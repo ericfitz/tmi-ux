@@ -32,7 +32,7 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterThreatModel()', () => {
-    it('should filter read-only fields from threat model', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'tm-123',
         name: 'My Threat Model',
@@ -55,11 +55,12 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered).toEqual({
         name: 'My Threat Model',
         description: 'Test description',
+        is_confidential: false,
       });
       expect(metadata).toBeUndefined();
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'custom-key', value: 'custom-value' }];
 
       const data = {
@@ -70,15 +71,15 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered, metadata } = service.filterThreatModel(data);
 
-      // metadata is extracted but NOT filtered from the object (it's returned separately)
+      // metadata is omitted from filtered (handled via metadata endpoint)
       expect(filtered).toEqual({
         name: 'My Threat Model',
-        metadata: mockMetadata,
+        is_confidential: false,
       });
       expect(metadata).toEqual(mockMetadata);
     });
 
-    it('should preserve non-readonly fields', () => {
+    it('should include only allowed fields from input', () => {
       const data = {
         name: 'My Threat Model',
         description: 'Test',
@@ -91,12 +92,12 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered.name).toBe('My Threat Model');
       expect(filtered.description).toBe('Test');
       expect(filtered.threat_model_framework).toBe('STRIDE');
-      expect(filtered.id).toBeUndefined();
+      expect((filtered as Record<string, unknown>)['id']).toBeUndefined();
     });
   });
 
   describe('filterThreat()', () => {
-    it('should filter read-only fields from threat', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'threat-123',
         threat_model_id: 'tm-123',
@@ -111,11 +112,14 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered).toEqual({
         name: 'SQL Injection',
         severity: 'high',
+        threat_type: [],
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toBeUndefined();
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'jira-ticket', value: 'SEC-123' }];
 
       const data = {
@@ -126,10 +130,12 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered, metadata } = service.filterThreat(data);
 
-      // metadata is extracted but NOT filtered from the object (it's returned separately)
+      // metadata is omitted from filtered (handled via metadata endpoint)
       expect(filtered).toEqual({
         name: 'SQL Injection',
-        metadata: mockMetadata,
+        threat_type: [],
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual(mockMetadata);
     });
@@ -245,11 +251,11 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterNote()', () => {
-    it('should filter read-only fields from note', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'note-123',
         name: 'Important Note',
-        text: 'This is the note content',
+        content: 'This is the note content',
         created_at: '2024-01-01',
         modified_at: '2024-01-02',
         metadata: [],
@@ -259,12 +265,14 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Important Note',
-        text: 'This is the note content',
+        content: 'This is the note content',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual([]);
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'color', value: 'yellow' }];
 
       const data = {
@@ -276,18 +284,21 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Note',
+        content: '',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual(mockMetadata);
     });
   });
 
   describe('filterAsset()', () => {
-    it('should filter read-only fields from asset', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'asset-123',
         threat_model_id: 'tm-123',
         name: 'Database',
-        asset_type: 'data-store',
+        type: 'data',
         created_at: '2024-01-01',
         modified_at: '2024-01-02',
         metadata: [],
@@ -297,12 +308,14 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Database',
-        asset_type: 'data-store',
+        type: 'data',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual([]);
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'classification', value: 'confidential' }];
 
       const data = {
@@ -315,13 +328,16 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Database',
+        type: 'data',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual(mockMetadata);
     });
   });
 
   describe('filterDocument()', () => {
-    it('should filter read-only fields from document', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'doc-123',
         name: 'Security Policy',
@@ -338,11 +354,13 @@ describe('ReadonlyFieldFilterService', () => {
         name: 'Security Policy',
         uri: 'https://example.com/policy.pdf',
         description: 'Corporate security policy',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual([]);
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'doc-type', value: 'policy' }];
 
       const data = {
@@ -354,13 +372,16 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Document',
+        uri: '',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual(mockMetadata);
     });
   });
 
   describe('filterRepository()', () => {
-    it('should filter read-only fields from repository', () => {
+    it('should construct typed output with only allowed fields', () => {
       const data = {
         id: 'repo-123',
         name: 'Main Codebase',
@@ -379,11 +400,13 @@ describe('ReadonlyFieldFilterService', () => {
         type: 'git',
         uri: 'https://github.com/example/repo',
         description: 'Main application repository',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual([]);
     });
 
-    it('should extract metadata separately', () => {
+    it('should extract metadata separately and omit it from filtered', () => {
       const mockMetadata: Metadata[] = [{ key: 'branch', value: 'main' }];
 
       const data = {
@@ -395,6 +418,9 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered).toEqual({
         name: 'Repository',
+        uri: '',
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(metadata).toEqual(mockMetadata);
     });
@@ -677,7 +703,11 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered } = service.filterThreatModel(data);
 
-      expect(filtered).toEqual(data);
+      expect(filtered).toEqual({
+        name: 'Test',
+        description: 'Description',
+        is_confidential: false,
+      });
     });
 
     it('should handle objects with all readonly fields', () => {
@@ -689,13 +719,23 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered } = service.filterThreat(data);
 
-      expect(filtered).toEqual({});
+      // Returns required defaults even when no writable fields are present
+      expect(filtered).toEqual({
+        name: undefined,
+        threat_type: [],
+        include_in_report: true,
+        timmy_enabled: true,
+      });
     });
 
     it('should handle empty objects', () => {
       const { filtered, metadata } = service.filterThreatModel({});
 
-      expect(filtered).toEqual({});
+      // Returns required defaults even for empty input
+      expect(filtered).toEqual({
+        name: undefined,
+        is_confidential: false,
+      });
       expect(metadata).toBeUndefined();
     });
 
