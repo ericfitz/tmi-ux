@@ -18,7 +18,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { exportAsSvg, exportAsPng, copyDiagramToClipboard } from '../../utils/mermaid-export.utils';
 
 const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 4;
+const MAX_ZOOM = 16;
 const ZOOM_STEP = 0.25;
 
 /**

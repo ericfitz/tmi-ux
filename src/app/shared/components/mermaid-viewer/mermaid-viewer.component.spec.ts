@@ -88,10 +88,10 @@ describe('MermaidViewerComponent', () => {
       expect(component.currentZoom).toBe(0.25);
     });
 
-    it('should not zoom above 4', () => {
-      component.currentZoom = 4;
+    it('should not zoom above 16', () => {
+      component.currentZoom = 16;
       component.zoomIn();
-      expect(component.currentZoom).toBe(4);
+      expect(component.currentZoom).toBe(16);
     });
 
     it('should reset zoom to 1', () => {

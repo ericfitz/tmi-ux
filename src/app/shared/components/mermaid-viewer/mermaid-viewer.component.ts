@@ -12,7 +12,7 @@ import { exportAsSvg, exportAsPng, copyDiagramToClipboard } from '../../utils/me
 import { MermaidOverlayViewerComponent } from '../mermaid-overlay-viewer/mermaid-overlay-viewer.component';
 
 const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 4;
+const MAX_ZOOM = 16;
 const ZOOM_STEP = 0.25;
 
 /**
