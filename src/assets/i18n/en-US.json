@@ -1956,5 +1956,17 @@
       "providerId": "Provider ID",
       "title": "User Profile"
     }
+  },
+  "userProjects": {
+    "title": "My Projects",
+    "subtitle": "View and edit your projects, teams, and relationships",
+    "listTitle": "Projects",
+    "noProjects": "{{projects.noProjects}}"
+  },
+  "userTeams": {
+    "title": "My Teams",
+    "subtitle": "View and edit your teams, members, and relationships",
+    "listTitle": "Teams",
+    "noTeams": "{{teams.noTeams}}"
   }
 }
