@@ -9,7 +9,7 @@
 #
 # Prerequisites:
 #   - OCI CLI installed and configured (oci session authenticate or API key)
-#   - Docker installed and running
+#   - Docker or Podman installed and running
 #   - jq installed
 #   - Access to the target OCI Container Repository
 #
@@ -20,8 +20,9 @@
 #   --region REGION       OCI region (default: us-ashburn-1)
 #   --repo-ocid OCID      Container repository OCID (auto-discovered if not set)
 #   --tag TAG             Image tag (default: latest)
-#   --platform PLATFORM   Docker platform (default: linux/arm64)
-#   --no-cache            Build without Docker cache
+#   --platform PLATFORM   Target platform (default: linux/arm64)
+#   --runtime RUNTIME     Container runtime: docker|podman (auto-detected if omitted)
+#   --no-cache            Build without cache
 #   --help                Show this help message
 #
 # Environment Variables:
@@ -72,24 +73,34 @@ REPO_OCID="${CONTAINER_REPO_OCID:-}"
 TAG="latest"
 PLATFORM="linux/arm64"
 NO_CACHE=false
+CONTAINER_RUNTIME=""
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --region)
+            [[ $# -lt 2 ]] && { log_error "--region requires a value"; exit 1; }
             REGION="$2"
             shift 2
             ;;
         --repo-ocid)
+            [[ $# -lt 2 ]] && { log_error "--repo-ocid requires a value"; exit 1; }
             REPO_OCID="$2"
             shift 2
             ;;
         --tag)
+            [[ $# -lt 2 ]] && { log_error "--tag requires a value"; exit 1; }
             TAG="$2"
             shift 2
             ;;
         --platform)
+            [[ $# -lt 2 ]] && { log_error "--platform requires a value"; exit 1; }
             PLATFORM="$2"
+            shift 2
+            ;;
+        --runtime)
+            [[ $# -lt 2 ]] && { log_error "--runtime requires a value"; exit 1; }
+            CONTAINER_RUNTIME="$2"
             shift 2
             ;;
         --no-cache)
@@ -107,17 +118,17 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Resolve container runtime
+source "${SCRIPT_DIR}/lib/container-runtime.sh"
+resolve_container_runtime
+
 # Check prerequisites
 check_prerequisites() {
     log_info "Checking prerequisites..."
+    log_info "Using container runtime: ${CONTAINER_RUNTIME}"
 
-    if ! command -v docker &> /dev/null; then
-        log_error "Docker is not installed or not in PATH"
-        exit 1
-    fi
-
-    if ! docker info &> /dev/null; then
-        log_error "Docker daemon is not running"
+    if ! $CONTAINER_RUNTIME info &> /dev/null; then
+        log_error "${CONTAINER_RUNTIME} daemon is not running"
         exit 1
     fi
 
@@ -318,30 +329,31 @@ authenticate_ocir() {
 
     log_info "Authenticating with OCI Container Registry..."
 
-    # Try to use docker credential helper if available
+    # Try to use OCI credential helper if available (binary name contains "docker"
+    # but works with both docker and podman)
     if docker-credential-oci-container-registry list &> /dev/null 2>&1; then
-        log_info "Using OCI credential helper for Docker authentication"
+        log_info "Using OCI credential helper for container authentication"
         return 0
     fi
 
     # Check if already logged in
-    if docker login "${registry}" --get-login &> /dev/null 2>&1; then
+    if $CONTAINER_RUNTIME login "${registry}" --get-login &> /dev/null 2>&1; then
         log_info "Already authenticated with ${registry}"
         return 0
     fi
 
     # For session-based auth, prompt for interactive login
-    log_warn "Docker login to OCI Container Registry required"
+    log_warn "Container registry login required"
     log_info "To authenticate, you need an OCI Auth Token:"
     log_info "  1. Go to OCI Console > Identity > Users > Your User > Auth Tokens"
     log_info "  2. Generate a new token (save it, shown only once)"
-    log_info "  3. Run: docker login ${registry}"
+    log_info "  3. Run: ${CONTAINER_RUNTIME} login ${registry}"
     log_info "     Username: ${namespace}/your-email@example.com"
     log_info "     Password: your-auth-token"
     log_info ""
     log_info "Attempting interactive login..."
 
-    if ! docker login "${registry}"; then
+    if ! $CONTAINER_RUNTIME login "${registry}"; then
         log_error "Failed to authenticate with OCI Container Registry"
         exit 1
     fi
@@ -385,13 +397,17 @@ main() {
     authenticate_ocir "$registry" "$namespace"
 
     # Build the image
-    log_info "Building Docker image for OCI..."
+    log_info "Building container image for OCI..."
     local build_args=(
         --platform "${PLATFORM}"
         --file Dockerfile.oci
         --tag "${full_image_name}"
         --build-arg "APP_VERSION=${app_version}"
     )
+
+    # Add runtime-specific flags
+    read -ra _rt_flags <<< "$(container_build_flags)"
+    build_args+=("${_rt_flags[@]}")
 
     if [[ "$TAG" == "latest" ]]; then
         build_args+=(--tag "${registry}/${namespace}/${repo_name}:v${app_version}")
@@ -401,18 +417,18 @@ main() {
         build_args+=(--no-cache)
     fi
 
-    if ! docker build "${build_args[@]}" .; then
-        log_error "Docker build failed"
+    if ! $CONTAINER_RUNTIME build "${build_args[@]}" .; then
+        log_error "Container build failed"
         exit 1
     fi
 
     local image_size
-    image_size=$(docker images "${full_image_name}" --format "{{.Size}}")
+    image_size=$($CONTAINER_RUNTIME images "${full_image_name}" --format "{{.Size}}")
     log_success "Image built successfully (${image_size})"
 
     # Push to OCIR
     log_info "Pushing ${full_image_name}..."
-    if ! docker push "${full_image_name}"; then
+    if ! $CONTAINER_RUNTIME push "${full_image_name}"; then
         log_error "Failed to push ${full_image_name}"
         exit 1
     fi
@@ -421,7 +437,7 @@ main() {
     if [[ "$TAG" == "latest" ]]; then
         local version_image="${registry}/${namespace}/${repo_name}:v${app_version}"
         log_info "Pushing ${version_image}..."
-        if ! docker push "${version_image}"; then
+        if ! $CONTAINER_RUNTIME push "${version_image}"; then
             log_warn "Failed to push version tag (non-fatal)"
         fi
     fi
