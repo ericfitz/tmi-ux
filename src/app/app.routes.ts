@@ -79,6 +79,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'teams',
+    loadComponent: () =>
+      import(/* webpackChunkName: "teams" */ './pages/teams/teams.component').then(
+        c => c.TeamsComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects',
+    loadComponent: () =>
+      import(/* webpackChunkName: "projects" */ './pages/projects/projects.component').then(
+        c => c.ProjectsComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     children: [
