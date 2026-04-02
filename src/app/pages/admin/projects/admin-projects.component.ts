@@ -40,12 +40,12 @@ import {
   CreateProjectDialogComponent,
   CreateProjectDialogResult,
 } from '@app/shared/components/create-project-dialog/create-project-dialog.component';
-import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
+import { EditProjectDialogComponent } from '@app/shared/components/edit-project-dialog/edit-project-dialog.component';
 import {
   ResponsiblePartiesDialogComponent,
   ResponsiblePartiesDialogData,
 } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
-import { RelatedProjectsDialogComponent } from './related-projects-dialog/related-projects-dialog.component';
+import { RelatedProjectsDialogComponent } from '@app/shared/components/related-projects-dialog/related-projects-dialog.component';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
