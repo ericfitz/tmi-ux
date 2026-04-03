@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, EMPTY } from 'rxjs';
+import { Observable, Subject, EMPTY, forkJoin } from 'rxjs';
 import { takeUntil, expand, map, reduce } from 'rxjs/operators';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -133,6 +133,10 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Load all non-closed threat models, then filter client-side
    * for those with no security_reviewer assigned.
+   *
+   * Uses two fetches: one for threat models with known non-closed statuses,
+   * and one unfiltered fetch to catch threat models with null/missing status
+   * (e.g., newly created from survey responses). Results are deduplicated.
    */
   loadUnassignedThreatModels(): void {
     this.isLoading = true;
@@ -142,11 +146,16 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
       .filter(s => s !== 'closed')
       .join(',');
 
-    this.fetchAllPages(nonClosedStatuses)
+    // The unfiltered fetch catches TMs with null status (e.g., newly created from
+    // survey responses) that the status-filtered fetch misses. The API does not
+    // support a "status is null" filter, so we fetch all and extract null-status items.
+    forkJoin([this.fetchAllPages(nonClosedStatuses), this.fetchAllPages(undefined)])
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: allItems => {
-          this.unassignedThreatModels = allItems.filter(tm => !tm.security_reviewer);
+        next: ([statusFiltered, allItems]) => {
+          const nullStatusItems = allItems.filter(tm => !tm.status);
+          const merged = this.mergeAndDeduplicate(statusFiltered, nullStatusItems);
+          this.unassignedThreatModels = merged.filter(tm => !tm.security_reviewer);
           this.totalUnassigned = this.unassignedThreatModels.length;
           this.countChange.emit(this.totalUnassigned);
           this.applyClientPagination();
@@ -165,7 +174,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Fetch all pages of threat models from the API.
    */
-  private fetchAllPages(status: string): Observable<TMListItem[]> {
+  private fetchAllPages(status: string | undefined): Observable<TMListItem[]> {
     return this.threatModelService
       .fetchThreatModels({ status, limit: FETCH_PAGE_SIZE, offset: 0 })
       .pipe(
@@ -183,6 +192,15 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
         map(response => response.threat_models),
         reduce((acc, items) => [...acc, ...items], [] as TMListItem[]),
       );
+  }
+
+  /**
+   * Merge two arrays of threat models, deduplicating by ID.
+   * Items from the first array take precedence.
+   */
+  private mergeAndDeduplicate(primary: TMListItem[], secondary: TMListItem[]): TMListItem[] {
+    const seen = new Set(primary.map(tm => tm.id));
+    return [...primary, ...secondary.filter(tm => !seen.has(tm.id))];
   }
 
   /**

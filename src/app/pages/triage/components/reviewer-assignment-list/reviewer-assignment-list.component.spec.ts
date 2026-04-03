@@ -216,11 +216,19 @@ describe('ReviewerAssignmentListComponent', () => {
         makeTMListItem({ id: `tm-${100 + i}`, security_reviewer: null }),
       );
 
-      mockThreatModelService.fetchThreatModels
-        .mockReturnValueOnce(of({ threat_models: page1Items, total: 150, limit: 100, offset: 0 }))
-        .mockReturnValueOnce(
-          of({ threat_models: page2Items, total: 150, limit: 100, offset: 100 }),
-        );
+      // forkJoin subscribes concurrently, so expand calls can interleave.
+      // Use mockImplementation to route by the status param.
+      mockThreatModelService.fetchThreatModels.mockImplementation(
+        (params: { status?: string; limit: number; offset: number }) => {
+          const items = params.offset === 0 ? page1Items : page2Items;
+          return of({
+            threat_models: items,
+            total: 150,
+            limit: 100,
+            offset: params.offset,
+          });
+        },
+      );
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
@@ -228,7 +236,83 @@ describe('ReviewerAssignmentListComponent', () => {
       component.ngOnInit();
 
       expect(component.totalUnassigned).toBe(150);
-      expect(mockThreatModelService.fetchThreatModels).toHaveBeenCalledTimes(2);
+      // 2 pages for status-filtered + 2 pages for unfiltered
+      expect(mockThreatModelService.fetchThreatModels).toHaveBeenCalledTimes(4);
+    });
+
+    it('should include threat models with null status via unfiltered fetch', () => {
+      const withStatus = makeTMListItem({
+        id: 'tm-with-status',
+        status: 'not_started',
+        security_reviewer: null,
+      });
+      const nullStatus = makeTMListItem({
+        id: 'tm-null-status',
+        status: null,
+        security_reviewer: null,
+      });
+
+      // Status-filtered fetch returns only the TM with a known status
+      mockThreatModelService.fetchThreatModels
+        .mockReturnValueOnce(of(makeApiResponse([withStatus])))
+        // Unfiltered fetch returns both
+        .mockReturnValueOnce(of(makeApiResponse([withStatus, nullStatus])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+
+      expect(component.totalUnassigned).toBe(2);
+      const ids = component.dataSource.data.map(tm => tm.id);
+      expect(ids).toContain('tm-with-status');
+      expect(ids).toContain('tm-null-status');
+    });
+
+    it('should exclude null-status threat models that have an assigned reviewer', () => {
+      const nullStatusAssigned = makeTMListItem({
+        id: 'tm-null-assigned',
+        status: null,
+        security_reviewer: mockReviewer,
+      });
+      const nullStatusUnassigned = makeTMListItem({
+        id: 'tm-null-unassigned',
+        status: null,
+        security_reviewer: null,
+      });
+
+      mockThreatModelService.fetchThreatModels
+        .mockReturnValueOnce(of(makeApiResponse([])))
+        .mockReturnValueOnce(of(makeApiResponse([nullStatusAssigned, nullStatusUnassigned])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+
+      expect(component.totalUnassigned).toBe(1);
+      expect(component.dataSource.data[0].id).toBe('tm-null-unassigned');
+    });
+
+    it('should deduplicate TMs that appear in both status-filtered and unfiltered fetches', () => {
+      const tm = makeTMListItem({
+        id: 'tm-overlap',
+        status: 'not_started',
+        security_reviewer: null,
+      });
+
+      // Same TM returned by both fetches
+      mockThreatModelService.fetchThreatModels
+        .mockReturnValueOnce(of(makeApiResponse([tm])))
+        .mockReturnValueOnce(of(makeApiResponse([tm])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+
+      expect(component.totalUnassigned).toBe(1);
+      expect(component.dataSource.data[0].id).toBe('tm-overlap');
     });
   });
 
