@@ -8,10 +8,12 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { of } from 'rxjs';
 
 import { UserPreferencesDialogComponent } from './user-preferences-dialog.component';
 import { LoggerService } from '../../services/logger.service';
 import { IAuthService } from '../../interfaces';
+import { UserProfile } from '@app/auth/models/auth.models';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 
 interface MockDialogRef {
@@ -23,6 +25,7 @@ describe('UserPreferencesDialogComponent', () => {
   let dialogRef: MockDialogRef;
   let loggerService: MockLoggerService;
   let envInjector: EnvironmentInjector;
+  let clientCredentialService: { list: ReturnType<typeof vi.fn>; delete: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,7 +49,7 @@ describe('UserPreferencesDialogComponent', () => {
       }),
     };
     const threatModelAuthService = { getCurrentRole: vi.fn() };
-    const clientCredentialService = { list: vi.fn(), delete: vi.fn() };
+    clientCredentialService = { list: vi.fn().mockReturnValue(of([])), delete: vi.fn() };
     const userService = { requestDeleteChallenge: vi.fn(), confirmDeleteAccount: vi.fn() };
     const snackBar = { open: vi.fn() };
     const transloco = { translate: vi.fn((key: string) => key) };
@@ -180,6 +183,68 @@ describe('UserPreferencesDialogComponent', () => {
   describe('credentialRows', () => {
     it('should start as empty array', () => {
       expect(component.credentialRows).toEqual([]);
+    });
+  });
+
+  describe('canManageCredentials', () => {
+    it('should default to false', () => {
+      expect(component.canManageCredentials).toBe(false);
+    });
+
+    it('should be true when user is admin', () => {
+      component['updateCredentialsAccess']({
+        email: 'admin@example.com',
+        is_admin: true,
+        is_security_reviewer: false,
+        groups: null,
+      } as UserProfile);
+      expect(component.canManageCredentials).toBe(true);
+    });
+
+    it('should be true when user is security reviewer', () => {
+      component['updateCredentialsAccess']({
+        email: 'reviewer@example.com',
+        is_admin: false,
+        is_security_reviewer: true,
+        groups: null,
+      } as UserProfile);
+      expect(component.canManageCredentials).toBe(true);
+    });
+
+    it('should be false when user is neither admin nor security reviewer', () => {
+      component['updateCredentialsAccess']({
+        email: 'user@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+        groups: null,
+      } as UserProfile);
+      expect(component.canManageCredentials).toBe(false);
+    });
+
+    it('should be false when profile is null', () => {
+      component['updateCredentialsAccess'](null);
+      expect(component.canManageCredentials).toBe(false);
+    });
+
+    it('should load credentials when access is granted', () => {
+      clientCredentialService.list.mockClear();
+      component['updateCredentialsAccess']({
+        email: 'admin@example.com',
+        is_admin: true,
+        groups: null,
+      } as UserProfile);
+      expect(clientCredentialService.list).toHaveBeenCalled();
+    });
+
+    it('should not load credentials when access is denied', () => {
+      clientCredentialService.list.mockClear();
+      component['updateCredentialsAccess']({
+        email: 'user@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+        groups: null,
+      } as UserProfile);
+      expect(clientCredentialService.list).not.toHaveBeenCalled();
     });
   });
 });

@@ -310,139 +310,141 @@ interface CheckboxChangeEvent {
           </div>
         </mat-tab>
 
-        <!-- Credentials Tab -->
-        <mat-tab [label]="'userPreferences.tabs.credentials' | transloco">
-          <div class="tab-content credentials-tab">
-            <h3 class="section-header" [transloco]="'userPreferences.credentials.title'">
-              Client Credentials
-            </h3>
+        <!-- Credentials Tab (admins and security reviewers only) -->
+        @if (canManageCredentials) {
+          <mat-tab [label]="'userPreferences.tabs.credentials' | transloco">
+            <div class="tab-content credentials-tab">
+              <h3 class="section-header" [transloco]="'userPreferences.credentials.title'">
+                Client Credentials
+              </h3>
 
-            @if (credentialsLoading) {
-              <div class="credentials-loading">
-                <mat-spinner diameter="32"></mat-spinner>
-              </div>
-            } @else if (credentials.length === 0) {
-              <div class="credentials-empty">
-                <mat-icon class="empty-icon">vpn_key</mat-icon>
-                <p class="empty-text" [transloco]="'userPreferences.credentials.noCredentials'">
-                  No client credentials yet
-                </p>
-                <p
-                  class="empty-description"
-                  [transloco]="'userPreferences.credentials.noCredentialsDescription'"
-                >
-                  Create credentials to access the TMI API programmatically.
-                </p>
-              </div>
-            } @else {
-              <div class="credentials-table-container">
-                <table mat-table [dataSource]="credentialRows" class="credentials-table">
-                  <!-- Credential column (name + description + client ID) -->
-                  <ng-container matColumnDef="credential">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.credential'"
-                    >
-                      Credential
-                    </th>
-                    <td mat-cell *matCellDef="let row">
-                      <div class="credential-name">{{ row.credential.name }}</div>
-                      @if (row.credential.description) {
-                        <div class="credential-description">
-                          {{ row.credential.description }}
-                        </div>
-                      }
-                      <div class="client-id">{{ row.credential.client_id }}</div>
-                    </td>
-                  </ng-container>
-
-                  <!-- Last Used column -->
-                  <ng-container matColumnDef="lastUsed">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.lastUsed'"
-                    >
-                      Last Used
-                    </th>
-                    <td mat-cell *matCellDef="let row">
-                      {{ formatLastUsed(row.credential.last_used_at) }}
-                    </td>
-                  </ng-container>
-
-                  <!-- Actions column -->
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let row">
-                      <button
-                        mat-icon-button
-                        (click)="onDeleteCredential(row.credential)"
-                        [matTooltip]="'common.delete' | transloco"
-                        color="warn"
+              @if (credentialsLoading) {
+                <div class="credentials-loading">
+                  <mat-spinner diameter="32"></mat-spinner>
+                </div>
+              } @else if (credentials.length === 0) {
+                <div class="credentials-empty">
+                  <mat-icon class="empty-icon">vpn_key</mat-icon>
+                  <p class="empty-text" [transloco]="'userPreferences.credentials.noCredentials'">
+                    No client credentials yet
+                  </p>
+                  <p
+                    class="empty-description"
+                    [transloco]="'userPreferences.credentials.noCredentialsDescription'"
+                  >
+                    Create credentials to access the TMI API programmatically.
+                  </p>
+                </div>
+              } @else {
+                <div class="credentials-table-container">
+                  <table mat-table [dataSource]="credentialRows" class="credentials-table">
+                    <!-- Credential column (name + description + client ID) -->
+                    <ng-container matColumnDef="credential">
+                      <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        [transloco]="'userPreferences.credentials.credential'"
                       >
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <!-- Metadata column (spans full width) -->
-                  <ng-container matColumnDef="metadata">
-                    <td mat-cell *matCellDef="let row" [attr.colspan]="3">
-                      <div
-                        class="credential-metadata"
-                        [class.credential-metadata-last]="row.isLast"
-                      >
-                        <span [transloco]="'userPreferences.credentials.createdOn'">Created</span>
-                        {{ formatDate(row.credential.created_at) }}
-                        ·
-                        @if (row.credential.expires_at) {
-                          @if (isExpired(row.credential.expires_at)) {
-                            <span
-                              class="credential-expired"
-                              [transloco]="'userPreferences.credentials.expired'"
-                              >Expired</span
-                            >
-                          } @else {
-                            <span [transloco]="'userPreferences.credentials.expiresOn'"
-                              >Expires</span
-                            >
-                            {{ formatExpires(row.credential.expires_at) }}
-                          }
-                        } @else {
-                          <span [transloco]="'userPreferences.credentials.neverExpires'"
-                            >Never expires</span
-                          >
+                        Credential
+                      </th>
+                      <td mat-cell *matCellDef="let row">
+                        <div class="credential-name">{{ row.credential.name }}</div>
+                        @if (row.credential.description) {
+                          <div class="credential-description">
+                            {{ row.credential.description }}
+                          </div>
                         }
-                      </div>
-                    </td>
-                  </ng-container>
+                        <div class="client-id">{{ row.credential.client_id }}</div>
+                      </td>
+                    </ng-container>
 
-                  <!-- Header row -->
-                  <tr mat-header-row *matHeaderRowDef="credentialColumns"></tr>
-                  <!-- Content row -->
-                  <tr
-                    mat-row
-                    *matRowDef="let row; columns: credentialColumns; when: isContentRow"
-                  ></tr>
-                  <!-- Metadata row -->
-                  <tr
-                    mat-row
-                    *matRowDef="let row; columns: credentialMetadataColumns; when: isMetadataRow"
-                    class="metadata-row"
-                  ></tr>
-                </table>
+                    <!-- Last Used column -->
+                    <ng-container matColumnDef="lastUsed">
+                      <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        [transloco]="'userPreferences.credentials.lastUsed'"
+                      >
+                        Last Used
+                      </th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ formatLastUsed(row.credential.last_used_at) }}
+                      </td>
+                    </ng-container>
+
+                    <!-- Actions column -->
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef></th>
+                      <td mat-cell *matCellDef="let row">
+                        <button
+                          mat-icon-button
+                          (click)="onDeleteCredential(row.credential)"
+                          [matTooltip]="'common.delete' | transloco"
+                          color="warn"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <!-- Metadata column (spans full width) -->
+                    <ng-container matColumnDef="metadata">
+                      <td mat-cell *matCellDef="let row" [attr.colspan]="3">
+                        <div
+                          class="credential-metadata"
+                          [class.credential-metadata-last]="row.isLast"
+                        >
+                          <span [transloco]="'userPreferences.credentials.createdOn'">Created</span>
+                          {{ formatDate(row.credential.created_at) }}
+                          ·
+                          @if (row.credential.expires_at) {
+                            @if (isExpired(row.credential.expires_at)) {
+                              <span
+                                class="credential-expired"
+                                [transloco]="'userPreferences.credentials.expired'"
+                                >Expired</span
+                              >
+                            } @else {
+                              <span [transloco]="'userPreferences.credentials.expiresOn'"
+                                >Expires</span
+                              >
+                              {{ formatExpires(row.credential.expires_at) }}
+                            }
+                          } @else {
+                            <span [transloco]="'userPreferences.credentials.neverExpires'"
+                              >Never expires</span
+                            >
+                          }
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Header row -->
+                    <tr mat-header-row *matHeaderRowDef="credentialColumns"></tr>
+                    <!-- Content row -->
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: credentialColumns; when: isContentRow"
+                    ></tr>
+                    <!-- Metadata row -->
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: credentialMetadataColumns; when: isMetadataRow"
+                      class="metadata-row"
+                    ></tr>
+                  </table>
+                </div>
+              }
+
+              <div class="credentials-actions">
+                <button mat-raised-button color="primary" (click)="onAddCredential()">
+                  <mat-icon>add</mat-icon>
+                  <span [transloco]="'userPreferences.credentials.add'">Add</span>
+                </button>
               </div>
-            }
-
-            <div class="credentials-actions">
-              <button mat-raised-button color="primary" (click)="onAddCredential()">
-                <mat-icon>add</mat-icon>
-                <span [transloco]="'userPreferences.credentials.add'">Add</span>
-              </button>
             </div>
-          </div>
-        </mat-tab>
+          </mat-tab>
+        }
 
         <!-- Danger Tab -->
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
@@ -811,6 +813,7 @@ export class UserPreferencesDialogComponent implements OnInit {
   currentThreatModelRole: 'owner' | 'writer' | 'reader' | null = null;
 
   // Credentials tab
+  canManageCredentials = false;
   credentials: ClientCredentialInfo[] = [];
   credentialsLoading = false;
   credentialColumns = ['credential', 'lastUsed', 'actions'];
@@ -841,6 +844,7 @@ export class UserPreferencesDialogComponent implements OnInit {
   ngOnInit(): void {
     // Get user profile from synchronous property
     this.userProfile = this.authService.userProfile;
+    this.updateCredentialsAccess(this.userProfile);
 
     // Refresh user profile to get latest admin status
     this.authService
@@ -849,6 +853,7 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe({
         next: profile => {
           this.userProfile = profile;
+          this.updateCredentialsAccess(profile);
         },
       });
 
@@ -858,9 +863,6 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe(role => {
         this.currentThreatModelRole = role;
       });
-
-    // Load client credentials
-    this.loadCredentials();
   }
 
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
@@ -981,6 +983,14 @@ export class UserPreferencesDialogComponent implements OnInit {
   }
 
   // Credentials methods
+  private updateCredentialsAccess(profile: UserProfile | null): void {
+    const hasAccess = profile?.is_admin === true || profile?.is_security_reviewer === true;
+    this.canManageCredentials = hasAccess;
+    if (hasAccess && this.credentials.length === 0 && !this.credentialsLoading) {
+      this.loadCredentials();
+    }
+  }
+
   private loadCredentials(): void {
     this.credentialsLoading = true;
     this.clientCredentialService
