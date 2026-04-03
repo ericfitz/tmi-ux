@@ -149,6 +149,15 @@ When you encounter a problem during development or debugging that appears to ori
 
 Key commands: `pnpm run dev`, `pnpm test`, `pnpm run build`, `pnpm run lint:all`, `pnpm run format`
 
+## Serena MCP Server
+
+Serena provides semantic code intelligence tools (symbol lookup, find references, rename, edit by symbol). It is configured globally and launches automatically with each session. Three projects are registered: `tmi-ux` (TypeScript), `tmi` (Go), and `tmi-tf-wh` (Python).
+
+- **At session start**: Activate the current project with `activate_project` (e.g., `tmi-ux` for this repo)
+- **When to use Serena**: Semantic navigation — understanding symbol relationships, finding references across files, renaming symbols, editing symbol bodies
+- **When to use built-in tools**: Text search (Grep), file discovery (Glob), reading config/non-code files (Read)
+- Only one project can be active at a time; switch with `activate_project` when working across repos
+
 ## Architecture
 
 See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architecture-and-Design) on the TMI wiki for complete architecture documentation.
