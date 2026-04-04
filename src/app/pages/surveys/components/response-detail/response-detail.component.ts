@@ -24,7 +24,7 @@ import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
+import { ProjectService } from '@app/core/services/project.service';
 import { environment } from '../../../../../environments/environment';
 
 /**
@@ -42,7 +42,6 @@ import { environment } from '../../../../../environments/environment';
     SurveyModule,
     TranslocoModule,
     UserDisplayComponent,
-    ProjectPickerComponent,
   ],
   templateUrl: './response-detail.component.html',
   styleUrl: './response-detail.component.scss',
@@ -58,6 +57,7 @@ export class ResponseDetailComponent implements OnInit {
   surveyModel: Model | null = null;
   response: SurveyResponse | null = null;
   surveyJson: SurveyJsonSchema | null = null;
+  projectName: string | null = null;
 
   loading = true;
   error: string | null = null;
@@ -69,6 +69,7 @@ export class ResponseDetailComponent implements OnInit {
     private router: Router,
     private surveyService: SurveyService,
     private responseService: SurveyResponseService,
+    private projectService: ProjectService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -98,6 +99,11 @@ export class ResponseDetailComponent implements OnInit {
       .subscribe({
         next: response => {
           this.response = response;
+
+          // Resolve project name
+          if (response.project_id) {
+            this.loadProjectName(response.project_id);
+          }
 
           // Use the survey_json snapshot from the response if available
           if (response.survey_json) {
@@ -137,6 +143,26 @@ export class ResponseDetailComponent implements OnInit {
           this.error = 'Failed to load survey';
           this.loading = false;
           this.logger.error('Failed to load survey JSON', error);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /**
+   * Resolve project name from project ID
+   */
+  private loadProjectName(projectId: string): void {
+    this.projectService
+      .get(projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: project => {
+          this.projectName = project.name;
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Failed to load project', error);
+          this.projectName = null;
           this.cdr.markForCheck();
         },
       });
@@ -202,35 +228,6 @@ export class ResponseDetailComponent implements OnInit {
       review_created: { label: 'Review Created', color: 'primary', icon: 'check_circle' },
     };
     return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
-  }
-
-  /**
-   * Handle project picker selection change
-   */
-  onProjectChange(projectId: string | null): void {
-    if (!this.response) return;
-
-    const previousProjectId = this.response.project_id ?? null;
-    this.response.project_id = projectId;
-
-    this.responseService
-      .patchProjectId(this.response.id, projectId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: updated => {
-          if (this.response) {
-            this.response.project_id = updated.project_id;
-            this.cdr.markForCheck();
-          }
-        },
-        error: error => {
-          this.logger.error('Failed to update project', error);
-          if (this.response) {
-            this.response.project_id = previousProjectId;
-            this.cdr.markForCheck();
-          }
-        },
-      });
   }
 
   /**
