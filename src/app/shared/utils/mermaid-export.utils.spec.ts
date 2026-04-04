@@ -41,22 +41,21 @@ describe('mermaid-export.utils', () => {
   });
 
   describe('exportAsSvg', () => {
-    it('should create and click a download link', () => {
+    it('should create and click a download link', async () => {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('width', '200');
       svg.setAttribute('height', '100');
 
-      const clickSpy = vi.fn();
-      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue({
-        href: '',
-        download: '',
-        click: clickSpy,
-      } as unknown as HTMLAnchorElement);
+      const anchor = document.createElement('a');
+      const clickSpy = vi.spyOn(anchor, 'click').mockImplementation(() => {});
+      const createElementSpy = vi
+        .spyOn(document, 'createElement')
+        .mockReturnValue(anchor as unknown as HTMLAnchorElement);
 
       const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
       vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
 
-      exportAsSvg(svg);
+      await exportAsSvg(svg);
 
       expect(clickSpy).toHaveBeenCalled();
       expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:test');
@@ -84,9 +83,11 @@ describe('mermaid-export.utils', () => {
           callback(new Blob([''], { type: 'image/png' }));
         }),
       };
+      const anchor = document.createElement('a');
+      vi.spyOn(anchor, 'click').mockImplementation(() => {});
       vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
         if (tag === 'canvas') return mockCanvas as unknown as HTMLCanvasElement;
-        return { href: '', download: '', click: vi.fn() } as unknown as HTMLAnchorElement;
+        return anchor as unknown as HTMLAnchorElement;
       });
       vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
       vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
