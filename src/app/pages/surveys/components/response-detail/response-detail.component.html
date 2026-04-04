@@ -73,13 +73,13 @@
               </a>
             </div>
           }
+          @if (response.project_id) {
+            <div class="info-item">
+              <span class="info-label">{{ 'common.project' | transloco }}</span>
+              <span class="info-value">{{ projectName ?? ('common.loading' | transloco) }}</span>
+            </div>
+          }
         </div>
-        @if (projectName) {
-          <div class="info-item">
-            <span class="info-label">Project</span>
-            <span class="info-value">{{ projectName }}</span>
-          </div>
-        }
       </mat-card-content>
     </mat-card>
 
