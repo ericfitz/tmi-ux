@@ -18,7 +18,7 @@ import {
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { ChatMessage } from '../../models/chat.model';
+import { ChatMessage, PreparationStatus } from '../../models/chat.model';
 
 @Component({
   selector: 'app-chat-messages',
@@ -39,6 +39,9 @@ import { ChatMessage } from '../../models/chat.model';
 export class ChatMessagesComponent implements AfterViewChecked {
   @Input() messages: ChatMessage[] = [];
   @Input() loading = false;
+  @Input() streamingMessageId: string | null = null;
+  @Input() preparationStatus: PreparationStatus | null = null;
+  @Input() inputDisabled = false;
 
   @Output() messageSent = new EventEmitter<string>();
 
@@ -47,9 +50,21 @@ export class ChatMessagesComponent implements AfterViewChecked {
   messageText = '';
   private shouldScroll = false;
 
+  get isInputDisabled(): boolean {
+    return this.inputDisabled || this.loading || this.preparationStatus !== null;
+  }
+
+  get isSendDisabled(): boolean {
+    return !this.messageText.trim() || this.isInputDisabled;
+  }
+
+  isStreaming(message: ChatMessage): boolean {
+    return message.id === this.streamingMessageId;
+  }
+
   onSend(): void {
     const text = this.messageText.trim();
-    if (!text) return;
+    if (!text || this.isInputDisabled) return;
 
     this.messageSent.emit(text);
     this.messageText = '';
@@ -74,7 +89,7 @@ export class ChatMessagesComponent implements AfterViewChecked {
     return message.id;
   }
 
-  private scrollToBottom(): void {
+  scrollToBottom(): void {
     const el = this.messagesContainer?.nativeElement;
     if (el) {
       el.scrollTop = el.scrollHeight;

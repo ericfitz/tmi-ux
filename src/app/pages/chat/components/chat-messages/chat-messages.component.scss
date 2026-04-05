@@ -79,6 +79,10 @@
     align-items: center;
     padding: 12px 20px;
   }
+
+  &.streaming .message-content {
+    background: var(--color-background-card, #f5f5f5);
+  }
 }
 
 .message-avatar {
@@ -158,12 +162,60 @@
   }
 }
 
+// Typing cursor for streaming messages
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentcolor;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+// Ephemeral preparation status bubble
+.status-bubble {
+  .status-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-secondary, #666);
+  }
+
+  .status-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+
+    &.ready {
+      color: var(--color-success, #4caf50);
+    }
+
+    &.error {
+      color: var(--color-error, #f44336);
+    }
+  }
+
+  .status-spinner {
+    flex-shrink: 0;
+  }
+}
+
+// Pinned input area — always visible at bottom
 .chat-input {
   display: flex;
   align-items: flex-end;
   gap: 8px;
   padding: 8px 16px 16px;
   border-top: 1px solid var(--color-border-light, #e0e0e0);
+  flex-shrink: 0;
 
   .message-input {
     flex: 1;
