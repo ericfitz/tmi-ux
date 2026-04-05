@@ -1827,8 +1827,12 @@
       "loading": "Loading unassigned reviews...",
       "noUnassigned": "No Unassigned Reviews",
       "noUnassignedDescription": "All active threat models have a security reviewer assigned",
+      "noUnassignedFiltered": "No threat models match your filters",
       "reviewer": "Security Reviewer",
-      "selectReviewer": "Select reviewer..."
+      "reviewerPlaceholder": "Filter by reviewer...",
+      "searchPlaceholder": "Search by name...",
+      "selectReviewer": "Select reviewer...",
+      "unassigned": "Unassigned"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
