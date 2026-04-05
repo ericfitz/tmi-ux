@@ -79,6 +79,7 @@ export interface DfdState {
   readonly diagramName?: string;
   readonly diagramDescription?: string;
   readonly includeInReport?: boolean;
+  readonly timmyEnabled?: boolean;
   readonly threatModelName?: string;
 }
 
@@ -611,6 +612,7 @@ export class AppDfdOrchestrator {
     diagramName?: string;
     diagramDescription?: string;
     includeInReport?: boolean;
+    timmyEnabled?: boolean;
   }): void {
     this._updateState(metadata);
   }
@@ -1088,6 +1090,7 @@ export class AppDfdOrchestrator {
             diagramName: result.data.name,
             diagramDescription: result.data.description,
             includeInReport: result.data.include_in_report,
+            timmyEnabled: result.data.timmy_enabled,
             threatModelName: result.data.threatModelName,
           });
         }

@@ -42,6 +42,7 @@ export interface NoteFormResult {
   content: string;
   description?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 @Component({
@@ -78,6 +79,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   private originalName = '';
   private originalDescription = '';
   private originalIncludeInReport: boolean | undefined = true;
+  private originalTimmyEnabled: boolean | undefined = true;
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -119,6 +121,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
         [Validators.maxLength(this.maxDescriptionLength)],
       ],
       include_in_report: [this.data.mode === 'create' ? true : this.data.note?.include_in_report],
+      timmy_enabled: [this.data.note?.timmy_enabled ?? true],
     });
 
     this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
@@ -128,6 +131,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     this.originalIncludeInReport = this.noteForm.get('include_in_report')?.value as
       | boolean
       | undefined;
+    this.originalTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
@@ -198,12 +202,14 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     const currentIncludeInReport = this.noteForm.get('include_in_report')?.value as
       | boolean
       | undefined;
+    const currentTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
 
     return (
       currentName !== this.originalName ||
       currentContent !== this.originalContent ||
       currentDescription !== this.originalDescription ||
-      currentIncludeInReport !== this.originalIncludeInReport
+      currentIncludeInReport !== this.originalIncludeInReport ||
+      currentTimmyEnabled !== this.originalTimmyEnabled
     );
   }
 
@@ -315,6 +321,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     this.originalContent = formValue.content;
     this.originalDescription = formValue.description || '';
     this.originalIncludeInReport = formValue.include_in_report;
+    this.originalTimmyEnabled = formValue.timmy_enabled;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }
@@ -364,6 +371,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
       content: value.content.trim(),
       description: value.description?.trim(),
       include_in_report: value.include_in_report,
+      timmy_enabled: value.timmy_enabled,
     };
   }
 

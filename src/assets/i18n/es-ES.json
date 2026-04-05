@@ -658,6 +658,7 @@
     "id": "ID",
     "identityProvider": "Proveedor de Identidad",
     "includeInReport": "Incluir en el Informe",
+    "includeInTimmyChat": "Incluir en el chat de Timmy",
     "issueUri": "URL del Problema",
     "language": "{{language}}",
     "lastModified": "Última Modificación",

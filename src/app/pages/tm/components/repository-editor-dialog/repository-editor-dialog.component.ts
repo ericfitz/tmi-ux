@@ -29,6 +29,7 @@ interface RepositoryFormValues {
   refValue?: string;
   subPath?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 /**
@@ -98,6 +99,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
       refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
       subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
       include_in_report: [data.mode === 'create' ? true : data.repository?.include_in_report],
+      timmy_enabled: [data.repository?.timmy_enabled ?? true],
     });
   }
 
@@ -159,6 +161,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
           }
         : undefined,
       include_in_report: formValues.include_in_report,
+      timmy_enabled: formValues.timmy_enabled,
     };
 
     this.dialogRef.close(result);

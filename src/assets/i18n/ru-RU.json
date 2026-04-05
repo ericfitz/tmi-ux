@@ -658,6 +658,7 @@
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
     "includeInReport": "Включить в отчет",
+    "includeInTimmyChat": "Включить в чат Timmy",
     "issueUri": "URL Задачи",
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",

@@ -29,6 +29,7 @@ interface AssetFormValues {
   classification?: string[];
   sensitivity?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 /**
@@ -91,6 +92,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       classification: [data.asset?.classification || []],
       sensitivity: [data.asset?.sensitivity || '', Validators.maxLength(256)],
       include_in_report: [data.mode === 'create' ? true : data.asset?.include_in_report],
+      timmy_enabled: [data.asset?.timmy_enabled ?? true],
     });
 
     if (this.isReadOnly) {
@@ -174,6 +176,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
     }
 
     result.include_in_report = formValues.include_in_report;
+    result.timmy_enabled = formValues.timmy_enabled;
 
     this.dialogRef.close(result);
   }

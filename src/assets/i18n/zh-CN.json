@@ -658,6 +658,7 @@
     "id": "ID",
     "identityProvider": "身份提供商",
     "includeInReport": "包含在报告中",
+    "includeInTimmyChat": "包含在 Timmy 聊天中",
     "issueUri": "问题URL",
     "language": "{{language}}",
     "lastModified": "最后修改",

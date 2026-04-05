@@ -78,6 +78,12 @@
           {{ 'common.includeInReport' | transloco }}
         </mat-checkbox>
       </div>
+
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="timmy_enabled" tabindex="5">
+          {{ 'common.includeInTimmyChat' | transloco }}
+        </mat-checkbox>
+      </div>
     </div>
   </form>
 </mat-dialog-content>
@@ -85,7 +91,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    tabindex="5"
+    tabindex="6"
     [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
   >
     {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
@@ -96,7 +102,7 @@
       color="primary"
       [disabled]="documentForm.invalid"
       (click)="onSubmit()"
-      tabindex="6"
+      tabindex="7"
       [attr.aria-label]="
         mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
       "

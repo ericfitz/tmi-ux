@@ -658,6 +658,7 @@
     "id": "ID",
     "identityProvider": "ID 공급자",
     "includeInReport": "보고서에 포함",
+    "includeInTimmyChat": "Timmy 채팅에 포함",
     "issueUri": "이슈 URL",
     "language": "{{language}}",
     "lastModified": "마지막 수정",

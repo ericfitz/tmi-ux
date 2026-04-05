@@ -658,6 +658,7 @@
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
     "includeInReport": "تضمين في التقرير",
+    "includeInTimmyChat": "تضمين في محادثة Timmy",
     "issueUri": "رابط المشكلة",
     "language": "{{language}}",
     "lastModified": "آخر تعديل",

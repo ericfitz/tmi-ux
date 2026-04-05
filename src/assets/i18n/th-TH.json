@@ -653,6 +653,7 @@
     "id": "รหัส",
     "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
     "includeInReport": "รวมในรายงาน",
+    "includeInTimmyChat": "รวมในแชท Timmy",
     "issueUri": "URL ปัญหา",
     "language": "{{language}}",
     "lastModified": "แก้ไขล่าสุด",

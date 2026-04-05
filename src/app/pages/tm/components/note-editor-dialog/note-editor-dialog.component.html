@@ -56,6 +56,13 @@
       </mat-checkbox>
     </div>
 
+    <!-- Include in Timmy Chat -->
+    <div class="checkbox-field">
+      <mat-checkbox formControlName="timmy_enabled">
+        {{ 'common.includeInTimmyChat' | transloco }}
+      </mat-checkbox>
+    </div>
+
     <!-- Markdown Editor Toolbar -->
     @if (!isReadOnly) {
       <div class="markdown-toolbar">

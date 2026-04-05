@@ -231,6 +231,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   diagramName: string | null = null;
   diagramDescription: string | null = null;
   includeInReport = true;
+  timmyEnabled = true;
   threatModelName: string | null = null;
   threatModelPermission: 'reader' | 'writer' | null = null;
 
@@ -672,6 +673,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (state.includeInReport !== undefined) {
           this.includeInReport = state.includeInReport;
+        }
+        if (state.timmyEnabled !== undefined) {
+          this.timmyEnabled = state.timmyEnabled;
         }
         if (state.threatModelName) {
           this.threatModelName = state.threatModelName;
@@ -1355,6 +1359,33 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: error => {
           this.logger.error('Failed to update diagram include_in_report', { error });
+        },
+      });
+  }
+
+  onTimmyEnabledChange(event: { checked: boolean }): void {
+    if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
+      return;
+    }
+
+    this.threatModelService
+      .patchDiagramProperties(this.threatModelId, this.dfdId, {
+        timmy_enabled: event.checked,
+      })
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: updatedDiagram => {
+          this.timmyEnabled = updatedDiagram.timmy_enabled ?? event.checked;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            timmyEnabled: this.timmyEnabled,
+          });
+          this.cdr.detectChanges();
+          this.logger.info('Diagram timmy_enabled updated', {
+            timmy_enabled: this.timmyEnabled,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to update diagram timmy_enabled', { error });
         },
       });
   }

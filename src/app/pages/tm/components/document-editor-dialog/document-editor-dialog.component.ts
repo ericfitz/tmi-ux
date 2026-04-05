@@ -24,6 +24,7 @@ interface DocumentFormValues {
   uri: string;
   description?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 /**
@@ -81,6 +82,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       ],
       description: [data.document?.description || '', Validators.maxLength(2048)],
       include_in_report: [data.mode === 'create' ? true : data.document?.include_in_report],
+      timmy_enabled: [data.document?.timmy_enabled ?? true],
     });
 
     if (this.isReadOnly) {

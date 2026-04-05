@@ -51,6 +51,15 @@
           {{ 'common.includeInReport' | transloco }}
         </mat-checkbox>
       </div>
+      <div class="subtitle include-in-timmy-chat">
+        <mat-checkbox
+          [checked]="timmyEnabled"
+          [disabled]="isReadOnlyMode || isCollaborating"
+          (change)="onTimmyEnabledChange($event)"
+        >
+          {{ 'common.includeInTimmyChat' | transloco }}
+        </mat-checkbox>
+      </div>
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>

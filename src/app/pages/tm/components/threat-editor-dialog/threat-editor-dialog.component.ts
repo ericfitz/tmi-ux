@@ -42,6 +42,7 @@ interface ThreatFormValues {
   mitigation?: string;
   issue_uri?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 /**
@@ -170,6 +171,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
       include_in_report: [true],
+      timmy_enabled: [true],
     });
   }
 
@@ -677,6 +679,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigation: '',
       issue_uri: '',
       include_in_report: true,
+      timmy_enabled: true,
     });
   }
 
@@ -756,6 +759,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigation: this.data.threat.mitigation || '',
       issue_uri: this.initialIssueUriValue,
       include_in_report: this.data.threat.include_in_report,
+      timmy_enabled: this.data.threat.timmy_enabled ?? true,
     });
 
     this.logger.debugComponent('ThreatEditorDialog', 'Form values after patching', {
@@ -1053,6 +1057,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigation: formValues.mitigation || '',
       issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
+      timmy_enabled: formValues.timmy_enabled,
       metadata: this.data.threat?.metadata || [],
     });
   }

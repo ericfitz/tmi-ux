@@ -53,6 +53,7 @@ export interface Diagram {
   modified_at: string;
   description?: string; // Optional diagram description
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
   metadata?: Metadata[];
   update_vector?: number; // Server-managed version counter
   image?: DiagramImage; // Image data with version information

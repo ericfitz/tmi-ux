@@ -658,6 +658,7 @@
     "id": "מזהה",
     "identityProvider": "ספק זהות",
     "includeInReport": "כלול בדוח",
+    "includeInTimmyChat": "כלול בצ'אט של Timmy",
     "issueUri": "כתובת URL של הבעיה",
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",

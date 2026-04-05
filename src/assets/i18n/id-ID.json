@@ -658,6 +658,7 @@
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
     "includeInReport": "Sertakan dalam Laporan",
+    "includeInTimmyChat": "Sertakan dalam obrolan Timmy",
     "issueUri": "URL Isu",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
