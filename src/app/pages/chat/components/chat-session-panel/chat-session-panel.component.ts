@@ -2,7 +2,13 @@ import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from 
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
-import { ChatSession } from '../../models/chat.model';
+import { ChatSession, SourceSnapshotEntry, EntityType } from '../../models/chat.model';
+
+interface SourceGroup {
+  type: EntityType;
+  labelKey: string;
+  entries: SourceSnapshotEntry[];
+}
 
 @Component({
   selector: 'app-chat-session-panel',
@@ -15,10 +21,49 @@ import { ChatSession } from '../../models/chat.model';
 export class ChatSessionPanelComponent {
   @Input() sessions: ChatSession[] = [];
   @Input() activeSessionId: string | null = null;
+  @Input() sourceSnapshot: SourceSnapshotEntry[] = [];
 
   @Output() sessionSelected = new EventEmitter<string>();
   @Output() sessionCreated = new EventEmitter<void>();
   @Output() sessionDeleted = new EventEmitter<string>();
+
+  sourceSummaryExpanded = false;
+
+  get sourceGroups(): SourceGroup[] {
+    if (!this.sourceSnapshot.length) return [];
+
+    const groupMap = new Map<EntityType, SourceSnapshotEntry[]>();
+    for (const entry of this.sourceSnapshot) {
+      const list = groupMap.get(entry.entityType) ?? [];
+      list.push(entry);
+      groupMap.set(entry.entityType, list);
+    }
+
+    const typeOrder: EntityType[] = [
+      'asset',
+      'threat',
+      'document',
+      'repository',
+      'note',
+      'diagram',
+    ];
+    const labelKeys: Record<EntityType, string> = {
+      asset: 'chat.sourceSummary.assets',
+      threat: 'chat.sourceSummary.threats',
+      document: 'chat.sourceSummary.documents',
+      repository: 'chat.sourceSummary.repositories',
+      note: 'chat.sourceSummary.notes',
+      diagram: 'chat.sourceSummary.diagrams',
+    };
+
+    return typeOrder
+      .filter(type => groupMap.has(type))
+      .map(type => ({
+        type,
+        labelKey: labelKeys[type],
+        entries: groupMap.get(type)!,
+      }));
+  }
 
   onSelect(sessionId: string): void {
     this.sessionSelected.emit(sessionId);
@@ -33,6 +78,10 @@ export class ChatSessionPanelComponent {
     this.sessionDeleted.emit(sessionId);
   }
 
+  toggleSourceSummary(): void {
+    this.sourceSummaryExpanded = !this.sourceSummaryExpanded;
+  }
+
   formatDate(isoString: string): string {
     const date = new Date(isoString);
     const now = new Date();
@@ -45,6 +94,10 @@ export class ChatSessionPanelComponent {
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  getGroupNames(group: SourceGroup): string {
+    return group.entries.map(e => e.entityName || e.entityId).join(', ');
   }
 
   trackBySessionId(_index: number, session: ChatSession): string {

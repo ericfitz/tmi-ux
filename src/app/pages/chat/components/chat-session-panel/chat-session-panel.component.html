@@ -6,6 +6,29 @@
     </button>
   </div>
 
+  @if (activeSessionId && sourceSnapshot.length > 0) {
+    <div class="source-summary">
+      <button class="source-summary-toggle" mat-button (click)="toggleSourceSummary()">
+        <mat-icon>{{ sourceSummaryExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        {{ t('chat.sourceSummary.title', { count: sourceSnapshot.length }) }}
+      </button>
+      @if (sourceSummaryExpanded) {
+        <div class="source-groups">
+          @for (group of sourceGroups; track group.type) {
+            <div class="source-group">
+              <span class="source-group-label">
+                {{ t(group.labelKey) }} ({{ group.entries.length }})
+              </span>
+              <span class="source-group-names">
+                {{ getGroupNames(group) }}
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
   @if (sessions.length === 0) {
     <div class="empty-sessions">
       <mat-icon>forum</mat-icon>
@@ -23,9 +46,7 @@
         <div class="session-info">
           <span class="session-title">{{ session.title }}</span>
           <span class="session-meta">
-            {{ formatDate(session.lastMessageAt) }}
-            &middot;
-            {{ session.messages.length }} {{ t('chat.messages') }}
+            {{ formatDate(session.modifiedAt) }}
           </span>
         </div>
         <button

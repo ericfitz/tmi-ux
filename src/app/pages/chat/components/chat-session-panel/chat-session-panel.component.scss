@@ -79,3 +79,44 @@ mat-list-item {
   display: flex;
   align-items: center;
 }
+
+.source-summary {
+  padding: 0 8px;
+  border-bottom: 1px solid var(--color-border-light, #e0e0e0);
+}
+
+.source-summary-toggle {
+  width: 100%;
+  text-align: left;
+  font-size: 13px;
+  color: var(--color-text-secondary, #666);
+}
+
+.source-groups {
+  padding: 0 8px 12px;
+}
+
+.source-group {
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.source-group-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 2px;
+}
+
+.source-group-names {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-tertiary, #999);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
