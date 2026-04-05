@@ -494,19 +494,14 @@
   "chat": {
     "title": "Timmy",
     "back": "Back to threat model",
-    "sources": "Sources",
     "sessions": "Sessions",
-    "messages": "messages",
     "newSession": "New Session",
     "deleteSession": "Delete session",
     "noSessions": "No chat sessions yet. Start a conversation!",
-    "noSources": "This threat model has no entities.",
     "send": "Send message",
     "inputPlaceholder": "Ask Timmy about this threat model...",
     "hideSidePanel": "Hide side panel",
     "showSidePanel": "Show side panel",
-    "selectAll": "Select all",
-    "deselectAll": "Deselect all",
     "emptyState": {
       "title": "Chat with Timmy",
       "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture."
@@ -516,13 +511,25 @@
       "threats": "What threats have been identified?",
       "assets": "What assets are in scope?"
     },
-    "entityGroups": {
+    "preparation": {
+      "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed.",
+      "error": "Preparation failed: {{message}}"
+    },
+    "sourceSummary": {
+      "title": "{{count}} sources included",
       "documents": "Documents",
       "repositories": "Repositories",
       "notes": "Notes",
       "assets": "Assets",
       "threats": "Threats",
       "diagrams": "Diagrams"
+    },
+    "errors": {
+      "rateLimited": "Message limit reached. Try again in {{minutes}} minutes.",
+      "serverBusy": "Server is busy. Try again in a moment.",
+      "interrupted": "Response interrupted. Try sending your message again.",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "auditTrail": {
