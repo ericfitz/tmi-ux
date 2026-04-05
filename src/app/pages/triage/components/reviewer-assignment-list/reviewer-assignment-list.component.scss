@@ -27,6 +27,63 @@
   }
 }
 
+.filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .status-filter {
+    width: 200px;
+  }
+
+  .unassigned-checkbox {
+    white-space: nowrap;
+  }
+
+  .reviewer-filter {
+    width: 200px;
+  }
+
+  .filter-toggle-active {
+    color: var(--mdc-theme-primary);
+  }
+
+  .clear-filters-button {
+    white-space: nowrap;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.advanced-filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .text-filter {
+    width: 200px;
+  }
+
+  .date-filter {
+    min-width: 200px;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
 .assignment-table-container {
   background: var(--color-surface);
   border-radius: 8px;
