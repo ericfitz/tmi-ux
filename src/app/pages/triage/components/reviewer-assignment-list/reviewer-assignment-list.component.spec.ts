@@ -154,31 +154,50 @@ describe('ReviewerAssignmentListComponent', () => {
       expect(component.isLoading).toBe(false);
       expect(component.error).toBeNull();
     });
+
+    it('should have default filter state', () => {
+      expect(component.filters.searchTerm).toBe('');
+      expect(component.filters.status).toBe('all');
+      expect(component.filters.unassigned).toBe(true);
+      expect(component.filters.securityReviewer).toBe('');
+      expect(component.filters.owner).toBe('');
+      expect(component.filters.createdAfter).toBeNull();
+      expect(component.filters.createdBefore).toBeNull();
+      expect(component.filters.modifiedAfter).toBeNull();
+      expect(component.filters.modifiedBefore).toBeNull();
+    });
   });
 
-  describe('loadUnassignedThreatModels()', () => {
-    it('should filter out TMs with assigned reviewers', () => {
-      const unassigned = makeTMListItem({ id: 'tm-unassigned', security_reviewer: null });
-      const assigned = makeTMListItem({
-        id: 'tm-assigned',
-        security_reviewer: mockReviewer,
-      });
+  describe('loadThreatModels()', () => {
+    it('should pass unassigned filter as is:blank by default', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+
+      const callArgs = mockThreatModelService.fetchThreatModels.mock.calls[0][0];
+      expect(callArgs.security_reviewer).toBe('is:blank');
+    });
+
+    it('should display items returned from server and set total', () => {
+      const unassigned = makeTMListItem({ id: 'tm-1', security_reviewer: null });
+      const unassigned2 = makeTMListItem({ id: 'tm-2', security_reviewer: null });
 
       mockThreatModelService.fetchThreatModels.mockReturnValue(
-        of(makeApiResponse([unassigned, assigned])),
+        of(makeApiResponse([unassigned, unassigned2], 2)),
       );
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
 
       const emitSpy = vi.spyOn(component.countChange, 'emit');
-
       component.ngOnInit();
 
-      expect(component.totalUnassigned).toBe(1);
-      expect(component.dataSource.data).toHaveLength(1);
-      expect(component.dataSource.data[0].id).toBe('tm-unassigned');
-      expect(emitSpy).toHaveBeenCalledWith(1);
+      expect(component.totalUnassigned).toBe(2);
+      expect(component.dataSource.data).toHaveLength(2);
+      expect(emitSpy).toHaveBeenCalledWith(2);
     });
 
     it('should handle empty results', () => {
@@ -208,111 +227,74 @@ describe('ReviewerAssignmentListComponent', () => {
       expect(mockLogger.error).toHaveBeenCalled();
     });
 
-    it('should paginate through multiple API pages', () => {
-      const page1Items = Array.from({ length: 100 }, (_, i) =>
-        makeTMListItem({ id: `tm-${i}`, security_reviewer: null }),
-      );
-      const page2Items = Array.from({ length: 50 }, (_, i) =>
-        makeTMListItem({ id: `tm-${100 + i}`, security_reviewer: null }),
-      );
-
-      // forkJoin subscribes concurrently, so expand calls can interleave.
-      // Use mockImplementation to route by the status param.
-      mockThreatModelService.fetchThreatModels.mockImplementation(
-        (params: { status?: string; limit: number; offset: number }) => {
-          const items = params.offset === 0 ? page1Items : page2Items;
-          return of({
-            threat_models: items,
-            total: 150,
-            limit: 100,
-            offset: params.offset,
-          });
-        },
-      );
+    it('should pass status filter to API', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
 
       component.ngOnInit();
+      component.filters.status = 'in_review';
+      component.loadThreatModels();
 
-      expect(component.totalUnassigned).toBe(150);
-      // 2 pages for status-filtered + 2 pages for unfiltered
-      expect(mockThreatModelService.fetchThreatModels).toHaveBeenCalledTimes(4);
+      const lastCall =
+        mockThreatModelService.fetchThreatModels.mock.calls[
+          mockThreatModelService.fetchThreatModels.mock.calls.length - 1
+        ][0];
+      expect(lastCall.status).toBe('in_review');
     });
 
-    it('should include threat models with null status via unfiltered fetch', () => {
-      const withStatus = makeTMListItem({
-        id: 'tm-with-status',
-        status: 'not_started',
-        security_reviewer: null,
-      });
-      const nullStatus = makeTMListItem({
-        id: 'tm-null-status',
-        status: null,
-        security_reviewer: null,
-      });
-
-      // Status-filtered fetch returns only the TM with a known status
-      mockThreatModelService.fetchThreatModels
-        .mockReturnValueOnce(of(makeApiResponse([withStatus])))
-        // Unfiltered fetch returns both
-        .mockReturnValueOnce(of(makeApiResponse([withStatus, nullStatus])));
+    it('should pass name filter to API when searchTerm is set', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
 
       component.ngOnInit();
+      component.filters.searchTerm = 'my project';
+      component.loadThreatModels();
 
-      expect(component.totalUnassigned).toBe(2);
-      const ids = component.dataSource.data.map(tm => tm.id);
-      expect(ids).toContain('tm-with-status');
-      expect(ids).toContain('tm-null-status');
+      const lastCall =
+        mockThreatModelService.fetchThreatModels.mock.calls[
+          mockThreatModelService.fetchThreatModels.mock.calls.length - 1
+        ][0];
+      expect(lastCall.name).toBe('my project');
     });
 
-    it('should exclude null-status threat models that have an assigned reviewer', () => {
-      const nullStatusAssigned = makeTMListItem({
-        id: 'tm-null-assigned',
-        status: null,
-        security_reviewer: mockReviewer,
-      });
-      const nullStatusUnassigned = makeTMListItem({
-        id: 'tm-null-unassigned',
-        status: null,
-        security_reviewer: null,
-      });
-
-      mockThreatModelService.fetchThreatModels
-        .mockReturnValueOnce(of(makeApiResponse([])))
-        .mockReturnValueOnce(of(makeApiResponse([nullStatusAssigned, nullStatusUnassigned])));
+    it('should pass owner filter to API when owner is set', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
 
       component.ngOnInit();
+      component.filters.unassigned = false;
+      component.filters.owner = 'alice@example.com';
+      component.loadThreatModels();
 
-      expect(component.totalUnassigned).toBe(1);
-      expect(component.dataSource.data[0].id).toBe('tm-null-unassigned');
+      const lastCall =
+        mockThreatModelService.fetchThreatModels.mock.calls[
+          mockThreatModelService.fetchThreatModels.mock.calls.length - 1
+        ][0];
+      expect(lastCall.owner).toBe('alice@example.com');
     });
 
-    it('should deduplicate TMs that appear in both status-filtered and unfiltered fetches', () => {
-      const tm = makeTMListItem({
-        id: 'tm-overlap',
-        status: 'not_started',
-        security_reviewer: null,
-      });
-
-      // Same TM returned by both fetches
-      mockThreatModelService.fetchThreatModels
-        .mockReturnValueOnce(of(makeApiResponse([tm])))
-        .mockReturnValueOnce(of(makeApiResponse([tm])));
+    it('should pass security_reviewer filter when unassigned is false and reviewer is set', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
 
       component.ngOnInit();
+      component.filters.unassigned = false;
+      component.filters.securityReviewer = 'bob@example.com';
+      component.loadThreatModels();
 
-      expect(component.totalUnassigned).toBe(1);
-      expect(component.dataSource.data[0].id).toBe('tm-overlap');
+      const lastCall =
+        mockThreatModelService.fetchThreatModels.mock.calls[
+          mockThreatModelService.fetchThreatModels.mock.calls.length - 1
+        ][0];
+      expect(lastCall.security_reviewer).toBe('bob@example.com');
     });
   });
 
@@ -349,9 +331,12 @@ describe('ReviewerAssignmentListComponent', () => {
       );
     });
 
-    it('should patch threat model and remove from list on success', () => {
+    it('should patch threat model and reload list on success', () => {
       const tm = makeTMListItem({ id: 'tm-assign' });
-      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([tm])));
+      // First call: initial load; second call: reload after assign
+      mockThreatModelService.fetchThreatModels
+        .mockReturnValueOnce(of(makeApiResponse([tm], 1)))
+        .mockReturnValueOnce(of(makeApiResponse([], 0)));
       mockThreatModelService.patchThreatModel.mockReturnValue(of({}));
 
       component.ngOnInit();
@@ -363,11 +348,12 @@ describe('ReviewerAssignmentListComponent', () => {
       expect(mockThreatModelService.patchThreatModel).toHaveBeenCalledWith('tm-assign', {
         security_reviewer: mockReviewer,
       });
+      // After reload, server returns 0 items
       expect(component.totalUnassigned).toBe(0);
       expect(emitSpy).toHaveBeenCalledWith(0);
     });
 
-    it('should handle assignment errors without removing from list', () => {
+    it('should handle assignment errors without reloading list', () => {
       const tm = makeTMListItem({ id: 'tm-error' });
       mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([tm])));
       mockThreatModelService.patchThreatModel.mockReturnValue(
@@ -377,7 +363,6 @@ describe('ReviewerAssignmentListComponent', () => {
       component.ngOnInit();
       component.assignReviewer('tm-error', mockReviewer);
 
-      expect(component.totalUnassigned).toBe(1);
       expect(mockLogger.error).toHaveBeenCalledWith('Failed to assign reviewer', expect.any(Error));
     });
 
@@ -437,28 +422,126 @@ describe('ReviewerAssignmentListComponent', () => {
     });
   });
 
-  describe('Client-side pagination', () => {
+  describe('Server-side pagination', () => {
     beforeEach(() => {
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
       );
     });
 
-    it('should paginate the filtered results', () => {
-      const items = Array.from({ length: 30 }, (_, i) =>
+    it('should pass limit and offset to API based on pageSize and pageIndex', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([], 30)));
+
+      component.ngOnInit();
+      component.onPageChange({ pageIndex: 1, pageSize: 10, length: 30, previousPageIndex: 0 });
+
+      const lastCall =
+        mockThreatModelService.fetchThreatModels.mock.calls[
+          mockThreatModelService.fetchThreatModels.mock.calls.length - 1
+        ][0];
+      expect(lastCall.limit).toBe(10);
+      expect(lastCall.offset).toBe(10);
+    });
+
+    it('should reflect server total in totalUnassigned', () => {
+      const items = Array.from({ length: 25 }, (_, i) =>
         makeTMListItem({ id: `tm-${i}`, security_reviewer: null }),
       );
-      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse(items)));
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse(items, 100)));
 
       component.ngOnInit();
 
-      // Default pageSize is 25
+      // dataSource shows only what server returned (25 items for this page)
       expect(component.dataSource.data).toHaveLength(25);
-      expect(component.totalUnassigned).toBe(30);
+      // totalUnassigned reflects the server total for the paginator
+      expect(component.totalUnassigned).toBe(100);
+    });
+  });
 
-      // Navigate to page 2
-      component.onPageChange({ pageIndex: 1, pageSize: 25, length: 30, previousPageIndex: 0 });
-      expect(component.dataSource.data).toHaveLength(5);
+  describe('Filter helpers', () => {
+    it('hasActiveFilters should be false with default filters', () => {
+      expect(component.hasActiveFilters).toBe(false);
+    });
+
+    it('hasActiveFilters should be true when searchTerm is set', () => {
+      component.filters.searchTerm = 'foo';
+      expect(component.hasActiveFilters).toBe(true);
+    });
+
+    it('hasActiveFilters should be true when unassigned is false', () => {
+      component.filters.unassigned = false;
+      expect(component.hasActiveFilters).toBe(true);
+    });
+
+    it('hasAdvancedFilters should be false with default filters', () => {
+      expect(component.hasAdvancedFilters).toBe(false);
+    });
+
+    it('hasAdvancedFilters should be true when owner is set', () => {
+      component.filters.owner = 'alice@example.com';
+      expect(component.hasAdvancedFilters).toBe(true);
+    });
+
+    it('hasAdvancedFilters should be true when createdAfter is set', () => {
+      component.filters.createdAfter = '2024-01-01';
+      expect(component.hasAdvancedFilters).toBe(true);
+    });
+  });
+
+  describe('clearFilters()', () => {
+    it('should reset all filters to defaults and reload', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+      component.filters.searchTerm = 'foo';
+      component.filters.status = 'in_review';
+      component.filters.unassigned = false;
+      component.showAdvancedFilters = true;
+
+      const callsBefore = mockThreatModelService.fetchThreatModels.mock.calls.length;
+      component.clearFilters();
+
+      expect(component.filters.searchTerm).toBe('');
+      expect(component.filters.status).toBe('all');
+      expect(component.filters.unassigned).toBe(true);
+      expect(component.showAdvancedFilters).toBe(false);
+      expect(component.pageIndex).toBe(0);
+      // clearFilters triggers a reload
+      expect(mockThreatModelService.fetchThreatModels.mock.calls.length).toBeGreaterThan(
+        callsBefore,
+      );
+    });
+  });
+
+  describe('onUnassignedChange()', () => {
+    it('should clear securityReviewer when switching to unassigned mode', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+      component.filters.unassigned = false;
+      component.filters.securityReviewer = 'bob@example.com';
+      component.onUnassignedChange(true);
+
+      expect(component.filters.securityReviewer).toBe('');
+    });
+
+    it('should not clear securityReviewer when switching to non-unassigned mode', () => {
+      mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
+      mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
+        of({ mode: 'picker' } as SecurityReviewerResult),
+      );
+
+      component.ngOnInit();
+      component.filters.securityReviewer = 'bob@example.com';
+      component.onUnassignedChange(false);
+
+      expect(component.filters.securityReviewer).toBe('bob@example.com');
     });
   });
 

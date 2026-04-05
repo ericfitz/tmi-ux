@@ -2,19 +2,20 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  ViewChild,
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, EMPTY, forkJoin } from 'rxjs';
-import { takeUntil, expand, map, reduce } from 'rxjs/operators';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import {
@@ -27,14 +28,27 @@ import {
   SecurityReviewerService,
   SecurityReviewerResult,
 } from '@app/shared/services/security-reviewer.service';
-import { ThreatModelService } from '../../../tm/services/threat-model.service';
+import {
+  ThreatModelService,
+  ThreatModelListParams,
+} from '../../../tm/services/threat-model.service';
 import { TMListItem } from '../../../tm/models/tm-list-item.model';
 import { User } from '../../../tm/models/threat-model.model';
 import { AdminUser } from '@app/types/user.types';
 import { getFieldKeysForFieldType, getFieldLabel } from '@app/shared/utils/field-value-helpers';
 
-/** Batch size for fetching threat models from the API */
-const FETCH_PAGE_SIZE = 100;
+interface ReviewerFilters {
+  searchTerm: string;
+  /** 'all' or a specific status key */
+  status: string;
+  unassigned: boolean;
+  securityReviewer: string;
+  owner: string;
+  createdAfter: string | null;
+  createdBefore: string | null;
+  modifiedAfter: string | null;
+  modifiedBefore: string | null;
+}
 
 /**
  * Component for displaying and assigning security reviewers to unassigned threat models.
@@ -43,25 +57,33 @@ const FETCH_PAGE_SIZE = 100;
 @Component({
   selector: 'app-reviewer-assignment-list',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule, UserDisplayComponent],
+  imports: [
+    ...COMMON_IMPORTS,
+    ...ALL_MATERIAL_IMPORTS,
+    TranslocoModule,
+    UserDisplayComponent,
+    MatDatepickerModule,
+    MatNativeDateModule,
+  ],
   templateUrl: './reviewer-assignment-list.component.html',
   styleUrl: './reviewer-assignment-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,
+  animations: [
+    trigger('detailExpand', [
+      state('void', style({ height: '0', opacity: '0', overflow: 'hidden' })),
+      state('*', style({ height: '*', opacity: '1' })),
+      transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   /** Emits the count of unassigned threat models for the parent tab badge */
   @Output() countChange = new EventEmitter<number>();
 
   /** Table data source */
   dataSource = new MatTableDataSource<TMListItem>([]);
-
-  /** All unassigned threat models (filtered client-side) */
-  private unassignedThreatModels: TMListItem[] = [];
 
   /** Displayed columns */
   displayedColumns = ['name', 'owner', 'status', 'created_at', 'reviewer_select', 'actions'];
@@ -73,7 +95,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /** Per-row reviewer selection */
   selectedReviewers = new Map<string, User | null>();
 
-  /** Pagination (client-side) */
+  /** Pagination (server-side) */
   totalUnassigned = 0;
   pageSize = 25;
   pageIndex = 0;
@@ -90,6 +112,30 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /** Bound compareReviewers for mat-select */
   compareReviewers: (a: User | null, b: User | null) => boolean;
 
+  /** Filter state */
+  filters: ReviewerFilters = {
+    searchTerm: '',
+    status: 'all',
+    unassigned: true,
+    securityReviewer: '',
+    owner: '',
+    createdAfter: null,
+    createdBefore: null,
+    modifiedAfter: null,
+    modifiedBefore: null,
+  };
+
+  /** Status filter options */
+  filterStatusOptions: { value: string; label: string }[] = [];
+
+  /** Advanced filters visibility */
+  showAdvancedFilters = false;
+
+  /** Debounced subjects for text inputs */
+  private searchChanged$ = new Subject<string>();
+  private securityReviewerChanged$ = new Subject<string>();
+  private ownerChanged$ = new Subject<string>();
+
   constructor(
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -103,8 +149,29 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Build status filter options
+    const statuses = getFieldKeysForFieldType('threatModels.status').filter(s => s !== 'closed');
+    this.filterStatusOptions = [
+      { value: 'all', label: this.transloco.translate('common.allStatuses') },
+      ...statuses.map(s => ({
+        value: s,
+        label: getFieldLabel(s, 'threatModels.status', this.transloco),
+      })),
+    ];
+
+    // Set up debounced text filters
+    this.setupDebouncedFilter(this.searchChanged$, value => {
+      this.filters.searchTerm = value;
+    });
+    this.setupDebouncedFilter(this.securityReviewerChanged$, value => {
+      this.filters.securityReviewer = value;
+    });
+    this.setupDebouncedFilter(this.ownerChanged$, value => {
+      this.filters.owner = value;
+    });
+
     this.loadReviewerOptions();
-    this.loadUnassignedThreatModels();
+    this.loadThreatModels();
   }
 
   ngOnDestroy(): void {
@@ -130,15 +197,20 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
       });
   }
 
+  private setupDebouncedFilter(subject: Subject<string>, setter: (value: string) => void): void {
+    subject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(value => {
+        setter(value);
+        this.pageIndex = 0;
+        this.loadThreatModels();
+      });
+  }
+
   /**
-   * Load all non-closed threat models, then filter client-side
-   * for those with no security_reviewer assigned.
-   *
-   * Uses two fetches: one for threat models with known non-closed statuses,
-   * and one unfiltered fetch to catch threat models with null/missing status
-   * (e.g., newly created from survey responses). Results are deduplicated.
+   * Load threat models from the server using current filter state.
    */
-  loadUnassignedThreatModels(): void {
+  loadThreatModels(): void {
     this.isLoading = true;
     this.error = null;
 
@@ -146,70 +218,135 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
       .filter(s => s !== 'closed')
       .join(',');
 
-    // The unfiltered fetch catches TMs with null status (e.g., newly created from
-    // survey responses) that the status-filtered fetch misses. The API does not
-    // support a "status is null" filter, so we fetch all and extract null-status items.
-    forkJoin([this.fetchAllPages(nonClosedStatuses), this.fetchAllPages(undefined)])
+    const params: ThreatModelListParams = {
+      limit: this.pageSize,
+      offset: this.pageIndex * this.pageSize,
+      status: this.filters.status === 'all' ? nonClosedStatuses : this.filters.status,
+    };
+
+    if (this.filters.searchTerm.trim()) {
+      params.name = this.filters.searchTerm.trim();
+    }
+
+    if (this.filters.unassigned) {
+      params.security_reviewer = 'is:blank';
+    } else if (this.filters.securityReviewer.trim()) {
+      params.security_reviewer = this.filters.securityReviewer.trim();
+    }
+
+    if (this.filters.owner.trim()) {
+      params.owner = this.filters.owner.trim();
+    }
+
+    if (this.filters.createdAfter) params.created_after = this.filters.createdAfter;
+    if (this.filters.createdBefore) params.created_before = this.filters.createdBefore;
+    if (this.filters.modifiedAfter) params.modified_after = this.filters.modifiedAfter;
+    if (this.filters.modifiedBefore) params.modified_before = this.filters.modifiedBefore;
+
+    this.threatModelService
+      .fetchThreatModels(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: ([statusFiltered, allItems]) => {
-          const nullStatusItems = allItems.filter(tm => !tm.status);
-          const merged = this.mergeAndDeduplicate(statusFiltered, nullStatusItems);
-          this.unassignedThreatModels = merged.filter(tm => !tm.security_reviewer);
-          this.totalUnassigned = this.unassignedThreatModels.length;
+        next: response => {
+          this.dataSource.data = response.threat_models;
+          this.totalUnassigned = response.total;
           this.countChange.emit(this.totalUnassigned);
-          this.applyClientPagination();
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: err => {
           this.isLoading = false;
           this.error = this.transloco.translate('triage.reviewerAssignment.errorLoading');
-          this.logger.error('Failed to load unassigned threat models', err);
+          this.logger.error('Failed to load threat models', err);
           this.cdr.detectChanges();
         },
       });
   }
 
   /**
-   * Fetch all pages of threat models from the API.
+   * Handle search text input changes (debounced).
    */
-  private fetchAllPages(status: string | undefined): Observable<TMListItem[]> {
-    return this.threatModelService
-      .fetchThreatModels({ status, limit: FETCH_PAGE_SIZE, offset: 0 })
-      .pipe(
-        expand(response => {
-          const fetched = response.offset + response.threat_models.length;
-          if (fetched < response.total) {
-            return this.threatModelService.fetchThreatModels({
-              status,
-              limit: FETCH_PAGE_SIZE,
-              offset: fetched,
-            });
-          }
-          return EMPTY;
-        }),
-        map(response => response.threat_models),
-        reduce((acc, items) => [...acc, ...items], [] as TMListItem[]),
-      );
+  onSearchChange(value: string): void {
+    this.searchChanged$.next(value);
   }
 
   /**
-   * Merge two arrays of threat models, deduplicating by ID.
-   * Items from the first array take precedence.
+   * Handle security reviewer filter text changes (debounced).
    */
-  private mergeAndDeduplicate(primary: TMListItem[], secondary: TMListItem[]): TMListItem[] {
-    const seen = new Set(primary.map(tm => tm.id));
-    return [...primary, ...secondary.filter(tm => !seen.has(tm.id))];
+  onSecurityReviewerChange(value: string): void {
+    this.securityReviewerChanged$.next(value);
   }
 
   /**
-   * Apply client-side pagination to the filtered list.
+   * Handle owner filter text changes (debounced).
    */
-  private applyClientPagination(): void {
-    const start = this.pageIndex * this.pageSize;
-    const end = start + this.pageSize;
-    this.dataSource.data = this.unassignedThreatModels.slice(start, end);
+  onOwnerChange(value: string): void {
+    this.ownerChanged$.next(value);
+  }
+
+  /**
+   * Handle immediate filter changes (e.g., select, checkbox).
+   */
+  onFilterChange(): void {
+    this.pageIndex = 0;
+    this.loadThreatModels();
+  }
+
+  /**
+   * Handle unassigned checkbox change.
+   */
+  onUnassignedChange(checked: boolean): void {
+    this.filters.unassigned = checked;
+    if (checked) {
+      this.filters.securityReviewer = '';
+    }
+    this.onFilterChange();
+  }
+
+  /**
+   * Clear all filters and reload.
+   */
+  clearFilters(): void {
+    this.filters = {
+      searchTerm: '',
+      status: 'all',
+      unassigned: true,
+      securityReviewer: '',
+      owner: '',
+      createdAfter: null,
+      createdBefore: null,
+      modifiedAfter: null,
+      modifiedBefore: null,
+    };
+    this.showAdvancedFilters = false;
+    this.pageIndex = 0;
+    this.loadThreatModels();
+  }
+
+  /** True when any filter deviates from its default value */
+  get hasActiveFilters(): boolean {
+    return (
+      this.filters.searchTerm !== '' ||
+      this.filters.status !== 'all' ||
+      !this.filters.unassigned ||
+      this.filters.securityReviewer !== '' ||
+      this.filters.owner !== '' ||
+      this.filters.createdAfter !== null ||
+      this.filters.createdBefore !== null ||
+      this.filters.modifiedAfter !== null ||
+      this.filters.modifiedBefore !== null
+    );
+  }
+
+  /** True when any advanced filter has a value */
+  get hasAdvancedFilters(): boolean {
+    return (
+      this.filters.owner !== '' ||
+      this.filters.createdAfter !== null ||
+      this.filters.createdBefore !== null ||
+      this.filters.modifiedAfter !== null ||
+      this.filters.modifiedBefore !== null
+    );
   }
 
   /**
@@ -218,7 +355,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.applyClientPagination();
+    this.loadThreatModels();
   }
 
   /**
@@ -269,18 +406,8 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.isAssigning.delete(tmId);
-          this.unassignedThreatModels = this.unassignedThreatModels.filter(tm => tm.id !== tmId);
-          this.totalUnassigned = this.unassignedThreatModels.length;
           this.selectedReviewers.delete(tmId);
-          this.countChange.emit(this.totalUnassigned);
-
-          // Adjust page index if current page is now empty
-          const maxPage = Math.max(0, Math.ceil(this.totalUnassigned / this.pageSize) - 1);
-          if (this.pageIndex > maxPage) {
-            this.pageIndex = maxPage;
-          }
-
-          this.applyClientPagination();
+          this.loadThreatModels();
           this.cdr.detectChanges();
         },
         error: err => {
