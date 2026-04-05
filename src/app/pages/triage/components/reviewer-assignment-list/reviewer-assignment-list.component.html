@@ -1,3 +1,146 @@
+<!-- Primary filters row -->
+<div class="filters-row">
+  <!-- Search field -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>{{ 'common.search' | transloco }}</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      [value]="filters.searchTerm"
+      (input)="onSearchChange($any($event.target).value)"
+      [placeholder]="'triage.reviewerAssignment.searchPlaceholder' | transloco"
+    />
+    @if (filters.searchTerm) {
+      <button matSuffix mat-icon-button (click)="filters.searchTerm = ''; onFilterChange()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  <!-- Status dropdown -->
+  <mat-form-field appearance="outline" class="status-filter">
+    <mat-label>{{ 'common.status' | transloco }}</mat-label>
+    <mat-select [(ngModel)]="filters.status" (selectionChange)="onFilterChange()">
+      @for (option of filterStatusOptions; track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Unassigned checkbox -->
+  <mat-checkbox
+    [checked]="filters.unassigned"
+    (change)="onUnassignedChange($event.checked)"
+    class="unassigned-checkbox"
+  >
+    {{ 'triage.reviewerAssignment.unassigned' | transloco }}
+  </mat-checkbox>
+
+  <!-- Security Reviewer text field -->
+  <mat-form-field appearance="outline" class="reviewer-filter">
+    <mat-label>{{ 'triage.reviewerAssignment.reviewer' | transloco }}</mat-label>
+    <input
+      matInput
+      [value]="filters.securityReviewer"
+      [disabled]="filters.unassigned"
+      (input)="onSecurityReviewerChange($any($event.target).value)"
+      [placeholder]="'triage.reviewerAssignment.reviewerPlaceholder' | transloco"
+    />
+  </mat-form-field>
+
+  <!-- More Filters toggle -->
+  <button
+    mat-icon-button
+    (click)="showAdvancedFilters = !showAdvancedFilters"
+    [matTooltip]="
+      showAdvancedFilters
+        ? ('dashboard.lessFilters' | transloco)
+        : ('dashboard.moreFilters' | transloco)
+    "
+    [class.filter-toggle-active]="showAdvancedFilters || hasAdvancedFilters"
+  >
+    <mat-icon>{{ showAdvancedFilters ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+  </button>
+
+  <!-- Clear Filters button -->
+  @if (hasActiveFilters) {
+    <button mat-stroked-button (click)="clearFilters()" class="clear-filters-button">
+      <mat-icon>filter_list_off</mat-icon>
+      {{ 'triage.filters.clearFilters' | transloco }}
+    </button>
+  }
+</div>
+
+<!-- Advanced filters row (expandable) -->
+@if (showAdvancedFilters) {
+  <div class="advanced-filters-row" [@detailExpand]>
+    <!-- Owner filter -->
+    <mat-form-field appearance="outline" class="text-filter">
+      <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
+      <input
+        matInput
+        [value]="filters.owner"
+        (input)="onOwnerChange($any($event.target).value)"
+        [placeholder]="'dashboard.ownerPlaceholder' | transloco"
+      />
+    </mat-form-field>
+
+    <!-- Created After -->
+    <mat-form-field appearance="outline" class="date-filter">
+      <mat-label>{{ 'dashboard.createdAfter' | transloco }}</mat-label>
+      <input
+        matInput
+        [matDatepicker]="createdAfterPicker"
+        [value]="filters.createdAfter"
+        (dateChange)="filters.createdAfter = $event.value?.toISOString() ?? null; onFilterChange()"
+      />
+      <mat-datepicker-toggle matSuffix [for]="createdAfterPicker"></mat-datepicker-toggle>
+      <mat-datepicker #createdAfterPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Created Before -->
+    <mat-form-field appearance="outline" class="date-filter">
+      <mat-label>{{ 'dashboard.createdBefore' | transloco }}</mat-label>
+      <input
+        matInput
+        [matDatepicker]="createdBeforePicker"
+        [value]="filters.createdBefore"
+        (dateChange)="filters.createdBefore = $event.value?.toISOString() ?? null; onFilterChange()"
+      />
+      <mat-datepicker-toggle matSuffix [for]="createdBeforePicker"></mat-datepicker-toggle>
+      <mat-datepicker #createdBeforePicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Modified After -->
+    <mat-form-field appearance="outline" class="date-filter">
+      <mat-label>{{ 'dashboard.modifiedAfter' | transloco }}</mat-label>
+      <input
+        matInput
+        [matDatepicker]="modifiedAfterPicker"
+        [value]="filters.modifiedAfter"
+        (dateChange)="filters.modifiedAfter = $event.value?.toISOString() ?? null; onFilterChange()"
+      />
+      <mat-datepicker-toggle matSuffix [for]="modifiedAfterPicker"></mat-datepicker-toggle>
+      <mat-datepicker #modifiedAfterPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Modified Before -->
+    <mat-form-field appearance="outline" class="date-filter">
+      <mat-label>{{ 'dashboard.modifiedBefore' | transloco }}</mat-label>
+      <input
+        matInput
+        [matDatepicker]="modifiedBeforePicker"
+        [value]="filters.modifiedBefore"
+        (dateChange)="
+          filters.modifiedBefore = $event.value?.toISOString() ?? null; onFilterChange()
+        "
+      />
+      <mat-datepicker-toggle matSuffix [for]="modifiedBeforePicker"></mat-datepicker-toggle>
+      <mat-datepicker #modifiedBeforePicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+}
+
 @if (isLoading && dataSource.data.length === 0) {
   <div class="loading-container">
     <mat-spinner diameter="48"></mat-spinner>
@@ -15,8 +158,15 @@
 } @else if (totalUnassigned === 0) {
   <div class="empty-state">
     <mat-icon>assignment_turned_in</mat-icon>
-    <h2>{{ 'triage.reviewerAssignment.noUnassigned' | transloco }}</h2>
-    <p>{{ 'triage.reviewerAssignment.noUnassignedDescription' | transloco }}</p>
+    @if (hasActiveFilters) {
+      <h2>{{ 'triage.reviewerAssignment.noUnassignedFiltered' | transloco }}</h2>
+      <button mat-raised-button color="primary" (click)="clearFilters()">
+        {{ 'triage.filters.clearFilters' | transloco }}
+      </button>
+    } @else {
+      <h2>{{ 'triage.reviewerAssignment.noUnassigned' | transloco }}</h2>
+      <p>{{ 'triage.reviewerAssignment.noUnassignedDescription' | transloco }}</p>
+    }
   </div>
 } @else {
   <div class="assignment-table-container">
