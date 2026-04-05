@@ -124,9 +124,9 @@ export interface SourceSnapshotEntry {
   entityId: string;
   entityName?: string;
 }
-
-export const TIMMY_METADATA_KEY = 'timmy';
 ```
+
+Note: Entity inclusion in Timmy chat is controlled by the `timmy_enabled: boolean` property on each entity (a first-class API field, not metadata). This property is already in the API schema and generated types.
 
 ### SSE Event Types
 
@@ -157,6 +157,7 @@ export interface ChatErrorEvent { code: string; message: string; }
 - `SerializedEntity` interface
 - `ChatSession.messages` array (messages fetched separately)
 - `ChatSession.lastMessageAt` (replaced by `modifiedAt` from server)
+- `TIMMY_METADATA_KEY` constant (entity inclusion uses `timmy_enabled` API property instead)
 
 ## Component Changes
 
