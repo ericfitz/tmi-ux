@@ -531,8 +531,11 @@
       "title": "Timmy کے ساتھ بات کریں"
     },
     "errors": {
+      "connectionFailed": "Timmy سے رابطہ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
       "generic": "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
       "interrupted": "جواب میں خرابی پیش آئی۔ اپنا پیغام دوبارہ بھیجنے کی کوشش کریں۔",
+      "notAcceptable": "سرور کی ترتیب کے مسئلے کی وجہ سے Timmy عارضی طور پر دستیاب نہیں ہے۔",
+      "notEnabled": "اس خطرے کے ماڈل کے لیے Timmy فعال نہیں ہے۔",
       "rateLimited": "پیغام کی حد تک پہنچ گئے۔ {{minutes}} منٹ میں دوبارہ کوشش کریں۔",
       "serverBusy": "سرور مصروف ہے۔ کچھ دیر میں دوبارہ کوشش کریں۔"
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "صارف نام درج کریں (اختیاری)"
     },
     "unexpectedError": "OAuth کے دوران ایک غیر متوقع خرابی ہوئی۔"
+  },
+  "mermaidViewer": {
+    "exportFailed": "ڈایاگرام ایکسپورٹ کرنے میں ناکام",
+    "fitToScreen": "اسکرین پر فٹ کریں",
+    "openInViewer": "ویور میں کھولیں",
+    "resetZoom": "زوم ری سیٹ کریں",
+    "zoomIn": "زوم ان",
+    "zoomOut": "زوم آؤٹ"
   },
   "navbar": {
     "admin": "ایڈمن",
@@ -1798,9 +1809,12 @@
       "loading": "غیر تفویض شدہ جائزے لوڈ ہو رہے ہیں...",
       "noUnassigned": "کوئی غیر تفویض شدہ جائزے نہیں",
       "noUnassignedDescription": "تمام فعال خطرے کی ماڈلز میں سیکیورٹی جائزہ کار تفویض ہے",
+      "noUnassignedFiltered": "آپ کے فلٹرز سے کوئی خطرے کے ماڈل نہیں ملے",
       "reviewer": "سیکیورٹی جائزہ کار",
+      "reviewerPlaceholder": "جائزہ کار کے مطابق فلٹر کریں...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "جائزہ کار منتخب کریں..."
+      "selectReviewer": "جائزہ کار منتخب کریں...",
+      "unassigned": "غیر تفویض شدہ"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "اپنے پروجیکٹس، ٹیموں، اور تعلقات کو دیکھیں اور ترمیم کریں",
+    "title": "میرے پروجیکٹس"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "اپنی ٹیموں، اراکین، اور تعلقات کو دیکھیں اور ترمیم کریں",
+    "title": "میری ٹیمیں"
   }
 }

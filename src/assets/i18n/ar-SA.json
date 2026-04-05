@@ -531,8 +531,11 @@
       "title": "الدردشة مع Timmy"
     },
     "errors": {
+      "connectionFailed": "تعذر الاتصال بـ Timmy. تحقق من اتصالك وحاول مرة أخرى.",
       "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
       "interrupted": "تم قطع الرد. حاول إرسال رسالتك مرة أخرى.",
+      "notAcceptable": "Timmy غير متاح مؤقتاً بسبب مشكلة في تكوين الخادم.",
+      "notEnabled": "Timmy غير مفعّل لنموذج التهديد هذا.",
       "rateLimited": "تم الوصول إلى حد الرسائل. حاول مرة أخرى في {{minutes}} دقيقة.",
       "serverBusy": "الخادم مشغول. حاول مرة أخرى في لحظة."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "أدخل اسم المستخدم (اختياري)"
     },
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
+  },
+  "mermaidViewer": {
+    "exportFailed": "فشل في تصدير المخطط",
+    "fitToScreen": "ملاءمة الشاشة",
+    "openInViewer": "فتح في العارض",
+    "resetZoom": "إعادة تعيين التكبير",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير"
   },
   "navbar": {
     "admin": "المسؤول",
@@ -1798,9 +1809,12 @@
       "loading": "جارٍ تحميل المراجعات غير المعينة...",
       "noUnassigned": "لا توجد مراجعات غير معينة",
       "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين",
+      "noUnassignedFiltered": "لا توجد نماذج تهديد تطابق عوامل التصفية",
       "reviewer": "مراجع الأمان",
+      "reviewerPlaceholder": "تصفية حسب المراجع...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "اختر مراجعاً..."
+      "selectReviewer": "اختر مراجعاً...",
+      "unassigned": "غير معيّن"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "عرض وتعديل مشاريعك وفرقك وعلاقاتك",
+    "title": "مشاريعي"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "عرض وتعديل فرقك وأعضائك وعلاقاتك",
+    "title": "فرقي"
   }
 }

@@ -531,8 +531,11 @@
       "title": "Chat mit Timmy"
     },
     "errors": {
+      "connectionFailed": "Verbindung zu Timmy konnte nicht hergestellt werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
       "generic": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
       "interrupted": "Antwort unterbrochen. Versuchen Sie, Ihre Nachricht erneut zu senden.",
+      "notAcceptable": "Timmy ist aufgrund eines Serverkonfigurationsproblems vorübergehend nicht verfügbar.",
+      "notEnabled": "Timmy ist für dieses Bedrohungsmodell nicht aktiviert.",
       "rateLimited": "Nachrichtenlimit erreicht. Versuchen Sie es in {{minutes}} Minuten erneut.",
       "serverBusy": "Server ist überlastet. Versuchen Sie es in Kürze erneut."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "Benutzername eingeben (optional)"
     },
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
+  },
+  "mermaidViewer": {
+    "exportFailed": "Diagramm konnte nicht exportiert werden",
+    "fitToScreen": "An Bildschirm anpassen",
+    "openInViewer": "Im Viewer öffnen",
+    "resetZoom": "Zoom zurücksetzen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern"
   },
   "navbar": {
     "admin": "Administration",
@@ -1798,9 +1809,12 @@
       "loading": "Unzugewiesene Überprüfungen werden geladen...",
       "noUnassigned": "Keine unzugewiesenen Überprüfungen",
       "noUnassignedDescription": "Alle aktiven Bedrohungsmodelle haben einen Sicherheitsprüfer zugewiesen",
+      "noUnassignedFiltered": "Keine Bedrohungsmodelle entsprechen Ihren Filtern",
       "reviewer": "Sicherheitsprüfer",
+      "reviewerPlaceholder": "Nach Prüfer filtern...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "Prüfer auswählen..."
+      "selectReviewer": "Prüfer auswählen...",
+      "unassigned": "Nicht zugewiesen"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "Ihre Projekte, Teams und Beziehungen anzeigen und bearbeiten",
+    "title": "Meine Projekte"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "Ihre Teams, Mitglieder und Beziehungen anzeigen und bearbeiten",
+    "title": "Meine Teams"
   }
 }

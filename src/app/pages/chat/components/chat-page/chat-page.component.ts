@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { identity, MonoTypeOperatorFunction } from 'rxjs';
 
 import {
@@ -20,6 +20,7 @@ import {
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModel } from '../../../tm/models/threat-model.model';
 import { SseEvent } from '../../../../core/interfaces/sse.interface';
+import { SseHttpError } from '../../../../core/services/sse-client.service';
 import {
   ChatMessage,
   ChatSession,
@@ -75,6 +76,7 @@ export class ChatPageComponent implements OnInit {
     private timmyChat: TimmyChatService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
     @Optional() private destroyRef: DestroyRef,
   ) {}
 
@@ -181,10 +183,7 @@ export class ChatPageComponent implements OnInit {
             progress: 0,
             current: 0,
             total: 0,
-            error:
-              (err as { statusText?: string; message?: string }).statusText ??
-              (err as { message?: string }).message ??
-              'Connection failed',
+            error: this.sessionCreationErrorMessage(err),
           };
           this.cdr.markForCheck();
         },
@@ -328,14 +327,14 @@ export class ChatPageComponent implements OnInit {
           this.streamingMessageId = null;
           this.loading = false;
 
-          const sseErr = err as { status?: number; retryAfter?: number };
+          const sseErr = err as SseHttpError;
           if (sseErr.status === 429) {
             const minutes = sseErr.retryAfter ? Math.ceil(sseErr.retryAfter / 60) : 1;
-            this.addErrorMessage(`Message limit reached. Try again in ${minutes} minutes.`);
+            this.addErrorMessage(this.transloco.translate('chat.errors.rateLimited', { minutes }));
           } else if (sseErr.status === 503) {
-            this.addErrorMessage('Server is busy. Try again in a moment.');
+            this.addErrorMessage(this.transloco.translate('chat.errors.serverBusy'));
           } else {
-            this.addErrorMessage('Response interrupted. Try sending your message again.');
+            this.addErrorMessage(this.transloco.translate('chat.errors.interrupted'));
           }
           this.cdr.markForCheck();
         },
@@ -398,6 +397,24 @@ export class ChatPageComponent implements OnInit {
           this.logger.error('Failed to load sessions', err);
         },
       });
+  }
+
+  private sessionCreationErrorMessage(err: unknown): string {
+    const sseErr = err as SseHttpError;
+    switch (sseErr.status) {
+      case 404:
+        return this.transloco.translate('chat.errors.notEnabled');
+      case 406:
+        return this.transloco.translate('chat.errors.notAcceptable');
+      case 429: {
+        const minutes = sseErr.retryAfter ? Math.ceil(sseErr.retryAfter / 60) : 1;
+        return this.transloco.translate('chat.errors.rateLimited', { minutes });
+      }
+      case 503:
+        return this.transloco.translate('chat.errors.serverBusy');
+      default:
+        return this.transloco.translate('chat.errors.connectionFailed');
+    }
   }
 
   private untilDestroyed<T>(): MonoTypeOperatorFunction<T> {

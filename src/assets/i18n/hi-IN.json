@@ -531,8 +531,11 @@
       "title": "Timmy के साथ चैट करें"
     },
     "errors": {
+      "connectionFailed": "Timmy से कनेक्ट नहीं हो सका। अपना कनेक्शन जांचें और पुनः प्रयास करें।",
       "generic": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
       "interrupted": "प्रतिक्रिया बाधित हुई। अपना संदेश फिर से भेजने का प्रयास करें।",
+      "notAcceptable": "सर्वर कॉन्फ़िगरेशन समस्या के कारण Timmy अस्थायी रूप से अनुपलब्ध है।",
+      "notEnabled": "इस थ्रेट मॉडल के लिए Timmy सक्षम नहीं है।",
       "rateLimited": "संदेश सीमा पहुंची। {{minutes}} मिनट में पुनः प्रयास करें।",
       "serverBusy": "सर्वर व्यस्त है। कृपया कुछ समय में पुनः प्रयास करें।"
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "उपयोगकर्ता नाम दर्ज करें (वैकल्पिक)"
     },
     "unexpectedError": "OAuth के दौरान एक अप्रत्याशित त्रुटि हुई।"
+  },
+  "mermaidViewer": {
+    "exportFailed": "आरेख निर्यात करने में विफल",
+    "fitToScreen": "स्क्रीन पर फ़िट करें",
+    "openInViewer": "व्यूअर में खोलें",
+    "resetZoom": "ज़ूम रीसेट करें",
+    "zoomIn": "ज़ूम इन",
+    "zoomOut": "ज़ूम आउट"
   },
   "navbar": {
     "admin": "व्यवस्थापक",
@@ -1798,9 +1809,12 @@
       "loading": "असाइन नहीं किए गए समीक्षाएं लोड हो रही हैं...",
       "noUnassigned": "कोई असाइन नहीं किए गए समीक्षाएं नहीं",
       "noUnassignedDescription": "सभी सक्रिय खतरा मॉडल के लिए सुरक्षा समीक्षक असाइन है",
+      "noUnassignedFiltered": "कोई भी थ्रेट मॉडल आपके फ़िल्टर से मेल नहीं खाता",
       "reviewer": "सुरक्षा समीक्षक",
+      "reviewerPlaceholder": "समीक्षक द्वारा फ़िल्टर करें...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "समीक्षक चुनें..."
+      "selectReviewer": "समीक्षक चुनें...",
+      "unassigned": "असाइन नहीं किया गया"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "अपनी परियोजनाएं, टीमें और संबंध देखें और संपादित करें",
+    "title": "मेरी परियोजनाएं"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "अपनी टीमें, सदस्य और संबंध देखें और संपादित करें",
+    "title": "मेरी टीमें"
   }
 }

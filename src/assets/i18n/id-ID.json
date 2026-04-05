@@ -531,8 +531,11 @@
       "title": "Chat dengan Timmy"
     },
     "errors": {
+      "connectionFailed": "Tidak dapat terhubung ke Timmy. Periksa koneksi Anda dan coba lagi.",
       "generic": "Terjadi kesalahan. Silakan coba lagi.",
       "interrupted": "Respons terputus. Coba kirim pesan Anda lagi.",
+      "notAcceptable": "Timmy tidak tersedia untuk sementara karena masalah konfigurasi server.",
+      "notEnabled": "Timmy tidak diaktifkan untuk model ancaman ini.",
       "rateLimited": "Batas pesan tercapai. Coba lagi dalam {{minutes}} menit.",
       "serverBusy": "Server sibuk. Coba lagi sebentar."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "Masukkan nama pengguna (opsional)"
     },
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
+  },
+  "mermaidViewer": {
+    "exportFailed": "Gagal mengekspor diagram",
+    "fitToScreen": "Sesuaikan ke Layar",
+    "openInViewer": "Buka di Penampil",
+    "resetZoom": "Atur Ulang Zoom",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil"
   },
   "navbar": {
     "admin": "Admin",
@@ -1798,9 +1809,12 @@
       "loading": "Memuat ulasan yang tidak ditugaskan...",
       "noUnassigned": "Tidak Ada Ulasan yang Tidak Ditugaskan",
       "noUnassignedDescription": "Semua model ancaman aktif memiliki reviewer keamanan yang ditugaskan",
+      "noUnassignedFiltered": "Tidak ada model ancaman yang cocok dengan filter Anda",
       "reviewer": "Reviewer Keamanan",
+      "reviewerPlaceholder": "Filter berdasarkan reviewer...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "Pilih reviewer..."
+      "selectReviewer": "Pilih reviewer...",
+      "unassigned": "Belum Ditugaskan"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "Lihat dan edit proyek, tim, dan hubungan Anda",
+    "title": "Proyek Saya"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "Lihat dan edit tim, anggota, dan hubungan Anda",
+    "title": "Tim Saya"
   }
 }

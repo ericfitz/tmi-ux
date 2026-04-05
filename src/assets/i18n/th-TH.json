@@ -526,8 +526,11 @@
       "title": "แชทกับ Timmy"
     },
     "errors": {
+      "connectionFailed": "ไม่สามารถเชื่อมต่อกับ Timmy ได้ ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง",
       "generic": "มีบางอย่างผิดพลาด โปรดลองอีกครั้ง",
       "interrupted": "การตอบสนองถูกขัดจังหวะ ลองส่งข้อความของคุณอีกครั้ง",
+      "notAcceptable": "Timmy ไม่พร้อมใช้งานชั่วคราวเนื่องจากปัญหาการกำหนดค่าเซิร์ฟเวอร์",
+      "notEnabled": "Timmy ไม่ได้เปิดใช้งานสำหรับโมเดลภัยคุกคามนี้",
       "rateLimited": "ถึงขีดจำกัดข้อความแล้ว ลองอีกครั้งใน {{minutes}} นาที",
       "serverBusy": "เซิร์ฟเวอร์ว่านไป ลองอีกครั้งในอีกสักครู่"
     },
@@ -1033,6 +1036,14 @@
       "usernamePlaceholder": "กรอกชื่อผู้ใช้ (ไม่บังคับ)"
     },
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth"
+  },
+  "mermaidViewer": {
+    "exportFailed": "ไม่สามารถส่งออกไดอะแกรมได้",
+    "fitToScreen": "พอดีหน้าจอ",
+    "openInViewer": "เปิดในตัวแสดง",
+    "resetZoom": "รีเซ็ตการซูม",
+    "zoomIn": "ซูมเข้า",
+    "zoomOut": "ซูมออก"
   },
   "navbar": {
     "admin": "ผู้ดูแล",
@@ -1789,9 +1800,12 @@
       "loading": "กำลังโหลดการตรวจสอบที่ยังไม่ได้มอบหมาย...",
       "noUnassigned": "ไม่มีการตรวจสอบที่ยังไม่ได้มอบหมาย",
       "noUnassignedDescription": "แบบจำลองการคุกคามที่ใช้งานอยู่ทั้งหมดได้รับการมอบหมายผู้ตรวจสอบความปลอดภัยแล้ว",
+      "noUnassignedFiltered": "ไม่มีโมเดลภัยคุกคามที่ตรงกับตัวกรองของคุณ",
       "reviewer": "ผู้ตรวจสอบความปลอดภัย",
+      "reviewerPlaceholder": "กรองตามผู้ตรวจสอบ...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "เลือกผู้ตรวจสอบ..."
+      "selectReviewer": "เลือกผู้ตรวจสอบ...",
+      "unassigned": "ยังไม่ได้มอบหมาย"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1918,9 +1932,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "ดูและแก้ไขโครงการ ทีม และความสัมพันธ์ของคุณ",
+    "title": "โครงการของฉัน"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "ดูและแก้ไขทีม สมาชิก และความสัมพันธ์ของคุณ",
+    "title": "ทีมของฉัน"
   }
 }

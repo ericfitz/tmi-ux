@@ -549,8 +549,11 @@
       "title": "Chat with Timmy"
     },
     "errors": {
+      "connectionFailed": "Could not connect to Timmy. Check your connection and try again.",
       "generic": "Something went wrong. Please try again.",
       "interrupted": "Response interrupted. Try sending your message again.",
+      "notAcceptable": "Timmy is temporarily unavailable due to a server configuration issue.",
+      "notEnabled": "Timmy is not enabled for this threat model.",
       "rateLimited": "Message limit reached. Try again in {{minutes}} minutes.",
       "serverBusy": "Server is busy. Try again in a moment."
     },

@@ -531,8 +531,11 @@
       "title": "Timmy와 채팅하기"
     },
     "errors": {
+      "connectionFailed": "Timmy에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.",
       "generic": "문제가 발생했습니다. 다시 시도해주세요.",
       "interrupted": "응답이 중단되었습니다. 메시지를 다시 보내세요.",
+      "notAcceptable": "서버 구성 문제로 인해 Timmy를 일시적으로 사용할 수 없습니다.",
+      "notEnabled": "이 위협 모델에서는 Timmy가 활성화되어 있지 않습니다.",
       "rateLimited": "메시지 제한에 도달했습니다. {{minutes}}분 후에 다시 시도하세요.",
       "serverBusy": "서버가 바쁩니다. 잠시 후에 다시 시도하세요."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "사용자 이름 입력 (선택 사항)"
     },
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
+  },
+  "mermaidViewer": {
+    "exportFailed": "다이어그램 내보내기에 실패했습니다",
+    "fitToScreen": "화면에 맞추기",
+    "openInViewer": "뷰어에서 열기",
+    "resetZoom": "확대/축소 초기화",
+    "zoomIn": "확대",
+    "zoomOut": "축소"
   },
   "navbar": {
     "admin": "관리",
@@ -1798,9 +1809,12 @@
       "loading": "할당되지 않은 검토 로딩 중...",
       "noUnassigned": "할당되지 않은 검토 없음",
       "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다",
+      "noUnassignedFiltered": "필터와 일치하는 위협 모델이 없습니다",
       "reviewer": "보안 검토자",
+      "reviewerPlaceholder": "검토자로 필터링...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "검토자 선택..."
+      "selectReviewer": "검토자 선택...",
+      "unassigned": "미할당"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "프로젝트, 팀 및 관계를 보고 편집합니다",
+    "title": "내 프로젝트"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "팀, 구성원 및 관계를 보고 편집합니다",
+    "title": "내 팀"
   }
 }

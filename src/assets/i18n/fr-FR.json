@@ -531,8 +531,11 @@
       "title": "Discuter avec Timmy"
     },
     "errors": {
+      "connectionFailed": "Impossible de se connecter à Timmy. Vérifiez votre connexion et réessayez.",
       "generic": "Une erreur s'est produite. Veuillez réessayer.",
       "interrupted": "Réponse interrompue. Essayez d'envoyer votre message à nouveau.",
+      "notAcceptable": "Timmy est temporairement indisponible en raison d'un problème de configuration du serveur.",
+      "notEnabled": "Timmy n'est pas activé pour ce modèle de menaces.",
       "rateLimited": "Limite de messages atteinte. Réessayez dans {{minutes}} minutes.",
       "serverBusy": "Le serveur est occupé. Réessayez dans un instant."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "Saisir le nom d'utilisateur (facultatif)"
     },
     "unexpectedError": "Une erreur inattendue s'est produite lors de l'authentification OAuth."
+  },
+  "mermaidViewer": {
+    "exportFailed": "Échec de l'exportation du diagramme",
+    "fitToScreen": "Ajuster à l'écran",
+    "openInViewer": "Ouvrir dans la visionneuse",
+    "resetZoom": "Réinitialiser le zoom",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
   },
   "navbar": {
     "admin": "Admin",
@@ -1798,9 +1809,12 @@
       "loading": "Chargement des évaluations non attribuées...",
       "noUnassigned": "Aucune évaluation non attribuée",
       "noUnassignedDescription": "Tous les modèles de menace actifs ont un évaluateur de sécurité attribué",
+      "noUnassignedFiltered": "Aucun modèle de menace ne correspond à vos filtres",
       "reviewer": "Évaluateur de sécurité",
+      "reviewerPlaceholder": "Filtrer par évaluateur...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "Sélectionner un évaluateur..."
+      "selectReviewer": "Sélectionner un évaluateur...",
+      "unassigned": "Non attribué"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "Consultez et modifiez vos projets, équipes et relations",
+    "title": "Mes Projets"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "Consultez et modifiez vos équipes, membres et relations",
+    "title": "Mes Équipes"
   }
 }

@@ -531,8 +531,11 @@
       "title": "Чат с Timmy"
     },
     "errors": {
+      "connectionFailed": "Не удалось подключиться к Timmy. Проверьте соединение и попробуйте снова.",
       "generic": "Что-то пошло не так. Пожалуйста, попробуйте снова.",
       "interrupted": "Ответ прерван. Попробуйте отправить ваше сообщение снова.",
+      "notAcceptable": "Timmy временно недоступен из-за проблемы с конфигурацией сервера.",
+      "notEnabled": "Timmy не включён для этой модели угроз.",
       "rateLimited": "Лимит сообщений достигнут. Попробуйте снова через {{minutes}} минут.",
       "serverBusy": "Сервер занят. Попробуйте снова через некоторое время."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "Введите имя пользователя (необязательно)"
     },
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
+  },
+  "mermaidViewer": {
+    "exportFailed": "Не удалось экспортировать диаграмму",
+    "fitToScreen": "По размеру экрана",
+    "openInViewer": "Открыть в просмотрщике",
+    "resetZoom": "Сбросить масштаб",
+    "zoomIn": "Увеличить",
+    "zoomOut": "Уменьшить"
   },
   "navbar": {
     "admin": "Админ",
@@ -1798,8 +1809,12 @@
       "loading": "Загрузка неназначенных рецензий...",
       "noUnassigned": "Нет неназначенных рецензий",
       "noUnassignedDescription": "Все активные модели угроз имеют назначенного рецензента безопасности",
+      "noUnassignedFiltered": "Нет моделей угроз, соответствующих вашим фильтрам",
       "reviewer": "Рецензент по безопасности",
-      "selectReviewer": "Выберите рецензента..."
+      "reviewerPlaceholder": "Фильтр по рецензенту...",
+      "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+      "selectReviewer": "Выберите рецензента...",
+      "unassigned": "Неназначенные"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1924,5 +1939,17 @@
       "providerId": "ID провайдера",
       "title": "Профиль Пользователя"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{projects.listTitle}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "Просмотр и редактирование ваших проектов, команд и связей",
+    "title": "Мои Проекты"
+  },
+  "userTeams": {
+    "listTitle": "{{teams.listTitle}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "Просмотр и редактирование ваших команд, участников и связей",
+    "title": "Мои Команды"
   }
 }

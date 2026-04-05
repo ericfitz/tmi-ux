@@ -531,8 +531,11 @@
       "title": "与 Timmy 聊天"
     },
     "errors": {
+      "connectionFailed": "无法连接到 Timmy。请检查您的网络连接后重试。",
       "generic": "出错了。请重试。",
       "interrupted": "响应已中断。请重新发送您的消息。",
+      "notAcceptable": "由于服务器配置问题，Timmy 暂时不可用。",
+      "notEnabled": "此威胁模型未启用 Timmy。",
       "rateLimited": "消息限制已达到。请在 {{minutes}} 分钟后重试。",
       "serverBusy": "服务器繁忙。请稍后重试。"
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "输入用户名（可选）"
     },
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
+  },
+  "mermaidViewer": {
+    "exportFailed": "导出图表失败",
+    "fitToScreen": "适应屏幕",
+    "openInViewer": "在查看器中打开",
+    "resetZoom": "重置缩放",
+    "zoomIn": "放大",
+    "zoomOut": "缩小"
   },
   "navbar": {
     "admin": "管理",
@@ -1798,9 +1809,12 @@
       "loading": "正在加载未分配的审核...",
       "noUnassigned": "无未分配的审核",
       "noUnassignedDescription": "所有活跃威胁模型都已分配了安全审核员",
+      "noUnassignedFiltered": "没有威胁模型匹配您的筛选条件",
       "reviewer": "安全审核员",
+      "reviewerPlaceholder": "按审核者筛选...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "选择审核员..."
+      "selectReviewer": "选择审核员...",
+      "unassigned": "未分配"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "查看和编辑您的项目、团队和关系",
+    "title": "我的项目"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "查看和编辑您的团队、成员和关系",
+    "title": "我的团队"
   }
 }

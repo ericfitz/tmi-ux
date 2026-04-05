@@ -531,8 +531,11 @@
       "title": "שוחח עם Timmy"
     },
     "errors": {
+      "connectionFailed": "לא ניתן להתחבר ל-Timmy. בדוק את החיבור שלך ונסה שוב.",
       "generic": "משהו השתבש. בבקשה נסה שוב.",
       "interrupted": "התגובה הופסקה. נסה לשלוח את ההודעה שלך שוב.",
+      "notAcceptable": "Timmy אינו זמין זמנית בשל בעיית תצורת שרת.",
+      "notEnabled": "Timmy אינו מופעל עבור מודל איומים זה.",
       "rateLimited": "הגעת לגבול הודעות. נסה שוב בעוד {{minutes}} דקות.",
       "serverBusy": "השרת עסוק. נסה שוב בעוד רגע."
     },
@@ -1038,6 +1041,14 @@
       "usernamePlaceholder": "הכנס שם משתמש (אופציונלי)"
     },
     "unexpectedError": "אירעה שגיאה בלתי צפויה במהלך OAuth."
+  },
+  "mermaidViewer": {
+    "exportFailed": "ייצוא הדיאגרמה נכשל",
+    "fitToScreen": "התאם למסך",
+    "openInViewer": "פתח בצופה",
+    "resetZoom": "אפס זום",
+    "zoomIn": "הגדל",
+    "zoomOut": "הקטן"
   },
   "navbar": {
     "admin": "ניהול",
@@ -1798,9 +1809,12 @@
       "loading": "טוען ביקורות לא מוקצות...",
       "noUnassigned": "אין ביקורות לא מוקצות",
       "noUnassignedDescription": "לכל מודלי האיומים הפעילים יש בודק ביטחון מוקצה",
+      "noUnassignedFiltered": "אין מודלי איומים התואמים למסננים שלך",
       "reviewer": "בודק ביטחון",
+      "reviewerPlaceholder": "סנן לפי בודק...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "בחר בודק..."
+      "selectReviewer": "בחר בודק...",
+      "unassigned": "לא מוקצה"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -1927,9 +1941,15 @@
     }
   },
   "userProjects": {
-    "listTitle": "{{teams.columns.projects}}"
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
+    "subtitle": "צפה וערוך את הפרויקטים, הצוותות והקשרים שלך",
+    "title": "הפרויקטים שלי"
   },
   "userTeams": {
-    "listTitle": "{{admin.sections.teams.title}}"
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
+    "subtitle": "צפה וערוך את הצוותות, החברים והקשרים שלך",
+    "title": "הצוותות שלי"
   }
 }
