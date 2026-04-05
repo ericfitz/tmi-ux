@@ -128,6 +128,7 @@ export interface ThreatModelListParams {
   description?: string;
   owner?: string;
   status?: string;
+  security_reviewer?: string;
   issue_uri?: string;
   created_after?: string;
   created_before?: string;
@@ -199,6 +200,7 @@ export class ThreatModelService implements OnDestroy {
         'description',
         'owner',
         'status',
+        'security_reviewer',
         'issue_uri',
         'created_after',
         'created_before',
