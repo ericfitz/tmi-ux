@@ -258,9 +258,7 @@
           <span class="tab-badge">{{ unassignedCount }}</span>
         }
       </ng-template>
-      <ng-template matTabContent>
-        <app-reviewer-assignment-list (countChange)="unassignedCount = $event" />
-      </ng-template>
+      <app-reviewer-assignment-list (countChange)="unassignedCount = $event" />
     </mat-tab>
   </mat-tab-group>
 </div>
