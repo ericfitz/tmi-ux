@@ -45,7 +45,7 @@ Includes the preceding user message for context:
 ### Note Titles
 
 - **Session** → session title (auto-generated from first user message)
-- **Single message** → first ~50 characters of the assistant message content, or `"Timmy response — {date}"` if content is too short or only contains code/formatting
+- **Single message** → first 50 characters of the assistant message content, truncated at the last word boundary with `…` appended. Falls back to `"Timmy response — {date}"` if the content starts with a code block or has no usable text in the first 50 characters.
 
 ### Note Defaults
 
