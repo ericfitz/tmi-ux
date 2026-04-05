@@ -5,6 +5,10 @@
  * SSE events, and preparation status for the server-integrated chat.
  */
 
+// SseEvent is defined in the core interfaces layer so that core services can use
+// it without violating the feature-module import restriction.
+export type { SseEvent } from '../../../core/interfaces/sse.interface';
+
 export type EntityType = 'document' | 'repository' | 'diagram' | 'note' | 'asset' | 'threat';
 
 export interface ChatMessage {
@@ -31,12 +35,6 @@ export interface SourceSnapshotEntry {
   entityType: EntityType;
   entityId: string;
   entityName?: string;
-}
-
-/** Generic SSE event as parsed from a text/event-stream response. */
-export interface SseEvent {
-  event: string;
-  data: string;
 }
 
 // Session creation SSE events
@@ -93,6 +91,3 @@ export interface PreparationStatus {
   readyStats?: ReadyEvent;
   error?: string;
 }
-
-/** Metadata key used to exclude entities from Timmy chat context. */
-export const TIMMY_METADATA_KEY = 'timmy';
