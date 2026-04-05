@@ -518,6 +518,47 @@
       "title": "การเข้าถึงไม่ได้รับอนุญาต"
     }
   },
+  "chat": {
+    "back": "กลับไปยังโมเดลภัยคุกคาม",
+    "deleteSession": "ลบเซสชัน",
+    "emptyState": {
+      "description": "ถามคำถามเกี่ยวกับโมเดลภัยคุกคามของคุณ Timmy สามารถช่วยวิเคราะห์ภัยคุกคาม ตรวจสอบสินทรัพย์ และอภิปรายท่าทีความปลอดภัยของคุณ",
+      "title": "แชทกับ Timmy"
+    },
+    "errors": {
+      "generic": "มีบางอย่างผิดพลาด โปรดลองอีกครั้ง",
+      "interrupted": "การตอบสนองถูกขัดจังหวะ ลองส่งข้อความของคุณอีกครั้ง",
+      "rateLimited": "ถึงขีดจำกัดข้อความแล้ว ลองอีกครั้งใน {{minutes}} นาที",
+      "serverBusy": "เซิร์ฟเวอร์ว่านไป ลองอีกครั้งในอีกสักครู่"
+    },
+    "hideSidePanel": "ซ่อนแผงด้านข้าง",
+    "inputPlaceholder": "ถามเรื่องโมเดลภัยคุกคามนี้กับ Timmy...",
+    "newSession": "เซสชันใหม่",
+    "noSessions": "ยังไม่มีเซสชันแชทเลย เริ่มสนทนากันเถิด",
+    "preparation": {
+      "error": "การเตรียมการล้มเหลว: {{message}}",
+      "processing": "กำลังประมวลผลแหล่งข้อมูล {{current}} จาก {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "พร้อมแล้ว! {{sourcesLoaded}} แหล่งข้อมูลโหลดแล้ว {{chunksEmbedded}} ชุดได้ทำการจัดทำดัชนีแล้ว"
+    },
+    "send": "ส่งข้อความ",
+    "sessions": "เซสชัน",
+    "showSidePanel": "แสดงแผงด้านข้าง",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} แหล่งข้อมูลรวม"
+    },
+    "suggestedPrompts": {
+      "assets": "สินทรัพย์ใดบ้างที่อยู่ในขอบเขต",
+      "summary": "ให้ฉันสรุปโมเดลภัยคุกคามนี้",
+      "threats": "ได้รับการระบุภัยคุกคามใด"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "ผู้ใช้ {{count}} คนที่ใช้งานอยู่",
     "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
@@ -1489,8 +1530,8 @@
       "error": "ล้มเหลวในการเตรียมข้อมูลส่งออก โปรดลองอีกครั้ง",
       "preparing": "กำลังเตรียมข้อมูลส่งออก...",
       "ready": "พร้อมส่งออก คลิก บันทึก เพื่อดาวน์โหลด",
-      "retry": "ลองอีกครั้ง",
-      "save": "บันทึก",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "ส่งออกแบบจำลองภัยคุกคาม"
     },
     "fileSizeExceeded": "ไฟล์เกินขนาดสูงสุดที่นำเข้าได้: {{maxSize}} MB",
@@ -1749,6 +1790,7 @@
       "noUnassigned": "ไม่มีการตรวจสอบที่ยังไม่ได้มอบหมาย",
       "noUnassignedDescription": "แบบจำลองการคุกคามที่ใช้งานอยู่ทั้งหมดได้รับการมอบหมายผู้ตรวจสอบความปลอดภัยแล้ว",
       "reviewer": "ผู้ตรวจสอบความปลอดภัย",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "เลือกผู้ตรวจสอบ..."
     },
     "revisionDialog": {
@@ -1874,5 +1916,11 @@
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

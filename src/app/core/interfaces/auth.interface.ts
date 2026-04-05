@@ -77,6 +77,12 @@ export interface IAuthService {
   refreshUserProfile(): Observable<UserProfile>;
 
   /**
+   * Force refresh session regardless of expiry time.
+   * Used when a 401 is received and the session needs immediate renewal.
+   */
+  forceRefreshToken(): Observable<IAuthSession>;
+
+  /**
    * Log out the current user
    */
   logout(): void;

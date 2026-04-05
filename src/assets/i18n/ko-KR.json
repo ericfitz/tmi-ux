@@ -523,6 +523,47 @@
       "title": "접근 권한 없음"
     }
   },
+  "chat": {
+    "back": "위협 모델로 돌아가기",
+    "deleteSession": "세션 삭제",
+    "emptyState": {
+      "description": "위협 모델에 대한 질문을 하세요. Timmy는 위협 분석, 자산 검토 및 보안 태세 논의를 도와드립니다.",
+      "title": "Timmy와 채팅하기"
+    },
+    "errors": {
+      "generic": "문제가 발생했습니다. 다시 시도해주세요.",
+      "interrupted": "응답이 중단되었습니다. 메시지를 다시 보내세요.",
+      "rateLimited": "메시지 제한에 도달했습니다. {{minutes}}분 후에 다시 시도하세요.",
+      "serverBusy": "서버가 바쁩니다. 잠시 후에 다시 시도하세요."
+    },
+    "hideSidePanel": "사이드 패널 숨기기",
+    "inputPlaceholder": "이 위협 모델에 대해 Timmy에게 물어보세요...",
+    "newSession": "새 세션",
+    "noSessions": "아직 채팅 세션이 없습니다. 대화를 시작하세요!",
+    "preparation": {
+      "error": "준비 실패: {{message}}",
+      "processing": "소스 {{current}}/{{total}} 처리 중 — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "준비 완료! {{sourcesLoaded}}개 소스 로드됨, {{chunksEmbedded}}개 청크 인덱싱됨."
+    },
+    "send": "메시지 전송",
+    "sessions": "세션",
+    "showSidePanel": "사이드 패널 표시",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}}개 소스 포함"
+    },
+    "suggestedPrompts": {
+      "assets": "범위에 어떤 자산이 있나요?",
+      "summary": "이 위협 모델의 요약을 제공해주세요",
+      "threats": "어떤 위협이 확인되었나요?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}}명의 활성 사용자",
     "approvePresenterRequest": "발표자 요청 승인",
@@ -1498,8 +1539,8 @@
       "error": "내보내기 데이터 준비에 실패했습니다. 다시 시도하세요.",
       "preparing": "내보내기 데이터 준비 중...",
       "ready": "내보내기 준비 완료. 다운로드하려면 저장을 클릭하세요.",
-      "retry": "다시 시도",
-      "save": "저장",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "위협 모델 내보내기"
     },
     "fileSizeExceeded": "파일이 최대 가져오기 크기를 초과합니다: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "할당되지 않은 검토 없음",
       "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다",
       "reviewer": "보안 검토자",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "검토자 선택..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "공급자 ID",
       "title": "사용자 프로필"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

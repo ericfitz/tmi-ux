@@ -523,6 +523,47 @@
       "title": "Akses Tidak Sah"
     }
   },
+  "chat": {
+    "back": "Kembali ke model ancaman",
+    "deleteSession": "Hapus sesi",
+    "emptyState": {
+      "description": "Tanyakan pertanyaan tentang model ancaman Anda. Timmy dapat membantu menganalisis ancaman, meninjau aset, dan mendiskusikan postur keamanan Anda.",
+      "title": "Chat dengan Timmy"
+    },
+    "errors": {
+      "generic": "Terjadi kesalahan. Silakan coba lagi.",
+      "interrupted": "Respons terputus. Coba kirim pesan Anda lagi.",
+      "rateLimited": "Batas pesan tercapai. Coba lagi dalam {{minutes}} menit.",
+      "serverBusy": "Server sibuk. Coba lagi sebentar."
+    },
+    "hideSidePanel": "Sembunyikan panel samping",
+    "inputPlaceholder": "Tanyakan kepada Timmy tentang model ancaman ini...",
+    "newSession": "Sesi Baru",
+    "noSessions": "Belum ada sesi chat. Mulai percakapan!",
+    "preparation": {
+      "error": "Persiapan gagal: {{message}}",
+      "processing": "Memproses sumber {{current}} dari {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "Siap! {{sourcesLoaded}} sumber dimuat, {{chunksEmbedded}} potongan diindeks."
+    },
+    "send": "Kirim pesan",
+    "sessions": "Sesi",
+    "showSidePanel": "Tampilkan panel samping",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} sumber disertakan"
+    },
+    "suggestedPrompts": {
+      "assets": "Aset apa saja yang termasuk dalam cakupan?",
+      "summary": "Berikan ringkasan model ancaman ini",
+      "threats": "Ancaman apa saja yang telah diidentifikasi?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} pengguna aktif",
     "approvePresenterRequest": "Setujui Permintaan Presenter",
@@ -1498,8 +1539,8 @@
       "error": "Gagal menyiapkan data ekspor. Silakan coba lagi.",
       "preparing": "Menyiapkan data ekspor...",
       "ready": "Ekspor siap. Klik Simpan untuk mengunduh.",
-      "retry": "Coba Lagi",
-      "save": "Simpan",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "Ekspor Model Ancaman"
     },
     "fileSizeExceeded": "File melebihi ukuran impor maksimum: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "Tidak Ada Ulasan yang Tidak Ditugaskan",
       "noUnassignedDescription": "Semua model ancaman aktif memiliki reviewer keamanan yang ditugaskan",
       "reviewer": "Reviewer Keamanan",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Pilih reviewer..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "ID Penyedia",
       "title": "Profil Pengguna"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

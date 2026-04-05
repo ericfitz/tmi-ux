@@ -18,6 +18,15 @@
         >
       }
     </h1>
+    <button
+      mat-icon-button
+      class="timmy-header-button"
+      (click)="openChat()"
+      [matTooltip]="'chat.title' | transloco"
+      [attr.aria-label]="'chat.title' | transloco"
+    >
+      <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-header-icon" />
+    </button>
   </div>
 
   @if (threatModel) {

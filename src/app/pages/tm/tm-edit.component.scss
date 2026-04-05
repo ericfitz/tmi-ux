@@ -3,6 +3,17 @@
 
 /* stylelint-disable no-descending-specificity */
 
+.timmy-header-button {
+  width: 48px;
+  height: 48px;
+}
+
+.timmy-header-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 .tm-edit-container {
   width: 100%;
   padding: 16px;

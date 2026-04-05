@@ -523,6 +523,47 @@
       "title": "Unberechtigter Zugriff"
     }
   },
+  "chat": {
+    "back": "Zurück zum Bedrohungsmodell",
+    "deleteSession": "Sitzung löschen",
+    "emptyState": {
+      "description": "Stellen Sie Fragen zu Ihrem Bedrohungsmodell. Timmy kann bei der Analyse von Bedrohungen, der Überprüfung von Assets und der Diskussion Ihres Sicherheitsstatus helfen.",
+      "title": "Chat mit Timmy"
+    },
+    "errors": {
+      "generic": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+      "interrupted": "Antwort unterbrochen. Versuchen Sie, Ihre Nachricht erneut zu senden.",
+      "rateLimited": "Nachrichtenlimit erreicht. Versuchen Sie es in {{minutes}} Minuten erneut.",
+      "serverBusy": "Server ist überlastet. Versuchen Sie es in Kürze erneut."
+    },
+    "hideSidePanel": "Seitenpanel ausblenden",
+    "inputPlaceholder": "Fragen Sie Timmy zu diesem Bedrohungsmodell...",
+    "newSession": "Neue Sitzung",
+    "noSessions": "Noch keine Chat-Sitzungen. Starten Sie ein Gespräch!",
+    "preparation": {
+      "error": "Vorbereitung fehlgeschlagen: {{message}}",
+      "processing": "Verarbeite Quelle {{current}} von {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "Bereit! {{sourcesLoaded}} Quellen geladen, {{chunksEmbedded}} Abschnitte indexiert."
+    },
+    "send": "Nachricht senden",
+    "sessions": "Sitzungen",
+    "showSidePanel": "Seitenpanel anzeigen",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} Quellen enthalten"
+    },
+    "suggestedPrompts": {
+      "assets": "Welche Assets sind im Umfang enthalten?",
+      "summary": "Geben Sie mir eine Zusammenfassung dieses Bedrohungsmodells",
+      "threats": "Welche Bedrohungen wurden identifiziert?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} aktive Benutzer",
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
@@ -1498,8 +1539,8 @@
       "error": "Exportdaten konnten nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
       "preparing": "Exportdaten werden vorbereitet...",
       "ready": "Export bereit. Klicken Sie auf Speichern zum Herunterladen.",
-      "retry": "Wiederholen",
-      "save": "Speichern",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "Bedrohungsmodell exportieren"
     },
     "fileSizeExceeded": "Datei überschreitet die maximale Importgröße: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "Keine unzugewiesenen Überprüfungen",
       "noUnassignedDescription": "Alle aktiven Bedrohungsmodelle haben einen Sicherheitsprüfer zugewiesen",
       "reviewer": "Sicherheitsprüfer",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Prüfer auswählen..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "Anbieter-ID",
       "title": "Benutzerprofil"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

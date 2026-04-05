@@ -67,7 +67,6 @@ docs-server/**
 # automated pen test artifacts
 deliverables/**
 workspace/**
-outputs/**
-docs/superpowers/**
 .playwright-mcp/**
 .superpowers/**
+docs/superpowers/**

@@ -523,6 +523,47 @@
       "title": "アクセス権限がありません"
     }
   },
+  "chat": {
+    "back": "脅威モデルに戻る",
+    "deleteSession": "セッションを削除",
+    "emptyState": {
+      "description": "脅威モデルについて質問してください。Timmyは脅威の分析、アセットのレビュー、セキュリティ姿勢の議論を支援できます。",
+      "title": "Timmyとチャット"
+    },
+    "errors": {
+      "generic": "問題が発生しました。もう一度お試しください。",
+      "interrupted": "応答が中断されました。メッセージを再度送信してください。",
+      "rateLimited": "メッセージの上限に達しました。{{minutes}}分後にお試しください。",
+      "serverBusy": "サーバーが混雑しています。しばらくしてからお試しください。"
+    },
+    "hideSidePanel": "サイドパネルを非表示",
+    "inputPlaceholder": "Timmyにこの脅威モデルについて質問してください...",
+    "newSession": "新しいセッション",
+    "noSessions": "チャットセッションはまだありません。会話を始めましょう!",
+    "preparation": {
+      "error": "準備に失敗しました：{{message}}",
+      "processing": "ソース{{current}}を処理中（全{{total}}）— {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
+      "ready": "準備完了！{{sourcesLoaded}}個のソースを読み込み、{{chunksEmbedded}}個のチャンクをインデックス化しました。"
+    },
+    "send": "メッセージを送信",
+    "sessions": "セッション",
+    "showSidePanel": "サイドパネルを表示",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}}個のソースが含まれています"
+    },
+    "suggestedPrompts": {
+      "assets": "スコープ内にはどのようなアセットがありますか?",
+      "summary": "この脅威モデルの概要を教えてください",
+      "threats": "どのような脅威が特定されていますか?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} 人のアクティブユーザー",
     "approvePresenterRequest": "プレゼンターリクエストを承認",
@@ -1498,8 +1539,8 @@
       "error": "エクスポートデータの準備に失敗しました。もう一度お試しください。",
       "preparing": "エクスポートデータを準備しています...",
       "ready": "エクスポートの準備ができました。保存をクリックしてダウンロードしてください。",
-      "retry": "再試行",
-      "save": "保存",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "脅威モデルをエクスポート"
     },
     "fileSizeExceeded": "ファイルが最大インポートサイズを超えています: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "割り当てられていないレビュー",
       "noUnassignedDescription": "すべてのアクティブな脅威モデルにセキュリティレビュー担当者が割り当てられています",
       "reviewer": "セキュリティレビュー担当者",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "レビュー担当者を選択..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "プロバイダーID",
       "title": "ユーザープロフィール"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

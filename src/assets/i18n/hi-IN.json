@@ -523,6 +523,47 @@
       "title": "अनधिकृत पहुंच"
     }
   },
+  "chat": {
+    "back": "थ्रेट मॉडल पर वापस जाएं",
+    "deleteSession": "सत्र हटाएं",
+    "emptyState": {
+      "description": "अपने थ्रेट मॉडल के बारे में प्रश्न पूछें। Timmy खतरों का विश्लेषण, संपत्ति की समीक्षा और आपकी सुरक्षा स्थिति पर चर्चा करने में मदद कर सकता है।",
+      "title": "Timmy के साथ चैट करें"
+    },
+    "errors": {
+      "generic": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
+      "interrupted": "प्रतिक्रिया बाधित हुई। अपना संदेश फिर से भेजने का प्रयास करें।",
+      "rateLimited": "संदेश सीमा पहुंची। {{minutes}} मिनट में पुनः प्रयास करें।",
+      "serverBusy": "सर्वर व्यस्त है। कृपया कुछ समय में पुनः प्रयास करें।"
+    },
+    "hideSidePanel": "साइड पैनल छुपाएं",
+    "inputPlaceholder": "इस थ्रेट मॉडल के बारे में Timmy से पूछें...",
+    "newSession": "नया सत्र",
+    "noSessions": "अभी तक कोई चैट सत्र नहीं। एक बातचीत शुरू करें!",
+    "preparation": {
+      "error": "तैयारी विफल: {{message}}",
+      "processing": "स्रोत {{current}} का {{total}} से प्रसंस्करण — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "तैयार! {{sourcesLoaded}} स्रोत लोड किए गए, {{chunksEmbedded}} चंक्स अनुक्रमित किए गए।"
+    },
+    "send": "संदेश भेजें",
+    "sessions": "सत्र",
+    "showSidePanel": "साइड पैनल दिखाएं",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} स्रोत शामिल हैं"
+    },
+    "suggestedPrompts": {
+      "assets": "स्कोप में कौन सी संपत्तियां हैं?",
+      "summary": "मुझे इस थ्रेट मॉडल का सारांश दें",
+      "threats": "कौन से खतरे पहचाने गए हैं?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} सक्रिय उपयोगकर्ता",
     "approvePresenterRequest": "प्रस्तुतकर्ता अनुरोध स्वीकृत करें",
@@ -1498,8 +1539,8 @@
       "error": "निर्यात डेटा तैयार करने में विफल। कृपया फिर से प्रयास करें।",
       "preparing": "निर्यात डेटा तैयार किया जा रहा है...",
       "ready": "निर्यात तैयार है। डाउनलोड करने के लिए सहेजें पर क्लिक करें।",
-      "retry": "फिर से प्रयास करें",
-      "save": "सहेजें",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "थ्रेट मॉडल निर्यात करें"
     },
     "fileSizeExceeded": "फ़ाइल अधिकतम आयात आकार से अधिक है: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "कोई असाइन नहीं किए गए समीक्षाएं नहीं",
       "noUnassignedDescription": "सभी सक्रिय खतरा मॉडल के लिए सुरक्षा समीक्षक असाइन है",
       "reviewer": "सुरक्षा समीक्षक",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "समीक्षक चुनें..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

@@ -523,6 +523,47 @@
       "title": "Acceso No Autorizado"
     }
   },
+  "chat": {
+    "back": "Volver al modelo de amenazas",
+    "deleteSession": "Eliminar sesión",
+    "emptyState": {
+      "description": "Haz preguntas sobre tu modelo de amenazas. Timmy puede ayudarte a analizar amenazas, revisar activos y discutir tu postura de seguridad.",
+      "title": "Chatear con Timmy"
+    },
+    "errors": {
+      "generic": "Algo salió mal. Por favor, inténtalo de nuevo.",
+      "interrupted": "Respuesta interrumpida. Intenta enviar tu mensaje de nuevo.",
+      "rateLimited": "Límite de mensajes alcanzado. Inténtalo de nuevo en {{minutes}} minutos.",
+      "serverBusy": "El servidor está ocupado. Inténtalo de nuevo en un momento."
+    },
+    "hideSidePanel": "Ocultar panel lateral",
+    "inputPlaceholder": "Pregunta a Timmy sobre este modelo de amenazas...",
+    "newSession": "Nueva Sesión",
+    "noSessions": "Sin sesiones de chat aún. ¡Comienza una conversación!",
+    "preparation": {
+      "error": "Preparación fallida: {{message}}",
+      "processing": "Procesando fuente {{current}} de {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "¡Listo! {{sourcesLoaded}} fuentes cargadas, {{chunksEmbedded}} fragmentos indexados."
+    },
+    "send": "Enviar mensaje",
+    "sessions": "Sesiones",
+    "showSidePanel": "Mostrar panel lateral",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} fuentes incluidas"
+    },
+    "suggestedPrompts": {
+      "assets": "¿Qué activos están en alcance?",
+      "summary": "Dame un resumen de este modelo de amenazas",
+      "threats": "¿Qué amenazas han sido identificadas?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} usuarios activos",
     "approvePresenterRequest": "Aprobar Solicitud de Presentador",
@@ -1498,8 +1539,8 @@
       "error": "Error al preparar datos de exportación. Por favor, inténtelo de nuevo.",
       "preparing": "Preparando datos de exportación...",
       "ready": "Exportación lista. Haga clic en Guardar para descargar.",
-      "retry": "Reintentar",
-      "save": "Guardar",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "Exportar Modelo de Amenazas"
     },
     "fileSizeExceeded": "El archivo excede el tamaño máximo de importación: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "Sin Revisiones Sin Asignar",
       "noUnassignedDescription": "Todos los modelos de amenaza activos tienen un revisor de seguridad asignado",
       "reviewer": "Revisor de Seguridad",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Seleccionar revisor..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "ID del Proveedor",
       "title": "Perfil de Usuario"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

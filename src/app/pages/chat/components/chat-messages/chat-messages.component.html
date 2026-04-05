@@ -1,0 +1,133 @@
+<ng-container *transloco="let t">
+  <div class="chat-messages" #messagesContainer>
+    @if (messages.length === 0 && !loading && !preparationStatus) {
+      <div class="empty-state">
+        <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="empty-icon" />
+        <h3>{{ t('chat.emptyState.title') }}</h3>
+        <p>{{ t('chat.emptyState.description') }}</p>
+        <div class="suggested-prompts">
+          <button
+            mat-stroked-button
+            [disabled]="isInputDisabled"
+            (click)="messageText = t('chat.suggestedPrompts.summary'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.summary') }}
+          </button>
+          <button
+            mat-stroked-button
+            [disabled]="isInputDisabled"
+            (click)="messageText = t('chat.suggestedPrompts.threats'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.threats') }}
+          </button>
+          <button
+            mat-stroked-button
+            [disabled]="isInputDisabled"
+            (click)="messageText = t('chat.suggestedPrompts.assets'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.assets') }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @for (message of messages; track trackByMessageId($index, message)) {
+      <div
+        class="message"
+        [class.user]="message.role === 'user'"
+        [class.assistant]="message.role === 'assistant'"
+        [class.streaming]="isStreaming(message)"
+      >
+        <div class="message-avatar">
+          @if (message.role === 'user') {
+            <mat-icon>person</mat-icon>
+          } @else {
+            <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+          }
+        </div>
+        <div class="message-content">
+          @if (message.role === 'assistant' && !isStreaming(message)) {
+            <markdown [data]="message.content"></markdown>
+          } @else {
+            <p>
+              {{ message.content }}
+              @if (isStreaming(message)) {
+                <span class="typing-cursor"></span>
+              }
+            </p>
+          }
+        </div>
+      </div>
+    }
+
+    @if (preparationStatus) {
+      <div class="message assistant status-bubble">
+        <div class="message-avatar">
+          <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+        </div>
+        <div class="message-content status-content">
+          @if (preparationStatus.ready) {
+            <mat-icon class="status-icon ready">check_circle</mat-icon>
+            <span>{{
+              t('chat.preparation.ready', {
+                sourcesLoaded: preparationStatus.readyStats?.sourcesLoaded ?? 0,
+                chunksEmbedded: preparationStatus.readyStats?.chunksEmbedded ?? 0,
+              })
+            }}</span>
+          } @else if (preparationStatus.error) {
+            <mat-icon class="status-icon error">error</mat-icon>
+            <span>{{ t('chat.preparation.error', { message: preparationStatus.error }) }}</span>
+          } @else {
+            <mat-spinner diameter="18" class="status-spinner"></mat-spinner>
+            <span>{{
+              t('chat.preparation.processing', {
+                current: preparationStatus.current,
+                total: preparationStatus.total,
+                entityType: preparationStatus.entityName ? '' : '',
+                entityName: preparationStatus.entityName,
+                phase: preparationStatus.phase,
+                progress: preparationStatus.progress,
+              })
+            }}</span>
+          }
+        </div>
+      </div>
+    }
+
+    @if (loading && !preparationStatus) {
+      <div class="message assistant loading">
+        <div class="message-avatar">
+          <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+        </div>
+        <div class="message-content">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="chat-input">
+    <mat-form-field appearance="outline" class="message-input">
+      <textarea
+        matInput
+        [(ngModel)]="messageText"
+        (keydown)="onKeydown($event)"
+        [placeholder]="t('chat.inputPlaceholder')"
+        [disabled]="isInputDisabled"
+        rows="1"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+      ></textarea>
+    </mat-form-field>
+    <button
+      mat-icon-button
+      [matTooltip]="t('chat.send')"
+      (click)="onSend()"
+      [disabled]="isSendDisabled"
+      color="primary"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</ng-container>

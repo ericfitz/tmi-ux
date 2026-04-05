@@ -523,6 +523,47 @@
       "title": "غیر مجاز رسائی"
     }
   },
+  "chat": {
+    "back": "خطرے کے ماڈل کی طرف واپس",
+    "deleteSession": "سیشن حذف کریں",
+    "emptyState": {
+      "description": "اپنے خطرے کے ماڈل کے بارے میں سوالات پوچھیں۔ Timmy خطرات کا تجزیہ کرنے، اثاثوں کے جائزے لینے، اور آپ کے سیکیورٹی موقف پر بحث کرنے میں مدد کر سکتا ہے۔",
+      "title": "Timmy کے ساتھ بات کریں"
+    },
+    "errors": {
+      "generic": "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+      "interrupted": "جواب میں خرابی پیش آئی۔ اپنا پیغام دوبارہ بھیجنے کی کوشش کریں۔",
+      "rateLimited": "پیغام کی حد تک پہنچ گئے۔ {{minutes}} منٹ میں دوبارہ کوشش کریں۔",
+      "serverBusy": "سرور مصروف ہے۔ کچھ دیر میں دوبارہ کوشش کریں۔"
+    },
+    "hideSidePanel": "سائیڈ پینل چھپائیں",
+    "inputPlaceholder": "Timmy سے اس خطرے کے ماڈل کے بارے میں پوچھیں...",
+    "newSession": "نیا سیشن",
+    "noSessions": "ابھی کوئی چیٹ سیشن نہیں۔ کوئی بات شروع کریں!",
+    "preparation": {
+      "error": "تیاری ناکام: {{message}}",
+      "processing": "ذریعہ {{current}} / {{total}} پر کام ہو رہا ہے — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "تیار! {{sourcesLoaded}} ذرائع لوڈ ہو گئے، {{chunksEmbedded}} حصے انڈیکس ہو گئے۔"
+    },
+    "send": "پیغام بھیجیں",
+    "sessions": "سیشنز",
+    "showSidePanel": "سائیڈ پینل دکھائیں",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} ذرائع شامل ہیں"
+    },
+    "suggestedPrompts": {
+      "assets": "کون سے اثاثے رینج میں ہیں؟",
+      "summary": "اس خطرے کے ماڈل کا خلاصہ دیں",
+      "threats": "کون سے خطرات شناخت کیے گئے ہیں؟"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} فعال صارفین",
     "approvePresenterRequest": "پیش کنندہ کی درخواست منظور کریں",
@@ -1498,8 +1539,8 @@
       "error": "برآمد کے ڈیٹا کی تیاری ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
       "preparing": "برآمد کے ڈیٹا کی تیاری جاری ہے...",
       "ready": "برآمد تیار ہے۔ ڈاؤن لوڈ کے لیے محفوظ کریں پر کلک کریں۔",
-      "retry": "دوبارہ کوشش کریں",
-      "save": "محفوظ کریں",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "خطرے کے ماڈل کو برآمد کریں"
     },
     "fileSizeExceeded": "فائل زیادہ سے زیادہ درآمد سائز سے بڑی ہے: {{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "کوئی غیر تفویض شدہ جائزے نہیں",
       "noUnassignedDescription": "تمام فعال خطرے کی ماڈلز میں سیکیورٹی جائزہ کار تفویض ہے",
       "reviewer": "سیکیورٹی جائزہ کار",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "جائزہ کار منتخب کریں..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "فراہم کنندہ ID",
       "title": "صارف پروفائل"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

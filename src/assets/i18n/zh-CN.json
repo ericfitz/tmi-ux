@@ -523,6 +523,47 @@
       "title": "未授权访问"
     }
   },
+  "chat": {
+    "back": "返回威胁模型",
+    "deleteSession": "删除会话",
+    "emptyState": {
+      "description": "询问有关您的威胁模型的问题。Timmy 可以帮助分析威胁、审查资产以及讨论您的安全态势。",
+      "title": "与 Timmy 聊天"
+    },
+    "errors": {
+      "generic": "出错了。请重试。",
+      "interrupted": "响应已中断。请重新发送您的消息。",
+      "rateLimited": "消息限制已达到。请在 {{minutes}} 分钟后重试。",
+      "serverBusy": "服务器繁忙。请稍后重试。"
+    },
+    "hideSidePanel": "隐藏边侧面板",
+    "inputPlaceholder": "向 Timmy 咨询有关此威胁模型的信息...",
+    "newSession": "新建会话",
+    "noSessions": "还没有聊天会话。开始对话吧！",
+    "preparation": {
+      "error": "准备失败：{{message}}",
+      "processing": "处理源 {{current}} / {{total}} — {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
+      "ready": "就绪！已加载 {{sourcesLoaded}} 个源，已索引 {{chunksEmbedded}} 个块。"
+    },
+    "send": "发送消息",
+    "sessions": "会话",
+    "showSidePanel": "显示边侧面板",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} 个源已包含"
+    },
+    "suggestedPrompts": {
+      "assets": "范围内有哪些资产？",
+      "summary": "请给我一份此威胁模型的摘要",
+      "threats": "已识别了哪些威胁？"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} 个活跃用户",
     "approvePresenterRequest": "批准主讲人请求",
@@ -1498,8 +1539,8 @@
       "error": "导出数据准备失败。请重试。",
       "preparing": "正在准备导出数据...",
       "ready": "导出已准备就绪。点击保存以下载。",
-      "retry": "重试",
-      "save": "保存",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "导出威胁模型"
     },
     "fileSizeExceeded": "文件超出最大导入大小限制：{{maxSize}} MB",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "无未分配的审核",
       "noUnassignedDescription": "所有活跃威胁模型都已分配了安全审核员",
       "reviewer": "安全审核员",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "选择审核员..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "提供商ID",
       "title": "用户资料"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }
