@@ -523,6 +523,47 @@
       "title": "Несанкционированный Доступ"
     }
   },
+  "chat": {
+    "back": "Вернуться к модели угроз",
+    "deleteSession": "Удалить сеанс",
+    "emptyState": {
+      "description": "Задавайте вопросы о вашей модели угроз. Timmy может помочь проанализировать угрозы, проверить активы и обсудить вашу позицию в области безопасности.",
+      "title": "Чат с Timmy"
+    },
+    "errors": {
+      "generic": "Что-то пошло не так. Пожалуйста, попробуйте снова.",
+      "interrupted": "Ответ прерван. Попробуйте отправить ваше сообщение снова.",
+      "rateLimited": "Лимит сообщений достигнут. Попробуйте снова через {{minutes}} минут.",
+      "serverBusy": "Сервер занят. Попробуйте снова через некоторое время."
+    },
+    "hideSidePanel": "Скрыть боковую панель",
+    "inputPlaceholder": "Спросите Timmy об этой модели угроз...",
+    "newSession": "Новый сеанс",
+    "noSessions": "Нет сеансов чата. Начните разговор!",
+    "preparation": {
+      "error": "Подготовка не удалась: {{message}}",
+      "processing": "Обработка источника {{current}} из {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "Готово! {{sourcesLoaded}} источников загружено, {{chunksEmbedded}} фрагментов проиндексировано."
+    },
+    "send": "Отправить сообщение",
+    "sessions": "Сеансы",
+    "showSidePanel": "Показать боковую панель",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} источников включено"
+    },
+    "suggestedPrompts": {
+      "assets": "Какие активы находятся в области охвата?",
+      "summary": "Дайте мне резюме этой модели угроз",
+      "threats": "Какие угрозы были выявлены?"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} active users",
     "approvePresenterRequest": "Одобрить запрос ведущего",

@@ -523,6 +523,47 @@
       "title": "وصول غير مصرح"
     }
   },
+  "chat": {
+    "back": "العودة إلى نموذج التهديد",
+    "deleteSession": "حذف الجلسة",
+    "emptyState": {
+      "description": "اطرح أسئلة حول نموذج التهديد الخاص بك. يمكن لـ Timmy مساعدتك في تحليل التهديدات ومراجعة الأصول والنقاش حول موقفك الأمني.",
+      "title": "الدردشة مع Timmy"
+    },
+    "errors": {
+      "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "interrupted": "تم قطع الرد. حاول إرسال رسالتك مرة أخرى.",
+      "rateLimited": "تم الوصول إلى حد الرسائل. حاول مرة أخرى في {{minutes}} دقيقة.",
+      "serverBusy": "الخادم مشغول. حاول مرة أخرى في لحظة."
+    },
+    "hideSidePanel": "إخفاء اللوحة الجانبية",
+    "inputPlaceholder": "اسأل Timmy عن نموذج التهديد هذا...",
+    "newSession": "جلسة جديدة",
+    "noSessions": "لا توجد جلسات دردشة حتى الآن. ابدأ محادثة!",
+    "preparation": {
+      "error": "فشل التحضير: {{message}}",
+      "processing": "معالجة المصدر {{current}} من {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "جاهز! {{sourcesLoaded}} مصدر تم تحميله، {{chunksEmbedded}} مقطع مفهرس."
+    },
+    "send": "إرسال الرسالة",
+    "sessions": "الجلسات",
+    "showSidePanel": "إظهار اللوحة الجانبية",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} مصدر مضمن"
+    },
+    "suggestedPrompts": {
+      "assets": "ما الأصول الموجودة في النطاق؟",
+      "summary": "أعطني ملخصاً لنموذج التهديد هذا",
+      "threats": "ما التهديدات التي تم تحديدها؟"
+    },
+    "title": "Timmy"
+  },
   "collaboration": {
     "activeUsers": "{{count}} مستخدمين نشطين",
     "approvePresenterRequest": "الموافقة على طلب المقدم",
@@ -1498,8 +1539,8 @@
       "error": "فشل في تحضير بيانات التصدير. يرجى المحاولة مرة أخرى.",
       "preparing": "جاري تحضير بيانات التصدير...",
       "ready": "التصدير جاهز. انقر على حفظ للتحميل.",
-      "retry": "إعادة المحاولة",
-      "save": "حفظ",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "تصدير نموذج التهديد"
     },
     "fileSizeExceeded": "الملف يتجاوز الحد الأقصى لحجم الاستيراد: {{maxSize}} ميغابايت",
@@ -1758,6 +1799,7 @@
       "noUnassigned": "لا توجد مراجعات غير معينة",
       "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين",
       "reviewer": "مراجع الأمان",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "اختر مراجعاً..."
     },
     "revisionDialog": {
@@ -1883,5 +1925,11 @@
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم"
     }
+  },
+  "userProjects": {
+    "listTitle": "{{teams.columns.projects}}"
+  },
+  "userTeams": {
+    "listTitle": "{{admin.sections.teams.title}}"
   }
 }

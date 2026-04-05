@@ -491,47 +491,6 @@
       "software": "Software"
     }
   },
-  "chat": {
-    "title": "Timmy",
-    "back": "Back to threat model",
-    "sessions": "Sessions",
-    "newSession": "New Session",
-    "deleteSession": "Delete session",
-    "noSessions": "No chat sessions yet. Start a conversation!",
-    "send": "Send message",
-    "inputPlaceholder": "Ask Timmy about this threat model...",
-    "hideSidePanel": "Hide side panel",
-    "showSidePanel": "Show side panel",
-    "emptyState": {
-      "title": "Chat with Timmy",
-      "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture."
-    },
-    "suggestedPrompts": {
-      "summary": "Give me a summary of this threat model",
-      "threats": "What threats have been identified?",
-      "assets": "What assets are in scope?"
-    },
-    "preparation": {
-      "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed.",
-      "error": "Preparation failed: {{message}}"
-    },
-    "sourceSummary": {
-      "title": "{{count}} sources included",
-      "documents": "Documents",
-      "repositories": "Repositories",
-      "notes": "Notes",
-      "assets": "Assets",
-      "threats": "Threats",
-      "diagrams": "Diagrams"
-    },
-    "errors": {
-      "rateLimited": "Message limit reached. Try again in {{minutes}} minutes.",
-      "serverBusy": "Server is busy. Try again in a moment.",
-      "interrupted": "Response interrupted. Try sending your message again.",
-      "generic": "Something went wrong. Please try again."
-    }
-  },
   "auditTrail": {
     "changeSummary": "Change summary",
     "changeTypes": {
@@ -581,6 +540,47 @@
       "requiredRole": "You need the {{role}} role to view this content.",
       "title": "Unauthorized Access"
     }
+  },
+  "chat": {
+    "back": "Back to threat model",
+    "deleteSession": "Delete session",
+    "emptyState": {
+      "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture.",
+      "title": "Chat with Timmy"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "interrupted": "Response interrupted. Try sending your message again.",
+      "rateLimited": "Message limit reached. Try again in {{minutes}} minutes.",
+      "serverBusy": "Server is busy. Try again in a moment."
+    },
+    "hideSidePanel": "Hide side panel",
+    "inputPlaceholder": "Ask Timmy about this threat model...",
+    "newSession": "New Session",
+    "noSessions": "No chat sessions yet. Start a conversation!",
+    "preparation": {
+      "error": "Preparation failed: {{message}}",
+      "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
+      "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed."
+    },
+    "send": "Send message",
+    "sessions": "Sessions",
+    "showSidePanel": "Show side panel",
+    "sourceSummary": {
+      "assets": "{{common.objectTypes.assets}}",
+      "diagrams": "{{common.objectTypes.diagrams}}",
+      "documents": "{{common.objectTypes.documents}}",
+      "notes": "{{common.objectTypes.notes}}",
+      "repositories": "{{common.objectTypes.repositories}}",
+      "threats": "{{common.objectTypes.threats}}",
+      "title": "{{count}} sources included"
+    },
+    "suggestedPrompts": {
+      "assets": "What assets are in scope?",
+      "summary": "Give me a summary of this threat model",
+      "threats": "What threats have been identified?"
+    },
+    "title": "Timmy"
   },
   "collaboration": {
     "activeUsers": "{{count}} active users",
@@ -1603,8 +1603,8 @@
       "error": "Failed to prepare export data. Please try again.",
       "preparing": "Preparing export data...",
       "ready": "Export ready. Click Save to download.",
-      "retry": "Retry",
-      "save": "Save",
+      "retry": "{{common.retry}}",
+      "save": "{{common.save}}",
       "title": "Export Threat Model"
     },
     "fileSizeExceeded": "File exceeds maximum import size: {{maxSize}} MB",
@@ -1871,7 +1871,7 @@
       "noUnassignedFiltered": "No threat models match your filters",
       "reviewer": "Security Reviewer",
       "reviewerPlaceholder": "Filter by reviewer...",
-      "searchPlaceholder": "Search by name...",
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Select reviewer...",
       "unassigned": "Unassigned"
     },
@@ -2003,15 +2003,15 @@
     }
   },
   "userProjects": {
-    "title": "My Projects",
+    "listTitle": "{{teams.columns.projects}}",
+    "noProjects": "{{projects.noProjects}}",
     "subtitle": "View and edit your projects, teams, and relationships",
-    "listTitle": "Projects",
-    "noProjects": "{{projects.noProjects}}"
+    "title": "My Projects"
   },
   "userTeams": {
-    "title": "My Teams",
+    "listTitle": "{{admin.sections.teams.title}}",
+    "noTeams": "{{teams.noTeams}}",
     "subtitle": "View and edit your teams, members, and relationships",
-    "listTitle": "Teams",
-    "noTeams": "{{teams.noTeams}}"
+    "title": "My Teams"
   }
 }
