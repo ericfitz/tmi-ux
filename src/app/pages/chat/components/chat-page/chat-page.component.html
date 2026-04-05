@@ -20,29 +20,23 @@
       <app-chat-messages
         [messages]="messages"
         [loading]="loading"
+        [streamingMessageId]="streamingMessageId"
+        [preparationStatus]="preparationStatus"
+        [inputDisabled]="!!preparationStatus && !preparationStatus.ready"
         (messageSent)="onMessageSent($event)"
       ></app-chat-messages>
     </div>
 
     @if (sidePanelOpen) {
       <div class="side-panel">
-        <mat-tab-group>
-          <mat-tab [label]="t('chat.sources')">
-            <app-chat-source-panel
-              [threatModel]="threatModel"
-              (sourceToggled)="onSourceToggled($event)"
-            ></app-chat-source-panel>
-          </mat-tab>
-          <mat-tab [label]="t('chat.sessions')">
-            <app-chat-session-panel
-              [sessions]="sessions"
-              [activeSessionId]="activeSessionId"
-              (sessionSelected)="onSessionSelected($event)"
-              (sessionCreated)="onSessionCreated()"
-              (sessionDeleted)="onSessionDeleted($event)"
-            ></app-chat-session-panel>
-          </mat-tab>
-        </mat-tab-group>
+        <app-chat-session-panel
+          [sessions]="sessions"
+          [activeSessionId]="activeSessionId"
+          [sourceSnapshot]="activeSourceSnapshot"
+          (sessionSelected)="onSessionSelected($event)"
+          (sessionCreated)="onSessionCreated()"
+          (sessionDeleted)="onSessionDeleted($event)"
+        ></app-chat-session-panel>
       </div>
     }
   </div>
