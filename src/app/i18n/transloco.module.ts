@@ -12,7 +12,7 @@ import {
 } from './language-config';
 
 // This function initializes Transloco during app startup
-export function preloadTranslations(transloco: TranslocoService): () => Promise<unknown> {
+function preloadTranslations(transloco: TranslocoService): () => Promise<unknown> {
   return () => {
     // Get preferred language (skip URL params — LanguageService handles those)
     const langToLoad = detectPreferredLanguage(null);

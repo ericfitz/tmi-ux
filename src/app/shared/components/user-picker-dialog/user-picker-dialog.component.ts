@@ -20,6 +20,15 @@ import { AdminUser } from '@app/types/user.types';
 export interface UserPickerDialogData {
   title: string;
   excludeUserId?: string;
+  showRoleSelector?: boolean;
+  roles?: string[];
+  roleTranslocoPrefix?: string;
+}
+
+export interface UserPickerDialogResult {
+  user: AdminUser;
+  role?: string;
+  customRole?: string;
 }
 
 @Component({
@@ -73,13 +82,36 @@ export interface UserPickerDialogData {
           </button>
         </div>
       }
+      @if (data.showRoleSelector && selectedUser) {
+        <mat-form-field appearance="outline" class="full-width role-field">
+          <mat-label [transloco]="'teams.membersDialog.role'">Role</mat-label>
+          <mat-select [(value)]="selectedRole">
+            @for (role of data.roles; track role) {
+              <mat-option [value]="role">
+                {{ data.roleTranslocoPrefix + role | transloco }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (selectedRole === 'other') {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label [transloco]="'teams.membersDialog.customRole'">Custom Role</mat-label>
+            <input matInput [(ngModel)]="customRole" />
+          </mat-form-field>
+        }
+      }
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
       <button mat-button (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="!selectedUser">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onConfirm()"
+        [disabled]="!selectedUser || (data.showRoleSelector && !selectedRole)"
+      >
         <span [transloco]="'common.confirm'">Confirm</span>
       </button>
     </mat-dialog-actions>
@@ -123,6 +155,10 @@ export interface UserPickerDialogData {
         flex-direction: column;
         gap: 4px;
       }
+
+      .role-field {
+        margin-top: 16px;
+      }
     `,
   ],
 })
@@ -132,6 +168,8 @@ export class UserPickerDialogComponent implements OnInit {
   userSearchControl = new FormControl('');
   filteredUsers$!: Observable<AdminUser[]>;
   selectedUser: AdminUser | null = null;
+  selectedRole = '';
+  customRole = '';
 
   constructor(
     public dialogRef: MatDialogRef<UserPickerDialogComponent>,
@@ -179,11 +217,21 @@ export class UserPickerDialogComponent implements OnInit {
   onClearUser(): void {
     this.selectedUser = null;
     this.userSearchControl.setValue('');
+    this.selectedRole = '';
+    this.customRole = '';
   }
 
   onConfirm(): void {
     if (this.selectedUser) {
-      this.dialogRef.close(this.selectedUser);
+      if (this.data.showRoleSelector) {
+        this.dialogRef.close({
+          user: this.selectedUser,
+          role: this.selectedRole || undefined,
+          customRole: this.customRole || undefined,
+        } as UserPickerDialogResult);
+      } else {
+        this.dialogRef.close(this.selectedUser);
+      }
     }
   }
 

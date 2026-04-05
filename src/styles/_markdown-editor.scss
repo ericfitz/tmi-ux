@@ -261,6 +261,14 @@
       background-color: var(--theme-surface);
       border-radius: 6px;
       border: 1px solid var(--theme-divider);
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    // Wrapper created by MermaidViewerService — hover border stays active
+    // while interacting with the toolbar (which is a sibling of .mermaid)
+    .mermaid-viewer-wrapper:hover > .mermaid {
+      border-color: var(--theme-text-secondary);
     }
 
     // Override Prism theme colors for dark mode compatibility

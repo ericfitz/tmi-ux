@@ -51,7 +51,7 @@ describe('DfdDiagramValidator', () => {
   ): Cell {
     return {
       id,
-      shape: 'edge',
+      shape: 'flow',
       source,
       target,
       ...overrides,
@@ -114,7 +114,7 @@ describe('DfdDiagramValidator', () => {
       }
     });
 
-    it('should accept edge shape', () => {
+    it('should accept flow shape', () => {
       const node1 = validNodeCell(validUUID);
       const node2 = validNodeCell(validUUID2);
       const edge = validEdgeCell(validUUID3, validUUID, validUUID2);
@@ -124,6 +124,18 @@ describe('DfdDiagramValidator', () => {
 
     it('should reject invalid cell shape', () => {
       const cell: Cell = { id: validUUID, shape: 'hexagon' };
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
+    });
+
+    it('should reject legacy "edge" shape as INVALID_CELL_TYPE', () => {
+      const cell: Cell = { id: validUUID, shape: 'edge' };
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
+    });
+
+    it('should reject legacy "textbox" shape (no hyphen) as INVALID_CELL_TYPE', () => {
+      const cell: Cell = { id: validUUID, shape: 'textbox' };
       const errors = validator.validateCells([cell], baseContext);
       expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
     });
@@ -142,6 +154,23 @@ describe('DfdDiagramValidator', () => {
     it('should reject non-array cells', () => {
       const errors = validator.validateCells('not-an-array' as any, baseContext);
       expect(hasError(errors, 'INVALID_CELLS')).toBe(true);
+    });
+
+    it("should reject legacy 'edge' shape as invalid", () => {
+      const cell: Cell = {
+        id: '550e8400-e29b-41d4-a716-446655440010',
+        shape: 'edge',
+        source: validUUID,
+        target: validUUID2,
+      };
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
+    });
+
+    it("should reject legacy 'textbox' shape as invalid", () => {
+      const cell = validNodeCell('550e8400-e29b-41d4-a716-446655440011', { shape: 'textbox' });
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
     });
   });
 
@@ -278,7 +307,7 @@ describe('DfdDiagramValidator', () => {
       const node2 = validNodeCell(validUUID2);
       const edge: Cell = {
         id: validUUID3,
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: validUUID },
         target: { cell: validUUID2 },
       };
@@ -290,7 +319,7 @@ describe('DfdDiagramValidator', () => {
     it('should reject edge without source', () => {
       const cell: Cell = {
         id: validUUID,
-        shape: 'edge',
+        shape: 'flow',
         target: validUUID2,
       };
       const errors = validator.validateCells([cell], baseContext);
@@ -300,7 +329,7 @@ describe('DfdDiagramValidator', () => {
     it('should reject edge without target', () => {
       const cell: Cell = {
         id: validUUID,
-        shape: 'edge',
+        shape: 'flow',
         source: validUUID2,
       };
       const errors = validator.validateCells([cell], baseContext);
@@ -310,7 +339,7 @@ describe('DfdDiagramValidator', () => {
     it('should reject edge with invalid source format', () => {
       const cell: Cell = {
         id: validUUID,
-        shape: 'edge',
+        shape: 'flow',
         source: { notCell: 'foo' } as any,
         target: validUUID2,
       };
@@ -377,7 +406,7 @@ describe('DfdDiagramValidator', () => {
       const node2 = validNodeCell(validUUID2);
       const edge: Cell = {
         id: validUUID3,
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: validUUID },
         target: { cell: validUUID2 },
       };

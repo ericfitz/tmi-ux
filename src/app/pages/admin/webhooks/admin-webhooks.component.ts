@@ -2,6 +2,7 @@ import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -19,6 +20,16 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
 import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dialog.component';
+import {
+  CreateAutomationUserDialogComponent,
+  CreateAutomationUserDialogData,
+} from './create-automation-user-dialog/create-automation-user-dialog.component';
+import {
+  CredentialSecretDialogComponent,
+  CredentialSecretDialogData,
+} from '@app/core/components/user-preferences-dialog/credential-secret-dialog/credential-secret-dialog.component';
+import { UserAdminService } from '@app/core/services/user-admin.service';
+import { CreateAutomationAccountResponse } from '@app/types/user.types';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -78,6 +89,8 @@ export class AdminWebhooksComponent implements OnInit {
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
+    private clipboard: Clipboard,
+    private userAdminService: UserAdminService,
   ) {}
 
   ngOnInit(): void {
@@ -177,15 +190,21 @@ export class AdminWebhooksComponent implements OnInit {
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((result: WebhookSubscription | undefined) => {
-        if (result) {
-          this.loadWebhooks();
-          // Show HMAC secret dialog if secret was returned
-          if (result.secret) {
-            this.showHmacSecretDialog(result.secret);
+      .subscribe(
+        (result: { webhook: WebhookSubscription; createAutomationUser: boolean } | undefined) => {
+          if (result) {
+            this.loadWebhooks();
+            // Show HMAC secret dialog if secret was returned
+            if (result.webhook.secret) {
+              this.showHmacSecretDialog(result.webhook.secret);
+            }
+            // Open automation user creation dialog if requested
+            if (result.createAutomationUser) {
+              this.openCreateAutomationUserDialog(result.webhook.name);
+            }
           }
-        }
-      });
+        },
+      );
   }
 
   private showHmacSecretDialog(secret: string): void {
@@ -226,6 +245,31 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
+  private openCreateAutomationUserDialog(webhookName: string): void {
+    const dialogData: CreateAutomationUserDialogData = { webhookName };
+    const dialogRef = this.dialog.open(CreateAutomationUserDialogComponent, {
+      width: '500px',
+      data: dialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: CreateAutomationAccountResponse | null) => {
+        if (result) {
+          const secretData: CredentialSecretDialogData = {
+            clientId: result.client_credential.client_id,
+            clientSecret: result.client_credential.client_secret,
+          };
+          this.dialog.open(CredentialSecretDialogComponent, {
+            width: '600px',
+            disableClose: true,
+            data: secretData,
+          });
+        }
+      });
+  }
+
   getStatusIcon(status: string): string {
     switch (status) {
       case 'active':
@@ -239,25 +283,15 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'pending_verification':
-        return 'warn';
-      case 'pending_delete':
-        return 'error';
-      default:
-        return '';
-    }
-  }
-
   getEventsTooltip(events: string[]): string {
     return events.join('\n');
   }
 
-  openWebhookUrl(url: string): void {
-    window.open(url, '_blank', 'noopener,noreferrer');
+  copyToClipboard(text: string): void {
+    const success = this.clipboard.copy(text);
+    if (!success) {
+      this.logger.error('Failed to copy to clipboard');
+    }
   }
 
   onClose(): void {

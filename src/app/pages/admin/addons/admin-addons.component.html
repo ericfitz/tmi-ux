@@ -15,7 +15,7 @@
 
   <mat-card class="filter-card">
     <mat-card-content>
-      <mat-form-field class="filter-field">
+      <mat-form-field class="filter-field" appearance="outline">
         <mat-label [transloco]="'admin.addons.filterLabel'">Filter Addons</mat-label>
         <input
           matInput
@@ -60,12 +60,18 @@
               <div class="addon-actions">
                 <button
                   mat-icon-button
-                  color="warn"
-                  (click)="onDeleteAddon(addon)"
-                  [matTooltip]="'admin.addons.deleteTooltip' | transloco"
+                  [matMenuTriggerFor]="addonKebabMenu"
+                  [matTooltip]="'common.actions' | transloco"
+                  (click)="$event.stopPropagation()"
                 >
-                  <mat-icon>delete</mat-icon>
+                  <mat-icon>more_vert</mat-icon>
                 </button>
+                <mat-menu #addonKebabMenu="matMenu">
+                  <button mat-menu-item (click)="onDeleteAddon(addon)">
+                    <mat-icon>delete</mat-icon>
+                    <span [transloco]="'admin.addons.deleteTooltip'">Delete</span>
+                  </button>
+                </mat-menu>
               </div>
 
               @if (addon.description) {

@@ -190,7 +190,7 @@ describe('AppCellOperationConverterService', () => {
     it('should create edge operation for new edge', () => {
       const cell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         attrs: {},
@@ -235,7 +235,7 @@ describe('AppCellOperationConverterService', () => {
     it('should create update edge operation for existing edge', () => {
       const previousCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         attrs: {},
@@ -243,7 +243,7 @@ describe('AppCellOperationConverterService', () => {
 
       const currentCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node3', port: 'in' },
         attrs: {},
@@ -380,7 +380,7 @@ describe('AppCellOperationConverterService', () => {
     it('should create edge operation with source and target', () => {
       const cell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         attrs: {},
@@ -406,7 +406,7 @@ describe('AppCellOperationConverterService', () => {
     it('should include vertices when present', () => {
       const cell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         vertices: [
@@ -431,7 +431,7 @@ describe('AppCellOperationConverterService', () => {
     it('should include labels when present', () => {
       const cell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         labels: [{ attrs: { text: { text: 'Label 1' } } }],
@@ -455,7 +455,7 @@ describe('AppCellOperationConverterService', () => {
     it('should create update edge operation', () => {
       const previousCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         attrs: {},
@@ -463,7 +463,7 @@ describe('AppCellOperationConverterService', () => {
 
       const currentCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node3', port: 'in' },
         attrs: {},
@@ -486,7 +486,7 @@ describe('AppCellOperationConverterService', () => {
     it('should include updated vertices', () => {
       const previousCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         vertices: [{ x: 200, y: 200 }],
@@ -495,7 +495,7 @@ describe('AppCellOperationConverterService', () => {
 
       const currentCell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         vertices: [
@@ -538,7 +538,7 @@ describe('AppCellOperationConverterService', () => {
     it('should create delete edge operation', () => {
       const cell: Cell = {
         id: 'edge1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node1', port: 'out' },
         target: { cell: 'node2', port: 'in' },
         attrs: {},

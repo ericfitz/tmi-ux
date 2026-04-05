@@ -95,6 +95,7 @@ import {
   hasActiveFilters as hasActiveServerFilters,
   hasAdvancedFilters as hasAdvancedServerFilters,
 } from './dashboard-filter.model';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 @Component({
   selector: 'app-dashboard',
@@ -566,7 +567,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.logger.error('Error deleting threat model', error);
             this.snackBar.open(
               this.transloco.translate('threatModels.deleteError', {
-                error: error instanceof Error ? error.message : String(error),
+                error: getErrorMessage(error),
               }),
               this.transloco.translate('common.close'),
               { duration: 5000 },
@@ -860,7 +861,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.logger.error('Failed to import threat model', error);
       this.showError(
         this.transloco.translate('threatModels.importError', {
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
         }),
       );
     } finally {

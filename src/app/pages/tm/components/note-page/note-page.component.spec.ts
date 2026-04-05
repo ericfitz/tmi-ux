@@ -72,6 +72,7 @@ describe('NotePageComponent', () => {
   let threatModelService: MockThreatModelService;
   let authorizationService: MockAuthorizationService;
   let addonService: MockAddonService;
+  let mermaidViewerService: { initialize: ReturnType<typeof vi.fn> };
 
   const mockNote: Note = {
     id: 'note-1',
@@ -144,6 +145,7 @@ describe('NotePageComponent', () => {
     addonService = {
       list: vi.fn().mockReturnValue(of({ addons: [], total: 0, limit: 0, offset: 0 })),
     };
+    mermaidViewerService = { initialize: vi.fn().mockReturnValue(() => {}) };
 
     component = new NotePageComponent(
       route as any,
@@ -157,6 +159,8 @@ describe('NotePageComponent', () => {
       threatModelService as any,
       authorizationService as any,
       addonService as any,
+      undefined,
+      mermaidViewerService as any,
     );
   });
 

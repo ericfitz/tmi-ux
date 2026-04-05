@@ -34,16 +34,11 @@
       "allObjects": "(Все)",
       "errorInvoking": "Не удалось вызвать дополнение. Пожалуйста, попробуйте снова.",
       "invalidCharacters": "Допускаются только буквенно-цифровые символы, пробелы, дефисы, точки, запятые и косые черты",
-      "invalidJson": "Неверный формат JSON",
       "invocationQueued": "Вызов дополнения добавлен в очередь",
       "metadataKeyMissing": "Обязательный ключ метаданных \"{{key}}\" отсутствует у этого объекта",
       "numberMax": "Значение должно быть не более {{max}}",
       "numberMin": "Значение должно быть не менее {{min}}",
       "parameters": "Параметры",
-      "payload": "Данные (Необязательно)",
-      "payloadHint": "JSON-данные для передачи дополнению",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "Идентификатор модели угроз",
       "title": "Вызвать дополнение",
       "valueTooLong": "Значение превышает максимальную длину"
@@ -111,9 +106,9 @@
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "Добавить участника",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Текущие участники",
         "noMembers": "В этой группе нет участников",
         "removeTooltip": "Удалить из группы",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "Установка и настройка дополнений приложения",
-        "title": "{{admin.addons.title}}"
+        "title": "Дополнения"
       },
       "groups": {
         "description": "Настройка групп пользователей и членства",
-        "title": "{{admin.groups.title}}"
+        "title": "Группы"
+      },
+      "projects": {
+        "description": "Управление проектами, связями и метаданными",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "Настройка квот и лимитов ресурсов",
-        "title": "{{admin.quotas.title}}"
+        "title": "Квоты"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Настройки"
       },
       "surveys": {
         "description": "Создание и управление опросами",
-        "title": "Управление опросами"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "Управление командами и членством в командах",
+        "title": "Команды"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
-        "title": "{{admin.users.title}}"
+        "title": "Пользователи"
       },
       "webhooks": {
         "description": "Установка и настройка интеграций вебхуков",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Вебхуки"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "Отменить редактирование",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Источник",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Вы уверены, что хотите удалить настройку \"{{key}}\"?",
       "deleteTooltip": "Удалить настройку",
       "editTooltip": "Редактировать настройку",
       "filterLabel": "Фильтр",
-      "filterPlaceholder": "Фильтр по ключу, значению или описанию",
+      "filterPlaceholder": "Фильтр по ключу, значению, описанию или источнику",
       "listTitle": "Системные Настройки",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "Мигрировать Настройки"
       },
       "noSettings": "Настройки не найдены",
+      "readOnlyTooltip": "Этот параметр доступен только для чтения и не может быть изменён здесь",
       "saveTooltip": "Сохранить изменения",
+      "sources": {
+        "config": "Файл конфигурации",
+        "database": "База данных",
+        "environment": "Окружение",
+        "vault": "Хранилище",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Просмотр и управление системными настройками конфигурации",
       "title": "Управление Настройками",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "Управление системными настройками и конфигурациями",
     "title": "Администрирование",
     "users": {
+      "actions": {
+        "manageCredentials": "Управление учётными данными"
+      },
       "administrator": "Администратор",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Удалить учётную запись пользователя",
+      "filter": {
+        "automationOnly": "Показать только учётные записи автоматизации"
+      },
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
       "lastLogin": "Последний вход",
-      "listTitle": "Пользователи",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Добавить учётные данные",
+        "deleteConfirm": "Вы уверены, что хотите удалить учётные данные \"{{name}}\"?",
+        "noCredentials": "Учётные данные не найдены",
+        "title": "Управление учётными данными для {{userName}}"
+      },
       "never": "Никогда",
       "noUsers": "Пользователи не найдены",
       "subtitle": "Просмотр и управление системными пользователями",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Создать пользователя автоматизации для этого вебхука",
         "events": "Типы событий для подписки",
         "eventsHint": "Типы событий для подписки (например, threat_model.created)",
         "eventsPlaceholder": "Выберите типы событий",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "Оставить пусто для автоматической генерации",
         "title": "Добавить Webhook",
         "url": "URL вебхука",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Должен быть HTTPS URL",
+        "urlHint": "Рекомендуется HTTPS",
+        "urlHttpWarning": "Предупреждение: URL конечной точки вебхука должен использовать HTTPS. Сервер может отклонить регистрации вебхуков, указывающие конечную точку без TLS.",
+        "urlHttpWarningTitle": "URL вебхука без HTTPS",
+        "urlInvalid": "Должен быть действительный URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL обязателен"
+      },
+      "createAutomationUserDialog": {
+        "email": "Электронная почта (необязательно)",
+        "emailHint": "Необязательно — по умолчанию используется автоматически сгенерированный адрес @tmi.local",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "От 2 до 64 символов, начинается с буквы",
+        "nameMaxLength": "Имя должно содержать не более 64 символов",
+        "nameMinLength": "Должно содержать не менее 2 символов",
+        "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Создать пользователя автоматизации",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Удалить вебхук",
@@ -308,8 +346,11 @@
         "pending_delete": "Ожидает удаления",
         "pending_verification": "Ожидает подтверждения"
       },
+      "subscriptionId": "Идентификатор подписки",
       "subtitle": "Настройка подписок вебхуков для уведомлений о событиях",
-      "title": "Управление Webhooks"
+      "title": "Управление Webhooks",
+      "triggerEvents": "Триггерные события",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "Требуется указать версию"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Не удалось удалить опрос: {{error}}",
+    "deleteTooltip": "Удалить опрос",
     "editTemplate": "Редактировать опрос",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "Действия",
     "activate": "Активировать",
     "active": "Активный",
+    "add": "Добавить",
     "addMetadata": "Добавить Метаданные",
     "addThreat": "Добавить Угрозу",
     "addons": "Дополнения",
@@ -562,6 +606,8 @@
     "email": "Электронная почта",
     "emailLabel": "Адрес Электронной Почты",
     "error": "Ошибка",
+    "exportAsPng": "Экспортировать как PNG",
+    "exportAsSvg": "Экспортировать как SVG",
     "false": "Ложь",
     "fonts": "Шрифты",
     "groups": "Группы",
@@ -886,9 +932,7 @@
     "pageTitle": "Редактор Диаграмм Потоков Данных",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Экспортировать как JPEG",
-        "exportAsPng": "Экспортировать как PNG",
-        "exportAsSvg": "Экспортировать как SVG"
+        "exportAsJpeg": "Экспортировать как JPEG"
       },
       "tooltips": {
         "addActor": "Добавить субъекта",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI — это инструмент, который оптимизирует процессы проверки безопасности и моделирования угроз в вашей организации. Он управляет рабочими процессами проверки, организует ключевую информацию и позволяет командам совместно разрабатывать диаграммы потоков данных. Он также интегрируется с системами автоматизации, помогая снизить ручной труд и более эффективно выявлять угрозы безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "Вход в систему...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Вход в TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Имя пользователя должно содержать не более 20 символов",
+      "errorMinLength": "Имя пользователя должно содержать не менее 3 символов",
+      "errorPattern": "Имя пользователя должно содержать только буквы и цифры",
+      "signIn": "Войти",
+      "title": "Войти с TMI Provider",
+      "usernameLabel": "Имя пользователя",
+      "usernamePlaceholder": "Введите имя пользователя (необязательно)"
+    },
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "Права Пользователей"
   },
   "projects": {
+    "addButton": "Добавить проект",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Введите описание проекта",
       "namePlaceholder": "Введите название проекта",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Создать новый проект",
+    "deleteDialog": {
+      "message": "Вы уверены, что хотите удалить проект \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Редактировать проект"
+    },
+    "filterLabel": "Фильтровать по названию",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Проектов не найдено",
     "picker": {
       "label": "{{common.project}}",
       "none": "Без проекта"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Добавить связанный проект",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Нет связанных проектов",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Выбрать проект",
+      "title": "Связанные проекты"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Отменено",
+      "completed": "Завершено",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Планирование"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Фильтровать по статусу",
+    "subtitle": "Создание, редактирование и управление проектами, связями и метаданными",
+    "teamFilterLabel": "Фильтровать по команде",
+    "title": "Управление проектами"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "Продолжить редактирование",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Фильтр по статусу",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
       "noResponsesTitle": "Пока нет ответов",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "Отправить опрос",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "В архиве",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Неактивный"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Просмотреть ответ"
   },
   "teams": {
+    "addButton": "Добавить команду",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Изменено",
+      "name": "{{common.name}}",
+      "projects": "Проекты",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Введите описание команды",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Создать новую команду"
+    "createNew": "Создать новую команду",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Вы уверены, что хотите удалить команду \"{{name}}\"?",
+      "projectWarning": "Эта команда имеет {{count}} проект(ов). Удаление команды может повлиять на эти проекты.",
+      "title": "Удалить команду"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Редактировать команду"
+    },
+    "filterLabel": "Фильтр команд",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "Участники",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Добавить участника",
+      "customRole": "Пользовательская роль",
+      "noMembers": "Нет участников",
+      "removeMember": "Удалить участника",
+      "role": "Роль",
+      "title": "Участники команды"
+    },
+    "noTeams": "Команды не найдены",
+    "relatedTeamsDialog": {
+      "addRelated": "Добавить связанную команду",
+      "customRelationship": "Пользовательская связь",
+      "noRelated": "Нет связанных команд",
+      "relationship": "Связь",
+      "removeRelated": "Удалить связанную команду",
+      "selectTeam": "Выберите команду",
+      "title": "Связанные команды"
+    },
+    "relationships": {
+      "child": "Дочерняя",
+      "dependency": "Зависимость",
+      "dependent": "Зависимая",
+      "other": "{{common.other}}",
+      "parent": "Родительская",
+      "related": "Связанная",
+      "superseded_by": "Заменена на",
+      "supersedes": "Заменяет"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Добавить ответственную сторону",
+      "noParties": "Нет ответственных сторон",
+      "removeParty": "Удалить ответственную сторону",
+      "title": "Ответственные стороны"
+    },
+    "roles": {
+      "business_leader": "Руководитель бизнеса",
+      "engineer": "Инженер",
+      "engineering_lead": "Руководитель инженеров",
+      "other": "{{common.other}}",
+      "product_manager": "Менеджер продукта",
+      "security_specialist": "Специалист по безопасности"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Архивирована",
+      "forming": "Формируется",
+      "merging": "Объединяется",
+      "on_hold": "На паузе",
+      "splitting": "Разделяется",
+      "winding_down": "Завершается"
+    },
+    "subtitle": "Создание, редактирование и управление командами, участниками и связями",
+    "title": "Управление командами"
   },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "Изменить ревизора безопасности",
     "clearSecurityReviewer": "Убрать ревизора безопасности",
     "commit": "Коммит",
+    "confidentialProject": "Конфиденциальный проект",
     "createFirstButton": "Создайте Свою Первую Модель Угроз",
     "createNewDiagram": "Создать новую диаграмму",
     "createNewRepository": "Добавить ссылку на репозиторий",
@@ -1305,6 +1494,14 @@
     "documentName": "Название документа",
     "documentUrl": "URL документа",
     "export": "Экспортировать",
+    "exportDialog": {
+      "error": "Ошибка подготовки данных экспорта. Пожалуйста, попробуйте снова.",
+      "preparing": "Подготовка данных для экспорта...",
+      "ready": "Экспорт готов. Нажмите «Сохранить» для скачивания.",
+      "retry": "Повторить",
+      "save": "Сохранить",
+      "title": "Экспортировать модель угроз"
+    },
     "fileSizeExceeded": "Файл превышает максимальный размер импорта: {{maxSize}} МБ",
     "frameworkDisabledHint": "Невозможно изменить фреймворк при наличии угроз",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "Угрозы ещё не добавлены",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Роль",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Управление разрешениями",
     "rename": "Переименовать",
@@ -1348,10 +1545,12 @@
     "repositoryType": "Тип репозитория",
     "repositoryUri": "URL репозитория",
     "sections": {
+      "audit": "Аудит",
       "inputs": "Входные данные",
       "inputsDescription": "Активы, документы и репозитории исходного кода, которые описывают анализируемую систему",
       "outputs": "Выходные данные",
-      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности"
+      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности",
+      "reviewProcess": "Процесс проверки"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Назначить владельцем",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "Диаграммы в TMI — это машиночитаемые представления движения данных и процессов в системе, позволяющие проводить как ручной, так и автоматизированный анализ безопасности.",
       "documentsCardTitle": "Ссылки на документы — это ссылки на документы, хранящиеся вне TMI. Соответствующие документы описывают анализируемую систему и могут использоваться как аналитиками безопасности, так и автоматизированными процессами анализа.",
       "downloadModel": "Скачать модель",
+      "dropToCreateDocument": "Перетащите для создания",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Перетащите, чтобы задать URI задачи",
       "import": "Импортировать",
       "notesCardTitle": "Заметки — это текст в формате markdown, полностью содержащийся в модели угроз, используемый для фиксации заметок и аннотаций от аналитиков безопасности и автоматизированных процессов анализа.",
       "repositoriesCardTitle": "Репозитории — это ссылки на репозитории исходного кода, где управляется исходный код системы.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Добавить заметку",
+      "columns": {
+        "answer": "Ответ",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "Вопрос"
+      },
       "markdownSupported": "Поддерживается Markdown",
       "noNotes": "Заметок триажа пока нет",
       "noResponses": "Ответы не записаны",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "Отметить на проверке",
     "markPendingTriage": "Отметить ожидающим сортировки",
+    "messages": {
+      "approveError": "Не удалось утвердить ответ",
+      "approveSuccess": "Ответ утверждён",
+      "createThreatModelError": "Не удалось создать модель угроз",
+      "createThreatModelSuccess": "Модель угроз успешно создана",
+      "returnForRevisionError": "Не удалось вернуть ответ на доработку",
+      "returnForRevisionSuccess": "Ответ возвращён на доработку"
+    },
     "noResponses": "Нет ответов для сортировки",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,8 +1778,8 @@
   "userPreferences": {
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
-      "add": "Добавить",
-      "clientId": "Идентификатор клиента",
+      "add": "{{common.add}}",
+      "clientId": "ID клиента",
       "clientSecret": "Секретный ключ клиента",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1581,9 +1796,13 @@
         "nameTooLong": "Название должно содержать не более 100 символов",
         "title": "Создать учётные данные клиента"
       },
-      "created": "{{common.created}}",
-      "expires": "Истекает",
+      "createdOn": "{{common.created}}",
+      "credential": "Учётные данные",
+      "expired": "Истёкший",
+      "expiresAt": "Истекает",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Последнее использование",
+      "neverExpires": "Никогда не истекает",
       "noCredentials": "Учётные данные клиента отсутствуют",
       "noCredentialsDescription": "Создайте учётные данные для программного доступа к API TMI.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
     "displayPreferences": "Настройки отображения",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Загружает последние записи журнала приложения в формате JSONL для диагностики.",
-      "title": "Экспорт журнала приложения"
+      "title": "Скачать журнал"
     },
     "hoverShowMetadata": "Показывать метаданные ячейки при наведении",
     "marginSize": {

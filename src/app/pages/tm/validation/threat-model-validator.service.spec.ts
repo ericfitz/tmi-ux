@@ -232,7 +232,7 @@ describe('ThreatModelValidatorService', () => {
               { id: 'cell-1', shape: 'invalid-shape', x: 100, y: 100, width: 120, height: 60 }, // Invalid: unknown shape
               {
                 id: 'cell-2',
-                shape: 'edge',
+                shape: 'flow',
                 source: { cell: 'cell-1' },
                 target: { cell: 'non-existent-cell' },
               }, // Invalid target

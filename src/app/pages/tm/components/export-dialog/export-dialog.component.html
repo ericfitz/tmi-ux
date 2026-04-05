@@ -1,0 +1,66 @@
+<h2 mat-dialog-title class="export-dialog-title">
+  <mat-icon>file_download</mat-icon>
+  {{ 'threatModels.exportDialog.title' | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <div class="export-dialog-content">
+    @switch (state) {
+      @case ('loading') {
+        <div class="status-row">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span>{{ 'threatModels.exportDialog.preparing' | transloco }}</span>
+        </div>
+      }
+      @case ('ready') {
+        <div class="status-row ready">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ 'threatModels.exportDialog.ready' | transloco }}</span>
+        </div>
+      }
+      @case ('error') {
+        <div class="status-row error">
+          <mat-icon>error</mat-icon>
+          <span>{{ 'threatModels.exportDialog.error' | transloco }}</span>
+        </div>
+      }
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onCancel()"
+    tabindex="1"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
+    {{ 'common.cancel' | transloco }}
+  </button>
+
+  @if (state === 'error') {
+    <button
+      mat-button
+      color="primary"
+      (click)="fetchData()"
+      tabindex="2"
+      [attr.aria-label]="'threatModels.exportDialog.retry' | transloco"
+    >
+      {{ 'threatModels.exportDialog.retry' | transloco }}
+    </button>
+  }
+
+  @if (state === 'ready') {
+    <button
+      mat-button
+      color="primary"
+      (click)="onSave()"
+      cdkFocusInitial
+      tabindex="2"
+      [attr.aria-label]="'threatModels.exportDialog.save' | transloco"
+    >
+      {{ 'threatModels.exportDialog.save' | transloco }}
+    </button>
+  }
+</mat-dialog-actions>

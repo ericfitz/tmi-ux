@@ -145,6 +145,45 @@ describe('ServerConnectionService', () => {
     });
   });
 
+  describe('getFormattedServerVersion()', () => {
+    it('should return empty string before first successful health check', () => {
+      expect(service.getFormattedServerVersion()).toBe('');
+    });
+
+    it('should format "semver-commitId" as "semver (commitId)"', async () => {
+      const response = {
+        ...mockHealthResponse,
+        service: { name: 'TMI Server', build: '1.3.0-5011053f' },
+      };
+      mockHttpClient.get.mockReturnValue(of(response));
+      await vi.advanceTimersByTimeAsync(1);
+
+      expect(service.getFormattedServerVersion()).toBe('1.3.0 (5011053f)');
+    });
+
+    it('should handle prerelease semver with commit ID', async () => {
+      const response = {
+        ...mockHealthResponse,
+        service: { name: 'TMI Server', build: '1.3.0-rc.0-abc12def' },
+      };
+      mockHttpClient.get.mockReturnValue(of(response));
+      await vi.advanceTimersByTimeAsync(1);
+
+      expect(service.getFormattedServerVersion()).toBe('1.3.0-rc.0 (abc12def)');
+    });
+
+    it('should return raw version if it does not match expected pattern', async () => {
+      const response = {
+        ...mockHealthResponse,
+        service: { name: 'TMI Server', build: 'v1.2.3' },
+      };
+      mockHttpClient.get.mockReturnValue(of(response));
+      await vi.advanceTimersByTimeAsync(1);
+
+      expect(service.getFormattedServerVersion()).toBe('v1.2.3');
+    });
+  });
+
   describe('Health Checks', () => {
     it('should update status to CONNECTED on successful health check', async () => {
       mockHttpClient.get.mockReturnValue(of(mockHealthResponse));

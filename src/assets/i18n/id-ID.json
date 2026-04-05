@@ -34,16 +34,11 @@
       "allObjects": "(Semua)",
       "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
       "invalidCharacters": "Hanya karakter alfanumerik, spasi, tanda hubung, titik, koma, dan garis miring yang diperbolehkan",
-      "invalidJson": "Format JSON tidak valid",
       "invocationQueued": "Pemanggilan addon dalam antrean",
       "metadataKeyMissing": "Kunci metadata yang diperlukan \"{{key}}\" tidak ada pada objek ini",
       "numberMax": "Nilai harus paling banyak {{max}}",
       "numberMin": "Nilai harus setidaknya {{min}}",
       "parameters": "Parameter",
-      "payload": "Payload (Opsional)",
-      "payloadHint": "Data JSON untuk dikirim ke addon",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID Model Ancaman",
       "title": "Panggil Addon",
       "valueTooLong": "Nilai melebihi panjang maksimum"
@@ -111,9 +106,9 @@
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "Tambah Anggota",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Anggota Saat Ini",
         "noMembers": "Tidak ada anggota dalam grup ini",
         "removeTooltip": "Keluarkan dari grup",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "Pasang dan konfigurasikan addon aplikasi",
-        "title": "{{admin.addons.title}}"
+        "title": "Pengaya"
       },
       "groups": {
         "description": "Konfigurasikan grup pengguna dan keanggotaan",
-        "title": "{{admin.groups.title}}"
+        "title": "Grup"
+      },
+      "projects": {
+        "description": "Kelola proyek, hubungan, dan metadata",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "Konfigurasikan kuota dan batas sumber daya",
-        "title": "{{admin.quotas.title}}"
+        "title": "Kuota"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Pengaturan"
       },
       "surveys": {
         "description": "Buat dan kelola survei",
-        "title": "Kelola Survei"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "Kelola tim dan keanggotaan tim",
+        "title": "Tim"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
-        "title": "{{admin.users.title}}"
+        "title": "Pengguna"
       },
       "webhooks": {
         "description": "Pasang dan konfigurasikan integrasi webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhook"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "Batalkan pengeditan",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Sumber",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Apakah Anda yakin ingin menghapus pengaturan \"{{key}}\"?",
       "deleteTooltip": "Hapus pengaturan",
       "editTooltip": "Edit pengaturan",
       "filterLabel": "Filter",
-      "filterPlaceholder": "Filter berdasarkan kunci, nilai, atau deskripsi",
+      "filterPlaceholder": "Filter berdasarkan kunci, nilai, deskripsi, atau sumber",
       "listTitle": "Pengaturan Sistem",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "Migrasikan Pengaturan"
       },
       "noSettings": "Tidak ada pengaturan ditemukan",
+      "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
       "saveTooltip": "Simpan perubahan",
+      "sources": {
+        "config": "File Konfigurasi",
+        "database": "Basis Data",
+        "environment": "Lingkungan",
+        "vault": "Vault",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
       "title": "Kelola Pengaturan",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",
     "title": "Administrasi",
     "users": {
+      "actions": {
+        "manageCredentials": "Kelola Kredensial"
+      },
       "administrator": "Administrator",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Hapus akun pengguna",
+      "filter": {
+        "automationOnly": "Tampilkan hanya akun otomasi"
+      },
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
       "lastLogin": "Login Terakhir",
-      "listTitle": "Pengguna",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Tambah Kredensial",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus kredensial \"{{name}}\"?",
+        "noCredentials": "Tidak ada kredensial ditemukan",
+        "title": "Kelola Kredensial untuk {{userName}}"
+      },
       "never": "Tidak Pernah",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Buat pengguna otomasi untuk webhook ini",
         "events": "Jenis Peristiwa untuk Berlangganan",
         "eventsHint": "Jenis peristiwa untuk berlangganan (misalnya, threat_model.created)",
         "eventsPlaceholder": "Pilih jenis peristiwa",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "Biarkan kosong untuk dibuat otomatis",
         "title": "Tambah Webhook",
         "url": "URL Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Harus berupa URL HTTPS",
+        "urlHint": "HTTPS disarankan",
+        "urlHttpWarning": "Peringatan: URL endpoint webhook harus menggunakan HTTPS. Server mungkin menolak pendaftaran webhook yang menggunakan endpoint non-TLS.",
+        "urlHttpWarningTitle": "URL Webhook Non-HTTPS",
+        "urlInvalid": "Harus berupa URL yang valid",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL wajib diisi"
+      },
+      "createAutomationUserDialog": {
+        "email": "Email (Opsional)",
+        "emailHint": "Opsional — default ke alamat @tmi.local yang dibuat otomatis",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 karakter, diawali huruf",
+        "nameMaxLength": "Nama harus maksimal 64 karakter",
+        "nameMinLength": "Harus minimal 2 karakter",
+        "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Buat Pengguna Otomasi",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Hapus webhook",
@@ -308,8 +346,11 @@
         "pending_delete": "Menunggu Penghapusan",
         "pending_verification": "Menunggu Verifikasi"
       },
+      "subscriptionId": "ID Langganan",
       "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa",
-      "title": "Kelola Webhook"
+      "title": "Kelola Webhook",
+      "triggerEvents": "Peristiwa pemicu",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "Versi wajib diisi"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Gagal menghapus survei: {{error}}",
+    "deleteTooltip": "Hapus survei",
     "editTemplate": "Edit survei",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "Tindakan",
     "activate": "Aktifkan",
     "active": "Aktif",
+    "add": "Tambah",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
@@ -562,6 +606,8 @@
     "email": "Email",
     "emailLabel": "Alamat Email",
     "error": "Kesalahan",
+    "exportAsPng": "Ekspor sebagai PNG",
+    "exportAsSvg": "Ekspor sebagai SVG",
     "false": "Salah",
     "fonts": "Font",
     "groups": "Grup",
@@ -886,9 +932,7 @@
     "pageTitle": "Editor Diagram Aliran Data",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Ekspor sebagai JPEG",
-        "exportAsPng": "Ekspor sebagai PNG",
-        "exportAsSvg": "Ekspor sebagai SVG"
+        "exportAsJpeg": "Ekspor sebagai JPEG"
       },
       "tooltips": {
         "addActor": "Tambah Aktor",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI adalah alat yang menyederhanakan proses peninjauan keamanan dan pemodelan ancaman organisasi Anda. Ini mendorong alur kerja peninjauan, mengorganisir informasi penting, dan memungkinkan tim untuk secara kolaboratif membangun diagram alur data. Alat ini juga terhubung dengan otomasi, membantu mengurangi pekerjaan manual dan mengidentifikasi ancaman keamanan dengan lebih efisien.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "Sedang masuk...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Masuk ke TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Nama pengguna harus maksimal 20 karakter",
+      "errorMinLength": "Nama pengguna harus minimal 3 karakter",
+      "errorPattern": "Nama pengguna hanya boleh mengandung huruf dan angka",
+      "signIn": "Masuk",
+      "title": "Masuk dengan TMI Provider",
+      "usernameLabel": "Nama pengguna",
+      "usernamePlaceholder": "Masukkan nama pengguna (opsional)"
+    },
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "Hak Pengguna"
   },
   "projects": {
+    "addButton": "Tambah Proyek",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Masukkan deskripsi proyek",
       "namePlaceholder": "Masukkan nama proyek",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Buat Proyek Baru",
+    "deleteDialog": {
+      "message": "Apakah Anda yakin ingin menghapus proyek \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Proyek"
+    },
+    "filterLabel": "Filter berdasarkan Nama",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Tidak ada proyek yang ditemukan",
     "picker": {
       "label": "{{common.project}}",
       "none": "Tanpa Proyek"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Tambah Proyek Terkait",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Tidak ada proyek terkait",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Pilih Proyek",
+      "title": "Proyek Terkait"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Dibatalkan",
+      "completed": "Selesai",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Perencanaan"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Filter berdasarkan Status",
+    "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata",
+    "teamFilterLabel": "Filter berdasarkan Tim",
+    "title": "Kelola Proyek"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "Lanjutkan mengedit",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Filter berdasarkan Status",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
       "noResponsesTitle": "Belum Ada Respons",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "Kirim Survei",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Diarsipkan",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Tidak Aktif"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Lihat Respons"
   },
   "teams": {
+    "addButton": "Tambah Tim",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Diubah",
+      "name": "{{common.name}}",
+      "projects": "Proyek",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Masukkan deskripsi tim",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Buat Tim Baru"
+    "createNew": "Buat Tim Baru",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Apakah Anda yakin ingin menghapus tim \"{{name}}\"?",
+      "projectWarning": "Tim ini memiliki {{count}} proyek. Menghapus tim mungkin mempengaruhi proyek-proyek ini.",
+      "title": "Hapus Tim"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Tim"
+    },
+    "filterLabel": "Filter Tim",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "Anggota",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Tambah Anggota",
+      "customRole": "Peran Kustom",
+      "noMembers": "Tidak ada anggota",
+      "removeMember": "Hapus Anggota",
+      "role": "Peran",
+      "title": "Anggota Tim"
+    },
+    "noTeams": "Tidak ada tim ditemukan",
+    "relatedTeamsDialog": {
+      "addRelated": "Tambah Tim Terkait",
+      "customRelationship": "Hubungan Kustom",
+      "noRelated": "Tidak ada tim terkait",
+      "relationship": "Hubungan",
+      "removeRelated": "Hapus Tim Terkait",
+      "selectTeam": "Pilih Tim",
+      "title": "Tim Terkait"
+    },
+    "relationships": {
+      "child": "Anak",
+      "dependency": "Ketergantungan",
+      "dependent": "Dependen",
+      "other": "{{common.other}}",
+      "parent": "Induk",
+      "related": "Terkait",
+      "superseded_by": "Digantikan Oleh",
+      "supersedes": "Menggantikan"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Tambah Pihak Yang Bertanggung Jawab",
+      "noParties": "Tidak ada pihak yang bertanggung jawab",
+      "removeParty": "Hapus Pihak Yang Bertanggung Jawab",
+      "title": "Pihak Yang Bertanggung Jawab"
+    },
+    "roles": {
+      "business_leader": "Pemimpin Bisnis",
+      "engineer": "Insinyur",
+      "engineering_lead": "Pemimpin Teknik",
+      "other": "{{common.other}}",
+      "product_manager": "Manajer Produk",
+      "security_specialist": "Spesialis Keamanan"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Diarsipkan",
+      "forming": "Membentuk",
+      "merging": "Menggabung",
+      "on_hold": "Ditahan",
+      "splitting": "Memisah",
+      "winding_down": "Ditutup Bertahap"
+    },
+    "subtitle": "Buat, edit, dan kelola tim, anggota, dan hubungan",
+    "title": "Kelola Tim"
   },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "Ubah Peninjau Keamanan",
     "clearSecurityReviewer": "Hapus Peninjau Keamanan",
     "commit": "Commit",
+    "confidentialProject": "Proyek Rahasia",
     "createFirstButton": "Buat Model Ancaman Pertama Anda",
     "createNewDiagram": "Buat Diagram Baru",
     "createNewRepository": "Tambah Referensi Repositori",
@@ -1305,6 +1494,14 @@
     "documentName": "Nama Dokumen",
     "documentUrl": "URL Dokumen",
     "export": "Ekspor",
+    "exportDialog": {
+      "error": "Gagal menyiapkan data ekspor. Silakan coba lagi.",
+      "preparing": "Menyiapkan data ekspor...",
+      "ready": "Ekspor siap. Klik Simpan untuk mengunduh.",
+      "retry": "Coba Lagi",
+      "save": "Simpan",
+      "title": "Ekspor Model Ancaman"
+    },
     "fileSizeExceeded": "File melebihi ukuran impor maksimum: {{maxSize}} MB",
     "frameworkDisabledHint": "Tidak Dapat Mengubah Framework Ketika Ancaman Ada",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "Belum Ada Ancaman Ditambahkan",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Peran",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Kelola Izin",
     "rename": "Ubah Nama",
@@ -1348,10 +1545,12 @@
     "repositoryType": "Jenis Repositori",
     "repositoryUri": "URL Repositori",
     "sections": {
+      "audit": "Audit",
       "inputs": "Input",
       "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis",
       "outputs": "Output",
-      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
+      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan",
+      "reviewProcess": "Proses Tinjauan"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Tetapkan sebagai Pemilik",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
       "downloadModel": "Unduh Model",
+      "dropToCreateDocument": "Lepas untuk membuat",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Lepas untuk mengatur URI isu",
       "import": "Impor",
       "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis.",
       "repositoriesCardTitle": "Repositori adalah tautan ke Repositori Kode Sumber tempat kode sumber sistem dikelola.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Tambah Catatan",
+      "columns": {
+        "answer": "Jawaban",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "Pertanyaan"
+      },
       "markdownSupported": "Markdown didukung",
       "noNotes": "Belum ada catatan triage",
       "noResponses": "Tidak ada respons tercatat",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "Tandai Sedang Ditinjau",
     "markPendingTriage": "Tandai Menunggu Triase",
+    "messages": {
+      "approveError": "Gagal menyetujui tanggapan",
+      "approveSuccess": "Tanggapan disetujui",
+      "createThreatModelError": "Gagal membuat model ancaman",
+      "createThreatModelSuccess": "Model ancaman berhasil dibuat",
+      "returnForRevisionError": "Gagal mengembalikan tanggapan untuk revisi",
+      "returnForRevisionSuccess": "Tanggapan dikembalikan untuk revisi"
+    },
     "noResponses": "Tidak ada respons untuk ditriase",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,7 +1778,7 @@
   "userPreferences": {
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "credentials": {
-      "add": "Tambah",
+      "add": "{{common.add}}",
       "clientId": "ID Klien",
       "clientSecret": "Rahasia Klien",
       "createDialog": {
@@ -1581,9 +1796,13 @@
         "nameTooLong": "Nama harus 100 karakter atau kurang",
         "title": "Buat Kredensial Klien"
       },
-      "created": "{{common.created}}",
-      "expires": "Kedaluwarsa",
+      "createdOn": "{{common.created}}",
+      "credential": "Kredensial",
+      "expired": "Kadaluarsa",
+      "expiresAt": "Kedaluwarsa",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Terakhir Digunakan",
+      "neverExpires": "Tidak pernah kedaluwarsa",
       "noCredentials": "Belum ada kredensial klien",
       "noCredentialsDescription": "Buat kredensial untuk mengakses API TMI secara terprogram.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
     "displayPreferences": "Preferensi Tampilan",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Mengunduh entri log aplikasi terbaru sebagai file JSONL untuk pemecahan masalah.",
-      "title": "Ekspor Log Aplikasi"
+      "title": "Unduh Log"
     },
     "hoverShowMetadata": "Tampilkan metadata sel saat mengarahkan kursor",
     "marginSize": {

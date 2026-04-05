@@ -61,7 +61,7 @@ describe('cell-normalization.util', () => {
       it('should remove line/filter from edge attrs', () => {
         const cell: Cell = {
           id: 'edge1',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           attrs: {
@@ -258,7 +258,7 @@ describe('cell-normalization.util', () => {
       it('should handle cells without position or size', () => {
         const cell: Cell = {
           id: 'edge2',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node1' },
           target: { cell: 'node2' },
         };
@@ -266,7 +266,7 @@ describe('cell-normalization.util', () => {
         const normalized = normalizeCell(cell);
 
         expect(normalized.id).toBe('edge2');
-        expect(normalized.shape).toBe('edge');
+        expect(normalized.shape).toBe('flow');
       });
     });
 
@@ -274,7 +274,7 @@ describe('cell-normalization.util', () => {
       it('should keep only the first label for edges', () => {
         const cell: Cell = {
           id: 'edge3',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           labels: [
@@ -293,7 +293,7 @@ describe('cell-normalization.util', () => {
       it('should preserve single label for edges', () => {
         const cell: Cell = {
           id: 'edge4',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           labels: [{ attrs: { text: { text: 'Only' } } }],
@@ -308,7 +308,7 @@ describe('cell-normalization.util', () => {
       it('should handle edges with empty labels array', () => {
         const cell: Cell = {
           id: 'edge5',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           labels: [],

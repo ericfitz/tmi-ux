@@ -34,16 +34,11 @@
       "allObjects": "(הכל)",
       "errorInvoking": "הפעלת התוסף נכשלה. אנא נסה שוב.",
       "invalidCharacters": "מותרים רק תווים אלפאנומריים, רווחים, מקפים, נקודות, פסיקים ולוכסנים",
-      "invalidJson": "פורמט JSON לא תקין",
       "invocationQueued": "הפעלת התוסף בתור",
       "metadataKeyMissing": "מפתח מטא-נתונים נדרש \"{{key}}\" אינו קיים באובייקט זה",
       "numberMax": "הערך חייב להיות לכל היותר {{max}}",
       "numberMin": "הערך חייב להיות לפחות {{min}}",
       "parameters": "פרמטרים",
-      "payload": "מטען (אופציונלי)",
-      "payloadHint": "נתוני JSON להעברה לתוסף",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "מזהה מודל איומים",
       "title": "הפעל תוסף",
       "valueTooLong": "הערך חורג מהאורך המקסימלי"
@@ -111,9 +106,9 @@
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "הוסף חבר",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "חברים נוכחיים",
         "noMembers": "אין חברים בקבוצה זו",
         "removeTooltip": "הסר מהקבוצה",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "התקן והגדר תוספי יישום",
-        "title": "{{admin.addons.title}}"
+        "title": "תוספים"
       },
       "groups": {
         "description": "הגדר קבוצות משתמשים וחברויות",
-        "title": "{{admin.groups.title}}"
+        "title": "קבוצות"
+      },
+      "projects": {
+        "description": "ניהול פרויקטים, קשרים ומטא-נתונים",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "הגדר מכסות ומגבלות משאבים",
-        "title": "{{admin.quotas.title}}"
+        "title": "מכסות"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "הגדרות"
       },
       "surveys": {
         "description": "יצירה וניהול של סקרים",
-        "title": "ניהול סקרים"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "Manage teams and team membership",
+        "title": "Teams"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
-        "title": "{{admin.users.title}}"
+        "title": "משתמשים"
       },
       "webhooks": {
         "description": "התקן והגדר שילובי webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "ווב-הוקים"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "בטל עריכה",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "מקור",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "האם אתה בטוח שברצונך למחוק את ההגדרה \"{{key}}\"?",
       "deleteTooltip": "מחק הגדרה",
       "editTooltip": "ערוך הגדרה",
       "filterLabel": "סנן",
-      "filterPlaceholder": "סנן לפי מפתח, ערך או תיאור",
+      "filterPlaceholder": "סנן לפי מפתח, ערך, תיאור או מקור",
       "listTitle": "הגדרות מערכת",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "העבר הגדרות"
       },
       "noSettings": "לא נמצאו הגדרות",
+      "readOnlyTooltip": "הגדרה זו לקריאה בלבד ולא ניתן לשנות אותה כאן",
       "saveTooltip": "שמור שינויים",
+      "sources": {
+        "config": "קובץ תצורה",
+        "database": "מסד נתונים",
+        "environment": "סביבה",
+        "vault": "כספת",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "צפה ונהל הגדרות תצורת מערכת",
       "title": "ניהול הגדרות",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "נהל הגדרות מערכת ותצורות",
     "title": "ניהול",
     "users": {
+      "actions": {
+        "manageCredentials": "נהל אישורים"
+      },
       "administrator": "מנהל מערכת",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "מחק חשבון משתמש",
+      "filter": {
+        "automationOnly": "הצג חשבונות אוטומציה בלבד"
+      },
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
       "lastLogin": "כניסה אחרונה",
-      "listTitle": "משתמשים",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "הוסף אישור",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק את האישור \"{{name}}\"?",
+        "noCredentials": "לא נמצאו אישורים",
+        "title": "נהל אישורים עבור {{userName}}"
+      },
       "never": "אף פעם",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "צור משתמש אוטומציה עבור webhook זה",
         "events": "סוגי אירועים להרשמה",
         "eventsHint": "סוגי אירועים להרשמה (לדוגמה, threat_model.created)",
         "eventsPlaceholder": "בחר סוגי אירועים",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "השאר ריק לצורך יצירה אוטומטית",
         "title": "הוסף Webhook",
         "url": "כתובת URL של Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "חייב להיות כתובת HTTPS",
+        "urlHint": "מומלץ HTTPS",
+        "urlHttpWarning": "אזהרה: כתובת ה-URL של נקודת הקצה של ה-webhook צריכה להשתמש ב-HTTPS. השרת עשוי לדחות רישומי webhook שמציינים נקודת קצה ללא TLS.",
+        "urlHttpWarningTitle": "כתובת URL של Webhook ללא HTTPS",
+        "urlInvalid": "חייב להיות URL תקין",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "כתובת URL נדרשת"
+      },
+      "createAutomationUserDialog": {
+        "email": "דוא\"ל (אופציונלי)",
+        "emailHint": "אופציונלי — ברירת מחדל לכתובת @tmi.local שנוצרת אוטומטית",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 תווים, מתחיל באות",
+        "nameMaxLength": "השם חייב להיות לכל היותר 64 תווים",
+        "nameMinLength": "חייב להיות לפחות 2 תווים",
+        "namePattern": "חייב להתחיל באות ולהסתיים באות או ספרה",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "צור משתמש אוטומציה",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "מחק webhook",
@@ -308,8 +346,11 @@
         "pending_delete": "ממתין למחיקה",
         "pending_verification": "ממתין לאימות"
       },
+      "subscriptionId": "מזהה מנוי",
       "subtitle": "הגדר מנויי webhook להודעות אירועים",
-      "title": "ניהול Webhooks"
+      "title": "ניהול Webhooks",
+      "triggerEvents": "אירועי הפעלה",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "גרסה נדרשת"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "מחיקת הסקר נכשלה: {{error}}",
+    "deleteTooltip": "מחק סקר",
     "editTemplate": "עריכת סקר",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "פעולות",
     "activate": "הפעלה",
     "active": "פעיל",
+    "add": "הוסף",
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",
@@ -562,6 +606,8 @@
     "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
+    "exportAsPng": "ייצא כ-PNG",
+    "exportAsSvg": "ייצא כ-SVG",
     "false": "שקר",
     "fonts": "גופנים",
     "groups": "קבוצות",
@@ -886,9 +932,7 @@
     "pageTitle": "עורך דיאגרמת זרימת נתונים",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "ייצא כ-JPEG",
-        "exportAsPng": "ייצא כ-PNG",
-        "exportAsSvg": "ייצא כ-SVG"
+        "exportAsJpeg": "ייצא כ-JPEG"
       },
       "tooltips": {
         "addActor": "הוסף שחקן",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI הוא כלי שמייעל את תהליכי סקירת האבטחה ומידול האיומים בארגון שלך. הוא מניע תהליכי עבודה של סקירה, מארגן מידע מרכזי ומאפשר לצוותים לבנות בשיתוף פעולה דיאגרמות זרימת נתונים. הוא גם מתחבר לאוטומציה, ועוזר לצמצם עבודה ידנית ולזהות איומי אבטחה בצורה יעילה יותר.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "מתחבר...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "כניסה ל-TMI",
+    "tmiDialog": {
+      "errorMaxLength": "שם המשתמש חייב להיות לכל היותר 20 תווים",
+      "errorMinLength": "שם המשתמש חייב להיות לפחות 3 תווים",
+      "errorPattern": "שם המשתמש חייב להכיל רק אותיות וספרות",
+      "signIn": "כניסה",
+      "title": "כניסה עם TMI Provider",
+      "usernameLabel": "שם משתמש",
+      "usernamePlaceholder": "הכנס שם משתמש (אופציונלי)"
+    },
     "unexpectedError": "אירעה שגיאה בלתי צפויה במהלך OAuth."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "זכויות המשתמש"
   },
   "projects": {
+    "addButton": "הוסף פרויקט",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "הזן תיאור פרויקט",
       "namePlaceholder": "הזן שם פרויקט",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "צור פרויקט חדש",
+    "deleteDialog": {
+      "message": "האם אתה בטוח שברצונך למחוק את הפרויקט \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "ערוך פרויקט"
+    },
+    "filterLabel": "סנן לפי שם",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "לא נמצאו פרויקטים",
     "picker": {
       "label": "{{common.project}}",
       "none": "ללא פרויקט"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "הוסף פרויקט קשור",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "אין פרויקטים קשורים",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "בחר פרויקט",
+      "title": "פרויקטים קשורים"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "בוטל",
+      "completed": "הושלם",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "תכנון"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "סנן לפי סטטוס",
+    "subtitle": "צור, ערוך וניהל פרויקטים, קשרים ומטא-נתונים",
+    "teamFilterLabel": "סנן לפי צוות",
+    "title": "ניהול פרויקטים"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "המשך בעריכה",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "סנן לפי סטטוס",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "לא השלמת אף סקר. התחל אחד מדף הסקרים.",
       "noResponsesTitle": "אין תגובות עדיין",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "שלח סקר",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "בארכיון",
+      "archived": "{{teams.status.archived}}",
       "inactive": "לא פעיל"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "הצג תגובה"
   },
   "teams": {
+    "addButton": "Add Team",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Modified",
+      "name": "{{common.name}}",
+      "projects": "Projects",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "הזן תיאור צוות",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "צור צוות חדש"
+    "createNew": "צור צוות חדש",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Are you sure you want to delete team \"{{name}}\"?",
+      "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
+      "title": "Delete Team"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Team"
+    },
+    "filterLabel": "Filter Teams",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "Members",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Add Member",
+      "customRole": "Custom Role",
+      "noMembers": "No members",
+      "removeMember": "Remove Member",
+      "role": "Role",
+      "title": "Team Members"
+    },
+    "noTeams": "No teams found",
+    "relatedTeamsDialog": {
+      "addRelated": "Add Related Team",
+      "customRelationship": "Custom Relationship",
+      "noRelated": "No related teams",
+      "relationship": "Relationship",
+      "removeRelated": "Remove Related Team",
+      "selectTeam": "Select Team",
+      "title": "Related Teams"
+    },
+    "relationships": {
+      "child": "Child",
+      "dependency": "Dependency",
+      "dependent": "Dependent",
+      "other": "{{common.other}}",
+      "parent": "Parent",
+      "related": "Related",
+      "superseded_by": "Superseded By",
+      "supersedes": "Supersedes"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Add Responsible Party",
+      "noParties": "No responsible parties",
+      "removeParty": "Remove Responsible Party",
+      "title": "Responsible Parties"
+    },
+    "roles": {
+      "business_leader": "Business Leader",
+      "engineer": "Engineer",
+      "engineering_lead": "Engineering Lead",
+      "other": "{{common.other}}",
+      "product_manager": "Product Manager",
+      "security_specialist": "Security Specialist"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archived",
+      "forming": "Forming",
+      "merging": "Merging",
+      "on_hold": "On Hold",
+      "splitting": "Splitting",
+      "winding_down": "Winding Down"
+    },
+    "subtitle": "Create, edit, and manage teams, members, and relationships",
+    "title": "Manage Teams"
   },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "שינוי סוקר אבטחה",
     "clearSecurityReviewer": "ניקוי סוקר אבטחה",
     "commit": "קומיט",
+    "confidentialProject": "פרויקט חסוי",
     "createFirstButton": "צור את מודל האיומים הראשון שלך",
     "createNewDiagram": "צור דיאגרמה חדשה",
     "createNewRepository": "הוסף הפניה למאגר",
@@ -1305,6 +1494,14 @@
     "documentName": "שם המסמך",
     "documentUrl": "כתובת URL של המסמך",
     "export": "ייצוא",
+    "exportDialog": {
+      "error": "הכנת נתוני הייצוא נכשלה. אנא נסה שוב.",
+      "preparing": "הכנת נתוני ייצוא...",
+      "ready": "הייצוא מוכן. לחץ על שמור כדי להוריד.",
+      "retry": "נסה שוב",
+      "save": "שמור",
+      "title": "ייצא מודל איומים"
+    },
     "fileSizeExceeded": "הקובץ חורג מגודל הייבוא המרבי: {{maxSize}} MB",
     "frameworkDisabledHint": "לא ניתן לשנות מסגרת כאשר קיימים איומים",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "טרם נוספו איומים",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "תפקיד",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "נהל הרשאות",
     "rename": "שנה שם",
@@ -1348,10 +1545,12 @@
     "repositoryType": "סוג מאגר",
     "repositoryUri": "כתובת URL של המאגר",
     "sections": {
+      "audit": "ביקורת",
       "inputs": "קלטים",
       "inputsDescription": "נכסים, מסמכים ומאגרי קוד מקור המתארים את המערכת הנתונה לניתוח",
       "outputs": "פלטים",
-      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
+      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה",
+      "reviewProcess": "תהליך הסקירה"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "הגדר כבעלים",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "דיאגרמות ב-TMI הן ייצוגים קריאים למכונה של תנועת נתונים ותהליכים בתוך מערכת, המאפשרים ניתוח אבטחה ידני ואוטומטי כאחד.",
       "documentsCardTitle": "הפניות למסמכים הן קישורים למסמכים המאוחסנים מחוץ ל-TMI. מסמכים רלוונטיים מתארים את המערכת לניתוח, וניתן להשתמש בהם הן על ידי מנתחי אבטחה והן על ידי תהליכי ניתוח אוטומטיים.",
       "downloadModel": "הורד מודל",
+      "dropToCreateDocument": "שחרר ליצירה",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "שחרר כדי להגדיר URI של פנייה",
       "import": "ייבוא",
       "notesCardTitle": "הערות הן טקסט בפורמט markdown המוכל במלואו בתוך מודל האיומים, המשמש ללכידת הערות והערות מאנליסטי אבטחה ותהליכי ניתוח אוטומטיים.",
       "repositoriesCardTitle": "מאגרים הם קישורים למאגרי קוד מקור בהם מנוהל קוד המקור של המערכת.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "הוסף הערה",
+      "columns": {
+        "answer": "תשובה",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "שאלה"
+      },
       "markdownSupported": "תומך ב-Markdown",
       "noNotes": "אין עדיין הערות טריאז'",
       "noResponses": "לא נרשמו תגובות",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "סמן בבדיקה",
     "markPendingTriage": "סמן ממתין לטריאז'",
+    "messages": {
+      "approveError": "אישור התגובה נכשל",
+      "approveSuccess": "התגובה אושרה",
+      "createThreatModelError": "יצירת מודל האיומים נכשלה",
+      "createThreatModelSuccess": "מודל האיומים נוצר בהצלחה",
+      "returnForRevisionError": "החזרת התגובה לתיקון נכשלה",
+      "returnForRevisionSuccess": "התגובה הוחזרה לתיקון"
+    },
     "noResponses": "אין תגובות לטריאז'",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,7 +1778,7 @@
   "userPreferences": {
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "credentials": {
-      "add": "הוסף",
+      "add": "{{common.add}}",
       "clientId": "מזהה לקוח",
       "clientSecret": "סוד לקוח",
       "createDialog": {
@@ -1581,9 +1796,13 @@
         "nameTooLong": "השם חייב להיות 100 תווים או פחות",
         "title": "צור אישור לקוח"
       },
-      "created": "{{common.created}}",
-      "expires": "פג תוקף",
+      "createdOn": "{{common.created}}",
+      "credential": "אישור",
+      "expired": "פג תוקף",
+      "expiresAt": "פג תוקף",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "שימוש אחרון",
+      "neverExpires": "לא מעולם פג",
       "noCredentials": "אין עדיין אישורי לקוח",
       "noCredentialsDescription": "צור אישורים לגישה ל-API של TMI באופן תכנותי.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "הפעל אפקטי אנימציה בעורך הדיאגרמות",
     "displayPreferences": "העדפות תצוגה",
-    "exportLog": {
+    "downloadLog": {
       "hint": "מוריד את רשומות יומן האפליקציה האחרונות כקובץ JSONL לצורך פתרון בעיות.",
-      "title": "ייצוא יומן אפליקציה"
+      "title": "הורד יומן"
     },
     "hoverShowMetadata": "הצג מטא-נתוני תא בריחוף",
     "marginSize": {

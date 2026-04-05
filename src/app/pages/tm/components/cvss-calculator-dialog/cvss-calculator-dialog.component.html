@@ -77,12 +77,7 @@
         <span class="vector-label"> {{ 'cvssCalculator.vectorString' | transloco }}: </span>
         <code class="vector-value">{{ vectorString || '--' }}</code>
         @if (vectorString) {
-          <button
-            mat-icon-button
-            (click)="copyVector()"
-            [matTooltip]="'common.copy' | transloco"
-            [attr.aria-label]="'common.copy' | transloco"
-          >
+          <button mat-icon-button (click)="copyVector()" [matTooltip]="'common.copy' | transloco">
             <mat-icon>content_copy</mat-icon>
           </button>
         }

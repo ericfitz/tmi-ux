@@ -1,6 +1,27 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 /**
+ * Extract a human-readable error message from any error type.
+ * Handles Error, HttpErrorResponse, and unknown values safely.
+ *
+ * @param error The caught error value
+ * @param fallback Optional fallback message when no message can be extracted
+ * @returns A string error message
+ */
+export function getErrorMessage(error: unknown, fallback = 'Unknown error'): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (error instanceof HttpErrorResponse) {
+    return extractHttpErrorMessage(error) || error.message || `HTTP ${error.status}`;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return fallback;
+}
+
+/**
  * Extract detailed error message from HTTP error response
  * Checks common API error message formats from various backend frameworks
  *

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -13,6 +14,7 @@ import {
   QuestionType,
   TmFieldPath,
 } from '@app/types/survey.types';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Configuration for available question types in the palette
@@ -167,6 +169,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
     private surveyService: SurveyService,
     private logger: LoggerService,
     private translocoService: TranslocoService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -522,6 +525,38 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
         this.logger.error('Failed to save template', err);
       },
     });
+  }
+
+  /**
+   * Delete the current survey after confirmation
+   */
+  deleteSurvey(): void {
+    if (!this.surveyId || !this.template) return;
+
+    const item = this.translocoService.translate('common.objectTypes.survey');
+    const message = this.translocoService.translate('common.confirmDelete', {
+      item,
+      name: this.template.name,
+    });
+
+    if (!confirm(message)) return;
+
+    this.surveyService
+      .deleteSurvey(this.surveyId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          void this.router.navigate(['/admin/surveys']);
+        },
+        error: (error: unknown) => {
+          const errorMessage = getErrorMessage(error);
+          this.snackBar.open(
+            this.translocoService.translate('adminSurveys.deleteError', { error: errorMessage }),
+            this.translocoService.translate('common.dismiss'),
+            { duration: 5000 },
+          );
+        },
+      });
   }
 
   /**

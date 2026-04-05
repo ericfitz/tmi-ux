@@ -45,10 +45,11 @@ export class AuthCallbackComponent implements OnInit {
       const providerType = queryParams['providerType'] as 'oauth' | 'saml' | undefined;
       this.providerName = (queryParams['providerName'] as string | undefined) || null;
       const returnUrl = queryParams['returnUrl'] as string | undefined;
+      const loginHint = queryParams['loginHint'] as string | undefined;
 
       // Mode 1: Initiating login - we received provider info from login page
       if (action === 'login' && providerId && providerType) {
-        this.initiateLogin(providerId, providerType, returnUrl);
+        this.initiateLogin(providerId, providerType, returnUrl, loginHint);
         return;
       }
 
@@ -133,11 +134,12 @@ export class AuthCallbackComponent implements OnInit {
     providerId: string,
     providerType: 'oauth' | 'saml',
     returnUrl?: string,
+    loginHint?: string,
   ): void {
     if (providerType === 'saml') {
       this.authService.initiateSAMLLogin(providerId, returnUrl);
     } else {
-      this.authService.initiateLogin(providerId, returnUrl);
+      this.authService.initiateLogin(providerId, returnUrl, loginHint);
     }
     // AuthService will redirect the browser to the OAuth/SAML provider
   }

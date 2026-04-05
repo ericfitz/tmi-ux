@@ -271,7 +271,7 @@ describe('ReferenceRewriterService', () => {
         name: 'Architecture Diagram',
         cells: [
           { id: 'cell-1', shape: 'rect' },
-          { id: 'cell-2', shape: 'edge' },
+          { id: 'cell-2', shape: 'flow' },
         ],
       };
 
@@ -285,7 +285,7 @@ describe('ReferenceRewriterService', () => {
         id: 'diagram-1',
         cells: [
           { id: 'client-cell-123', shape: 'rect' },
-          { id: 'client-cell-456', shape: 'edge' },
+          { id: 'client-cell-456', shape: 'flow' },
         ],
       };
 

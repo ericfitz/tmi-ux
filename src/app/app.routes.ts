@@ -79,6 +79,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'teams',
+    loadComponent: () =>
+      import(/* webpackChunkName: "teams" */ './pages/teams/teams.component').then(
+        c => c.TeamsComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects',
+    loadComponent: () =>
+      import(/* webpackChunkName: "projects" */ './pages/projects/projects.component').then(
+        c => c.ProjectsComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     children: [
@@ -104,6 +120,22 @@ export const routes: Routes = [
           import(
             /* webpackChunkName: "admin-groups" */ './pages/admin/groups/admin-groups.component'
           ).then(c => c.AdminGroupsComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'teams',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-teams" */ './pages/admin/teams/admin-teams.component'
+          ).then(c => c.AdminTeamsComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'projects',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-projects" */ './pages/admin/projects/admin-projects.component'
+          ).then(c => c.AdminProjectsComponent),
         canActivate: [adminGuard],
       },
       {

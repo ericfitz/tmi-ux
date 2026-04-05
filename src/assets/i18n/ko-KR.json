@@ -34,16 +34,11 @@
       "allObjects": "(모두)",
       "errorInvoking": "애드온 호출에 실패했습니다. 다시 시도해 주세요.",
       "invalidCharacters": "영숫자, 공백, 하이픈, 마침표, 쉼표 및 슬래시만 허용됩니다",
-      "invalidJson": "잘못된 JSON 형식",
       "invocationQueued": "애드온 호출이 대기열에 추가되었습니다",
       "metadataKeyMissing": "필수 메타데이터 키 \"{{key}}\"가 이 객체에 존재하지 않습니다",
       "numberMax": "값은 최대 {{max}}이어야 합니다",
       "numberMin": "값은 최소 {{min}}이어야 합니다",
       "parameters": "매개변수",
-      "payload": "페이로드 (선택 사항)",
-      "payloadHint": "애드온에 전달할 JSON 데이터",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "위협 모델 ID",
       "title": "애드온 호출",
       "valueTooLong": "값이 최대 길이를 초과합니다"
@@ -111,9 +106,9 @@
       "deleteTooltip": "그룹 삭제",
       "filterLabel": "그룹 필터",
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "멤버 추가",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "현재 멤버",
         "noMembers": "이 그룹에 멤버가 없습니다",
         "removeTooltip": "그룹에서 제거",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "애플리케이션 애드온 설치 및 구성",
-        "title": "{{admin.addons.title}}"
+        "title": "애드온"
       },
       "groups": {
         "description": "사용자 그룹 및 멤버십 구성",
-        "title": "{{admin.groups.title}}"
+        "title": "그룹"
+      },
+      "projects": {
+        "description": "프로젝트, 관계 및 메타데이터 관리",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "리소스 할당량 및 제한 구성",
-        "title": "{{admin.quotas.title}}"
+        "title": "할당량"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "설정"
       },
       "surveys": {
         "description": "설문조사 생성 및 관리",
-        "title": "설문조사 관리"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "팀 및 팀 멤버십 관리",
+        "title": "팀"
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",
-        "title": "{{admin.users.title}}"
+        "title": "사용자"
       },
       "webhooks": {
         "description": "웹훅 통합 설치 및 구성",
-        "title": "{{admin.webhooks.title}}"
+        "title": "웹훅"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "편집 취소",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "출처",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "설정 \"{{key}}\"을(를) 삭제하시겠습니까?",
       "deleteTooltip": "설정 삭제",
       "editTooltip": "설정 편집",
       "filterLabel": "필터",
-      "filterPlaceholder": "키, 값 또는 설명으로 필터링",
+      "filterPlaceholder": "키, 값, 설명 또는 출처로 필터링",
       "listTitle": "시스템 설정",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "설정 마이그레이션"
       },
       "noSettings": "설정을 찾을 수 없습니다",
+      "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
       "saveTooltip": "변경 사항 저장",
+      "sources": {
+        "config": "구성 파일",
+        "database": "데이터베이스",
+        "environment": "환경",
+        "vault": "볼트",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "시스템 구성 설정 보기 및 관리",
       "title": "설정 관리",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "시스템 설정 및 구성 관리",
     "title": "관리",
     "users": {
+      "actions": {
+        "manageCredentials": "자격 증명 관리"
+      },
       "administrator": "관리자",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "사용자 계정 삭제",
+      "filter": {
+        "automationOnly": "자동화 계정만 표시"
+      },
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
       "lastLogin": "마지막 로그인",
-      "listTitle": "사용자",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "자격 증명 추가",
+        "deleteConfirm": "자격 증명 \"{{name}}\"을(를) 삭제하시겠습니까?",
+        "noCredentials": "자격 증명을 찾을 수 없습니다",
+        "title": "{{userName}}의 자격 증명 관리"
+      },
       "never": "없음",
       "noUsers": "사용자를 찾을 수 없습니다",
       "subtitle": "시스템 사용자 보기 및 관리",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "이 웹훅을 위한 자동화 사용자 생성",
         "events": "구독할 이벤트 유형",
         "eventsHint": "구독할 이벤트 유형 (예: threat_model.created)",
         "eventsPlaceholder": "이벤트 유형 선택",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "비우면 자동 생성됩니다",
         "title": "Webhook 추가",
         "url": "웹훅 URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL이어야 합니다",
+        "urlHint": "HTTPS 권장",
+        "urlHttpWarning": "경고: 웹훅 엔드포인트 URL은 HTTPS를 사용해야 합니다. 서버는 TLS가 아닌 엔드포인트를 지정하는 웹훅 등록을 거부할 수 있습니다.",
+        "urlHttpWarningTitle": "비HTTPS 웹훅 URL",
+        "urlInvalid": "유효한 URL이어야 합니다",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL은 필수입니다"
+      },
+      "createAutomationUserDialog": {
+        "email": "이메일 (선택 사항)",
+        "emailHint": "선택 사항 — 기본값은 자동 생성된 @tmi.local 주소",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64자, 문자로 시작",
+        "nameMaxLength": "이름은 최대 64자여야 합니다",
+        "nameMinLength": "최소 2자 이상이어야 합니다",
+        "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "자동화 사용자 생성",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "웹훅 삭제",
@@ -308,8 +346,11 @@
         "pending_delete": "삭제 대기 중",
         "pending_verification": "확인 대기 중"
       },
+      "subscriptionId": "구독 ID",
       "subtitle": "이벤트 알림을 위한 웹훅 구독 구성",
-      "title": "Webhooks 관리"
+      "title": "Webhooks 관리",
+      "triggerEvents": "트리거 이벤트",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "버전은 필수입니다"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "설문조사 삭제 실패: {{error}}",
+    "deleteTooltip": "설문조사 삭제",
     "editTemplate": "설문조사 편집",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "작업",
     "activate": "활성화",
     "active": "활성",
+    "add": "추가",
     "addMetadata": "메타데이터 추가",
     "addThreat": "위협 추가",
     "addons": "애드온",
@@ -562,6 +606,8 @@
     "email": "이메일",
     "emailLabel": "이메일 주소",
     "error": "오류",
+    "exportAsPng": "PNG로 내보내기",
+    "exportAsSvg": "SVG로 내보내기",
     "false": "거짓",
     "fonts": "글꼴",
     "groups": "그룹",
@@ -886,9 +932,7 @@
     "pageTitle": "데이터 흐름 다이어그램 편집기",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG로 내보내기",
-        "exportAsPng": "PNG로 내보내기",
-        "exportAsSvg": "SVG로 내보내기"
+        "exportAsJpeg": "JPEG로 내보내기"
       },
       "tooltips": {
         "addActor": "액터 추가",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 간소화하는 도구입니다. 검토 워크플로우를 주도하고, 핵심 정보를 정리하며, 팀이 협력하여 데이터 흐름 다이어그램을 구축할 수 있도록 지원합니다. 또한 자동화와 연결되어 수동 작업을 줄이고 보안 위협을 보다 효율적으로 식별하는 데 도움이 됩니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "로그인 중...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI 로그인",
+    "tmiDialog": {
+      "errorMaxLength": "사용자 이름은 최대 20자여야 합니다",
+      "errorMinLength": "사용자 이름은 최소 3자여야 합니다",
+      "errorPattern": "사용자 이름은 문자와 숫자만 포함해야 합니다",
+      "signIn": "로그인",
+      "title": "TMI Provider로 로그인",
+      "usernameLabel": "사용자 이름",
+      "usernamePlaceholder": "사용자 이름 입력 (선택 사항)"
+    },
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "사용자 권리"
   },
   "projects": {
+    "addButton": "프로젝트 추가",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "프로젝트 설명을 입력하세요",
       "namePlaceholder": "프로젝트 이름을 입력하세요",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "새 프로젝트 생성",
+    "deleteDialog": {
+      "message": "프로젝트 \"{{name}}\"을(를) 삭제하시겠습니까?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "프로젝트 편집"
+    },
+    "filterLabel": "이름으로 필터링",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "프로젝트를 찾을 수 없음",
     "picker": {
       "label": "{{common.project}}",
       "none": "프로젝트 없음"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "관련 프로젝트 추가",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "관련 프로젝트 없음",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "프로젝트 선택",
+      "title": "관련 프로젝트"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "취소됨",
+      "completed": "완료됨",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "계획 중"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "상태로 필터링",
+    "subtitle": "프로젝트, 관계 및 메타데이터 생성, 편집 및 관리",
+    "teamFilterLabel": "팀으로 필터링",
+    "title": "프로젝트 관리"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "편집 계속하기",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "상태별 필터",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "완료한 설문조사가 없습니다. 설문조사 페이지에서 시작하세요.",
       "noResponsesTitle": "응답 없음",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "설문 제출",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "보관됨",
+      "archived": "{{teams.status.archived}}",
       "inactive": "비활성"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "응답 보기"
   },
   "teams": {
+    "addButton": "팀 추가",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "수정됨",
+      "name": "{{common.name}}",
+      "projects": "프로젝트",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "팀 설명을 입력하세요",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "새 팀 생성"
+    "createNew": "새 팀 생성",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "\"{{name}}\" 팀을 정말 삭제하시겠습니까?",
+      "projectWarning": "이 팀에는 {{count}}개의 프로젝트(들)이 있습니다. 팀을 삭제하면 이 프로젝트(들)에 영향을 미칠 수 있습니다.",
+      "title": "팀 삭제"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "팀 편집"
+    },
+    "filterLabel": "팀 필터",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "멤버",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "멤버 추가",
+      "customRole": "사용자 정의 역할",
+      "noMembers": "멤버 없음",
+      "removeMember": "멤버 제거",
+      "role": "역할",
+      "title": "팀 멤버"
+    },
+    "noTeams": "팀을 찾을 수 없습니다",
+    "relatedTeamsDialog": {
+      "addRelated": "관련 팀 추가",
+      "customRelationship": "사용자 정의 관계",
+      "noRelated": "관련 팀 없음",
+      "relationship": "관계",
+      "removeRelated": "관련 팀 제거",
+      "selectTeam": "팀 선택",
+      "title": "관련 팀"
+    },
+    "relationships": {
+      "child": "하위",
+      "dependency": "종속성",
+      "dependent": "종속된",
+      "other": "{{common.other}}",
+      "parent": "상위",
+      "related": "관련됨",
+      "superseded_by": "다음으로 대체됨",
+      "supersedes": "대체함"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "책임자 추가",
+      "noParties": "책임자 없음",
+      "removeParty": "책임자 제거",
+      "title": "책임자"
+    },
+    "roles": {
+      "business_leader": "비즈니스 리더",
+      "engineer": "엔지니어",
+      "engineering_lead": "엔지니어링 리더",
+      "other": "{{common.other}}",
+      "product_manager": "제품 관리자",
+      "security_specialist": "보안 전문가"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "보관됨",
+      "forming": "구성 중",
+      "merging": "병합 중",
+      "on_hold": "보류 중",
+      "splitting": "분할 중",
+      "winding_down": "종료 중"
+    },
+    "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리",
+    "title": "팀 관리"
   },
   "threatEditor": {
     "createNewThreat": "새 위협 생성",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "보안 검토자 변경",
     "clearSecurityReviewer": "보안 검토자 해제",
     "commit": "커밋",
+    "confidentialProject": "기밀 프로젝트",
     "createFirstButton": "첫 번째 위협 모델 만들기",
     "createNewDiagram": "새 다이어그램 생성",
     "createNewRepository": "저장소 참조 추가",
@@ -1305,6 +1494,14 @@
     "documentName": "문서 이름",
     "documentUrl": "문서 URL",
     "export": "내보내기",
+    "exportDialog": {
+      "error": "내보내기 데이터 준비에 실패했습니다. 다시 시도하세요.",
+      "preparing": "내보내기 데이터 준비 중...",
+      "ready": "내보내기 준비 완료. 다운로드하려면 저장을 클릭하세요.",
+      "retry": "다시 시도",
+      "save": "저장",
+      "title": "위협 모델 내보내기"
+    },
     "fileSizeExceeded": "파일이 최대 가져오기 크기를 초과합니다: {{maxSize}} MB",
     "frameworkDisabledHint": "위협이 있을 때는 프레임워크를 변경할 수 없습니다",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "추가된 위협 없음",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "역할",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "권한 관리",
     "rename": "이름 변경",
@@ -1348,10 +1545,12 @@
     "repositoryType": "저장소 유형",
     "repositoryUri": "저장소 URL",
     "sections": {
+      "audit": "감사",
       "inputs": "입력",
       "inputsDescription": "분석 대상 시스템을 설명하는 자산, 문서 및 소스 코드 저장소",
       "outputs": "출력",
-      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
+      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협",
+      "reviewProcess": "검토 프로세스"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "소유자로 설정",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "TMI의 다이어그램은 시스템 내 데이터 이동 및 프로세스를 기계가 읽을 수 있는 형태로 표현하여 수동 및 자동 보안 분석을 모두 가능하게 합니다.",
       "documentsCardTitle": "문서 참조는 TMI 외부에 저장된 문서에 대한 링크입니다. 관련 문서는 분석할 시스템을 설명하며 보안 분석가와 자동화된 분석 프로세스 모두에서 사용할 수 있습니다.",
       "downloadModel": "모델 다운로드",
+      "dropToCreateDocument": "드롭하여 생성",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "이슈 URI를 설정하려면 놓기",
       "import": "가져오기",
       "notesCardTitle": "노트는 위협 모델 내에 완전히 포함된 마크다운 형식의 텍스트로, 보안 분석가 및 자동화된 분석 프로세스의 메모와 주석을 캡처하는 데 사용됩니다.",
       "repositoriesCardTitle": "저장소는 시스템의 소스 코드가 관리되는 소스 코드 저장소에 대한 링크입니다.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "노트 추가",
+      "columns": {
+        "answer": "답변",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "질문"
+      },
       "markdownSupported": "Markdown 지원",
       "noNotes": "아직 트리아지 노트가 없습니다",
       "noResponses": "기록된 응답 없음",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "검토 중으로 표시",
     "markPendingTriage": "트리아지 대기로 표시",
+    "messages": {
+      "approveError": "응답 승인에 실패했습니다",
+      "approveSuccess": "응답이 승인되었습니다",
+      "createThreatModelError": "위협 모델 생성에 실패했습니다",
+      "createThreatModelSuccess": "위협 모델이 성공적으로 생성되었습니다",
+      "returnForRevisionError": "수정 요청 반환에 실패했습니다",
+      "returnForRevisionSuccess": "응답이 수정을 위해 반환되었습니다"
+    },
     "noResponses": "트리아지할 응답이 없습니다",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,7 +1778,7 @@
   "userPreferences": {
     "colorBlindMode": "색맹 모드 활성화",
     "credentials": {
-      "add": "추가",
+      "add": "{{common.add}}",
       "clientId": "클라이언트 ID",
       "clientSecret": "클라이언트 시크릿",
       "createDialog": {
@@ -1581,9 +1796,13 @@
         "nameTooLong": "이름은 100자 이하여야 합니다",
         "title": "클라이언트 자격 증명 생성"
       },
-      "created": "{{common.created}}",
-      "expires": "만료",
+      "createdOn": "{{common.created}}",
+      "credential": "자격 증명",
+      "expired": "만료됨",
+      "expiresAt": "만료",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "마지막 사용",
+      "neverExpires": "만료되지 않음",
       "noCredentials": "클라이언트 자격 증명이 없습니다",
       "noCredentialsDescription": "TMI API에 프로그래밍 방식으로 접근하려면 자격 증명을 생성하세요.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화",
     "displayPreferences": "디스플레이 설정",
-    "exportLog": {
+    "downloadLog": {
       "hint": "문제 해결을 위해 최근 애플리케이션 로그 항목을 JSONL 파일로 다운로드합니다.",
-      "title": "애플리케이션 로그 내보내기"
+      "title": "로그 다운로드"
     },
     "hoverShowMetadata": "호버 시 셀 메타데이터 표시",
     "marginSize": {

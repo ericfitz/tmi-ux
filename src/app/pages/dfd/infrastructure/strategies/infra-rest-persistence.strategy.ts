@@ -62,45 +62,48 @@ export class InfraRestPersistenceStrategy {
       edges: operation.data.edges?.length || 0,
     });
 
-    // Use the threatModelService to save via PATCH
-    return this.threatModelService
-      .patchDiagramCells(threatModelId, operation.diagramId, cells)
-      .pipe(
-        map(response => {
-          this.logger.debugComponent(
-            'InfraRestPersistenceStrategy',
-            'save completed successfully',
-            {
-              diagramId: operation.diagramId,
-              updateVector: response.update_vector,
-            },
-          );
-          return {
-            success: true,
-            operationId: `save-${Date.now()}`,
-            diagramId: operation.diagramId,
-            timestamp: Date.now(),
-            metadata: {
-              update_vector: response.update_vector, // Pass to auto-save manager
-              cellsSaved: cells.length,
-            },
-          };
-        }),
-        catchError(error => {
-          const errorMessage = `REST save failed: ${error.message || 'Unknown error'}`;
-          this.logger.error(errorMessage, {
-            diagramId: operation.diagramId,
-            error,
-          });
-          return of({
-            success: false,
-            operationId: `save-${Date.now()}`,
-            diagramId: operation.diagramId,
-            timestamp: Date.now(),
-            error: errorMessage,
-          });
-        }),
-      );
+    // Choose API method based on whether image data is present
+    const apiCall = operation.imageData?.svg
+      ? this.threatModelService.patchDiagramWithImage(
+          threatModelId,
+          operation.diagramId,
+          cells,
+          operation.imageData,
+        )
+      : this.threatModelService.patchDiagramCells(threatModelId, operation.diagramId, cells);
+
+    return apiCall.pipe(
+      map(response => {
+        this.logger.debugComponent('InfraRestPersistenceStrategy', 'save completed successfully', {
+          diagramId: operation.diagramId,
+          updateVector: response.update_vector,
+        });
+        return {
+          success: true,
+          operationId: `save-${Date.now()}`,
+          diagramId: operation.diagramId,
+          timestamp: Date.now(),
+          metadata: {
+            update_vector: response.update_vector, // Pass to auto-save manager
+            cellsSaved: cells.length,
+          },
+        };
+      }),
+      catchError(error => {
+        const errorMessage = `REST save failed: ${error.message || 'Unknown error'}`;
+        this.logger.error(errorMessage, {
+          diagramId: operation.diagramId,
+          error,
+        });
+        return of({
+          success: false,
+          operationId: `save-${Date.now()}`,
+          diagramId: operation.diagramId,
+          timestamp: Date.now(),
+          error: errorMessage,
+        });
+      }),
+    );
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription, Subject } from 'rxjs';
 import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
@@ -568,7 +568,7 @@ export class DfdCollaborationService implements OnDestroy {
     this._setupWebSocketListeners();
 
     // Connect to WebSocket and wait for connection to be established
-    return this._connectToWebSocket(existingSession.websocket_url).pipe(
+    return this._connectToWebSocket(existingSession.websocket_url, existingSession.session_id).pipe(
       tap(() => {
         // Show session joined notification
         this._notificationService?.showSessionEvent('userJoined').subscribe();
@@ -651,7 +651,10 @@ export class DfdCollaborationService implements OnDestroy {
         }),
         // Connect to WebSocket and wait for connection to be established
         switchMap((result: { session: CollaborationSession; isNewSession: boolean }) => {
-          return this._connectToWebSocket(result.session.websocket_url).pipe(map(() => result));
+          return this._connectToWebSocket(
+            result.session.websocket_url,
+            result.session.session_id,
+          ).pipe(map(() => result));
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
@@ -1585,15 +1588,29 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Connect to WebSocket for real-time collaboration
    * @param websocketUrl The WebSocket URL provided by the API
+   * @param sessionId The collaboration session ID, passed to the ticket endpoint
    */
-  private _connectToWebSocket(websocketUrl: string): Observable<void> {
+  private _connectToWebSocket(websocketUrl: string, sessionId: string): Observable<void> {
+    if (!sessionId) {
+      this._logger.error('Cannot connect to WebSocket: session_id is empty');
+      return throwError(() => new Error('Cannot connect to WebSocket: missing session ID'));
+    }
+
     const baseUrl = this._getFullWebSocketUrl(websocketUrl);
 
-    // Fetch a short-lived ticket for WebSocket authentication (AUTH-VULN-007 remediation)
+    // Fetch a short-lived, session-scoped ticket for WebSocket authentication (AUTH-VULN-007 remediation)
+    const params = new HttpParams().set('session_id', sessionId);
     return this._http
-      .get<{ ticket: string }>(`${environment.apiUrl}/ws/ticket`)
+      .get<{ ticket: string }>(`${environment.apiUrl}/ws/ticket`, { params })
       .pipe(
         switchMap(response => {
+          if (!response.ticket) {
+            this._logger.error('Server returned empty WebSocket ticket', { sessionId });
+            return throwError(
+              () => new Error('Server returned empty WebSocket authentication ticket'),
+            );
+          }
+
           const separator = baseUrl.includes('?') ? '&' : '?';
           const fullWebSocketUrl = `${baseUrl}${separator}ticket=${encodeURIComponent(response.ticket)}`;
 
@@ -1616,7 +1633,11 @@ export class DfdCollaborationService implements OnDestroy {
           // Client should not send join messages
         }),
         catchError((error: unknown) => {
-          this._logger.error('Failed to connect to WebSocket', error);
+          this._logger.error('Failed to connect to WebSocket', {
+            sessionId,
+            websocketUrl,
+            error,
+          });
 
           // Type guard for error object
           const errorMessage =
@@ -1642,10 +1663,11 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Convert relative WebSocket URL from server to absolute URL pointing to API server.
-   * Authentication is handled via a short-lived ticket obtained from GET /ws/ticket.
-   * @param websocketUrl The WebSocket URL (may be relative or absolute)
-   * @returns Observable resolving to full WebSocket URL with ticket as query parameter
+   * Convert relative WebSocket URL from server to absolute URL
+   * pointing to API server. Authentication is handled via a
+   * short-lived, session-scoped ticket from GET /ws/ticket.
+   * @param websocketUrl The WebSocket URL (relative or absolute)
+   * @returns Full WebSocket URL
    */
   private _getFullWebSocketUrl(websocketUrl: string): string {
     let fullUrl: string;
@@ -1872,9 +1894,9 @@ export class DfdCollaborationService implements OnDestroy {
    */
   // MANUAL RETRY METHOD COMMENTED OUT
   // private _retryWebSocketConnection(): void {
-  //   if (this._currentSession?.websocket_url) {
+  //   if (this._currentSession?.websocket_url && this._currentSession?.session_id) {
   //     this._logger.info('Retrying WebSocket connection');
-  //     this._connectToWebSocket(this._currentSession.websocket_url);
+  //     this._connectToWebSocket(this._currentSession.websocket_url, this._currentSession.session_id);
   //   } else {
   //     this._logger.warn('Cannot retry WebSocket connection - no session URL available');
   //     this._notificationService

@@ -9,6 +9,7 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 import { BaseOperationExecutor } from './base-operation-executor';
 import {
   GraphOperation,
@@ -208,7 +209,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
   private createEdgeConfig(edgeData: any): any {
     return {
       id: edgeData.id,
-      shape: edgeData.shape || 'edge',
+      shape: edgeData.shape || CANONICAL_EDGE_SHAPE,
       source: edgeData.source,
       target: edgeData.target,
       attrs: edgeData.attrs || {

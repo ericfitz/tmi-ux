@@ -89,7 +89,7 @@ export interface NodeAttrs {
 /**
  * Default node attributes
  */
-export const DEFAULT_NODE_ATTRS: NodeAttrs = {
+const DEFAULT_NODE_ATTRS: NodeAttrs = {
   body: {
     fill: '#ffffff',
     stroke: '#000000',

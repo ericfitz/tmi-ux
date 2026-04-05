@@ -1,17 +1,24 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { MarkdownModule } from 'ngx-markdown';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
+import { LanguageService } from '@app/i18n/language.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
 import { TriageNoteService } from '../../services/triage-note.service';
-import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
+import {
+  SurveyResponse,
+  SurveyJsonSchema,
+  SurveyQuestion,
+  ResponseStatus,
+} from '@app/types/survey.types';
 import { TriageNoteListItem, TriageNote } from '@app/types/triage-note.types';
 import {
   RevisionNotesDialogComponent,
@@ -22,6 +29,23 @@ import {
   TriageNoteEditorDialogData,
   TriageNoteEditorResult,
 } from '../triage-note-editor-dialog/triage-note-editor-dialog.component';
+
+/**
+ * Flattened survey response row for table display.
+ * Panels and dynamic panels are expanded into individual rows.
+ */
+interface SurveyResponseRow {
+  /** Panel/dynamic panel title; empty for top-level questions */
+  group: string;
+  /** Question ID of the panel (for tooltip); empty for top-level */
+  groupId: string;
+  /** Question title from schema, or raw key without schema */
+  question: string;
+  /** Question ID (for tooltip) */
+  questionId: string;
+  /** Formatted answer value */
+  answer: string;
+}
 
 /**
  * Status timeline entry
@@ -74,7 +98,15 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   statusTimeline: StatusTimelineEntry[] = [];
 
   /** Formatted survey responses for display */
-  formattedResponses: { question: string; answer: string; name: string }[] = [];
+  formattedResponses: SurveyResponseRow[] = [];
+
+  /** Whether survey schema was available for formatting */
+  hasSchema = false;
+
+  /** Columns displayed in the survey responses table */
+  get responsesDisplayedColumns(): string[] {
+    return this.hasSchema ? ['group', 'question', 'answer'] : ['question', 'answer'];
+  }
 
   /** Triage notes for this response */
   triageNotes: TriageNoteListItem[] = [];
@@ -89,17 +121,27 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Columns displayed in the triage notes table */
   notesDisplayedColumns: string[] = ['name', 'created_by', 'created_at'];
 
+  /** Current locale for date formatting */
+  currentLocale = 'en-US';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
     private triageNoteService: TriageNoteService,
     private logger: LoggerService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
+      this.currentLocale = language.code;
+    });
+
     this.route.paramMap
       .pipe(
         switchMap(params => {
@@ -164,7 +206,10 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Format survey responses for display using survey definition
+   * Format survey responses for display using survey definition.
+   * Flattens panels and dynamic panels into individual rows.
+   * Only recurses one level deep (panel > child); nested panels
+   * within panels are treated as leaf elements.
    */
   private formatResponses(surveyJson: SurveyJsonSchema): void {
     if (!this.response?.answers) {
@@ -172,27 +217,85 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const responses: { question: string; answer: string; name: string }[] = [];
+    const rows: SurveyResponseRow[] = [];
     const answers = this.response.answers;
 
-    // Walk through all pages and elements to maintain order
     for (const page of surveyJson.pages ?? []) {
       for (const element of page.elements ?? []) {
-        if (element.name && answers[element.name] !== undefined) {
-          responses.push({
-            name: element.name,
+        if (element.type === 'panel' && element.elements) {
+          this.flattenPanel(element, answers, rows);
+        } else if (element.type === 'paneldynamic' && element.templateElements) {
+          this.flattenDynamicPanel(element, answers, rows);
+        } else if (answers[element.name] !== undefined) {
+          rows.push({
+            group: '',
+            groupId: '',
             question: element.title ?? element.name,
+            questionId: element.name,
             answer: this.formatAnswer(answers[element.name]),
           });
         }
       }
     }
 
-    this.formattedResponses = responses;
+    this.hasSchema = true;
+    this.formattedResponses = rows;
   }
 
   /**
-   * Format responses without a definition (raw key/value display)
+   * Flatten a static panel's child questions into rows.
+   * SurveyJS static panels are visual grouping only — child answers
+   * are stored as flat top-level keys, not nested under the panel name.
+   */
+  private flattenPanel(
+    element: SurveyQuestion,
+    answers: Record<string, unknown>,
+    rows: SurveyResponseRow[],
+  ): void {
+    for (const child of element.elements ?? []) {
+      if (answers[child.name] !== undefined) {
+        rows.push({
+          group: element.title ?? element.name,
+          groupId: element.name,
+          question: child.title ?? child.name,
+          questionId: child.name,
+          answer: this.formatAnswer(answers[child.name]),
+        });
+      }
+    }
+  }
+
+  /**
+   * Flatten a dynamic panel's entries into numbered rows.
+   * Dynamic panel answers are arrays of objects under answers[panelName].
+   */
+  private flattenDynamicPanel(
+    element: SurveyQuestion,
+    answers: Record<string, unknown>,
+    rows: SurveyResponseRow[],
+  ): void {
+    const entries = answers[element.name];
+    if (!Array.isArray(entries)) return;
+
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i] as Record<string, unknown>;
+      for (const child of element.templateElements ?? []) {
+        if (entry[child.name] !== undefined) {
+          rows.push({
+            group: `${element.title ?? element.name} #${i + 1}`,
+            groupId: element.name,
+            question: child.title ?? child.name,
+            questionId: child.name,
+            answer: this.formatAnswer(entry[child.name]),
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Format responses without a definition (raw key/value display).
+   * Produces 2-column rows (no group) with raw keys as question names.
    */
   private formatResponsesWithoutDefinition(): void {
     if (!this.response?.answers) {
@@ -200,9 +303,12 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.hasSchema = false;
     this.formattedResponses = Object.entries(this.response.answers).map(([key, value]) => ({
-      name: key,
+      group: '',
+      groupId: '',
       question: key,
+      questionId: key,
       answer: this.formatAnswer(value),
     }));
   }
@@ -212,7 +318,10 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    */
   private formatAnswer(value: unknown): string {
     if (value === null || value === undefined) return '';
-    if (Array.isArray(value)) return (value as unknown[]).map(v => String(v)).join(', ');
+    if (Array.isArray(value))
+      return value
+        .map(v => (typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)))
+        .join(', ');
     if (typeof value === 'object') return JSON.stringify(value, null, 2);
     if (typeof value === 'string') return value;
     if (typeof value === 'number' || typeof value === 'boolean') return String(value);
@@ -223,11 +332,11 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Build status timeline
    */
   private buildStatusTimeline(response: SurveyResponse): void {
-    const statuses: { key: ResponseStatus; label: string }[] = [
-      { key: 'draft', label: 'Draft' },
-      { key: 'submitted', label: 'Submitted' },
-      { key: 'ready_for_review', label: 'Ready for Review' },
-      { key: 'review_created', label: 'Review Created' },
+    const statuses: { key: ResponseStatus; labelKey: string }[] = [
+      { key: 'draft', labelKey: 'surveys.status.draft' },
+      { key: 'submitted', labelKey: 'surveys.status.submitted' },
+      { key: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
+      { key: 'review_created', labelKey: 'surveys.status.reviewCreated' },
     ];
 
     const statusOrder: Record<ResponseStatus, number> = {
@@ -242,7 +351,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
 
     this.statusTimeline = statuses.map((s, index) => ({
       status: s.key,
-      label: s.label,
+      label: s.labelKey,
       timestamp: this.getTimestampForStatus(response, s.key),
       isActive: index === currentIndex,
       isCompleted: index < currentIndex,
@@ -282,10 +391,20 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
           this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
           this.logger.info('Response approved', { id: updatedResponse.id });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
         },
         error: (err: unknown) => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to approve response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -330,10 +449,20 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
           this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
           this.logger.info('Response returned for revision', { id: updatedResponse.id });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.returnForRevisionSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
         },
         error: err => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to return response for revision', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.returnForRevisionError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -356,11 +485,21 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
             responseId: result.survey_response_id,
             threatModelId: result.threat_model_id,
           });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
           void this.router.navigate(['/tm', result.threat_model_id]);
         },
         error: err => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to create threat model from response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -479,6 +618,33 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Copy text to clipboard with snackbar feedback
+   */
+  copyToClipboard(text: string): void {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.snackBar.open(
+          this.transloco.translate('common.copiedToClipboard'),
+          this.transloco.translate('common.close'),
+          { duration: 2000 },
+        );
+      })
+      .catch((err: unknown) => {
+        this.logger.error('Could not copy text: ', err);
+      });
+  }
+
+  /**
+   * Copy the response ID to clipboard
+   */
+  copyResponseId(): void {
+    if (this.response?.id) {
+      this.copyToClipboard(this.response.id);
+    }
+  }
+
+  /**
    * Navigate back to triage list
    */
   goBack(): void {
@@ -486,17 +652,17 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get display label for a status
+   * Convert snake_case status to camelCase i18n key
    */
-  getStatusLabel(status: ResponseStatus): string {
-    const labels: Record<ResponseStatus, string> = {
-      draft: 'Draft',
-      submitted: 'Submitted',
-      needs_revision: 'Needs Revision',
-      ready_for_review: 'Ready for Review',
-      review_created: 'Review Created',
+  getStatusKey(status: ResponseStatus): string {
+    const keyMap: Record<ResponseStatus, string> = {
+      draft: 'draft',
+      submitted: 'submitted',
+      needs_revision: 'needsRevision',
+      ready_for_review: 'readyForReview',
+      review_created: 'reviewCreated',
     };
-    return labels[status] ?? status;
+    return keyMap[status] ?? status;
   }
 
   /**

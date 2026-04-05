@@ -6,6 +6,15 @@ import {
   sanitizeCellForApi,
 } from '../../../dfd/utils/cell-property-filter.util';
 import type { Cell } from '../../../../core/types/websocket-message.types';
+import type {
+  ApiThreatModelInput,
+  ApiThreatInput,
+  ApiAssetInput,
+  ApiNoteInput,
+  ApiDocumentInput,
+  ApiRepositoryInput,
+  ApiCreateDiagramRequest,
+} from '@app/generated/api-type-helpers';
 
 /**
  * Service for filtering read-only fields from objects before sending to the server.
@@ -19,108 +28,6 @@ export class ReadonlyFieldFilterService {
   constructor(private readonly _logger: LoggerService) {}
 
   /**
-   * Read-only fields on ThreatModel that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiThreatModelInput.
-   * @see ApiThreatModelInput in @app/generated/api-type-helpers
-   */
-  private readonly _threatModelReadOnlyFields = [
-    'id',
-    'created_at',
-    'modified_at',
-    'created_by',
-    'owner',
-    'documents',
-    'repositories',
-    'diagrams',
-    'threats',
-    'notes',
-    'assets',
-    'status_updated',
-  ] as const;
-
-  /**
-   * Read-only fields on Threat that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiThreatInput (= ThreatBase).
-   * @see ApiThreatInput in @app/generated/api-type-helpers
-   */
-  private readonly _threatReadOnlyFields = [
-    'id',
-    'threat_model_id',
-    'created_at',
-    'modified_at',
-  ] as const;
-
-  /**
-   * Read-only fields on Diagram that should be stripped before POST/PUT.
-   * @see ApiDfdDiagramInput, ApiBaseDiagramInput in @app/generated/api-type-helpers
-   */
-  private readonly _diagramReadOnlyFields = ['id', 'update_vector'] as const;
-
-  /**
-   * Fields that should be stripped before POST (create) but allowed in PUT (update).
-   * ApiCreateDiagramRequest only accepts 'name' and 'type' fields.
-   * These fields are extracted and sent via a subsequent PUT using ApiDfdDiagramInput.
-   * @see ApiCreateDiagramRequest, ApiDfdDiagramInput in @app/generated/api-type-helpers
-   */
-  private readonly _diagramCreateOnlyFields = [
-    'cells',
-    'description',
-    'image',
-    'include_in_report',
-    'created_at',
-    'modified_at',
-    'metadata',
-  ] as const;
-
-  /**
-   * Read-only fields on Note that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiNoteInput (= NoteBase).
-   * Metadata is managed via separate endpoint, not included in NoteInput.
-   * @see ApiNoteInput in @app/generated/api-type-helpers
-   */
-  private readonly _noteReadOnlyFields = ['id', 'created_at', 'modified_at', 'metadata'] as const;
-
-  /**
-   * Read-only fields on Asset that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiAssetInput (= AssetBase).
-   * Metadata is managed via separate endpoint, not included in AssetInput.
-   * @see ApiAssetInput in @app/generated/api-type-helpers
-   */
-  private readonly _assetReadOnlyFields = [
-    'id',
-    'created_at',
-    'modified_at',
-    'metadata',
-    'threat_model_id',
-  ] as const;
-
-  /**
-   * Read-only fields on Document that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiDocumentInput (= DocumentBase).
-   * Metadata is managed via separate endpoint, not included in DocumentInput.
-   * @see ApiDocumentInput in @app/generated/api-type-helpers
-   */
-  private readonly _documentReadOnlyFields = [
-    'id',
-    'created_at',
-    'modified_at',
-    'metadata',
-  ] as const;
-
-  /**
-   * Read-only fields on Repository that should be stripped before POST/PUT.
-   * After filtering, the remaining fields should match ApiRepositoryInput (= RepositoryBase).
-   * Metadata is managed via separate endpoint, not included in RepositoryInput.
-   * @see ApiRepositoryInput in @app/generated/api-type-helpers
-   */
-  private readonly _repositoryReadOnlyFields = [
-    'id',
-    'created_at',
-    'modified_at',
-    'metadata',
-  ] as const;
-
-  /**
    * Read-only fields on Authorization that should be stripped before POST/PUT/PATCH.
    * display_name is populated by the server based on the principal identity.
    * @see ApiAuthorization in @app/generated/api-type-helpers
@@ -128,107 +35,197 @@ export class ReadonlyFieldFilterService {
   private readonly _authorizationReadOnlyFields = ['display_name'] as const;
 
   /**
-   * Filters read-only fields from a ThreatModel object.
-   * Also extracts metadata for separate handling.
+   * Constructs a typed ApiThreatModelInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterThreatModel(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiThreatModelInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._threatModelReadOnlyFields);
+
+    const filtered: ApiThreatModelInput = {
+      name: data['name'] as string,
+      is_confidential: (data['is_confidential'] as boolean) ?? false,
+    };
+
+    if (data['description'] != null) filtered.description = data['description'] as string;
+    if (data['threat_model_framework'] != null)
+      filtered.threat_model_framework = data['threat_model_framework'] as string;
+    if (data['authorization'] != null)
+      filtered.authorization = data['authorization'] as ApiThreatModelInput['authorization'];
+    if (data['issue_uri'] != null) filtered.issue_uri = data['issue_uri'] as string;
+
     return { filtered, metadata };
   }
 
   /**
-   * Filters read-only fields from a Threat object.
-   * Also extracts metadata for separate handling.
+   * Constructs a typed ApiThreatInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterThreat(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiThreatInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._threatReadOnlyFields);
+
+    const filtered: ApiThreatInput = {
+      name: data['name'] as string,
+      threat_type: (data['threat_type'] as string[]) ?? [],
+      include_in_report: (data['include_in_report'] as boolean) ?? true,
+      timmy_enabled: (data['timmy_enabled'] as boolean) ?? true,
+    };
+
+    if (data['description'] != null) filtered.description = data['description'] as string;
+    if (data['mitigation'] != null) filtered.mitigation = data['mitigation'] as string;
+    if (data['diagram_id'] != null) filtered.diagram_id = data['diagram_id'] as string;
+    if (data['cell_id'] != null) filtered.cell_id = data['cell_id'] as string;
+    if (data['severity'] != null) filtered.severity = data['severity'] as string;
+    if (data['score'] != null) filtered.score = data['score'] as number;
+    if (data['priority'] != null) filtered.priority = data['priority'] as string;
+    if (data['mitigated'] != null) filtered.mitigated = data['mitigated'] as boolean;
+    if (data['status'] != null) filtered.status = data['status'] as string;
+    if (data['issue_uri'] != null) filtered.issue_uri = data['issue_uri'] as string;
+    if (data['asset_id'] != null) filtered.asset_id = data['asset_id'] as string;
+    if (data['cwe_id'] != null) filtered.cwe_id = data['cwe_id'] as string[];
+    if (data['cvss'] != null) filtered.cvss = data['cvss'] as ApiThreatInput['cvss'];
+
     return { filtered, metadata };
   }
 
   /**
-   * Filters read-only fields from a Diagram object for CREATE operations.
-   * Extracts metadata, cells, description, and image for separate handling.
-   * CreateDiagramRequest only accepts 'name' and 'type' fields.
-   * Other fields must be added via a subsequent PUT/PATCH operation.
+   * Constructs a typed ApiCreateDiagramRequest from the input data.
+   * Extracts fields that belong in the subsequent PUT
+   * (BaseDiagramInput / DfdDiagramInput) for separate handling.
    */
   filterDiagram(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiCreateDiagramRequest;
     metadata: Metadata[] | undefined;
     cells: unknown[] | undefined;
     description: string | undefined;
     includeInReport: boolean | undefined;
     image: Record<string, unknown> | undefined;
+    colorPalette: unknown[] | undefined;
+    timmyEnabled: boolean | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
     const cells = data['cells'] as unknown[] | undefined;
     const description = data['description'] as string | undefined;
     const includeInReport = data['include_in_report'] as boolean | undefined;
     const image = data['image'] as Record<string, unknown> | undefined;
+    const colorPalette = data['color_palette'] as unknown[] | undefined;
+    const timmyEnabled = data['timmy_enabled'] as boolean | undefined;
 
-    // Combine both readonly and create-only fields for filtering
-    const allFieldsToFilter = [...this._diagramReadOnlyFields, ...this._diagramCreateOnlyFields];
-    const filtered = this._filterFields(data, allFieldsToFilter);
+    // Allow-list: only pass fields accepted by CreateDiagramRequest
+    const filtered: ApiCreateDiagramRequest = {
+      name: data['name'] as string,
+      type: (data['type'] as ApiCreateDiagramRequest['type']) ?? 'DFD-1.0.0',
+    };
 
-    return { filtered, metadata, cells, description, includeInReport, image };
+    return {
+      filtered,
+      metadata,
+      cells,
+      description,
+      includeInReport,
+      image,
+      colorPalette,
+      timmyEnabled,
+    };
   }
 
   /**
-   * Filters read-only fields from a Note object.
-   * Extracts metadata for separate handling via metadata endpoint.
+   * Constructs a typed ApiNoteInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterNote(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiNoteInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._noteReadOnlyFields);
+
+    const filtered: ApiNoteInput = {
+      name: data['name'] as string,
+      content: (data['content'] as string) ?? '',
+      include_in_report: (data['include_in_report'] as boolean) ?? true,
+      timmy_enabled: (data['timmy_enabled'] as boolean) ?? true,
+    };
+
+    if (data['description'] != null) filtered.description = data['description'] as string;
+
     return { filtered, metadata };
   }
 
   /**
-   * Filters read-only fields from an Asset object.
-   * Extracts metadata for separate handling via metadata endpoint.
+   * Constructs a typed ApiAssetInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterAsset(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiAssetInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._assetReadOnlyFields);
+
+    const filtered: ApiAssetInput = {
+      name: data['name'] as string,
+      type: (data['type'] as ApiAssetInput['type']) ?? 'data',
+      include_in_report: (data['include_in_report'] as boolean) ?? true,
+      timmy_enabled: (data['timmy_enabled'] as boolean) ?? true,
+    };
+
+    if (data['description'] != null) filtered.description = data['description'] as string;
+    if (data['criticality'] != null) filtered.criticality = data['criticality'] as string;
+    if (data['classification'] != null)
+      filtered.classification = data['classification'] as string[];
+    if (data['sensitivity'] != null) filtered.sensitivity = data['sensitivity'] as string;
+
     return { filtered, metadata };
   }
 
   /**
-   * Filters read-only fields from a Document object.
-   * Extracts metadata for separate handling via metadata endpoint.
+   * Constructs a typed ApiDocumentInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterDocument(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiDocumentInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._documentReadOnlyFields);
+
+    const filtered: ApiDocumentInput = {
+      name: data['name'] as string,
+      uri: (data['uri'] as string) ?? '',
+      include_in_report: (data['include_in_report'] as boolean) ?? true,
+      timmy_enabled: (data['timmy_enabled'] as boolean) ?? true,
+    };
+
+    if (data['description'] != null) filtered.description = data['description'] as string;
+
     return { filtered, metadata };
   }
 
   /**
-   * Filters read-only fields from a Repository object.
-   * Extracts metadata for separate handling via metadata endpoint.
+   * Constructs a typed ApiRepositoryInput from the input data, picking only
+   * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
   filterRepository(data: Record<string, unknown>): {
-    filtered: Record<string, unknown>;
+    filtered: ApiRepositoryInput;
     metadata: Metadata[] | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._repositoryReadOnlyFields);
+
+    const filtered: ApiRepositoryInput = {
+      uri: (data['uri'] as string) ?? '',
+      include_in_report: (data['include_in_report'] as boolean) ?? true,
+      timmy_enabled: (data['timmy_enabled'] as boolean) ?? true,
+    };
+
+    if (data['name'] != null) filtered.name = data['name'] as string;
+    if (data['description'] != null) filtered.description = data['description'] as string;
+    if (data['type'] != null) filtered.type = data['type'] as ApiRepositoryInput['type'];
+    if (data['parameters'] != null)
+      filtered.parameters = data['parameters'] as ApiRepositoryInput['parameters'];
+
     return { filtered, metadata };
   }
 
@@ -295,7 +292,7 @@ export class ReadonlyFieldFilterService {
   }
 
   /**
-   * Generic field filtering helper
+   * Generic field filtering helper (block-list)
    */
   private _filterFields(
     data: Record<string, unknown>,

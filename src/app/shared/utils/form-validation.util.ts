@@ -8,7 +8,7 @@ import { AbstractControl } from '@angular/forms';
 /**
  * Interface for URI suggestion validation error
  */
-export interface UriSuggestionError {
+interface UriSuggestionError {
   message?: string;
   severity?: string;
 }

@@ -1,9 +1,9 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit, Optional } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -17,6 +17,10 @@ import {
   ClientCredentialResponse,
   CreateClientCredentialRequest,
 } from '@app/types/client-credential.types';
+
+export interface CreateCredentialDialogData {
+  returnFormOnly?: boolean;
+}
 
 /**
  * Create Client Credential Dialog Component
@@ -33,9 +37,9 @@ import {
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     MatDatepickerModule,
-    MatNativeDateModule,
     TranslocoModule,
   ],
+  providers: [provideNativeDateAdapter()],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.credentials.createDialog.title'">
       Create Client Credential
@@ -173,6 +177,7 @@ export class CreateCredentialDialogComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<CreateCredentialDialogComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) private data: CreateCredentialDialogData | null,
     private clientCredentialService: ClientCredentialService,
     private fb: FormBuilder,
     private logger: LoggerService,
@@ -188,9 +193,6 @@ export class CreateCredentialDialogComponent implements OnInit {
 
   onSave(): void {
     if (this.form.valid && !this.saving) {
-      this.saving = true;
-      this.errorMessage = '';
-
       const formValue = this.form.value as {
         name: string;
         description: string;
@@ -202,6 +204,14 @@ export class CreateCredentialDialogComponent implements OnInit {
         ...(formValue.description && { description: formValue.description.trim() }),
         ...(formValue.expiresAt && { expires_at: formValue.expiresAt.toISOString() }),
       };
+
+      if (this.data?.returnFormOnly) {
+        this.dialogRef.close(input);
+        return;
+      }
+
+      this.saving = true;
+      this.errorMessage = '';
 
       this.clientCredentialService
         .create(input)

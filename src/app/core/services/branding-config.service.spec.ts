@@ -335,4 +335,75 @@ describe('BrandingConfigService', () => {
       expect(value).toBeNull();
     });
   });
+
+  describe('defaultTheme', () => {
+    it('should return null before initialization', () => {
+      expect(service.defaultTheme).toBeNull();
+    });
+
+    it('should return "automatic" when server sends "auto"', async () => {
+      const configWithTheme = { ui: { default_theme: 'auto' } };
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(configWithTheme))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBe('automatic');
+    });
+
+    it('should return "light" when server sends "light"', async () => {
+      const configWithTheme = { ui: { default_theme: 'light' } };
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(configWithTheme))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBe('light');
+    });
+
+    it('should return "dark" when server sends "dark"', async () => {
+      const configWithTheme = { ui: { default_theme: 'dark' } };
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(configWithTheme))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBe('dark');
+    });
+
+    it('should return null when server sends invalid value', async () => {
+      const configWithBadTheme = { ui: { default_theme: 'neon' } };
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(configWithBadTheme))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBeNull();
+    });
+
+    it('should return null when server config has no default_theme', async () => {
+      const configNoTheme = { ui: { organization_name: 'Test' } };
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(configNoTheme))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBeNull();
+    });
+
+    it('should return null when server config has no ui section', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse({ features: {} }))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      expect(service.defaultTheme).toBeNull();
+    });
+  });
 });

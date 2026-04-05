@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective, UrlDropZoneDirective } from '@app/shared/imports';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -21,6 +22,7 @@ import {
   getFieldOptions,
   migrateFieldValue,
 } from '../../../../shared/utils/field-value-helpers';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Interface for threat form values
@@ -99,6 +101,8 @@ export interface ThreatEditorDialogData {
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
+    UrlDropZoneDirective,
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
@@ -184,6 +188,18 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         const errorMessage = err instanceof Error ? err.message : String(err);
         this.logger.error('Could not copy text: ', errorMessage);
       });
+  }
+
+  /**
+   * Handles a URL dropped onto the issue URI container.
+   * Sets the issue_uri form control value to the dropped URL.
+   */
+  onIssueUriUrlDropped(url: string): void {
+    if (this.isViewOnly) return;
+    this.threatForm.get('issue_uri')?.setValue(url);
+    this.threatForm.get('issue_uri')?.markAsDirty();
+    this.initialIssueUriValue = url;
+    this.isEditingIssueUri = false;
   }
 
   /**
@@ -435,7 +451,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[] = [];
+    let filteredCells: CellOption[];
 
     if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
       // Filter cells for the selected diagram
@@ -954,7 +970,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         });
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       this.logger.error(`Error translating key ${key}: ${errorMessage}`);
     }
   }
@@ -1010,30 +1026,32 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     const formValues = this.threatForm.getRawValue() as ThreatFormValues;
 
-    // Return the form values to be used to create or update the threat
+    // Return the form values to be used to create or update the threat.
+    // Send explicit empty/null values for cleared fields so the server
+    // can distinguish "clear this field" from "leave unchanged".
     this.dialogRef.close({
       name: formValues.name,
-      description: formValues.description,
-      severity: formValues.severity,
-      threat_type: formValues.threat_type,
+      description: formValues.description || '',
+      severity: formValues.severity || '',
+      threat_type: formValues.threat_type || [],
       asset_id:
         formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.asset_id
-          : undefined,
+          : null,
       diagram_id:
         formValues.diagram_id && formValues.diagram_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.diagram_id
-          : undefined,
+          : null,
       cell_id:
         formValues.cell_id && formValues.cell_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.cell_id
-          : undefined,
-      score: formValues.score || undefined,
-      priority: formValues.priority || undefined,
+          : null,
+      score: formValues.score ?? undefined, // see ericfitz/tmi#208 for server-side clearing
+      priority: formValues.priority || '',
       mitigated: formValues.mitigated,
-      status: formValues.status || undefined,
-      mitigation: formValues.mitigation || undefined,
-      issue_uri: formValues.issue_uri || undefined,
+      status: formValues.status || '',
+      mitigation: formValues.mitigation || '',
+      issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
       metadata: this.data.threat?.metadata || [],
     });

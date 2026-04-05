@@ -155,15 +155,16 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   loadGroups(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
+    const filter = this.filterText.trim();
 
     this.groupAdminService
-      .list({ limit: this.pageSize, offset })
+      .list({ limit: this.pageSize, offset, ...(filter ? { group_name: filter } : {}) })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.groups = response.groups;
           this.totalGroups = response.total;
-          this.applyFilter();
+          this.dataSource.data = [...this.groups];
           this.loading = false;
           this.logger.info('Groups loaded', {
             count: response.groups.length,
@@ -202,21 +203,6 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       queryParamsHandling: '',
       replaceUrl: true,
     });
-  }
-
-  applyFilter(): void {
-    const filter = this.filterText.toLowerCase().trim();
-    if (!filter) {
-      this.dataSource.data = [...this.groups];
-      return;
-    }
-
-    this.dataSource.data = this.groups.filter(
-      group =>
-        group.group_name?.toLowerCase().includes(filter) ||
-        group.name?.toLowerCase().includes(filter) ||
-        group.provider.toLowerCase().includes(filter),
-    );
   }
 
   onAddGroup(): void {

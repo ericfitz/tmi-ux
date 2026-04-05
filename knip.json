@@ -1,0 +1,35 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": [
+    "-lintignore"
+  ],
+  "project": [
+    "src/**/*.{ts,html,scss}",
+    "!scripts/**"
+  ],
+  "ignoreBinaries": [
+    "uv",
+    "kubectl"
+  ],
+  "ignoreDependencies": [
+    "@angular/platform-browser-dynamic",
+    "@material/material-color-utilities",
+    "@typescript-eslint/parser",
+    "@oxc-project/runtime",
+    "@e18e/cli",
+    "clipboard"
+  ],
+  "ignore": [
+    "src/**/index.ts",
+    "src/environments/environment.example.ts",
+    "src/testing/**",
+    "src/app/pages/dfd/interfaces/*.interface.ts",
+    "src/app/pages/dfd/infrastructure/adapters/infra-x6-event-handlers.adapter.ts",
+    "src/app/pages/dfd/infrastructure/services/injection-tokens.ts",
+    "src/app/pages/dfd/types/auto-save.types.ts"
+  ],
+  "rules": {
+    "enumMembers": "off",
+    "types": "off"
+  }
+}

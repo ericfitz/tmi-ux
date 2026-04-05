@@ -34,16 +34,11 @@
       "allObjects": "(সব)",
       "errorInvoking": "অ্যাডঅন চালু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
       "invalidCharacters": "শুধুমাত্র আলফানিউমেরিক অক্ষর, স্পেস, হাইফেন, পিরিয়ড, কমা এবং ফরওয়ার্ড স্ল্যাশ অনুমোদিত",
-      "invalidJson": "অবৈধ JSON ফরম্যাট",
       "invocationQueued": "অ্যাডঅন কল সারিবদ্ধ হয়েছে",
       "metadataKeyMissing": "প্রয়োজনীয় মেটাডেটা কী \"{{key}}\" এই অবজেক্টে উপস্থিত নেই",
       "numberMax": "মান সর্বাধিক {{max}} হতে হবে",
       "numberMin": "মান সর্বনিম্ন {{min}} হতে হবে",
       "parameters": "প্যারামিটার",
-      "payload": "পেলোড (ঐচ্ছিক)",
-      "payloadHint": "অ্যাডঅনে পাঠানোর জন্য JSON ডেটা",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "থ্রেট মডেল আইডি",
       "title": "অ্যাডঅন চালু করুন",
       "valueTooLong": "মান সর্বোচ্চ দৈর্ঘ্য অতিক্রম করেছে"
@@ -111,9 +106,9 @@
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "সদস্য যোগ করুন",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "বর্তমান সদস্য",
         "noMembers": "এই গ্রুপে কোনো সদস্য নেই",
         "removeTooltip": "গ্রুপ থেকে সরান",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "অ্যাপ্লিকেশন অ্যাডঅন ইনস্টল এবং কনফিগার করুন",
-        "title": "{{admin.addons.title}}"
+        "title": "অ্যাডঅন"
       },
       "groups": {
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",
-        "title": "{{admin.groups.title}}"
+        "title": "গ্রুপ"
+      },
+      "projects": {
+        "description": "প্রকল্প, সম্পর্ক এবং মেটাডেটা পরিচালনা করুন",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
-        "title": "{{admin.quotas.title}}"
+        "title": "কোটা"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "সেটিংস"
       },
       "surveys": {
         "description": "জরিপ তৈরি এবং পরিচালনা করুন",
-        "title": "জরিপ পরিচালনা করুন"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "দল এবং দল সদস্যপদ পরিচালনা করুন",
+        "title": "দল"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
-        "title": "{{admin.users.title}}"
+        "title": "ব্যবহারকারী"
       },
       "webhooks": {
         "description": "ওয়েবহুক ইন্টিগ্রেশন ইনস্টল এবং কনফিগার করুন",
-        "title": "{{admin.webhooks.title}}"
+        "title": "ওয়েবহুক"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "সম্পাদনা বাতিল করুন",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "উৎস",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "আপনি কি নিশ্চিত যে \"{{key}}\" সেটিংটি মুছতে চান?",
       "deleteTooltip": "সেটিং মুছুন",
       "editTooltip": "সেটিং সম্পাদনা করুন",
       "filterLabel": "ফিল্টার",
-      "filterPlaceholder": "কী, মান বা বিবরণ দিয়ে ফিল্টার করুন",
+      "filterPlaceholder": "কী, মান, বিবরণ, বা উৎস দিয়ে ফিল্টার করুন",
       "listTitle": "সিস্টেম সেটিংস",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "সেটিংস মাইগ্রেট করুন"
       },
       "noSettings": "কোনো সেটিংস পাওয়া যায়নি",
+      "readOnlyTooltip": "এই সেটিংটি শুধুমাত্র পঠনযোগ্য এবং এখান থেকে পরিবর্তন করা যাবে না",
       "saveTooltip": "পরিবর্তনগুলি সংরক্ষণ করুন",
+      "sources": {
+        "config": "কনফিগারেশন ফাইল",
+        "database": "ডাটাবেস",
+        "environment": "পরিবেশ",
+        "vault": "ভল্ট",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "সিস্টেম কনফিগারেশন সেটিংস দেখুন এবং পরিচালনা করুন",
       "title": "সেটিংস পরিচালনা করুন",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",
     "title": "প্রশাসন",
     "users": {
+      "actions": {
+        "manageCredentials": "ক্রেডেনশিয়াল পরিচালনা করুন"
+      },
       "administrator": "প্রশাসক",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
+      "filter": {
+        "automationOnly": "শুধুমাত্র অটোমেশন অ্যাকাউন্ট দেখান"
+      },
       "filterLabel": "ব্যবহারকারী ফিল্টার করুন",
       "filterPlaceholder": "ইমেইল, নাম, প্রোভাইডার বা গ্রুপের নাম দিয়ে খুঁজুন",
       "lastLogin": "সর্বশেষ লগইন",
-      "listTitle": "ব্যবহারকারী",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "ক্রেডেনশিয়াল যোগ করুন",
+        "deleteConfirm": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" ক্রেডেনশিয়ালটি মুছতে চান?",
+        "noCredentials": "কোনো ক্রেডেনশিয়াল পাওয়া যায়নি",
+        "title": "{{userName}}-এর ক্রেডেনশিয়াল পরিচালনা করুন"
+      },
       "never": "কখনো না",
       "noUsers": "কোনো ব্যবহারকারী পাওয়া যায়নি",
       "subtitle": "সিস্টেম ব্যবহারকারী দেখুন এবং পরিচালনা করুন",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "এই ওয়েবহুকের জন্য অটোমেশন ব্যবহারকারী তৈরি করুন",
         "events": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার",
         "eventsHint": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার (যেমন, threat_model.created)",
         "eventsPlaceholder": "ইভেন্ট প্রকার নির্বাচন করুন",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "স্বয়ংক্রিয়ভাবে তৈরি করতে খালি রেখে দিন",
         "title": "Webhook যোগ করুন",
         "url": "ওয়েবহুক URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL হতে হবে",
+        "urlHint": "HTTPS প্রস্তাবিত",
+        "urlHttpWarning": "সতর্কতা: ওয়েবহুক এন্ডপয়েন্ট URL-এ HTTPS ব্যবহার করা উচিত। সার্ভার নন-TLS এন্ডপয়েন্ট নির্দিষ্ট করা ওয়েবহুক রেজিস্ট্রেশন প্রত্যাখ্যান করতে পারে।",
+        "urlHttpWarningTitle": "নন-HTTPS ওয়েবহুক URL",
+        "urlInvalid": "একটি বৈধ URL হতে হবে",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL প্রয়োজন"
+      },
+      "createAutomationUserDialog": {
+        "email": "ইমেইল (ঐচ্ছিক)",
+        "emailHint": "ঐচ্ছিক — ডিফল্ট হলো স্বয়ংক্রিয়ভাবে তৈরি @tmi.local ঠিকানা",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "২-৬৪ অক্ষর, অক্ষর দিয়ে শুরু",
+        "nameMaxLength": "নাম সর্বোচ্চ ৬৪ অক্ষর হতে হবে",
+        "nameMinLength": "কমপক্ষে ২ অক্ষর হতে হবে",
+        "namePattern": "একটি অক্ষর দিয়ে শুরু এবং একটি অক্ষর বা সংখ্যা দিয়ে শেষ হতে হবে",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "অটোমেশন ব্যবহারকারী তৈরি করুন",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ওয়েবহুক মুছুন",
@@ -308,8 +346,11 @@
         "pending_delete": "মুছে ফেলা মুলতুবি",
         "pending_verification": "যাচাই মুলতুবি"
       },
+      "subscriptionId": "সাবস্ক্রিপশন আইডি",
       "subtitle": "ইভেন্ট বিজ্ঞপ্তির জন্য ওয়েবহুক সাবস্ক্রিপশন কনফিগার করুন",
-      "title": "Webhooks পরিচালনা করুন"
+      "title": "Webhooks পরিচালনা করুন",
+      "triggerEvents": "ট্রিগার ইভেন্ট",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "সংস্করণ প্রয়োজন"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "সমীক্ষা মুছতে ব্যর্থ: {{error}}",
+    "deleteTooltip": "সমীক্ষা মুছুন",
     "editTemplate": "জরিপ সম্পাদনা করুন",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "ক্রিয়াকলাপ",
     "activate": "সক্রিয় করুন",
     "active": "সক্রিয়",
+    "add": "যোগ করুন",
     "addMetadata": "মেটাডেটা যোগ করুন",
     "addThreat": "হুমকি যোগ করুন",
     "addons": "অ্যাডঅন",
@@ -562,6 +606,8 @@
     "email": "ইমেইল",
     "emailLabel": "ইমেল ঠিকানা",
     "error": "ত্রুটি",
+    "exportAsPng": "PNG হিসাবে এক্সপোর্ট করুন",
+    "exportAsSvg": "SVG হিসাবে এক্সপোর্ট করুন",
     "false": "মিথ্যা",
     "fonts": "ফন্ট",
     "groups": "গ্রুপ",
@@ -886,9 +932,7 @@
     "pageTitle": "ডেটা ফ্লো ডায়াগ্রাম এডিটর",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG হিসাবে এক্সপোর্ট করুন",
-        "exportAsPng": "PNG হিসাবে এক্সপোর্ট করুন",
-        "exportAsSvg": "SVG হিসাবে এক্সপোর্ট করুন"
+        "exportAsJpeg": "JPEG হিসাবে এক্সপোর্ট করুন"
       },
       "tooltips": {
         "addActor": "অ্যাক্টর যোগ করুন",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI একটি টুল যা আপনার সংস্থার নিরাপত্তা পর্যালোচনা এবং হুমকি মডেলিং প্রক্রিয়াগুলি সুবিন্যস্ত করে। এটি পর্যালোচনা ওয়ার্কফ্লো চালিত করে, মূল তথ্য সংগঠিত করে এবং দলগুলিকে সহযোগীভাবে ডেটা প্রবাহ ডায়াগ্রাম তৈরি করতে সক্ষম করে। এটি অটোমেশনের সাথেও সংযোগ স্থাপন করে, ম্যানুয়াল প্রচেষ্টা হ্রাস করতে এবং আরও দক্ষতার সাথে নিরাপত্তা হুমকি প্রকাশ করতে সহায়তা করে।",
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "সাইন ইন করা হচ্ছে...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI-তে সাইন ইন করুন",
+    "tmiDialog": {
+      "errorMaxLength": "ব্যবহারকারীর নাম সর্বোচ্চ 20 অক্ষরের হতে হবে",
+      "errorMinLength": "ব্যবহারকারীর নাম কমপক্ষে 3 অক্ষরের হতে হবে",
+      "errorPattern": "ব্যবহারকারীর নামে শুধুমাত্র অক্ষর এবং সংখ্যা থাকতে পারে",
+      "signIn": "সাইন ইন",
+      "title": "TMI Provider দিয়ে সাইন ইন করুন",
+      "usernameLabel": "ব্যবহারকারীর নাম",
+      "usernamePlaceholder": "ব্যবহারকারীর নাম লিখুন (ঐচ্ছিক)"
+    },
     "unexpectedError": "OAuth এর সময় একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।"
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "ব্যবহারকারীর অধিকার"
   },
   "projects": {
+    "addButton": "প্রকল্প যোগ করুন",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "প্রকল্পের বিবরণ লিখুন",
       "namePlaceholder": "প্রকল্পের নাম লিখুন",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "নতুন প্রকল্প তৈরি করুন",
+    "deleteDialog": {
+      "message": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" প্রকল্পটি মুছতে চান?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "প্রকল্প সম্পাদনা করুন"
+    },
+    "filterLabel": "নাম দ্বারা ফিল্টার করুন",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "কোন প্রকল্প পাওয়া যায়নি",
     "picker": {
       "label": "{{common.project}}",
       "none": "কোনো প্রকল্প নেই"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "সম্পর্কিত প্রকল্প যোগ করুন",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "সম্পর্কিত প্রকল্প নেই",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "প্রকল্প নির্বাচন করুন",
+      "title": "সম্পর্কিত প্রকল্পসমূহ"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "বাতিল করা হয়েছে",
+      "completed": "সম্পন্ন",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "পরিকল্পনা"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "অবস্থা দ্বারা ফিল্টার করুন",
+    "subtitle": "প্রকল্প, সম্পর্ক এবং মেটাডেটা তৈরি, সম্পাদনা এবং পরিচালনা করুন",
+    "teamFilterLabel": "দল দ্বারা ফিল্টার করুন",
+    "title": "প্রকল্প পরিচালনা করুন"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "সম্পাদনা চালিয়ে যান",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "স্ট্যাটাস অনুযায়ী ফিল্টার করুন",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "আপনি এখনো কোনো সমীক্ষা সম্পন্ন করেননি। সমীক্ষা পৃষ্ঠা থেকে একটি শুরু করুন।",
       "noResponsesTitle": "এখনো কোনো প্রতিক্রিয়া নেই",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "জরিপ জমা দিন",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "আর্কাইভকৃত",
+      "archived": "{{teams.status.archived}}",
       "inactive": "নিষ্ক্রিয়"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "প্রতিক্রিয়া দেখুন"
   },
   "teams": {
+    "addButton": "দল যোগ করুন",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "সংশোধিত",
+      "name": "{{common.name}}",
+      "projects": "প্রকল্প",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "দলের বিবরণ লিখুন",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "নতুন দল তৈরি করুন"
+    "createNew": "নতুন দল তৈরি করুন",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "আপনি কি নিশ্চিত যে \"{{name}}\" দলটি মুছতে চান?",
+      "projectWarning": "এই দলের {{count}}টি প্রকল্প রয়েছে। দলটি মুছলে এই প্রকল্পগুলি প্রভাবিত হতে পারে।",
+      "title": "দল মুছুন"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "দল সম্পাদনা করুন"
+    },
+    "filterLabel": "দল ফিল্টার করুন",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "সদস্য",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "সদস্য যোগ করুন",
+      "customRole": "কাস্টম ভূমিকা",
+      "noMembers": "কোনো সদস্য নেই",
+      "removeMember": "সদস্য সরান",
+      "role": "ভূমিকা",
+      "title": "দল সদস্য"
+    },
+    "noTeams": "কোনো দল পাওয়া যায়নি",
+    "relatedTeamsDialog": {
+      "addRelated": "সম্পর্কিত দল যোগ করুন",
+      "customRelationship": "কাস্টম সম্পর্ক",
+      "noRelated": "কোনো সম্পর্কিত দল নেই",
+      "relationship": "সম্পর্ক",
+      "removeRelated": "সম্পর্কিত দল সরান",
+      "selectTeam": "দল নির্বাচন করুন",
+      "title": "সম্পর্কিত দল"
+    },
+    "relationships": {
+      "child": "সন্তান",
+      "dependency": "নির্ভরতা",
+      "dependent": "নির্ভরযোগ্য",
+      "other": "{{common.other}}",
+      "parent": "অভিভাবক",
+      "related": "সম্পর্কিত",
+      "superseded_by": "দ্বারা অতিক্রম করা হয়েছে",
+      "supersedes": "অতিক্রম করা হয়"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "দায়িত্বশীল পক্ষ যোগ করুন",
+      "noParties": "কোনো দায়িত্বশীল পক্ষ নেই",
+      "removeParty": "দায়িত্বশীল পক্ষ সরান",
+      "title": "দায়িত্বশীল পক্ষ"
+    },
+    "roles": {
+      "business_leader": "ব্যবসায়িক নেতা",
+      "engineer": "প্রকৌশলী",
+      "engineering_lead": "প্রকৌশল নেতা",
+      "other": "{{common.other}}",
+      "product_manager": "পণ্য ব্যবস্থাপক",
+      "security_specialist": "নিরাপত্তা বিশেষজ্ঞ"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "সংরক্ষিত",
+      "forming": "গঠনশীল",
+      "merging": "একীভূতকরণ",
+      "on_hold": "অধরিত",
+      "splitting": "বিভাজন",
+      "winding_down": "সমাপ্তিশীল"
+    },
+    "subtitle": "দল, সদস্য এবং সম্পর্ক তৈরি, সম্পাদনা এবং পরিচালনা করুন",
+    "title": "দল পরিচালনা করুন"
   },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "নিরাপত্তা পর্যালোচক পরিবর্তন করুন",
     "clearSecurityReviewer": "নিরাপত্তা পর্যালোচক মুছুন",
     "commit": "কমিট",
+    "confidentialProject": "গোপনীয় প্রকল্প",
     "createFirstButton": "আপনার প্রথম থ্রেট মডেল তৈরি করুন",
     "createNewDiagram": "নতুন ডায়াগ্রাম তৈরি করুন",
     "createNewRepository": "রিপোজিটরি রেফারেন্স যোগ করুন",
@@ -1305,6 +1494,14 @@
     "documentName": "ডকুমেন্টের নাম",
     "documentUrl": "ডকুমেন্ট URL",
     "export": "রপ্তানি",
+    "exportDialog": {
+      "error": "রপ্তানি ডেটা প্রস্তুত করতে ব্যর্থ। আবার চেষ্টা করুন।",
+      "preparing": "রপ্তানি ডেটা প্রস্তুত করা হচ্ছে...",
+      "ready": "রপ্তানি প্রস্তুত। ডাউনলোড করতে সংরক্ষণ ক্লিক করুন।",
+      "retry": "পুনরায় চেষ্টা করুন",
+      "save": "সংরক্ষণ",
+      "title": "হুমকি মডেল রপ্তানি করুন"
+    },
     "fileSizeExceeded": "ফাইল সর্বোচ্চ আমদানি আকার অতিক্রম করেছে: {{maxSize}} MB",
     "frameworkDisabledHint": "হুমকি থাকলে ফ্রেমওয়ার্ক পরিবর্তন করা যাবে না",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "এখনো কোনো হুমকি যোগ করা হয়নি",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "ভূমিকা",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "অনুমতি পরিচালনা করুন",
     "rename": "পুনঃনামকরণ",
@@ -1348,10 +1545,12 @@
     "repositoryType": "রিপোজিটরির ধরন",
     "repositoryUri": "রিপোজিটরি URL",
     "sections": {
+      "audit": "অডিট",
       "inputs": "ইনপুট",
       "inputsDescription": "অ্যাসেট, ডকুমেন্ট এবং বিশ্লেষণ অধীন সিস্টেম বর্ণনা করে এমন উৎস কোড রিপোজিটরি",
       "outputs": "আউটপুট",
-      "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি"
+      "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি",
+      "reviewProcess": "পর্যালোচনা প্রক্রিয়া"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "মালিক হিসেবে সেট করুন",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "TMI-তে ডায়াগ্রাম হল একটি সিস্টেমের মধ্যে ডেটা চলাচল এবং প্রক্রিয়াগুলির মেশিন-পাঠযোগ্য উপস্থাপনা, যা ম্যানুয়াল এবং স্বয়ংক্রিয় নিরাপত্তা বিশ্লেষণ উভয়ই সক্ষম করে।",
       "documentsCardTitle": "ডকুমেন্ট রেফারেন্স হল TMI-র বাইরে সংরক্ষিত ডকুমেন্টের লিংক। প্রাসঙ্গিক ডকুমেন্ট বিশ্লেষণ করা সিস্টেম বর্ণনা করে এবং নিরাপত্তা বিশ্লেষক এবং স্বয়ংক্রিয় বিশ্লেষণ প্রক্রিয়া উভয় দ্বারা ব্যবহার করা যেতে পারে।",
       "downloadModel": "মডেল ডাউনলোড করুন",
+      "dropToCreateDocument": "তৈরি করতে ড্রপ করুন",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "ইস্যু URI সেট করতে ড্রপ করুন",
       "import": "আমদানি",
       "notesCardTitle": "নোট হল মার্কডাউন ফরম্যাট টেক্সট যা সম্পূর্ণভাবে থ্রেট মডেলের মধ্যে থাকে, নিরাপত্তা বিশ্লেষক এবং স্বয়ংক্রিয় বিশ্লেষণ প্রক্রিয়া থেকে নোট এবং টীকা ক্যাপচার করতে ব্যবহৃত হয়।",
       "repositoriesCardTitle": "রিপোজিটরি হল সোর্স কোড রিপোজিটরির লিংক যেখানে সিস্টেমের সোর্স কোড পরিচালিত হয়।",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "নোট যোগ করুন",
+      "columns": {
+        "answer": "উত্তর",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "প্রশ্ন"
+      },
       "markdownSupported": "মার্কডাউন সমর্থিত",
       "noNotes": "এখনো কোনো ট্রায়াজ নোট নেই",
       "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "পর্যালোচনায় চিহ্নিত করুন",
     "markPendingTriage": "ট্রায়াজ মুলতুবি চিহ্নিত করুন",
+    "messages": {
+      "approveError": "প্রতিক্রিয়া অনুমোদন করতে ব্যর্থ",
+      "approveSuccess": "প্রতিক্রিয়া অনুমোদিত হয়েছে",
+      "createThreatModelError": "থ্রেট মডেল তৈরি করতে ব্যর্থ",
+      "createThreatModelSuccess": "থ্রেট মডেল সফলভাবে তৈরি হয়েছে",
+      "returnForRevisionError": "সংশোধনের জন্য প্রতিক্রিয়া ফেরত পাঠাতে ব্যর্থ",
+      "returnForRevisionSuccess": "প্রতিক্রিয়া সংশোধনের জন্য ফেরত পাঠানো হয়েছে"
+    },
     "noResponses": "ট্রায়াজ করার জন্য কোনো প্রতিক্রিয়া নেই",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,7 +1778,7 @@
   "userPreferences": {
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
-      "add": "যোগ করুন",
+      "add": "{{common.add}}",
       "clientId": "ক্লায়েন্ট আইডি",
       "clientSecret": "ক্লায়েন্ট সিক্রেট",
       "createDialog": {
@@ -1581,9 +1796,13 @@
         "nameTooLong": "নাম ১০০ অক্ষর বা তার কম হতে হবে",
         "title": "ক্লায়েন্ট ক্রেডেনশিয়াল তৈরি করুন"
       },
-      "created": "{{common.created}}",
-      "expires": "মেয়াদ শেষ",
+      "createdOn": "{{common.created}}",
+      "credential": "শংসাপত্র",
+      "expired": "মেয়াদ শেষ",
+      "expiresAt": "মেয়াদ শেষ হয়",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "সর্বশেষ ব্যবহৃত",
+      "neverExpires": "কখনও মেয়াদ শেষ হয় না",
       "noCredentials": "এখনো কোনো ক্লায়েন্ট ক্রেডেনশিয়াল নেই",
       "noCredentialsDescription": "প্রোগ্রামগতভাবে TMI API অ্যাক্সেস করতে ক্রেডেনশিয়াল তৈরি করুন।",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "ডায়াগ্রাম এডিটরে অ্যানিমেশন ইফেক্ট সক্রিয় করুন",
     "displayPreferences": "প্রদর্শন পছন্দ",
-    "exportLog": {
+    "downloadLog": {
       "hint": "সমস্যা সমাধানের জন্য সাম্প্রতিক অ্যাপ্লিকেশন লগ এন্ট্রিগুলি JSONL ফাইল হিসেবে ডাউনলোড করে।",
-      "title": "অ্যাপ্লিকেশন লগ এক্সপোর্ট করুন"
+      "title": "লগ ডাউনলোড করুন"
     },
     "hoverShowMetadata": "হোভারে সেল মেটাডেটা দেখান",
     "marginSize": {

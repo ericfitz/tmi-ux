@@ -36,6 +36,18 @@ export class AdminComponent {
       action: 'groups',
     },
     {
+      title: 'admin.sections.teams.title',
+      description: 'admin.sections.teams.description',
+      icon: 'groups',
+      action: 'teams',
+    },
+    {
+      title: 'admin.sections.projects.title',
+      description: 'admin.sections.projects.description',
+      icon: 'folder',
+      action: 'projects',
+    },
+    {
       title: 'admin.sections.quotas.title',
       description: 'admin.sections.quotas.description',
       icon: 'speed',

@@ -28,6 +28,7 @@ import { SurveyDraftService } from '../../services/survey-draft.service';
 import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, SurveyUIState } from '@app/types/survey.types';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 /**
  * Survey fill component
@@ -65,6 +66,8 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   error: string | null = null;
   submitting = false;
   submitted = false;
+
+  readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
 
   // Auto-save state
   isSaving$: Observable<boolean> = this.draftService.isSaving$;

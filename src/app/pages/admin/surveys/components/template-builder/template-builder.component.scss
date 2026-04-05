@@ -337,17 +337,20 @@ button:not([mat-icon-button]) mat-icon {
     box-shadow: none;
     border: 1px solid var(--color-divider);
 
+    mat-panel-description {
+      justify-content: flex-end;
+      align-items: center;
+      flex-grow: 0;
+    }
+
+    .condition-help-button {
+      margin: -12px 0;
+    }
+
     .condition-panel-content {
       display: flex;
       flex-direction: column;
       gap: 16px;
-      position: relative;
-
-      .condition-help-button {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-      }
     }
   }
 

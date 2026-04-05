@@ -6,6 +6,8 @@
 
 export type SettingType = 'string' | 'int' | 'bool' | 'json';
 
+export type SettingSource = 'database' | 'config' | 'environment' | 'vault';
+
 /**
  * System setting returned from the API
  */
@@ -16,6 +18,8 @@ export interface SystemSetting {
   description?: string;
   modified_at?: string;
   modified_by?: string;
+  source?: SettingSource;
+  read_only?: boolean;
 }
 
 /**

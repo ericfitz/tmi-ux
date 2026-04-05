@@ -9,7 +9,11 @@ import '@angular/compiler';
 
 import { describe, it, expect } from 'vitest';
 import { HttpErrorResponse } from '@angular/common/http';
-import { extractHttpErrorMessage, extractHttpErrorDetails } from './http-error.utils';
+import {
+  extractHttpErrorMessage,
+  extractHttpErrorDetails,
+  getErrorMessage,
+} from './http-error.utils';
 
 function makeErrorResponse(error: unknown, status = 400): HttpErrorResponse {
   return new HttpErrorResponse({ error, status, statusText: 'Bad Request' });
@@ -140,6 +144,36 @@ describe('http-error.utils', () => {
       const result = extractHttpErrorDetails(response);
       expect(result.error).toBeNull();
       expect(result.errorDescription).toBeNull();
+    });
+  });
+
+  describe('getErrorMessage', () => {
+    it('should extract message from Error instance', () => {
+      expect(getErrorMessage(new Error('something broke'))).toBe('something broke');
+    });
+
+    it('should extract message from HttpErrorResponse with body message', () => {
+      const response = makeErrorResponse({ message: 'Not authorized' });
+      expect(getErrorMessage(response)).toBe('Not authorized');
+    });
+
+    it('should fall back to HttpErrorResponse.message when body has no message', () => {
+      const response = makeErrorResponse(null, 403);
+      expect(getErrorMessage(response)).toContain('403');
+    });
+
+    it('should return string errors directly', () => {
+      expect(getErrorMessage('plain string error')).toBe('plain string error');
+    });
+
+    it('should return default fallback for unknown types', () => {
+      expect(getErrorMessage(42)).toBe('Unknown error');
+      expect(getErrorMessage({})).toBe('Unknown error');
+      expect(getErrorMessage(null)).toBe('Unknown error');
+    });
+
+    it('should return custom fallback for unknown types', () => {
+      expect(getErrorMessage(42, 'Custom fallback')).toBe('Custom fallback');
     });
   });
 });

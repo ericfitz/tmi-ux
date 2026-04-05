@@ -19,7 +19,7 @@ interface DiagramFormValues {
 /**
  * Interface for dialog data
  */
-export interface CreateDiagramDialogData {
+interface CreateDiagramDialogData {
   threatModelName: string;
 }
 

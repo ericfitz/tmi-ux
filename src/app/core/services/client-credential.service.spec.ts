@@ -69,7 +69,7 @@ describe('ClientCredentialService', () => {
   describe('list', () => {
     it('should GET me/client_credentials and extract credentials array', async () => {
       const response: ListClientCredentialsResponse = {
-        client_credentials: [mockCredential],
+        credentials: [mockCredential],
         total: 1,
         limit: 50,
         offset: 0,
@@ -85,7 +85,7 @@ describe('ClientCredentialService', () => {
       });
     });
 
-    it('should return empty array when response has no client_credentials', async () => {
+    it('should return empty array when response has no credentials', async () => {
       mockApiService.get.mockReturnValue(of({}));
 
       const result = await lastValueFrom(service.list());
@@ -93,16 +93,16 @@ describe('ClientCredentialService', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return empty array when client_credentials is undefined', async () => {
-      mockApiService.get.mockReturnValue(of({ client_credentials: undefined }));
+    it('should return empty array when credentials is undefined', async () => {
+      mockApiService.get.mockReturnValue(of({ credentials: undefined }));
 
       const result = await lastValueFrom(service.list());
 
       expect(result).toEqual([]);
     });
 
-    it('should return empty array when client_credentials is null', async () => {
-      mockApiService.get.mockReturnValue(of({ client_credentials: null }));
+    it('should return empty array when credentials is null', async () => {
+      mockApiService.get.mockReturnValue(of({ credentials: null }));
 
       const result = await lastValueFrom(service.list());
 

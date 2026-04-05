@@ -13,16 +13,27 @@
 
   <mat-card class="filter-card">
     <mat-card-content>
-      <mat-form-field class="filter-field">
-        <mat-label [transloco]="'admin.users.filterLabel'">Filter Users</mat-label>
-        <input
-          matInput
-          [value]="filterText"
-          (input)="onFilterChange($any($event.target).value)"
-          [placeholder]="'admin.users.filterPlaceholder' | transloco"
-        />
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
+      <div class="filter-row">
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label [transloco]="'admin.users.filterLabel'">Filter Users</mat-label>
+          <input
+            matInput
+            [value]="filterText"
+            (input)="onFilterChange($any($event.target).value)"
+            [placeholder]="'admin.users.filterPlaceholder' | transloco"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+        <mat-slide-toggle
+          [checked]="automationOnly"
+          (change)="onAutomationFilterChange($event.checked)"
+          class="automation-toggle"
+        >
+          <span [transloco]="'admin.users.filter.automationOnly'">
+            Show automation accounts only
+          </span>
+        </mat-slide-toggle>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -121,19 +132,33 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    (click)="onTransferOwnership(user)"
-                    [matTooltip]="'admin.users.transferOwnership.tooltip' | transloco"
+                    [matTooltip]="'admin.users.actions.manageCredentials' | transloco"
+                    [disabled]="user.automation !== true"
+                    (click)="onManageCredentials(user); $event.stopPropagation()"
                   >
-                    <mat-icon>swap_horiz</mat-icon>
+                    <mat-icon>vpn_key</mat-icon>
                   </button>
                   <button
                     mat-icon-button
-                    color="warn"
-                    (click)="onDeleteUser(user)"
-                    [matTooltip]="'admin.users.deleteTooltip' | transloco"
+                    [matMenuTriggerFor]="userRowKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #userRowKebabMenu="matMenu">
+                    <button mat-menu-item (click)="onTransferOwnership(user)">
+                      <mat-icon>swap_horiz</mat-icon>
+                      <span [transloco]="'admin.users.transferOwnership.tooltip'"
+                        >Transfer Ownership</span
+                      >
+                    </button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="onDeleteUser(user)">
+                      <mat-icon>delete</mat-icon>
+                      <span [transloco]="'admin.users.deleteTooltip'">Delete</span>
+                    </button>
+                  </mat-menu>
                 </div>
               </td>
             </ng-container>

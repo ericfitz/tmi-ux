@@ -18,6 +18,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -43,6 +44,7 @@ import { CollaborationDialogComponent } from '../collaboration-dialog/collaborat
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatBadgeModule,
     TranslocoModule,
   ],

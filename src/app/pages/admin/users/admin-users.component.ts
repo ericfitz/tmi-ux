@@ -25,6 +25,10 @@ import {
   UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import {
+  ManageCredentialsDialogComponent,
+  ManageCredentialsDialogData,
+} from './manage-credentials-dialog/manage-credentials-dialog.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { LanguageService } from '@app/i18n/language.service';
@@ -82,6 +86,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
+  automationOnly = false;
   loading = false;
   currentLocale = 'en-US';
 
@@ -177,7 +182,11 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     const offset = calculateOffset(this.pageIndex, this.pageSize);
 
     this.userAdminService
-      .list({ limit: this.pageSize, offset })
+      .list({
+        limit: this.pageSize,
+        offset,
+        ...(this.automationOnly && { automation: true }),
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -200,6 +209,25 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
 
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
+  }
+
+  onAutomationFilterChange(checked: boolean): void {
+    this.automationOnly = checked;
+    this.pageIndex = 0;
+    this.loadUsers();
+    this.updateUrl();
+  }
+
+  onManageCredentials(user: AdminUser): void {
+    const dialogData: ManageCredentialsDialogData = {
+      internalUuid: user.internal_uuid,
+      userName: user.name || user.email,
+    };
+    this.dialog.open(ManageCredentialsDialogComponent, {
+      width: '90vw',
+      maxWidth: '1200px',
+      data: dialogData,
+    });
   }
 
   onPageChange(event: PageEvent): void {

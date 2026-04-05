@@ -35,6 +35,20 @@
     padding: 16px;
   }
 
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .filter-field {
+      flex: 1;
+    }
+
+    .automation-toggle {
+      white-space: nowrap;
+    }
+  }
+
   .filter-field {
     width: 100%;
 
@@ -118,10 +132,15 @@
 
   .mat-column-actions,
   .column-actions {
-    width: 120px;
-    min-width: 120px;
-    text-align: right;
-    padding-right: 8px !important;
+    width: 160px;
+    min-width: 160px;
+    text-align: center;
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
   .subject-info {

@@ -1,3 +1,4 @@
+import '@angular/compiler';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
 import { PdfLayoutEngine, LayoutConfig } from './pdf-layout-engine';

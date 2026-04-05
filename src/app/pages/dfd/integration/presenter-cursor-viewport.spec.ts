@@ -22,9 +22,9 @@ import { Subject } from 'rxjs';
 import { createMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 import { UiPresenterCursorDisplayService } from '../presentation/services/ui-presenter-cursor-display.service';
 import { UiPresenterCursorService } from '../presentation/services/ui-presenter-cursor.service';
-import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { DfdCollaborationService } from '../../../core/services/dfd-collaboration.service';
 import { InfraWebsocketCollaborationAdapter } from '../infrastructure/adapters/infra-websocket-collaboration.adapter';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 
 // Setup JSDOM environment for X6
 const mockSVGElement = {

@@ -34,16 +34,11 @@
       "allObjects": "（全部）",
       "errorInvoking": "调用插件失败。请重试。",
       "invalidCharacters": "仅允许使用字母数字字符、空格、连字符、句点、逗号和正斜杠",
-      "invalidJson": "无效的JSON格式",
       "invocationQueued": "插件调用已排队",
       "metadataKeyMissing": "此对象上不存在必需的元数据键 \"{{key}}\"",
       "numberMax": "值不能超过 {{max}}",
       "numberMin": "值不能小于 {{min}}",
       "parameters": "参数",
-      "payload": "载荷（可选）",
-      "payloadHint": "传递给插件的JSON数据",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "威胁模型ID",
       "title": "调用插件",
       "valueTooLong": "值超过最大长度"
@@ -111,9 +106,9 @@
       "deleteTooltip": "删除用户组",
       "filterLabel": "筛选用户组",
       "filterPlaceholder": "按组名或提供商搜索",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "添加成员",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "当前成员",
         "noMembers": "此组中没有成员",
         "removeTooltip": "从组中移除",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "安装和配置应用程序插件",
-        "title": "{{admin.addons.title}}"
+        "title": "附加组件"
       },
       "groups": {
         "description": "配置用户组和成员资格",
-        "title": "{{admin.groups.title}}"
+        "title": "群组"
+      },
+      "projects": {
+        "description": "管理项目、关系和元数据",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "配置资源配额和限制",
-        "title": "{{admin.quotas.title}}"
+        "title": "配额"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "设置"
       },
       "surveys": {
         "description": "创建和管理调查问卷",
-        "title": "管理调查问卷"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "管理团队和团队成员",
+        "title": "团队"
       },
       "users": {
         "description": "查看和管理用户账户",
-        "title": "{{admin.users.title}}"
+        "title": "用户"
       },
       "webhooks": {
         "description": "安装和配置 webhook 集成",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhook"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "取消编辑",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "来源",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "您确定要删除设置\"{{key}}\"吗？",
       "deleteTooltip": "删除设置",
       "editTooltip": "编辑设置",
       "filterLabel": "筛选",
-      "filterPlaceholder": "按键、值或描述筛选",
+      "filterPlaceholder": "按键名、值、描述或来源筛选",
       "listTitle": "系统设置",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "迁移设置"
       },
       "noSettings": "未找到设置",
+      "readOnlyTooltip": "此设置为只读，无法在此处修改",
       "saveTooltip": "保存更改",
+      "sources": {
+        "config": "配置文件",
+        "database": "数据库",
+        "environment": "环境变量",
+        "vault": "密钥库",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "查看和管理系统配置设置",
       "title": "管理设置",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "管理系统设置和配置",
     "title": "系统管理",
     "users": {
+      "actions": {
+        "manageCredentials": "管理凭证"
+      },
       "administrator": "管理员",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "删除用户账户",
+      "filter": {
+        "automationOnly": "仅显示自动化账户"
+      },
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
       "lastLogin": "最后登录",
-      "listTitle": "用户",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "添加凭证",
+        "deleteConfirm": "确定要删除凭证\"{{name}}\"吗？",
+        "noCredentials": "未找到凭证",
+        "title": "管理 {{userName}} 的凭证"
+      },
       "never": "从未",
       "noUsers": "未找到用户",
       "subtitle": "查看和管理系统用户",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "为此 webhook 创建自动化用户",
         "events": "要订阅的事件类型",
         "eventsHint": "要订阅的事件类型（例如：threat_model.created）",
         "eventsPlaceholder": "选择事件类型",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "留空以自动生成",
         "title": "添加Webhook",
         "url": "Webhook URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "必须是HTTPS URL",
+        "urlHint": "建议使用HTTPS",
+        "urlHttpWarning": "警告：Webhook端点URL应使用HTTPS。服务器可能会拒绝指定非TLS端点的webhook注册。",
+        "urlHttpWarningTitle": "非HTTPS的Webhook URL",
+        "urlInvalid": "必须是有效的URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL为必填项"
+      },
+      "createAutomationUserDialog": {
+        "email": "电子邮件（可选）",
+        "emailHint": "可选 — 默认为自动生成的 @tmi.local 地址",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 个字符，以字母开头",
+        "nameMaxLength": "名称最多 64 个字符",
+        "nameMinLength": "至少需要 2 个字符",
+        "namePattern": "必须以字母开头，以字母或数字结尾",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "创建自动化用户",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "删除webhook",
@@ -308,8 +346,11 @@
         "pending_delete": "待删除",
         "pending_verification": "待验证"
       },
+      "subscriptionId": "订阅 ID",
       "subtitle": "配置webhook订阅以接收事件通知",
-      "title": "管理Webhook"
+      "title": "管理Webhook",
+      "triggerEvents": "触发事件",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "版本为必填项"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "删除问卷失败: {{error}}",
+    "deleteTooltip": "删除问卷",
     "editTemplate": "编辑调查问卷",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "操作",
     "activate": "激活",
     "active": "活跃",
+    "add": "添加",
     "addMetadata": "添加元数据",
     "addThreat": "添加威胁",
     "addons": "插件",
@@ -562,6 +606,8 @@
     "email": "邮箱",
     "emailLabel": "电子邮件地址",
     "error": "错误",
+    "exportAsPng": "导出为 PNG",
+    "exportAsSvg": "导出为 SVG",
     "false": "假",
     "fonts": "字体",
     "groups": "用户组",
@@ -886,9 +932,7 @@
     "pageTitle": "数据流图编辑器",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "导出为 JPEG",
-        "exportAsPng": "导出为 PNG",
-        "exportAsSvg": "导出为 SVG"
+        "exportAsJpeg": "导出为 JPEG"
       },
       "tooltips": {
         "addActor": "添加角色",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI 是一款简化组织安全审查和威胁建模流程的工具。它驱动审查工作流程，组织关键信息，并使团队能够协作构建数据流图。它还可以连接到自动化工具，帮助减少手动工作并更高效地发现安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "正在登录...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "登录到TMI",
+    "tmiDialog": {
+      "errorMaxLength": "用户名最多为20个字符",
+      "errorMinLength": "用户名至少为3个字符",
+      "errorPattern": "用户名只能包含字母和数字",
+      "signIn": "登录",
+      "title": "使用TMI Provider登录",
+      "usernameLabel": "用户名",
+      "usernamePlaceholder": "输入用户名（可选）"
+    },
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "用户权利"
   },
   "projects": {
+    "addButton": "添加项目",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "输入项目描述",
       "namePlaceholder": "输入项目名称",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "创建新项目",
+    "deleteDialog": {
+      "message": "您确定要删除项目 \"{{name}}\" 吗？"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "编辑项目"
+    },
+    "filterLabel": "按名称筛选",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "未找到项目",
     "picker": {
       "label": "{{common.project}}",
       "none": "无项目"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "添加相关项目",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "无相关项目",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "选择项目",
+      "title": "相关项目"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "已取消",
+      "completed": "已完成",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "规划中"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "按状态筛选",
+    "subtitle": "创建、编辑和管理项目、关系和元数据",
+    "teamFilterLabel": "按团队筛选",
+    "title": "管理项目"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "继续编辑",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "按状态筛选",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "您还没有完成任何调查问卷。请从调查问卷页面开始。",
       "noResponsesTitle": "暂无回复",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "提交调查",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "已归档",
+      "archived": "{{teams.status.archived}}",
       "inactive": "未激活"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "查看回复"
   },
   "teams": {
+    "addButton": "添加团队",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "已修改",
+      "name": "{{common.name}}",
+      "projects": "项目",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "输入团队描述",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "创建新团队"
+    "createNew": "创建新团队",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "确定要删除团队 \"{{name}}\" 吗？",
+      "projectWarning": "此团队有 {{count}} 个项目。删除团队可能会影响这些项目。",
+      "title": "删除团队"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "编辑团队"
+    },
+    "filterLabel": "筛选团队",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "成员",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "添加成员",
+      "customRole": "自定义角色",
+      "noMembers": "无成员",
+      "removeMember": "移除成员",
+      "role": "角色",
+      "title": "团队成员"
+    },
+    "noTeams": "未找到团队",
+    "relatedTeamsDialog": {
+      "addRelated": "添加相关团队",
+      "customRelationship": "自定义关系",
+      "noRelated": "无相关团队",
+      "relationship": "关系",
+      "removeRelated": "移除相关团队",
+      "selectTeam": "选择团队",
+      "title": "相关团队"
+    },
+    "relationships": {
+      "child": "子团队",
+      "dependency": "依赖",
+      "dependent": "依赖者",
+      "other": "{{common.other}}",
+      "parent": "父团队",
+      "related": "相关",
+      "superseded_by": "被取代",
+      "supersedes": "取代"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "添加负责方",
+      "noParties": "无负责方",
+      "removeParty": "移除负责方",
+      "title": "负责方"
+    },
+    "roles": {
+      "business_leader": "业务负责人",
+      "engineer": "工程师",
+      "engineering_lead": "工程主管",
+      "other": "{{common.other}}",
+      "product_manager": "产品经理",
+      "security_specialist": "安全专家"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "已归档",
+      "forming": "组建中",
+      "merging": "合并中",
+      "on_hold": "暂停",
+      "splitting": "分裂中",
+      "winding_down": "逐步关闭"
+    },
+    "subtitle": "创建、编辑和管理团队、成员和关系",
+    "title": "管理团队"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "更换安全审查员",
     "clearSecurityReviewer": "清除安全审查员",
     "commit": "提交",
+    "confidentialProject": "机密项目",
     "createFirstButton": "创建您的第一个威胁模型",
     "createNewDiagram": "创建新图表",
     "createNewRepository": "添加仓库引用",
@@ -1305,6 +1494,14 @@
     "documentName": "文档名称",
     "documentUrl": "文档链接",
     "export": "导出",
+    "exportDialog": {
+      "error": "导出数据准备失败。请重试。",
+      "preparing": "正在准备导出数据...",
+      "ready": "导出已准备就绪。点击保存以下载。",
+      "retry": "重试",
+      "save": "保存",
+      "title": "导出威胁模型"
+    },
     "fileSizeExceeded": "文件超出最大导入大小限制：{{maxSize}} MB",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "尚未添加威胁",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "角色",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "管理权限",
     "rename": "重命名",
@@ -1348,10 +1545,12 @@
     "repositoryType": "存储库类型",
     "repositoryUri": "存储库URL",
     "sections": {
+      "audit": "审计",
       "inputs": "输入",
       "inputsDescription": "描述被分析系统的资产、文档和源代码仓库",
       "outputs": "输出",
-      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁"
+      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁",
+      "reviewProcess": "审查流程"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "设为所有者",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "TMI中的图表是系统内数据流动和处理过程的机器可读表示，支持手动和自动化安全分析。",
       "documentsCardTitle": "文档引用是指向存储在TMI外部的文档的链接。相关文档描述要分析的系统，可供安全分析师和自动化分析流程使用。",
       "downloadModel": "下载模型",
+      "dropToCreateDocument": "拖放以创建",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "拖放以设置问题URI",
       "import": "导入",
       "notesCardTitle": "笔记是完全包含在威胁模型中的markdown格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释。",
       "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "添加备注",
+      "columns": {
+        "answer": "回答",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "问题"
+      },
       "markdownSupported": "支持 Markdown",
       "noNotes": "暂无分诊备注",
       "noResponses": "无回复记录",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "标记为审核中",
     "markPendingTriage": "标记为待分诊",
+    "messages": {
+      "approveError": "批准回复失败",
+      "approveSuccess": "回复已批准",
+      "createThreatModelError": "创建威胁模型失败",
+      "createThreatModelSuccess": "威胁模型创建成功",
+      "returnForRevisionError": "退回修订失败",
+      "returnForRevisionSuccess": "回复已退回修订"
+    },
     "noResponses": "暂无待分诊回复",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,7 +1778,7 @@
   "userPreferences": {
     "colorBlindMode": "启用色盲模式",
     "credentials": {
-      "add": "添加",
+      "add": "{{common.add}}",
       "clientId": "客户端ID",
       "clientSecret": "客户端密钥",
       "createDialog": {
@@ -1581,9 +1796,13 @@
         "nameTooLong": "名称不能超过100个字符",
         "title": "创建客户端凭证"
       },
-      "created": "{{common.created}}",
-      "expires": "到期",
+      "createdOn": "{{common.created}}",
+      "credential": "凭证",
+      "expired": "已过期",
+      "expiresAt": "到期",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "上次使用",
+      "neverExpires": "永不过期",
       "noCredentials": "暂无客户端凭证",
       "noCredentialsDescription": "创建凭证以编程方式访问TMI API。",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "在图表编辑器中启用动画效果",
     "displayPreferences": "显示偏好设置",
-    "exportLog": {
+    "downloadLog": {
       "hint": "将最近的应用程序日志条目下载为 JSONL 文件，用于故障排除。",
-      "title": "导出应用程序日志"
+      "title": "下载日志"
     },
     "hoverShowMetadata": "悬停时显示单元格元数据",
     "marginSize": {

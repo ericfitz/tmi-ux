@@ -1,4 +1,11 @@
 import { Injectable } from '@angular/core';
+import type {
+  ApiThreatInput,
+  ApiAssetInput,
+  ApiNoteInput,
+  ApiDocumentInput,
+  ApiRepositoryInput,
+} from '@app/generated/api-type-helpers';
 import { IdTranslationService } from './id-translation.service';
 
 /**
@@ -16,34 +23,32 @@ export class ReferenceRewriterService {
    * Updates: diagram_id, asset_id
    * Preserves: cell_id (client-managed)
    */
-  rewriteThreatReferences(threat: Record<string, unknown>): Record<string, unknown> {
+  rewriteThreatReferences(threat: ApiThreatInput): ApiThreatInput {
     const rewritten = { ...threat };
 
     // Rewrite diagram_id if present
-    if (typeof rewritten['diagram_id'] === 'string' && rewritten['diagram_id']) {
-      const newDiagramId = this._idTranslation.getDiagramId(rewritten['diagram_id']);
+    if (typeof rewritten.diagram_id === 'string' && rewritten.diagram_id) {
+      const newDiagramId = this._idTranslation.getDiagramId(rewritten.diagram_id);
       if (newDiagramId) {
-        rewritten['diagram_id'] = newDiagramId;
+        rewritten.diagram_id = newDiagramId;
       } else {
-        // Diagram ID not found in translation map - clear the reference
         console.warn(
-          `Threat references unknown diagram_id: ${rewritten['diagram_id']}. Reference will be cleared.`,
+          `Threat references unknown diagram_id: ${rewritten.diagram_id}. Reference will be cleared.`,
         );
-        delete rewritten['diagram_id'];
+        delete rewritten.diagram_id;
       }
     }
 
     // Rewrite asset_id if present
-    if (typeof rewritten['asset_id'] === 'string' && rewritten['asset_id']) {
-      const newAssetId = this._idTranslation.getAssetId(rewritten['asset_id']);
+    if (typeof rewritten.asset_id === 'string' && rewritten.asset_id) {
+      const newAssetId = this._idTranslation.getAssetId(rewritten.asset_id);
       if (newAssetId) {
-        rewritten['asset_id'] = newAssetId;
+        rewritten.asset_id = newAssetId;
       } else {
-        // Asset ID not found in translation map - clear the reference
         console.warn(
-          `Threat references unknown asset_id: ${rewritten['asset_id']}. Reference will be cleared.`,
+          `Threat references unknown asset_id: ${rewritten.asset_id}. Reference will be cleared.`,
         );
-        delete rewritten['asset_id'];
+        delete rewritten.asset_id;
       }
     }
 
@@ -123,7 +128,7 @@ export class ReferenceRewriterService {
    * Rewrites ID references in a Note object.
    * Notes don't currently have cross-references to other entities.
    */
-  rewriteNoteReferences(note: Record<string, unknown>): Record<string, unknown> {
+  rewriteNoteReferences(note: ApiNoteInput): ApiNoteInput {
     // No cross-references to rewrite in notes currently
     return { ...note };
   }
@@ -132,7 +137,7 @@ export class ReferenceRewriterService {
    * Rewrites ID references in an Asset object.
    * Assets don't currently have cross-references to other entities.
    */
-  rewriteAssetReferences(asset: Record<string, unknown>): Record<string, unknown> {
+  rewriteAssetReferences(asset: ApiAssetInput): ApiAssetInput {
     // No cross-references to rewrite in assets currently
     return { ...asset };
   }
@@ -141,7 +146,7 @@ export class ReferenceRewriterService {
    * Rewrites ID references in a Document object.
    * Documents don't currently have cross-references to other entities.
    */
-  rewriteDocumentReferences(document: Record<string, unknown>): Record<string, unknown> {
+  rewriteDocumentReferences(document: ApiDocumentInput): ApiDocumentInput {
     // No cross-references to rewrite in documents currently
     return { ...document };
   }
@@ -150,7 +155,7 @@ export class ReferenceRewriterService {
    * Rewrites ID references in a Repository object.
    * Repositories don't currently have cross-references to other entities.
    */
-  rewriteRepositoryReferences(repository: Record<string, unknown>): Record<string, unknown> {
+  rewriteRepositoryReferences(repository: ApiRepositoryInput): ApiRepositoryInput {
     // No cross-references to rewrite in repositories currently
     return { ...repository };
   }

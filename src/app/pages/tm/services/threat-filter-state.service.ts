@@ -6,7 +6,7 @@ import { ThreatFilters, createDefaultThreatFilters } from '../models/threat-filt
  * Survives navigation to/from the threat editor page within the same
  * threat model session. Cleared when a different threat model is opened.
  */
-export interface ThreatCardState {
+interface ThreatCardState {
   threatModelId: string;
   filters: ThreatFilters;
   sortActive: string;

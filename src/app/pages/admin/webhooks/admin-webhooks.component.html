@@ -15,7 +15,7 @@
 
   <mat-card class="filter-card">
     <mat-card-content>
-      <mat-form-field class="filter-field">
+      <mat-form-field class="filter-field" appearance="outline">
         <mat-label [transloco]="'admin.webhooks.filterLabel'">Filter Webhooks</mat-label>
         <input
           matInput
@@ -54,53 +54,76 @@
                 <mat-icon>webhook</mat-icon>
               </div>
 
-              <!-- Row 1 Columns -->
-              <div class="webhook-status">
+              <!-- Row 1: Status, Name -->
+              <div class="webhook-row1">
                 <mat-chip [class]="'status-chip status-' + webhook.status">
                   <mat-icon class="chip-icon">{{ getStatusIcon(webhook.status) }}</mat-icon>
                   <span>{{ 'admin.webhooks.status.' + webhook.status | transloco }}</span>
                 </mat-chip>
-              </div>
-
-              <div class="webhook-url">
-                <button
-                  mat-icon-button
-                  (click)="openWebhookUrl(webhook.url)"
-                  [matTooltip]="webhook.url"
-                >
-                  <mat-icon>link</mat-icon>
-                </button>
-              </div>
-
-              <div class="webhook-name">
-                <strong>{{ webhook.name }}</strong>
+                <strong class="webhook-name">{{ webhook.name }}</strong>
               </div>
 
               <!-- Actions spanning both rows -->
               <div class="webhook-actions">
                 <button
                   mat-icon-button
-                  color="warn"
-                  (click)="onDeleteWebhook(webhook)"
-                  [matTooltip]="'admin.webhooks.deleteTooltip' | transloco"
+                  [matMenuTriggerFor]="webhookKebabMenu"
+                  [matTooltip]="'common.actions' | transloco"
+                  (click)="$event.stopPropagation()"
                 >
-                  <mat-icon>delete</mat-icon>
+                  <mat-icon>more_vert</mat-icon>
                 </button>
+                <mat-menu #webhookKebabMenu="matMenu">
+                  <button mat-menu-item (click)="onDeleteWebhook(webhook)">
+                    <mat-icon>delete</mat-icon>
+                    <span [transloco]="'admin.webhooks.deleteTooltip'">Delete</span>
+                  </button>
+                </mat-menu>
               </div>
 
-              <!-- Row 2 Columns -->
-              <div class="webhook-events">
-                <mat-icon [matTooltip]="getEventsTooltip(webhook.events)">notifications</mat-icon>
-                <span
-                  >{{ webhook.events.length }}
-                  <span [transloco]="'admin.webhooks.events'">events</span></span
-                >
-              </div>
+              <!-- Row 2: Events, Subscription ID, URL, Created -->
+              <div class="webhook-row2">
+                <span class="detail-item" [matTooltip]="getEventsTooltip(webhook.events)">
+                  <mat-icon class="inline-icon">notifications</mat-icon>
+                  <span [transloco]="'admin.webhooks.triggerEvents'">Trigger events</span>:
+                  {{ webhook.events.length }}
+                </span>
 
-              <div class="webhook-created">
-                <mat-icon class="inline-icon">schedule</mat-icon>
-                <span [transloco]="'admin.webhooks.created'">Created</span>
-                {{ webhook.created_at | date: 'short' }}
+                <span class="detail-item">
+                  <mat-icon class="inline-icon">webhook</mat-icon>
+                  <span [transloco]="'admin.webhooks.subscriptionId'">Subscription ID</span>:
+                  {{ webhook.id }}
+                  <button
+                    mat-icon-button
+                    class="copy-button"
+                    (click)="copyToClipboard(webhook.id)"
+                    [matTooltip]="'common.copyToClipboard' | transloco"
+                    [attr.aria-label]="'common.copyToClipboard' | transloco"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                </span>
+
+                <span class="detail-item detail-item-url">
+                  <mat-icon class="inline-icon">link</mat-icon>
+                  <span [transloco]="'admin.webhooks.webhookUrl'">Webhook URL</span>:
+                  <span class="url-text">{{ webhook.url }}</span>
+                  <button
+                    mat-icon-button
+                    class="copy-button"
+                    (click)="copyToClipboard(webhook.url)"
+                    [matTooltip]="'common.copyToClipboard' | transloco"
+                    [attr.aria-label]="'common.copyToClipboard' | transloco"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                </span>
+
+                <span class="detail-item">
+                  <mat-icon class="inline-icon">schedule</mat-icon>
+                  <span [transloco]="'admin.webhooks.created'">Created</span>:
+                  {{ webhook.created_at | date: 'short' }}
+                </span>
               </div>
             </div>
           }

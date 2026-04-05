@@ -48,8 +48,14 @@ import {
 } from '../../types/graph-operation.types';
 import { HistoryOperationType } from '../../types/history.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
-import { shouldTriggerHistoryOrPersistence } from '../../utils/cell-property-filter.util';
+import {
+  shouldTriggerHistoryOrPersistence,
+  sanitizeCellForApi,
+  CANONICAL_EDGE_SHAPE,
+} from '../../utils/cell-property-filter.util';
+import { extractCellsFromGraph } from '../../utils/cell-extraction.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 // Simple interfaces that match what the tests expect
 export interface DfdInitializationParams {
@@ -894,7 +900,7 @@ export class AppDfdOrchestrator {
         operationType: 'create-node' as const,
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `addNode failed: ${error instanceof Error ? error.message : String(error)}`,
+        error: `addNode failed: ${getErrorMessage(error)}`,
       });
     }
   }
@@ -955,38 +961,46 @@ export class AppDfdOrchestrator {
       hasSvg: !!imageData.svg,
     });
 
-    const graph = this.dfdInfrastructure.getGraph();
+    const isCollaborating = this.collaborationService.isCollaborating();
+    const useWebSocket = isCollaborating;
 
-    // Use AppDiagramService (accessed via loading service) to save with image data
-    return (this.appDiagramLoadingService as any).diagramService
-      .saveDiagramChangesWithImage(
-        graph,
-        this._initParams.diagramId,
-        this._initParams.threatModelId,
-        imageData,
-      )
-      .pipe(
-        tap((success: boolean) => {
-          if (success) {
-            this._updateState({
-              hasUnsavedChanges: false,
-              lastSaved: new Date(),
-            });
-            this.logger.info('Diagram saved with image successfully');
-          }
-        }),
-        catchError((error: unknown) => {
-          this.logger.error('Manual save with image failed', { error });
-          return throwError(() => error);
-        }),
-      );
+    const saveOperation = {
+      diagramId: this._initParams.diagramId,
+      threatModelId: this._initParams.threatModelId,
+      data: this._getGraphData(),
+      imageData,
+      metadata: {
+        saveType: 'manual-with-image',
+        providerId: this.authService.providerId,
+        userEmail: this.authService.userEmail,
+        userName: this.authService.username,
+      },
+    };
+
+    return this.appPersistenceCoordinator.save(saveOperation, useWebSocket).pipe(
+      map(result => {
+        if (result.success) {
+          this._stats.autoSaves++;
+          this._updateState({
+            hasUnsavedChanges: false,
+            lastSaved: new Date(),
+          });
+          return true;
+        }
+        return false;
+      }),
+      catchError(error => {
+        this.logger.error('Manual save with image failed', { error });
+        return throwError(() => error);
+      }),
+    );
   }
 
   loadDiagram(forceLoad?: boolean): Observable<any>;
   loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
   loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {
     let targetDiagramId: string | undefined;
-    let shouldForceLoad = false;
+    let shouldForceLoad: boolean;
 
     if (typeof diagramIdOrForceLoad === 'boolean') {
       // Called as loadDiagram(forceLoad)
@@ -1486,8 +1500,8 @@ export class AppDfdOrchestrator {
       metadata: {
         affectedCellCount: result.affectedCellIds.length,
         affectedCellIds: result.affectedCellIds,
-        nodeIds: currentCells.filter(c => c.shape !== 'edge').map(c => c.id),
-        edgeIds: currentCells.filter(c => c.shape === 'edge').map(c => c.id),
+        nodeIds: currentCells.filter(c => c.shape !== CANONICAL_EDGE_SHAPE).map(c => c.id),
+        edgeIds: currentCells.filter(c => c.shape === CANONICAL_EDGE_SHAPE).map(c => c.id),
       },
     };
   }
@@ -1941,24 +1955,17 @@ export class AppDfdOrchestrator {
       return null;
     }
 
-    const graphJson = graph.toJSON();
-    const cells = graphJson.cells || [];
+    const rawCells = extractCellsFromGraph(graph);
+    const normalizedCells = normalizeCells(rawCells);
+    const apiCells = normalizedCells.map(cell => sanitizeCellForApi(cell, this.logger));
 
-    const normalizedCells = normalizeCells(cells);
+    const nodes = apiCells
+      .filter((cell: any) => cell.shape !== CANONICAL_EDGE_SHAPE)
+      .map((cell: any) => ({ ...cell, type: 'node' }));
 
-    const nodes = normalizedCells
-      .filter((cell: any) => cell.shape !== 'edge')
-      .map((cell: any) => ({
-        ...cell,
-        type: 'node',
-      }));
-
-    const edges = normalizedCells
-      .filter((cell: any) => cell.shape === 'edge')
-      .map((cell: any) => ({
-        ...cell,
-        type: 'edge',
-      }));
+    const edges = apiCells
+      .filter((cell: any) => cell.shape === CANONICAL_EDGE_SHAPE)
+      .map((cell: any) => ({ ...cell, type: 'edge' }));
 
     return { nodes, edges };
   }

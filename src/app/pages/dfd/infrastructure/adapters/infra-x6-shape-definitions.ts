@@ -247,6 +247,24 @@ export function registerCustomShapes(): void {
     });
   }
 
+  // Register custom flow edge shape (canonical DFD data flow edge)
+  if (!registeredShapes.has('flow')) {
+    registeredShapes.add('flow');
+    Shape.Edge.define({
+      shape: 'flow',
+      attrs: {
+        line: {
+          stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
+          strokeWidth: DFD_STYLING.EDGES.DEFAULT_STROKE_WIDTH,
+          targetMarker: {
+            name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+            size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
+          },
+        },
+      },
+    });
+  }
+
   // Register custom text-box shape (transparent background, text only)
   if (!registeredShapes.has('text-box')) {
     registeredShapes.add('text-box');
@@ -299,60 +317,5 @@ export function getX6ShapeForNodeType(nodeType: string): string {
       return 'text-box'; // Use custom shape for text-box
     default:
       return 'rect';
-  }
-}
-
-/**
- * Get X6 edge attributes for domain edge type
- */
-export function getEdgeAttrs(edgeType: string): Record<string, unknown> {
-  const baseAttrs = {
-    line: {
-      stroke: DFD_STYLING.EDGES.STROKE,
-      strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
-      targetMarker: {
-        name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
-        size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
-        fill: DFD_STYLING.EDGES.TARGET_MARKER.FILL,
-        stroke: DFD_STYLING.EDGES.TARGET_MARKER.STROKE,
-      },
-    },
-  };
-
-  switch (edgeType) {
-    case 'data-flow':
-      return baseAttrs;
-    case 'trust-boundary':
-      return {
-        ...baseAttrs,
-        line: {
-          ...baseAttrs.line,
-          stroke: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE,
-          strokeWidth: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE_WIDTH,
-          strokeDasharray: DFD_STYLING.EDGES.TRUST_BOUNDARY.STROKE_DASHARRAY,
-          targetMarker: {
-            ...baseAttrs.line.targetMarker,
-            fill: DFD_STYLING.EDGES.TRUST_BOUNDARY.MARKER_FILL,
-            stroke: DFD_STYLING.EDGES.TRUST_BOUNDARY.MARKER_STROKE,
-          },
-        },
-      };
-    case 'control-flow':
-      return {
-        ...baseAttrs,
-        line: {
-          ...baseAttrs.line,
-          stroke: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE,
-          strokeWidth: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE_WIDTH,
-          strokeDasharray: DFD_STYLING.EDGES.CONTROL_FLOW.STROKE_DASHARRAY,
-          targetMarker: {
-            ...baseAttrs.line.targetMarker,
-            fill: DFD_STYLING.EDGES.CONTROL_FLOW.MARKER_FILL,
-            stroke: DFD_STYLING.EDGES.CONTROL_FLOW.MARKER_STROKE,
-          },
-        },
-      };
-    default:
-      return baseAttrs;
   }
 }

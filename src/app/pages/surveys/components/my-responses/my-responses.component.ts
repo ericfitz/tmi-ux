@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -52,6 +53,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
   loading = true;
   error: string | null = null;
+  private _deleteInProgress = false;
 
   statusFilter: ResponseStatus[] = [
     'draft',
@@ -152,6 +154,9 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
    * View a response
    */
   viewResponse(response: SurveyResponseListItem): void {
+    if (this._deleteInProgress) {
+      return;
+    }
     if (response.status === 'draft' || response.status === 'needs_revision') {
       void this.router.navigate(['/intake', 'fill', response.survey_id, response.id]);
     } else {
@@ -163,16 +168,27 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
    * Continue a draft
    */
   continueDraft(response: SurveyResponseListItem): void {
+    if (this._deleteInProgress) {
+      return;
+    }
     void this.router.navigate(['/intake', 'fill', response.survey_id, response.id]);
   }
 
   /**
    * Delete a draft
    */
-  deleteDraft(response: SurveyResponseListItem): void {
+  deleteDraft(response: SurveyResponseListItem, event: Event): void {
+    event.stopPropagation();
+    this._deleteInProgress = true;
+
     this.responseService
       .deleteDraft(response.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this._deleteInProgress = false;
+        }),
+      )
       .subscribe({
         next: () => {
           this.loadResponses();

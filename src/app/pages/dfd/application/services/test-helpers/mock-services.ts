@@ -4,7 +4,7 @@
  */
 
 import { vi } from 'vitest';
-import { BehaviorSubject, Subject, of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 /**
  * Create a mock LoggerService
@@ -123,41 +123,5 @@ export function createMockGraph() {
     on: vi.fn(),
     off: vi.fn(),
     batchUpdate: vi.fn((callback: () => any) => callback()),
-  };
-}
-
-/**
- * Create a mock DfdCollaborationService
- */
-export function createMockCollaborationService() {
-  return {
-    isCurrentUserPresenterModeActive: vi.fn(() => false),
-    isCurrentUserPresenter: vi.fn(() => false),
-    endCollaboration: vi.fn(() => of(undefined)),
-    collaborationState$: new BehaviorSubject({
-      isPresenterModeActive: false,
-      isCollaborating: false,
-    }),
-  };
-}
-
-/**
- * Create a mock InfraDfdWebsocketAdapter
- */
-export function createMockWebsocketAdapter() {
-  return {
-    operationRejected$: new Subject(),
-    diagramOperations$: new Subject(),
-    sendOperation: vi.fn(() => of(undefined)),
-  };
-}
-
-/**
- * Create a mock AppDiagramResyncService
- */
-export function createMockResyncService() {
-  return {
-    triggerResync: vi.fn(),
-    resyncComplete$: new Subject(),
   };
 }

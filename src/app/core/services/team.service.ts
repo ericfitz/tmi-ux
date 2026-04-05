@@ -1,8 +1,8 @@
 /**
  * Team Service
  *
- * Manages team list and create operations via the non-admin API endpoints.
- * Used by the create-project dialog for selecting and creating teams.
+ * Manages team CRUD operations via the non-admin API endpoints.
+ * Used by the create-project dialog and admin teams page.
  */
 
 import { Injectable } from '@angular/core';
@@ -11,10 +11,10 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
-import { Team, TeamInput, TeamFilter, ListTeamsResponse } from '@app/types/team.types';
+import { Team, TeamInput, TeamPatch, TeamFilter, ListTeamsResponse } from '@app/types/team.types';
 
 /**
- * Service for team operations via non-admin API endpoints
+ * Service for full team CRUD operations via non-admin API endpoints
  */
 @Injectable({
   providedIn: 'root',
@@ -56,6 +56,73 @@ export class TeamService {
       }),
       catchError(error => {
         this.logger.error('Failed to create team', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get a team by ID
+   * @param id Team ID
+   */
+  get(id: string): Observable<Team> {
+    return this.apiService.get<Team>(`teams/${id}`).pipe(
+      tap(team => this.logger.debug('Team loaded', { id: team.id })),
+      catchError(error => {
+        this.logger.error('Failed to load team', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Update a team (full replacement)
+   * @param id Team ID
+   * @param team Team input data
+   */
+  update(id: string, team: TeamInput): Observable<Team> {
+    return this.apiService
+      .put<Team>(`teams/${id}`, team as unknown as Record<string, unknown>)
+      .pipe(
+        tap(result => this.logger.info('Team updated', { id: result.id })),
+        catchError(error => {
+          this.logger.error('Failed to update team', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Patch a team (partial update using JSON Patch operations)
+   * @param id Team ID
+   * @param changes Partial team changes to apply as JSON Patch replace operations
+   */
+  patch(id: string, changes: TeamPatch): Observable<Team> {
+    const operations = (Object.entries(changes) as [string, TeamPatch[keyof TeamPatch]][]).map(
+      ([key, value]) => ({
+        op: 'replace' as const,
+        path: `/${key}`,
+        value,
+      }),
+    );
+    return this.apiService.patch<Team>(`teams/${id}`, operations).pipe(
+      tap(result => this.logger.info('Team patched', { id: result.id })),
+      catchError(error => {
+        this.logger.error('Failed to patch team', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Delete a team
+   * @param id Team ID
+   */
+  delete(id: string): Observable<void> {
+    return this.apiService.delete<void>(`teams/${id}`).pipe(
+      tap(() => this.logger.info('Team deleted', { id })),
+      catchError(error => {
+        this.logger.error('Failed to delete team', error);
         throw error;
       }),
     );

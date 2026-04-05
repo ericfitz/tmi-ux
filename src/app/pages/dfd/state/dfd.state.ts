@@ -22,7 +22,7 @@ export interface DfdState {
 /**
  * Initial state for the DFD component
  */
-export const initialDfdState: DfdState = {
+const initialDfdState: DfdState = {
   isInitialized: false,
   graph: null,
   selectedNode: null,

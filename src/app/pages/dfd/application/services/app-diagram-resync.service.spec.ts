@@ -44,7 +44,7 @@ describe('AppDiagramResyncService', () => {
           name: 'Test Diagram',
           cells: [
             { id: 'cell-1', shape: 'process' },
-            { id: 'cell-2', shape: 'edge' },
+            { id: 'cell-2', shape: 'flow' },
           ],
           update_vector: 42,
         }),
@@ -224,7 +224,7 @@ describe('AppDiagramResyncService', () => {
       expect(mockDiagramLoadingService.loadCellsIntoGraph).toHaveBeenCalledWith(
         [
           { id: 'cell-1', shape: 'process' },
-          { id: 'cell-2', shape: 'edge' },
+          { id: 'cell-2', shape: 'flow' },
         ],
         mockGraph,
         'diagram-1',

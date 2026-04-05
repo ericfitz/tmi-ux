@@ -180,7 +180,7 @@ describe('ThreatModel Validation Integration', () => {
             { id: 'cell-1', shape: 'invalid-shape', x: 100, y: 100, width: 120, height: 60 }, // Invalid: unknown shape
             {
               id: 'cell-2',
-              shape: 'edge',
+              shape: 'flow',
               source: { cell: 'cell-1' },
               target: { cell: 'non-existent-cell' },
             }, // Invalid target
@@ -364,7 +364,7 @@ describe('ThreatModel Validation Integration', () => {
             },
             {
               id: '123e4567-e89b-12d3-a456-426614174012',
-              shape: 'edge',
+              shape: 'flow',
               source: { cell: '123e4567-e89b-12d3-a456-426614174010' },
               target: { cell: '123e4567-e89b-12d3-a456-426614174011' },
             },

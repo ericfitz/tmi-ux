@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
@@ -96,6 +96,9 @@ export class GroupAdminService {
     return this.apiService
       .get<ListGroupMembersResponse>(`admin/groups/${internal_uuid}/members`, params)
       .pipe(
+        map(
+          response => response ?? { members: [], total: 0, limit: limit ?? 0, offset: offset ?? 0 },
+        ),
         tap(response => {
           this.logger.debug('Group members loaded', {
             internal_uuid,

@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.overlay-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--theme-surface, #fff);
+}
+
+.overlay-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 4px;
+  background-color: var(--theme-surface, #fff);
+  border-bottom: 1px solid var(--theme-divider, #e0e0e0);
+  z-index: 1;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.overlay-viewport {
+  flex: 1;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+
+  &.panning {
+    cursor: grabbing;
+  }
+}
+
+.svg-container {
+  transform-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.svg-host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ::ng-deep svg {
+    max-width: none;
+    max-height: none;
+  }
+}

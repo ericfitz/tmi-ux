@@ -403,6 +403,80 @@ describe('LoggerService', () => {
         'eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==',
       ); // Full token
     });
+
+    it('should strip control characters from string params', () => {
+      const malicious = 'normal\nForged [INFO] entry\r\x00hidden';
+      service.debug('Message', malicious);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as string;
+
+      expect(sanitized).toBe('normalForged [INFO] entryhidden');
+      expect(sanitized).not.toContain('\n');
+      expect(sanitized).not.toContain('\r');
+      expect(sanitized).not.toContain('\x00');
+    });
+
+    it('should recursively sanitize object params', () => {
+      const malicious = {
+        name: 'normal',
+        nested: {
+          value: 'has\nnewline\rand\x00null',
+        },
+        list: ['clean', 'has\nnewline'],
+      };
+      service.debug('Message', malicious);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as Record<string, unknown>;
+
+      expect(sanitized['name']).toBe('normal');
+      const nested = sanitized['nested'] as Record<string, unknown>;
+      expect(nested['value']).toBe('hasnewlineandnull');
+      const list = sanitized['list'] as string[];
+      expect(list[0]).toBe('clean');
+      expect(list[1]).toBe('hasnewline');
+    });
+
+    it('should produce null-prototype objects to prevent prototype pollution', () => {
+      const input = { constructor: 'evil', toString: 'overwritten', normal: 'good' };
+      service.debug('Message', input);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as Record<string, unknown>;
+
+      expect(sanitized['normal']).toBe('good');
+      expect(sanitized['constructor']).toBe('evil');
+      expect(sanitized['toString']).toBe('overwritten');
+      expect(Object.getPrototypeOf(sanitized)).toBeNull();
+    });
+
+    it('should sanitize control characters in object keys', () => {
+      const obj = { safe: 'value', 'has\nnewline': 'value2' };
+      service.debug('Message', obj);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as Record<string, unknown>;
+
+      expect(sanitized['safe']).toBe('value');
+      expect(sanitized['hasnewline']).toBe('value2');
+      expect(Object.keys(sanitized)).not.toContain('has\nnewline');
+    });
+
+    it('should pass through non-string non-object params unchanged', () => {
+      service.debug('Message', 42, true, null);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+
+      expect(lastCall[1]).toBe(42);
+      expect(lastCall[2]).toBe(true);
+      expect(lastCall[3]).toBeNull();
+    });
   });
 
   describe('Ring Buffer', () => {

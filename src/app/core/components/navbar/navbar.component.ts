@@ -35,6 +35,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 import { BrandingConfigService } from '../../services/branding-config.service';
+import { version } from '../../../../../package.json';
+import { gitCommit } from '../../../../build-info.json';
 
 @Component({
   selector: 'app-navbar',
@@ -414,9 +416,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
       },
     );
 
+    const serverVersion = this.serverConnectionService.getFormattedServerVersion() || 'unknown';
     const title = encodeURIComponent('bug: ');
     const body = encodeURIComponent(
-      '## Description\n\nDescribe the bug here.\n\n## Steps to Reproduce\n\n1. \n2. \n3. \n\n' +
+      `## Environment\n\n- Client: ${version} (${gitCommit})\n- Server: ${serverVersion}\n\n` +
+        '## Description\n\nDescribe the bug here.\n\n## Steps to Reproduce\n\n1. \n2. \n3. \n\n' +
         '## Application Log\n\nThe application log has been copied to your clipboard. ' +
         'Please paste it below, between the tick marks. Alternatively, if you downloaded ' +
         'the application log file from the preferences dialog, please attach the file to ' +

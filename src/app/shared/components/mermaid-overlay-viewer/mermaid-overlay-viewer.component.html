@@ -1,0 +1,72 @@
+<div class="overlay-container" cdkTrapFocus (wheel)="onWheel($event)">
+  <!-- Toolbar -->
+  <div class="overlay-toolbar">
+    <button mat-icon-button (click)="zoomIn()" [matTooltip]="'mermaidViewer.zoomIn' | transloco">
+      <mat-icon>zoom_in</mat-icon>
+    </button>
+    <button mat-icon-button (click)="zoomOut()" [matTooltip]="'mermaidViewer.zoomOut' | transloco">
+      <mat-icon>zoom_out</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="resetZoom()"
+      [matTooltip]="'mermaidViewer.resetZoom' | transloco"
+    >
+      <mat-icon>fit_screen</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="fitToView()"
+      [matTooltip]="'mermaidViewer.fitToScreen' | transloco"
+    >
+      <mat-icon>zoom_out_map</mat-icon>
+    </button>
+    <span class="toolbar-spacer"></span>
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="exportMenu"
+      [matTooltip]="'common.save' | transloco"
+    >
+      <mat-icon>save_alt</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="copyToClipboard()"
+      [matTooltip]="'common.copyToClipboard' | transloco"
+    >
+      <mat-icon>content_copy</mat-icon>
+    </button>
+    <button mat-icon-button (click)="close()" [matTooltip]="'common.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Export Menu -->
+  <mat-menu #exportMenu="matMenu">
+    <button mat-menu-item (click)="onExportSvg()">
+      <mat-icon>image</mat-icon>
+      <span>{{ 'common.exportAsSvg' | transloco }}</span>
+    </button>
+    <button mat-menu-item (click)="onExportPng()">
+      <mat-icon>image</mat-icon>
+      <span>{{ 'common.exportAsPng' | transloco }}</span>
+    </button>
+  </mat-menu>
+
+  <!-- Viewport -->
+  <div
+    class="overlay-viewport"
+    [class.panning]="isPanning"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
+    <div
+      class="svg-container"
+      [style.transform]="'translate(' + panX + 'px, ' + panY + 'px) scale(' + currentZoom + ')'"
+    >
+      <div #svgHost class="svg-host"></div>
+    </div>
+  </div>
+</div>

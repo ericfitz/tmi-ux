@@ -7,7 +7,7 @@ import { REPORT_STYLES, SPACING, STRUCTURAL_COLORS, FontVariant } from './pdf-st
 /**
  * A segment of text with a style annotation, used for mixed-style rendering.
  */
-export interface TextSegment {
+interface TextSegment {
   text: string;
   style: FontVariant;
 }

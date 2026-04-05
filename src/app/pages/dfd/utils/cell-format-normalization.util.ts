@@ -14,6 +14,7 @@ import {
   validateAndFixParentChildRelationships,
   ValidationResult,
 } from './cell-relationship-validation.util';
+import { CANONICAL_EDGE_SHAPE } from './cell-property-filter.util';
 
 /**
  * Normalizes a single cell from flat format to nested format
@@ -29,6 +30,13 @@ import {
 export function normalizeCellFormat(cell: Cell): Cell {
   // Create a shallow copy to avoid mutating the original
   const normalized = { ...cell };
+
+  // Normalize legacy shape values to API-canonical forms
+  if (normalized.shape === 'edge') {
+    normalized.shape = CANONICAL_EDGE_SHAPE;
+  } else if (normalized.shape === 'textbox') {
+    normalized.shape = 'text-box';
+  }
 
   // Convert flat x, y properties to nested position {x, y} object
   if (normalized['x'] !== undefined && normalized['y'] !== undefined && !normalized.position) {
@@ -73,6 +81,7 @@ export function normalizeCellFormat(cell: Cell): Cell {
  *
  * @param cells - Array of cells in either flat (X6 v1) or nested (X6 v2) format
  * @returns Array of cells in X6 v2 native nested format
+ * @public
  */
 export function normalizeCellsFormat(cells: Cell[]): Cell[] {
   if (!Array.isArray(cells)) {

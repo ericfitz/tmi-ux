@@ -5,6 +5,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { OperatorService } from '../../core/services/operator.service';
 import { ServerConnectionService } from '../../core/services/server-connection.service';
 import { version } from '../../../../package.json';
+import { gitCommit } from '../../../build-info.json';
 
 @Component({
   selector: 'app-about',
@@ -88,8 +89,8 @@ export class AboutComponent implements OnInit {
     this.operatorName = this.operatorService.getOperatorName();
     this.operatorContact = this.operatorService.getOperatorContact();
     this.operatorJurisdiction = this.operatorService.getOperatorJurisdiction();
-    this.webApplicationVersion = version;
-    this.serverVersion = this.serverConnectionService.getServerVersion() || '';
+    this.webApplicationVersion = `${version} (${gitCommit})`;
+    this.serverVersion = this.serverConnectionService.getFormattedServerVersion();
   }
 
   goBack(): void {

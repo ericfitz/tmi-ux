@@ -11,7 +11,3 @@ let _globalInjector: Injector;
 export function setInjector(injector: Injector): void {
   _globalInjector = injector;
 }
-
-export function getInjector(): Injector {
-  return _globalInjector;
-}

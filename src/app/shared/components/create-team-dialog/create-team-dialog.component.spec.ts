@@ -41,8 +41,8 @@ describe('CreateTeamDialogComponent', () => {
       expect(component.form.get('uri')?.value).toBe('');
     });
 
-    it('should have empty status by default', () => {
-      expect(component.form.get('status')?.value).toBe('');
+    it('should have null status by default', () => {
+      expect(component.form.get('status')?.value).toBeNull();
     });
   });
 

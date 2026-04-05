@@ -37,7 +37,7 @@ import {
 } from '../../types/pagination.types';
 import { calculateOffset } from './pagination.util';
 
-export interface PaginationRequestParams {
+interface PaginationRequestParams {
   limit: number;
   offset: number;
 }

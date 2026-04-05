@@ -28,7 +28,7 @@ export class ClientCredentialService {
    */
   public list(): Observable<ClientCredentialInfo[]> {
     return this.apiService.get<ListClientCredentialsResponse>('me/client_credentials').pipe(
-      map(response => response.client_credentials || []),
+      map(response => response.credentials || []),
       tap(credentials => {
         this.logger.debug('Client credentials loaded', { count: credentials.length });
       }),

@@ -1,0 +1,209 @@
+<div class="admin-page-container">
+  <div class="admin-header">
+    <div class="header-content">
+      <h1 [transloco]="'projects.title'">Manage Projects</h1>
+      <p class="subtitle" [transloco]="'projects.subtitle'">
+        Create, edit, and manage projects, teams, and relationships
+      </p>
+    </div>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filter-row">
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label [transloco]="'projects.filterNameLabel'">Filter by Name</mat-label>
+          <input
+            matInput
+            [value]="filterName"
+            (input)="onNameFilterChange($any($event.target).value)"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label [transloco]="'projects.filterTeamLabel'">Filter by Team</mat-label>
+          <input
+            matInput
+            [value]="filterTeamName"
+            (input)="onTeamFilterInput($any($event.target).value)"
+            [matAutocomplete]="teamAuto"
+          />
+          <mat-icon matPrefix>group</mat-icon>
+          @if (filterTeamId) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="clearTeamFilter()"
+              [matTooltip]="'common.clear' | transloco"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <mat-autocomplete
+            #teamAuto="matAutocomplete"
+            [displayWith]="displayTeam"
+            (optionSelected)="onTeamSelected($event)"
+          >
+            @for (team of teamSuggestions$ | async; track team.id) {
+              <mat-option [value]="team">{{ team.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label [transloco]="'projects.filterStatusLabel'">Filter by Status</mat-label>
+          <mat-select [value]="filterStatus" (selectionChange)="onStatusFilterChange($event.value)">
+            <mat-option [value]="null">
+              {{ 'projects.allStatuses' | transloco }}
+            </mat-option>
+            @for (status of projectStatuses; track status) {
+              <mat-option [value]="status">
+                {{ getStatusLabel(status) | transloco }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (hasActiveFilters()) {
+          <button mat-stroked-button class="clear-filters-btn" (click)="clearFilters()">
+            <mat-icon>filter_list_off</mat-icon>
+            <span [transloco]="'projects.clearFilters'">Clear Filters</span>
+          </button>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="projects-card">
+    <mat-card-header>
+      <mat-card-title [transloco]="'projects.listTitle'">Projects</mat-card-title>
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="onAddProject()">
+          <mat-icon>add</mat-icon>
+          <span [transloco]="'projects.addButton'">Add Project</span>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (dataSource.data.length > 0) {
+        <table mat-table [dataSource]="dataSource" matSort class="projects-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'projects.columns.name' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let project" [matTooltip]="project.description || ''">
+              {{ project.name }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'projects.columns.status' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let project">
+              @if (project.status) {
+                {{ getStatusLabel(project.status) | transloco }}
+              } @else {
+                —
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="team">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'projects.columns.team' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let project">
+              {{ project.team_name || '—' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="modified">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'projects.columns.modified' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let project">
+              {{ project.modified_at | date: 'yyyy-MM-dd' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-column">
+              {{ 'common.actions' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let project" class="actions-column">
+              <div class="action-buttons">
+                <button
+                  mat-icon-button
+                  (click)="onEditDetails(project)"
+                  [matTooltip]="'common.edit' | transloco"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="rowKebab"
+                  [matTooltip]="'common.moreActions' | transloco"
+                  (click)="$event.stopPropagation()"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #rowKebab="matMenu">
+                  <button mat-menu-item (click)="onResponsibleParties(project)">
+                    <mat-icon>supervisor_account</mat-icon>
+                    <span [transloco]="'projects.kebab.responsibleParties'">
+                      Responsible Parties
+                    </span>
+                  </button>
+                  <button mat-menu-item (click)="onRelatedProjects(project)">
+                    <mat-icon>link</mat-icon>
+                    <span [transloco]="'projects.kebab.relatedProjects'">Related Projects</span>
+                  </button>
+                  <button mat-menu-item (click)="onMetadata(project)">
+                    <mat-icon>list</mat-icon>
+                    <span [transloco]="'projects.kebab.metadata'">Metadata</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="onDelete(project)" class="delete-action">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span [transloco]="'projects.kebab.delete'">Delete</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      } @else {
+        <div class="no-items-message">
+          <mat-icon class="no-items-icon">folder_off</mat-icon>
+          <p [transloco]="'projects.noProjects'">No projects found</p>
+        </div>
+      }
+
+      @if (!loading && totalProjects > 0) {
+        <mat-paginator
+          [length]="totalProjects"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        ></mat-paginator>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

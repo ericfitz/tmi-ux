@@ -13,6 +13,7 @@ import {
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -31,6 +32,7 @@ import {
   CreateSurveyDialogComponent,
   CreateSurveyDialogResult,
 } from './components/create-survey-dialog/create-survey-dialog.component';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Admin surveys component
@@ -86,6 +88,7 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -384,6 +387,37 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
         },
         error: error => {
           this.logger.error('Failed to unarchive template', error);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /**
+   * Delete a template after confirmation
+   */
+  deleteTemplate(template: SurveyListItem): void {
+    const item = this.transloco.translate('common.objectTypes.survey');
+    const message = this.transloco.translate('common.confirmDelete', {
+      item,
+      name: template.name,
+    });
+
+    if (!confirm(message)) return;
+
+    this.surveyService
+      .deleteSurvey(template.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.loadTemplates();
+        },
+        error: (error: unknown) => {
+          const errorMessage = getErrorMessage(error);
+          this.snackBar.open(
+            this.transloco.translate('adminSurveys.deleteError', { error: errorMessage }),
+            this.transloco.translate('common.dismiss'),
+            { duration: 5000 },
+          );
           this.cdr.markForCheck();
         },
       });

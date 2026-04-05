@@ -5,6 +5,7 @@ import {
   CellOption,
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { LoggerService } from '../../core/services/logger.service';
+import { CANONICAL_EDGE_SHAPE } from '../../pages/dfd/utils/cell-property-filter.util';
 
 /**
  * Interface for X6 Graph basic operations
@@ -66,7 +67,7 @@ interface StoredCell {
 /**
  * Interface for extracted cell data that includes both diagram and cell information
  */
-export interface DiagramCellData {
+interface DiagramCellData {
   diagrams: DiagramOption[];
   cells: CellOption[];
 }
@@ -283,7 +284,11 @@ export class CellDataExtractionService {
 
   /** Extracts label from X6 edge labels array (labels[].attrs.text.text). */
   private tryExtractEdgeLabel(cell: StoredCell): string | null {
-    if (cell.shape !== 'edge' || !Array.isArray(cell.labels) || cell.labels.length === 0) {
+    if (
+      cell.shape !== CANONICAL_EDGE_SHAPE ||
+      !Array.isArray(cell.labels) ||
+      cell.labels.length === 0
+    ) {
       return null;
     }
     const labelText = cell.labels[0]?.attrs?.text?.text;

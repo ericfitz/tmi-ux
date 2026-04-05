@@ -75,7 +75,8 @@
                     <app-user-display [user]="response.reviewed_by" />
                     @if (response.reviewed_at) {
                       <span class="reviewed-date">
-                        &middot; {{ response.reviewed_at | date: 'medium' }}
+                        &middot;
+                        {{ response.reviewed_at | date: 'medium' : undefined : currentLocale }}
                       </span>
                     }
                   </div>
@@ -111,10 +112,10 @@
                       }
                     </div>
                     <div class="timeline-label">
-                      <span class="timeline-status">{{ entry.label }}</span>
+                      <span class="timeline-status">{{ entry.label | transloco }}</span>
                       @if (entry.timestamp) {
                         <span class="timeline-timestamp">{{
-                          entry.timestamp | date: 'short'
+                          entry.timestamp | date: 'short' : undefined : currentLocale
                         }}</span>
                       }
                     </div>
@@ -126,6 +127,97 @@
               </div>
             </mat-card-content>
           </mat-card>
+
+          <!-- Triage Notes (expandable) -->
+          <div class="section-group">
+            <button
+              class="section-header"
+              type="button"
+              (click)="toggleTriageNotesSection()"
+              [attr.aria-expanded]="triageNotesSectionExpanded"
+              aria-controls="triage-notes-section-body"
+            >
+              <mat-icon class="section-toggle-icon" [class.collapsed]="!triageNotesSectionExpanded">
+                expand_more
+              </mat-icon>
+              <span class="section-title" [transloco]="'triage.detail.triageNotes'">
+                Triage Notes
+              </span>
+              <span class="section-description">
+                {{ triageNotes.length }}
+                {{
+                  triageNotes.length === 1
+                    ? ('triage.detail.note' | transloco)
+                    : ('triage.detail.notes' | transloco)
+                }}
+              </span>
+            </button>
+            <div
+              class="section-body"
+              id="triage-notes-section-body"
+              [hidden]="!triageNotesSectionExpanded"
+            >
+              <mat-card class="notes-card">
+                <mat-card-content>
+                  @if (isLoadingNotes) {
+                    <div class="notes-loading">
+                      <mat-spinner diameter="24"></mat-spinner>
+                    </div>
+                  } @else if (triageNotes.length === 0) {
+                    <div class="notes-empty">
+                      <mat-icon>description</mat-icon>
+                      <p>{{ 'triage.detail.noNotes' | transloco }}</p>
+                    </div>
+                  } @else {
+                    <div class="notes-table-container">
+                      <table mat-table [dataSource]="triageNotes" class="notes-table">
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                          <th mat-header-cell *matHeaderCellDef>
+                            {{ 'triage.noteEditor.nameLabel' | transloco }}
+                          </th>
+                          <td mat-cell *matCellDef="let note">
+                            <a class="note-link" (click)="viewNote(note)">{{ note.name }}</a>
+                          </td>
+                        </ng-container>
+
+                        <!-- Created By Column -->
+                        <ng-container matColumnDef="created_by">
+                          <th mat-header-cell *matHeaderCellDef>
+                            {{ 'common.createdBy' | transloco }}
+                          </th>
+                          <td mat-cell *matCellDef="let note">
+                            @if (note.created_by) {
+                              <app-user-display [user]="note.created_by" />
+                            }
+                          </td>
+                        </ng-container>
+
+                        <!-- Created At Column -->
+                        <ng-container matColumnDef="created_at">
+                          <th mat-header-cell *matHeaderCellDef>
+                            {{ 'common.created' | transloco }}
+                          </th>
+                          <td mat-cell *matCellDef="let note">
+                            {{ note.created_at | date: 'short' : undefined : currentLocale }}
+                          </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="notesDisplayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: notesDisplayedColumns"></tr>
+                      </table>
+                    </div>
+                  }
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-button (click)="openNoteEditor()">
+                    <mat-icon>add</mat-icon>
+                    {{ 'triage.detail.addNote' | transloco }}
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+          </div>
         </div>
 
         <!-- Right column: Response Details (spans rows 1-2) -->
@@ -138,7 +230,7 @@
               <div class="info-item">
                 <span class="info-label">{{ 'common.status' | transloco }}</span>
                 <mat-chip [ngClass]="getStatusClass(response.status)">
-                  {{ getStatusLabel(response.status) }}
+                  {{ 'surveys.status.' + getStatusKey(response.status) | transloco }}
                 </mat-chip>
               </div>
 
@@ -156,6 +248,13 @@
                 </div>
               }
 
+              @if (surveyJson?.title) {
+                <div class="info-item">
+                  <span class="info-label">{{ 'common.objectTypes.survey' | transloco }}</span>
+                  <span class="info-value">{{ surveyJson?.title }}</span>
+                </div>
+              }
+
               <div class="info-item">
                 <span class="info-label">{{ 'common.version' | transloco }}</span>
                 <span class="info-value">v{{ response.survey_version }}</span>
@@ -163,13 +262,17 @@
 
               <div class="info-item">
                 <span class="info-label">{{ 'common.created' | transloco }}</span>
-                <span class="info-value">{{ response.created_at | date: 'medium' }}</span>
+                <span class="info-value">{{
+                  response.created_at | date: 'medium' : undefined : currentLocale
+                }}</span>
               </div>
 
               @if (response.submitted_at) {
                 <div class="info-item">
                   <span class="info-label">{{ 'triage.list.submitted' | transloco }}</span>
-                  <span class="info-value">{{ response.submitted_at | date: 'medium' }}</span>
+                  <span class="info-value">{{
+                    response.submitted_at | date: 'medium' : undefined : currentLocale
+                  }}</span>
                 </div>
               }
 
@@ -182,16 +285,11 @@
                 </div>
               }
 
-              @if (response.reviewed_at) {
-                <div class="info-item">
-                  <span class="info-label">{{ 'triage.detail.reviewedAt' | transloco }}</span>
-                  <span class="info-value">{{ response.reviewed_at | date: 'medium' }}</span>
-                </div>
-              }
-
               <div class="info-item">
                 <span class="info-label">{{ 'common.lastModified' | transloco }}</span>
-                <span class="info-value">{{ response.modified_at | date: 'medium' }}</span>
+                <span class="info-value">{{
+                  response.modified_at | date: 'medium' : undefined : currentLocale
+                }}</span>
               </div>
 
               @if (response.created_threat_model_id) {
@@ -205,7 +303,19 @@
 
               <div class="info-item">
                 <span class="info-label">{{ 'common.id' | transloco }}</span>
-                <span class="info-value monospace">{{ response.id }}</span>
+                <div class="id-row">
+                  <span class="info-value monospace">{{ response.id }}</span>
+                  @if (response.id) {
+                    <button
+                      mat-icon-button
+                      class="copy-id-button"
+                      (click)="copyResponseId()"
+                      [matTooltip]="'common.copyToClipboard' | transloco"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  }
+                </div>
               </div>
             </div>
           </mat-card-content>
@@ -244,107 +354,50 @@
                   <p>{{ 'triage.detail.noResponses' | transloco }}</p>
                 </div>
               } @else {
-                <div class="responses-list">
-                  @for (item of formattedResponses; track item.name) {
-                    <div class="response-item">
-                      <div class="response-question">{{ item.question }}</div>
-                      <div class="response-answer">{{ item.answer }}</div>
-                    </div>
-                  }
-                </div>
-              }
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </div>
-
-      <!-- Row 4: Triage Notes (expandable, full width) -->
-      <div class="section-group">
-        <button
-          class="section-header"
-          type="button"
-          (click)="toggleTriageNotesSection()"
-          [attr.aria-expanded]="triageNotesSectionExpanded"
-          aria-controls="triage-notes-section-body"
-        >
-          <mat-icon class="section-toggle-icon" [class.collapsed]="!triageNotesSectionExpanded">
-            expand_more
-          </mat-icon>
-          <span class="section-title" [transloco]="'triage.detail.triageNotes'">
-            Triage Notes
-          </span>
-          <span class="section-description">
-            {{ triageNotes.length }}
-            {{
-              triageNotes.length === 1
-                ? ('triage.detail.note' | transloco)
-                : ('triage.detail.notes' | transloco)
-            }}
-          </span>
-        </button>
-        <div
-          class="section-body"
-          id="triage-notes-section-body"
-          [hidden]="!triageNotesSectionExpanded"
-        >
-          <mat-card class="notes-card">
-            <mat-card-content>
-              @if (isLoadingNotes) {
-                <div class="notes-loading">
-                  <mat-spinner diameter="24"></mat-spinner>
-                </div>
-              } @else if (triageNotes.length === 0) {
-                <div class="notes-empty">
-                  <mat-icon>description</mat-icon>
-                  <p>{{ 'triage.detail.noNotes' | transloco }}</p>
-                </div>
-              } @else {
-                <div class="notes-table-container">
-                  <table mat-table [dataSource]="triageNotes" class="notes-table">
-                    <!-- Name Column -->
-                    <ng-container matColumnDef="name">
+                <div class="responses-table-container">
+                  <table mat-table [dataSource]="formattedResponses" class="responses-table">
+                    <!-- Group Column -->
+                    <ng-container matColumnDef="group">
                       <th mat-header-cell *matHeaderCellDef>
-                        {{ 'triage.noteEditor.nameLabel' | transloco }}
+                        {{ 'triage.detail.columns.group' | transloco }}
                       </th>
-                      <td mat-cell *matCellDef="let note">
-                        <a class="note-link" (click)="viewNote(note)">{{ note.name }}</a>
+                      <td
+                        mat-cell
+                        *matCellDef="let row"
+                        class="group-cell"
+                        [matTooltip]="row.groupId"
+                        [matTooltipDisabled]="!row.groupId"
+                      >
+                        {{ row.group }}
                       </td>
                     </ng-container>
 
-                    <!-- Created By Column -->
-                    <ng-container matColumnDef="created_by">
+                    <!-- Question Column -->
+                    <ng-container matColumnDef="question">
                       <th mat-header-cell *matHeaderCellDef>
-                        {{ 'common.createdBy' | transloco }}
+                        {{ 'triage.detail.columns.question' | transloco }}
                       </th>
-                      <td mat-cell *matCellDef="let note">
-                        @if (note.created_by) {
-                          <app-user-display [user]="note.created_by" />
-                        }
+                      <td mat-cell *matCellDef="let row" [matTooltip]="row.questionId">
+                        {{ row.question }}
                       </td>
                     </ng-container>
 
-                    <!-- Created At Column -->
-                    <ng-container matColumnDef="created_at">
+                    <!-- Answer Column -->
+                    <ng-container matColumnDef="answer">
                       <th mat-header-cell *matHeaderCellDef>
-                        {{ 'common.created' | transloco }}
+                        {{ 'triage.detail.columns.answer' | transloco }}
                       </th>
-                      <td mat-cell *matCellDef="let note">
-                        {{ note.created_at | date: 'short' }}
+                      <td mat-cell *matCellDef="let row" class="answer-cell">
+                        {{ row.answer }}
                       </td>
                     </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="notesDisplayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: notesDisplayedColumns"></tr>
+                    <tr mat-header-row *matHeaderRowDef="responsesDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: responsesDisplayedColumns"></tr>
                   </table>
                 </div>
               }
             </mat-card-content>
-            <mat-card-actions>
-              <button mat-button (click)="openNoteEditor()">
-                <mat-icon>add</mat-icon>
-                {{ 'triage.detail.addNote' | transloco }}
-              </button>
-            </mat-card-actions>
           </mat-card>
         </div>
       </div>

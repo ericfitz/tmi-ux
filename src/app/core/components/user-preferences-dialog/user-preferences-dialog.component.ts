@@ -70,71 +70,94 @@ interface CheckboxChangeEvent {
               User Profile
             </h3>
 
-            <div class="profile-info">
-              <div class="profile-item">
-                <span class="profile-label" [transloco]="'common.name'">Name</span>
-                <span class="profile-value"
-                  ><app-user-display [user]="userProfile" fallback="N/A"
-                /></span>
-              </div>
-
-              <div class="profile-item">
-                <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
-                <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
-              </div>
-
-              @if (userProfile?.provider) {
+            <div class="profile-layout">
+              <div class="profile-info">
                 <div class="profile-item">
-                  <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
-                    Identity Provider
-                  </span>
-                  <span class="profile-value">{{ userProfile?.provider }}</span>
+                  <span class="profile-label" [transloco]="'common.name'">Name</span>
+                  <span class="profile-value"
+                    ><app-user-display [user]="userProfile" fallback="N/A"
+                  /></span>
                 </div>
-              }
 
-              @if (userProfile?.provider_id) {
+                <div class="profile-item">
+                  <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
+                  <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
+                </div>
+
+                @if (userProfile?.provider) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.provider'"
+                    >
+                      Identity Provider
+                    </span>
+                    <span class="profile-value">{{ userProfile?.provider }}</span>
+                  </div>
+                }
+
+                @if (userProfile?.provider_id) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.providerId'"
+                    >
+                      Provider ID
+                    </span>
+                    <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                  </div>
+                }
+
                 <div class="profile-item">
                   <span
                     class="profile-label"
-                    [transloco]="'userPreferences.userProfile.providerId'"
+                    [transloco]="'userPreferences.userProfile.groupMemberships'"
                   >
-                    Provider ID
+                    Group Memberships
                   </span>
-                  <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                  @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
+                    <div class="profile-value groups-list">
+                      @for (group of userProfile?.groups; track group.internal_uuid) {
+                        <span class="group-badge">{{ group.name ?? group.group_name }}</span>
+                      }
+                    </div>
+                  } @else {
+                    <span class="profile-value" [transloco]="'common.none'">None</span>
+                  }
                 </div>
-              }
 
-              <div class="profile-item">
-                <span
-                  class="profile-label"
-                  [transloco]="'userPreferences.userProfile.groupMemberships'"
-                >
-                  Group Memberships
-                </span>
-                @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
-                  <div class="profile-value groups-list">
-                    @for (group of userProfile?.groups; track group.internal_uuid) {
-                      <span class="group-badge">{{ group.name ?? group.group_name }}</span>
-                    }
+                @if (currentThreatModelRole) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.currentRole'"
+                    >
+                      Current Threat Model Role
+                    </span>
+                    <span class="profile-value">
+                      {{ 'common.roles.' + currentThreatModelRole | transloco }}
+                    </span>
                   </div>
-                } @else {
-                  <span class="profile-value" [transloco]="'common.none'">None</span>
                 }
               </div>
-
-              @if (currentThreatModelRole) {
-                <div class="profile-item">
-                  <span
-                    class="profile-label"
-                    [transloco]="'userPreferences.userProfile.currentRole'"
+              <mat-divider [vertical]="true"></mat-divider>
+              <div class="profile-actions">
+                <div class="profile-actions-content">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="onExportLog()"
+                    class="download-log-button"
                   >
-                    Current Threat Model Role
-                  </span>
-                  <span class="profile-value">
-                    {{ 'common.roles.' + currentThreatModelRole | transloco }}
-                  </span>
+                    <mat-icon>download</mat-icon>
+                    <span [transloco]="'userPreferences.downloadLog.title'">Download Log</span>
+                  </button>
+                  <p class="download-log-hint" [transloco]="'userPreferences.downloadLog.hint'">
+                    Downloads the most recent application log entries as a JSONL file for
+                    troubleshooting.
+                  </p>
                 </div>
-              }
+              </div>
             </div>
           </div>
         </mat-tab>
@@ -287,138 +310,145 @@ interface CheckboxChangeEvent {
           </div>
         </mat-tab>
 
-        <!-- Credentials Tab -->
-        <mat-tab [label]="'userPreferences.tabs.credentials' | transloco">
-          <div class="tab-content credentials-tab">
-            <h3 class="section-header" [transloco]="'userPreferences.credentials.title'">
-              Client Credentials
-            </h3>
+        <!-- Credentials Tab (admins and security reviewers only) -->
+        @if (canManageCredentials) {
+          <mat-tab [label]="'userPreferences.tabs.credentials' | transloco">
+            <div class="tab-content credentials-tab">
+              <h3 class="section-header" [transloco]="'userPreferences.credentials.title'">
+                Client Credentials
+              </h3>
 
-            @if (credentialsLoading) {
-              <div class="credentials-loading">
-                <mat-spinner diameter="32"></mat-spinner>
-              </div>
-            } @else if (credentials.length === 0) {
-              <div class="credentials-empty">
-                <mat-icon class="empty-icon">vpn_key</mat-icon>
-                <p class="empty-text" [transloco]="'userPreferences.credentials.noCredentials'">
-                  No client credentials yet
-                </p>
-                <p
-                  class="empty-description"
-                  [transloco]="'userPreferences.credentials.noCredentialsDescription'"
-                >
-                  Create credentials to access the TMI API programmatically.
-                </p>
-              </div>
-            } @else {
-              <div class="credentials-table-container">
-                <table mat-table [dataSource]="credentials" class="credentials-table">
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef [transloco]="'common.name'">Name</th>
-                    <td mat-cell *matCellDef="let credential">
-                      <div class="credential-name">{{ credential.name }}</div>
-                      @if (credential.description) {
-                        <div class="credential-description">{{ credential.description }}</div>
-                      }
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="clientId">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.clientId'"
-                    >
-                      Client ID
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      <span class="client-id">{{ credential.client_id }}</span>
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="created">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.created'"
-                    >
-                      Created
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatDate(credential.created_at) }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="lastUsed">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.lastUsed'"
-                    >
-                      Last Used
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatLastUsed(credential.last_used_at) }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="expires">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.expires'"
-                    >
-                      Expires
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatExpires(credential.expires_at) }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let credential">
-                      <button
-                        mat-icon-button
-                        (click)="onDeleteCredential(credential)"
-                        [matTooltip]="'common.delete' | transloco"
-                        color="warn"
+              @if (credentialsLoading) {
+                <div class="credentials-loading">
+                  <mat-spinner diameter="32"></mat-spinner>
+                </div>
+              } @else if (credentials.length === 0) {
+                <div class="credentials-empty">
+                  <mat-icon class="empty-icon">vpn_key</mat-icon>
+                  <p class="empty-text" [transloco]="'userPreferences.credentials.noCredentials'">
+                    No client credentials yet
+                  </p>
+                  <p
+                    class="empty-description"
+                    [transloco]="'userPreferences.credentials.noCredentialsDescription'"
+                  >
+                    Create credentials to access the TMI API programmatically.
+                  </p>
+                </div>
+              } @else {
+                <div class="credentials-table-container">
+                  <table mat-table [dataSource]="credentialRows" class="credentials-table">
+                    <!-- Credential column (name + description + client ID) -->
+                    <ng-container matColumnDef="credential">
+                      <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        [transloco]="'userPreferences.credentials.credential'"
                       >
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
+                        Credential
+                      </th>
+                      <td mat-cell *matCellDef="let row">
+                        <div class="credential-name">{{ row.credential.name }}</div>
+                        @if (row.credential.description) {
+                          <div class="credential-description">
+                            {{ row.credential.description }}
+                          </div>
+                        }
+                        <div class="client-id">{{ row.credential.client_id }}</div>
+                      </td>
+                    </ng-container>
 
-                  <tr mat-header-row *matHeaderRowDef="credentialColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: credentialColumns"></tr>
-                </table>
+                    <!-- Last Used column -->
+                    <ng-container matColumnDef="lastUsed">
+                      <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        [transloco]="'userPreferences.credentials.lastUsed'"
+                      >
+                        Last Used
+                      </th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ formatLastUsed(row.credential.last_used_at) }}
+                      </td>
+                    </ng-container>
+
+                    <!-- Actions column -->
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef></th>
+                      <td mat-cell *matCellDef="let row">
+                        <button
+                          mat-icon-button
+                          (click)="onDeleteCredential(row.credential)"
+                          [matTooltip]="'common.delete' | transloco"
+                          color="warn"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <!-- Metadata column (spans full width) -->
+                    <ng-container matColumnDef="metadata">
+                      <td mat-cell *matCellDef="let row" [attr.colspan]="3">
+                        <div
+                          class="credential-metadata"
+                          [class.credential-metadata-last]="row.isLast"
+                        >
+                          <span [transloco]="'userPreferences.credentials.createdOn'">Created</span>
+                          {{ formatDate(row.credential.created_at) }}
+                          ·
+                          @if (row.credential.expires_at) {
+                            @if (isExpired(row.credential.expires_at)) {
+                              <span
+                                class="credential-expired"
+                                [transloco]="'userPreferences.credentials.expired'"
+                                >Expired</span
+                              >
+                            } @else {
+                              <span [transloco]="'userPreferences.credentials.expiresOn'"
+                                >Expires</span
+                              >
+                              {{ formatExpires(row.credential.expires_at) }}
+                            }
+                          } @else {
+                            <span [transloco]="'userPreferences.credentials.neverExpires'"
+                              >Never expires</span
+                            >
+                          }
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Header row -->
+                    <tr mat-header-row *matHeaderRowDef="credentialColumns"></tr>
+                    <!-- Content row -->
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: credentialColumns; when: isContentRow"
+                    ></tr>
+                    <!-- Metadata row -->
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: credentialMetadataColumns; when: isMetadataRow"
+                      class="metadata-row"
+                    ></tr>
+                  </table>
+                </div>
+              }
+
+              <div class="credentials-actions">
+                <button mat-raised-button color="primary" (click)="onAddCredential()">
+                  <mat-icon>add</mat-icon>
+                  <span [transloco]="'userPreferences.credentials.add'">Add</span>
+                </button>
               </div>
-            }
-
-            <div class="credentials-actions">
-              <button mat-raised-button color="primary" (click)="onAddCredential()">
-                <mat-icon>add</mat-icon>
-                <span [transloco]="'userPreferences.credentials.add'">Add</span>
-              </button>
             </div>
-          </div>
-        </mat-tab>
+          </mat-tab>
+        }
 
         <!-- Danger Tab -->
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
           <div class="tab-content danger-tab">
-            <div class="preference-item">
-              <button mat-raised-button (click)="onExportLog()" class="export-log-button">
-                <mat-icon>download</mat-icon>
-                <span [transloco]="'userPreferences.exportLog.title'">Export Application Log</span>
-              </button>
-              <p class="danger-hint" [transloco]="'userPreferences.exportLog.hint'">
-                Downloads the most recent application log entries as a JSONL file for
-                troubleshooting.
-              </p>
-            </div>
-            <mat-divider></mat-divider>
             <div class="preference-item">
               <button
                 mat-raised-button
@@ -527,10 +557,46 @@ interface CheckboxChangeEvent {
         line-height: 20px;
       }
 
+      .profile-layout {
+        display: flex;
+        gap: 24px;
+      }
+
       .profile-info {
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 12px;
+      }
+
+      .profile-actions {
+        display: flex;
+        align-items: center;
+        padding-left: 16px;
+      }
+
+      .profile-actions-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-log-button {
+        border-radius: 24px;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-log-hint {
+        margin: 0;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+        text-align: center;
+        max-width: 160px;
+        line-height: 1.4;
       }
 
       .profile-item {
@@ -672,6 +738,26 @@ interface CheckboxChangeEvent {
         word-break: break-all;
       }
 
+      .credential-metadata {
+        font-size: 11px;
+        color: var(--theme-text-secondary);
+        padding: 2px 0 12px 0;
+        border-bottom: 1px solid var(--theme-divider);
+      }
+
+      .credential-metadata-last {
+        border-bottom: none;
+      }
+
+      .credential-expired {
+        color: var(--mat-warn-color, #f44336);
+      }
+
+      .metadata-row td {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
       .credentials-actions {
         margin-top: 16px;
       }
@@ -691,19 +777,6 @@ interface CheckboxChangeEvent {
       /* Danger tab styles */
       .danger-tab {
         padding-top: 8px;
-      }
-
-      .export-log-button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .export-log-button mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        line-height: 20px;
       }
 
       .transfer-button {
@@ -740,9 +813,16 @@ export class UserPreferencesDialogComponent implements OnInit {
   currentThreatModelRole: 'owner' | 'writer' | 'reader' | null = null;
 
   // Credentials tab
+  canManageCredentials = false;
   credentials: ClientCredentialInfo[] = [];
   credentialsLoading = false;
-  credentialColumns = ['name', 'clientId', 'created', 'lastUsed', 'expires', 'actions'];
+  credentialColumns = ['credential', 'lastUsed', 'actions'];
+  credentialMetadataColumns = ['metadata'];
+  credentialRows: Array<{
+    type: 'content' | 'metadata';
+    credential: ClientCredentialInfo;
+    isLast: boolean;
+  }> = [];
 
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
@@ -764,6 +844,7 @@ export class UserPreferencesDialogComponent implements OnInit {
   ngOnInit(): void {
     // Get user profile from synchronous property
     this.userProfile = this.authService.userProfile;
+    this.updateCredentialsAccess(this.userProfile);
 
     // Refresh user profile to get latest admin status
     this.authService
@@ -772,6 +853,7 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe({
         next: profile => {
           this.userProfile = profile;
+          this.updateCredentialsAccess(profile);
         },
       });
 
@@ -781,9 +863,6 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe(role => {
         this.currentThreatModelRole = role;
       });
-
-    // Load client credentials
-    this.loadCredentials();
   }
 
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
@@ -904,6 +983,14 @@ export class UserPreferencesDialogComponent implements OnInit {
   }
 
   // Credentials methods
+  private updateCredentialsAccess(profile: UserProfile | null): void {
+    const hasAccess = profile?.is_admin === true || profile?.is_security_reviewer === true;
+    this.canManageCredentials = hasAccess;
+    if (hasAccess && this.credentials.length === 0 && !this.credentialsLoading) {
+      this.loadCredentials();
+    }
+  }
+
   private loadCredentials(): void {
     this.credentialsLoading = true;
     this.clientCredentialService
@@ -912,6 +999,18 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe({
         next: credentials => {
           this.credentials = credentials;
+          this.credentialRows = credentials.flatMap((credential, index) => [
+            {
+              type: 'content' as const,
+              credential,
+              isLast: index === credentials.length - 1,
+            },
+            {
+              type: 'metadata' as const,
+              credential,
+              isLast: index === credentials.length - 1,
+            },
+          ]);
           this.credentialsLoading = false;
         },
         error: () => {
@@ -972,9 +1071,16 @@ export class UserPreferencesDialogComponent implements OnInit {
     }
   }
 
+  isContentRow = (_index: number, row: { type: string }): boolean => row.type === 'content';
+  isMetadataRow = (_index: number, row: { type: string }): boolean => row.type === 'metadata';
+
+  isExpired(dateString: string): boolean {
+    return new Date(dateString) < new Date();
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   formatLastUsed(dateString: string | null | undefined): string {
@@ -994,19 +1100,19 @@ export class UserPreferencesDialogComponent implements OnInit {
     } else if (diffDays < 7) {
       return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     }
   }
 
   formatExpires(dateString: string | null | undefined): string {
     if (!dateString) {
-      return 'Never';
+      return '';
     }
     const date = new Date(dateString);
-    const now = new Date();
-    if (date < now) {
-      return 'Expired';
-    }
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 }

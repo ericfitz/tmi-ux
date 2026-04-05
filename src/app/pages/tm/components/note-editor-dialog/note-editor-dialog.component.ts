@@ -2,6 +2,7 @@ import {
   Component,
   Inject,
   OnInit,
+  OnDestroy,
   Output,
   EventEmitter,
   ViewChild,
@@ -20,7 +21,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { Note } from '../../models/threat-model.model';
+import { MermaidViewerService } from '../../../../shared/services/mermaid-viewer.service';
 
 export interface NoteEditorDialogData {
   mode: 'create' | 'edit';
@@ -54,6 +57,7 @@ export interface NoteFormResult {
     MatIconModule,
     MatCheckboxModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatSnackBarModule,
     TranslocoModule,
     MarkdownModule,
@@ -61,7 +65,7 @@ export interface NoteFormResult {
   templateUrl: './note-editor-dialog.component.html',
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
-export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
+export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Output() saveEvent = new EventEmitter<NoteFormResult>();
   @ViewChild('contentTextarea') contentTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('markdownPreview') markdownPreview?: ElementRef<HTMLDivElement>;
@@ -77,6 +81,8 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
+  private mermaidViewersInitialized = false;
+  private mermaidCleanup?: () => void;
 
   readonly maxContentLength = 262144;
   readonly maxNameLength = 256;
@@ -92,6 +98,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     private snackBar: MatSnackBar,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: NoteEditorDialogData,
+    private mermaidViewerService?: MermaidViewerService,
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
@@ -144,6 +151,22 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     } else if (!this.previewMode) {
       this.taskListCheckboxesInitialized = false;
     }
+
+    // Initialize mermaid diagram viewers
+    if (this.previewMode && !this.mermaidViewersInitialized && this.markdownPreview) {
+      const cleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
+      if (cleanup) {
+        this.mermaidCleanup = cleanup;
+        this.mermaidViewersInitialized = true;
+      }
+    } else if (!this.previewMode && this.mermaidViewersInitialized) {
+      this.mermaidCleanup?.();
+      this.mermaidViewersInitialized = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.mermaidCleanup?.();
   }
 
   get dialogTitle(): string {

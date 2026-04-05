@@ -129,10 +129,27 @@ export class ServerConnectionService implements OnDestroy {
   }
 
   /**
-   * Get server version from last successful health check
+   * Get raw server version from last successful health check
    * @returns Server version string or null if not yet retrieved
    */
   getServerVersion(): string | null {
+    return this._serverVersion;
+  }
+
+  /**
+   * Get server version formatted for display.
+   * Transforms "semver-commitId" (e.g., "1.3.0-5011053f") into "semver (commitId)"
+   * (e.g., "1.3.0 (5011053f)"). Returns the raw string if it doesn't match the expected pattern.
+   * @returns Formatted server version string, or empty string if not yet retrieved
+   */
+  getFormattedServerVersion(): string {
+    if (!this._serverVersion) {
+      return '';
+    }
+    const match = this._serverVersion.match(/^(.+)-([0-9a-f]{7,12})$/);
+    if (match) {
+      return `${match[1]} (${match[2]})`;
+    }
     return this._serverVersion;
   }
 

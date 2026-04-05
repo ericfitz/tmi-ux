@@ -19,8 +19,18 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, BehaviorSubject, throwError, timer } from 'rxjs';
-import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, throwError, timer, forkJoin, EMPTY } from 'rxjs';
+import {
+  catchError,
+  switchMap,
+  map,
+  tap,
+  retryWhen,
+  mergeMap,
+  take,
+  expand,
+  reduce,
+} from 'rxjs/operators';
 
 import {
   ThreatModel,
@@ -42,6 +52,18 @@ import {
   ListAssetsResponse,
   ListThreatsResponse,
 } from '../models/api-responses.model';
+import type {
+  ApiThreatModelInput,
+  ApiThreatInput,
+  ApiDocumentInput,
+  ApiRepositoryInput,
+  ApiBaseDiagramInput,
+  ApiDfdDiagramInput,
+  ApiNoteInput,
+  ApiAssetInput,
+} from '@app/generated/api-type-helpers';
+import { PaginationMetadata } from '@app/types/api-responses.types';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * User information from the API (Principal-based)
@@ -106,6 +128,7 @@ export interface ThreatModelListParams {
   description?: string;
   owner?: string;
   status?: string;
+  security_reviewer?: string;
   issue_uri?: string;
   created_after?: string;
   created_before?: string;
@@ -177,6 +200,7 @@ export class ThreatModelService implements OnDestroy {
         'description',
         'owner',
         'status',
+        'security_reviewer',
         'issue_uri',
         'created_after',
         'created_before',
@@ -304,6 +328,194 @@ export class ThreatModelService implements OnDestroy {
       catchError(error => {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
         return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Fetch a complete threat model with all sub-entities for export.
+   *
+   * GET /threat_models/{id} only includes diagrams and threats inline.
+   * Notes, documents, repositories, and assets require separate paginated
+   * endpoint calls. This method fetches everything and assembles a complete
+   * ThreatModel object suitable for JSON serialization.
+   */
+  exportThreatModel(id: string): Observable<ThreatModel | undefined> {
+    return this.getThreatModelById(id, true).pipe(
+      switchMap(threatModel => {
+        if (!threatModel) {
+          return of(undefined);
+        }
+
+        return forkJoin({
+          notes: this.fetchAllNotes(id),
+          documents: this.fetchAllPages<TMDocument>(`threat_models/${id}/documents`, 'documents'),
+          repositories: this.fetchAllPages<Repository>(
+            `threat_models/${id}/repositories`,
+            'repositories',
+          ),
+          assets: this.fetchAllPages<Asset>(`threat_models/${id}/assets`, 'assets'),
+          diagrams: this.fetchAllDiagrams(id),
+          // fetchAllThreats delegates to getThreatsForThreatModel which
+          // already applies migrateLegacyThreatFieldValues per-threat
+          threats: this.fetchAllThreats(id),
+        }).pipe(
+          map(subEntities => ({
+            ...threatModel,
+            ...subEntities,
+          })),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(`Error exporting threat model with ID: ${id}`, error);
+        return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Fetch all pages of a paginated list endpoint, accumulating results.
+   * @param endpoint API path (e.g. `threat_models/{id}/notes`)
+   * @param itemsKey The key in the response that holds the array of items
+   * @param pageSize Number of items to request per page
+   * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
+   */
+  private fetchAllPages<T>(
+    endpoint: string,
+    itemsKey: string,
+    pageSize = 100,
+    maxPages = 100,
+  ): Observable<T[]> {
+    let pageCount = 1; // counts the initial request
+    return this.apiService
+      .get<PaginationMetadata & Record<string, unknown>>(endpoint, {
+        limit: pageSize.toString(),
+        offset: '0',
+      })
+      .pipe(
+        expand(response => {
+          const items = (response[itemsKey] as T[]) || [];
+          if (items.length === 0) {
+            return EMPTY;
+          }
+          if (pageCount >= maxPages) {
+            this.logger.warn(`fetchAllPages: hit max page limit (${maxPages}) for ${endpoint}`);
+            return EMPTY;
+          }
+          pageCount++;
+          const nextOffset = (response.offset ?? 0) + items.length;
+          if (response.total != null && nextOffset >= response.total) {
+            return EMPTY;
+          }
+          return this.apiService.get<PaginationMetadata & Record<string, unknown>>(endpoint, {
+            limit: pageSize.toString(),
+            offset: nextOffset.toString(),
+          });
+        }),
+        map(response => (response[itemsKey] as T[]) || []),
+        reduce((all: T[], page: T[]) => all.concat(page), []),
+        catchError(error => {
+          this.logger.error(`Error fetching all pages from ${endpoint}`, error);
+          return of([] as T[]);
+        }),
+      );
+  }
+
+  /**
+   * Fetch all notes with full content.
+   * The list endpoint returns NoteListItem which excludes content for
+   * performance. We fetch the list to get all IDs, then fetch each note
+   * individually via getNoteById to get complete data including content.
+   */
+  private fetchAllNotes(threatModelId: string): Observable<Note[]> {
+    return this.fetchAllPages<{ id: string }>(`threat_models/${threatModelId}/notes`, 'notes').pipe(
+      switchMap(listItems => {
+        if (listItems.length === 0) {
+          return of([] as Note[]);
+        }
+        return forkJoin(listItems.map(item => this.getNoteById(threatModelId, item.id))).pipe(
+          map(notes => notes.filter((n): n is Note => n !== undefined)),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(`Error fetching all notes for threat model ID: ${threatModelId}`, error);
+        return of([] as Note[]);
+      }),
+    );
+  }
+
+  /**
+   * Fetch all diagrams with full cell data.
+   * The list endpoint returns DiagramListItem which excludes cells for
+   * performance. We fetch the list to get all IDs, then fetch each diagram
+   * individually via getDiagramById to get complete data including cells.
+   */
+  private fetchAllDiagrams(threatModelId: string): Observable<Diagram[]> {
+    return this.fetchAllPages<{ id: string }>(
+      `threat_models/${threatModelId}/diagrams`,
+      'diagrams',
+    ).pipe(
+      switchMap(listItems => {
+        if (listItems.length === 0) {
+          return of([] as Diagram[]);
+        }
+        return forkJoin(listItems.map(item => this.getDiagramById(threatModelId, item.id))).pipe(
+          map(diagrams => diagrams.filter((d): d is Diagram => d !== undefined)),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(
+          `Error fetching all diagrams for threat model ID: ${threatModelId}`,
+          error,
+        );
+        return of([] as Diagram[]);
+      }),
+    );
+  }
+
+  /**
+   * Fetch all threats across all pages.
+   * Threats use a different query-param shape (ThreatListParams) so they
+   * cannot go through the generic fetchAllPages helper.
+   * @param threatModelId ID of the threat model
+   * @param pageSize Number of items to request per page
+   * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
+   */
+  private fetchAllThreats(
+    threatModelId: string,
+    pageSize = 100,
+    maxPages = 100,
+  ): Observable<Threat[]> {
+    let pageCount = 1; // counts the initial request
+    return this.getThreatsForThreatModel(threatModelId, { limit: pageSize, offset: 0 }).pipe(
+      expand(response => {
+        if (response.threats.length === 0) {
+          return EMPTY;
+        }
+        if (pageCount >= maxPages) {
+          this.logger.warn(
+            `fetchAllThreats: hit max page limit (${maxPages}) for threat model ${threatModelId}`,
+          );
+          return EMPTY;
+        }
+        pageCount++;
+        const nextOffset = (response.offset ?? 0) + response.threats.length;
+        if (response.total != null && nextOffset >= response.total) {
+          return EMPTY;
+        }
+        return this.getThreatsForThreatModel(threatModelId, {
+          limit: pageSize,
+          offset: nextOffset,
+        });
+      }),
+      map(response => response.threats),
+      reduce((all: Threat[], page: Threat[]) => all.concat(page), []),
+      catchError(error => {
+        this.logger.error(
+          `Error fetching all threats for threat model ID: ${threatModelId}`,
+          error,
+        );
+        return of([] as Threat[]);
       }),
     );
   }
@@ -614,26 +826,23 @@ export class ThreatModelService implements OnDestroy {
         },
 
         // Asset operations
-        createAsset: (tmId, asset) => this.createAsset(tmId, asset as Partial<Asset>),
+        createAsset: (tmId, asset) => this.createAsset(tmId, asset),
 
         // Note operations
-        createNote: (tmId, note) => this.createNote(tmId, note as Partial<Note>),
+        createNote: (tmId, note) => this.createNote(tmId, note),
 
         // Document operations
-        createDocument: (tmId, document) =>
-          this.createDocument(tmId, document as Partial<TMDocument>),
+        createDocument: (tmId, document) => this.createDocument(tmId, document),
 
         // Repository operations
-        createRepository: (tmId, repository) =>
-          this.createRepository(tmId, repository as Partial<Repository>),
+        createRepository: (tmId, repository) => this.createRepository(tmId, repository),
 
         // Diagram operations
-        createDiagram: (tmId, diagram) => this.createDiagram(tmId, diagram as Partial<Diagram>),
-        updateDiagram: (tmId, diagramId, diagram) =>
-          this.updateDiagram(tmId, diagramId, diagram as Partial<Diagram>),
+        createDiagram: (tmId, diagram) => this.createDiagram(tmId, diagram),
+        updateDiagram: (tmId, diagramId, diagram) => this.updateDiagram(tmId, diagramId, diagram),
 
         // Threat operations
-        createThreat: (tmId, threat) => this.createThreat(tmId, threat as Partial<Threat>),
+        createThreat: (tmId, threat) => this.createThreat(tmId, threat),
 
         // Metadata operations
         updateThreatModelMetadata: (tmId, metadata) =>
@@ -677,34 +886,15 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update a threat model
    */
-  updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI ThreatModelInput schema, only these fields are allowed:
-    // name (required), description, threat_model_framework, authorization, metadata, issue_uri
-    const {
-      id,
-      created_at,
-      modified_at,
-      created_by,
-      owner,
-      status_updated,
-      documents,
-      repositories,
-      diagrams,
-      threats,
-      notes,
-      assets,
-      ...threatModelData
-    } = threatModel;
-
+  updateThreatModel(
+    threatModelId: string,
+    data: Partial<ApiThreatModelInput>,
+  ): Observable<ThreatModel> {
     return this.apiService
-      .put<ThreatModel>(
-        `threat_models/${threatModel.id}`,
-        threatModelData as unknown as Record<string, unknown>,
-      )
+      .put<ThreatModel>(`threat_models/${threatModelId}`, data as Record<string, unknown>)
       .pipe(
         catchError(error => {
-          this.logger.error(`Error updating threat model with ID: ${threatModel.id}`, error);
+          this.logger.error(`Error updating threat model with ID: ${threatModelId}`, error);
           throw error;
         }),
       );
@@ -1004,17 +1194,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new threat in a threat model
    */
-  createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI ThreatInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, threat_model_id, created_at, modified_at, ...threatData } = threat as Threat;
-
+  createThreat(threatModelId: string, threat: Partial<ApiThreatInput>): Observable<Threat> {
     return this.apiService
-      .post<Threat>(
-        `threat_models/${threatModelId}/threats`,
-        threatData as unknown as Record<string, unknown>,
-      )
+      .post<Threat>(`threat_models/${threatModelId}/threats`, threat as Record<string, unknown>)
       .pipe(
         tap(newThreat => {
           const cached = this._cachedThreatModels.get(threatModelId);
@@ -1039,17 +1221,12 @@ export class ThreatModelService implements OnDestroy {
   updateThreat(
     threatModelId: string,
     threatId: string,
-    threat: Partial<Threat>,
+    threat: Partial<ApiThreatInput>,
   ): Observable<Threat> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI ThreatInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, threat_model_id, created_at, modified_at, ...threatData } = threat as Threat;
-
     return this.apiService
       .put<Threat>(
         `threat_models/${threatModelId}/threats/${threatId}`,
-        threatData as unknown as Record<string, unknown>,
+        threat as Record<string, unknown>,
       )
       .pipe(
         tap(updatedThreat => {
@@ -1092,16 +1269,14 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new document in a threat model
    */
-  createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI DocumentInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...documentData } = document as TMDocument;
-
+  createDocument(
+    threatModelId: string,
+    document: Partial<ApiDocumentInput>,
+  ): Observable<TMDocument> {
     return this.apiService
       .post<TMDocument>(
         `threat_models/${threatModelId}/documents`,
-        documentData as unknown as Record<string, unknown>,
+        document as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1117,17 +1292,12 @@ export class ThreatModelService implements OnDestroy {
   updateDocument(
     threatModelId: string,
     documentId: string,
-    document: Partial<TMDocument>,
+    document: Partial<ApiDocumentInput>,
   ): Observable<TMDocument> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI DocumentInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...documentData } = document as TMDocument;
-
     return this.apiService
       .put<TMDocument>(
         `threat_models/${threatModelId}/documents/${documentId}`,
-        documentData as unknown as Record<string, unknown>,
+        document as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1153,16 +1323,14 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new repository in a threat model
    */
-  createRepository(threatModelId: string, repository: Partial<Repository>): Observable<Repository> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI RepositoryInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...repositoryData } = repository as Repository;
-
+  createRepository(
+    threatModelId: string,
+    repository: Partial<ApiRepositoryInput>,
+  ): Observable<Repository> {
     return this.apiService
       .post<Repository>(
         `threat_models/${threatModelId}/repositories`,
-        repositoryData as unknown as Record<string, unknown>,
+        repository as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1181,17 +1349,12 @@ export class ThreatModelService implements OnDestroy {
   updateRepository(
     threatModelId: string,
     repositoryId: string,
-    repository: Partial<Repository>,
+    repository: Partial<ApiRepositoryInput>,
   ): Observable<Repository> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI RepositoryInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...repositoryData } = repository as Repository;
-
     return this.apiService
       .put<Repository>(
         `threat_models/${threatModelId}/repositories/${repositoryId}`,
-        repositoryData as unknown as Record<string, unknown>,
+        repository as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1219,17 +1382,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new diagram in a threat model
    */
-  createDiagram(threatModelId: string, diagram: Partial<Diagram>): Observable<Diagram> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI DfdDiagramInput schema, these fields are NOT allowed:
-    // id, created_at, modified_at, update_vector
-    const { id, created_at, modified_at, update_vector, ...diagramData } = diagram as Diagram;
-
+  createDiagram(threatModelId: string, diagram: Partial<ApiBaseDiagramInput>): Observable<Diagram> {
     return this.apiService
-      .post<Diagram>(
-        `threat_models/${threatModelId}/diagrams`,
-        diagramData as unknown as Record<string, unknown>,
-      )
+      .post<Diagram>(`threat_models/${threatModelId}/diagrams`, diagram as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating diagram in threat model ID: ${threatModelId}`, error);
@@ -1245,17 +1400,12 @@ export class ThreatModelService implements OnDestroy {
   updateDiagram(
     threatModelId: string,
     diagramId: string,
-    diagram: Partial<Diagram>,
+    diagram: Partial<ApiDfdDiagramInput>,
   ): Observable<Diagram> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI DfdDiagramInput schema, these fields are NOT allowed:
-    // id, created_at, modified_at, update_vector
-    const { id, created_at, modified_at, update_vector, ...diagramData } = diagram as Diagram;
-
     return this.apiService
       .put<Diagram>(
         `threat_models/${threatModelId}/diagrams/${diagramId}`,
-        diagramData as unknown as Record<string, unknown>,
+        diagram as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1622,17 +1772,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new note for a threat model
    */
-  createNote(threatModelId: string, note: Partial<Note>): Observable<Note> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI NoteInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...noteData } = note as Note;
-
+  createNote(threatModelId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
-      .post<Note>(
-        `threat_models/${threatModelId}/notes`,
-        noteData as unknown as Record<string, unknown>,
-      )
+      .post<Note>(`threat_models/${threatModelId}/notes`, note as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating note for threat model ID: ${threatModelId}`, error);
@@ -1656,17 +1798,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update an existing note
    */
-  updateNote(threatModelId: string, noteId: string, note: Partial<Note>): Observable<Note> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI NoteInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...noteData } = note as Note;
-
+  updateNote(threatModelId: string, noteId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
-      .put<Note>(
-        `threat_models/${threatModelId}/notes/${noteId}`,
-        noteData as unknown as Record<string, unknown>,
-      )
+      .put<Note>(`threat_models/${threatModelId}/notes/${noteId}`, note as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating note ID: ${noteId}`, error);
@@ -1750,17 +1884,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new asset for a threat model
    */
-  createAsset(threatModelId: string, asset: Partial<Asset>): Observable<Asset> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI AssetInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...assetData } = asset as Asset;
-
+  createAsset(threatModelId: string, asset: Partial<ApiAssetInput>): Observable<Asset> {
     return this.apiService
-      .post<Asset>(
-        `threat_models/${threatModelId}/assets`,
-        assetData as unknown as Record<string, unknown>,
-      )
+      .post<Asset>(`threat_models/${threatModelId}/assets`, asset as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating asset for threat model ID: ${threatModelId}`, error);
@@ -1772,16 +1898,15 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update an existing asset
    */
-  updateAsset(threatModelId: string, assetId: string, asset: Partial<Asset>): Observable<Asset> {
-    // Remove all read-only and server-managed fields before sending to API
-    // Per OpenAPI AssetInput schema, these fields are NOT allowed:
-    // id, threat_model_id, created_at, modified_at
-    const { id, created_at, modified_at, ...assetData } = asset as Asset;
-
+  updateAsset(
+    threatModelId: string,
+    assetId: string,
+    asset: Partial<ApiAssetInput>,
+  ): Observable<Asset> {
     return this.apiService
       .put<Asset>(
         `threat_models/${threatModelId}/assets/${assetId}`,
-        assetData as unknown as Record<string, unknown>,
+        asset as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -2137,7 +2262,7 @@ export class ThreatModelService implements OnDestroy {
         this.logger.warn(
           `Retrying ${operation} (attempt ${retryAttempt + 1}/${maxRetries}) after ${delayMs}ms delay`,
           {
-            error: error instanceof Error ? error.message : String(error),
+            error: getErrorMessage(error),
             delayMs,
           },
         );

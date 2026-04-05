@@ -31,8 +31,8 @@ Before completing any task:
 
 ### For Any File Changes
 
-1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, fix any issues
-2. **Git Commit**: Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). Do not run `git diff` or `git log` before committing - just commit directly with an appropriate message based on the work done. Include any files that were reformatted by the format/lint step, even if you didn't directly modify them.
+1. **Lint**: Run `pnpm run lint:all`, fix any issues (formatting is handled automatically by a PostToolUse hook)
+2. **Git Commit**: Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). Do not run `git diff` or `git log` before committing - just commit directly with an appropriate message based on the work done.
 
 ### For Code Changes
 
@@ -41,6 +41,7 @@ Also:
 1. **Build**: Run `pnpm run build` and fix all build errors, regardless of whether they were pre-existing or caused by the current changes. Test isn't meaningful against a failing build.
 2. **Test**: Run related tests and fix any failures
 3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
+4. **Code Review**: Run the code review skill (`superpowers:requesting-code-review`) before committing
 
 ### For GitHub Issue-Related Changes
 
@@ -176,7 +177,7 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 - Config: `vitest.config.ts`, mocks in `src/app/mocks/`, utilities in `src/testing/`
 - Tests alongside source: `*.spec.ts`
 
-**Integration Tests (Cypress):** E2E tests in `cypress/e2e/`, component tests enabled
+**E2E Tests (Playwright):** Config: `playwright.config.ts`
 
 ## Versioning
 

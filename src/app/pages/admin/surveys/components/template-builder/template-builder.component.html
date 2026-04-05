@@ -17,13 +17,22 @@
           'adminSurveys.templateBuilder.unsavedChanges' | transloco
         }}</span>
       }
+      @if (surveyId) {
+        <button
+          mat-icon-button
+          (click)="deleteSurvey()"
+          [disabled]="isSaving"
+          [matTooltip]="'adminSurveys.deleteTooltip' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
       <button
         mat-icon-button
         color="primary"
         (click)="save()"
         [disabled]="isSaving"
         [matTooltip]="'common.save' | transloco"
-        [attr.aria-label]="'common.save' | transloco"
       >
         @if (isSaving) {
           <mat-spinner diameter="20"></mat-spinner>
@@ -36,7 +45,6 @@
         color="warn"
         (click)="goBack()"
         [matTooltip]="'common.close' | transloco"
-        [attr.aria-label]="'common.close' | transloco"
       >
         <mat-icon>close</mat-icon>
       </button>
@@ -385,21 +393,21 @@
                     <mat-panel-title>
                       {{ 'adminSurveys.templateBuilder.conditionalLogic' | transloco }}
                     </mat-panel-title>
+                    <mat-panel-description>
+                      <button
+                        mat-icon-button
+                        class="condition-help-button"
+                        (click)="openConditionHelp(); $event.stopPropagation()"
+                        [matTooltip]="
+                          'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
+                        "
+                      >
+                        <mat-icon>help</mat-icon>
+                      </button>
+                    </mat-panel-description>
                   </mat-expansion-panel-header>
 
                   <div class="condition-panel-content">
-                    <button
-                      mat-icon-button
-                      class="condition-help-button"
-                      (click)="openConditionHelp(); $event.stopPropagation()"
-                      [matTooltip]="'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco"
-                      [attr.aria-label]="
-                        'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
-                      "
-                    >
-                      <mat-icon>help</mat-icon>
-                    </button>
-
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-label>{{
                         'adminSurveys.templateBuilder.visibleIf' | transloco

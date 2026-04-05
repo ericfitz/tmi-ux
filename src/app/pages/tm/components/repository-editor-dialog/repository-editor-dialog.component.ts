@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -52,6 +53,7 @@ export interface RepositoryEditorDialogData {
     MatIconModule,
     MatCheckboxModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     ReactiveFormsModule,
     TranslocoModule,
   ],

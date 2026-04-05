@@ -3,12 +3,7 @@
   <div class="page-header">
     <h1 class="page-title">{{ 'triage.queue' | transloco }}</h1>
     <div class="action-buttons">
-      <button
-        mat-icon-button
-        (click)="onClose()"
-        [attr.aria-label]="'common.close' | transloco"
-        [matTooltip]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -165,7 +160,7 @@
               </th>
               <td mat-cell *matCellDef="let row">
                 @if (row.submitted_at) {
-                  {{ row.submitted_at | date: 'medium' }}
+                  {{ row.submitted_at | date: 'medium' : undefined : currentLocale }}
                 } @else {
                   <span class="not-submitted">{{ 'triage.list.notSubmitted' | transloco }}</span>
                 }
@@ -193,7 +188,6 @@
                     mat-icon-button
                     (click)="viewResponse(row); $event.stopPropagation()"
                     [matTooltip]="'triage.viewDetails' | transloco"
-                    [attr.aria-label]="'triage.viewDetails' | transloco"
                   >
                     <mat-icon>visibility</mat-icon>
                   </button>
@@ -202,7 +196,6 @@
                       mat-icon-button
                       (click)="approveResponse(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.approve' | transloco"
-                      [attr.aria-label]="'triage.list.approve' | transloco"
                     >
                       <mat-icon>check_circle</mat-icon>
                     </button>
@@ -212,7 +205,6 @@
                       mat-icon-button
                       (click)="openRevisionDialogForRow(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.returnForRevision' | transloco"
-                      [attr.aria-label]="'triage.list.returnForRevision' | transloco"
                     >
                       <mat-icon>undo</mat-icon>
                     </button>
@@ -222,7 +214,6 @@
                       mat-icon-button
                       (click)="createThreatModel(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.createThreatModel' | transloco"
-                      [attr.aria-label]="'triage.list.createThreatModel' | transloco"
                     >
                       <mat-icon>add_circle</mat-icon>
                     </button>
@@ -267,9 +258,7 @@
           <span class="tab-badge">{{ unassignedCount }}</span>
         }
       </ng-template>
-      <ng-template matTabContent>
-        <app-reviewer-assignment-list (countChange)="unassignedCount = $event" />
-      </ng-template>
+      <app-reviewer-assignment-list (countChange)="unassignedCount = $event" />
     </mat-tab>
   </mat-tab-group>
 </div>

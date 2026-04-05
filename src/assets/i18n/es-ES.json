@@ -34,16 +34,11 @@
       "allObjects": "(Todos)",
       "errorInvoking": "Error al invocar el complemento. Por favor, inténtelo de nuevo.",
       "invalidCharacters": "Solo se permiten caracteres alfanuméricos, espacios, guiones, puntos, comas y barras diagonales",
-      "invalidJson": "Formato JSON no válido",
       "invocationQueued": "Invocación del complemento en cola",
       "metadataKeyMissing": "La clave de metadatos requerida \"{{key}}\" no está presente en este objeto",
       "numberMax": "El valor debe ser como máximo {{max}}",
       "numberMin": "El valor debe ser como mínimo {{min}}",
       "parameters": "Parámetros",
-      "payload": "Carga útil (Opcional)",
-      "payloadHint": "Datos JSON para pasar al complemento",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID del modelo de amenazas",
       "title": "Invocar complemento",
       "valueTooLong": "El valor excede la longitud máxima"
@@ -111,9 +106,9 @@
       "deleteTooltip": "Eliminar grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Buscar por nombre de grupo o proveedor",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "Añadir Miembro",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Miembros Actuales",
         "noMembers": "No hay miembros en este grupo",
         "removeTooltip": "Eliminar del grupo",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "Instalar y configurar complementos de la aplicación",
-        "title": "{{admin.addons.title}}"
+        "title": "Complementos"
       },
       "groups": {
         "description": "Configurar grupos de usuarios y membresías",
-        "title": "{{admin.groups.title}}"
+        "title": "Grupos"
+      },
+      "projects": {
+        "description": "Gestionar proyectos, relaciones y metadatos",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "Configurar cuotas y límites de recursos",
-        "title": "{{admin.quotas.title}}"
+        "title": "Cuotas"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Configuración"
       },
       "surveys": {
         "description": "Crear y gestionar encuestas",
-        "title": "Gestionar encuestas"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "Gestionar equipos y membresía de equipos",
+        "title": "Equipos"
       },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",
-        "title": "{{admin.users.title}}"
+        "title": "Usuarios"
       },
       "webhooks": {
         "description": "Instalar y configurar integraciones de webhooks",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "Cancelar edición",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Origen",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "¿Está seguro de que desea eliminar la configuración \"{{key}}\"?",
       "deleteTooltip": "Eliminar configuración",
       "editTooltip": "Editar configuración",
       "filterLabel": "Filtrar",
-      "filterPlaceholder": "Filtrar por clave, valor o descripción",
+      "filterPlaceholder": "Filtrar por clave, valor, descripción u origen",
       "listTitle": "Configuraciones del Sistema",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "Migrar Configuraciones"
       },
       "noSettings": "No se encontraron configuraciones",
+      "readOnlyTooltip": "Esta configuración es de solo lectura y no se puede modificar aquí",
       "saveTooltip": "Guardar cambios",
+      "sources": {
+        "config": "Archivo de configuración",
+        "database": "Base de datos",
+        "environment": "Entorno",
+        "vault": "Bóveda",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Ver y gestionar configuraciones del sistema",
       "title": "Gestionar Configuraciones",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "Gestionar configuraciones y ajustes del sistema",
     "title": "Administración",
     "users": {
+      "actions": {
+        "manageCredentials": "Gestionar credenciales"
+      },
       "administrator": "Administrador",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Eliminar cuenta de usuario",
+      "filter": {
+        "automationOnly": "Mostrar solo cuentas de automatización"
+      },
       "filterLabel": "Filtrar Usuarios",
       "filterPlaceholder": "Buscar por correo electrónico, nombre, proveedor o nombre de grupo",
       "lastLogin": "Ultimo Inicio de Sesion",
-      "listTitle": "Usuarios",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Agregar Credencial",
+        "deleteConfirm": "¿Está seguro de que desea eliminar la credencial \"{{name}}\"?",
+        "noCredentials": "No se encontraron credenciales",
+        "title": "Gestionar Credenciales para {{userName}}"
+      },
       "never": "Nunca",
       "noUsers": "No se encontraron usuarios",
       "subtitle": "Ver y gestionar usuarios del sistema",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Crear usuario de automatización para este webhook",
         "events": "Tipos de Evento a Suscribir",
         "eventsHint": "Tipos de evento a suscribir (p. ej., threat_model.created)",
         "eventsPlaceholder": "Seleccione tipos de evento",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "Dejar vacío para generar automáticamente",
         "title": "Agregar Webhook",
         "url": "URL del Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Debe ser una URL HTTPS",
+        "urlHint": "Se recomienda HTTPS",
+        "urlHttpWarning": "Advertencia: La URL del endpoint del webhook debe usar HTTPS. El servidor puede rechazar registros de webhooks que especifiquen un endpoint sin TLS.",
+        "urlHttpWarningTitle": "URL de Webhook sin HTTPS",
+        "urlInvalid": "Debe ser una URL válida",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "La URL es obligatoria"
+      },
+      "createAutomationUserDialog": {
+        "email": "Correo Electrónico (Opcional)",
+        "emailHint": "Opcional — el valor predeterminado es una dirección @tmi.local generada automáticamente",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 caracteres, comienza con letra",
+        "nameMaxLength": "El nombre debe tener como máximo 64 caracteres",
+        "nameMinLength": "Debe tener al menos 2 caracteres",
+        "namePattern": "Debe comenzar con una letra y terminar con una letra o dígito",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Crear Usuario de Automatización",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Eliminar webhook",
@@ -308,8 +346,11 @@
         "pending_delete": "Pendiente de Eliminación",
         "pending_verification": "Pendiente de Verificación"
       },
+      "subscriptionId": "ID de suscripción",
       "subtitle": "Configurar suscripciones de webhook para notificaciones de eventos",
-      "title": "Gestionar Webhooks"
+      "title": "Gestionar Webhooks",
+      "triggerEvents": "Eventos de activación",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "La versión es obligatoria"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Error al eliminar la encuesta: {{error}}",
+    "deleteTooltip": "Eliminar encuesta",
     "editTemplate": "Editar encuesta",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "Acciones",
     "activate": "Activar",
     "active": "Activo",
+    "add": "Añadir",
     "addMetadata": "Agregar Metadatos",
     "addThreat": "Agregar Amenaza",
     "addons": "Complementos",
@@ -562,6 +606,8 @@
     "email": "Correo electrónico",
     "emailLabel": "Dirección de Correo Electrónico",
     "error": "Error",
+    "exportAsPng": "Exportar como PNG",
+    "exportAsSvg": "Exportar como SVG",
     "false": "Falso",
     "fonts": "Fuentes",
     "groups": "Grupos",
@@ -886,9 +932,7 @@
     "pageTitle": "Editor de Diagramas de Flujo de Datos",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Exportar como JPEG",
-        "exportAsPng": "Exportar como PNG",
-        "exportAsSvg": "Exportar como SVG"
+        "exportAsJpeg": "Exportar como JPEG"
       },
       "tooltips": {
         "addActor": "Añadir Actor",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI es una herramienta que optimiza los procesos de revisión de seguridad y modelado de amenazas de tu organización. Impulsa flujos de trabajo de revisión, organiza información clave y permite que los equipos construyan colaborativamente diagramas de flujo de datos. También se conecta con automatización, ayudando a reducir trabajo manual y a detectar amenazas de seguridad de manera más eficiente.",
   "homeWelcomeTitle": "Bienvenido a TMI: Modelado de Amenazas Mejorado",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "Iniciando sesión...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Iniciar Sesión en TMI",
+    "tmiDialog": {
+      "errorMaxLength": "El nombre de usuario debe tener como máximo 20 caracteres",
+      "errorMinLength": "El nombre de usuario debe tener al menos 3 caracteres",
+      "errorPattern": "El nombre de usuario debe contener solo letras y dígitos",
+      "signIn": "Iniciar sesión",
+      "title": "Iniciar sesión con TMI Provider",
+      "usernameLabel": "Nombre de usuario",
+      "usernamePlaceholder": "Introducir nombre de usuario (opcional)"
+    },
     "unexpectedError": "Se ha producido un error inesperado durante la autenticación OAuth."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "Derechos del Usuario"
   },
   "projects": {
+    "addButton": "Agregar Proyecto",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Introduce la descripcion del proyecto",
       "namePlaceholder": "Introduce el nombre del proyecto",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Crear Nuevo Proyecto",
+    "deleteDialog": {
+      "message": "¿Está seguro de que desea eliminar el proyecto \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Editar Proyecto"
+    },
+    "filterLabel": "Filtrar por Nombre",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "No se encontraron proyectos",
     "picker": {
       "label": "{{common.project}}",
       "none": "Sin Proyecto"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Agregar Proyecto Relacionado",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "No hay proyectos relacionados",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Seleccionar Proyecto",
+      "title": "Proyectos Relacionados"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Cancelado",
+      "completed": "Completado",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Planificación"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Filtrar por Estado",
+    "subtitle": "Crear, editar y gestionar proyectos, relaciones y metadatos",
+    "teamFilterLabel": "Filtrar por Equipo",
+    "title": "Gestionar Proyectos"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "Continuar editando",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Filtrar por Estado",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "No ha completado ninguna encuesta. Comience una desde la página de encuestas.",
       "noResponsesTitle": "Aún No Hay Respuestas",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "Enviar Encuesta",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Archivada",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inactiva"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Respuesta"
   },
   "teams": {
+    "addButton": "Agregar Equipo",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Modificado",
+      "name": "{{common.name}}",
+      "projects": "Proyectos",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Introduce la descripcion del equipo",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Crear Nuevo Equipo"
+    "createNew": "Crear Nuevo Equipo",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "¿Está seguro de que desea eliminar el equipo \"{{name}}\"?",
+      "projectWarning": "Este equipo tiene {{count}} proyecto(s). Eliminar el equipo puede afectar a estos proyectos.",
+      "title": "Eliminar Equipo"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Editar Equipo"
+    },
+    "filterLabel": "Filtrar Equipos",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "Miembros",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Agregar Miembro",
+      "customRole": "Rol Personalizado",
+      "noMembers": "No hay miembros",
+      "removeMember": "Eliminar Miembro",
+      "role": "Rol",
+      "title": "Miembros del Equipo"
+    },
+    "noTeams": "No se encontraron equipos",
+    "relatedTeamsDialog": {
+      "addRelated": "Agregar Equipo Relacionado",
+      "customRelationship": "Relación Personalizada",
+      "noRelated": "No hay equipos relacionados",
+      "relationship": "Relación",
+      "removeRelated": "Eliminar Equipo Relacionado",
+      "selectTeam": "Seleccionar Equipo",
+      "title": "Equipos Relacionados"
+    },
+    "relationships": {
+      "child": "Hijo",
+      "dependency": "Dependencia",
+      "dependent": "Dependiente",
+      "other": "{{common.other}}",
+      "parent": "Padre",
+      "related": "Relacionado",
+      "superseded_by": "Reemplazado Por",
+      "supersedes": "Reemplaza"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Agregar Parte Responsable",
+      "noParties": "No hay partes responsables",
+      "removeParty": "Eliminar Parte Responsable",
+      "title": "Partes Responsables"
+    },
+    "roles": {
+      "business_leader": "Líder Empresarial",
+      "engineer": "Ingeniero",
+      "engineering_lead": "Líder de Ingeniería",
+      "other": "{{common.other}}",
+      "product_manager": "Gerente de Producto",
+      "security_specialist": "Especialista en Seguridad"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archivado",
+      "forming": "En Formación",
+      "merging": "En Fusión",
+      "on_hold": "En Espera",
+      "splitting": "En División",
+      "winding_down": "En Cierre"
+    },
+    "subtitle": "Crear, editar y gestionar equipos, miembros y relaciones",
+    "title": "Gestionar Equipos"
   },
   "threatEditor": {
     "createNewThreat": "Crear Nueva Amenaza",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "Cambiar revisor de seguridad",
     "clearSecurityReviewer": "Quitar revisor de seguridad",
     "commit": "Commit",
+    "confidentialProject": "Proyecto confidencial",
     "createFirstButton": "Crear Su Primer Modelo de Amenazas",
     "createNewDiagram": "Crear Nuevo Diagrama",
     "createNewRepository": "Añadir Referencia de Repositorio",
@@ -1305,6 +1494,14 @@
     "documentName": "Nombre del Documento",
     "documentUrl": "URL del Documento",
     "export": "Exportar",
+    "exportDialog": {
+      "error": "Error al preparar datos de exportación. Por favor, inténtelo de nuevo.",
+      "preparing": "Preparando datos de exportación...",
+      "ready": "Exportación lista. Haga clic en Guardar para descargar.",
+      "retry": "Reintentar",
+      "save": "Guardar",
+      "title": "Exportar Modelo de Amenazas"
+    },
     "fileSizeExceeded": "El archivo excede el tamaño máximo de importación: {{maxSize}} MB",
     "frameworkDisabledHint": "No Se Puede Cambiar el Framework Cuando Existen Amenazas",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "Aún No Se Han Añadido Amenazas",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Rol",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Gestionar Permisos",
     "rename": "Renombrar",
@@ -1348,10 +1545,12 @@
     "repositoryType": "Tipo de Repositorio",
     "repositoryUri": "URL del Repositorio",
     "sections": {
+      "audit": "Auditoría",
       "inputs": "Entradas",
       "inputsDescription": "Activos, documentos y repositorios de código fuente que describen el sistema bajo análisis",
       "outputs": "Salidas",
-      "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad"
+      "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad",
+      "reviewProcess": "Proceso de revisión"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Establecer como Propietario",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "Los diagramas en TMI son representaciones legibles por máquina del movimiento de datos y procesos dentro de un sistema, permitiendo análisis de seguridad tanto manual como automatizado.",
       "documentsCardTitle": "Las referencias de documentos son enlaces a documentos almacenados fuera de TMI. Los documentos relevantes describen el sistema a analizar y pueden ser utilizados tanto por analistas de seguridad como por procesos de análisis automatizados.",
       "downloadModel": "Descargar modelo",
+      "dropToCreateDocument": "Soltar para crear",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Soltar para establecer URI del issue",
       "import": "Importar",
       "notesCardTitle": "Las notas son texto en formato markdown que está completamente contenido dentro del modelo de amenazas, utilizado para capturar notas y anotaciones de analistas de seguridad y procesos de análisis automatizados.",
       "repositoriesCardTitle": "Los repositorios son enlaces a Repositorios de Código Fuente donde se gestiona el código fuente del sistema.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Añadir Nota",
+      "columns": {
+        "answer": "Respuesta",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "Pregunta"
+      },
       "markdownSupported": "Compatible con Markdown",
       "noNotes": "Aún no hay notas de clasificación",
       "noResponses": "No hay respuestas registradas",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "Marcar en Revisión",
     "markPendingTriage": "Marcar Pendiente de Clasificación",
+    "messages": {
+      "approveError": "Error al aprobar la respuesta",
+      "approveSuccess": "Respuesta aprobada",
+      "createThreatModelError": "Error al crear el modelo de amenazas",
+      "createThreatModelSuccess": "Modelo de amenazas creado correctamente",
+      "returnForRevisionError": "Error al devolver la respuesta para revisión",
+      "returnForRevisionSuccess": "Respuesta devuelta para revisión"
+    },
     "noResponses": "No hay respuestas para clasificar",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,8 +1778,8 @@
   "userPreferences": {
     "colorBlindMode": "Activar Modo para Daltonismo",
     "credentials": {
-      "add": "Agregar",
-      "clientId": "ID de Cliente",
+      "add": "{{common.add}}",
+      "clientId": "ID de cliente",
       "clientSecret": "Secreto de Cliente",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1581,9 +1796,13 @@
         "nameTooLong": "El nombre debe tener 100 caracteres o menos",
         "title": "Crear Credencial de Cliente"
       },
-      "created": "{{common.created}}",
-      "expires": "Caduca",
+      "createdOn": "{{common.created}}",
+      "credential": "Credencial",
+      "expired": "Expirado",
+      "expiresAt": "Caduca",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Último Uso",
+      "neverExpires": "Nunca caduca",
       "noCredentials": "Aún no hay credenciales de cliente",
       "noCredentialsDescription": "Cree credenciales para acceder a la API de TMI programáticamente.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "Activar Efectos de Animación en el Editor de Diagramas",
     "displayPreferences": "Preferencias de Visualización",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Descarga las entradas más recientes del registro de la aplicación como un archivo JSONL para la resolución de problemas.",
-      "title": "Exportar registro de la aplicación"
+      "title": "Descargar registro"
     },
     "hoverShowMetadata": "Mostrar metadatos de celda al pasar el cursor",
     "marginSize": {

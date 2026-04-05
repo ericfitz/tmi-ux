@@ -653,7 +653,7 @@ describe('ThreatPageComponent', () => {
       );
     });
 
-    it('should send undefined for empty cwe_id array', () => {
+    it('should send empty array for empty cwe_id array', () => {
       component.threatForm.patchValue({ cwe_id: [] });
       component.threatForm.markAsDirty();
       component.save();
@@ -662,12 +662,12 @@ describe('ThreatPageComponent', () => {
         'tm-1',
         'threat-1',
         expect.objectContaining({
-          cwe_id: undefined,
+          cwe_id: [],
         }),
       );
     });
 
-    it('should send undefined for empty cvss array', () => {
+    it('should send empty array for empty cvss array', () => {
       component.threatForm.patchValue({ cvss: [] });
       component.threatForm.markAsDirty();
       component.save();
@@ -676,7 +676,7 @@ describe('ThreatPageComponent', () => {
         'tm-1',
         'threat-1',
         expect.objectContaining({
-          cvss: undefined,
+          cvss: [],
         }),
       );
     });

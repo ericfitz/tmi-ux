@@ -34,16 +34,11 @@
       "allObjects": "(Tous)",
       "errorInvoking": "Échec de l'invocation du module complémentaire. Veuillez réessayer.",
       "invalidCharacters": "Seuls les caractères alphanumériques, espaces, tirets, points, virgules et barres obliques sont autorisés",
-      "invalidJson": "Format JSON invalide",
       "invocationQueued": "Invocation du module complémentaire mise en file d'attente",
       "metadataKeyMissing": "La clé de métadonnées requise \"{{key}}\" n'est pas présente sur cet objet",
       "numberMax": "La valeur doit être au maximum {{max}}",
       "numberMin": "La valeur doit être au minimum {{min}}",
       "parameters": "Paramètres",
-      "payload": "Charge utile (Facultatif)",
-      "payloadHint": "Données JSON à transmettre au module complémentaire",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID du modèle de menace",
       "title": "Invoquer le module complémentaire",
       "valueTooLong": "La valeur dépasse la longueur maximale"
@@ -111,9 +106,9 @@
       "deleteTooltip": "Supprimer le groupe",
       "filterLabel": "Filtrer les groupes",
       "filterPlaceholder": "Rechercher par nom de groupe ou fournisseur",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
-        "addMember": "Ajouter un membre",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Membres actuels",
         "noMembers": "Aucun membre dans ce groupe",
         "removeTooltip": "Retirer du groupe",
@@ -164,31 +159,39 @@
     "sections": {
       "addons": {
         "description": "Installer et configurer les addons d'application",
-        "title": "{{admin.addons.title}}"
+        "title": "Extensions"
       },
       "groups": {
         "description": "Configurer les groupes d'utilisateurs et les appartenances",
-        "title": "{{admin.groups.title}}"
+        "title": "Groupes"
+      },
+      "projects": {
+        "description": "Gérer les projets, les relations et les métadonnées",
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "Configurer les quotas et limites de ressources",
-        "title": "{{admin.quotas.title}}"
+        "title": "Quotas"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Paramètres"
       },
       "surveys": {
         "description": "Créer et gérer des enquêtes",
-        "title": "Gérer les enquêtes"
+        "title": "{{common.objectTypes.surveys}}"
+      },
+      "teams": {
+        "description": "Gérer les équipes et l'adhésion aux équipes",
+        "title": "Équipes"
       },
       "users": {
         "description": "Afficher et gerer les comptes utilisateurs",
-        "title": "{{admin.users.title}}"
+        "title": "Utilisateurs"
       },
       "webhooks": {
         "description": "Installer et configurer les integrations webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -209,17 +212,15 @@
       },
       "cancelTooltip": "Annuler la modification",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Source",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Êtes-vous sûr de vouloir supprimer le paramètre \"{{key}}\" ?",
       "deleteTooltip": "Supprimer le paramètre",
       "editTooltip": "Modifier le paramètre",
       "filterLabel": "Filtrer",
-      "filterPlaceholder": "Filtrer par clé, valeur ou description",
+      "filterPlaceholder": "Filtrer par clé, valeur, description ou source",
       "listTitle": "Paramètres système",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -232,7 +233,15 @@
         "title": "Migrer les paramètres"
       },
       "noSettings": "Aucun paramètre trouvé",
+      "readOnlyTooltip": "Ce paramètre est en lecture seule et ne peut pas être modifié ici",
       "saveTooltip": "Enregistrer les modifications",
+      "sources": {
+        "config": "Fichier de configuration",
+        "database": "Base de données",
+        "environment": "Environnement",
+        "vault": "Coffre-fort",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Afficher et gérer les paramètres de configuration du système",
       "title": "Gérer les paramètres",
       "types": {
@@ -245,6 +254,9 @@
     "subtitle": "Gerer les parametres et configurations du systeme",
     "title": "Administration",
     "users": {
+      "actions": {
+        "manageCredentials": "Gérer les identifiants"
+      },
       "administrator": "Administrateur",
       "columns": {
         "groups": "{{common.groups}}",
@@ -253,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Supprimer le compte utilisateur",
+      "filter": {
+        "automationOnly": "Afficher uniquement les comptes d'automatisation"
+      },
       "filterLabel": "Filtrer les utilisateurs",
       "filterPlaceholder": "Rechercher par email, nom, fournisseur ou nom de groupe",
       "lastLogin": "Derniere connexion",
-      "listTitle": "Utilisateurs",
+      "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Ajouter un identifiant",
+        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'identifiant \"{{name}}\" ?",
+        "noCredentials": "Aucun identifiant trouvé",
+        "title": "Gérer les identifiants de {{userName}}"
+      },
       "never": "Jamais",
       "noUsers": "Aucun utilisateur trouve",
       "subtitle": "Afficher et gerer les utilisateurs du systeme",
@@ -272,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Créer un utilisateur d'automatisation pour ce webhook",
         "events": "Types d'evenements auxquels s'abonner",
         "eventsHint": "Types d'evenements auxquels s'abonner (ex : threat_model.created)",
         "eventsPlaceholder": "Selectionnez les types d'evenements",
@@ -286,10 +308,26 @@
         "secretPlaceholder": "Laisser vide pour generer automatiquement",
         "title": "Ajouter un Webhook",
         "url": "URL du webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Doit etre une URL HTTPS",
+        "urlHint": "HTTPS recommandé",
+        "urlHttpWarning": "Avertissement : L'URL du point de terminaison du webhook doit utiliser HTTPS. Le serveur peut rejeter les enregistrements de webhooks qui spécifient un point de terminaison non-TLS.",
+        "urlHttpWarningTitle": "URL de webhook non-HTTPS",
+        "urlInvalid": "Doit être une URL valide",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "L'URL est requise"
+      },
+      "createAutomationUserDialog": {
+        "email": "Adresse e-mail (Optionnelle)",
+        "emailHint": "Optionnel — par défaut, une adresse @tmi.local générée automatiquement",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2 à 64 caractères, commence par une lettre",
+        "nameMaxLength": "Le nom doit comporter au maximum 64 caractères",
+        "nameMinLength": "Doit comporter au moins 2 caractères",
+        "namePattern": "Doit commencer par une lettre et se terminer par une lettre ou un chiffre",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Créer un utilisateur d'automatisation",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Supprimer le webhook",
@@ -308,8 +346,11 @@
         "pending_delete": "Suppression en attente",
         "pending_verification": "Verification en attente"
       },
+      "subscriptionId": "ID d'abonnement",
       "subtitle": "Configurer les abonnements webhook pour les notifications d'evenements",
-      "title": "Gerer les Webhooks"
+      "title": "Gerer les Webhooks",
+      "triggerEvents": "Événements déclencheurs",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -325,6 +366,8 @@
       "versionRequired": "La version est requise"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Échec de la suppression du sondage : {{error}}",
+    "deleteTooltip": "Supprimer le sondage",
     "editTemplate": "Modifier l'enquête",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -517,6 +560,7 @@
     "actions": "Actions",
     "activate": "Activer",
     "active": "Actif",
+    "add": "Ajouter",
     "addMetadata": "Ajouter des Metadonnees",
     "addThreat": "Ajouter une Menace",
     "addons": "Modules",
@@ -562,6 +606,8 @@
     "email": "E-mail",
     "emailLabel": "Adresse E-mail",
     "error": "Erreur",
+    "exportAsPng": "Exporter en PNG",
+    "exportAsSvg": "Exporter en SVG",
     "false": "Faux",
     "fonts": "Polices",
     "groups": "Groupes",
@@ -886,9 +932,7 @@
     "pageTitle": "Editeur de Diagrammes de Flux de Donnees",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Exporter en JPEG",
-        "exportAsPng": "Exporter en PNG",
-        "exportAsSvg": "Exporter en SVG"
+        "exportAsJpeg": "Exporter en JPEG"
       },
       "tooltips": {
         "addActor": "Ajouter un acteur",
@@ -918,6 +962,7 @@
   "homeDescription": "TMI est un outil qui rationalise les processus d'examen de sécurité et de modélisation des menaces de votre organisation. Il pilote les workflows d'examen, organise les informations clés et permet aux équipes de construire collaborativement des diagrammes de flux de données. Il se connecte également à l'automatisation, aidant à réduire les tâches manuelles et à identifier plus efficacement les menaces de sécurité.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -942,6 +987,15 @@
     "signingIn": "Connexion en cours...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Connexion a TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Le nom d'utilisateur doit comporter au maximum 20 caractères",
+      "errorMinLength": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+      "errorPattern": "Le nom d'utilisateur ne doit contenir que des lettres et des chiffres",
+      "signIn": "Se connecter",
+      "title": "Se connecter avec TMI Provider",
+      "usernameLabel": "Nom d'utilisateur",
+      "usernamePlaceholder": "Saisir le nom d'utilisateur (facultatif)"
+    },
     "unexpectedError": "Une erreur inattendue s'est produite lors de l'authentification OAuth."
   },
   "navbar": {
@@ -1086,6 +1140,14 @@
     "userRightsTitle": "Droits des Utilisateurs"
   },
   "projects": {
+    "addButton": "Ajouter un Projet",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Saisir la description du projet",
       "namePlaceholder": "Saisir le nom du projet",
@@ -1097,10 +1159,56 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Creer un Nouveau Projet",
+    "deleteDialog": {
+      "message": "Êtes-vous sûr de vouloir supprimer le projet \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Modifier le Projet"
+    },
+    "filterLabel": "Filtrer par Nom",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Aucun projet trouvé",
     "picker": {
       "label": "{{common.project}}",
       "none": "Aucun Projet"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Ajouter un Projet Associé",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Aucun projet associé",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Sélectionner un Projet",
+      "title": "Projets Associés"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Annulé",
+      "completed": "Terminé",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Planification"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Filtrer par Statut",
+    "subtitle": "Créer, modifier et gérer les projets, les relations et les métadonnées",
+    "teamFilterLabel": "Filtrer par Équipe",
+    "title": "Gérer les Projets"
   },
   "report": {
     "cvss": "CVSS",
@@ -1175,7 +1283,7 @@
     "responses": {
       "continueEditing": "Continuer la modification",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Filtrer par statut",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Vous n'avez pas encore complété de questionnaires. Commencez-en un depuis la page des questionnaires.",
       "noResponsesTitle": "Aucune réponse pour le moment",
@@ -1195,13 +1303,21 @@
     "submitSurvey": "Soumettre l'enquête",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Archivée",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inactif"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Voir la réponse"
   },
   "teams": {
+    "addButton": "Ajouter une Équipe",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Modifié",
+      "name": "{{common.name}}",
+      "projects": "Projets",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Saisir la description de l'equipe",
       "emailAddress": "{{common.emailLabel}}",
@@ -1214,7 +1330,79 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Creer une Nouvelle Equipe"
+    "createNew": "Creer une Nouvelle Equipe",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Êtes-vous sûr de vouloir supprimer l'équipe \"{{name}}\" ?",
+      "projectWarning": "Cette équipe a {{count}} projet(s). La suppression de l'équipe peut affecter ces projets.",
+      "title": "Supprimer l'Équipe"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Modifier l'Équipe"
+    },
+    "filterLabel": "Filtrer les Équipes",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "members": "Membres",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Ajouter un Membre",
+      "customRole": "Rôle Personnalisé",
+      "noMembers": "Aucun membre",
+      "removeMember": "Supprimer un Membre",
+      "role": "Rôle",
+      "title": "Membres de l'Équipe"
+    },
+    "noTeams": "Aucune équipe trouvée",
+    "relatedTeamsDialog": {
+      "addRelated": "Ajouter une Équipe Associée",
+      "customRelationship": "Relation Personnalisée",
+      "noRelated": "Aucune équipe associée",
+      "relationship": "Relation",
+      "removeRelated": "Supprimer une Équipe Associée",
+      "selectTeam": "Sélectionner une Équipe",
+      "title": "Équipes Associées"
+    },
+    "relationships": {
+      "child": "Enfant",
+      "dependency": "Dépendance",
+      "dependent": "Dépendant",
+      "other": "{{common.other}}",
+      "parent": "Parent",
+      "related": "Associée",
+      "superseded_by": "Remplacée par",
+      "supersedes": "Remplace"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Ajouter une Partie Responsable",
+      "noParties": "Aucune partie responsable",
+      "removeParty": "Supprimer une Partie Responsable",
+      "title": "Parties Responsables"
+    },
+    "roles": {
+      "business_leader": "Directeur Commercial",
+      "engineer": "Ingénieur",
+      "engineering_lead": "Responsable Technique",
+      "other": "{{common.other}}",
+      "product_manager": "Chef de Produit",
+      "security_specialist": "Spécialiste en Sécurité"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archivée",
+      "forming": "En Formation",
+      "merging": "En Fusion",
+      "on_hold": "En Attente",
+      "splitting": "En Division",
+      "winding_down": "En Réduction"
+    },
+    "subtitle": "Créer, modifier et gérer des équipes, des membres et des relations",
+    "title": "Gérer les Équipes"
   },
   "threatEditor": {
     "createNewThreat": "Creer une nouvelle menace",
@@ -1278,6 +1466,7 @@
     "changeSecurityReviewer": "Changer le réviseur de sécurité",
     "clearSecurityReviewer": "Retirer le réviseur de sécurité",
     "commit": "Valider",
+    "confidentialProject": "Projet confidentiel",
     "createFirstButton": "Creer Votre Premier Modele de Menaces",
     "createNewDiagram": "Creer un nouveau diagramme",
     "createNewRepository": "Ajouter une reference de depot",
@@ -1305,6 +1494,14 @@
     "documentName": "Nom du document",
     "documentUrl": "URL du document",
     "export": "Exporter",
+    "exportDialog": {
+      "error": "Échec de la préparation des données d'exportation. Veuillez réessayer.",
+      "preparing": "Préparation des données d'exportation...",
+      "ready": "Export prêt. Cliquez sur Enregistrer pour télécharger.",
+      "retry": "Réessayer",
+      "save": "Enregistrer",
+      "title": "Exporter le Modèle de Menaces"
+    },
     "fileSizeExceeded": "Le fichier dépasse la taille maximale d'importation : {{maxSize}} Mo",
     "frameworkDisabledHint": "Impossible de changer le framework lorsque des menaces existent",
     "idLabel": "{{common.id}}",
@@ -1325,7 +1522,7 @@
     "noThreats": "Aucune menace ajoutee pour le moment",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Rôle",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Gerer les permissions",
     "rename": "Renommer",
@@ -1348,10 +1545,12 @@
     "repositoryType": "Type de depot",
     "repositoryUri": "URL du depot",
     "sections": {
+      "audit": "Audit",
       "inputs": "Entrées",
       "inputsDescription": "Actifs, documents et dépôts de code source qui décrivent le système en cours d'analyse",
       "outputs": "Sorties",
-      "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité"
+      "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité",
+      "reviewProcess": "Processus de révision"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir comme proprietaire",
@@ -1391,6 +1590,9 @@
       "diagramsCardTitle": "Les diagrammes dans TMI sont des representations lisibles par machine du mouvement des donnees et des processus au sein d'un systeme, permettant une analyse de securite manuelle et automatisee.",
       "documentsCardTitle": "Les references de documents sont des liens vers des documents stockes en dehors de TMI. Les documents pertinents decrivent le systeme a analyser et peuvent etre utilises par les analystes de securite et les processus d'analyse automatises.",
       "downloadModel": "Télécharger le modèle",
+      "dropToCreateDocument": "Déposer pour créer",
+      "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Déposer pour définir l'URI du ticket",
       "import": "Importer",
       "notesCardTitle": "Les notes sont du texte au format markdown entierement contenu dans le modele de menaces, utilise pour capturer les notes et annotations des analystes de securite et des processus d'analyse automatises.",
       "repositoriesCardTitle": "Les depots sont des liens vers des depots de code source ou le code source du systeme est gere.",
@@ -1478,6 +1680,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Ajouter une note",
+      "columns": {
+        "answer": "Réponse",
+        "group": "{{common.subjectTypes.group}}",
+        "question": "Question"
+      },
       "markdownSupported": "Markdown pris en charge",
       "noNotes": "Aucune note de triage pour le moment",
       "noResponses": "Aucune réponse enregistrée",
@@ -1522,6 +1729,14 @@
     },
     "markInReview": "Marquer en révision",
     "markPendingTriage": "Marquer en attente de triage",
+    "messages": {
+      "approveError": "Échec de l'approbation de la réponse",
+      "approveSuccess": "Réponse approuvée",
+      "createThreatModelError": "Échec de la création du modèle de menace",
+      "createThreatModelSuccess": "Modèle de menace créé avec succès",
+      "returnForRevisionError": "Échec du renvoi de la réponse pour révision",
+      "returnForRevisionSuccess": "Réponse renvoyée pour révision"
+    },
     "noResponses": "Aucune réponse à trier",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
@@ -1563,8 +1778,8 @@
   "userPreferences": {
     "colorBlindMode": "Activer le mode daltonien",
     "credentials": {
-      "add": "Ajouter",
-      "clientId": "Identifiant client",
+      "add": "{{common.add}}",
+      "clientId": "ID client",
       "clientSecret": "Secret client",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1581,9 +1796,13 @@
         "nameTooLong": "Le nom doit contenir 100 caractères ou moins",
         "title": "Créer un identifiant client"
       },
-      "created": "{{common.created}}",
-      "expires": "Expire",
+      "createdOn": "{{common.created}}",
+      "credential": "Identifiant",
+      "expired": "Expiré",
+      "expiresAt": "Expire",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Dernière utilisation",
+      "neverExpires": "N'expire jamais",
       "noCredentials": "Aucun identifiant client",
       "noCredentialsDescription": "Créez des identifiants pour accéder à l'API TMI de manière programmatique.",
       "secretDialog": {
@@ -1612,9 +1831,9 @@
     },
     "diagramAnimationEffects": "Activer les effets d'animation dans l'editeur de diagrammes",
     "displayPreferences": "Preferences d'affichage",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Télécharge les entrées les plus récentes du journal de l'application sous forme de fichier JSONL pour le dépannage.",
-      "title": "Exporter le journal de l'application"
+      "title": "Télécharger le journal"
     },
     "hoverShowMetadata": "Afficher les métadonnées de cellule au survol",
     "marginSize": {

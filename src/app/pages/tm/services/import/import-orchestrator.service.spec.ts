@@ -114,6 +114,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       }),
       filterThreat: vi.fn().mockReturnValue(defaultFilterResult()),
       filterDocument: vi.fn().mockReturnValue(defaultFilterResult()),
@@ -351,6 +353,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 
@@ -373,6 +377,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 
@@ -389,6 +395,8 @@ describe('ImportOrchestratorService', () => {
         description: 'A data flow diagram',
         includeInReport: undefined,
         image: 'data:image/png;base64,abc',
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 
@@ -413,6 +421,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: true,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 
@@ -428,6 +438,32 @@ describe('ImportOrchestratorService', () => {
       );
     });
 
+    it('should include color_palette and timmy_enabled in diagram update when present', async () => {
+      mockFieldFilter.filterDiagram.mockReturnValue({
+        filtered: { name: 'DFD', type: 'dfd' },
+        metadata: undefined,
+        cells: undefined,
+        description: undefined,
+        includeInReport: undefined,
+        image: undefined,
+        colorPalette: [{ name: 'red', value: '#ff0000' }],
+        timmyEnabled: false,
+      });
+      const deps = createMockDeps();
+
+      await lastValueFrom(service.orchestrateImport({ diagrams: [{ id: 'd1' }] }, deps));
+
+      expect(deps.updateDiagram).toHaveBeenCalledWith(
+        'new-tm-1',
+        'new-diagram-1',
+        expect.objectContaining({
+          cells: [],
+          color_palette: [{ name: 'red', value: '#ff0000' }],
+          timmy_enabled: false,
+        }),
+      );
+    });
+
     it('should always include cells array in diagram PUT even when no cells present', async () => {
       mockFieldFilter.filterDiagram.mockReturnValue({
         filtered: { name: 'DFD', type: 'dfd' },
@@ -436,6 +472,8 @@ describe('ImportOrchestratorService', () => {
         description: 'Description only',
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 
@@ -455,6 +493,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps({
         updateDiagram: vi.fn().mockReturnValue(throwError(() => new Error('update failed'))),
@@ -471,7 +511,7 @@ describe('ImportOrchestratorService', () => {
       expect(mockLogger.warn).toHaveBeenCalled();
     });
 
-    it('should not call updateDiagram when no cells/description/includeInReport/image', async () => {
+    it('should not call updateDiagram when no additional fields present', async () => {
       mockFieldFilter.filterDiagram.mockReturnValue({
         filtered: { name: 'DFD', type: 'dfd' },
         metadata: undefined,
@@ -479,6 +519,8 @@ describe('ImportOrchestratorService', () => {
         description: undefined,
         includeInReport: undefined,
         image: undefined,
+        colorPalette: undefined,
+        timmyEnabled: undefined,
       });
       const deps = createMockDeps();
 

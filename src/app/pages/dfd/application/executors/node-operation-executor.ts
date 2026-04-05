@@ -28,6 +28,7 @@ import {
 } from '../../types/graph-operation.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
 import { normalizeCell } from '../../utils/cell-normalization.util';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 export class NodeOperationExecutor implements OperationExecutor {
   readonly priority = 100; // Standard priority for node operations
@@ -184,7 +185,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'create-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to create node: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Failed to create node: ${getErrorMessage(error)}`,
       });
     }
   }
@@ -250,7 +251,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'update-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to update node: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Failed to update node: ${getErrorMessage(error)}`,
       });
     }
   }
@@ -353,7 +354,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'delete-node',
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `Failed to delete node: ${error instanceof Error ? error.message : String(error)}`,
+        error: `Failed to delete node: ${getErrorMessage(error)}`,
       });
     }
   }

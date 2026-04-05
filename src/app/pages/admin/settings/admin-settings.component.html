@@ -7,12 +7,7 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button
-        mat-icon-button
-        (click)="onClose()"
-        [attr.aria-label]="'common.close' | transloco"
-        [matTooltip]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -61,7 +56,9 @@
                 {{ 'admin.settings.columns.key' | transloco }}
               </th>
               <td mat-cell *matCellDef="let setting">
-                <span class="setting-key">{{ setting.key }}</span>
+                <span class="setting-key" [matTooltip]="setting.description || ''">{{
+                  setting.key
+                }}</span>
               </td>
             </ng-container>
 
@@ -70,7 +67,11 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 {{ 'admin.settings.columns.value' | transloco }}
               </th>
-              <td mat-cell *matCellDef="let setting">
+              <td
+                mat-cell
+                *matCellDef="let setting"
+                [matTooltip]="'admin.settings.types.' + setting.type | transloco"
+              >
                 @if (setting.editing) {
                   @switch (setting.type) {
                     @case ('bool') {
@@ -80,12 +81,12 @@
                       ></mat-slide-toggle>
                     }
                     @case ('int') {
-                      <mat-form-field class="setting-input">
+                      <mat-form-field class="setting-input" appearance="outline">
                         <input matInput type="number" [(ngModel)]="setting.editValues!.value" />
                       </mat-form-field>
                     }
                     @case ('json') {
-                      <mat-form-field class="setting-input json-input">
+                      <mat-form-field class="setting-input json-input" appearance="outline">
                         <textarea
                           matInput
                           [(ngModel)]="setting.editValues!.value"
@@ -95,7 +96,7 @@
                       </mat-form-field>
                     }
                     @default {
-                      <mat-form-field class="setting-input">
+                      <mat-form-field class="setting-input" appearance="outline">
                         <input matInput type="text" [(ngModel)]="setting.editValues!.value" />
                       </mat-form-field>
                     }
@@ -118,41 +119,15 @@
               </td>
             </ng-container>
 
-            <!-- Type Column -->
-            <ng-container matColumnDef="type">
+            <!-- Source Column -->
+            <ng-container matColumnDef="source">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ 'admin.settings.columns.type' | transloco }}
+                {{ 'admin.settings.columns.source' | transloco }}
               </th>
               <td mat-cell *matCellDef="let setting">
-                <span class="type-badge">
-                  {{ 'admin.settings.types.' + setting.type | transloco }}
-                </span>
-              </td>
-            </ng-container>
-
-            <!-- Description Column -->
-            <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ 'admin.settings.columns.description' | transloco }}
-              </th>
-              <td mat-cell *matCellDef="let setting">
-                @if (setting.editing) {
-                  <mat-form-field class="setting-input">
-                    <input matInput type="text" [(ngModel)]="setting.editValues!.description" />
-                  </mat-form-field>
-                } @else {
-                  <span class="setting-description">{{ setting.description }}</span>
+                @if (setting.source) {
+                  {{ 'admin.settings.sources.' + setting.source | transloco }}
                 }
-              </td>
-            </ng-container>
-
-            <!-- Modified Column -->
-            <ng-container matColumnDef="modified_at">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ 'admin.settings.columns.modified' | transloco }}
-              </th>
-              <td mat-cell *matCellDef="let setting">
-                {{ setting.modified_at | date: 'short' }}
               </td>
             </ng-container>
 
@@ -185,18 +160,34 @@
                     <button
                       mat-icon-button
                       (click)="onEditSetting(setting)"
-                      [matTooltip]="'admin.settings.editTooltip' | transloco"
+                      [disabled]="setting.read_only"
+                      [matTooltip]="
+                        (setting.read_only
+                          ? 'admin.settings.readOnlyTooltip'
+                          : 'admin.settings.editTooltip'
+                        ) | transloco
+                      "
                     >
                       <mat-icon>edit</mat-icon>
                     </button>
                     <button
                       mat-icon-button
-                      color="warn"
-                      (click)="onDeleteSetting(setting)"
-                      [matTooltip]="'admin.settings.deleteTooltip' | transloco"
+                      [matMenuTriggerFor]="settingRowKebabMenu"
+                      [matTooltip]="'common.actions' | transloco"
+                      (click)="$event.stopPropagation()"
                     >
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #settingRowKebabMenu="matMenu">
+                      <button
+                        mat-menu-item
+                        (click)="onDeleteSetting(setting)"
+                        [disabled]="setting.read_only"
+                      >
+                        <mat-icon>delete</mat-icon>
+                        <span [transloco]="'admin.settings.deleteTooltip'">Delete</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 }
               </td>

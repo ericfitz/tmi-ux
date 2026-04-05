@@ -545,7 +545,7 @@ const EDGE_ATTRS_SCHEMA: Record<string, readonly string[] | Record<string, reado
 /**
  * Logger interface for warning about unknown properties.
  */
-export interface ApiSanitizationLogger {
+interface ApiSanitizationLogger {
   warn(message: string, context?: Record<string, unknown>): void;
 }
 

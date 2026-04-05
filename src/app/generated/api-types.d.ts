@@ -1462,114 +1462,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/webhooks/subscriptions': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List webhook subscriptions
-     * @description List all webhook subscriptions. Requires administrator privileges.
-     */
-    get: operations['listWebhookSubscriptions'];
-    put?: never;
-    /**
-     * Create webhook subscription
-     * @description Create a new webhook subscription. Requires administrator privileges. The subscription will be in pending_verification status until the challenge is completed.
-     */
-    post: operations['createWebhookSubscription'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/webhooks/subscriptions/{webhook_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get webhook subscription
-     * @description Retrieve details of a specific webhook subscription. Requires administrator privileges.
-     */
-    get: operations['getWebhookSubscription'];
-    put?: never;
-    post?: never;
-    /**
-     * Delete webhook subscription
-     * @description Delete a webhook subscription and all its associated deliveries. Requires administrator privileges.
-     */
-    delete: operations['deleteWebhookSubscription'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/webhooks/subscriptions/{webhook_id}/test': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Test webhook subscription
-     * @description Send a test event to the webhook endpoint. Requires administrator privileges. Returns a delivery ID that can be used to track the test delivery status.
-     */
-    post: operations['testWebhookSubscription'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/webhooks/deliveries': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List webhook deliveries
-     * @description List webhook deliveries. Requires administrator privileges. Optionally filter by subscription_id.
-     */
-    get: operations['listWebhookDeliveries'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/webhooks/deliveries/{delivery_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get webhook delivery
-     * @description Retrieve details of a specific webhook delivery including payload and delivery attempts. Requires administrator privileges.
-     */
-    get: operations['getWebhookDelivery'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/addons': {
     parameters: {
       query?: never;
@@ -2107,26 +1999,6 @@ export interface paths {
      */
     post: operations['createCurrentUserClientCredential'];
     delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/client_credentials/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Delete client credential
-     * @description Permanently deletes a client credential. All tokens issued with this credential will immediately become invalid.
-     */
-    delete: operations['deleteCurrentUserClientCredential'];
     options?: never;
     head?: never;
     patch?: never;
@@ -2839,13 +2711,13 @@ export interface paths {
      * List teams
      * @description Returns a paginated list of teams. Non-admin users see only teams they are members of.
      */
-    get: operations['ListTeams'];
+    get: operations['listTeams'];
     put?: never;
     /**
      * Create a team
      * @description Creates a new team. The creating user is automatically added as a member.
      */
-    post: operations['CreateTeam'];
+    post: operations['createTeam'];
     delete?: never;
     options?: never;
     head?: never;
@@ -2863,25 +2735,25 @@ export interface paths {
      * Get a team
      * @description Returns a team by ID. Requires team membership or admin access.
      */
-    get: operations['GetTeam'];
+    get: operations['getTeam'];
     /**
      * Update a team
      * @description Full replacement update of a team. Requires team membership or admin access.
      */
-    put: operations['UpdateTeam'];
+    put: operations['updateTeam'];
     post?: never;
     /**
      * Delete a team
      * @description Deletes a team. Requires owner role or admin access. Returns 409 if the team is referenced by projects.
      */
-    delete: operations['DeleteTeam'];
+    delete: operations['deleteTeam'];
     options?: never;
     head?: never;
     /**
      * Patch a team
      * @description Partial update of a team using JSON Patch (RFC 6902). Requires team membership or admin access.
      */
-    patch: operations['PatchTeam'];
+    patch: operations['patchTeam'];
     trace?: never;
   };
   '/teams/{team_id}/metadata': {
@@ -2891,11 +2763,17 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get team metadata */
-    get: operations['GetTeamMetadata'];
+    /**
+     * Get team metadata
+     * @description Retrieve all metadata key-value pairs associated with the specified team.
+     */
+    get: operations['getTeamMetadata'];
     put?: never;
-    /** Create team metadata */
-    post: operations['CreateTeamMetadata'];
+    /**
+     * Create team metadata
+     * @description Create a new metadata key-value pair for the specified team.
+     */
+    post: operations['createTeamMetadata'];
     delete?: never;
     options?: never;
     head?: never;
@@ -2910,11 +2788,17 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Update team metadata */
-    put: operations['UpdateTeamMetadata'];
+    /**
+     * Update team metadata
+     * @description Update the value of an existing metadata key for the specified team.
+     */
+    put: operations['updateTeamMetadata'];
     post?: never;
-    /** Delete team metadata */
-    delete: operations['DeleteTeamMetadata'];
+    /**
+     * Delete team metadata
+     * @description Delete a metadata key-value pair from the specified team.
+     */
+    delete: operations['deleteTeamMetadata'];
     options?: never;
     head?: never;
     patch?: never;
@@ -2928,15 +2812,24 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Bulk replace team metadata */
-    put: operations['BulkReplaceTeamMetadata'];
-    /** Bulk create team metadata */
-    post: operations['BulkCreateTeamMetadata'];
+    /**
+     * Bulk replace team metadata
+     * @description Replace all metadata for the specified team with the provided key-value pairs.
+     */
+    put: operations['bulkReplaceTeamMetadata'];
+    /**
+     * Bulk create team metadata
+     * @description Create multiple metadata key-value pairs for the specified team in a single request.
+     */
+    post: operations['bulkCreateTeamMetadata'];
     delete?: never;
     options?: never;
     head?: never;
-    /** Bulk upsert team metadata */
-    patch: operations['BulkUpsertTeamMetadata'];
+    /**
+     * Bulk upsert team metadata
+     * @description Create or update multiple metadata key-value pairs for the specified team in a single request.
+     */
+    patch: operations['bulkUpsertTeamMetadata'];
     trace?: never;
   };
   '/projects': {
@@ -2950,13 +2843,13 @@ export interface paths {
      * List projects
      * @description Returns a paginated list of projects. Non-admin users see only projects belonging to teams they are members of.
      */
-    get: operations['ListProjects'];
+    get: operations['listProjects'];
     put?: never;
     /**
      * Create a project
      * @description Creates a new project. Requires membership in the referenced team.
      */
-    post: operations['CreateProject'];
+    post: operations['createProject'];
     delete?: never;
     options?: never;
     head?: never;
@@ -2974,25 +2867,25 @@ export interface paths {
      * Get a project
      * @description Returns a project by ID. Requires membership in the project's team or admin access.
      */
-    get: operations['GetProject'];
+    get: operations['getProject'];
     /**
      * Update a project
      * @description Full replacement update of a project. Requires membership in the project's team or admin access.
      */
-    put: operations['UpdateProject'];
+    put: operations['updateProject'];
     post?: never;
     /**
      * Delete a project
      * @description Deletes a project. Requires owner role or admin access. Returns 409 if the project is referenced by threat models.
      */
-    delete: operations['DeleteProject'];
+    delete: operations['deleteProject'];
     options?: never;
     head?: never;
     /**
      * Patch a project
      * @description Partial update of a project using JSON Patch (RFC 6902). Requires membership in the project's team or admin access.
      */
-    patch: operations['PatchProject'];
+    patch: operations['patchProject'];
     trace?: never;
   };
   '/projects/{project_id}/metadata': {
@@ -3002,11 +2895,17 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get project metadata */
-    get: operations['GetProjectMetadata'];
+    /**
+     * Get project metadata
+     * @description Retrieve all metadata key-value pairs associated with the specified project.
+     */
+    get: operations['getProjectMetadata'];
     put?: never;
-    /** Create project metadata */
-    post: operations['CreateProjectMetadata'];
+    /**
+     * Create project metadata
+     * @description Create a new metadata key-value pair for the specified project.
+     */
+    post: operations['createProjectMetadata'];
     delete?: never;
     options?: never;
     head?: never;
@@ -3021,11 +2920,17 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Update project metadata */
-    put: operations['UpdateProjectMetadata'];
+    /**
+     * Update project metadata
+     * @description Update the value of an existing metadata key for the specified project.
+     */
+    put: operations['updateProjectMetadata'];
     post?: never;
-    /** Delete project metadata */
-    delete: operations['DeleteProjectMetadata'];
+    /**
+     * Delete project metadata
+     * @description Delete a metadata key-value pair from the specified project.
+     */
+    delete: operations['deleteProjectMetadata'];
     options?: never;
     head?: never;
     patch?: never;
@@ -3039,15 +2944,24 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Bulk replace project metadata */
-    put: operations['BulkReplaceProjectMetadata'];
-    /** Bulk create project metadata */
-    post: operations['BulkCreateProjectMetadata'];
+    /**
+     * Bulk replace project metadata
+     * @description Replace all metadata for the specified project with the provided key-value pairs.
+     */
+    put: operations['bulkReplaceProjectMetadata'];
+    /**
+     * Bulk create project metadata
+     * @description Create multiple metadata key-value pairs for the specified project in a single request.
+     */
+    post: operations['bulkCreateProjectMetadata'];
     delete?: never;
     options?: never;
     head?: never;
-    /** Bulk upsert project metadata */
-    patch: operations['BulkUpsertProjectMetadata'];
+    /**
+     * Bulk upsert project metadata
+     * @description Create or update multiple metadata key-value pairs for the specified project in a single request.
+     */
+    patch: operations['bulkUpsertProjectMetadata'];
     trace?: never;
   };
   '/me/groups': {
@@ -3090,6 +3004,538 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/threat_models/{threat_model_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a threat model and all sub-objects
+     * @description Returns a paginated list of audit trail entries
+     */
+    get: operations['getThreatModelAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/audit_trail/{entry_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a single audit trail entry
+     * @description Returns a single audit trail entry by ID
+     */
+    get: operations['getAuditEntry'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/audit_trail/{entry_id}/rollback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Rollback an entity to a previous version
+     * @description Restores an entity to the state captured in the specified audit entry's version snapshot. Creates a new audit entry recording the rollback. Returns 410 Gone if the version snapshot has been pruned.
+     */
+    post: operations['rollbackToVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/diagrams/{diagram_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a diagram
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getDiagramAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/threats/{threat_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a threat
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getThreatAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/assets/{asset_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for an asset
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getAssetAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/documents/{document_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a document
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getDocumentAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/notes/{note_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a note
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getNoteAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/repositories/{repository_id}/audit_trail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List audit trail for a repository
+     * @description Returns a paginated list of audit trail entries for a specific resource
+     */
+    get: operations['getRepositoryAuditTrail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted threat model
+     * @description Restores a soft-deleted threat model and all its soft-deleted children (diagrams, threats, assets, documents, notes, repositories). Restricted to owner role or administrators.
+     */
+    post: operations['restoreThreatModel'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/diagrams/{diagram_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted diagram
+     * @description Restores a soft-deleted diagram within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreDiagram'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/threats/{threat_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted threat
+     * @description Restores a soft-deleted threat within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreThreat'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/assets/{asset_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted asset
+     * @description Restores a soft-deleted asset within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreAsset'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/documents/{document_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted document
+     * @description Restores a soft-deleted document within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/notes/{note_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted note
+     * @description Restores a soft-deleted note within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreNote'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/repositories/{repository_id}/restore': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Restore a soft-deleted repository
+     * @description Restores a soft-deleted repository within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     */
+    post: operations['restoreRepository'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ws/ticket': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a WebSocket authentication ticket
+     * @description Issues a short-lived, single-use authentication ticket for establishing a WebSocket connection to a collaboration session. The ticket is scoped to the specified session and the authenticated user. Tickets expire after 30 seconds and can only be used once.
+     */
+    get: operations['getWsTicket'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/automation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create an automation (service) account
+     * @description Creates a new automation account with the TMI provider, sets the automation flag, adds the account to the TMI Automation built-in group, and creates a client credential. The client secret is returned only once and cannot be retrieved later. Requires administrator privileges.
+     */
+    post: operations['createAutomationAccount'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{internal_uuid}/client_credentials': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List client credentials for an automation user
+     * @description Lists all client credentials for the specified automation user. Only accessible for users with automation=true. Secrets are never returned.
+     */
+    get: operations['listAdminUserClientCredentials'];
+    put?: never;
+    /**
+     * Create a client credential for an automation user
+     * @description Creates a new client credential for the specified automation user. Only accessible for users with automation=true. The client_secret is returned only once. Admin operations bypass quota limits.
+     */
+    post: operations['createAdminUserClientCredential'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{internal_uuid}/client_credentials/{credential_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a client credential for an automation user
+     * @description Deletes and revokes a client credential for the specified automation user. Only accessible for users with automation=true.
+     */
+    delete: operations['deleteAdminUserClientCredential'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/client_credentials/{credential_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete client credential
+     * @description Permanently deletes a client credential. All tokens issued with this credential will immediately become invalid.
+     */
+    delete: operations['deleteCurrentUserClientCredential'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/webhooks/subscriptions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List webhook subscriptions
+     * @description List all webhook subscriptions. Requires administrator privileges.
+     */
+    get: operations['listWebhookSubscriptions'];
+    put?: never;
+    /**
+     * Create webhook subscription
+     * @description Create a new webhook subscription. Requires administrator privileges. The subscription will be in pending_verification status until the challenge is completed.
+     */
+    post: operations['createWebhookSubscription'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/webhooks/subscriptions/{webhook_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get webhook subscription
+     * @description Retrieve details of a specific webhook subscription. Requires administrator privileges.
+     */
+    get: operations['getWebhookSubscription'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete webhook subscription
+     * @description Delete a webhook subscription and all its associated deliveries. Requires administrator privileges.
+     */
+    delete: operations['deleteWebhookSubscription'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/webhooks/subscriptions/{webhook_id}/test': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Test webhook subscription
+     * @description Send a test event to the webhook endpoint. Requires administrator privileges. Returns a delivery ID that can be used to track the test delivery status.
+     */
+    post: operations['testWebhookSubscription'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/webhooks/deliveries': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List webhook deliveries
+     * @description List webhook deliveries. Requires administrator privileges. Optionally filter by subscription_id.
+     */
+    get: operations['listWebhookDeliveries'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/webhooks/deliveries/{delivery_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get webhook delivery
+     * @description Retrieve details of a specific webhook delivery including payload and delivery attempts. Requires administrator privileges.
+     */
+    get: operations['getWebhookDelivery'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3098,7 +3544,7 @@ export interface components {
      * @description API information response for the root endpoint
      * @example {
      *       "status": {
-     *         "code": "OK",
+     *         "code": "ok",
      *         "time": "2025-04-09T12:00:00Z"
      *       },
      *       "service": {
@@ -3118,7 +3564,7 @@ export interface components {
     ApiInfo: {
       /**
        * @example {
-       *       "code": "OK",
+       *       "code": "ok",
        *       "time": "2026-01-17T12:00:00Z"
        *     }
        */
@@ -3127,7 +3573,7 @@ export interface components {
          * @description Status code indicating system health: OK (all components healthy), DEGRADED (server up but database or Redis unhealthy), ERROR (critical failure)
          * @enum {string}
          */
-        code: 'OK' | 'DEGRADED' | 'ERROR';
+        code: 'ok' | 'degraded' | 'error';
         /**
          * Format: date-time
          * @description Current server time in UTC, formatted as RFC 3339
@@ -3285,7 +3731,8 @@ export interface components {
      *       "created_at": "2024-01-17T14:00:00Z",
      *       "modified_at": "2024-01-17T14:00:00Z",
      *       "uri": "https://example.com/docs/security-policy.pdf",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     Document: components['schemas']['DocumentBase'] & {
@@ -3306,6 +3753,11 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description Base diagram object with common properties - used for API responses
@@ -3316,7 +3768,8 @@ export interface components {
      *       "description": "High-level system architecture diagram",
      *       "created_at": "2024-01-15T10:00:00Z",
      *       "modified_at": "2024-01-15T10:00:00Z",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     BaseDiagram: {
@@ -3369,6 +3822,18 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
+      /** @description Custom color palette for diagram elements, ordered by position */
+      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
     };
     /**
      * @description Base diagram input for PUT/PATCH requests - excludes readOnly server-managed fields
@@ -3376,7 +3841,8 @@ export interface components {
      *       "type": "DFD-1.0.0",
      *       "name": "New Architecture Diagram",
      *       "description": "Draft architecture for microservices migration",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     BaseDiagramInput: {
@@ -3409,6 +3875,13 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /** @description Custom color palette for diagram elements, ordered by position */
+      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
     };
     /**
      * @description Data Flow Diagram with cells, edges, and visual styling for JointJS rendering
@@ -3429,7 +3902,8 @@ export interface components {
      *           "height": 70
      *         }
      *       ],
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     DfdDiagram: Omit<components['schemas']['BaseDiagram'], 'type'> & {
@@ -3440,6 +3914,12 @@ export interface components {
       type?: 'DFD-1.0.0';
       /** @description List of diagram cells (nodes and edges) following X6 structure */
       cells: (components['schemas']['Node'] | components['schemas']['Edge'])[];
+    } & {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'DFD-1.0.0';
     } & {
       /**
        * @description discriminator enum property added by openapi-typescript
@@ -3463,7 +3943,8 @@ export interface components {
      *           "height": 60
      *         }
      *       ],
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     DfdDiagramInput: Omit<components['schemas']['BaseDiagramInput'], 'type'> & {
@@ -3654,7 +4135,35 @@ export interface components {
        */
       shape: 'flow';
     };
-    /** @description A threat model containing diagrams, threats, documents, and other security analysis artifacts */
+    /**
+     * @description A threat model containing diagrams, threats, documents, and other security analysis artifacts
+     * @example {
+     *       "id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *       "name": "Payment Service Threat Model",
+     *       "description": "Threat model for the payment processing service",
+     *       "owner": {
+     *         "principal_type": "user",
+     *         "provider": "google",
+     *         "provider_id": "alice@example.com",
+     *         "display_name": "Alice Johnson",
+     *         "email": "alice@example.com"
+     *       },
+     *       "authorization": [
+     *         {
+     *           "principal_type": "user",
+     *           "provider": "google",
+     *           "provider_id": "alice@example.com",
+     *           "display_name": "Alice Johnson",
+     *           "email": "alice@example.com",
+     *           "role": "owner"
+     *         }
+     *       ],
+     *       "threat_model_framework": "STRIDE",
+     *       "status": "in_progress",
+     *       "created_at": "2026-01-10T08:00:00Z",
+     *       "modified_at": "2026-01-15T10:30:00Z"
+     *     }
+     */
     ThreatModel: components['schemas']['ThreatModelBase'] & {
       /**
        * Format: uuid
@@ -3692,6 +4201,11 @@ export interface components {
       readonly status_updated?: string | null;
       /** @description Whether this threat model is confidential (set at creation, read-only after) */
       readonly is_confidential?: boolean;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description A security threat identified during threat modeling, with severity, status, and mitigation details
@@ -3714,7 +4228,8 @@ export interface components {
      *       "threat_type": [
      *         "spoofing"
      *       ],
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     Threat: components['schemas']['ThreatBase'] & {
@@ -3738,6 +4253,11 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description Authorization record granting a user access to a resource with a specific role
@@ -3817,7 +4337,7 @@ export interface components {
      * @example {
      *       "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
      *       "refresh_token": "def456...",
-     *       "token_type": "Bearer",
+     *       "token_type": "bearer",
      *       "expires_in": 3600
      *     }
      */
@@ -3830,7 +4350,7 @@ export interface components {
        * @description Token type
        * @enum {string}
        */
-      token_type: 'Bearer';
+      token_type: 'bearer';
       /** @description Access token expiration time in seconds */
       expires_in: number;
     };
@@ -3911,7 +4431,8 @@ export interface components {
      *       "created_at": "2025-01-15T10:30:00Z",
      *       "modified_at": "2025-01-15T14:22:00Z",
      *       "image": null,
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     DiagramListItem: {
@@ -3957,6 +4478,16 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description Enhanced item for threat model list endpoints with key metadata and counts
@@ -4040,6 +4571,11 @@ export interface components {
       readonly status_updated?: string | null;
       /** @description Security reviewer assigned to this threat model. The assigned security reviewer automatically has the owner role on this threat model. */
       security_reviewer?: components['schemas']['User'] | null;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description A 2D point with x and y coordinates
@@ -4268,13 +4804,13 @@ export interface components {
      *     }
      */
     EdgeRouter:
-      | ('normal' | 'orth' | 'oneSide' | 'manhattan' | 'metro' | 'er')
+      | ('normal' | 'orth' | 'one_side' | 'manhattan' | 'metro' | 'er')
       | {
           /**
            * @description Router algorithm name
            * @enum {string}
            */
-          name: 'normal' | 'orth' | 'oneSide' | 'manhattan' | 'metro' | 'er';
+          name: 'normal' | 'orth' | 'one_side' | 'manhattan' | 'metro' | 'er';
           /** @description Router-specific arguments */
           args?: {
             /** @description Padding around obstacles for routing */
@@ -4351,7 +4887,7 @@ export interface components {
       /** @description Name of the threat model */
       name: string;
       /** @description Description of the threat model */
-      description?: string;
+      description?: string | null;
       /** @description User who owns the threat model (can be null for orphaned models) */
       owner: components['schemas']['User'];
       /** @description The framework used for this threat model */
@@ -4364,7 +4900,7 @@ export interface components {
        * Format: uri
        * @description URL to an issue in an issue tracking system for this threat model
        */
-      issue_uri?: string;
+      issue_uri?: string | null;
       /** @description Status of the threat model in the organization's threat modeling or SDLC process. Examples: "Not started", "In progress", "Review", "Approved", "Closed" */
       status?: string | null;
       /** @description Alternative names or identifiers for the threat model */
@@ -4402,7 +4938,7 @@ export interface components {
       /** @description Description of the threat model and its purpose */
       description?: string | null;
       /** @description The framework used for this threat model */
-      threat_model_framework?: string;
+      threat_model_framework?: string | null;
       /** @description List of users and their roles for this threat model */
       authorization?: components['schemas']['Authorization'][];
       /** @description Key-value pairs for additional threat model metadata */
@@ -4436,16 +4972,17 @@ export interface components {
      *           "score": 9.8
      *         }
      *       ],
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     ThreatBase: {
       /** @description Name of the threat */
       name: string;
       /** @description Description of the threat and risk to the organization */
-      description?: string;
+      description?: string | null;
       /** @description Recommended or planned mitigation(s) for the threat */
-      mitigation?: string;
+      mitigation?: string | null;
       /**
        * Format: uuid
        * @description Unique identifier of the associated diagram (if applicable) (UUID)
@@ -4457,15 +4994,15 @@ export interface components {
        */
       cell_id?: string | null;
       /** @description Severity level of the threat */
-      severity?: string;
+      severity?: string | null;
       /** @description Numeric score representing the risk or impact of the threat */
       score?: number;
       /** @description Priority level for addressing the threat */
-      priority?: string;
+      priority?: string | null;
       /** @description Whether the threat has been mitigated */
       mitigated?: boolean;
       /** @description Current status of the threat */
-      status?: string;
+      status?: string | null;
       /**
        * @description Types or categories of the threat. Supports multiple classifications within the same framework (e.g., ['Spoofing', 'Tampering']). Empty array indicates no types assigned.
        * @default []
@@ -4477,7 +5014,7 @@ export interface components {
        * Format: uri
        * @description URL to an issue in an issue tracking system for this threat
        */
-      issue_uri?: string;
+      issue_uri?: string | null;
       /**
        * Format: uuid
        * @description Unique identifier of the associated asset (if applicable) (UUID)
@@ -4492,6 +5029,11 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
     };
     /**
      * @description Input schema for creating/updating Threat
@@ -4510,7 +5052,8 @@ export interface components {
      *       "threat_type": [
      *         "spoofing"
      *       ],
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     ThreatInput: components['schemas']['ThreatBase'];
@@ -4599,7 +5142,8 @@ export interface components {
      *       "created_at": "2024-01-15T10:00:00Z",
      *       "modified_at": "2024-01-15T10:00:00Z",
      *       "uri": "https://github.com/example/repo",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     Repository: components['schemas']['RepositoryBase'] & {
@@ -4620,8 +5164,23 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
-    /** @description Complete Note schema with server-generated fields */
+    /**
+     * @description Complete Note schema with server-generated fields
+     * @example {
+     *       "id": "d4e5f6a7-b8c9-0123-defa-23456789abcd",
+     *       "name": "Security Review Notes",
+     *       "content": "Reviewed authentication flow. Identified potential session fixation risk.",
+     *       "description": "Notes from initial security review session",
+     *       "created_at": "2026-01-12T11:00:00Z",
+     *       "modified_at": "2026-01-13T16:00:00Z"
+     *     }
+     */
     Note: components['schemas']['NoteBase'] & {
       /**
        * Format: uuid
@@ -4640,8 +5199,28 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
-    /** @description Complete Asset schema with server-generated fields */
+    /**
+     * @description Complete Asset schema with server-generated fields
+     * @example {
+     *       "id": "c3d4e5f6-a7b8-9012-cdef-123456789abc",
+     *       "name": "Customer Database",
+     *       "type": "data",
+     *       "description": "Primary PostgreSQL database storing customer PII",
+     *       "classification": [
+     *         "confidential"
+     *       ],
+     *       "criticality": "high",
+     *       "sensitivity": "high",
+     *       "created_at": "2026-01-11T09:00:00Z",
+     *       "modified_at": "2026-01-14T14:00:00Z"
+     *     }
+     */
     Asset: components['schemas']['AssetBase'] & {
       /**
        * Format: uuid
@@ -4660,6 +5239,11 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /** @description Asset with extended metadata for detailed security analysis */
     ExtendedAsset: components['schemas']['Asset'] & {
@@ -4686,7 +5270,8 @@ export interface components {
      *       "type": "data",
      *       "description": "PostgreSQL database storing customer payment information",
      *       "criticality": "high",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     AssetBase: {
@@ -4710,6 +5295,11 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
     };
     /**
      * @description Input schema for creating or updating Asset
@@ -4717,7 +5307,8 @@ export interface components {
      *       "name": "User Database",
      *       "type": "data",
      *       "description": "Primary database storing user credentials",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     AssetInput: components['schemas']['AssetBase'];
@@ -4727,7 +5318,8 @@ export interface components {
      *       "name": "Payment System Architecture",
      *       "uri": "https://docs.example.com/architecture/payment-system.pdf",
      *       "description": "High-level architecture diagram and documentation",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     DocumentBase: {
@@ -4745,6 +5337,11 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
     };
     /**
      * @description Input schema for creating or updating Document
@@ -4760,7 +5357,8 @@ export interface components {
      *         }
      *       ],
      *       "uri": "https://example.com/docs/security-policy.pdf",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     DocumentInput: components['schemas']['DocumentBase'];
@@ -4769,13 +5367,14 @@ export interface components {
      * @example {
      *       "name": "Security Review Notes",
      *       "content": "Reviewed payment flow with security team. Key findings:\n- Need additional input validation\n- Consider rate limiting on payment endpoint",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     NoteBase: {
       /** @description Note name */
       name: string;
-      /** @description Note content in markdown format */
+      /** @description Note content in markdown format. Safe inline HTML (tables, SVG, formatting) is allowed and sanitized server-side; dangerous elements (script, iframe, event handlers) are stripped. */
       content: string;
       /** @description Description of note purpose or context */
       description?: string | null;
@@ -4784,13 +5383,19 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
     };
     /**
      * @description Input schema for creating or updating Note
      * @example {
      *       "name": "Security Analysis Notes",
      *       "content": "Initial security analysis of the authentication flow.",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     NoteInput: components['schemas']['NoteBase'];
@@ -4801,7 +5406,8 @@ export interface components {
      *       "name": "Security Review Notes",
      *       "created_at": "2024-01-17T14:30:00Z",
      *       "modified_at": "2024-01-17T15:00:00Z",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     NoteListItem: {
@@ -4831,25 +5437,36 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
     };
     /**
      * @description Base fields for Repository (user-writable only)
      * @example {
      *       "uri": "https://github.com/example/payment-service",
      *       "description": "Main repository for payment processing service",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     RepositoryBase: {
       /** @description Name for the source code reference */
-      name?: string;
+      name?: string | null;
       /** @description Description of the referenced source code */
       description?: string | null;
       /**
        * @description Source code repository type
-       * @enum {string}
+       * @enum {string|null}
        */
-      type?: 'git' | 'svn' | 'mercurial' | 'other';
+      type?: 'git' | 'svn' | 'mercurial' | 'other' | null;
       /** @description repo-specific parameters for retrieving the source */
       parameters?: {
         /**
@@ -4872,6 +5489,11 @@ export interface components {
        * @default true
        */
       include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
     };
     /**
      * @description Input schema for creating or updating Repository
@@ -4887,7 +5509,8 @@ export interface components {
      *         }
      *       ],
      *       "uri": "https://github.com/example/repo",
-     *       "include_in_report": true
+     *       "include_in_report": true,
+     *       "timmy_enabled": true
      *     }
      */
     RepositoryInput: components['schemas']['RepositoryBase'];
@@ -5113,6 +5736,27 @@ export interface components {
      *       "objects": [
      *         "threat_model",
      *         "diagram"
+     *       ],
+     *       "parameters": [
+     *         {
+     *           "name": "scan_model",
+     *           "type": "enum",
+     *           "description": "AI model to use for security analysis",
+     *           "required": true,
+     *           "enum_values": [
+     *             "claude-sonnet",
+     *             "claude-opus",
+     *             "gpt-4"
+     *           ],
+     *           "default_value": "claude-sonnet"
+     *         },
+     *         {
+     *           "name": "verbose",
+     *           "type": "boolean",
+     *           "description": "Enable verbose output",
+     *           "required": false,
+     *           "default_value": "true"
+     *         }
      *       ]
      *     }
      */
@@ -5146,6 +5790,8 @@ export interface components {
        * @description Optional: Scope add-on to specific threat model
        */
       threat_model_id?: string;
+      /** @description Typed parameter declarations for client UI generation. Each parameter defines a name, type, and type-specific configuration that clients use to render appropriate input controls. */
+      parameters?: components['schemas']['AddonParameter'][];
     };
     /**
      * @description Addon details including configuration and status
@@ -5192,6 +5838,8 @@ export interface components {
        * @description Threat model scope (if scoped)
        */
       threat_model_id?: string;
+      /** @description Typed parameter declarations for client UI generation. Each parameter defines a name, type, and type-specific configuration that clients use to render appropriate input controls. */
+      parameters?: components['schemas']['AddonParameter'][];
     };
     /**
      * @description Paginated list of registered addons
@@ -5220,12 +5868,12 @@ export interface components {
       offset: number;
     };
     /**
-     * @description Request to invoke an addon with parameters and payload
+     * @description Request to invoke an addon with parameters and data
      * @example {
      *       "threat_model_id": "660e8400-e29b-41d4-a716-446655440001",
      *       "object_type": "diagram",
      *       "object_id": "880e8400-e29b-41d4-a716-446655440003",
-     *       "payload": {
+     *       "data": {
      *         "scan_type": "full",
      *         "include_recommendations": true
      *       }
@@ -5249,14 +5897,16 @@ export interface components {
         | 'document'
         | 'note'
         | 'repository'
-        | 'metadata';
+        | 'metadata'
+        | 'survey'
+        | 'survey_response';
       /**
        * Format: uuid
        * @description Optional: Specific object ID to operate on
        */
       object_id?: string;
       /** @description User-provided data for the add-on (max 1KB JSON-serialized) */
-      payload?: {
+      data?: {
         [key: string]: unknown;
       };
     };
@@ -5333,8 +5983,6 @@ export interface components {
       object_id?: string;
       /** @description User who triggered the invocation */
       invoked_by: components['schemas']['User'];
-      /** @description JSON-encoded payload */
-      payload?: string;
       /**
        * @description Current status
        * @enum {string}
@@ -5354,6 +6002,8 @@ export interface components {
        * @description Last status update timestamp
        */
       status_updated_at: string;
+      /** @description JSON-encoded data */
+      data?: string;
     };
     /**
      * @description Paginated list of addon invocations
@@ -5625,7 +6275,8 @@ export interface components {
      *       "email_verified": true,
      *       "is_admin": false,
      *       "created_at": "2024-01-01T00:00:00Z",
-     *       "modified_at": "2024-01-01T00:00:00Z"
+     *       "modified_at": "2024-01-01T00:00:00Z",
+     *       "automation": null
      *     }
      */
     AdminUser: {
@@ -5668,6 +6319,8 @@ export interface components {
       readonly groups?: string[];
       /** @description Number of active threat models owned by user (enriched) */
       readonly active_threat_models?: number;
+      /** @description Whether this is an automation/service account. Server-managed: set to true only when an automation account is created via the admin API. Nullable; null and false are equivalent. */
+      readonly automation?: boolean | null;
     };
     /**
      * @description Paginated list of users for administrative management
@@ -6149,7 +6802,7 @@ export interface components {
       };
       /** @description Minimal cell data (nodes and edges) without visual styling */
       cells: components['schemas']['MinimalCell'][];
-      /** @description Asset objects referenced by cells in this diagram via dataAssetIds */
+      /** @description Asset objects referenced by cells in this diagram via data_asset_ids */
       assets: components['schemas']['Asset'][];
     };
     /**
@@ -6176,13 +6829,13 @@ export interface components {
      *       "labels": [
      *         "Payment Gateway"
      *       ],
-     *       "dataAssetIds": [
-     *         "960e8400-e29b-41d4-a716-446655440004"
-     *       ],
      *       "metadata": {
      *         "technology": "Java"
      *       },
-     *       "security_boundary": false
+     *       "security_boundary": false,
+     *       "data_asset_ids": [
+     *         "960e8400-e29b-41d4-a716-446655440004"
+     *       ]
      *     }
      */
     MinimalNode: {
@@ -6205,8 +6858,6 @@ export interface components {
       children: string[];
       /** @description Text labels extracted from node attrs and embedded text-box children */
       labels: string[];
-      /** @description References to Asset IDs associated with this node */
-      dataAssetIds?: string[];
       /** @description Flattened cell metadata (converted from _metadata array in cell.data) */
       metadata: {
         [key: string]: string;
@@ -6216,6 +6867,8 @@ export interface components {
        * @default false
        */
       security_boundary: boolean;
+      /** @description References to Asset IDs associated with this node */
+      data_asset_ids?: string[];
     };
     /**
      * @description Minimal edge representation without visual styling or routing information
@@ -6231,10 +6884,10 @@ export interface components {
      *       "labels": [
      *         "Credit Card Data"
      *       ],
-     *       "dataAssetIds": [],
      *       "metadata": {
      *         "protocol": "https"
-     *       }
+     *       },
+     *       "data_asset_ids": []
      *     }
      */
     MinimalEdge: {
@@ -6254,12 +6907,12 @@ export interface components {
       target: components['schemas']['EdgeTerminal'];
       /** @description Text labels extracted from edge labels array */
       labels: string[];
-      /** @description References to Asset IDs associated with this edge */
-      dataAssetIds?: string[];
       /** @description Flattened edge metadata (converted from _metadata array in edge.data) */
       metadata: {
         [key: string]: string;
       };
+      /** @description References to Asset IDs associated with this edge */
+      data_asset_ids?: string[];
     };
     /** @description JSON Patch document as defined in RFC 6902 */
     JsonPatchDocument: {
@@ -6546,7 +7199,9 @@ export interface components {
      *       "type": "int",
      *       "description": "Maximum API requests per minute per user",
      *       "modified_at": "2026-01-15T10:30:00Z",
-     *       "modified_by": "550e8400-e29b-41d4-a716-446655440000"
+     *       "modified_by": "550e8400-e29b-41d4-a716-446655440000",
+     *       "source": "database",
+     *       "read_only": false
      *     }
      */
     SystemSetting: {
@@ -6571,6 +7226,13 @@ export interface components {
        * @description UUID of the user who last modified the setting
        */
       modified_by?: string;
+      /**
+       * @description Where the effective value of this setting comes from. Server-managed, not writable.
+       * @enum {string}
+       */
+      readonly source?: 'database' | 'config' | 'environment' | 'vault';
+      /** @description Whether this setting can be modified via the API. True when source is not database. */
+      readonly read_only?: boolean;
     };
     /**
      * @description Request body for creating or updating a system setting
@@ -7361,11 +8023,11 @@ export interface components {
       /** @description Name of the survey */
       name: string;
       /** @description Description of the survey and its purpose */
-      description?: string;
+      description?: string | null;
       /** @description Custom version string (e.g., '2024-Q1', 'v2-pilot') */
       version: string;
       /** @description Survey status: active surveys appear in intake, inactive are hidden but editable, archived are read-only and preserved for historical reference */
-      status?: string;
+      status?: string | null;
       settings?: components['schemas']['SurveySettings'];
       /** @description Complete SurveyJS JSON definition. Opaque to the server; validated only for top-level structure (must contain a pages array). */
       survey_json: {
@@ -7560,7 +8222,7 @@ export interface components {
     TriageNoteBase: {
       /** @description Triage note name */
       name: string;
-      /** @description Triage note content in markdown format */
+      /** @description Triage note content in markdown format. Safe inline HTML (tables, SVG, formatting) is allowed and sanitized server-side; dangerous elements (script, iframe, event handlers) are stripped. */
       content: string;
     };
     /** @description Complete TriageNote schema with server-generated fields */
@@ -7778,7 +8440,7 @@ export interface components {
        * @description Team description
        * @example Core platform infrastructure team
        */
-      description?: string;
+      description?: string | null;
       /**
        * @description List of team members with their roles
        * @example [
@@ -7804,18 +8466,18 @@ export interface components {
        * @description URL or reference to internal team page
        * @example https://wiki.example.com/teams/platform-engineering
        */
-      uri?: string;
+      uri?: string | null;
       /**
        * Format: email
        * @description Team email address
        * @example platform-eng@example.com
        */
-      email_address?: string;
+      email_address?: string | null;
       /**
-       * @description Team status (lifecycle, archival, deprecation, etc.)
+       * @description Team lifecycle status. Defaults to 'active' if not provided or set to null.
        * @example active
        */
-      status?: string;
+      status?: (string & components['schemas']['TeamStatus']) | null;
     };
     /** @description A team representing an organizational unit */
     Team: components['schemas']['TeamBase'] & {
@@ -7854,7 +8516,11 @@ export interface components {
       id: string;
       name: string;
       description?: string | null;
-      status?: string | null;
+      /**
+       * @description Team lifecycle status. Defaults to 'active' if not provided or set to null.
+       * @example active
+       */
+      status?: (string & components['schemas']['TeamStatus']) | null;
       /** @description Number of team members */
       member_count?: number;
       /** @description Number of projects associated with this team */
@@ -7907,7 +8573,7 @@ export interface components {
        * @description Project description
        * @example Migrate legacy API gateway to cloud-native architecture
        */
-      description?: string;
+      description?: string | null;
       /**
        * Format: uuid
        * @description UUID of the team this project belongs to
@@ -7929,12 +8595,12 @@ export interface components {
        * @description URL or reference to internal project page
        * @example https://wiki.example.com/projects/api-gateway
        */
-      uri?: string;
+      uri?: string | null;
       /**
-       * @description Project status (lifecycle, archival, deprecation, etc.)
+       * @description Project lifecycle status. Defaults to 'active' if not provided or set to null.
        * @example active
        */
-      status?: string;
+      status?: (string & components['schemas']['ProjectStatus']) | null;
     };
     /** @description A project representing a product, service, or application */
     Project: components['schemas']['ProjectBase'] & {
@@ -7975,7 +8641,11 @@ export interface components {
       id: string;
       name: string;
       description?: string | null;
-      status?: string | null;
+      /**
+       * @description Project lifecycle status.
+       * @example active
+       */
+      status?: (string & components['schemas']['ProjectStatus']) | null;
       /** Format: uuid */
       team_id: string;
       /** @description Name of the associated team */
@@ -8036,6 +8706,356 @@ export interface components {
       groups: components['schemas']['UserGroupMembership'][];
       /** @description Total number of groups */
       total: number;
+    };
+    /** @description Denormalized user information stored with audit entries. Persists after user deletion. */
+    AuditActor: {
+      /**
+       * Format: email
+       * @description User email at the time of the action
+       */
+      email: string;
+      /** @description Identity provider (e.g., google, github, tmi) */
+      provider: string;
+      /** @description Provider-specific user identifier */
+      provider_id: string;
+      /** @description User display name at the time of the action */
+      display_name: string;
+    };
+    /**
+     * @description An entry in the audit trail recording a mutation to an entity
+     * @example {
+     *       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+     *       "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *       "object_type": "threat_model",
+     *       "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *       "version": 3,
+     *       "change_type": "updated",
+     *       "actor": {
+     *         "email": "alice@example.com",
+     *         "provider": "google",
+     *         "provider_id": "google-12345",
+     *         "display_name": "Alice"
+     *       },
+     *       "change_summary": "Updated threat model description",
+     *       "created_at": "2026-01-15T10:30:00Z"
+     *     }
+     */
+    AuditEntry: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the audit entry
+       * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description ID of the threat model this audit entry belongs to
+       */
+      threat_model_id: string;
+      /**
+       * @description Type of the entity that was mutated
+       * @enum {string}
+       */
+      object_type:
+        | 'threat_model'
+        | 'diagram'
+        | 'threat'
+        | 'asset'
+        | 'document'
+        | 'note'
+        | 'repository';
+      /**
+       * Format: uuid
+       * @description ID of the entity that was mutated
+       */
+      object_id: string;
+      /** @description Version number. Null if the version snapshot has been pruned and rollback is no longer available. */
+      version?: number | null;
+      /**
+       * @description Type of mutation
+       * @enum {string}
+       */
+      change_type: 'created' | 'updated' | 'patched' | 'deleted' | 'rolled_back' | 'restored';
+      actor: components['schemas']['AuditActor'];
+      /** @description Human-readable summary of what changed */
+      change_summary?: string | null;
+      /**
+       * Format: date-time
+       * @description When the mutation occurred
+       */
+      created_at: string;
+    };
+    /**
+     * @description Paginated list of audit trail entries
+     * @example {
+     *       "audit_entries": [
+     *         {
+     *           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+     *           "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *           "object_type": "threat_model",
+     *           "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *           "version": 3,
+     *           "change_type": "updated",
+     *           "actor": {
+     *             "email": "alice@example.com",
+     *             "provider": "google",
+     *             "provider_id": "google-12345",
+     *             "display_name": "Alice"
+     *           },
+     *           "change_summary": "Updated threat model description",
+     *           "created_at": "2026-01-15T10:30:00Z"
+     *         }
+     *       ],
+     *       "total": 42,
+     *       "limit": 20,
+     *       "offset": 0
+     *     }
+     */
+    ListAuditTrailResponse: {
+      /**
+       * @example [
+       *       {
+       *         "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+       *         "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+       *         "object_type": "threat_model",
+       *         "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+       *         "version": 3,
+       *         "change_type": "updated",
+       *         "actor": {
+       *           "email": "alice@example.com",
+       *           "provider": "google",
+       *           "provider_id": "google-12345",
+       *           "display_name": "Alice"
+       *         },
+       *         "change_summary": "Updated threat model description",
+       *         "created_at": "2026-01-15T10:30:00Z"
+       *       }
+       *     ]
+       */
+      audit_entries: components['schemas']['AuditEntry'][];
+      /** @description Total number of matching audit entries */
+      total: number;
+      /** @description Maximum number of entries returned */
+      limit: number;
+      /** @description Offset from the beginning of the result set */
+      offset: number;
+    };
+    /**
+     * @description Result of a rollback operation
+     * @example {
+     *       "restored_entity": {
+     *         "id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *         "name": "Payment Service Threat Model",
+     *         "description": "Threat model for the payment processing service",
+     *         "owner": {
+     *           "principal_type": "user",
+     *           "provider": "google",
+     *           "provider_id": "alice@example.com",
+     *           "display_name": "Alice Johnson",
+     *           "email": "alice@example.com"
+     *         },
+     *         "authorization": [
+     *           {
+     *             "principal_type": "user",
+     *             "provider": "google",
+     *             "provider_id": "alice@example.com",
+     *             "display_name": "Alice Johnson",
+     *             "email": "alice@example.com",
+     *             "role": "owner"
+     *           }
+     *         ],
+     *         "threat_model_framework": "STRIDE",
+     *         "status": "in_progress",
+     *         "created_at": "2026-01-10T08:00:00Z",
+     *         "modified_at": "2026-01-15T10:30:00Z"
+     *       },
+     *       "audit_entry": {
+     *         "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+     *         "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *         "object_type": "threat_model",
+     *         "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *         "version": 4,
+     *         "change_type": "rolled_back",
+     *         "actor": {
+     *           "email": "alice@example.com",
+     *           "provider": "google",
+     *           "provider_id": "google-12345",
+     *           "display_name": "Alice"
+     *         },
+     *         "change_summary": "Rolled back to version 3",
+     *         "created_at": "2026-01-15T11:00:00Z"
+     *       }
+     *     }
+     */
+    RollbackResponse: {
+      /**
+       * @description The entity restored to its previous state
+       * @example {
+       *       "id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+       *       "name": "Payment Service Threat Model",
+       *       "description": "Threat model for the payment processing service",
+       *       "owner": {
+       *         "principal_type": "user",
+       *         "provider": "google",
+       *         "provider_id": "alice@example.com",
+       *         "display_name": "Alice Johnson",
+       *         "email": "alice@example.com"
+       *       },
+       *       "authorization": [
+       *         {
+       *           "principal_type": "user",
+       *           "provider": "google",
+       *           "provider_id": "alice@example.com",
+       *           "display_name": "Alice Johnson",
+       *           "email": "alice@example.com",
+       *           "role": "owner"
+       *         }
+       *       ],
+       *       "threat_model_framework": "STRIDE",
+       *       "status": "in_progress",
+       *       "created_at": "2026-01-10T08:00:00Z",
+       *       "modified_at": "2026-01-15T10:30:00Z"
+       *     }
+       */
+      restored_entity?: Record<string, never>;
+      /** @description The new audit entry recording the rollback */
+      audit_entry: components['schemas']['AuditEntry'];
+    };
+    /**
+     * @description Typed parameter declaration for an add-on, used to drive client UI generation
+     * @example {
+     *       "name": "model",
+     *       "type": "enum",
+     *       "description": "AI model to use for analysis",
+     *       "required": true,
+     *       "enum_values": [
+     *         "anthropic/claude-opus-4-6",
+     *         "anthropic/claude-sonnet-4-6",
+     *         "openai/gpt-5.3-codex"
+     *       ],
+     *       "default_value": "anthropic/claude-sonnet-4-6"
+     *     }
+     */
+    AddonParameter: {
+      /** @description Parameter name (used as key in invocation data payload) */
+      name: string;
+      /**
+       * @description Parameter type determining client UI control
+       * @enum {string}
+       */
+      type: 'enum' | 'boolean' | 'string' | 'number' | 'metadata_key';
+      /** @description Human-readable description for UI display */
+      description?: string;
+      /**
+       * @description Whether the parameter must be provided on invocation
+       * @default false
+       */
+      required: boolean;
+      /** @description Allowed values (applicable when type is 'enum') */
+      enum_values?: string[];
+      /** @description Default value if not provided by user */
+      default_value?: string;
+      /** @description Metadata key name to auto-populate from TMI object (applicable when type is 'metadata_key') */
+      metadata_key?: string;
+      /** @description Minimum allowed value (applicable when type is 'number') */
+      number_min?: number;
+      /** @description Maximum allowed value (applicable when type is 'number') */
+      number_max?: number;
+      /** @description Maximum string length (applicable when type is 'string') */
+      string_max_length?: number;
+      /** @description Regular expression for string validation (applicable when type is 'string') */
+      string_validation_regex?: string;
+    };
+    /** @description A color entry in a diagram color palette with explicit position for ordering */
+    ColorPaletteEntry: {
+      /** @description Display order position (1-8) */
+      position: number;
+      /** @description Hex color value (#RGB or #RRGGBB), stored as lowercase #RRGGBB */
+      color: string;
+    };
+    /**
+     * @description Response containing a short-lived, single-use authentication ticket for WebSocket connection
+     * @example {
+     *       "ticket": "tmi_ws_abc123def456"
+     *     }
+     */
+    WsTicketResponse: {
+      /**
+       * @description Short-lived, single-use authentication ticket for WebSocket connection
+       * @example tmi_ws_abc123def456
+       */
+      ticket: string;
+    };
+    /**
+     * @description Project lifecycle status. Defaults to 'active' if not provided or set to null.
+     * @enum {string}
+     */
+    ProjectStatus:
+      | 'active'
+      | 'planning'
+      | 'on_hold'
+      | 'cancelled'
+      | 'in_development'
+      | 'in_review'
+      | 'mvp'
+      | 'limited_availability'
+      | 'general_availability'
+      | 'deprecated'
+      | 'end_of_life'
+      | 'archived';
+    /**
+     * @description Team lifecycle status. Defaults to 'active' if not provided or set to null.
+     * @enum {string}
+     */
+    TeamStatus:
+      | 'active'
+      | 'on_hold'
+      | 'winding_down'
+      | 'archived'
+      | 'forming'
+      | 'merging'
+      | 'splitting';
+    /**
+     * @description Request body for creating an automation (service) account
+     * @example {
+     *       "name": "webhook-analyzer"
+     *     }
+     */
+    CreateAutomationAccountRequest: {
+      /** @description Short identifier for the automation account (2-64 characters). Used to construct the account name, email, and provider ID. Must start with a letter and end with a letter or digit. */
+      name: string;
+      /**
+       * Format: email
+       * @description Optional custom email address. If not provided, defaults to tmi-automation-{normalized_name}@tmi.local.
+       */
+      email?: string;
+    };
+    /**
+     * @description Response from creating an automation account. Contains the created user and a client credential with the plaintext secret (shown only once).
+     * @example {
+     *       "user": {
+     *         "internal_uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *         "provider": "tmi",
+     *         "provider_user_id": "tmi-automation-webhook-analyzer",
+     *         "email": "tmi-automation-webhook-analyzer@tmi.local",
+     *         "name": "TMI Automation: webhook-analyzer",
+     *         "email_verified": true,
+     *         "automation": true,
+     *         "created_at": "2024-01-01T00:00:00Z",
+     *         "modified_at": "2024-01-01T00:00:00Z"
+     *       },
+     *       "client_credential": {
+     *         "id": "990eabcd-e89b-41d4-a716-446655440008",
+     *         "client_id": "tmi_cc_abcdef1234567890",
+     *         "client_secret": "base64url-encoded-secret-shown-only-once",
+     *         "name": "webhook-analyzer",
+     *         "created_at": "2024-01-01T00:00:00Z"
+     *       }
+     *     }
+     */
+    CreateAutomationAccountResponse: {
+      user: components['schemas']['AdminUser'];
+      client_credential: components['schemas']['ClientCredentialResponse'];
     };
   };
   responses: {
@@ -8249,14 +9269,20 @@ export interface components {
     CodeQueryParam: string;
     /** @description Filter by owner name or email */
     OwnerQueryParam: string;
-    /** @description Filter by threat model name (partial match) */
+    /** @description Filter by name (case-insensitive substring match) */
     NameQueryParam: string;
     /** @description Filter by threat model description (partial match) */
     DescriptionQueryParam: string;
     /** @description Filter by issue URI (partial match) */
     IssueUriQueryParam: string;
-    /** @description Filter by status value (exact match). To filter by multiple statuses, use multiple status parameters or comma-separated values. */
-    StatusQueryParam: string;
+    /**
+     * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
+     * @example [
+     *       "identified",
+     *       "mitigated"
+     *     ]
+     */
+    StatusQueryParam: string[];
     /** @description Filter threat models where status was updated after this timestamp (RFC3339) */
     StatusUpdatedAfterQueryParam: string;
     /** @description Filter threat models where status was updated before this timestamp (RFC3339) */
@@ -8264,17 +9290,23 @@ export interface components {
     /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
     SortQueryParam: string;
     /**
-     * @description Filter by threat types (AND logic). Threat must contain ALL specified types. Example: ?threat_type=Tampering&threat_type=Spoofing
+     * @description Filter by threat types (OR logic). Returns threats matching ANY of the specified types. Example: ?threat_type=Tampering&threat_type=Spoofing
      * @example [
      *       "spoofing",
      *       "tampering"
      *     ]
      */
     ThreatTypeQueryParam: string[];
-    /** @description Filter by severity level (exact match) */
-    SeverityQueryParam: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-    /** @description Filter by priority (exact match) */
-    PriorityQueryParam: string;
+    /** @description Filter by severity level (OR logic). Returns threats matching ANY of the specified severities. Example: ?severity=high&severity=critical */
+    SeverityQueryParam: ('unknown' | 'informational' | 'low' | 'medium' | 'high' | 'critical')[];
+    /**
+     * @description Filter by priority (OR logic). Returns threats matching ANY of the specified priorities. Example: ?priority=high&priority=critical
+     * @example [
+     *       "high",
+     *       "critical"
+     *     ]
+     */
+    PriorityQueryParam: string[];
     /** @description Filter by diagram ID (exact match) */
     DiagramIdQueryParam: string;
     /** @description Filter by cell ID (exact match) */
@@ -8332,7 +9364,7 @@ export interface components {
     /** @description Filter users who logged in before this timestamp (RFC3339) */
     LastLoginBeforeQueryParam: string;
     /** @description Field to sort by */
-    SortByQueryParam: 'created_at' | 'last_login' | 'email';
+    SortByQueryParam: 'created_at' | 'last_login' | 'email' | 'name';
     /** @description Sort direction */
     SortOrderQueryParam: 'asc' | 'desc';
     /** @description Internal system UUID of the user */
@@ -8363,6 +9395,33 @@ export interface components {
     SurveyResponseId: string;
     /** @description Triage note identifier (sequential within survey response) */
     TriageNoteId: number;
+    /** @description Unique identifier of the audit entry */
+    AuditEntryId: string;
+    /** @description Filter by object type */
+    AuditObjectType:
+      | 'threat_model'
+      | 'diagram'
+      | 'threat'
+      | 'asset'
+      | 'document'
+      | 'note'
+      | 'repository';
+    /** @description Filter by change type */
+    AuditChangeType: 'created' | 'updated' | 'patched' | 'deleted' | 'rolled_back' | 'restored';
+    /** @description Filter by actor email */
+    AuditActorEmail: string;
+    /** @description Filter entries after this timestamp (ISO 8601) */
+    AuditAfter: string;
+    /** @description Filter entries before this timestamp (ISO 8601) */
+    AuditBefore: string;
+    /** @description Filter by mitigated status (exact match) */
+    MitigatedQueryParam: boolean;
+    /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+    IncludeDeletedQueryParam: boolean;
+    /** @description Filter by automation account status. True returns only automation accounts, false returns only non-automation accounts. */
+    AutomationQueryParam: boolean;
+    /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
+    CredentialIdPathParam: string;
   };
   requestBodies: never;
   headers: never;
@@ -9492,7 +10551,7 @@ export interface operations {
         offset?: components['parameters']['PaginationOffset'];
         /** @description Filter by owner name or email */
         owner?: components['parameters']['OwnerQueryParam'];
-        /** @description Filter by threat model name (partial match) */
+        /** @description Filter by name (case-insensitive substring match) */
         name?: components['parameters']['NameQueryParam'];
         /** @description Filter by threat model description (partial match) */
         description?: components['parameters']['DescriptionQueryParam'];
@@ -9506,12 +10565,20 @@ export interface operations {
         modified_after?: components['parameters']['ModifiedAfter'];
         /** @description Filter results modified before this timestamp (ISO 8601) */
         modified_before?: components['parameters']['ModifiedBefore'];
-        /** @description Filter by status value (exact match). To filter by multiple statuses, use multiple status parameters or comma-separated values. */
+        /**
+         * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
+         * @example [
+         *       "identified",
+         *       "mitigated"
+         *     ]
+         */
         status?: components['parameters']['StatusQueryParam'];
         /** @description Filter threat models where status was updated after this timestamp (RFC3339) */
         status_updated_after?: components['parameters']['StatusUpdatedAfterQueryParam'];
         /** @description Filter threat models where status was updated before this timestamp (RFC3339) */
         status_updated_before?: components['parameters']['StatusUpdatedBeforeQueryParam'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path?: never;
@@ -10095,24 +11162,38 @@ export interface operations {
         offset?: components['parameters']['PaginationOffset'];
         /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
         sort?: components['parameters']['SortQueryParam'];
-        /** @description Filter by threat model name (partial match) */
+        /** @description Filter by name (case-insensitive substring match) */
         name?: components['parameters']['NameQueryParam'];
         /** @description Filter by threat model description (partial match) */
         description?: components['parameters']['DescriptionQueryParam'];
         /**
-         * @description Filter by threat types (AND logic). Threat must contain ALL specified types. Example: ?threat_type=Tampering&threat_type=Spoofing
+         * @description Filter by threat types (OR logic). Returns threats matching ANY of the specified types. Example: ?threat_type=Tampering&threat_type=Spoofing
          * @example [
          *       "spoofing",
          *       "tampering"
          *     ]
          */
         threat_type?: components['parameters']['ThreatTypeQueryParam'];
-        /** @description Filter by severity level (exact match) */
+        /** @description Filter by severity level (OR logic). Returns threats matching ANY of the specified severities. Example: ?severity=high&severity=critical */
         severity?: components['parameters']['SeverityQueryParam'];
-        /** @description Filter by priority (exact match) */
+        /**
+         * @description Filter by priority (OR logic). Returns threats matching ANY of the specified priorities. Example: ?priority=high&priority=critical
+         * @example [
+         *       "high",
+         *       "critical"
+         *     ]
+         */
         priority?: components['parameters']['PriorityQueryParam'];
-        /** @description Filter by status value (exact match). To filter by multiple statuses, use multiple status parameters or comma-separated values. */
+        /**
+         * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
+         * @example [
+         *       "identified",
+         *       "mitigated"
+         *     ]
+         */
         status?: components['parameters']['StatusQueryParam'];
+        /** @description Filter by mitigated status (exact match) */
+        mitigated?: components['parameters']['MitigatedQueryParam'];
         /** @description Filter by diagram ID (exact match) */
         diagram_id?: components['parameters']['DiagramIdQueryParam'];
         /** @description Filter by cell ID (exact match) */
@@ -10135,6 +11216,8 @@ export interface operations {
         modified_after?: components['parameters']['ModifiedAfter'];
         /** @description Filter results modified before this timestamp (ISO 8601) */
         modified_before?: components['parameters']['ModifiedBefore'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -11160,6 +12243,8 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -12080,6 +13165,8 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -13462,6 +14549,8 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -14613,6 +15702,8 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -15476,6 +16567,8 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
+        /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
+        include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
       };
       header?: never;
       path: {
@@ -16682,640 +17775,6 @@ export interface operations {
       500: components['responses']['InternalServerError'];
     };
   };
-  listWebhookSubscriptions: {
-    parameters: {
-      query?: {
-        /** @description Filter subscriptions by threat model ID */
-        threat_model_id?: components['parameters']['ThreatModelIdQueryParam'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['PaginationOffset'];
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['PaginationLimit'];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description List of webhook subscriptions */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "subscriptions": [
-           *         {
-           *           "id": "550e8400-e29b-41d4-a716-446655440000",
-           *           "owner_id": "550e8400-e29b-41d4-a716-446655440020",
-           *           "name": "Production Slack Notifications",
-           *           "url": "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXX",
-           *           "events": [
-           *             "diagram.updated",
-           *             "threat_model.created"
-           *           ],
-           *           "status": "active",
-           *           "created_at": "2024-01-15T10:30:00Z",
-           *           "modified_at": "2024-01-15T10:30:00Z"
-           *         }
-           *       ],
-           *       "total": 6,
-           *       "limit": 20,
-           *       "offset": 0
-           *     }
-           */
-          'application/json': components['schemas']['ListWebhookSubscriptionsResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  createWebhookSubscription: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Webhook subscription configuration */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['WebhookSubscriptionInput'];
-      };
-    };
-    responses: {
-      /** @description Webhook subscription created */
-      201: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['WebhookSubscription'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  getWebhookSubscription: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Webhook subscription identifier */
-        webhook_id: components['parameters']['WebhookId'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Webhook subscription details */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['WebhookSubscription'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  deleteWebhookSubscription: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Webhook subscription identifier */
-        webhook_id: components['parameters']['WebhookId'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Webhook subscription deleted */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  testWebhookSubscription: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Webhook subscription identifier */
-        webhook_id: components['parameters']['WebhookId'];
-      };
-      cookie?: never;
-    };
-    /** @description Webhook test request configuration */
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['WebhookTestRequest'];
-      };
-    };
-    responses: {
-      /** @description Test webhook sent */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['WebhookTestResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  listWebhookDeliveries: {
-    parameters: {
-      query?: {
-        /** @description Filter by subscription ID */
-        subscription_id?: components['parameters']['SubscriptionIdQueryParam'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['PaginationOffset'];
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['PaginationLimit'];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description List of webhook deliveries */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "deliveries": [
-           *         {
-           *           "id": "aa0e8400-e29b-41d4-a716-446655440005",
-           *           "subscription_id": "550e8400-e29b-41d4-a716-446655440000",
-           *           "event_type": "diagram.updated",
-           *           "status": "delivered",
-           *           "attempts": 1,
-           *           "created_at": "2024-01-20T15:45:30Z",
-           *           "delivered_at": "2024-01-20T15:45:31Z"
-           *         }
-           *       ],
-           *       "total": 100,
-           *       "limit": 20,
-           *       "offset": 0
-           *     }
-           */
-          'application/json': components['schemas']['ListWebhookDeliveriesResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  getWebhookDelivery: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Webhook delivery identifier */
-        delivery_id: components['parameters']['DeliveryId'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Webhook delivery details */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['WebhookDelivery'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
   listAddons: {
     parameters: {
       query?: {
@@ -17758,7 +18217,13 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
-        /** @description Filter by status value (exact match). To filter by multiple statuses, use multiple status parameters or comma-separated values. */
+        /**
+         * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
+         * @example [
+         *       "identified",
+         *       "mitigated"
+         *     ]
+         */
         status?: components['parameters']['StatusQueryParam'];
         /** @description Filter by add-on */
         addon_id?: components['parameters']['AddonIdQueryParam'];
@@ -18937,6 +19402,8 @@ export interface operations {
         provider?: components['parameters']['ProviderQueryParam'];
         /** @description Filter by email (case-insensitive substring match) */
         email?: components['parameters']['EmailQueryParam'];
+        /** @description Filter by name (case-insensitive substring match) */
+        name?: components['parameters']['NameQueryParam'];
         /** @description Filter users created after this timestamp (RFC3339) */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
         /** @description Filter users created before this timestamp (RFC3339) */
@@ -18953,6 +19420,8 @@ export interface operations {
         sort_by?: components['parameters']['SortByQueryParam'];
         /** @description Sort direction */
         sort_order?: components['parameters']['SortOrderQueryParam'];
+        /** @description Filter by automation account status. True returns only automation accounts, false returns only non-automation accounts. */
+        automation?: components['parameters']['AutomationQueryParam'];
       };
       header?: never;
       path?: never;
@@ -21761,114 +22230,6 @@ export interface operations {
       };
       /** @description Forbidden - quota exceeded */
       403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  deleteCurrentUserClientCredential: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Administrator grant ID */
-        id: components['parameters']['IdPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No Content - Resource successfully deleted */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Invalid credential ID format */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - missing or invalid JWT token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Client credential not found or not owned by user */
-      404: {
         headers: {
           /** @description Maximum number of requests allowed in the current time window */
           'X-RateLimit-Limit'?: number;
@@ -26095,7 +26456,7 @@ export interface operations {
       };
     };
   };
-  ListTeams: {
+  listTeams: {
     parameters: {
       query?: {
         /** @description Maximum number of results per page */
@@ -26104,7 +26465,7 @@ export interface operations {
         offset?: number;
         /** @description Filter by team name (partial match) */
         name?: string;
-        /** @description Filter by status (exact match, comma-separated for multiple) */
+        /** @description Filter by team lifecycle status (exact match, comma-separated for multiple). Valid values: active, on_hold, winding_down, archived, forming, merging, splitting */
         status?: string;
         /** @description Filter teams that include this user as a member */
         member_user_id?: string;
@@ -26187,7 +26548,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  CreateTeam: {
+  createTeam: {
     parameters: {
       query?: never;
       header?: never;
@@ -26281,7 +26642,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  GetTeam: {
+  getTeam: {
     parameters: {
       query?: never;
       header?: never;
@@ -26382,7 +26743,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  UpdateTeam: {
+  updateTeam: {
     parameters: {
       query?: never;
       header?: never;
@@ -26509,7 +26870,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  DeleteTeam: {
+  deleteTeam: {
     parameters: {
       query?: never;
       header?: never;
@@ -26613,7 +26974,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  PatchTeam: {
+  patchTeam: {
     parameters: {
       query?: never;
       header?: never;
@@ -26743,7 +27104,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  GetTeamMetadata: {
+  getTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -26819,7 +27180,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  CreateTeamMetadata: {
+  createTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -26915,7 +27276,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  UpdateTeamMetadata: {
+  updateTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -26998,7 +27359,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  DeleteTeamMetadata: {
+  deleteTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -27074,7 +27435,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkReplaceTeamMetadata: {
+  bulkReplaceTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -27155,7 +27516,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkCreateTeamMetadata: {
+  bulkCreateTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -27251,7 +27612,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkUpsertTeamMetadata: {
+  bulkUpsertTeamMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -27332,7 +27693,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  ListProjects: {
+  listProjects: {
     parameters: {
       query?: {
         /** @description Maximum number of results per page */
@@ -27425,7 +27786,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  CreateProject: {
+  createProject: {
     parameters: {
       query?: never;
       header?: never;
@@ -27536,7 +27897,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  GetProject: {
+  getProject: {
     parameters: {
       query?: never;
       header?: never;
@@ -27638,7 +27999,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  UpdateProject: {
+  updateProject: {
     parameters: {
       query?: never;
       header?: never;
@@ -27767,7 +28128,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  DeleteProject: {
+  deleteProject: {
     parameters: {
       query?: never;
       header?: never;
@@ -27871,7 +28232,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  PatchProject: {
+  patchProject: {
     parameters: {
       query?: never;
       header?: never;
@@ -28002,7 +28363,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  GetProjectMetadata: {
+  getProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28078,7 +28439,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  CreateProjectMetadata: {
+  createProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28174,7 +28535,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  UpdateProjectMetadata: {
+  updateProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28257,7 +28618,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  DeleteProjectMetadata: {
+  deleteProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28333,7 +28694,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkReplaceProjectMetadata: {
+  bulkReplaceProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28414,7 +28775,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkCreateProjectMetadata: {
+  bulkCreateProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28510,7 +28871,7 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  BulkUpsertProjectMetadata: {
+  bulkUpsertProjectMetadata: {
     parameters: {
       query?: never;
       header?: never;
@@ -28615,6 +28976,7 @@ export interface operations {
           'application/json': components['schemas']['MyGroupListResponse'];
         };
       };
+      400: components['responses']['Error'];
       /** @description Unauthorized - invalid or missing authentication */
       401: {
         headers: {
@@ -28788,6 +29150,2105 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+    };
+  };
+  getThreatModelAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+        /** @description Filter by object type */
+        object_type?: components['parameters']['AuditObjectType'];
+        /** @description Filter by change type */
+        change_type?: components['parameters']['AuditChangeType'];
+        /** @description Filter by actor email */
+        actor_email?: components['parameters']['AuditActorEmail'];
+        /** @description Filter entries after this timestamp (ISO 8601) */
+        after?: components['parameters']['AuditAfter'];
+        /** @description Filter entries before this timestamp (ISO 8601) */
+        before?: components['parameters']['AuditBefore'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getAuditEntry: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Unique identifier of the audit entry */
+        entry_id: components['parameters']['AuditEntryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Audit trail entry */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AuditEntry'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  rollbackToVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Unique identifier of the audit entry */
+        entry_id: components['parameters']['AuditEntryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Rollback successful */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RollbackResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Version snapshot has been pruned; rollback is no longer available */
+      410: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getDiagramAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Diagram identifier */
+        diagram_id: components['parameters']['DiagramId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getThreatAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Threat identifier */
+        threat_id: components['parameters']['ThreatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getAssetAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Asset identifier */
+        asset_id: components['parameters']['AssetId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getDocumentAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Document identifier */
+        document_id: components['parameters']['DocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getNoteAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Note identifier */
+        note_id: components['parameters']['NoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getRepositoryAuditTrail: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Repository identifier */
+        repository_id: components['parameters']['RepositoryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of audit trail entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAuditTrailResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreThreatModel: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ThreatModel'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreDiagram: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Diagram identifier */
+        diagram_id: components['parameters']['DiagramId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DfdDiagram'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreThreat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Threat identifier */
+        threat_id: components['parameters']['ThreatId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Threat'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreAsset: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Asset identifier */
+        asset_id: components['parameters']['AssetId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Asset'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreDocument: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Document identifier */
+        document_id: components['parameters']['DocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Document'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Note identifier */
+        note_id: components['parameters']['NoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Note'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  restoreRepository: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Repository identifier */
+        repository_id: components['parameters']['RepositoryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Entity restored successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Repository'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getWsTicket: {
+    parameters: {
+      query: {
+        /** @description The collaboration session ID the ticket is scoped to */
+        session_id: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Ticket issued successfully */
+      200: {
+        headers: {
+          /** @description Set to no-store to prevent caching */
+          'Cache-Control'?: string;
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WsTicketResponse'];
+        };
+      };
+      /** @description Missing or invalid session_id parameter */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid authentication */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Session not found or user is not a participant */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+    };
+  };
+  createAutomationAccount: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateAutomationAccountRequest'];
+      };
+    };
+    responses: {
+      /** @description Automation account created successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CreateAutomationAccountResponse'];
+        };
+      };
+      /** @description Invalid request (validation error) */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized (requires administrator role) */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Conflict - an account with the same email or provider ID already exists */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  listAdminUserClientCredentials: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        internal_uuid: components['parameters']['InternalUuidPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of client credentials (without secrets) */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListClientCredentialsResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid query parameters */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  createAdminUserClientCredential: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        internal_uuid: components['parameters']['InternalUuidPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          /**
+           * @description Human-readable name for the credential
+           * @example CI/CD Pipeline
+           */
+          name: string;
+          /**
+           * @description Optional description of the credential's purpose
+           * @example CI/CD pipeline automation credential
+           */
+          description?: string;
+          /**
+           * Format: date-time
+           * @description Optional expiration timestamp (ISO 8601)
+           * @example 2027-01-17T00:00:00Z
+           */
+          expires_at?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Client credential created. WARNING: client_secret is only returned once. */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientCredentialResponse'];
+        };
+      };
+      /** @description Invalid request (validation error) */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  deleteAdminUserClientCredential: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        internal_uuid: components['parameters']['InternalUuidPathParam'];
+        /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
+        credential_id: components['parameters']['CredentialIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Client credential deleted successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User or credential not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  deleteCurrentUserClientCredential: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
+        credential_id: components['parameters']['CredentialIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content - Resource successfully deleted */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Invalid credential ID format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Client credential not found or not owned by user */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listWebhookSubscriptions: {
+    parameters: {
+      query?: {
+        /** @description Filter subscriptions by threat model ID */
+        threat_model_id?: components['parameters']['ThreatModelIdQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of webhook subscriptions */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "subscriptions": [
+           *         {
+           *           "id": "550e8400-e29b-41d4-a716-446655440000",
+           *           "owner_id": "550e8400-e29b-41d4-a716-446655440020",
+           *           "name": "Production Slack Notifications",
+           *           "url": "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXX",
+           *           "events": [
+           *             "diagram.updated",
+           *             "threat_model.created"
+           *           ],
+           *           "status": "active",
+           *           "created_at": "2024-01-15T10:30:00Z",
+           *           "modified_at": "2024-01-15T10:30:00Z"
+           *         }
+           *       ],
+           *       "total": 6,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
+          'application/json': components['schemas']['ListWebhookSubscriptionsResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  createWebhookSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Webhook subscription configuration */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WebhookSubscriptionInput'];
+      };
+    };
+    responses: {
+      /** @description Webhook subscription created */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookSubscription'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too Many Requests */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getWebhookSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook subscription identifier */
+        webhook_id: components['parameters']['WebhookId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Webhook subscription details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookSubscription'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  deleteWebhookSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook subscription identifier */
+        webhook_id: components['parameters']['WebhookId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Webhook subscription deleted */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  testWebhookSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook subscription identifier */
+        webhook_id: components['parameters']['WebhookId'];
+      };
+      cookie?: never;
+    };
+    /** @description Webhook test request configuration */
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['WebhookTestRequest'];
+      };
+    };
+    responses: {
+      /** @description Test webhook sent */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookTestResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listWebhookDeliveries: {
+    parameters: {
+      query?: {
+        /** @description Filter by subscription ID */
+        subscription_id?: components['parameters']['SubscriptionIdQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of webhook deliveries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "deliveries": [
+           *         {
+           *           "id": "aa0e8400-e29b-41d4-a716-446655440005",
+           *           "subscription_id": "550e8400-e29b-41d4-a716-446655440000",
+           *           "event_type": "diagram.updated",
+           *           "status": "delivered",
+           *           "attempts": 1,
+           *           "created_at": "2024-01-20T15:45:30Z",
+           *           "delivered_at": "2024-01-20T15:45:31Z"
+           *         }
+           *       ],
+           *       "total": 100,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
+          'application/json': components['schemas']['ListWebhookDeliveriesResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getWebhookDelivery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook delivery identifier */
+        delivery_id: components['parameters']['DeliveryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Webhook delivery details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookDelivery'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal Server Error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
 }

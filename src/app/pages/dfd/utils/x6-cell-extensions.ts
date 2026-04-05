@@ -21,7 +21,6 @@
 
 import { Cell, Edge } from '@antv/x6';
 import { DFD_STYLING } from '../constants/styling-constants';
-import { Metadata } from '../domain/value-objects/metadata';
 
 /**
  * X6 Cell Extensions
@@ -56,23 +55,6 @@ export interface PortConnectionState {
   connectedPorts: Set<string>;
   visiblePorts: Set<string>;
   lastUpdated: Date;
-}
-
-/**
- * Extended cell interface with our custom methods
- */
-export interface ExtendedCell extends Cell {
-  setLabel(label: string): void;
-  getLabel(): string;
-  setApplicationMetadata(key: string, value: string): void;
-  getApplicationMetadata(key?: string): string | Record<string, string>;
-  removeApplicationMetadata(key: string): void;
-  hasApplicationMetadata(key: string): boolean;
-  // Node-specific methods
-  getNodeTypeInfo(): NodeTypeInfo | null;
-  isNodeType(type: string): boolean;
-  updatePortVisibility(): void;
-  getPortConnectionState(): PortConnectionState | null;
 }
 
 /**
@@ -284,114 +266,4 @@ export function initializeX6CellExtensions(): void {
       lastUpdated: new Date(),
     };
   };
-}
-
-/**
- * Utility functions for working with X6 cells
- */
-export class CellUtils {
-  /**
-   * Safely gets a cell's position, handling potential null/undefined cases
-   */
-  static getPosition(cell: Cell): { x: number; y: number } {
-    if (cell.isNode()) {
-      return cell.getPosition();
-    }
-    return { x: 0, y: 0 };
-  }
-
-  /**
-   * Safely gets a cell's size, handling potential null/undefined cases
-   */
-  static getSize(cell: Cell): { width: number; height: number } {
-    if (cell.isNode()) {
-      return cell.getSize();
-    }
-    return { width: 0, height: 0 };
-  }
-
-  /**
-   * Gets the cell type for domain model purposes
-   */
-  static getCellType(cell: Cell): string {
-    if (cell.isNode()) {
-      return cell.shape || 'unknown';
-    } else if (cell.isEdge()) {
-      return 'edge';
-    }
-    return 'unknown';
-  }
-
-  /**
-   * Validates that metadata contains only application-specific data
-   * Returns true if metadata is valid (no X6 native properties)
-   */
-  static validateMetadata(metadata: Metadata[]): boolean {
-    const x6NativeProperties = [
-      'position',
-      'size',
-      'angle',
-      'attrs',
-      'zIndex',
-      'visible',
-      'parent',
-      'children',
-      'source',
-      'target',
-      'vertices',
-      'router',
-      'connector',
-      'labels',
-      'defaultLabel',
-    ];
-
-    for (const entry of metadata) {
-      if (x6NativeProperties.includes(entry.key)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Filters out any X6 native properties from metadata
-   * Returns clean metadata array with only application-specific data
-   */
-  static cleanMetadata(metadata: Metadata[]): Metadata[] {
-    const x6NativeProperties = [
-      'position',
-      'size',
-      'angle',
-      'attrs',
-      'zIndex',
-      'visible',
-      'parent',
-      'children',
-      'source',
-      'target',
-      'vertices',
-      'router',
-      'connector',
-      'labels',
-      'defaultLabel',
-    ];
-
-    return metadata.filter(entry => !x6NativeProperties.includes(entry.key));
-  }
-
-  /**
-   * Gets application metadata from a cell as a clean record
-   */
-  static getCleanMetadata(cell: Cell): Record<string, string> {
-    const metadata = cell.getData()?._metadata || [];
-    const cleanMetadata = this.cleanMetadata(metadata);
-
-    const record: Record<string, string> = {};
-    cleanMetadata.forEach((entry: any) => {
-      record[entry.key] = entry.value;
-    });
-
-    return record;
-  }
 }

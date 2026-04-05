@@ -8,6 +8,7 @@ import { take } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { Threat } from '../../models/threat-model.model';
+import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -196,18 +197,19 @@ export class ThreatsDialogComponent implements OnInit {
       if (result) {
         this.logger.info('Threat editor closed with changes, updating threat');
 
-        // Update the threat with new data
-        const updatedThreatData: Partial<Threat> = {
+        // Update the threat with new data — pass through empty values
+        // so the server can clear fields the user emptied
+        const updatedThreatData: Partial<ApiThreatInput> = {
           name: result.name,
           description: result.description,
-          severity: result.severity ?? undefined,
+          severity: result.severity ?? '',
           threat_type: result.threat_type,
           diagram_id: result.diagram_id,
           cell_id: result.cell_id,
           score: result.score,
-          priority: result.priority,
+          priority: result.priority ?? '',
           mitigated: result.mitigated,
-          status: result.status,
+          status: result.status ?? '',
           issue_uri: result.issue_uri,
           metadata: result.metadata || threat.metadata || [],
         };

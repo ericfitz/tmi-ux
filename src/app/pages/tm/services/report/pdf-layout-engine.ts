@@ -23,7 +23,7 @@ export interface Cursor {
 /**
  * Options for wrapped text drawing.
  */
-export interface DrawWrappedTextOptions {
+interface DrawWrappedTextOptions {
   /** Maximum width for text wrapping. Defaults to contentWidth. */
   maxWidth?: number;
   /** Left indent from margin in points. */

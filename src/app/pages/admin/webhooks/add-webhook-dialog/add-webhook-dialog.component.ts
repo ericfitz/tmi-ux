@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -10,6 +10,11 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import {
+  ConfirmActionDialogComponent,
+  ConfirmActionDialogData,
+  ConfirmActionDialogResult,
+} from '@app/shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { WebhookSubscriptionInput } from '@app/types/webhook.types';
 import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -46,9 +51,11 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-hint [transloco]="'admin.webhooks.addDialog.nameHint'"
             >Descriptive name for this webhook</mat-hint
           >
-          <mat-error *ngIf="form.get('name')?.hasError('required')">
-            <span [transloco]="'admin.webhooks.addDialog.nameRequired'">Name is required</span>
-          </mat-error>
+          @if (form.get('name')?.hasError('required')) {
+            <mat-error>
+              <span [transloco]="'admin.webhooks.addDialog.nameRequired'">Name is required</span>
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -60,13 +67,26 @@ import { LoggerService } from '@app/core/services/logger.service';
             [placeholder]="'admin.webhooks.addDialog.urlPlaceholder' | transloco"
             required
           />
-          <mat-hint [transloco]="'admin.webhooks.addDialog.urlHint'">Must be HTTPS URL</mat-hint>
-          <mat-error *ngIf="form.get('url')?.hasError('required')">
-            <span [transloco]="'admin.webhooks.addDialog.urlRequired'">URL is required</span>
-          </mat-error>
-          <mat-error *ngIf="form.get('url')?.hasError('pattern')">
-            <span [transloco]="'admin.webhooks.addDialog.urlInvalid'">URL must be HTTPS</span>
-          </mat-error>
+          @if (showHttpWarning) {
+            <mat-hint
+              class="url-http-warning"
+              [transloco]="'admin.webhooks.addDialog.urlHttpWarning'"
+              >Warning: The webhook endpoint URL should use HTTPS. The server may reject webhook
+              registrations that specify a non-TLS endpoint.</mat-hint
+            >
+          } @else {
+            <mat-hint [transloco]="'admin.webhooks.addDialog.urlHint'">HTTPS recommended</mat-hint>
+          }
+          @if (form.get('url')?.hasError('required')) {
+            <mat-error>
+              <span [transloco]="'admin.webhooks.addDialog.urlRequired'">URL is required</span>
+            </mat-error>
+          }
+          @if (form.get('url')?.hasError('pattern')) {
+            <mat-error>
+              <span [transloco]="'admin.webhooks.addDialog.urlInvalid'">Must be a valid URL</span>
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -86,11 +106,13 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-hint [transloco]="'admin.webhooks.addDialog.eventsHint'"
             >Event types to subscribe to (e.g., threat_model.created)</mat-hint
           >
-          <mat-error *ngIf="form.get('events')?.hasError('required')">
-            <span [transloco]="'admin.webhooks.addDialog.eventsRequired'"
-              >At least one event is required</span
-            >
-          </mat-error>
+          @if (form.get('events')?.hasError('required')) {
+            <mat-error>
+              <span [transloco]="'admin.webhooks.addDialog.eventsRequired'"
+                >At least one event is required</span
+              >
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="full-width">
@@ -106,6 +128,12 @@ import { LoggerService } from '@app/core/services/logger.service';
             >HMAC secret for signing payloads (auto-generated if empty)</mat-hint
           >
         </mat-form-field>
+
+        <mat-checkbox formControlName="createAutomationUser" class="full-width">
+          <span [transloco]="'admin.webhooks.addDialog.createAutomationUser'">
+            Create automation user for this webhook
+          </span>
+        </mat-checkbox>
 
         @if (errorMessage) {
           <mat-error class="form-error">
@@ -145,6 +173,10 @@ import { LoggerService } from '@app/core/services/logger.service';
         width: 100%;
       }
 
+      .url-http-warning {
+        color: var(--theme-warn, #f59e0b);
+      }
+
       .form-error {
         color: var(--theme-error);
         font-size: 12px;
@@ -169,6 +201,7 @@ export class AddWebhookDialogComponent implements OnInit {
   form!: FormGroup;
   saving = false;
   errorMessage = '';
+  showHttpWarning = false;
 
   // Event types from OpenAPI schema
   availableEventTypes: string[] = [
@@ -207,6 +240,7 @@ export class AddWebhookDialogComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<AddWebhookDialogComponent>,
+    private dialog: MatDialog,
     private webhookService: WebhookService,
     private fb: FormBuilder,
     private logger: LoggerService,
@@ -215,51 +249,87 @@ export class AddWebhookDialogComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      url: ['', [Validators.required, Validators.pattern(/^https:\/\/.+/)]],
+      url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       events: [[], Validators.required],
       secret: [''],
+      createAutomationUser: [false],
     });
+
+    this.form
+      .get('url')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: string) => {
+        this.showHttpWarning = !!value && value.startsWith('http://');
+      });
   }
 
   onSave(): void {
-    if (this.form.valid && !this.saving) {
-      this.saving = true;
-      this.errorMessage = '';
-
-      const formValue = this.form.value as {
-        name: string;
-        url: string;
-        events: string[];
-        secret: string;
-      };
-      const name = formValue.name;
-      const url = formValue.url;
-      const events = formValue.events;
-      const secret = formValue.secret;
-
-      const input: WebhookSubscriptionInput = {
-        name,
-        url,
-        events,
-        ...(secret && { secret }),
-      };
-
-      this.webhookService
-        .create(input)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: webhook => {
-            this.logger.info('Webhook created successfully');
-            this.dialogRef.close(webhook);
-          },
-          error: (error: { error?: { message?: string } }) => {
-            this.logger.error('Failed to create webhook', error);
-            this.errorMessage =
-              error.error?.message || 'Failed to create webhook. Please try again.';
-            this.saving = false;
-          },
-        });
+    if (!this.form.valid || this.saving) {
+      return;
     }
+
+    if (this.showHttpWarning) {
+      const confirmRef = this.dialog.open(ConfirmActionDialogComponent, {
+        width: '450px',
+        data: {
+          title: 'admin.webhooks.addDialog.urlHttpWarningTitle',
+          message: 'admin.webhooks.addDialog.urlHttpWarning',
+          confirmLabel: 'admin.webhooks.addDialog.save',
+          confirmIsDestructive: false,
+          icon: 'warning',
+        } as ConfirmActionDialogData,
+        disableClose: true,
+      });
+
+      confirmRef
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((result: ConfirmActionDialogResult | undefined) => {
+          if (result?.confirmed) {
+            this.createWebhook();
+          }
+        });
+    } else {
+      this.createWebhook();
+    }
+  }
+
+  private createWebhook(): void {
+    this.saving = true;
+    this.errorMessage = '';
+
+    const formValue = this.form.value as {
+      name: string;
+      url: string;
+      events: string[];
+      secret: string;
+      createAutomationUser: boolean;
+    };
+
+    const input: WebhookSubscriptionInput = {
+      name: formValue.name,
+      url: formValue.url,
+      events: formValue.events,
+      ...(formValue.secret && { secret: formValue.secret }),
+    };
+
+    this.webhookService
+      .create(input)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: webhook => {
+          this.logger.info('Webhook created successfully');
+          this.dialogRef.close({
+            webhook,
+            createAutomationUser: formValue.createAutomationUser,
+          });
+        },
+        error: (error: { error?: { message?: string } }) => {
+          this.logger.error('Failed to create webhook', error);
+          this.errorMessage = error.error?.message || 'Failed to create webhook. Please try again.';
+          this.saving = false;
+        },
+      });
   }
 
   onCancel(): void {

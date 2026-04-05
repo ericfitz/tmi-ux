@@ -39,6 +39,8 @@ describe('SettingsAdminService', () => {
     description: 'Maximum API requests per minute per user',
     modified_at: '2026-01-15T10:30:00Z',
     modified_by: '550e8400-e29b-41d4-a716-446655440000',
+    source: 'database',
+    read_only: false,
   };
 
   const mockSettings: SystemSetting[] = [
@@ -49,6 +51,8 @@ describe('SettingsAdminService', () => {
       type: 'bool',
       description: 'Whether WebSocket collaboration is enabled',
       modified_at: '2026-01-10T08:00:00Z',
+      source: 'config',
+      read_only: true,
     },
   ];
 

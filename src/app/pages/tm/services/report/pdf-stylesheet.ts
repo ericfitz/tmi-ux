@@ -3,7 +3,7 @@ import { rgb, Color } from 'pdf-lib';
 /**
  * Named text style definition used by the layout engine and renderers.
  */
-export interface TextStyle {
+interface TextStyle {
   fontSize: number;
   lineHeight: number;
   color: Color;
@@ -198,8 +198,6 @@ export const REPORT_STYLES = {
     spaceAfter: 4,
   },
 } as const satisfies Record<string, TextStyle>;
-
-export type StyleName = keyof typeof REPORT_STYLES;
 
 /**
  * Table column proportions (must sum to 1.0 per entity type).

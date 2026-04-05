@@ -26,6 +26,7 @@ import {
   FORM_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
+  UrlDropZoneDirective,
 } from '@app/shared/imports';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -35,6 +36,7 @@ import { ThreatModelAuthorizationService } from '../../services/threat-model-aut
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { CVSSScore, Threat, ThreatModel } from '../../models/threat-model.model';
+import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 import {
   FieldOption,
@@ -112,6 +114,7 @@ interface ThreatFormValues {
     ...FORM_MATERIAL_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    UrlDropZoneDirective,
   ],
   templateUrl: './threat-page.component.html',
   styleUrls: ['./threat-page.component.scss'],
@@ -444,7 +447,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[] = [];
+    let filteredCells: CellOption[];
 
     if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
       filteredCells = this.allCellOptions.filter(cell => cell.diagramId === diagramId);
@@ -610,36 +613,35 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  private buildThreatData(): Partial<Threat> {
+  private buildThreatData(): Partial<ApiThreatInput> {
     const formValues = this.threatForm.getRawValue() as ThreatFormValues;
 
     return {
-      ...this.threat,
       name: formValues.name,
-      description: formValues.description || undefined,
-      severity: formValues.severity || undefined,
+      description: formValues.description || '',
+      severity: formValues.severity || '',
       threat_type: formValues.threat_type || [],
       asset_id:
         formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.asset_id
-          : undefined,
+          : null,
       diagram_id:
         formValues.diagram_id && formValues.diagram_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.diagram_id
-          : undefined,
+          : null,
       cell_id:
         formValues.cell_id && formValues.cell_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.cell_id
-          : undefined,
-      score: formValues.score ?? undefined,
-      priority: formValues.priority || undefined,
+          : null,
+      score: formValues.score ?? undefined, // see ericfitz/tmi#208 for server-side clearing
+      priority: formValues.priority || '',
       mitigated: formValues.mitigated,
-      status: formValues.status || undefined,
-      mitigation: formValues.mitigation || undefined,
-      issue_uri: formValues.issue_uri || undefined,
+      status: formValues.status || '',
+      mitigation: formValues.mitigation || '',
+      issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
-      cwe_id: formValues.cwe_id?.length ? formValues.cwe_id : undefined,
-      cvss: formValues.cvss?.length ? formValues.cvss : undefined,
+      cwe_id: formValues.cwe_id || [],
+      cvss: formValues.cvss || [],
     };
   }
 
@@ -735,6 +737,18 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
         const errorMessage = err instanceof Error ? err.message : String(err);
         this.logger.error('Could not copy text: ', errorMessage);
       });
+  }
+
+  /**
+   * Handles a URL dropped onto the issue URI container.
+   * Sets the issue_uri form control value to the dropped URL.
+   */
+  onIssueUriUrlDropped(url: string): void {
+    if (!this.canEdit) return;
+    this.threatForm.get('issue_uri')?.setValue(url);
+    this.threatForm.get('issue_uri')?.markAsDirty();
+    this.initialIssueUriValue = url;
+    this.isEditingIssueUri = false;
   }
 
   /**
@@ -914,7 +928,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       if (!value) return null;
 
       // Check supported version prefix
-      let version: CvssVersion | null = null;
+      let version: CvssVersion;
       if (value.startsWith('CVSS:4.0')) {
         version = '4.0';
       } else if (value.startsWith('CVSS:3.1')) {

@@ -6,11 +6,12 @@
 import { DiagramValidator, ValidationError, ValidationContext } from './types';
 import { BaseValidator, ValidationUtils } from './base-validator';
 import { Diagram, Cell } from '../models/diagram.model';
+import { isEdgeShape } from '../../dfd/utils/cell-property-filter.util';
 
 /**
  * Abstract base class for diagram validators
  */
-export abstract class BaseDiagramValidator extends BaseValidator implements DiagramValidator {
+abstract class BaseDiagramValidator extends BaseValidator implements DiagramValidator {
   abstract diagramType: string;
   abstract versionPattern: RegExp;
 
@@ -91,8 +92,8 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     'process',
     'store',
     'security-boundary',
-    'textbox',
-    'edge',
+    'text-box',
+    'flow',
   ];
 
   diagramType = 'DFD-1.0.0';
@@ -166,7 +167,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
     // Validate cell type based on shape property (per OpenAPI spec)
     const NODE_SHAPES = ['actor', 'process', 'store', 'security-boundary', 'text-box'];
-    const EDGE_SHAPES = ['edge'];
+    const EDGE_SHAPES = ['flow'];
 
     if (!cell.shape || typeof cell.shape !== 'string') {
       errors.push(
@@ -457,7 +458,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
     // Validate edge references
     cells.forEach((cell, index) => {
-      if (cell?.shape === 'edge' && cell.source && cell.target) {
+      if (isEdgeShape(cell?.shape) && cell.source && cell.target) {
         const cellPath = ValidationUtils.buildPath(basePath, index);
         errors.push(...this._validateEdgeReference(cell.source, 'source', cellIds, cellPath));
         errors.push(...this._validateEdgeReference(cell.target, 'target', cellIds, cellPath));

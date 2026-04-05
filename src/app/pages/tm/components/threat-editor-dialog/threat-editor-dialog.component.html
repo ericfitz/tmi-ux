@@ -195,7 +195,12 @@
     <div class="form-field-row">
       <!-- Edit mode: Toggle between form input and hyperlink display -->
       @if (!isViewOnly) {
-        <div class="issue-uri-container">
+        <div
+          class="issue-uri-container"
+          appUrlDropZone
+          (urlDropped)="onIssueUriUrlDropped($event)"
+          [attr.data-drop-hint]="'threatModels.tooltips.dropToSetIssueUri' | transloco"
+        >
           <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
             <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
 
@@ -229,7 +234,6 @@
               class="external-edit-button"
               (click)="editIssueUri()"
               [matTooltip]="'common.edit' | transloco"
-              [attr.aria-label]="'common.edit' | transloco"
               tabindex="14"
             >
               <mat-icon>edit</mat-icon>

@@ -8,6 +8,7 @@ import {
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import { TEAM_STATUSES, TeamStatus } from '@app/types/team.types';
 
 export interface CreateTeamDialogResult {
   name: string;
@@ -54,7 +55,7 @@ export interface CreateTeamDialogResult {
             matInput
             formControlName="description"
             [placeholder]="'teams.createDialog.descriptionPlaceholder' | transloco"
-            maxlength="1024"
+            maxlength="2048"
             rows="3"
           ></textarea>
         </mat-form-field>
@@ -86,11 +87,14 @@ export interface CreateTeamDialogResult {
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label [transloco]="'common.status'">Status</mat-label>
-          <input
-            matInput
-            formControlName="status"
-            [placeholder]="'teams.createDialog.statusPlaceholder' | transloco"
-          />
+          <mat-select formControlName="status">
+            <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+            @for (status of teamStatuses; track status) {
+              <mat-option [value]="status">
+                {{ 'teams.status.' + status | transloco }}
+              </mat-option>
+            }
+          </mat-select>
         </mat-form-field>
       </form>
     </mat-dialog-content>
@@ -125,6 +129,7 @@ export interface CreateTeamDialogResult {
   ],
 })
 export class CreateTeamDialogComponent {
+  teamStatuses: TeamStatus[] = TEAM_STATUSES;
   form: FormGroup;
 
   constructor(
@@ -136,7 +141,7 @@ export class CreateTeamDialogComponent {
       description: ['', [Validators.maxLength(2048)]],
       email_address: ['', [Validators.email]],
       uri: [''],
-      status: [''],
+      status: [null],
     });
   }
 
@@ -150,7 +155,7 @@ export class CreateTeamDialogComponent {
       description: string;
       email_address: string;
       uri: string;
-      status: string;
+      status: TeamStatus | null;
     };
     const result: CreateTeamDialogResult = {
       name: value.name.trim(),
@@ -165,8 +170,8 @@ export class CreateTeamDialogComponent {
     if (value.uri?.trim()) {
       result.uri = value.uri.trim();
     }
-    if (value.status?.trim()) {
-      result.status = value.status.trim();
+    if (value.status != null) {
+      result.status = value.status;
     }
 
     this.dialogRef.close(result);
