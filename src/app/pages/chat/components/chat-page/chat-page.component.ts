@@ -119,7 +119,7 @@ export class ChatPageComponent implements OnInit {
     this.preparationStatus = null;
 
     const session = this.sessions.find(s => s.id === sessionId);
-    this.activeSourceSnapshot = session?.sourceSnapshot ?? [];
+    this.activeSourceSnapshot = session?.source_snapshot ?? [];
 
     this.timmyChat
       .getMessages(this.threatModelId, sessionId)
@@ -260,7 +260,7 @@ export class ChatPageComponent implements OnInit {
         complete: () => {
           if (sessionId) {
             this.activeSessionId = sessionId;
-            userMessage.sessionId = sessionId;
+            userMessage.session_id = sessionId;
             this.loadSessions();
             this.sendMessageToSession(text);
           }
@@ -352,11 +352,11 @@ export class ChatPageComponent implements OnInit {
               assembledContent = '';
               const assistantMessage: ChatMessage = {
                 id: currentMessageId,
-                sessionId: this.activeSessionId!,
+                session_id: this.activeSessionId!,
                 role: 'assistant',
                 content: '',
                 sequence: this.messages.length,
-                createdAt: new Date().toISOString(),
+                created_at: new Date().toISOString(),
               };
               this.messages = [...this.messages, assistantMessage];
               this.streamingMessageId = currentMessageId;
@@ -377,7 +377,7 @@ export class ChatPageComponent implements OnInit {
               const data = JSON.parse(event.data) as MessageEndEvent;
               const msg = this.messages.find(m => m.id === currentMessageId);
               if (msg) {
-                msg.tokenCount = data.tokenCount;
+                msg.token_count = data.tokenCount;
               }
               this.streamingMessageId = null;
               this.loadSessions();
@@ -430,11 +430,11 @@ export class ChatPageComponent implements OnInit {
   private addErrorMessage(text: string): void {
     const errorMsg: ChatMessage = {
       id: crypto.randomUUID(),
-      sessionId: this.activeSessionId ?? '',
+      session_id: this.activeSessionId ?? '',
       role: 'assistant',
       content: `*${text}*`,
       sequence: this.messages.length,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
     this.messages = [...this.messages, errorMsg];
   }
@@ -442,11 +442,11 @@ export class ChatPageComponent implements OnInit {
   private createUserMessage(text: string, sessionId: string): ChatMessage {
     return {
       id: crypto.randomUUID(),
-      sessionId,
+      session_id: sessionId,
       role: 'user',
       content: text,
       sequence: this.messages.length,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
   }
 
@@ -472,7 +472,7 @@ export class ChatPageComponent implements OnInit {
 
   private formatSingleMessage(message: ChatMessage): string {
     const role = message.role === 'user' ? 'You' : 'Timmy';
-    const timestamp = this.datePipe.transform(message.createdAt, 'long') ?? message.createdAt;
+    const timestamp = this.datePipe.transform(message.created_at, 'long') ?? message.created_at;
     return `**${role}** (${timestamp}): ${message.content}`;
   }
 
@@ -499,7 +499,7 @@ export class ChatPageComponent implements OnInit {
           this.sessions = sessions;
           if (this.activeSessionId) {
             const active = sessions.find(s => s.id === this.activeSessionId);
-            this.activeSourceSnapshot = active?.sourceSnapshot ?? [];
+            this.activeSourceSnapshot = active?.source_snapshot ?? [];
           }
           this.cdr.markForCheck();
         },

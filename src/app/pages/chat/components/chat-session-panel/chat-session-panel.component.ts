@@ -36,9 +36,9 @@ export class ChatSessionPanelComponent {
 
     const groupMap = new Map<EntityType, SourceSnapshotEntry[]>();
     for (const entry of this.sourceSnapshot) {
-      const list = groupMap.get(entry.entityType) ?? [];
+      const list = groupMap.get(entry.entity_type) ?? [];
       list.push(entry);
-      groupMap.set(entry.entityType, list);
+      groupMap.set(entry.entity_type, list);
     }
 
     const typeOrder: EntityType[] = [
@@ -104,7 +104,7 @@ export class ChatSessionPanelComponent {
   }
 
   getGroupNames(group: SourceGroup): string {
-    return group.entries.map(e => e.entityName || e.entityId).join(', ');
+    return group.entries.map(e => e.entity_name || e.entity_id).join(', ');
   }
 
   trackBySessionId(_index: number, session: ChatSession): string {

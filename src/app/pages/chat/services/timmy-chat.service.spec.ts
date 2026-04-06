@@ -41,12 +41,12 @@ describe('TimmyChatService', () => {
   });
 
   describe('listSessions', () => {
-    it('should call ApiService.get with correct endpoint', () => {
+    it('should call ApiService.get with correct endpoint and unwrap response', () => {
       const sessions: ChatSession[] = [];
-      mockApiService.get.mockReturnValue(of(sessions));
+      mockApiService.get.mockReturnValue(of({ sessions, total: 0, limit: 20, offset: 0 }));
 
       service.listSessions('tm-123').subscribe(result => {
-        expect(result).toBe(sessions);
+        expect(result).toStrictEqual(sessions);
       });
 
       expect(mockApiService.get).toHaveBeenCalledWith('/threat_models/tm-123/chat/sessions');
@@ -77,12 +77,12 @@ describe('TimmyChatService', () => {
   });
 
   describe('getMessages', () => {
-    it('should call ApiService.get with correct endpoint and params', () => {
+    it('should call ApiService.get with correct endpoint and params and unwrap response', () => {
       const messages: ChatMessage[] = [];
-      mockApiService.get.mockReturnValue(of(messages));
+      mockApiService.get.mockReturnValue(of({ messages, total: 0, limit: 20, offset: 0 }));
 
       service.getMessages('tm-123', 's-1', 50, 0).subscribe(result => {
-        expect(result).toBe(messages);
+        expect(result).toStrictEqual(messages);
       });
 
       expect(mockApiService.get).toHaveBeenCalledWith(
@@ -92,7 +92,7 @@ describe('TimmyChatService', () => {
     });
 
     it('should omit params when not provided', () => {
-      mockApiService.get.mockReturnValue(of([]));
+      mockApiService.get.mockReturnValue(of({ messages: [], total: 0, limit: 20, offset: 0 }));
 
       service.getMessages('tm-123', 's-1').subscribe();
 

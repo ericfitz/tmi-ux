@@ -1530,66 +1530,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/invocations': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List invocations
-     * @description List add-on invocations (users see own, admins see all)
-     */
-    get: operations['listInvocations'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/invocations/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get invocation
-     * @description Get a single invocation by ID (own invocations or admin)
-     */
-    get: operations['getInvocation'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/invocations/{id}/status': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Update invocation status
-     * @description Update invocation status (webhook callback with HMAC authentication)
-     */
-    post: operations['updateInvocationStatus'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/saml/providers': {
     parameters: {
       query?: never;
@@ -1995,7 +1935,7 @@ export interface paths {
     put?: never;
     /**
      * Create client credential
-     * @description Creates a new OAuth 2.0 client credential for machine-to-machine authentication. The client_secret is ONLY returned once at creation and cannot be retrieved later.
+     * @description Creates a new OAuth 2.0 client credential for machine-to-machine authentication. Only administrators and security reviewers can create credentials. Service accounts cannot use this endpoint. The client_secret is ONLY returned once at creation and cannot be retrieved later.
      */
     post: operations['createCurrentUserClientCredential'];
     delete?: never;
@@ -3536,6 +3476,270 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/teams/{team_id}/notes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List notes in a team
+     * @description Returns a paginated list of notes within the specified team
+     */
+    get: operations['listTeamNotes'];
+    put?: never;
+    /**
+     * Create a new team note
+     * @description Creates a new note within the specified team
+     */
+    post: operations['createTeamNote'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/teams/{team_id}/notes/{team_note_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a specific team note
+     * @description Returns details of a specific note within the team
+     */
+    get: operations['getTeamNote'];
+    /**
+     * Update a team note
+     * @description Updates a specific note within the team
+     */
+    put: operations['updateTeamNote'];
+    post?: never;
+    /**
+     * Delete a team note
+     * @description Deletes a specific note from the team
+     */
+    delete: operations['deleteTeamNote'];
+    options?: never;
+    head?: never;
+    /**
+     * Partially update a team note
+     * @description Apply JSON Patch operations to partially update a team note
+     */
+    patch: operations['patchTeamNote'];
+    trace?: never;
+  };
+  '/projects/{project_id}/notes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List notes in a project
+     * @description Returns a paginated list of notes within the specified project
+     */
+    get: operations['listProjectNotes'];
+    put?: never;
+    /**
+     * Create a new project note
+     * @description Creates a new note within the specified project
+     */
+    post: operations['createProjectNote'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/projects/{project_id}/notes/{project_note_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a specific project note
+     * @description Returns details of a specific note within the project
+     */
+    get: operations['getProjectNote'];
+    /**
+     * Update a project note
+     * @description Updates a specific note within the project
+     */
+    put: operations['updateProjectNote'];
+    post?: never;
+    /**
+     * Delete a project note
+     * @description Deletes a specific note from the project
+     */
+    delete: operations['deleteProjectNote'];
+    options?: never;
+    head?: never;
+    /**
+     * Partially update a project note
+     * @description Apply JSON Patch operations to partially update a project note
+     */
+    patch: operations['patchProjectNote'];
+    trace?: never;
+  };
+  '/webhook-deliveries/{delivery_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get webhook delivery status
+     * @description Retrieve the status of a webhook delivery. Supports JWT (owner/invoker/admin) or HMAC (webhook receiver) authentication.
+     */
+    get: operations['getWebhookDeliveryStatus'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/webhook-deliveries/{delivery_id}/status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Update webhook delivery status
+     * @description Update the status of a webhook delivery via callback. Requires HMAC signature authentication.
+     */
+    post: operations['updateWebhookDeliveryStatus'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/chat/sessions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Timmy chat sessions
+     * @description Returns a paginated list of Timmy chat sessions for the specified threat model
+     */
+    get: operations['listTimmyChatSessions'];
+    put?: never;
+    /**
+     * Create a new Timmy chat session
+     * @description Creates a new AI assistant chat session for the specified threat model. Returns an SSE stream of session creation progress including context loading status.
+     */
+    post: operations['createTimmyChatSession'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/chat/sessions/{session_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a Timmy chat session
+     * @description Returns the details of a specific Timmy chat session
+     */
+    get: operations['getTimmyChatSession'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete a Timmy chat session
+     * @description Deletes a specific Timmy chat session and all associated messages
+     */
+    delete: operations['deleteTimmyChatSession'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/chat/sessions/{session_id}/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List messages in a Timmy chat session
+     * @description Returns a paginated list of messages within the specified Timmy chat session
+     */
+    get: operations['listTimmyChatMessages'];
+    put?: never;
+    /**
+     * Send a message to Timmy
+     * @description Sends a user message to the Timmy AI assistant and returns an SSE stream of the assistant response
+     */
+    post: operations['createTimmyChatMessage'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/timmy/usage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Timmy usage statistics
+     * @description Returns usage statistics for the Timmy AI assistant, optionally filtered by user, threat model, or date range
+     */
+    get: operations['getTimmyUsage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/timmy/status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Timmy system status
+     * @description Returns the current system status of the Timmy AI assistant including memory utilization and session metrics
+     */
+    get: operations['getTimmyStatus'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4639,10 +4843,10 @@ export interface components {
         fill?: string;
         /** @description Font family */
         fontFamily?: string;
-        /** @description Horizontal position (0-1 relative or pixels) */
-        refX?: number;
-        /** @description Vertical position (0-1 relative or pixels) */
-        refY?: number;
+        /** @description Horizontal position (0-1 relative, pixels, or percentage string e.g. '50%') */
+        refX?: number | string;
+        /** @description Vertical position (0-1 relative, pixels, or percentage string e.g. '50%') */
+        refY?: number | string;
         /** @description Horizontal offset from refX */
         refDx?: number;
         /** @description Vertical offset from refY */
@@ -4760,20 +4964,58 @@ export interface components {
      * @example {
      *       "groups": {
      *         "in": {
-     *           "position": "left"
+     *           "position": "left",
+     *           "attrs": {
+     *             "circle": {
+     *               "r": 5,
+     *               "fill": "#fff",
+     *               "stroke": "#000",
+     *               "strokeWidth": 2,
+     *               "magnet": "active"
+     *             }
+     *           }
      *         },
      *         "out": {
-     *           "position": "right"
+     *           "position": "right",
+     *           "attrs": {
+     *             "circle": {
+     *               "r": 5,
+     *               "fill": "#fff",
+     *               "stroke": "#000",
+     *               "strokeWidth": 2,
+     *               "magnet": "active"
+     *             }
+     *           }
      *         }
      *       },
      *       "items": [
      *         {
+     *           "id": "port-in-1",
      *           "group": "in",
-     *           "id": "port-in-1"
+     *           "attrs": {
+     *             "text": {
+     *               "style": {
+     *                 "visibility": "hidden"
+     *               }
+     *             },
+     *             "circle": {
+     *               "style": {}
+     *             }
+     *           }
      *         },
      *         {
+     *           "id": "port-out-1",
      *           "group": "out",
-     *           "id": "port-out-1"
+     *           "attrs": {
+     *             "text": {
+     *               "style": {
+     *                 "visibility": "hidden"
+     *               }
+     *             },
+     *             "circle": {
+     *               "style": {}
+     *             }
+     *           }
      *         }
      *       ]
      *     }
@@ -4787,6 +5029,8 @@ export interface components {
            * @enum {string}
            */
           position?: 'top' | 'right' | 'bottom' | 'left';
+          /** @description Visual attributes for port group rendering (e.g., circle styling) */
+          attrs?: Record<string, never>;
         };
       };
       /** @description Individual port instances */
@@ -4795,6 +5039,8 @@ export interface components {
         id: string;
         /** @description Port group this port belongs to */
         group: string;
+        /** @description Visual attributes for port rendering (e.g., text visibility, circle styling) */
+        attrs?: Record<string, never>;
       }[];
     };
     /**
@@ -4893,7 +5139,7 @@ export interface components {
       /** @description The framework used for this threat model */
       threat_model_framework: string;
       /** @description List of users and their roles for this threat model */
-      authorization: components['schemas']['Authorization'][];
+      authorization: components['schemas']['Authorization'][] | null;
       /** @description Key-value pairs for additional threat model metadata */
       metadata?: components['schemas']['Metadata'][] | null;
       /**
@@ -5643,12 +5889,14 @@ export interface components {
       subscription_id: string;
       event_type: components['schemas']['WebhookEventType'];
       /** @description Event payload (JSON) */
-      payload?: Record<string, never>;
+      payload?: {
+        [key: string]: unknown;
+      };
       /**
        * @description Delivery status
        * @enum {string}
        */
-      status: 'pending' | 'delivered' | 'failed';
+      status: 'pending' | 'in_progress' | 'delivered' | 'failed';
       /** @description Number of delivery attempts */
       attempts: number;
       /**
@@ -5668,6 +5916,22 @@ export interface components {
        * @description Successful delivery timestamp
        */
       delivered_at?: string | null;
+      /** @description Progress percentage */
+      status_percent?: number;
+      /** @description Human-readable status description */
+      status_message?: string;
+      /**
+       * Format: date-time
+       * @description Last status update or delivery attempt
+       */
+      last_activity_at?: string | null;
+      /**
+       * Format: uuid
+       * @description Add-on ID (for addon invocations only)
+       */
+      addon_id?: string | null;
+      /** @description User who invoked the add-on (for addon invocations only) */
+      invoked_by?: components['schemas']['User'] | null;
     };
     /**
      * @description Request to test a webhook subscription with a sample event
@@ -5911,9 +6175,9 @@ export interface components {
       };
     };
     /**
-     * @description Response from addon invocation including result or invocation ID
+     * @description Response from addon invocation including delivery ID
      * @example {
-     *       "invocation_id": "990e8400-e29b-41d4-a716-446655440004",
+     *       "delivery_id": "990e8400-e29b-41d4-a716-446655440004",
      *       "status": "pending",
      *       "created_at": "2024-01-20T15:45:30Z"
      *     }
@@ -5921,9 +6185,9 @@ export interface components {
     InvokeAddonResponse: {
       /**
        * Format: uuid
-       * @description Invocation identifier for tracking
+       * @description Delivery identifier for tracking
        */
-      invocation_id: string;
+      delivery_id: string;
       /**
        * @description Current invocation status
        * @enum {string}
@@ -5934,158 +6198,6 @@ export interface components {
        * @description Invocation creation timestamp
        */
       created_at: string;
-    };
-    /**
-     * @description Status and result of an addon invocation
-     * @example {
-     *       "id": "990e8400-e29b-41d4-a716-446655440004",
-     *       "addon_id": "770e8400-e29b-41d4-a716-446655440002",
-     *       "threat_model_id": "660e8400-e29b-41d4-a716-446655440001",
-     *       "object_type": "diagram",
-     *       "object_id": "880e8400-e29b-41d4-a716-446655440003",
-     *       "invoked_by": {
-     *         "principal_type": "user",
-     *         "provider": "tmi",
-     *         "provider_id": "alice@example.com",
-     *         "email": "alice@example.com",
-     *         "display_name": "Alice Anderson"
-     *       },
-     *       "status": "completed",
-     *       "status_percent": 100,
-     *       "status_message": "Security scan completed successfully",
-     *       "created_at": "2024-01-20T15:45:30Z",
-     *       "status_updated_at": "2024-01-20T15:50:00Z",
-     *       "completed_at": "2024-01-20T15:50:00Z"
-     *     }
-     */
-    InvocationResponse: {
-      /**
-       * Format: uuid
-       * @description Invocation identifier
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description Add-on that was invoked
-       */
-      addon_id: string;
-      /**
-       * Format: uuid
-       * @description Threat model context
-       */
-      threat_model_id: string;
-      /** @description Object type (if specified) */
-      object_type?: string;
-      /**
-       * Format: uuid
-       * @description Object ID (if specified)
-       */
-      object_id?: string;
-      /** @description User who triggered the invocation */
-      invoked_by: components['schemas']['User'];
-      /**
-       * @description Current status
-       * @enum {string}
-       */
-      status: 'pending' | 'in_progress' | 'completed' | 'failed';
-      /** @description Progress percentage (0-100) */
-      status_percent: number;
-      /** @description Optional status description */
-      status_message?: string;
-      /**
-       * Format: date-time
-       * @description Creation timestamp
-       */
-      created_at: string;
-      /**
-       * Format: date-time
-       * @description Last status update timestamp
-       */
-      status_updated_at: string;
-      /** @description JSON-encoded data */
-      data?: string;
-    };
-    /**
-     * @description Paginated list of addon invocations
-     * @example {
-     *       "invocations": [
-     *         {
-     *           "id": "990e8400-e29b-41d4-a716-446655440004",
-     *           "addon_id": "770e8400-e29b-41d4-a716-446655440002",
-     *           "threat_model_id": "660e8400-e29b-41d4-a716-446655440001",
-     *           "invoked_by": {
-     *             "principal_type": "user",
-     *             "provider": "tmi",
-     *             "provider_id": "alice@example.com",
-     *             "email": "alice@example.com",
-     *             "display_name": "Alice Anderson"
-     *           },
-     *           "status": "completed",
-     *           "status_percent": 100,
-     *           "created_at": "2024-01-20T15:45:30Z",
-     *           "status_updated_at": "2024-01-20T15:50:00Z"
-     *         }
-     *       ],
-     *       "total": 1,
-     *       "limit": 50,
-     *       "offset": 0
-     *     }
-     */
-    ListInvocationsResponse: {
-      invocations: components['schemas']['InvocationResponse'][];
-      /** @description Total number of invocations */
-      total: number;
-      /** @description Pagination limit */
-      limit: number;
-      /** @description Pagination offset */
-      offset: number;
-    };
-    /**
-     * @description Request to update the status of an async addon invocation
-     * @example {
-     *       "status": "completed",
-     *       "status_percent": 100,
-     *       "status_message": "Security scan completed successfully. Found 3 vulnerabilities."
-     *     }
-     */
-    UpdateInvocationStatusRequest: {
-      /**
-       * @description New status (cannot transition back to pending)
-       * @enum {string}
-       */
-      status: 'in_progress' | 'completed' | 'failed';
-      /** @description Progress percentage */
-      status_percent?: number;
-      /** @description Optional status description */
-      status_message?: string;
-    };
-    /**
-     * @description Response confirming invocation status update
-     * @example {
-     *       "id": "990e8400-e29b-41d4-a716-446655440004",
-     *       "status": "completed",
-     *       "status_percent": 100,
-     *       "status_updated_at": "2024-01-20T15:50:00Z"
-     *     }
-     */
-    UpdateInvocationStatusResponse: {
-      /**
-       * Format: uuid
-       * @description Invocation identifier
-       */
-      id: string;
-      /**
-       * @description Current status
-       * @enum {string}
-       */
-      status: 'pending' | 'in_progress' | 'completed' | 'failed';
-      /** @description Progress percentage */
-      status_percent: number;
-      /**
-       * Format: date-time
-       * @description Status update timestamp
-       */
-      status_updated_at: string;
     };
     /**
      * @description Base identity representation for users and groups with portable, globally-unique identifiers
@@ -8509,6 +8621,8 @@ export interface components {
       reviewed_at?: string | null;
       /** @description Optional metadata key-value pairs */
       metadata?: components['schemas']['Metadata'][] | null;
+      /** @description List of notes associated with the team */
+      readonly notes?: components['schemas']['TeamNoteListItem'][];
     };
     /** @description Summary of a team for list views */
     TeamListItem: {
@@ -8529,6 +8643,8 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       modified_at?: string;
+      /** @description Number of notes associated with this team */
+      note_count?: number;
     };
     TeamInput: components['schemas']['TeamBase'];
     /** @description Paginated list of teams */
@@ -8634,6 +8750,8 @@ export interface components {
       reviewed_at?: string | null;
       /** @description Optional metadata key-value pairs */
       metadata?: components['schemas']['Metadata'][] | null;
+      /** @description List of notes associated with the project */
+      readonly notes?: components['schemas']['ProjectNoteListItem'][];
     };
     /** @description Summary of a project for list views */
     ProjectListItem: {
@@ -8654,6 +8772,8 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       modified_at?: string;
+      /** @description Number of notes associated with this project */
+      note_count?: number;
     };
     ProjectInput: components['schemas']['ProjectBase'];
     /** @description Paginated list of projects */
@@ -9057,6 +9177,447 @@ export interface components {
       user: components['schemas']['AdminUser'];
       client_credential: components['schemas']['ClientCredentialResponse'];
     };
+    /** @description Base fields for TeamProjectNote (user-writable only) */
+    TeamProjectNoteBase: {
+      /**
+       * @description Note name
+       * @example Security Review Notes
+       */
+      name: string;
+      /**
+       * @description Note content in markdown format. Safe inline HTML (tables, SVG, formatting) is allowed and sanitized server-side; dangerous elements (script, iframe, event handlers) are stripped.
+       * @example # Security Review
+       *
+       *     Findings from the quarterly review.
+       */
+      content: string;
+      /**
+       * @description Description of note purpose or context
+       * @example Notes from the quarterly security review meeting
+       */
+      description?: string | null;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       * @example true
+       */
+      timmy_enabled: boolean;
+      /**
+       * @description Controls note visibility. When true, visible to all team/project members. When false, only visible to admins and security reviewers. Only admins and security reviewers can set this field; regular users who include this field in requests will receive a 403 error. Default: true for regular users, false for admins/security reviewers.
+       * @example true
+       */
+      sharable?: boolean;
+    };
+    /**
+     * @description Complete TeamNote schema with server-generated fields
+     * @example {
+     *       "id": "d4e5f6a7-b8c9-0123-defa-23456789abcd",
+     *       "name": "Team Security Guidelines",
+     *       "content": "Security guidelines for the team.\n- All members must use MFA\n- Code reviews required for all PRs",
+     *       "description": "Team-wide security guidelines",
+     *       "timmy_enabled": true,
+     *       "sharable": true,
+     *       "created_at": "2026-01-12T11:00:00Z",
+     *       "modified_at": "2026-01-13T16:00:00Z"
+     *     }
+     */
+    TeamNote: components['schemas']['TeamProjectNoteBase'] & {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the team note
+       */
+      readonly id: string;
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at?: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (RFC3339)
+       */
+      readonly modified_at?: string;
+    };
+    /**
+     * @description Complete ProjectNote schema with server-generated fields
+     * @example {
+     *       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+     *       "name": "Project Kickoff Notes",
+     *       "content": "Notes from project kickoff meeting.\n- Threat modeling planned for Q2\n- Security review scheduled",
+     *       "description": "Notes from initial project planning",
+     *       "timmy_enabled": true,
+     *       "sharable": true,
+     *       "created_at": "2026-02-01T09:00:00Z",
+     *       "modified_at": "2026-02-01T10:30:00Z"
+     *     }
+     */
+    ProjectNote: components['schemas']['TeamProjectNoteBase'] & {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the project note
+       */
+      readonly id: string;
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at?: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (RFC3339)
+       */
+      readonly modified_at?: string;
+    };
+    TeamNoteInput: components['schemas']['TeamProjectNoteBase'];
+    ProjectNoteInput: components['schemas']['TeamProjectNoteBase'];
+    /**
+     * @description Summary information for TeamNote in list responses
+     * @example {
+     *       "id": "d4e5f6a7-b8c9-0123-defa-23456789abcd",
+     *       "name": "Team Security Guidelines",
+     *       "timmy_enabled": true,
+     *       "sharable": true,
+     *       "created_at": "2026-01-12T11:00:00Z",
+     *       "modified_at": "2026-01-13T16:00:00Z"
+     *     }
+     */
+    TeamNoteListItem: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the team note
+       */
+      readonly id: string;
+      /** @description Note name */
+      name: string;
+      /** @description Description of note purpose or context */
+      description?: string | null;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /** @description Controls note visibility */
+      sharable?: boolean;
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at?: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (RFC3339)
+       */
+      readonly modified_at?: string;
+    };
+    /**
+     * @description Summary information for ProjectNote in list responses
+     * @example {
+     *       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+     *       "name": "Project Kickoff Notes",
+     *       "timmy_enabled": true,
+     *       "sharable": true,
+     *       "created_at": "2026-02-01T09:00:00Z",
+     *       "modified_at": "2026-02-01T10:30:00Z"
+     *     }
+     */
+    ProjectNoteListItem: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the project note
+       */
+      readonly id: string;
+      /** @description Note name */
+      name: string;
+      /** @description Description of note purpose or context */
+      description?: string | null;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /** @description Controls note visibility */
+      sharable?: boolean;
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at?: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (RFC3339)
+       */
+      readonly modified_at?: string;
+    };
+    /** @description Paginated list of team notes */
+    ListTeamNotesResponse: {
+      /**
+       * @example [
+       *       {
+       *         "id": "550e8400-e29b-41d4-a716-446655440001",
+       *         "name": "Security Review Notes",
+       *         "description": "Notes from quarterly security review",
+       *         "created_at": "2026-01-15T10:30:00Z",
+       *         "modified_at": "2026-01-15T10:30:00Z"
+       *       }
+       *     ]
+       */
+      notes: components['schemas']['TeamNoteListItem'][];
+      /**
+       * @description Total number of team notes matching criteria
+       * @example 5
+       */
+      total: number;
+      /**
+       * @description Pagination limit
+       * @example 20
+       */
+      limit: number;
+      /**
+       * @description Pagination offset
+       * @example 0
+       */
+      offset: number;
+    };
+    /** @description Paginated list of project notes */
+    ListProjectNotesResponse: {
+      /**
+       * @example [
+       *       {
+       *         "id": "550e8400-e29b-41d4-a716-446655440002",
+       *         "name": "Architecture Decision Record",
+       *         "description": "ADR for authentication redesign",
+       *         "created_at": "2026-02-01T14:00:00Z",
+       *         "modified_at": "2026-02-01T14:00:00Z"
+       *       }
+       *     ]
+       */
+      notes: components['schemas']['ProjectNoteListItem'][];
+      /**
+       * @description Total number of project notes matching criteria
+       * @example 5
+       */
+      total: number;
+      /**
+       * @description Pagination limit
+       * @example 20
+       */
+      limit: number;
+      /**
+       * @description Pagination offset
+       * @example 0
+       */
+      offset: number;
+    };
+    /** @description Request to update the status of a webhook delivery */
+    UpdateWebhookDeliveryStatusRequest: {
+      /**
+       * @description New delivery status
+       * @enum {string}
+       */
+      status: 'in_progress' | 'completed' | 'failed';
+      /** @description Progress percentage (0-100) */
+      status_percent?: number;
+      /** @description Human-readable status description */
+      status_message?: string;
+    };
+    /** @description Response confirming webhook delivery status update */
+    UpdateWebhookDeliveryStatusResponse: {
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      status: 'pending' | 'in_progress' | 'delivered' | 'failed';
+      status_percent: number;
+      /** Format: date-time */
+      status_updated_at: string;
+    };
+    /** @description A Timmy AI assistant chat session within a threat model */
+    TimmyChatSession: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the chat session
+       */
+      readonly id: string;
+      /**
+       * Format: uuid
+       * @description Identifier of the parent threat model
+       */
+      readonly threat_model_id: string;
+      /**
+       * Format: uuid
+       * @description Identifier of the user who created the session
+       */
+      readonly user_id: string;
+      /** @description Optional session title */
+      title?: string;
+      /** @description Snapshot of source entities used for context */
+      source_snapshot?: {
+        /** @description Type of the source entity */
+        entity_type?: string;
+        /**
+         * Format: uuid
+         * @description Identifier of the source entity
+         */
+        entity_id?: string;
+      }[];
+      /** @description Hash of the system prompt used for this session */
+      readonly system_prompt_hash?: string;
+      /**
+       * @description Current status of the chat session
+       * @enum {string}
+       */
+      status: 'active' | 'archived';
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (RFC3339)
+       */
+      readonly modified_at: string;
+    };
+    /** @description A message within a Timmy chat session */
+    TimmyChatMessage: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the message
+       */
+      readonly id: string;
+      /**
+       * Format: uuid
+       * @description Identifier of the parent chat session
+       */
+      readonly session_id: string;
+      /**
+       * @description Role of the message sender
+       * @enum {string}
+       */
+      role: 'user' | 'assistant';
+      /** @description Message content */
+      content: string;
+      /** @description Number of tokens in the message */
+      readonly token_count?: number;
+      /** @description Message sequence number within the session */
+      readonly sequence: number;
+      /**
+       * Format: date-time
+       * @description Creation timestamp (RFC3339)
+       */
+      readonly created_at: string;
+    };
+    /** @description Optional request body for creating a Timmy chat session */
+    CreateTimmySessionRequest: {
+      /** @description Optional session title */
+      title?: string;
+    };
+    /** @description Request body for creating a message in a Timmy chat session */
+    CreateTimmyMessageRequest: {
+      /** @description Message content to send to Timmy */
+      content: string;
+    };
+    /** @description Paginated list of Timmy chat sessions */
+    ListTimmySessionsResponse: {
+      sessions: components['schemas']['TimmyChatSession'][];
+      /**
+       * @description Total number of sessions matching criteria
+       * @example 5
+       */
+      total: number;
+      /**
+       * @description Pagination limit
+       * @example 20
+       */
+      limit: number;
+      /**
+       * @description Pagination offset
+       * @example 0
+       */
+      offset: number;
+    };
+    /** @description Paginated list of Timmy chat messages */
+    ListTimmyMessagesResponse: {
+      messages: components['schemas']['TimmyChatMessage'][];
+      /**
+       * @description Total number of messages matching criteria
+       * @example 42
+       */
+      total: number;
+      /**
+       * @description Pagination limit
+       * @example 20
+       */
+      limit: number;
+      /**
+       * @description Pagination offset
+       * @example 0
+       */
+      offset: number;
+    };
+    /** @description Usage record for Timmy AI assistant */
+    TimmyUsageRecord: {
+      /**
+       * Format: uuid
+       * @description User identifier
+       */
+      user_id?: string;
+      /**
+       * Format: uuid
+       * @description Chat session identifier
+       */
+      session_id?: string;
+      /**
+       * Format: uuid
+       * @description Threat model identifier
+       */
+      threat_model_id?: string;
+      /** @description Number of messages in the period */
+      message_count?: number;
+      /** @description Number of prompt tokens consumed */
+      prompt_tokens?: number;
+      /** @description Number of completion tokens consumed */
+      completion_tokens?: number;
+      /** @description Number of embedding tokens consumed */
+      embedding_tokens?: number;
+      /**
+       * Format: date-time
+       * @description Start of the usage period (RFC3339)
+       */
+      period_start?: string;
+      /**
+       * Format: date-time
+       * @description End of the usage period (RFC3339)
+       */
+      period_end?: string;
+    };
+    /** @description Response containing Timmy usage records */
+    TimmyUsageResponse: {
+      usage: components['schemas']['TimmyUsageRecord'][];
+      /**
+       * @description Total number of usage records
+       * @example 10
+       */
+      total: number;
+    };
+    /** @description Timmy AI assistant system status */
+    TimmyStatusResponse: {
+      /** @description Current memory usage in bytes */
+      memory_used_bytes: number;
+      /** @description Total memory budget in bytes */
+      memory_budget_bytes: number;
+      /** @description Memory utilization percentage */
+      memory_utilization_pct: number;
+      /** @description Number of currently loaded indexes */
+      loaded_indexes: number;
+      /** @description Number of active chat sessions */
+      active_sessions: number;
+      /** @description Total number of index evictions */
+      evictions_total: number;
+      /** @description Number of evictions due to memory pressure */
+      evictions_pressure: number;
+      /** @description Total number of sessions rejected due to resource constraints */
+      sessions_rejected_total: number;
+    };
   };
   responses: {
     /** @description Error response */
@@ -9337,8 +9898,6 @@ export interface components {
     ThreatModelIdQueryParam: string;
     /** @description Filter by subscription ID */
     SubscriptionIdQueryParam: string;
-    /** @description Filter by add-on */
-    AddonIdQueryParam: string;
     /** @description HMAC-SHA256 signature (format: sha256={hex_signature}) */
     'X-Webhook-SignatureHeaderParam': string;
     /** @description SAML provider identifier */
@@ -9349,8 +9908,6 @@ export interface components {
     LimitQueryParam: number;
     /** @description Number of results to skip */
     OffsetQueryParam: number;
-    /** @description Administrator grant ID */
-    IdPathParam: string;
     /** @description User ID */
     UserIdPathParam: string;
     /** @description Filter by email (case-insensitive substring match) */
@@ -9422,6 +9979,14 @@ export interface components {
     AutomationQueryParam: boolean;
     /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
     CredentialIdPathParam: string;
+    /** @description Team note identifier */
+    TeamNoteId: string;
+    /** @description Project note identifier */
+    ProjectNoteId: string;
+    /** @description Filter by security reviewer. Plain value performs case-insensitive partial match on reviewer email or display name. Use 'is:null' to find unassigned threat models (no security reviewer), 'is:notnull' to find assigned ones. */
+    SecurityReviewerQueryParam: string;
+    /** @description Chat session identifier */
+    SessionId: string;
   };
   requestBodies: never;
   headers: never;
@@ -10579,6 +11144,8 @@ export interface operations {
         status_updated_before?: components['parameters']['StatusUpdatedBeforeQueryParam'];
         /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
         include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
+        /** @description Filter by security reviewer. Plain value performs case-insensitive partial match on reviewer email or display name. Use 'is:null' to find unassigned threat models (no security reviewer), 'is:notnull' to find assigned ones. */
+        security_reviewer?: components['parameters']['SecurityReviewerQueryParam'];
       };
       header?: never;
       path?: never;
@@ -18210,271 +18777,6 @@ export interface operations {
       500: components['responses']['InternalServerError'];
     };
   };
-  listInvocations: {
-    parameters: {
-      query?: {
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['PaginationLimit'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['PaginationOffset'];
-        /**
-         * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
-         * @example [
-         *       "identified",
-         *       "mitigated"
-         *     ]
-         */
-        status?: components['parameters']['StatusQueryParam'];
-        /** @description Filter by add-on */
-        addon_id?: components['parameters']['AddonIdQueryParam'];
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Success */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ListInvocationsResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - authentication required */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-    };
-  };
-  getInvocation: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Resource identifier */
-        id: components['parameters']['GenericId'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Invocation details */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InvocationResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - authentication required */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - not your invocation and not admin */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Invocation not found or expired */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-    };
-  };
-  updateInvocationStatus: {
-    parameters: {
-      query?: never;
-      header: {
-        /** @description HMAC-SHA256 signature (format: sha256={hex_signature}) */
-        'X-Webhook-Signature': components['parameters']['X-Webhook-SignatureHeaderParam'];
-      };
-      path: {
-        /** @description Resource identifier */
-        id: components['parameters']['GenericId'];
-      };
-      cookie?: never;
-    };
-    /** @description Invocation status update */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateInvocationStatusRequest'];
-      };
-    };
-    responses: {
-      /** @description Status updated successfully */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UpdateInvocationStatusResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - invalid HMAC signature */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Invocation not found or expired */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Conflict - invalid status transition */
-      409: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-    };
-  };
   getSAMLProviders: {
     parameters: {
       query?: never;
@@ -22228,7 +22530,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-      /** @description Forbidden - quota exceeded */
+      /** @description Forbidden - insufficient privileges (requires administrator or security reviewer role) or quota exceeded */
       403: {
         headers: {
           /** @description Maximum number of requests allowed in the current time window */
@@ -24386,6 +24688,27 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      /** @description Unprocessable Entity. Returned when a status transition has unmet requirements — for example, transitioning to needs_revision requires revision_notes to be set on the survey response. */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "unprocessable_entity",
+           *       "error_description": "status transition to needs_revision requires revision_notes to be set"
+           *     }
+           */
+          'application/json': components['schemas']['Error'];
+        };
+      };
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24681,6 +25004,27 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unprocessable Entity. Returned when a status transition has unmet requirements — for example, transitioning to needs_revision requires revision_notes to be set on the survey response. */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "unprocessable_entity",
+           *       "error_description": "status transition to needs_revision requires revision_notes to be set"
+           *     }
+           */
           'application/json': components['schemas']['Error'];
         };
       };
@@ -30088,6 +30432,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
+    /** @description Automation account creation parameters */
     requestBody: {
       content: {
         'application/json': components['schemas']['CreateAutomationAccountRequest'];
@@ -30169,6 +30514,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
         headers: {
@@ -30278,6 +30624,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
         headers: {
@@ -30305,6 +30652,7 @@ export interface operations {
       };
       cookie?: never;
     };
+    /** @description Client credential creation parameters */
     requestBody: {
       content: {
         'application/json': {
@@ -30403,6 +30751,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
         headers: {
@@ -30446,6 +30795,21 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
       };
       /** @description Not authenticated */
       401: {
@@ -30492,6 +30856,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
         headers: {
@@ -31249,6 +31614,1314 @@ export interface operations {
         };
       };
       503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listTeamNotes: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of team notes */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "notes": [
+           *         {
+           *           "id": "550e8400-e29b-41d4-a716-446655440001",
+           *           "name": "Security Review Notes",
+           *           "description": "Notes from quarterly security review",
+           *           "created_at": "2026-01-15T10:30:00Z",
+           *           "modified_at": "2026-01-15T10:30:00Z"
+           *         }
+           *       ],
+           *       "total": 1,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
+          'application/json': components['schemas']['ListTeamNotesResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  createTeamNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+      };
+      cookie?: never;
+    };
+    /** @description Team note creation data */
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *       "name": "Security Review Notes",
+         *       "content": "# Security Review\n\nFindings from the quarterly review."
+         *     }
+         */
+        'application/json': components['schemas']['TeamNoteInput'];
+      };
+    };
+    responses: {
+      /** @description Team note created successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getTeamNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+        /** @description Team note identifier */
+        team_note_id: components['parameters']['TeamNoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Team note details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  updateTeamNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+        /** @description Team note identifier */
+        team_note_id: components['parameters']['TeamNoteId'];
+      };
+      cookie?: never;
+    };
+    /** @description Complete team note data for replacement */
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *       "name": "Security Review Notes (Updated)",
+         *       "content": "# Security Review\n\nUpdated findings from the quarterly review."
+         *     }
+         */
+        'application/json': components['schemas']['TeamNoteInput'];
+      };
+    };
+    responses: {
+      /** @description Team note updated successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  deleteTeamNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+        /** @description Team note identifier */
+        team_note_id: components['parameters']['TeamNoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Team note deleted successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  patchTeamNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Team UUID */
+        team_id: string;
+        /** @description Team note identifier */
+        team_note_id: components['parameters']['TeamNoteId'];
+      };
+      cookie?: never;
+    };
+    /** @description JSON Patch operations to apply to the team note */
+    requestBody: {
+      content: {
+        /**
+         * @example [
+         *       {
+         *         "op": "replace",
+         *         "path": "/name",
+         *         "value": "Updated Note Title"
+         *       }
+         *     ]
+         */
+        'application/json-patch+json': components['schemas']['JsonPatchDocument'];
+      };
+    };
+    responses: {
+      /** @description Successfully patched team note */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  listProjectNotes: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of project notes */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "notes": [
+           *         {
+           *           "id": "550e8400-e29b-41d4-a716-446655440002",
+           *           "name": "Architecture Decision Record",
+           *           "description": "ADR for authentication redesign",
+           *           "created_at": "2026-02-01T14:00:00Z",
+           *           "modified_at": "2026-02-01T14:00:00Z"
+           *         }
+           *       ],
+           *       "total": 1,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
+          'application/json': components['schemas']['ListProjectNotesResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  createProjectNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+      };
+      cookie?: never;
+    };
+    /** @description Project note creation data */
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *       "name": "Architecture Decision Record",
+         *       "content": "# ADR: Authentication Redesign\n\nContext and decision details."
+         *     }
+         */
+        'application/json': components['schemas']['ProjectNoteInput'];
+      };
+    };
+    responses: {
+      /** @description Project note created successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getProjectNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+        /** @description Project note identifier */
+        project_note_id: components['parameters']['ProjectNoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Project note details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  updateProjectNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+        /** @description Project note identifier */
+        project_note_id: components['parameters']['ProjectNoteId'];
+      };
+      cookie?: never;
+    };
+    /** @description Complete project note data for replacement */
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *       "name": "Architecture Decision Record (Updated)",
+         *       "content": "# ADR: Authentication Redesign\n\nUpdated context and decision details."
+         *     }
+         */
+        'application/json': components['schemas']['ProjectNoteInput'];
+      };
+    };
+    responses: {
+      /** @description Project note updated successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  deleteProjectNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+        /** @description Project note identifier */
+        project_note_id: components['parameters']['ProjectNoteId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Project note deleted successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  patchProjectNote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Project UUID */
+        project_id: string;
+        /** @description Project note identifier */
+        project_note_id: components['parameters']['ProjectNoteId'];
+      };
+      cookie?: never;
+    };
+    /** @description JSON Patch operations to apply to the project note */
+    requestBody: {
+      content: {
+        /**
+         * @example [
+         *       {
+         *         "op": "replace",
+         *         "path": "/name",
+         *         "value": "Updated ADR Title"
+         *       }
+         *     ]
+         */
+        'application/json-patch+json': components['schemas']['JsonPatchDocument'];
+      };
+    };
+    responses: {
+      /** @description Successfully patched project note */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProjectNote'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getWebhookDeliveryStatus: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description HMAC-SHA256 signature (format: sha256={hex_signature}). Required for HMAC authentication, optional when using JWT. */
+        'X-Webhook-Signature'?: string;
+      };
+      path: {
+        /** @description Webhook delivery identifier */
+        delivery_id: components['parameters']['DeliveryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Webhook delivery status */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookDelivery'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  updateWebhookDeliveryStatus: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description HMAC-SHA256 signature (format: sha256={hex_signature}) */
+        'X-Webhook-Signature': components['parameters']['X-Webhook-SignatureHeaderParam'];
+      };
+      path: {
+        /** @description Webhook delivery identifier */
+        delivery_id: components['parameters']['DeliveryId'];
+      };
+      cookie?: never;
+    };
+    /** @description Webhook delivery status update */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateWebhookDeliveryStatusRequest'];
+      };
+    };
+    responses: {
+      /** @description Status updated successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UpdateWebhookDeliveryStatusResponse'];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Conflict - invalid status transition */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  listTimmyChatSessions: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of chat sessions */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListTimmySessionsResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  createTimmyChatSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    /** @description Optional session configuration */
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['CreateTimmySessionRequest'];
+      };
+    };
+    responses: {
+      /** @description SSE stream of session creation progress */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'text/event-stream': string;
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getTimmyChatSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Chat session identifier */
+        session_id: components['parameters']['SessionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chat session details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TimmyChatSession'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  deleteTimmyChatSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Chat session identifier */
+        session_id: components['parameters']['SessionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chat session deleted successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  listTimmyChatMessages: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Chat session identifier */
+        session_id: components['parameters']['SessionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of chat messages */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListTimmyMessagesResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  createTimmyChatMessage: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Chat session identifier */
+        session_id: components['parameters']['SessionId'];
+      };
+      cookie?: never;
+    };
+    /** @description Message content to send to Timmy */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateTimmyMessageRequest'];
+      };
+    };
+    responses: {
+      /** @description SSE stream of the assistant response */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'text/event-stream': string;
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getTimmyUsage: {
+    parameters: {
+      query?: {
+        /** @description Filter usage by user identifier */
+        user_id?: string;
+        /** @description Filter usage by threat model identifier */
+        threat_model_id?: string;
+        /** @description Filter usage records starting from this date (RFC3339) */
+        start_date?: string;
+        /** @description Filter usage records up to this date (RFC3339) */
+        end_date?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Timmy usage statistics */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TimmyUsageResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getTimmyStatus: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Timmy system status */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TimmyStatusResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
     };
   };
 }

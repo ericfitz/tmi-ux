@@ -229,37 +229,37 @@ describe('ChatPageComponent', () => {
     const mockMessages: ChatMessage[] = [
       {
         id: 'msg-1',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'user',
         content: 'What threats exist?',
         sequence: 0,
-        createdAt: '2026-04-05T14:34:00.000Z',
+        created_at: '2026-04-05T14:34:00.000Z',
       },
       {
         id: 'msg-2',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'assistant',
         content: 'There are **three** main threats.',
-        tokenCount: 42,
+        token_count: 42,
         sequence: 1,
-        createdAt: '2026-04-05T14:34:05.000Z',
+        created_at: '2026-04-05T14:34:05.000Z',
       },
       {
         id: 'msg-3',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'user',
         content: 'Tell me more about the first one.',
         sequence: 2,
-        createdAt: '2026-04-05T14:35:00.000Z',
+        created_at: '2026-04-05T14:35:00.000Z',
       },
       {
         id: 'msg-4',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'assistant',
         content: 'The first threat involves injection attacks.',
-        tokenCount: 30,
+        token_count: 30,
         sequence: 3,
-        createdAt: '2026-04-05T14:35:10.000Z',
+        created_at: '2026-04-05T14:35:10.000Z',
       },
     ];
 
@@ -311,12 +311,12 @@ describe('ChatPageComponent', () => {
         const messagesWithoutUser: ChatMessage[] = [
           {
             id: 'msg-solo',
-            sessionId: 'session-1',
+            session_id: 'session-1',
             role: 'assistant',
             content: 'Hello, I am Timmy.',
-            tokenCount: 10,
+            token_count: 10,
             sequence: 0,
-            createdAt: '2026-04-05T14:34:00.000Z',
+            created_at: '2026-04-05T14:34:00.000Z',
           },
         ];
         const result = (component as any).formatMessageAsMarkdown('msg-solo', messagesWithoutUser);
@@ -358,20 +358,20 @@ describe('ChatPageComponent', () => {
     const mockMessages: ChatMessage[] = [
       {
         id: 'msg-1',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'user',
         content: 'What threats?',
         sequence: 0,
-        createdAt: '2026-04-05T14:34:00.000Z',
+        created_at: '2026-04-05T14:34:00.000Z',
       },
       {
         id: 'msg-2',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'assistant',
         content: 'Three threats found.',
-        tokenCount: 20,
+        token_count: 20,
         sequence: 1,
-        createdAt: '2026-04-05T14:34:05.000Z',
+        created_at: '2026-04-05T14:34:05.000Z',
       },
     ];
 
@@ -380,12 +380,12 @@ describe('ChatPageComponent', () => {
       component.sessions = [
         {
           id: 'session-1',
-          threatModelId: 'tm-123',
+          threat_model_id: 'tm-123',
           title: 'What threats?',
-          sourceSnapshot: [],
+          source_snapshot: [],
           status: 'active' as const,
-          createdAt: '2026-04-05T14:34:00.000Z',
-          modifiedAt: '2026-04-05T14:34:05.000Z',
+          created_at: '2026-04-05T14:34:00.000Z',
+          modified_at: '2026-04-05T14:34:05.000Z',
         },
       ];
       component.activeSessionId = 'session-1';
@@ -432,20 +432,20 @@ describe('ChatPageComponent', () => {
     const mockMessages: ChatMessage[] = [
       {
         id: 'msg-1',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'user',
         content: 'What threats?',
         sequence: 0,
-        createdAt: '2026-04-05T14:34:00.000Z',
+        created_at: '2026-04-05T14:34:00.000Z',
       },
       {
         id: 'msg-2',
-        sessionId: 'session-1',
+        session_id: 'session-1',
         role: 'assistant',
         content: 'Three threats found.',
-        tokenCount: 20,
+        token_count: 20,
         sequence: 1,
-        createdAt: '2026-04-05T14:34:05.000Z',
+        created_at: '2026-04-05T14:34:05.000Z',
       },
     ];
 

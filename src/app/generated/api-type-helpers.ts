@@ -72,3 +72,10 @@ export type ApiListDocumentsResponse = components['schemas']['ListDocumentsRespo
 export type ApiListNotesResponse = components['schemas']['ListNotesResponse'];
 export type ApiListAssetsResponse = components['schemas']['ListAssetsResponse'];
 export type ApiListRepositoriesResponse = components['schemas']['ListRepositoriesResponse'];
+
+// ─── Chat/Timmy types ───────────────────────────────────────────────────────
+
+export type ApiTimmyChatSession = components['schemas']['TimmyChatSession'];
+export type ApiTimmyChatMessage = components['schemas']['TimmyChatMessage'];
+export type ApiListTimmySessionsResponse = components['schemas']['ListTimmySessionsResponse'];
+export type ApiListTimmyMessagesResponse = components['schemas']['ListTimmyMessagesResponse'];

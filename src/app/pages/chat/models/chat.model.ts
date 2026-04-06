@@ -13,28 +13,42 @@ export type EntityType = 'document' | 'repository' | 'diagram' | 'note' | 'asset
 
 export interface ChatMessage {
   id: string;
-  sessionId: string;
+  session_id: string;
   role: 'user' | 'assistant';
   content: string;
-  tokenCount?: number;
+  token_count?: number;
   sequence: number;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface ChatSession {
   id: string;
-  threatModelId: string;
+  threat_model_id: string;
   title: string;
-  sourceSnapshot: SourceSnapshotEntry[];
+  source_snapshot: SourceSnapshotEntry[];
   status: 'active' | 'archived';
-  createdAt: string;
-  modifiedAt: string;
+  created_at: string;
+  modified_at: string;
 }
 
 export interface SourceSnapshotEntry {
-  entityType: EntityType;
-  entityId: string;
-  entityName?: string;
+  entity_type: EntityType;
+  entity_id: string;
+  entity_name?: string;
+}
+
+export interface ListSessionsResponse {
+  sessions: ChatSession[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ListMessagesResponse {
+  messages: ChatMessage[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 // Session creation SSE events

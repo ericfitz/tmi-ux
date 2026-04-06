@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ApiService } from '../../../core/services/api.service';
 import { SseClientService } from '../../../core/services/sse-client.service';
 import { ActivityTrackerService } from '../../../core/services/activity-tracker.service';
-import { ChatSession, ChatMessage } from '../models/chat.model';
+import {
+  ChatSession,
+  ChatMessage,
+  ListSessionsResponse,
+  ListMessagesResponse,
+} from '../models/chat.model';
 import { SseEvent } from '../../../core/interfaces/sse.interface';
 
 /**
@@ -33,7 +39,9 @@ export class TimmyChatService {
 
   /** List the current user's chat sessions for a threat model. */
   listSessions(threatModelId: string): Observable<ChatSession[]> {
-    return this.api.get<ChatSession[]>(`/threat_models/${threatModelId}/chat/sessions`);
+    return this.api
+      .get<ListSessionsResponse>(`/threat_models/${threatModelId}/chat/sessions`)
+      .pipe(map(response => response.sessions || []));
   }
 
   /** Get a single session's details (metadata + source snapshot). */
@@ -68,9 +76,11 @@ export class TimmyChatService {
       limit !== undefined || offset !== undefined
         ? { ...(limit !== undefined && { limit }), ...(offset !== undefined && { offset }) }
         : undefined;
-    return this.api.get<ChatMessage[]>(
-      `/threat_models/${threatModelId}/chat/sessions/${sessionId}/messages`,
-      params,
-    );
+    return this.api
+      .get<ListMessagesResponse>(
+        `/threat_models/${threatModelId}/chat/sessions/${sessionId}/messages`,
+        params,
+      )
+      .pipe(map(response => response.messages || []));
   }
 }
