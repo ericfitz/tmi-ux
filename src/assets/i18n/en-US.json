@@ -1977,6 +1977,7 @@
       "title": "Download Log"
     },
     "hoverShowMetadata": "Show cell metadata on hover",
+    "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",

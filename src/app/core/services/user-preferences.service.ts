@@ -17,6 +17,7 @@ export interface UserPreferencesData {
   showDeveloperTools: boolean;
   dashboardListView: boolean;
   hoverShowMetadata: boolean;
+  showShapeBordersWithIcons: boolean;
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
 }
@@ -38,6 +39,7 @@ const DEFAULT_PREFERENCES: UserPreferencesData = {
   showDeveloperTools: false,
   dashboardListView: false,
   hoverShowMetadata: false,
+  showShapeBordersWithIcons: true,
   pageSize: 'usLetter',
   marginSize: 'standard',
 };

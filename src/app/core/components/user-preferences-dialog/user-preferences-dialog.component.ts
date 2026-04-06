@@ -43,6 +43,7 @@ export interface UserPreferences {
   showDeveloperTools: boolean;
   dashboardListView: boolean;
   hoverShowMetadata: boolean;
+  showShapeBordersWithIcons: boolean;
 }
 
 interface CheckboxChangeEvent {
@@ -223,6 +224,17 @@ interface CheckboxChangeEvent {
               >
                 <span [transloco]="'userPreferences.hoverShowMetadata'">
                   Show cell metadata on hover
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.showShapeBordersWithIcons"
+                (change)="onShowShapeBordersWithIconsChange($event)"
+              >
+                <span [transloco]="'userPreferences.showShapeBordersWithIcons'">
+                  Show shape fill and border when icon is displayed
                 </span>
               </mat-checkbox>
             </div>
@@ -900,6 +912,13 @@ export class UserPreferencesDialogComponent implements OnInit {
   onHoverShowMetadataChange(event: CheckboxChangeEvent): void {
     this.preferences.hoverShowMetadata = event.checked;
     this.userPreferencesService.updatePreferences({ hoverShowMetadata: event.checked });
+  }
+
+  onShowShapeBordersWithIconsChange(event: CheckboxChangeEvent): void {
+    this.preferences.showShapeBordersWithIcons = event.checked;
+    this.userPreferencesService.updatePreferences({
+      showShapeBordersWithIcons: event.checked,
+    });
   }
 
   onExportLog(): void {

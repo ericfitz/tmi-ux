@@ -42,6 +42,7 @@ describe('UserPreferencesService', () => {
     showDeveloperTools: false,
     dashboardListView: false,
     hoverShowMetadata: false,
+    showShapeBordersWithIcons: true,
     pageSize: 'usLetter',
     marginSize: 'standard',
   };
