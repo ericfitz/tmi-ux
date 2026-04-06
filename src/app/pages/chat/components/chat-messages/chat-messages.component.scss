@@ -208,6 +208,17 @@
   }
 }
 
+// Save note button styling
+.message .save-note-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message:hover .save-note-btn,
+.message .save-note-btn:focus {
+  opacity: 1;
+}
+
 // Pinned input area — always visible at bottom
 .chat-input {
   display: flex;

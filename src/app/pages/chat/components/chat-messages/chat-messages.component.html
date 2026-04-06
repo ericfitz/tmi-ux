@@ -48,6 +48,15 @@
         <div class="message-content">
           @if (message.role === 'assistant' && !isStreaming(message)) {
             <markdown [data]="message.content"></markdown>
+            <button
+              mat-icon-button
+              class="save-note-btn"
+              [matTooltip]="t('chat.saveMessageAsNote')"
+              [disabled]="savingNote"
+              (click)="onSaveAsNote(message.id)"
+            >
+              <mat-icon>note_add</mat-icon>
+            </button>
           } @else {
             <p>
               {{ message.content }}

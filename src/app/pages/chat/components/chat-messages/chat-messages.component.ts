@@ -42,8 +42,10 @@ export class ChatMessagesComponent implements AfterViewChecked {
   @Input() streamingMessageId: string | null = null;
   @Input() preparationStatus: PreparationStatus | null = null;
   @Input() inputDisabled = false;
+  @Input() savingNote = false;
 
   @Output() messageSent = new EventEmitter<string>();
+  @Output() messageSavedAsNote = new EventEmitter<string>();
 
   @ViewChild('messagesContainer') messagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -60,6 +62,14 @@ export class ChatMessagesComponent implements AfterViewChecked {
 
   isStreaming(message: ChatMessage): boolean {
     return message.id === this.streamingMessageId;
+  }
+
+  canSaveAsNote(message: ChatMessage): boolean {
+    return message.role === 'assistant' && !this.isStreaming(message);
+  }
+
+  onSaveAsNote(messageId: string): void {
+    this.messageSavedAsNote.emit(messageId);
   }
 
   onSend(): void {
