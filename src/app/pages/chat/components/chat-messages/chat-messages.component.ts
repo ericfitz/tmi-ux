@@ -64,10 +64,6 @@ export class ChatMessagesComponent implements AfterViewChecked {
     return message.id === this.streamingMessageId;
   }
 
-  canSaveAsNote(message: ChatMessage): boolean {
-    return message.role === 'assistant' && !this.isStreaming(message);
-  }
-
   onSaveAsNote(messageId: string): void {
     this.messageSavedAsNote.emit(messageId);
   }

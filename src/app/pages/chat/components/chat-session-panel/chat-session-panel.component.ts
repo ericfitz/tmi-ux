@@ -22,11 +22,11 @@ export class ChatSessionPanelComponent {
   @Input() sessions: ChatSession[] = [];
   @Input() activeSessionId: string | null = null;
   @Input() sourceSnapshot: SourceSnapshotEntry[] = [];
+  @Input() savingNote = false;
 
   @Output() sessionSelected = new EventEmitter<string>();
   @Output() sessionCreated = new EventEmitter<void>();
   @Output() sessionDeleted = new EventEmitter<string>();
-  @Input() savingNote = false;
   @Output() sessionSavedAsNote = new EventEmitter<string>();
 
   sourceSummaryExpanded = false;
