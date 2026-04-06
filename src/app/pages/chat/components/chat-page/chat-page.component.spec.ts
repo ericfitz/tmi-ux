@@ -81,6 +81,19 @@ describe('ChatPageComponent', () => {
       translate: vi.fn().mockImplementation((key: string) => key),
     };
 
+    const mockDatePipe = {
+      transform: vi.fn().mockImplementation((date: string) => {
+        return new Date(date).toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZoneName: 'short',
+        });
+      }),
+    };
+
     component = new ChatPageComponent(
       mockRoute as any,
       mockRouter as any,
@@ -88,6 +101,7 @@ describe('ChatPageComponent', () => {
       mockLogger as any,
       mockCdr as any,
       mockTransloco as any,
+      mockDatePipe as any,
       null, // destroyRef
     );
 

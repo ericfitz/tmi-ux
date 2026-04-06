@@ -8,6 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { identity, MonoTypeOperatorFunction } from 'rxjs';
@@ -52,6 +53,7 @@ import { ChatSessionPanelComponent } from '../chat-session-panel/chat-session-pa
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DatePipe],
 })
 export class ChatPageComponent implements OnInit {
   threatModel: ThreatModel | null = null;
@@ -77,6 +79,7 @@ export class ChatPageComponent implements OnInit {
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
+    private datePipe: DatePipe,
     @Optional() private destroyRef: DestroyRef,
   ) {}
 
@@ -378,6 +381,46 @@ export class ChatPageComponent implements OnInit {
       sequence: this.messages.length,
       createdAt: new Date().toISOString(),
     };
+  }
+
+  private formatSessionAsMarkdown(messages: ChatMessage[]): string {
+    return messages.map(m => this.formatSingleMessage(m)).join('\n\n');
+  }
+
+  private formatMessageAsMarkdown(assistantMessageId: string, messages: ChatMessage[]): string {
+    const msgIndex = messages.findIndex(m => m.id === assistantMessageId);
+    if (msgIndex === -1) return '';
+
+    const assistantMsg = messages[msgIndex];
+    const precedingUserMsg =
+      msgIndex > 0 && messages[msgIndex - 1].role === 'user' ? messages[msgIndex - 1] : null;
+
+    const parts: string[] = [];
+    if (precedingUserMsg) {
+      parts.push(this.formatSingleMessage(precedingUserMsg));
+    }
+    parts.push(this.formatSingleMessage(assistantMsg));
+    return parts.join('\n\n');
+  }
+
+  private formatSingleMessage(message: ChatMessage): string {
+    const role = message.role === 'user' ? 'You' : 'Timmy';
+    const timestamp = this.datePipe.transform(message.createdAt, 'long') ?? message.createdAt;
+    return `**${role}** (${timestamp}): ${message.content}`;
+  }
+
+  private generateNoteTitle(assistantContent: string): string {
+    const stripped = assistantContent.replace(/```[\s\S]*?```/g, '').trim();
+    if (!stripped || stripped.length < 5) {
+      const date =
+        this.datePipe.transform(new Date(), 'mediumDate') ?? new Date().toLocaleDateString();
+      return `Timmy response \u2014 ${date}`;
+    }
+    if (stripped.length <= 50) return stripped;
+
+    const truncated = stripped.substring(0, 50);
+    const lastSpace = truncated.lastIndexOf(' ');
+    return (lastSpace > 20 ? truncated.substring(0, lastSpace) : truncated) + '\u2026';
   }
 
   private loadSessions(): void {
