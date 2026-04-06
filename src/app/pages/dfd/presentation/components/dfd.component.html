@@ -144,6 +144,16 @@
         <mat-icon>palette</mat-icon>
       </button>
 
+      <button
+        mat-icon-button
+        (click)="toggleIconPickerPanel()"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'dfd.iconPicker.toolbarTooltip' | transloco"
+        [class.active-toggle]="isIconPickerPanelOpen"
+      >
+        <mat-icon>category</mat-icon>
+      </button>
+
       <span class="button-spacer"></span>
 
       <button
@@ -397,6 +407,16 @@
         (clearCustomFormatting)="onClearCustomFormatting($event)"
         (diagramPaletteChanged)="onDiagramPaletteChanged($event)"
       ></app-style-panel>
+    }
+
+    @if (isIconPickerPanelOpen) {
+      <app-icon-picker-panel
+        [selectedCells]="iconPickerCells"
+        [disabled]="isReadOnlyMode"
+        (iconSelected)="onIconSelected($event)"
+        (iconRemoved)="onIconRemoved($event)"
+        (placementChanged)="onIconPlacementChanged($event)"
+      />
     }
 
     <!-- Port label popover -->

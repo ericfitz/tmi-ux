@@ -122,6 +122,16 @@ import {
   StyleChangeEvent,
 } from './style-panel/style-panel.component';
 import {
+  IconPickerPanelComponent,
+  IconPickerCellInfo,
+  IconSelectedEvent,
+  IconRemovedEvent,
+  PlacementChangedEvent,
+} from './icon-picker-panel/icon-picker-panel.component';
+import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
+import { ArchIconData, ICON_HIDEABLE_BORDER_SHAPES } from '../../types/arch-icon.types';
+import { ICON_PLACEMENT_ATTRS, getIconPlacementKey } from '../../types/icon-placement.types';
+import {
   PortLabelPopoverComponent,
   PortLabelData,
   PortLabelChangeEvent,
@@ -166,6 +176,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InlineEditComponent,
     StylePanelComponent,
     PortLabelPopoverComponent,
+    IconPickerPanelComponent,
   ],
   providers: [
     // DFD v2 Architecture - Component-scoped services
@@ -254,6 +265,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   stylePanelCells: CellStyleInfo[] = [];
   diagramColorPalette: ColorPaletteEntry[] = [];
 
+  // Icon picker panel state
+  isIconPickerPanelOpen = false;
+  iconPickerCells: IconPickerCellInfo[] = [];
+
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
   private _rightClickedCell: any = null;
@@ -296,6 +311,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
     private authService: AuthService,
     private userPreferencesService: UserPreferencesService,
+    private architectureIconService: ArchitectureIconService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -659,6 +675,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             'DFD orchestrator just became initialized - setting up edge handlers',
           );
           this.setupEdgeObservableSubscriptions();
+          this.applyIconsOnLoad();
         }
 
         this.isSystemInitialized = state.initialized;
@@ -963,6 +980,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             graphAdapter.clearClipboard();
             this.logger.debugComponent('DfdComponent', 'Cleared clipboard after diagram load');
           }
+
+          // Apply architecture icons to nodes that have icon data
+          this.applyIconsOnLoad();
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
@@ -2558,6 +2578,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isStylePanelOpen) {
       this.updateStylePanelCells();
     }
+    this.updateIconPickerCells();
 
     // Only trigger change detection if state actually changed
     if (
@@ -2632,6 +2653,213 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // Icon picker panel methods
+
+  toggleIconPickerPanel(): void {
+    this.isIconPickerPanelOpen = !this.isIconPickerPanelOpen;
+    if (this.isIconPickerPanelOpen) {
+      this.updateIconPickerCells();
+    }
+    this.cdr.detectChanges();
+  }
+
+  private updateIconPickerCells(): void {
+    if (!this.isIconPickerPanelOpen) return;
+    const selectedCellIds = this.appDfdOrchestrator.getSelectedCells();
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.iconPickerCells = [];
+      return;
+    }
+    this.iconPickerCells = selectedCellIds
+      .map(id => graph.getCellById(id))
+      .filter(cell => cell?.isNode())
+      .map(cell => ({
+        cellId: cell!.id,
+        nodeType: cell!.shape,
+        arch: (cell!.getData()?._arch as ArchIconData) ?? null,
+      }));
+  }
+
+  onIconSelected(event: IconSelectedEvent): void {
+    if (this.isReadOnlyMode) return;
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const cellId of event.cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (!cell || !cell.isNode()) continue;
+
+      const previousData = cell.getData() ?? {};
+      cell.setData({ ...previousData, _arch: event.arch }, { silent: true });
+      this.applyIconToCell(cell, event.arch);
+      this.applyBorderPreference(cell, event.arch);
+
+      const operation = {
+        id: `icon-set-${Date.now()}-${cellId}`,
+        type: 'update-node' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: Date.now(),
+        nodeId: cellId,
+        updates: { properties: { _arch: event.arch } },
+        previousState: { properties: { _arch: previousData._arch ?? null } },
+        includeInHistory: true,
+      };
+      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+    }
+    this.updateIconPickerCells();
+    this.cdr.detectChanges();
+  }
+
+  onIconRemoved(event: IconRemovedEvent): void {
+    if (this.isReadOnlyMode) return;
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const cellId of event.cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (!cell || !cell.isNode()) continue;
+
+      const previousData = cell.getData() ?? {};
+      const { _arch, ...restData } = previousData;
+      cell.setData(restData, { silent: true });
+      cell.setAttrByPath('icon/href', null);
+
+      // Restore label position if it was shifted for centered icon
+      const previousArch = _arch as ArchIconData | undefined;
+      if (
+        previousArch?.placement.vertical === 'middle' &&
+        previousArch?.placement.horizontal === 'center' &&
+        cell.shape !== 'security-boundary'
+      ) {
+        cell.setAttrByPath('text/refY', '50%');
+        cell.setAttrByPath('text/textVerticalAnchor', 'middle');
+      }
+
+      this.restoreBorder(cell);
+
+      const operation = {
+        id: `icon-remove-${Date.now()}-${cellId}`,
+        type: 'update-node' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: Date.now(),
+        nodeId: cellId,
+        updates: { properties: { _arch: null } },
+        previousState: { properties: { _arch: previousData._arch ?? null } },
+        includeInHistory: true,
+      };
+      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+    }
+    this.updateIconPickerCells();
+    this.cdr.detectChanges();
+  }
+
+  onIconPlacementChanged(event: PlacementChangedEvent): void {
+    if (this.isReadOnlyMode) return;
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const cellId of event.cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (!cell || !cell.isNode()) continue;
+
+      const previousData = cell.getData() ?? {};
+      const previousArch = previousData._arch as ArchIconData | undefined;
+      if (!previousArch) continue;
+
+      const newArch: ArchIconData = {
+        ...previousArch,
+        placement: event.placement as any,
+      };
+      cell.setData({ ...previousData, _arch: newArch }, { silent: true });
+      this.applyIconToCell(cell, newArch);
+
+      const operation = {
+        id: `icon-placement-${Date.now()}-${cellId}`,
+        type: 'update-node' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: Date.now(),
+        nodeId: cellId,
+        updates: { properties: { _arch: newArch } },
+        previousState: { properties: { _arch: previousArch } },
+        includeInHistory: true,
+      };
+      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+    }
+    this.updateIconPickerCells();
+    this.cdr.detectChanges();
+  }
+
+  private applyIconToCell(cell: any, arch: ArchIconData): void {
+    const iconPath = this.architectureIconService.getIconPath(arch);
+    const placementKey = getIconPlacementKey(arch.placement);
+    const placementAttrs = ICON_PLACEMENT_ATTRS[placementKey];
+
+    cell.setAttrByPath('icon/href', iconPath);
+    cell.setAttrByPath('icon/width', 32);
+    cell.setAttrByPath('icon/height', 32);
+    cell.setAttrByPath('icon/refX', placementAttrs.refX);
+    cell.setAttrByPath('icon/refY', placementAttrs.refY);
+    cell.setAttrByPath('icon/xAlignment', 'middle');
+    cell.setAttrByPath('icon/yAlignment', 'middle');
+
+    // When icon is centered, shift label below the icon (for non-security-boundary shapes)
+    if (
+      arch.placement.vertical === 'middle' &&
+      arch.placement.horizontal === 'center' &&
+      cell.shape !== 'security-boundary'
+    ) {
+      cell.setAttrByPath('text/refY', '75%');
+      cell.setAttrByPath('text/textVerticalAnchor', 'top');
+    }
+  }
+
+  private applyBorderPreference(cell: any, _arch: ArchIconData): void {
+    const prefs = this.userPreferencesService.getPreferences();
+    if (
+      !prefs.showShapeBordersWithIcons &&
+      (ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(cell.shape)
+    ) {
+      cell.setAttrByPath('body/stroke', 'transparent');
+      cell.setAttrByPath('body/fill', 'transparent');
+    }
+  }
+
+  private restoreBorder(cell: any): void {
+    const shape = cell.shape;
+    const nodeStyles = DFD_STYLING.NODES as Record<string, any>;
+    const shapeKey = shape.toUpperCase().replace(/-/g, '_');
+    const config = nodeStyles[shapeKey];
+    if (config) {
+      cell.setAttrByPath('body/stroke', config.STROKE ?? DFD_STYLING.DEFAULT_STROKE);
+      cell.setAttrByPath('body/fill', config.FILL ?? DFD_STYLING.DEFAULT_FILL);
+    }
+  }
+
+  private applyIconsOnLoad(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const node of graph.getNodes()) {
+      const data = node.getData();
+      const arch = data?._arch as ArchIconData | undefined;
+      if (arch) {
+        this.applyIconToCell(node, arch);
+        const prefs = this.userPreferencesService.getPreferences();
+        if (
+          !prefs.showShapeBordersWithIcons &&
+          (ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(node.shape)
+        ) {
+          node.setAttrByPath('body/stroke', 'transparent');
+          node.setAttrByPath('body/fill', 'transparent');
+        }
+      }
+    }
+  }
+
   onStyleChange(event: StyleChangeEvent): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2649,6 +2877,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.updateStylePanelCells();
+    this.updateIconPickerCells();
     this.cdr.detectChanges();
   }
 
@@ -2884,6 +3113,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.updateStylePanelCells();
+    this.updateIconPickerCells();
     this.cdr.detectChanges();
   }
 
