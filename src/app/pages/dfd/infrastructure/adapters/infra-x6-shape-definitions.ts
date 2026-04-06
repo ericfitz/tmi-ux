@@ -31,6 +31,10 @@ export function registerCustomShapes(): void {
           selector: 'top',
         },
         {
+          tagName: 'image',
+          selector: 'icon',
+        },
+        {
           tagName: 'text',
           selector: 'text',
         },
@@ -149,6 +153,10 @@ export function registerCustomShapes(): void {
           selector: 'body',
         },
         {
+          tagName: 'image',
+          selector: 'icon',
+        },
+        {
           tagName: 'text',
           selector: 'text',
         },
@@ -185,6 +193,10 @@ export function registerCustomShapes(): void {
           selector: 'body',
         },
         {
+          tagName: 'image',
+          selector: 'icon',
+        },
+        {
           tagName: 'text',
           selector: 'text',
         },
@@ -219,6 +231,10 @@ export function registerCustomShapes(): void {
         {
           tagName: 'rect',
           selector: 'body',
+        },
+        {
+          tagName: 'image',
+          selector: 'icon',
         },
         {
           tagName: 'text',
@@ -274,6 +290,10 @@ export function registerCustomShapes(): void {
         {
           tagName: 'rect',
           selector: 'body',
+        },
+        {
+          tagName: 'image',
+          selector: 'icon',
         },
         {
           tagName: 'text',
