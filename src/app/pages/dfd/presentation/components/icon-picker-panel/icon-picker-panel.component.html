@@ -1,0 +1,161 @@
+<div class="icon-picker-panel" cdkDrag cdkDragBoundary=".dfd-container">
+  <div class="panel-header" cdkDragHandle>
+    <mat-icon class="drag-handle-icon">drag_indicator</mat-icon>
+    <span class="panel-title">{{ 'dfd.iconPicker.title' | transloco }}</span>
+  </div>
+
+  <div class="panel-body">
+    @if (noSelection) {
+      <div class="no-selection-hint">
+        {{ 'dfd.iconPicker.selectShape' | transloco }}
+      </div>
+    } @else if (selectionNotEligible) {
+      <div class="no-selection-hint">
+        {{ 'dfd.iconPicker.notAvailable' | transloco }}
+      </div>
+    } @else {
+      <!-- Current icon section -->
+      @if (currentArch) {
+        <div class="current-icon-section">
+          <div class="current-icon-preview">
+            <img [src]="currentIconPath" [alt]="currentIconLabel" class="current-icon-img" />
+            <div class="current-icon-info">
+              <span class="current-icon-label">{{ currentIconLabel }}</span>
+              <span class="current-icon-breadcrumb">{{ currentIconBreadcrumb }}</span>
+            </div>
+          </div>
+          <div class="current-icon-actions">
+            <button
+              mat-icon-button
+              [disabled]="disabled"
+              [matTooltip]="'dfd.iconPicker.remove' | transloco"
+              (click)="onRemoveIcon()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Placement grid -->
+        <div class="placement-section">
+          <div class="placement-label">
+            {{ 'dfd.iconPicker.placement' | transloco }}
+          </div>
+          <div class="placement-grid">
+            @for (row of verticalPositions; track row) {
+              <div class="placement-row">
+                @for (col of horizontalPositions; track col) {
+                  <button
+                    class="placement-cell"
+                    [class.active]="isActivePlacement(row, col)"
+                    [disabled]="disabled"
+                    [matTooltip]="row + '-' + col"
+                    (click)="onPlacementSelected(row, col)"
+                  >
+                    <span class="position-dot"></span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Search field -->
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <input
+            matInput
+            [placeholder]="
+              (currentArch ? 'dfd.iconPicker.searchToChange' : 'dfd.iconPicker.searchPlaceholder')
+                | transloco
+            "
+            [ngModel]="searchQuery"
+            (ngModelChange)="onSearchInput($event)"
+            [disabled]="disabled"
+          />
+          @if (searchQuery) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="onSearchInput('')"
+              [matTooltip]="'common.clear' | transloco"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          } @else {
+            <mat-icon matSuffix>search</mat-icon>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Results area -->
+      <div class="results-section">
+        @if (!searchQuery) {
+          <div class="empty-state">
+            <div class="empty-state-prompt">
+              {{ 'dfd.iconPicker.emptyStatePrompt' | transloco }}
+            </div>
+            <div class="empty-state-examples">
+              {{ 'dfd.iconPicker.emptyStateTryExamples' | transloco }}
+            </div>
+          </div>
+        } @else if (searchResults.length === 0) {
+          <div class="empty-state">
+            <div class="empty-state-prompt">
+              {{ 'dfd.iconPicker.statusMatches' | transloco: { count: 0 } }}
+            </div>
+          </div>
+        } @else {
+          <div class="icon-results">
+            @for (group of searchResults; track getGroupKey(group)) {
+              <div class="result-group">
+                <button class="group-header" (click)="toggleGroup(group)">
+                  <mat-icon class="group-toggle-icon">
+                    {{ isGroupCollapsed(group) ? 'chevron_right' : 'expand_more' }}
+                  </mat-icon>
+                  <span class="group-label">
+                    {{ group.provider | uppercase }} · {{ group.subcategory }}
+                  </span>
+                  <span class="group-count">({{ group.icons.length }})</span>
+                </button>
+                @if (!isGroupCollapsed(group)) {
+                  <div class="icon-grid">
+                    @for (entry of group.icons; track entry.path) {
+                      <button
+                        class="icon-cell"
+                        [disabled]="disabled"
+                        [matTooltip]="entry.label"
+                        (click)="onIconClick(entry)"
+                      >
+                        <img
+                          [src]="getIconPathFromEntry(entry)"
+                          [alt]="entry.label"
+                          class="icon-img"
+                          loading="lazy"
+                        />
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="panel-footer">
+    @if (hasEligibleCells) {
+      <span class="status-text">
+        @if (searchQuery && searchResults.length > 0) {
+          {{ 'dfd.iconPicker.statusMatches' | transloco: { count: matchCount } }}
+        }
+        @if (selectedCount > 0) {
+          {{ 'dfd.iconPicker.statusShapesSelected' | transloco: { count: selectedCount } }}
+        }
+      </span>
+    }
+  </div>
+</div>
