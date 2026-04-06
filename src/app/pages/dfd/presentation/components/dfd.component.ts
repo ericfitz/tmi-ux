@@ -2693,7 +2693,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const previousData = cell.getData() ?? {};
       cell.setData({ ...previousData, _arch: event.arch }, { silent: true });
       this.applyIconToCell(cell, event.arch);
-      this.applyBorderPreference(cell, event.arch);
+      this.applyBorderPreference(cell);
 
       const operation = {
         id: `icon-set-${Date.now()}-${cellId}`,
@@ -2817,7 +2817,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private applyBorderPreference(cell: any, _arch: ArchIconData): void {
+  private applyBorderPreference(cell: any): void {
     const prefs = this.userPreferencesService.getPreferences();
     if (
       !prefs.showShapeBordersWithIcons &&
