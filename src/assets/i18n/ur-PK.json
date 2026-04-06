@@ -1098,6 +1098,21 @@
       "view": "نوٹ دیکھیں"
     }
   },
+  "notes": {
+    "addNote": "نوٹ شامل کریں",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "کیا آپ واقعی نوٹ \"{{name}}\" کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں کیا جا سکتا۔",
+    "deleteConfirmTitle": "نوٹ حذف کریں",
+    "noNotes": "ابھی تک کوئی نوٹ نہیں",
+    "sharable": "تمام اراکین کو نظر آتا ہے",
+    "sharableTooltip": "فعال ہونے پر، یہ نوٹ تمام ٹیم/پروجیکٹ اراکین کو نظر آتا ہے۔ غیر فعال ہونے پر، صرف منتظمین اور سیکیورٹی جائزہ لینے والے اسے دیکھ سکتے ہیں۔",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "نوٹس ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "لاگ ان"
@@ -1221,6 +1236,7 @@
       "message": "کیا آپ کو یقین ہے کہ آپ منصوبہ \"{{name}}\" کو حذف کرنا چاہتے ہیں؟"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "منصوبہ میں ترمیم کریں"
     },
@@ -1396,6 +1412,7 @@
       "title": "ٹیم حذف کریں"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "ٹیم میں ترمیم کریں"
     },

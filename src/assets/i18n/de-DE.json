@@ -1098,6 +1098,21 @@
       "view": "Notiz anzeigen"
     }
   },
+  "notes": {
+    "addNote": "Notiz hinzufügen",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "Möchten Sie die Notiz \"{{name}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteConfirmTitle": "Notiz löschen",
+    "noNotes": "Noch keine Notizen",
+    "sharable": "Für alle Mitglieder sichtbar",
+    "sharableTooltip": "Wenn aktiviert, ist diese Notiz für alle Team-/Projektmitglieder sichtbar. Wenn deaktiviert, können nur Administratoren und Sicherheitsprüfer sie sehen.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Notizen ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "Anmelden"
@@ -1221,6 +1236,7 @@
       "message": "Sind Sie sicher, dass Sie das Projekt \"{{name}}\" löschen möchten?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Projekt bearbeiten"
     },
@@ -1396,6 +1412,7 @@
       "title": "Team löschen"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Team bearbeiten"
     },

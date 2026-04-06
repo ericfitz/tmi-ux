@@ -1098,6 +1098,21 @@
       "view": "צפה בהערה"
     }
   },
+  "notes": {
+    "addNote": "הוסף הערה",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "האם אתה בטוח שברצונך למחוק את ההערה \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
+    "deleteConfirmTitle": "מחק הערה",
+    "noNotes": "אין הערות עדיין",
+    "sharable": "גלוי לכל החברים",
+    "sharableTooltip": "כאשר מופעל, הערה זו גלויה לכל חברי הצוות/הפרויקט. כאשר מושבת, רק מנהלים ובודקי אבטחה יכולים לראות אותה.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "הערות ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "התחברות"
@@ -1221,6 +1236,7 @@
       "message": "האם אתה בטוח שברצונך למחוק את הפרויקט \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "ערוך פרויקט"
     },
@@ -1396,6 +1412,7 @@
       "title": "Delete Team"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Edit Team"
     },

@@ -1098,6 +1098,21 @@
       "view": "عرض الملاحظة"
     }
   },
+  "notes": {
+    "addNote": "إضافة ملاحظة",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف الملاحظة \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deleteConfirmTitle": "حذف الملاحظة",
+    "noNotes": "لا توجد ملاحظات بعد",
+    "sharable": "مرئي لجميع الأعضاء",
+    "sharableTooltip": "عند التفعيل، تكون هذه الملاحظة مرئية لجميع أعضاء الفريق/المشروع. عند التعطيل، يمكن فقط للمسؤولين ومحللي الأمان رؤيتها.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "ملاحظات ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "تسجيل الدخول"
@@ -1221,6 +1236,7 @@
       "message": "هل أنت متأكد من رغبتك في حذف المشروع \"{{name}}\"؟"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "تحرير المشروع"
     },
@@ -1396,6 +1412,7 @@
       "title": "حذف الفريق"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "تحرير الفريق"
     },

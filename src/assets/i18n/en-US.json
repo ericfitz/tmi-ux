@@ -1131,8 +1131,19 @@
     }
   },
   "notes": {
-    "sharable": "Sharable",
-    "sharableTooltip": "Allow this note to be shared with other users"
+    "addNote": "Add note",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "Are you sure you want to delete the note \"{{name}}\"? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Note",
+    "noNotes": "No notes yet",
+    "sharable": "Visible to all members",
+    "sharableTooltip": "When enabled, this note is visible to all team/project members. When disabled, only admins and security reviewers can see it.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Notes ({{count}})"
   },
   "notifications": {
     "actions": {
@@ -1258,6 +1269,7 @@
       "message": "Are you sure you want to delete project \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Edit Project"
     },
@@ -1444,6 +1456,7 @@
       "title": "Delete Team"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Edit Team"
     },

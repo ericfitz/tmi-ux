@@ -1098,6 +1098,21 @@
       "view": "Visualizar Nota"
     }
   },
+  "notes": {
+    "addNote": "Adicionar nota",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "Tem certeza de que deseja excluir a nota \"{{name}}\"? Esta ação não pode ser desfeita.",
+    "deleteConfirmTitle": "Excluir nota",
+    "noNotes": "Nenhuma nota ainda",
+    "sharable": "Visível para todos os membros",
+    "sharableTooltip": "Quando habilitado, esta nota é visível para todos os membros da equipe/projeto. Quando desabilitado, apenas administradores e revisores de segurança podem vê-la.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Notas ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "Entrar"
@@ -1221,6 +1236,7 @@
       "message": "Tem certeza de que deseja excluir o projeto \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Editar Projeto"
     },
@@ -1396,6 +1412,7 @@
     "deleteDialog.projectWarning": "Esta equipe possui {{count}} projeto(s). Deletar a equipe pode afetar esses projetos.",
     "deleteDialog.title": "Deletar Equipe",
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}"
     },
     "editDialog.title": "Editar Equipe",

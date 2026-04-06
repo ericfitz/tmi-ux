@@ -1098,6 +1098,21 @@
       "view": "Ver Nota"
     }
   },
+  "notes": {
+    "addNote": "Agregar nota",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "¿Está seguro de que desea eliminar la nota \"{{name}}\"? Esta acción no se puede deshacer.",
+    "deleteConfirmTitle": "Eliminar nota",
+    "noNotes": "Aún no hay notas",
+    "sharable": "Visible para todos los miembros",
+    "sharableTooltip": "Cuando está habilitado, esta nota es visible para todos los miembros del equipo/proyecto. Cuando está deshabilitado, solo los administradores y revisores de seguridad pueden verla.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Notas ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "Iniciar sesión"
@@ -1221,6 +1236,7 @@
       "message": "¿Está seguro de que desea eliminar el proyecto \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Editar Proyecto"
     },
@@ -1396,6 +1412,7 @@
       "title": "Eliminar Equipo"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Editar Equipo"
     },

@@ -1098,6 +1098,21 @@
       "view": "নোট দেখুন"
     }
   },
+  "notes": {
+    "addNote": "নোট যোগ করুন",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "আপনি কি নিশ্চিতভাবে \"{{name}}\" নোটটি মুছতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।",
+    "deleteConfirmTitle": "নোট মুছুন",
+    "noNotes": "এখনও কোনো নোট নেই",
+    "sharable": "সকল সদস্যদের কাছে দৃশ্যমান",
+    "sharableTooltip": "সক্রিয় হলে, এই নোটটি সকল দল/প্রকল্প সদস্যদের কাছে দৃশ্যমান। নিষ্ক্রিয় হলে, শুধুমাত্র অ্যাডমিন এবং নিরাপত্তা পর্যালোচকরা এটি দেখতে পারবেন।",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "নোট ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "লগইন"
@@ -1221,6 +1236,7 @@
       "message": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" প্রকল্পটি মুছতে চান?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "প্রকল্প সম্পাদনা করুন"
     },
@@ -1396,6 +1412,7 @@
       "title": "দল মুছুন"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "দল সম্পাদনা করুন"
     },

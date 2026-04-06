@@ -1098,6 +1098,21 @@
       "view": "查看笔记"
     }
   },
+  "notes": {
+    "addNote": "添加备注",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "您确定要删除备注“{{name}}”吗？此操作无法撤销。",
+    "deleteConfirmTitle": "删除备注",
+    "noNotes": "暂无备注",
+    "sharable": "对所有成员可见",
+    "sharableTooltip": "启用后，此备注对所有团队/项目成员可见。禁用后，只有管理员和安全审查员可以看到它。",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "备注 ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "登录"
@@ -1221,6 +1236,7 @@
       "message": "您确定要删除项目 \"{{name}}\" 吗？"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "编辑项目"
     },
@@ -1396,6 +1412,7 @@
       "title": "删除团队"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "编辑团队"
     },

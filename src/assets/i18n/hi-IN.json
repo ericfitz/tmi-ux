@@ -1098,6 +1098,21 @@
       "view": "नोट देखें"
     }
   },
+  "notes": {
+    "addNote": "नोट जोड़ें",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "क्या आप वाकई नोट \"{{name}}\" को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "deleteConfirmTitle": "नोट हटाएं",
+    "noNotes": "अभी तक कोई नोट नहीं",
+    "sharable": "सभी सदस्यों को दृश्यमान",
+    "sharableTooltip": "सक्षम होने पर, यह नोट सभी टीम/प्रोजेक्ट सदस्यों को दिखाई देता है। अक्षम होने पर, केवल व्यवस्थापक और सुरक्षा समीक्षक इसे देख सकते हैं।",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "नोट ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "लॉगिन"
@@ -1221,6 +1236,7 @@
       "message": "क्या आप सुनिश्चित हैं कि आप प्रकल्प \"{{name}}\" को हटाना चाहते हैं?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "प्रकल्प संपादित करें"
     },
@@ -1396,6 +1412,7 @@
       "title": "टीम हटाएं"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "टीम संपादित करें"
     },

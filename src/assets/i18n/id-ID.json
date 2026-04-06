@@ -1098,6 +1098,21 @@
       "view": "Lihat Catatan"
     }
   },
+  "notes": {
+    "addNote": "Tambah catatan",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus catatan \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
+    "deleteConfirmTitle": "Hapus Catatan",
+    "noNotes": "Belum ada catatan",
+    "sharable": "Terlihat oleh semua anggota",
+    "sharableTooltip": "Saat diaktifkan, catatan ini terlihat oleh semua anggota tim/proyek. Saat dinonaktifkan, hanya admin dan peninjau keamanan yang dapat melihatnya.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Catatan ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "Masuk"
@@ -1221,6 +1236,7 @@
       "message": "Apakah Anda yakin ingin menghapus proyek \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Edit Proyek"
     },
@@ -1396,6 +1412,7 @@
       "title": "Hapus Tim"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Edit Tim"
     },

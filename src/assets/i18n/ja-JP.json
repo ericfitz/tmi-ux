@@ -1098,6 +1098,21 @@
       "view": "ノートを表示"
     }
   },
+  "notes": {
+    "addNote": "ノートを追加",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "ノート「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
+    "deleteConfirmTitle": "ノートを削除",
+    "noNotes": "まだノートがありません",
+    "sharable": "すべてのメンバーに表示",
+    "sharableTooltip": "有効にすると、このノートはすべてのチーム/プロジェクトメンバーに表示されます。無効にすると、管理者とセキュリティレビュアーのみが表示できます。",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "ノート ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "ログイン"
@@ -1221,6 +1236,7 @@
       "message": "プロジェクト \"{{name}}\" を削除してもよろしいですか?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "プロジェクトを編集"
     },
@@ -1396,6 +1412,7 @@
       "title": "チームを削除"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "チームを編集"
     },

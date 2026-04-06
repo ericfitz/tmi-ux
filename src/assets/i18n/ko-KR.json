@@ -1098,6 +1098,21 @@
       "view": "노트 보기"
     }
   },
+  "notes": {
+    "addNote": "노트 추가",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "노트 \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 실행 취소할 수 없습니다.",
+    "deleteConfirmTitle": "노트 삭제",
+    "noNotes": "아직 노트가 없습니다",
+    "sharable": "모든 멤버에게 표시",
+    "sharableTooltip": "활성화하면 이 노트는 모든 팀/프로젝트 멤버에게 표시됩니다. 비활성화하면 관리자와 보안 검토자만 볼 수 있습니다.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "노트 ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "로그인"
@@ -1221,6 +1236,7 @@
       "message": "프로젝트 \"{{name}}\"을(를) 삭제하시겠습니까?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "프로젝트 편집"
     },
@@ -1396,6 +1412,7 @@
       "title": "팀 삭제"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "팀 편집"
     },

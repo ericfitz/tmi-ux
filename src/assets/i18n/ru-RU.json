@@ -1098,6 +1098,21 @@
       "view": "Просмотр Заметки"
     }
   },
+  "notes": {
+    "addNote": "Добавить заметку",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "Вы уверены, что хотите удалить заметку \"{{name}}\"? Это действие нельзя отменить.",
+    "deleteConfirmTitle": "Удалить заметку",
+    "noNotes": "Заметок пока нет",
+    "sharable": "Видно всем участникам",
+    "sharableTooltip": "При включении эта заметка видна всем участникам команды/проекта. При отключении её могут видеть только администраторы и проверяющие безопасности.",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "Заметки ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "Войти"
@@ -1221,6 +1236,7 @@
       "message": "Вы уверены, что хотите удалить проект \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "Редактировать проект"
     },
@@ -1396,6 +1412,7 @@
       "title": "Удалить команду"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "Редактировать команду"
     },

@@ -1093,6 +1093,21 @@
       "view": "ดูหมายเหตุ"
     }
   },
+  "notes": {
+    "addNote": "เพิ่มบันทึก",
+    "columns": {
+      "actions": "{{common.actions}}",
+      "description": "{{common.description}}",
+      "name": "{{common.name}}"
+    },
+    "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึก \"{{name}}\"? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "deleteConfirmTitle": "ลบบันทึก",
+    "noNotes": "ยังไม่มีบันทึก",
+    "sharable": "มองเห็นได้โดยสมาชิกทุกคน",
+    "sharableTooltip": "เมื่อเปิดใช้งาน บันทึกนี้จะมองเห็นได้โดยสมาชิกทีม/โครงการทุกคน เมื่อปิดใช้งาน เฉพาะผู้ดูแลระบบและผู้ตรวจสอบความปลอดภัยเท่านั้นที่สามารถมองเห็นได้",
+    "tab": "{{common.objectTypes.notes}}",
+    "tabWithCount": "บันทึก ({{count}})"
+  },
   "notifications": {
     "actions": {
       "login": "เข้าสู่ระบบ"
@@ -1216,6 +1231,7 @@
       "message": "คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ \"{{name}}\"?"
     },
     "editDialog": {
+      "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
       "title": "แก้ไขโครงการ"
     },
@@ -1387,6 +1403,7 @@
       "title": "ลบทีม"
     },
     "editDialog": {
+      "detailsTab": "Details",
       "save": "{{common.save}}",
       "title": "แก้ไขทีม"
     },
