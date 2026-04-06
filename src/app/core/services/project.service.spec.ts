@@ -12,7 +12,13 @@ import { of, throwError } from 'rxjs';
 import { ProjectService } from './project.service';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { ListProjectsResponse, Project, ProjectInput } from '@app/types/project.types';
+import {
+  ListProjectsResponse,
+  ListProjectNotesResponse,
+  Project,
+  ProjectInput,
+  ProjectNote,
+} from '@app/types/project.types';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -62,6 +68,38 @@ describe('ProjectService', () => {
     uri: 'https://example.com',
     status: 'active',
     created_at: '2024-03-01T00:00:00Z',
+  };
+
+  const mockNote: ProjectNote = {
+    id: 'note-1',
+    name: 'Test Note',
+    content: '# Test\n\nThis is a test note.',
+    description: 'A test note',
+    timmy_enabled: false,
+    sharable: true,
+    created_at: '2024-04-01T00:00:00Z',
+    modified_at: '2024-04-01T00:00:00Z',
+  };
+
+  const mockNoteListResponse: ListProjectNotesResponse = {
+    notes: [
+      {
+        id: 'note-1',
+        name: 'Test Note',
+        description: 'A test note',
+        created_at: '2024-04-01T00:00:00Z',
+        modified_at: '2024-04-01T00:00:00Z',
+      },
+      {
+        id: 'note-2',
+        name: 'Another Note',
+        created_at: '2024-04-02T00:00:00Z',
+        modified_at: '2024-04-02T00:00:00Z',
+      },
+    ],
+    total: 2,
+    limit: 200,
+    offset: 0,
   };
 
   beforeEach(() => {
@@ -278,6 +316,233 @@ describe('ProjectService', () => {
       service.delete('proj-new').subscribe({
         error: err => {
           expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to delete project', error);
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('listNotes()', () => {
+    const projectId = 'proj-1';
+
+    it('should call API with correct endpoint', () => {
+      mockApiService.get.mockReturnValue(of(mockNoteListResponse));
+
+      service.listNotes(projectId).subscribe(response => {
+        expect(response).toEqual(mockNoteListResponse);
+      });
+
+      expect(mockApiService.get).toHaveBeenCalledWith(`projects/${projectId}/notes`, undefined);
+    });
+
+    it('should pass limit and offset parameters', () => {
+      mockApiService.get.mockReturnValue(of(mockNoteListResponse));
+
+      service.listNotes(projectId, 50, 10).subscribe();
+
+      const params = mockApiService.get.mock.calls[0][1] as Record<string, unknown>;
+      expect(params['limit']).toBe(50);
+      expect(params['offset']).toBe(10);
+    });
+
+    it('should log debug message on success', () => {
+      mockApiService.get.mockReturnValue(of(mockNoteListResponse));
+
+      service.listNotes(projectId).subscribe(() => {
+        expect(mockLoggerService.debug).toHaveBeenCalledWith('Project notes loaded', {
+          projectId,
+          count: 2,
+          total: 2,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('List notes failed');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+
+      service.listNotes(projectId).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to list project notes',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('getNoteById()', () => {
+    const projectId = 'proj-1';
+    const noteId = 'note-1';
+
+    it('should call API with correct endpoint', () => {
+      mockApiService.get.mockReturnValue(of(mockNote));
+
+      service.getNoteById(projectId, noteId).subscribe(note => {
+        expect(note).toEqual(mockNote);
+      });
+
+      expect(mockApiService.get).toHaveBeenCalledWith(`projects/${projectId}/notes/${noteId}`);
+    });
+
+    it('should return undefined on error', () => {
+      const error = new Error('Not found');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+
+      service.getNoteById(projectId, noteId).subscribe(note => {
+        expect(note).toBeUndefined();
+      });
+    });
+
+    it('should log error on API failure', () => {
+      const error = new Error('Not found');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+
+      service.getNoteById(projectId, noteId).subscribe(() => {
+        expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to load project note', error);
+      });
+    });
+  });
+
+  describe('createNote()', () => {
+    const projectId = 'proj-1';
+    const noteInput = {
+      name: 'Test Note',
+      content: '# Test\n\nThis is a test note.',
+      description: 'A test note',
+    };
+
+    it('should call API with correct endpoint and body', () => {
+      mockApiService.post.mockReturnValue(of(mockNote));
+
+      service.createNote(projectId, noteInput).subscribe(note => {
+        expect(note).toEqual(mockNote);
+      });
+
+      expect(mockApiService.post).toHaveBeenCalledWith(`projects/${projectId}/notes`, noteInput);
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.post.mockReturnValue(of(mockNote));
+
+      service.createNote(projectId, noteInput).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project note created', {
+          projectId,
+          id: 'note-1',
+          name: 'Test Note',
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('Create note failed');
+      mockApiService.post.mockReturnValue(throwError(() => error));
+
+      service.createNote(projectId, noteInput).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to create project note',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('updateNote()', () => {
+    const projectId = 'proj-1';
+    const noteId = 'note-1';
+    const noteUpdate = {
+      name: 'Updated Note',
+      content: '# Updated\n\nThis is updated.',
+    };
+
+    it('should call API with correct endpoint and body', () => {
+      mockApiService.put.mockReturnValue(of(mockNote));
+
+      service.updateNote(projectId, noteId, noteUpdate).subscribe(note => {
+        expect(note).toEqual(mockNote);
+      });
+
+      expect(mockApiService.put).toHaveBeenCalledWith(
+        `projects/${projectId}/notes/${noteId}`,
+        noteUpdate,
+      );
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.put.mockReturnValue(of(mockNote));
+
+      service.updateNote(projectId, noteId, noteUpdate).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project note updated', {
+          projectId,
+          id: 'note-1',
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('Update note failed');
+      mockApiService.put.mockReturnValue(throwError(() => error));
+
+      service.updateNote(projectId, noteId, noteUpdate).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to update project note',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('deleteNote()', () => {
+    const projectId = 'proj-1';
+    const noteId = 'note-1';
+
+    it('should call API with correct endpoint', () => {
+      mockApiService.delete.mockReturnValue(of(null));
+
+      service.deleteNote(projectId, noteId).subscribe(result => {
+        expect(result).toBe(true);
+      });
+
+      expect(mockApiService.delete).toHaveBeenCalledWith(`projects/${projectId}/notes/${noteId}`);
+    });
+
+    it('should map response to true on success', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+
+      service.deleteNote(projectId, noteId).subscribe(result => {
+        expect(result).toBe(true);
+      });
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.delete.mockReturnValue(of(null));
+
+      service.deleteNote(projectId, noteId).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project note deleted', {
+          projectId,
+          noteId,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('Delete note failed');
+      mockApiService.delete.mockReturnValue(throwError(() => error));
+
+      service.deleteNote(projectId, noteId).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to delete project note',
+            error,
+          );
           expect(err).toBe(error);
         },
       });

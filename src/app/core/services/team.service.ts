@@ -6,12 +6,21 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
-import { Team, TeamInput, TeamPatch, TeamFilter, ListTeamsResponse } from '@app/types/team.types';
+import {
+  Team,
+  TeamInput,
+  TeamPatch,
+  TeamFilter,
+  ListTeamsResponse,
+  TeamNote,
+  TeamProjectNoteInput,
+  ListTeamNotesResponse,
+} from '@app/types/team.types';
 
 /**
  * Service for full team CRUD operations via non-admin API endpoints
@@ -123,6 +132,99 @@ export class TeamService {
       tap(() => this.logger.info('Team deleted', { id })),
       catchError(error => {
         this.logger.error('Failed to delete team', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * List notes for a team
+   * @param teamId Team ID
+   * @param limit Maximum number of results
+   * @param offset Number of results to skip
+   */
+  listNotes(teamId: string, limit?: number, offset?: number): Observable<ListTeamNotesResponse> {
+    const params = buildHttpParams({ limit, offset });
+    return this.apiService.get<ListTeamNotesResponse>(`teams/${teamId}/notes`, params).pipe(
+      tap(response => {
+        this.logger.debug('Team notes loaded', {
+          teamId,
+          count: response.notes.length,
+          total: response.total,
+        });
+      }),
+      catchError(error => {
+        this.logger.error('Failed to list team notes', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get a team note by ID
+   * @param teamId Team ID
+   * @param noteId Note ID
+   */
+  getNoteById(teamId: string, noteId: string): Observable<TeamNote | undefined> {
+    return this.apiService.get<TeamNote>(`teams/${teamId}/notes/${noteId}`).pipe(
+      tap(() => this.logger.debug('Team note loaded', { teamId, noteId })),
+      catchError(error => {
+        this.logger.error('Failed to load team note', error);
+        return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Create a new note for a team
+   * @param teamId Team ID
+   * @param note Note creation input
+   */
+  createNote(teamId: string, note: Partial<TeamProjectNoteInput>): Observable<TeamNote> {
+    return this.apiService
+      .post<TeamNote>(`teams/${teamId}/notes`, note as unknown as Record<string, unknown>)
+      .pipe(
+        tap(result => this.logger.info('Team note created', { teamId, noteId: result.id })),
+        catchError(error => {
+          this.logger.error('Failed to create team note', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update a team note (full replacement)
+   * @param teamId Team ID
+   * @param noteId Note ID
+   * @param note Note input data
+   */
+  updateNote(
+    teamId: string,
+    noteId: string,
+    note: Partial<TeamProjectNoteInput>,
+  ): Observable<TeamNote> {
+    return this.apiService
+      .put<TeamNote>(`teams/${teamId}/notes/${noteId}`, note as unknown as Record<string, unknown>)
+      .pipe(
+        tap(result => this.logger.info('Team note updated', { teamId, noteId: result.id })),
+        catchError(error => {
+          this.logger.error('Failed to update team note', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Delete a team note
+   * @param teamId Team ID
+   * @param noteId Note ID
+   */
+  deleteNote(teamId: string, noteId: string): Observable<boolean> {
+    return this.apiService.delete<void>(`teams/${teamId}/notes/${noteId}`).pipe(
+      tap(() => this.logger.info('Team note deleted', { teamId, noteId })),
+      map(() => true),
+      catchError(error => {
+        this.logger.error('Failed to delete team note', error);
         throw error;
       }),
     );
