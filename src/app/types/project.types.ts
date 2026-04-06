@@ -5,7 +5,12 @@
 
 import { User } from '@app/pages/tm/models/threat-model.model';
 import { Metadata } from '@app/types/metadata.types';
-import { ResponsibleParty, RelationshipType, Team } from '@app/types/team.types';
+import {
+  ResponsibleParty,
+  RelationshipType,
+  Team,
+  TeamProjectNoteInput,
+} from '@app/types/team.types';
 
 /**
  * Summary of a project for list views and pickers
@@ -139,4 +144,40 @@ export interface ProjectFilter {
   status?: string;
   /** Filter by team */
   team_id?: string;
+}
+
+/** Summary for list views (no content) */
+export interface ProjectNoteListItem {
+  /** Note identifier (UUID) */
+  id: string;
+  /** Note name */
+  name: string;
+  /** Note description */
+  description?: string;
+  /** Creation timestamp */
+  created_at: string;
+  /** Last modification timestamp */
+  modified_at: string;
+}
+
+/** Full project note with content */
+export interface ProjectNote extends TeamProjectNoteInput {
+  /** Note identifier (UUID, readonly) */
+  readonly id: string;
+  /** Creation timestamp (readonly) */
+  readonly created_at: string;
+  /** Last modification timestamp (readonly) */
+  readonly modified_at: string;
+}
+
+/** Paginated list of project notes */
+export interface ListProjectNotesResponse {
+  /** Array of project note summaries */
+  notes: ProjectNoteListItem[];
+  /** Total number of notes */
+  total: number;
+  /** Maximum number of results per page */
+  limit: number;
+  /** Number of results skipped */
+  offset: number;
 }

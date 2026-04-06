@@ -172,6 +172,56 @@ export interface ListTeamsResponse {
   offset: number;
 }
 
+/** Base fields for team/project notes (user-writable) */
+export interface TeamProjectNoteInput {
+  /** Note name (required) */
+  name: string;
+  /** Note content in markdown format (required) */
+  content: string;
+  /** Description of note purpose or context */
+  description?: string;
+  /** Whether the Timmy AI assistant is enabled for this note */
+  timmy_enabled?: boolean;
+  /** Controls note visibility — true = all members, false = admins/security reviewers only */
+  sharable?: boolean;
+}
+
+/** Summary for list views (no content) */
+export interface TeamNoteListItem {
+  /** Note identifier (UUID) */
+  id: string;
+  /** Note name */
+  name: string;
+  /** Note description */
+  description?: string;
+  /** Creation timestamp */
+  created_at: string;
+  /** Last modification timestamp */
+  modified_at: string;
+}
+
+/** Full team note with content */
+export interface TeamNote extends TeamProjectNoteInput {
+  /** Note identifier (UUID, readonly) */
+  readonly id: string;
+  /** Creation timestamp (readonly) */
+  readonly created_at: string;
+  /** Last modification timestamp (readonly) */
+  readonly modified_at: string;
+}
+
+/** Paginated list of team notes */
+export interface ListTeamNotesResponse {
+  /** Array of team note summaries */
+  notes: TeamNoteListItem[];
+  /** Total number of notes */
+  total: number;
+  /** Maximum number of results per page */
+  limit: number;
+  /** Number of results skipped */
+  offset: number;
+}
+
 /**
  * Filter parameters for listing teams
  */
