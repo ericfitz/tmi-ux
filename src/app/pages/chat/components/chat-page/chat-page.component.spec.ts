@@ -7,6 +7,7 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, throwError, EMPTY } from 'rxjs';
 
 import { ChatPageComponent } from './chat-page.component';
+import { ChatMessage } from '../../models/chat.model';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -187,6 +188,135 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       expect(mockCdr.markForCheck).toHaveBeenCalled();
+    });
+  });
+
+  describe('save as note formatting', () => {
+    const mockMessages: ChatMessage[] = [
+      {
+        id: 'msg-1',
+        sessionId: 'session-1',
+        role: 'user',
+        content: 'What threats exist?',
+        sequence: 0,
+        createdAt: '2026-04-05T14:34:00.000Z',
+      },
+      {
+        id: 'msg-2',
+        sessionId: 'session-1',
+        role: 'assistant',
+        content: 'There are **three** main threats.',
+        tokenCount: 42,
+        sequence: 1,
+        createdAt: '2026-04-05T14:34:05.000Z',
+      },
+      {
+        id: 'msg-3',
+        sessionId: 'session-1',
+        role: 'user',
+        content: 'Tell me more about the first one.',
+        sequence: 2,
+        createdAt: '2026-04-05T14:35:00.000Z',
+      },
+      {
+        id: 'msg-4',
+        sessionId: 'session-1',
+        role: 'assistant',
+        content: 'The first threat involves injection attacks.',
+        tokenCount: 30,
+        sequence: 3,
+        createdAt: '2026-04-05T14:35:10.000Z',
+      },
+    ];
+
+    beforeEach(() => {
+      component.messages = mockMessages;
+    });
+
+    describe('formatSessionAsMarkdown', () => {
+      it('should include all messages with role labels and timestamps', () => {
+        const result = (component as any).formatSessionAsMarkdown(mockMessages);
+
+        expect(result).toContain('**You**');
+        expect(result).toContain('**Timmy**');
+        expect(result).toContain('What threats exist?');
+        expect(result).toContain('There are **three** main threats.');
+        expect(result).toContain('Tell me more about the first one.');
+        expect(result).toContain('The first threat involves injection attacks.');
+      });
+
+      it('should separate messages with blank lines', () => {
+        const result = (component as any).formatSessionAsMarkdown(mockMessages);
+        const blocks = result.split('\n\n').filter((b: string) => b.trim());
+
+        expect(blocks.length).toBe(4);
+      });
+    });
+
+    describe('formatMessageAsMarkdown', () => {
+      it('should include the assistant message and preceding user message', () => {
+        const result = (component as any).formatMessageAsMarkdown('msg-2', mockMessages);
+
+        expect(result).toContain('**You**');
+        expect(result).toContain('What threats exist?');
+        expect(result).toContain('**Timmy**');
+        expect(result).toContain('There are **three** main threats.');
+      });
+
+      it('should include only two messages', () => {
+        const result = (component as any).formatMessageAsMarkdown('msg-4', mockMessages);
+        const blocks = result.split('\n\n').filter((b: string) => b.trim());
+
+        expect(blocks.length).toBe(2);
+        expect(result).toContain('Tell me more about the first one.');
+        expect(result).toContain('The first threat involves injection attacks.');
+        expect(result).not.toContain('What threats exist?');
+      });
+
+      it('should handle first assistant message with no preceding user message', () => {
+        const messagesWithoutUser: ChatMessage[] = [
+          {
+            id: 'msg-solo',
+            sessionId: 'session-1',
+            role: 'assistant',
+            content: 'Hello, I am Timmy.',
+            tokenCount: 10,
+            sequence: 0,
+            createdAt: '2026-04-05T14:34:00.000Z',
+          },
+        ];
+        const result = (component as any).formatMessageAsMarkdown('msg-solo', messagesWithoutUser);
+
+        expect(result).toContain('**Timmy**');
+        expect(result).toContain('Hello, I am Timmy.');
+        expect(result).not.toContain('**You**');
+      });
+    });
+
+    describe('generateNoteTitle', () => {
+      it('should truncate at word boundary and add ellipsis', () => {
+        const longContent =
+          'This is a very long message that goes well beyond fifty characters and should be truncated';
+        const result = (component as any).generateNoteTitle(longContent);
+
+        expect(result.length).toBeLessThanOrEqual(53);
+        expect(result).toContain('\u2026');
+        expect(result).not.toContain('truncated');
+      });
+
+      it('should return short content as-is', () => {
+        const result = (component as any).generateNoteTitle('Short message');
+
+        expect(result).toBe('Short message');
+      });
+
+      it('should fall back for code-only content', () => {
+        const result = (component as any).generateNoteTitle(
+          '```javascript\nconsole.log("hi")\n```',
+        );
+
+        expect(result).toMatch(/^Timmy response/);
+      });
     });
   });
 });
