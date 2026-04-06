@@ -55,7 +55,7 @@ import {
   NoteEditorDialogComponent,
   NoteEditorDialogData,
   NoteEditorResult,
-} from './components/note-editor-dialog/note-editor-dialog.component';
+} from '@app/shared/components/note-editor-dialog/note-editor-dialog.component';
 import {
   AssetEditorDialogComponent,
   AssetEditorDialogData,
@@ -1858,6 +1858,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const dialogData: NoteEditorDialogData = {
       mode: 'create',
+      entityType: 'threat_model',
       isReadOnly: !this.canEdit,
     };
 
