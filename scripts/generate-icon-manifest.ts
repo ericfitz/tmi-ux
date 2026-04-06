@@ -23,6 +23,7 @@ interface ManifestEntry {
   type: string;
   subcategory: string;
   icon: string;
+  path: string;
   label: string;
   tokens: string[];
 }
@@ -90,11 +91,13 @@ function walkIcons(): ManifestEntry[] {
           for (const svgPath of svgs) {
             const svg = path.basename(svgPath);
             const icon = svg.replace('.svg', '');
+            const relativePath = path.relative(ICONS_DIR, svgPath).split(path.sep).join('/');
             const partial = {
               provider,
               type,
               subcategory,
               icon,
+              path: relativePath,
               label: humanizeFilename(icon),
             };
             entries.push({ ...partial, tokens: generateTokens(partial) });
@@ -106,11 +109,13 @@ function walkIcons(): ManifestEntry[] {
         for (const svgPath of svgs) {
           const svg = path.basename(svgPath);
           const icon = svg.replace('.svg', '');
+          const relativePath = path.relative(ICONS_DIR, svgPath).split(path.sep).join('/');
           const partial = {
             provider,
             type,
             subcategory: type,
             icon,
+            path: relativePath,
             label: humanizeFilename(icon),
           };
           entries.push({ ...partial, tokens: generateTokens(partial) });
