@@ -41,6 +41,14 @@ interface MockChangeDetectorRef {
   markForCheck: ReturnType<typeof vi.fn>;
 }
 
+interface MockThreatModelService {
+  createNote: ReturnType<typeof vi.fn>;
+}
+
+interface MockSnackBar {
+  open: ReturnType<typeof vi.fn>;
+}
+
 describe('ChatPageComponent', () => {
   let component: ChatPageComponent;
   let mockRoute: MockActivatedRoute;
@@ -49,6 +57,8 @@ describe('ChatPageComponent', () => {
   let mockLogger: MockLoggerService;
   let mockCdr: MockChangeDetectorRef;
   let mockTransloco: MockTranslocoService;
+  let mockThreatModelService: MockThreatModelService;
+  let mockSnackBar: MockSnackBar;
 
   beforeEach(() => {
     mockRoute = {
@@ -81,6 +91,14 @@ describe('ChatPageComponent', () => {
       translate: vi.fn().mockImplementation((key: string) => key),
     };
 
+    mockThreatModelService = {
+      createNote: vi.fn().mockReturnValue(of({ id: 'note-1', name: 'Test', content: '' })),
+    };
+
+    mockSnackBar = {
+      open: vi.fn().mockReturnValue({ onAction: vi.fn().mockReturnValue(EMPTY) }),
+    };
+
     const mockDatePipe = {
       transform: vi.fn().mockImplementation((date: string) => {
         return new Date(date).toLocaleString('en-US', {
@@ -101,6 +119,8 @@ describe('ChatPageComponent', () => {
       mockLogger as any,
       mockCdr as any,
       mockTransloco as any,
+      mockThreatModelService as any,
+      mockSnackBar as any,
       mockDatePipe as any,
       null, // destroyRef
     );
@@ -331,6 +351,139 @@ describe('ChatPageComponent', () => {
 
         expect(result).toMatch(/^Timmy response/);
       });
+    });
+  });
+
+  describe('onSessionSavedAsNote', () => {
+    const mockMessages: ChatMessage[] = [
+      {
+        id: 'msg-1',
+        sessionId: 'session-1',
+        role: 'user',
+        content: 'What threats?',
+        sequence: 0,
+        createdAt: '2026-04-05T14:34:00.000Z',
+      },
+      {
+        id: 'msg-2',
+        sessionId: 'session-1',
+        role: 'assistant',
+        content: 'Three threats found.',
+        tokenCount: 20,
+        sequence: 1,
+        createdAt: '2026-04-05T14:34:05.000Z',
+      },
+    ];
+
+    beforeEach(() => {
+      component.messages = mockMessages;
+      component.sessions = [
+        {
+          id: 'session-1',
+          threatModelId: 'tm-123',
+          title: 'What threats?',
+          sourceSnapshot: [],
+          status: 'active' as const,
+          createdAt: '2026-04-05T14:34:00.000Z',
+          modifiedAt: '2026-04-05T14:34:05.000Z',
+        },
+      ];
+      component.activeSessionId = 'session-1';
+    });
+
+    it('should call createNote with session title and formatted content', () => {
+      component.onSessionSavedAsNote('session-1');
+
+      expect(mockThreatModelService.createNote).toHaveBeenCalledWith(
+        'tm-123',
+        expect.objectContaining({
+          name: 'What threats?',
+          include_in_report: false,
+          timmy_enabled: false,
+        }),
+      );
+    });
+
+    it('should show success snackbar on save', () => {
+      component.onSessionSavedAsNote('session-1');
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'chat.savedAsNote',
+        'chat.savedAsNoteView',
+        expect.objectContaining({ duration: 5000 }),
+      );
+    });
+
+    it('should show error snackbar on failure', () => {
+      mockThreatModelService.createNote.mockReturnValue(throwError(() => new Error('API error')));
+
+      component.onSessionSavedAsNote('session-1');
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'chat.saveAsNoteError',
+        '',
+        expect.any(Object),
+      );
+      expect(mockLogger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe('onMessageSavedAsNote', () => {
+    const mockMessages: ChatMessage[] = [
+      {
+        id: 'msg-1',
+        sessionId: 'session-1',
+        role: 'user',
+        content: 'What threats?',
+        sequence: 0,
+        createdAt: '2026-04-05T14:34:00.000Z',
+      },
+      {
+        id: 'msg-2',
+        sessionId: 'session-1',
+        role: 'assistant',
+        content: 'Three threats found.',
+        tokenCount: 20,
+        sequence: 1,
+        createdAt: '2026-04-05T14:34:05.000Z',
+      },
+    ];
+
+    beforeEach(() => {
+      component.messages = mockMessages;
+      component.activeSessionId = 'session-1';
+    });
+
+    it('should call createNote with generated title and formatted content', () => {
+      component.onMessageSavedAsNote('msg-2');
+
+      expect(mockThreatModelService.createNote).toHaveBeenCalledWith(
+        'tm-123',
+        expect.objectContaining({
+          name: 'Three threats found.',
+          include_in_report: false,
+          timmy_enabled: false,
+        }),
+      );
+    });
+
+    it('should include preceding user message in content', () => {
+      component.onMessageSavedAsNote('msg-2');
+
+      const call = mockThreatModelService.createNote.mock.calls[0];
+      const noteContent = call[1].content as string;
+      expect(noteContent).toContain('What threats?');
+      expect(noteContent).toContain('Three threats found.');
+    });
+
+    it('should show success snackbar on save', () => {
+      component.onMessageSavedAsNote('msg-2');
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'chat.savedAsNote',
+        'chat.savedAsNoteView',
+        expect.objectContaining({ duration: 5000 }),
+      );
     });
   });
 });
