@@ -23,7 +23,9 @@
         [streamingMessageId]="streamingMessageId"
         [preparationStatus]="preparationStatus"
         [inputDisabled]="!!preparationStatus && !preparationStatus.ready"
+        [savingNote]="savingNote"
         (messageSent)="onMessageSent($event)"
+        (messageSavedAsNote)="onMessageSavedAsNote($event)"
       ></app-chat-messages>
     </div>
 
@@ -33,9 +35,11 @@
           [sessions]="sessions"
           [activeSessionId]="activeSessionId"
           [sourceSnapshot]="activeSourceSnapshot"
+          [savingNote]="savingNote"
           (sessionSelected)="onSessionSelected($event)"
           (sessionCreated)="onSessionCreated()"
           (sessionDeleted)="onSessionDeleted($event)"
+          (sessionSavedAsNote)="onSessionSavedAsNote($event)"
         ></app-chat-session-panel>
       </div>
     }
