@@ -49,12 +49,29 @@
       }
     </mat-form-field>
 
-    <!-- Include in Report -->
-    <div class="checkbox-field">
-      <mat-checkbox formControlName="include_in_report">
-        {{ 'common.includeInReport' | transloco }}
-      </mat-checkbox>
-    </div>
+    <!-- Include in Report (TM notes only) -->
+    @if (entityType === 'threat_model') {
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="include_in_report">
+          {{ 'common.includeInReport' | transloco }}
+        </mat-checkbox>
+      </div>
+    }
+
+    <!-- Sharable (Team/Project notes only) -->
+    @if (entityType !== 'threat_model') {
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="sharable">
+          {{ 'notes.sharable' | transloco }}
+        </mat-checkbox>
+        <mat-icon
+          class="info-icon"
+          [matTooltip]="'notes.sharableTooltip' | transloco"
+          fontSet="material-symbols-outlined"
+          >info</mat-icon
+        >
+      </div>
+    }
 
     <!-- Include in Timmy Chat -->
     <div class="checkbox-field">

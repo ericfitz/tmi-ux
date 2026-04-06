@@ -1130,6 +1130,10 @@
       "view": "View Note"
     }
   },
+  "notes": {
+    "sharable": "Sharable",
+    "sharableTooltip": "Allow this note to be shared with other users"
+  },
   "notifications": {
     "actions": {
       "login": "Login"

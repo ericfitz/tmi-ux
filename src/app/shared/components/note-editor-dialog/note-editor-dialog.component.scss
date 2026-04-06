@@ -1,4 +1,4 @@
-@use '../../../../../styles/markdown-editor' as md;
+@use '../../../../styles/markdown-editor' as md;
 
 :host {
   display: block;
@@ -17,6 +17,15 @@
   align-items: center;
   margin-top: 0;
   height: 56px;
+
+  .info-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-left: 8px;
+    color: var(--theme-text-secondary);
+    cursor: help;
+  }
 }
 
 .markdown-toolbar {

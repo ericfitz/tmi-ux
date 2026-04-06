@@ -22,12 +22,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TooltipAriaLabelDirective } from '@app/shared/imports';
-import { Note } from '../../models/threat-model.model';
-import { MermaidViewerService } from '../../../../shared/services/mermaid-viewer.service';
+import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.service';
+
+export type NoteEntityType = 'threat_model' | 'team' | 'project';
+
+/** Minimal note shape the dialog needs for initialization */
+export interface NoteEditorNote {
+  id?: string;
+  name: string;
+  content: string;
+  description?: string;
+  include_in_report?: boolean;
+  timmy_enabled?: boolean;
+  sharable?: boolean;
+}
 
 export interface NoteEditorDialogData {
   mode: 'create' | 'edit';
-  note?: Note;
+  entityType: NoteEntityType;
+  note?: NoteEditorNote;
   isReadOnly?: boolean;
 }
 
@@ -43,6 +56,7 @@ export interface NoteFormResult {
   description?: string;
   include_in_report?: boolean;
   timmy_enabled?: boolean;
+  sharable?: boolean;
 }
 
 @Component({
@@ -73,6 +87,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
 
   noteForm!: FormGroup;
   mode: 'create' | 'edit';
+  entityType: NoteEntityType;
   isReadOnly: boolean = false;
   previewMode = false;
   private originalContent = '';
@@ -80,6 +95,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   private originalDescription = '';
   private originalIncludeInReport: boolean | undefined = true;
   private originalTimmyEnabled: boolean | undefined = true;
+  private originalSharable: boolean | undefined = true;
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -104,6 +120,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
+    this.entityType = data.entityType;
   }
 
   ngOnInit(): void {
@@ -120,8 +137,17 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
         this.data.note?.description || '',
         [Validators.maxLength(this.maxDescriptionLength)],
       ],
-      include_in_report: [this.data.mode === 'create' ? true : this.data.note?.include_in_report],
+      include_in_report: [
+        this.entityType === 'threat_model'
+          ? this.data.mode === 'create'
+            ? true
+            : this.data.note?.include_in_report
+          : undefined,
+      ],
       timmy_enabled: [this.data.note?.timmy_enabled ?? true],
+      sharable: [
+        this.entityType !== 'threat_model' ? (this.data.note?.sharable ?? true) : undefined,
+      ],
     });
 
     this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
@@ -132,6 +158,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
       | boolean
       | undefined;
     this.originalTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
+    this.originalSharable = this.noteForm.get('sharable')?.value as boolean | undefined;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
@@ -203,13 +230,15 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
       | boolean
       | undefined;
     const currentTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
+    const currentSharable = this.noteForm.get('sharable')?.value as boolean | undefined;
 
     return (
       currentName !== this.originalName ||
       currentContent !== this.originalContent ||
       currentDescription !== this.originalDescription ||
       currentIncludeInReport !== this.originalIncludeInReport ||
-      currentTimmyEnabled !== this.originalTimmyEnabled
+      currentTimmyEnabled !== this.originalTimmyEnabled ||
+      currentSharable !== this.originalSharable
     );
   }
 
@@ -322,6 +351,7 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     this.originalDescription = formValue.description || '';
     this.originalIncludeInReport = formValue.include_in_report;
     this.originalTimmyEnabled = formValue.timmy_enabled;
+    this.originalSharable = formValue.sharable;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }
@@ -366,13 +396,18 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   }
 
   private getFormValue(value: NoteFormResult): NoteFormResult {
-    return {
+    const result: NoteFormResult = {
       name: value.name.trim(),
       content: value.content.trim(),
       description: value.description?.trim(),
-      include_in_report: value.include_in_report,
       timmy_enabled: value.timmy_enabled,
     };
+    if (this.entityType === 'threat_model') {
+      result.include_in_report = value.include_in_report;
+    } else {
+      result.sharable = value.sharable;
+    }
+    return result;
   }
 
   private showMessage(key: string, isError = false): void {
