@@ -906,6 +906,21 @@
     }
   },
   "dfd": {
+    "iconPicker": {
+      "emptyStatePrompt": "Type to search across all providers",
+      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
+      "notAvailable": "Icons not available for this shape",
+      "placement": "Placement",
+      "remove": "Remove",
+      "searchPlaceholder": "Search by provider, service, or category...",
+      "searchToChange": "Search to change icon...",
+      "selectShape": "Select a shape first",
+      "statusAvailable": "{count} icons available",
+      "statusMatches": "{count} matches",
+      "statusShapesSelected": "{count} shape(s) selected",
+      "title": "Architecture Icon",
+      "toolbarTooltip": "Architecture Icon"
+    },
     "portLabel": {
       "position.bottom": "नीचे",
       "position.inside": "अंदर",
@@ -1933,6 +1948,7 @@
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
+    "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
     "tabs": {
       "credentials": "क्रेडेंशियल",
       "danger": "खतरा",
