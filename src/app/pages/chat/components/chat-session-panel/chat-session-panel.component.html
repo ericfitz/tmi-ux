@@ -51,6 +51,15 @@
         </div>
         <button
           mat-icon-button
+          class="save-note-btn"
+          [matTooltip]="t('chat.saveSessionAsNote')"
+          [disabled]="savingNote"
+          (click)="onSaveAsNote($event, session.id)"
+        >
+          <mat-icon>note_add</mat-icon>
+        </button>
+        <button
+          mat-icon-button
           class="delete-btn"
           [matTooltip]="t('chat.deleteSession')"
           (click)="onDelete($event, session.id)"

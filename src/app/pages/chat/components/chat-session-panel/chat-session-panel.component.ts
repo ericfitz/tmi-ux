@@ -26,6 +26,8 @@ export class ChatSessionPanelComponent {
   @Output() sessionSelected = new EventEmitter<string>();
   @Output() sessionCreated = new EventEmitter<void>();
   @Output() sessionDeleted = new EventEmitter<string>();
+  @Input() savingNote = false;
+  @Output() sessionSavedAsNote = new EventEmitter<string>();
 
   sourceSummaryExpanded = false;
 
@@ -76,6 +78,11 @@ export class ChatSessionPanelComponent {
   onDelete(event: Event, sessionId: string): void {
     event.stopPropagation();
     this.sessionDeleted.emit(sessionId);
+  }
+
+  onSaveAsNote(event: Event, sessionId: string): void {
+    event.stopPropagation();
+    this.sessionSavedAsNote.emit(sessionId);
   }
 
   toggleSourceSummary(): void {
