@@ -548,6 +548,11 @@
       "processing": "处理源 {{current}} / {{total}} — {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
       "ready": "就绪！已加载 {{sourcesLoaded}} 个源，已索引 {{chunksEmbedded}} 个块。"
     },
+    "saveAsNoteError": "无法保存为笔记。请重试。",
+    "saveMessageAsNote": "将消息保存为笔记",
+    "saveSessionAsNote": "将会话保存为笔记",
+    "savedAsNote": "已保存为笔记",
+    "savedAsNoteView": "{{common.view}}",
     "send": "发送消息",
     "sessions": "会话",
     "showSidePanel": "显示边侧面板",

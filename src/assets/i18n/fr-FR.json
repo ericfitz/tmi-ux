@@ -548,6 +548,11 @@
       "processing": "Traitement de la source {{current}} sur {{total}} — {{entityType}} : {{entityName}} — {{phase}} {{progress}}%",
       "ready": "Prêt ! {{sourcesLoaded}} sources chargées, {{chunksEmbedded}} fragments indexés."
     },
+    "saveAsNoteError": "Impossible d'enregistrer comme note. Veuillez réessayer.",
+    "saveMessageAsNote": "Enregistrer le message comme note",
+    "saveSessionAsNote": "Enregistrer la session comme note",
+    "savedAsNote": "Enregistré comme note",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Envoyer le message",
     "sessions": "Sessions",
     "showSidePanel": "Afficher le panneau latéral",

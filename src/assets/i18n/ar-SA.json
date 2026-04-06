@@ -548,6 +548,11 @@
       "processing": "معالجة المصدر {{current}} من {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "جاهز! {{sourcesLoaded}} مصدر تم تحميله، {{chunksEmbedded}} مقطع مفهرس."
     },
+    "saveAsNoteError": "تعذّر الحفظ كملاحظة. يرجى المحاولة مرة أخرى.",
+    "saveMessageAsNote": "حفظ الرسالة كملاحظة",
+    "saveSessionAsNote": "حفظ الجلسة كملاحظة",
+    "savedAsNote": "تم الحفظ كملاحظة",
+    "savedAsNoteView": "{{common.view}}",
     "send": "إرسال الرسالة",
     "sessions": "الجلسات",
     "showSidePanel": "إظهار اللوحة الجانبية",

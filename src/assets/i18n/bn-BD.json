@@ -548,6 +548,11 @@
       "processing": "উৎস {{current}} টি {{total}} টির মধ্য থেকে প্রক্রিয়া করছি — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "প্রস্তুত! {{sourcesLoaded}} টি উৎস লোড হয়েছে, {{chunksEmbedded}} টি চাংক ইনডেক্স করা হয়েছে।"
     },
+    "saveAsNoteError": "নোট হিসেবে সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "saveMessageAsNote": "বার্তা নোট হিসেবে সংরক্ষণ করুন",
+    "saveSessionAsNote": "সেশন নোট হিসেবে সংরক্ষণ করুন",
+    "savedAsNote": "নোট হিসেবে সংরক্ষিত হয়েছে",
+    "savedAsNoteView": "{{common.view}}",
     "send": "বার্তা পাঠান",
     "sessions": "সেশন",
     "showSidePanel": "সাইড প্যানেল দেখান",

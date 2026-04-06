@@ -548,6 +548,11 @@
       "processing": "स्रोत {{current}} का {{total}} से प्रसंस्करण — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "तैयार! {{sourcesLoaded}} स्रोत लोड किए गए, {{chunksEmbedded}} चंक्स अनुक्रमित किए गए।"
     },
+    "saveAsNoteError": "नोट के रूप में सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+    "saveMessageAsNote": "संदेश को नोट के रूप में सहेजें",
+    "saveSessionAsNote": "सत्र को नोट के रूप में सहेजें",
+    "savedAsNote": "नोट के रूप में सहेजा गया",
+    "savedAsNoteView": "{{common.view}}",
     "send": "संदेश भेजें",
     "sessions": "सत्र",
     "showSidePanel": "साइड पैनल दिखाएं",

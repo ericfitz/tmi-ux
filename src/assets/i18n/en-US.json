@@ -544,11 +544,6 @@
   "chat": {
     "back": "Back to threat model",
     "deleteSession": "Delete session",
-    "saveSessionAsNote": "Save session as note",
-    "saveMessageAsNote": "Save message as note",
-    "savedAsNote": "Saved as note",
-    "savedAsNoteView": "View",
-    "saveAsNoteError": "Could not save as note. Please try again.",
     "emptyState": {
       "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture.",
       "title": "Chat with Timmy"
@@ -571,6 +566,11 @@
       "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed."
     },
+    "saveAsNoteError": "Could not save as note. Please try again.",
+    "saveMessageAsNote": "Save message as note",
+    "saveSessionAsNote": "Save session as note",
+    "savedAsNote": "Saved as note",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Send message",
     "sessions": "Sessions",
     "showSidePanel": "Show side panel",

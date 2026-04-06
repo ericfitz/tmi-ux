@@ -548,6 +548,11 @@
       "processing": "Verarbeite Quelle {{current}} von {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "Bereit! {{sourcesLoaded}} Quellen geladen, {{chunksEmbedded}} Abschnitte indexiert."
     },
+    "saveAsNoteError": "Speichern als Notiz fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "saveMessageAsNote": "Nachricht als Notiz speichern",
+    "saveSessionAsNote": "Sitzung als Notiz speichern",
+    "savedAsNote": "Als Notiz gespeichert",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Nachricht senden",
     "sessions": "Sitzungen",
     "showSidePanel": "Seitenpanel anzeigen",

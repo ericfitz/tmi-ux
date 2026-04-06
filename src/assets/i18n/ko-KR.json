@@ -548,6 +548,11 @@
       "processing": "소스 {{current}}/{{total}} 처리 중 — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "준비 완료! {{sourcesLoaded}}개 소스 로드됨, {{chunksEmbedded}}개 청크 인덱싱됨."
     },
+    "saveAsNoteError": "메모로 저장할 수 없습니다. 다시 시도해 주세요.",
+    "saveMessageAsNote": "메시지를 메모로 저장",
+    "saveSessionAsNote": "세션을 메모로 저장",
+    "savedAsNote": "메모로 저장됨",
+    "savedAsNoteView": "{{common.view}}",
     "send": "메시지 전송",
     "sessions": "세션",
     "showSidePanel": "사이드 패널 표시",

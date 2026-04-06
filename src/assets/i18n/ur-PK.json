@@ -548,6 +548,11 @@
       "processing": "ذریعہ {{current}} / {{total}} پر کام ہو رہا ہے — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "تیار! {{sourcesLoaded}} ذرائع لوڈ ہو گئے، {{chunksEmbedded}} حصے انڈیکس ہو گئے۔"
     },
+    "saveAsNoteError": "نوٹ کے طور پر محفوظ نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+    "saveMessageAsNote": "پیغام کو نوٹ کے طور پر محفوظ کریں",
+    "saveSessionAsNote": "سیشن کو نوٹ کے طور پر محفوظ کریں",
+    "savedAsNote": "نوٹ کے طور پر محفوظ کیا گیا",
+    "savedAsNoteView": "{{common.view}}",
     "send": "پیغام بھیجیں",
     "sessions": "سیشنز",
     "showSidePanel": "سائیڈ پینل دکھائیں",

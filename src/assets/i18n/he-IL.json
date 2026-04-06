@@ -548,6 +548,11 @@
       "processing": "עיבוד מקור {{current}} מתוך {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "מוכן! {{sourcesLoaded}} מקורות נטענו, {{chunksEmbedded}} חלקים באינדקס."
     },
+    "saveAsNoteError": "לא ניתן לשמור כהערה. אנא נסה שוב.",
+    "saveMessageAsNote": "שמור הודעה כהערה",
+    "saveSessionAsNote": "שמור סשן כהערה",
+    "savedAsNote": "נשמר כהערה",
+    "savedAsNoteView": "{{common.view}}",
     "send": "שלח הודעה",
     "sessions": "הפגישות",
     "showSidePanel": "הצג פנל צד",

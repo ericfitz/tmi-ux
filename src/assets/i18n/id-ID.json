@@ -548,6 +548,11 @@
       "processing": "Memproses sumber {{current}} dari {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "Siap! {{sourcesLoaded}} sumber dimuat, {{chunksEmbedded}} potongan diindeks."
     },
+    "saveAsNoteError": "Tidak dapat disimpan sebagai catatan. Silakan coba lagi.",
+    "saveMessageAsNote": "Simpan pesan sebagai catatan",
+    "saveSessionAsNote": "Simpan sesi sebagai catatan",
+    "savedAsNote": "Disimpan sebagai catatan",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Kirim pesan",
     "sessions": "Sesi",
     "showSidePanel": "Tampilkan panel samping",

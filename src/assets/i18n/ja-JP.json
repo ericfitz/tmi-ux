@@ -548,6 +548,11 @@
       "processing": "ソース{{current}}を処理中（全{{total}}）— {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
       "ready": "準備完了！{{sourcesLoaded}}個のソースを読み込み、{{chunksEmbedded}}個のチャンクをインデックス化しました。"
     },
+    "saveAsNoteError": "メモとして保存できませんでした。もう一度お試しください。",
+    "saveMessageAsNote": "メッセージをメモとして保存",
+    "saveSessionAsNote": "セッションをメモとして保存",
+    "savedAsNote": "メモとして保存しました",
+    "savedAsNoteView": "{{common.view}}",
     "send": "メッセージを送信",
     "sessions": "セッション",
     "showSidePanel": "サイドパネルを表示",

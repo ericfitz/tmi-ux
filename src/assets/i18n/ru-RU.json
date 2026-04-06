@@ -548,6 +548,11 @@
       "processing": "Обработка источника {{current}} из {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "Готово! {{sourcesLoaded}} источников загружено, {{chunksEmbedded}} фрагментов проиндексировано."
     },
+    "saveAsNoteError": "Не удалось сохранить как заметку. Пожалуйста, попробуйте снова.",
+    "saveMessageAsNote": "Сохранить сообщение как заметку",
+    "saveSessionAsNote": "Сохранить сеанс как заметку",
+    "savedAsNote": "Сохранено как заметка",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Отправить сообщение",
     "sessions": "Сеансы",
     "showSidePanel": "Показать боковую панель",

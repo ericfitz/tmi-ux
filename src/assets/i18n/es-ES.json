@@ -548,6 +548,11 @@
       "processing": "Procesando fuente {{current}} de {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "¡Listo! {{sourcesLoaded}} fuentes cargadas, {{chunksEmbedded}} fragmentos indexados."
     },
+    "saveAsNoteError": "No se pudo guardar como nota. Por favor, inténtelo de nuevo.",
+    "saveMessageAsNote": "Guardar mensaje como nota",
+    "saveSessionAsNote": "Guardar sesión como nota",
+    "savedAsNote": "Guardado como nota",
+    "savedAsNoteView": "{{common.view}}",
     "send": "Enviar mensaje",
     "sessions": "Sesiones",
     "showSidePanel": "Mostrar panel lateral",

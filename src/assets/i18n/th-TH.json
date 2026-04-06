@@ -543,6 +543,11 @@
       "processing": "กำลังประมวลผลแหล่งข้อมูล {{current}} จาก {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
       "ready": "พร้อมแล้ว! {{sourcesLoaded}} แหล่งข้อมูลโหลดแล้ว {{chunksEmbedded}} ชุดได้ทำการจัดทำดัชนีแล้ว"
     },
+    "saveAsNoteError": "ไม่สามารถบันทึกเป็นบันทึกย่อได้ โปรดลองอีกครั้ง",
+    "saveMessageAsNote": "บันทึกข้อความเป็นบันทึกย่อ",
+    "saveSessionAsNote": "บันทึกเซสชันเป็นบันทึกย่อ",
+    "savedAsNote": "บันทึกเป็นบันทึกย่อแล้ว",
+    "savedAsNoteView": "{{common.view}}",
     "send": "ส่งข้อความ",
     "sessions": "เซสชัน",
     "showSidePanel": "แสดงแผงด้านข้าง",
