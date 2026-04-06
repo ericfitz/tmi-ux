@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { identity, MonoTypeOperatorFunction } from 'rxjs';
 
@@ -19,7 +20,8 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { ThreatModel } from '../../../tm/models/threat-model.model';
+import { ThreatModel, Note } from '../../../tm/models/threat-model.model';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { SseEvent } from '../../../../core/interfaces/sse.interface';
 import { SseHttpError } from '../../../../core/services/sse-client.service';
 import {
@@ -66,6 +68,7 @@ export class ChatPageComponent implements OnInit {
   sidePanelOpen = true;
   streamingMessageId: string | null = null;
   preparationStatus: PreparationStatus | null = null;
+  savingNote = false;
 
   private sessionSourceCount = 0;
   private progressCounter = 0;
@@ -79,6 +82,8 @@ export class ChatPageComponent implements OnInit {
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
+    private threatModelService: ThreatModelService,
+    private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     @Optional() private destroyRef: DestroyRef,
   ) {}
@@ -155,6 +160,68 @@ export class ChatPageComponent implements OnInit {
         },
         error: err => {
           this.logger.error('Failed to delete session', err);
+        },
+      });
+  }
+
+  onSessionSavedAsNote(sessionId: string): void {
+    if (this.savingNote) return;
+
+    const session = this.sessions.find(s => s.id === sessionId);
+    if (!session) return;
+
+    const content = this.formatSessionAsMarkdown(this.messages);
+    const name = session.title;
+
+    this.saveAsNote(name, content);
+  }
+
+  onMessageSavedAsNote(messageId: string): void {
+    if (this.savingNote) return;
+
+    const message = this.messages.find(m => m.id === messageId);
+    if (!message || message.role !== 'assistant') return;
+
+    const content = this.formatMessageAsMarkdown(messageId, this.messages);
+    const name = this.generateNoteTitle(message.content);
+
+    this.saveAsNote(name, content);
+  }
+
+  private saveAsNote(name: string, content: string): void {
+    this.savingNote = true;
+    this.cdr.markForCheck();
+
+    this.threatModelService
+      .createNote(this.threatModelId, {
+        name,
+        content,
+        include_in_report: false,
+        timmy_enabled: false,
+      })
+      .pipe(this.untilDestroyed())
+      .subscribe({
+        next: (note: Note) => {
+          this.savingNote = false;
+          this.cdr.markForCheck();
+
+          const snackBarRef = this.snackBar.open(
+            this.transloco.translate('chat.savedAsNote'),
+            this.transloco.translate('chat.savedAsNoteView'),
+            { duration: 5000 },
+          );
+
+          snackBarRef.onAction().subscribe(() => {
+            void this.router.navigate(['/tm', this.threatModelId, 'note', note.id]);
+          });
+        },
+        error: (err: unknown) => {
+          this.savingNote = false;
+          this.cdr.markForCheck();
+          this.logger.error('Failed to save as note', err);
+          this.snackBar.open(this.transloco.translate('chat.saveAsNoteError'), '', {
+            duration: 5000,
+          });
         },
       });
   }
