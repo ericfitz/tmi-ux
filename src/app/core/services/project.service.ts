@@ -6,8 +6,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
@@ -17,7 +17,10 @@ import {
   ProjectPatch,
   ProjectFilter,
   ListProjectsResponse,
+  ProjectNote,
+  ListProjectNotesResponse,
 } from '@app/types/project.types';
+import { TeamProjectNoteInput } from '@app/types/team.types';
 
 /**
  * Service for project operations via non-admin API endpoints
@@ -131,6 +134,114 @@ export class ProjectService {
       tap(() => this.logger.info('Project deleted', { id })),
       catchError(error => {
         this.logger.error('Failed to delete project', error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * List notes for a project
+   * @param projectId Project ID
+   * @param limit Maximum number of results
+   * @param offset Number of results to skip
+   */
+  listNotes(
+    projectId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListProjectNotesResponse> {
+    const params = buildHttpParams({ limit, offset });
+    return this.apiService
+      .get<ListProjectNotesResponse>(`projects/${projectId}/notes`, params)
+      .pipe(
+        tap(response => {
+          this.logger.debug('Project notes loaded', {
+            projectId,
+            count: response.notes.length,
+            total: response.total,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to list project notes', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Get a project note by ID
+   * @param projectId Project ID
+   * @param noteId Note ID
+   */
+  getNoteById(projectId: string, noteId: string): Observable<ProjectNote | undefined> {
+    return this.apiService.get<ProjectNote>(`projects/${projectId}/notes/${noteId}`).pipe(
+      tap(note => this.logger.debug('Project note loaded', { projectId, id: note.id })),
+      catchError(error => {
+        this.logger.error('Failed to load project note', error);
+        return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Create a new note for a project
+   * @param projectId Project ID
+   * @param note Note input data
+   */
+  createNote(projectId: string, note: Partial<TeamProjectNoteInput>): Observable<ProjectNote> {
+    return this.apiService
+      .post<ProjectNote>(`projects/${projectId}/notes`, note as unknown as Record<string, unknown>)
+      .pipe(
+        tap(created => {
+          this.logger.info('Project note created', {
+            projectId,
+            id: created.id,
+            name: created.name,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create project note', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update a project note (full replacement)
+   * @param projectId Project ID
+   * @param noteId Note ID
+   * @param note Note input data
+   */
+  updateNote(
+    projectId: string,
+    noteId: string,
+    note: Partial<TeamProjectNoteInput>,
+  ): Observable<ProjectNote> {
+    return this.apiService
+      .put<ProjectNote>(
+        `projects/${projectId}/notes/${noteId}`,
+        note as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(result => this.logger.info('Project note updated', { projectId, id: result.id })),
+        catchError(error => {
+          this.logger.error('Failed to update project note', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Delete a project note
+   * @param projectId Project ID
+   * @param noteId Note ID
+   */
+  deleteNote(projectId: string, noteId: string): Observable<boolean> {
+    return this.apiService.delete<void>(`projects/${projectId}/notes/${noteId}`).pipe(
+      tap(() => this.logger.info('Project note deleted', { projectId, noteId })),
+      map(() => true),
+      catchError(error => {
+        this.logger.error('Failed to delete project note', error);
         throw error;
       }),
     );
