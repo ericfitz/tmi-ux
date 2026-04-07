@@ -58,6 +58,7 @@ export interface CellStyleInfo {
   fillOpacity: number | null;
   hasCustomStyles: boolean;
   labelPosition: LabelPosition | null;
+  hasArchIcon: boolean;
 }
 
 /** Emitted when the user changes a style property */
@@ -148,9 +149,9 @@ export class StylePanelComponent implements OnChanges {
     return this.selectedCells.filter(c => c.isNode);
   }
 
-  /** Cells that support label position changes (nodes except text-box) */
+  /** Cells that support label position changes (nodes except text-box and nodes with arch icons) */
   private get labelApplicableCells(): CellStyleInfo[] {
-    return this.selectedCells.filter(c => c.isNode && c.nodeType !== 'text-box');
+    return this.selectedCells.filter(c => c.isNode && c.nodeType !== 'text-box' && !c.hasArchIcon);
   }
 
   private updateDisplayedValues(): void {

@@ -7,6 +7,8 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -36,7 +38,7 @@ import { ChatMessage, PreparationStatus } from '../../models/chat.model';
   styleUrl: './chat-messages.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatMessagesComponent implements AfterViewChecked {
+export class ChatMessagesComponent implements AfterViewChecked, OnChanges {
   @Input() messages: ChatMessage[] = [];
   @Input() loading = false;
   @Input() streamingMessageId: string | null = null;
@@ -58,6 +60,12 @@ export class ChatMessagesComponent implements AfterViewChecked {
 
   get isSendDisabled(): boolean {
     return !this.messageText.trim() || this.isInputDisabled;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['messages'] || changes['streamingMessageId']) {
+      this.shouldScroll = true;
+    }
   }
 
   isStreaming(message: ChatMessage): boolean {

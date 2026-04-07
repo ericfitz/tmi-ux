@@ -128,8 +128,12 @@ export class ArchitectureIconService {
     if (entry) {
       return `assets/architecture-icons/${entry.path}`;
     }
-    // Fallback: reconstruct from parts
-    return `assets/architecture-icons/${arch.provider}/${arch.type}/${arch.subcategory}/${arch.icon}.svg`;
+    // Fallback: reconstruct from parts (skip subcategory when it equals type to avoid duplication)
+    const base =
+      arch.subcategory && arch.subcategory !== arch.type
+        ? `${arch.provider}/${arch.type}/${arch.subcategory}`
+        : `${arch.provider}/${arch.type}`;
+    return `assets/architecture-icons/${base}/${arch.icon}.svg`;
   }
 
   /**

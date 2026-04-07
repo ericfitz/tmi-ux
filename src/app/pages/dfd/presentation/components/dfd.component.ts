@@ -130,7 +130,11 @@ import {
 } from './icon-picker-panel/icon-picker-panel.component';
 import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
 import { ArchIconData, ICON_HIDEABLE_BORDER_SHAPES } from '../../types/arch-icon.types';
-import { ICON_PLACEMENT_ATTRS, getIconPlacementKey } from '../../types/icon-placement.types';
+import {
+  ICON_PLACEMENT_ATTRS,
+  ICON_SIZE,
+  getIconPlacementKey,
+} from '../../types/icon-placement.types';
 import {
   PortLabelPopoverComponent,
   PortLabelData,
@@ -2649,6 +2653,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           fillOpacity,
           hasCustomStyles: !!data.customStyles,
           labelPosition,
+          hasArchIcon: !!data._arch,
         } as CellStyleInfo;
       });
   }
@@ -2799,12 +2804,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const placementAttrs = ICON_PLACEMENT_ATTRS[placementKey];
 
     cell.setAttrByPath('icon/href', iconPath);
-    cell.setAttrByPath('icon/width', 32);
-    cell.setAttrByPath('icon/height', 32);
+    cell.setAttrByPath('icon/width', ICON_SIZE);
+    cell.setAttrByPath('icon/height', ICON_SIZE);
     cell.setAttrByPath('icon/refX', placementAttrs.refX);
     cell.setAttrByPath('icon/refY', placementAttrs.refY);
-    cell.setAttrByPath('icon/xAlignment', 'middle');
-    cell.setAttrByPath('icon/yAlignment', 'middle');
+    cell.setAttrByPath('icon/refX2', -ICON_SIZE / 2);
+    cell.setAttrByPath('icon/refY2', -ICON_SIZE / 2);
 
     // When icon is centered, shift label below the icon (for non-security-boundary shapes)
     if (
