@@ -2206,6 +2206,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         tagName: 'path',
         selector: 'wrap',
         attrs: {
+          connection: true,
           fill: 'none',
           cursor: 'pointer',
           stroke: 'transparent',
@@ -2216,6 +2217,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         tagName: 'path',
         selector: 'line',
         attrs: {
+          connection: true,
           fill: 'none',
           pointerEvents: 'none',
         },
