@@ -270,7 +270,7 @@ describe('SseClientService', () => {
     });
   });
 
-  it('should handle multi-line data fields (e.g. JSON)', () => {
+  it('should handle JSON data containing escaped newlines on a single data line', () => {
     const json = JSON.stringify({ content: 'line1\nline2' });
     const sseText = `event: token\ndata: ${json}\n\n`;
     const stream = makeStream(sseText);
@@ -288,6 +288,33 @@ describe('SseClientService', () => {
             expect(events[0].event).toBe('token');
             const parsed = JSON.parse(events[0].data) as { content: string };
             expect(parsed.content).toBe('line1\nline2');
+            resolve();
+          } catch (e) {
+            reject(e instanceof Error ? e : new Error(String(e)));
+          }
+        },
+      });
+    });
+  });
+
+  it('should concatenate multiple data: lines per SSE spec', () => {
+    // Per https://html.spec.whatwg.org/multipage/server-sent-events.html,
+    // multiple data: lines within one event are joined with newlines.
+    const sseText = 'event: info\ndata: line1\ndata: line2\ndata: line3\n\n';
+    const stream = makeStream(sseText);
+    const response = makeResponse(true, 200, stream);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response));
+
+    return new Promise<void>((resolve, reject) => {
+      const events: SseEvent[] = [];
+      service.post('/chat/messages').subscribe({
+        next: ev => events.push(ev),
+        error: reject,
+        complete: () => {
+          try {
+            expect(events).toHaveLength(1);
+            expect(events[0].event).toBe('info');
+            expect(events[0].data).toBe('line1\nline2\nline3');
             resolve();
           } catch (e) {
             reject(e instanceof Error ? e : new Error(String(e)));

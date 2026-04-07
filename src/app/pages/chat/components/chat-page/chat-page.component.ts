@@ -371,7 +371,7 @@ export class ChatPageComponent implements OnInit {
           switch (event.event) {
             case 'message_start': {
               const data = JSON.parse(event.data) as MessageStartEvent;
-              currentMessageId = data.message_id;
+              currentMessageId = data.message_id ?? '';
               assembledContent = '';
               const assistantMessage: ChatMessage = {
                 id: currentMessageId,
@@ -398,10 +398,7 @@ export class ChatPageComponent implements OnInit {
             }
             case 'message_end': {
               const data = JSON.parse(event.data) as MessageEndEvent;
-              const msg = this.messages.find(m => m.id === currentMessageId);
-              if (msg) {
-                msg.token_count = data.token_count;
-              }
+              this.reconcileMessage(data, currentMessageId, assembledContent);
               this.streamingMessageId = null;
               this.loadSessions();
               break;
@@ -448,6 +445,65 @@ export class ChatPageComponent implements OnInit {
     } else {
       this.addErrorMessage(data.message);
     }
+  }
+
+  /**
+   * Reconcile the in-memory assistant message with the server's authoritative
+   * message_end payload. Updates the message id, content, and metadata so that
+   * the displayed text always matches what the server persisted.
+   *
+   * Logs a warning when the token-assembled content diverges from the server
+   * content so that truncation issues are visible in the application log.
+   */
+  private reconcileMessage(
+    data: MessageEndEvent,
+    clientMessageId: string,
+    assembledContent: string,
+  ): void {
+    const msg = this.findMessageForReconciliation(clientMessageId, data.id);
+    if (!msg) {
+      this.logger.warn('[chat] message_end received but no matching message found', {
+        clientMessageId,
+        serverId: data.id,
+      });
+      return;
+    }
+
+    // Reconcile content: server payload is authoritative
+    if (data.content !== assembledContent) {
+      this.logger.warn('[chat] Token-assembled content differs from server content', {
+        assembledLength: assembledContent.length,
+        serverLength: data.content.length,
+        delta: data.content.length - assembledContent.length,
+      });
+      msg.content = data.content;
+    }
+
+    // Backfill fields from the server's persisted message
+    msg.id = data.id;
+    msg.token_count = data.token_count;
+    msg.created_at = data.created_at;
+    msg.sequence = data.sequence;
+
+    // Always create a new array reference so OnPush children detect the
+    // updated id, token_count, and (possibly corrected) content.
+    this.messages = [...this.messages];
+  }
+
+  /**
+   * Locate the assistant message to reconcile. Tries the client-assigned id
+   * first, then falls back to the server-assigned id (in case message_start
+   * included it), and finally falls back to the last assistant message.
+   */
+  private findMessageForReconciliation(
+    clientMessageId: string,
+    serverId: string,
+  ): ChatMessage | undefined {
+    return (
+      this.messages.find(m => m.id === clientMessageId) ??
+      this.messages.find(m => m.id === serverId) ??
+      [...this.messages].reverse().find(m => m.role === 'assistant')
+    );
   }
 
   private addErrorMessage(text: string): void {

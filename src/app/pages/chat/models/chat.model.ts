@@ -80,17 +80,26 @@ export interface ReadyEvent {
 // Message streaming SSE events
 // Field names match the server's snake_case JSON payloads.
 export interface MessageStartEvent {
-  message_id: string;
-  role: 'assistant';
+  status: string;
+  message_id?: string;
 }
 
 export interface TokenEvent {
   content: string;
 }
 
+/**
+ * The server sends the full persisted message object as the message_end
+ * payload, so the interface mirrors ChatMessage plus token_count.
+ */
 export interface MessageEndEvent {
-  message_id: string;
+  id: string;
+  session_id: string;
+  role: 'assistant';
+  content: string;
   token_count: number;
+  sequence: number;
+  created_at: string;
 }
 
 // Error event (can occur in either stream)

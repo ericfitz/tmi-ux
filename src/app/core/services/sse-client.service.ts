@@ -198,17 +198,25 @@ export class SseClientService {
     }
   }
 
+  /**
+   * Parse a single SSE event block and emit it to the subscriber.
+   *
+   * Per the SSE specification, multiple `data:` lines within an event are
+   * concatenated with newline separators.
+   */
   private parseAndEmit(raw: string, url: string, subscriber: Subscriber<SseEvent>): void {
     let event = 'message';
-    let data = '';
+    const dataLines: string[] = [];
 
     for (const line of raw.split('\n')) {
       if (line.startsWith('event:')) {
         event = line.slice('event:'.length).trim();
       } else if (line.startsWith('data:')) {
-        data = line.slice('data:'.length).trim();
+        dataLines.push(line.slice('data:'.length).trim());
       }
     }
+
+    const data = dataLines.join('\n');
 
     if (data) {
       // Log the event type and parsed data. For token events, truncate to

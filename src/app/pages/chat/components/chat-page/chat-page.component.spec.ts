@@ -560,6 +560,201 @@ describe('ChatPageComponent', () => {
     });
   });
 
+  describe('message streaming reconciliation', () => {
+    function setupSessionAndSendMessage(): Subject<SseEvent> {
+      const sessionStream = new Subject<SseEvent>();
+      const messageStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(messageStream.asObservable());
+
+      component.onMessageSent('test question');
+
+      // Complete session creation
+      sessionStream.next({
+        event: 'session_created',
+        data: JSON.stringify({
+          id: 'session-1',
+          source_snapshot: [],
+          status: 'active',
+          threat_model_id: 'tm-123',
+          user_id: 'user-1',
+          created_at: '2026-04-07T00:00:00Z',
+          modified_at: '2026-04-07T00:00:00Z',
+        }),
+      });
+      sessionStream.next({ event: 'ready', data: JSON.stringify({ status: 'ready' }) });
+
+      return messageStream;
+    }
+
+    it('should use server content from message_end as authoritative', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing' }),
+      });
+      messageStream.next({
+        event: 'token',
+        data: JSON.stringify({ content: 'partial' }),
+      });
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'msg-server-1',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: 'full server content',
+          token_count: 42,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      const assistantMsg = component.messages.find(m => m.role === 'assistant');
+      expect(assistantMsg).toBeDefined();
+      expect(assistantMsg!.content).toBe('full server content');
+      expect(assistantMsg!.id).toBe('msg-server-1');
+      expect(assistantMsg!.token_count).toBe(42);
+    });
+
+    it('should log warning when assembled content differs from server content', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing' }),
+      });
+      messageStream.next({
+        event: 'token',
+        data: JSON.stringify({ content: 'partial' }),
+      });
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'msg-server-1',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: 'full server content that is longer',
+          token_count: 42,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        '[chat] Token-assembled content differs from server content',
+        expect.objectContaining({
+          assembledLength: 7,
+          serverLength: 34,
+        }),
+      );
+    });
+
+    it('should not log warning when assembled content matches server content', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing' }),
+      });
+      messageStream.next({
+        event: 'token',
+        data: JSON.stringify({ content: 'exact match' }),
+      });
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'msg-server-1',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: 'exact match',
+          token_count: 5,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      expect(mockLogger.warn).not.toHaveBeenCalled();
+    });
+
+    it('should handle message_start with optional message_id', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      // Server sends message_id in message_start
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing', message_id: 'pre-assigned-id' }),
+      });
+      messageStream.next({
+        event: 'token',
+        data: JSON.stringify({ content: 'hello' }),
+      });
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'pre-assigned-id',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: 'hello',
+          token_count: 1,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      const assistantMsg = component.messages.find(m => m.role === 'assistant');
+      expect(assistantMsg!.id).toBe('pre-assigned-id');
+    });
+
+    it('should clear streamingMessageId after message_end', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing' }),
+      });
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'msg-1',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: '',
+          token_count: 0,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      expect(component.streamingMessageId).toBeNull();
+    });
+
+    it('should log warning when message_end arrives with no matching message', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      // Send message_end WITHOUT a preceding message_start so no assistant
+      // message exists in the array.
+      messageStream.next({
+        event: 'message_end',
+        data: JSON.stringify({
+          id: 'orphan-msg',
+          session_id: 'session-1',
+          role: 'assistant',
+          content: 'orphan content',
+          token_count: 5,
+          sequence: 2,
+          created_at: '2026-04-07T00:00:01Z',
+        }),
+      });
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        '[chat] message_end received but no matching message found',
+        expect.objectContaining({ serverId: 'orphan-msg' }),
+      );
+    });
+  });
+
   describe('onMessageSavedAsNote', () => {
     const mockMessages: ChatMessage[] = [
       {
