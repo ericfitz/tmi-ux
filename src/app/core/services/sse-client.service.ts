@@ -62,6 +62,8 @@ export class SseClientService {
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${this.baseUrl}${normalizedEndpoint}`;
 
+    this.logger.debug(`[sse] POST request to ${url}`, body !== undefined ? { body } : undefined);
+
     return new Observable<SseEvent>(subscriber => {
       const abortController = new AbortController();
 
@@ -69,6 +71,7 @@ export class SseClientService {
 
       // Teardown: abort the in-flight request / ongoing read loop
       return () => {
+        this.logger.debug(`[sse] Stream aborted for ${url}`);
         abortController.abort();
       };
     });
@@ -93,8 +96,15 @@ export class SseClientService {
         signal: abortController.signal,
       });
 
+      this.logger.debug(`[sse] Response from ${url}`, {
+        status: response.status,
+        statusText: response.statusText,
+        isRetry,
+      });
+
       // Handle 401 with a single token-refresh retry
       if (response.status === 401 && !isRetry) {
+        this.logger.debug('[sse] 401 received, attempting token refresh and retry');
         this.authService
           .forceRefreshToken()
           .pipe(take(1))
@@ -118,6 +128,7 @@ export class SseClientService {
           statusText: response.statusText,
           ...(retryAfter !== undefined && !isNaN(retryAfter) ? { retryAfter } : {}),
         };
+        this.logger.debug(`[sse] Error response from ${url}`, error);
         subscriber.error(error);
         return;
       }
@@ -127,7 +138,7 @@ export class SseClientService {
         return;
       }
 
-      await this.readStream(response.body, subscriber);
+      await this.readStream(response.body, url, subscriber);
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
         subscriber.complete();
@@ -139,6 +150,7 @@ export class SseClientService {
 
   private async readStream(
     body: ReadableStream<Uint8Array>,
+    url: string,
     subscriber: Subscriber<SseEvent>,
   ): Promise<void> {
     const reader = body.getReader();
@@ -156,8 +168,9 @@ export class SseClientService {
 
         if (done) {
           if (buffer.trim()) {
-            this.parseAndEmit(buffer, subscriber);
+            this.parseAndEmit(buffer, url, subscriber);
           }
+          this.logger.debug(`[sse] Stream completed for ${url}`);
           subscriber.complete();
           return;
         }
@@ -172,7 +185,7 @@ export class SseClientService {
 
         for (const part of parts) {
           if (part.trim()) {
-            this.parseAndEmit(part, subscriber);
+            this.parseAndEmit(part, url, subscriber);
           }
         }
       }
@@ -185,7 +198,7 @@ export class SseClientService {
     }
   }
 
-  private parseAndEmit(raw: string, subscriber: Subscriber<SseEvent>): void {
+  private parseAndEmit(raw: string, url: string, subscriber: Subscriber<SseEvent>): void {
     let event = 'message';
     let data = '';
 
@@ -198,6 +211,13 @@ export class SseClientService {
     }
 
     if (data) {
+      // Log the event type and parsed data. For token events, truncate to
+      // avoid flooding the log with streaming content.
+      if (event === 'token') {
+        this.logger.debug(`[sse] Event from ${url}`, { event, data: '(token content)' });
+      } else {
+        this.logger.debug(`[sse] Event from ${url}`, { event, data });
+      }
       subscriber.next({ event, data });
     }
   }
