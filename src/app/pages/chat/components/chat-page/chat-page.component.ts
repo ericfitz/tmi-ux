@@ -288,14 +288,15 @@ export class ChatPageComponent implements OnInit {
     switch (event.event) {
       case 'session_created': {
         const data = JSON.parse(event.data) as SessionCreatedEvent;
-        onSessionId(data.sessionId);
-        this.sessionSourceCount = data.sourceCount;
+        onSessionId(data.id);
+        this.sessionSourceCount = data.source_snapshot?.length ?? 0;
+        this.activeSourceSnapshot = data.source_snapshot ?? [];
         this.preparationStatus = {
           phase: 'loading',
           entityName: '',
           progress: 0,
           current: 0,
-          total: data.sourceCount,
+          total: this.sessionSourceCount,
         };
         break;
       }
@@ -306,7 +307,7 @@ export class ChatPageComponent implements OnInit {
         }
         this.preparationStatus = {
           phase: data.phase,
-          entityName: data.entityName,
+          entityName: data.entity_name,
           progress: data.progress,
           current: this.progressCounter,
           total: this.sessionSourceCount,
@@ -322,7 +323,11 @@ export class ChatPageComponent implements OnInit {
           current: this.sessionSourceCount,
           total: this.sessionSourceCount,
           ready: true,
-          readyStats: data,
+          readyStats: {
+            status: data.status,
+            sources_loaded: data.sources_loaded ?? this.sessionSourceCount,
+            chunks_embedded: data.chunks_embedded ?? this.progressCounter,
+          },
         };
         setTimeout(() => {
           this.preparationStatus = null;
@@ -364,7 +369,7 @@ export class ChatPageComponent implements OnInit {
           switch (event.event) {
             case 'message_start': {
               const data = JSON.parse(event.data) as MessageStartEvent;
-              currentMessageId = data.messageId;
+              currentMessageId = data.message_id;
               assembledContent = '';
               const assistantMessage: ChatMessage = {
                 id: currentMessageId,
@@ -393,7 +398,7 @@ export class ChatPageComponent implements OnInit {
               const data = JSON.parse(event.data) as MessageEndEvent;
               const msg = this.messages.find(m => m.id === currentMessageId);
               if (msg) {
-                msg.token_count = data.tokenCount;
+                msg.token_count = data.token_count;
               }
               this.streamingMessageId = null;
               this.loadSessions();

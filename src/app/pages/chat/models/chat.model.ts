@@ -52,30 +52,35 @@ export interface ListMessagesResponse {
 }
 
 // Session creation SSE events
+// Field names match the server's snake_case JSON payloads.
 export interface SessionCreatedEvent {
-  sessionId: string;
-  sourceCount: number;
+  id: string;
+  source_snapshot: SourceSnapshotEntry[];
+  status: string;
+  threat_model_id: string;
+  user_id: string;
+  created_at: string;
+  modified_at: string;
 }
 
 export interface ProgressEvent {
   phase: string;
-  entityType: string;
-  entityName: string;
+  entity_type: string;
+  entity_name: string;
   progress: number;
   detail?: string;
 }
 
 export interface ReadyEvent {
-  sessionId: string;
-  sourcesLoaded: number;
-  chunksEmbedded: number;
-  cachedReused: number;
-  newlyEmbedded: number;
+  status: string;
+  sources_loaded?: number;
+  chunks_embedded?: number;
 }
 
 // Message streaming SSE events
+// Field names match the server's snake_case JSON payloads.
 export interface MessageStartEvent {
-  messageId: string;
+  message_id: string;
   role: 'assistant';
 }
 
@@ -84,8 +89,8 @@ export interface TokenEvent {
 }
 
 export interface MessageEndEvent {
-  messageId: string;
-  tokenCount: number;
+  message_id: string;
+  token_count: number;
 }
 
 // Error event (can occur in either stream)

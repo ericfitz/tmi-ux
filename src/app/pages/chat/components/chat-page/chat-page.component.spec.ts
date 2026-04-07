@@ -131,22 +131,28 @@ describe('ChatPageComponent', () => {
 
   describe('session creation happy path', () => {
     function sessionCreatedEvent(sessionId: string, sourceCount: number): SseEvent {
+      const snapshot = Array.from({ length: sourceCount }, (_, i) => ({
+        entity_id: `entity-${i}`,
+        entity_type: 'threat' as const,
+      }));
       return {
         event: 'session_created',
-        data: JSON.stringify({ sessionId, sourceCount }),
+        data: JSON.stringify({
+          id: sessionId,
+          source_snapshot: snapshot,
+          status: 'active',
+          threat_model_id: 'tm-123',
+          user_id: 'user-1',
+          created_at: '2026-04-07T00:00:00Z',
+          modified_at: '2026-04-07T00:00:00Z',
+        }),
       };
     }
 
-    function readyEvent(sessionId: string): SseEvent {
+    function readyEvent(): SseEvent {
       return {
         event: 'ready',
-        data: JSON.stringify({
-          sessionId,
-          sourcesLoaded: 0,
-          chunksEmbedded: 0,
-          cachedReused: 0,
-          newlyEmbedded: 0,
-        }),
+        data: JSON.stringify({ status: 'ready' }),
       };
     }
 
@@ -158,7 +164,7 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       sessionStream.next(sessionCreatedEvent('session-abc', 0));
-      sessionStream.next(readyEvent('session-abc'));
+      sessionStream.next(readyEvent());
 
       expect(mockTimmyChat.sendMessage).toHaveBeenCalledWith(
         'tm-123',
@@ -176,7 +182,7 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       sessionStream.next(sessionCreatedEvent('session-abc', 0));
-      sessionStream.next(readyEvent('session-abc'));
+      sessionStream.next(readyEvent());
       // Intentionally NOT calling sessionStream.complete()
 
       expect(mockTimmyChat.sendMessage).toHaveBeenCalledTimes(1);
@@ -190,7 +196,7 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       sessionStream.next(sessionCreatedEvent('session-abc', 0));
-      sessionStream.next(readyEvent('session-abc'));
+      sessionStream.next(readyEvent());
       sessionStream.complete();
 
       expect(mockTimmyChat.sendMessage).toHaveBeenCalledTimes(1);
@@ -222,7 +228,7 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       sessionStream.next(sessionCreatedEvent('session-abc', 2));
-      sessionStream.next(readyEvent('session-abc'));
+      sessionStream.next(readyEvent());
 
       expect(component.activeSessionId).toBe('session-abc');
       expect(mockTimmyChat.listSessions).toHaveBeenCalledWith('tm-123');

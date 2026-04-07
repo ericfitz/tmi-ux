@@ -79,8 +79,8 @@
             <mat-icon class="status-icon ready">check_circle</mat-icon>
             <span>{{
               t('chat.preparation.ready', {
-                sourcesLoaded: preparationStatus.readyStats?.sourcesLoaded ?? 0,
-                chunksEmbedded: preparationStatus.readyStats?.chunksEmbedded ?? 0,
+                sourcesLoaded: preparationStatus.readyStats?.sources_loaded ?? 0,
+                chunksEmbedded: preparationStatus.readyStats?.chunks_embedded ?? 0,
               })
             }}</span>
           } @else if (preparationStatus.error) {
