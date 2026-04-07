@@ -4,10 +4,11 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { of, throwError, EMPTY } from 'rxjs';
+import { of, throwError, EMPTY, Subject } from 'rxjs';
 
 import { ChatPageComponent } from './chat-page.component';
 import { ChatMessage } from '../../models/chat.model';
+import { SseEvent } from '../../../../core/interfaces/sse.interface';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -126,6 +127,106 @@ describe('ChatPageComponent', () => {
     );
 
     component.ngOnInit();
+  });
+
+  describe('session creation happy path', () => {
+    function sessionCreatedEvent(sessionId: string, sourceCount: number): SseEvent {
+      return {
+        event: 'session_created',
+        data: JSON.stringify({ sessionId, sourceCount }),
+      };
+    }
+
+    function readyEvent(sessionId: string): SseEvent {
+      return {
+        event: 'ready',
+        data: JSON.stringify({
+          sessionId,
+          sourcesLoaded: 0,
+          chunksEmbedded: 0,
+          cachedReused: 0,
+          newlyEmbedded: 0,
+        }),
+      };
+    }
+
+    it('should send message when ready event is received', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+
+      sessionStream.next(sessionCreatedEvent('session-abc', 0));
+      sessionStream.next(readyEvent('session-abc'));
+
+      expect(mockTimmyChat.sendMessage).toHaveBeenCalledWith(
+        'tm-123',
+        'session-abc',
+        'test message',
+      );
+      expect(component.activeSessionId).toBe('session-abc');
+    });
+
+    it('should send message even if stream never completes', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+
+      sessionStream.next(sessionCreatedEvent('session-abc', 0));
+      sessionStream.next(readyEvent('session-abc'));
+      // Intentionally NOT calling sessionStream.complete()
+
+      expect(mockTimmyChat.sendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not double-send when ready fires and then stream completes', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+
+      sessionStream.next(sessionCreatedEvent('session-abc', 0));
+      sessionStream.next(readyEvent('session-abc'));
+      sessionStream.complete();
+
+      expect(mockTimmyChat.sendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fall back to sending on complete if no ready event received', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+
+      sessionStream.next(sessionCreatedEvent('session-abc', 0));
+      // No ready event, just close the stream
+      sessionStream.complete();
+
+      expect(mockTimmyChat.sendMessage).toHaveBeenCalledWith(
+        'tm-123',
+        'session-abc',
+        'test message',
+      );
+    });
+
+    it('should set activeSessionId and load sessions on ready', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+
+      sessionStream.next(sessionCreatedEvent('session-abc', 2));
+      sessionStream.next(readyEvent('session-abc'));
+
+      expect(component.activeSessionId).toBe('session-abc');
+      expect(mockTimmyChat.listSessions).toHaveBeenCalledWith('tm-123');
+    });
   });
 
   describe('session creation error handling', () => {

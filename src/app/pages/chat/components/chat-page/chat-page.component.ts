@@ -232,8 +232,18 @@ export class ChatPageComponent implements OnInit {
     this.cdr.markForCheck();
 
     let sessionId = '';
+    let messageSent = false;
     this.sessionSourceCount = 0;
     this.progressCounter = 0;
+
+    const sendQueuedMessage = (): void => {
+      if (!sessionId || messageSent) return;
+      messageSent = true;
+      this.activeSessionId = sessionId;
+      userMessage.session_id = sessionId;
+      this.loadSessions();
+      this.sendMessageToSession(text);
+    };
 
     this.timmyChat
       .createSession(this.threatModelId)
@@ -243,6 +253,15 @@ export class ChatPageComponent implements OnInit {
           this.handleSessionCreationEvent(event, id => {
             sessionId = id;
           });
+
+          // Send the message as soon as the session is ready, rather than
+          // waiting for the SSE stream to close.  Some servers keep the
+          // connection open after the 'ready' event, which would prevent
+          // the complete callback from ever firing.
+          if (event.event === 'ready') {
+            sendQueuedMessage();
+          }
+
           this.cdr.markForCheck();
         },
         error: err => {
@@ -258,12 +277,9 @@ export class ChatPageComponent implements OnInit {
           this.cdr.markForCheck();
         },
         complete: () => {
-          if (sessionId) {
-            this.activeSessionId = sessionId;
-            userMessage.session_id = sessionId;
-            this.loadSessions();
-            this.sendMessageToSession(text);
-          }
+          // Fallback: if the stream completes without a 'ready' event
+          // (e.g. server closes immediately after session_created)
+          sendQueuedMessage();
         },
       });
   }
