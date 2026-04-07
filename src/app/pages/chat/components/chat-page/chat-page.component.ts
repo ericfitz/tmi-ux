@@ -171,7 +171,9 @@ export class ChatPageComponent implements OnInit {
     if (!session) return;
 
     const content = this.formatSessionAsMarkdown(this.messages);
-    const name = session.title;
+    const date =
+      this.datePipe.transform(new Date(), 'mediumDate') ?? new Date().toLocaleDateString();
+    const name = session.title || `Timmy session — ${date}`;
 
     this.saveAsNote(name, content);
   }

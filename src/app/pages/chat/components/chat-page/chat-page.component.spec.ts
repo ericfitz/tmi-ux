@@ -533,6 +533,31 @@ describe('ChatPageComponent', () => {
       );
       expect(mockLogger.error).toHaveBeenCalled();
     });
+
+    it('should use fallback name when session title is empty', () => {
+      component.sessions = [
+        {
+          id: 'session-1',
+          threat_model_id: 'tm-123',
+          title: '',
+          source_snapshot: [],
+          status: 'active' as const,
+          created_at: '2026-04-05T14:34:00.000Z',
+          modified_at: '2026-04-05T14:34:05.000Z',
+        },
+      ];
+
+      component.onSessionSavedAsNote('session-1');
+
+      expect(mockThreatModelService.createNote).toHaveBeenCalledWith(
+        'tm-123',
+        expect.objectContaining({
+          name: expect.stringContaining('Timmy session'),
+          include_in_report: false,
+          timmy_enabled: false,
+        }),
+      );
+    });
   });
 
   describe('onMessageSavedAsNote', () => {
