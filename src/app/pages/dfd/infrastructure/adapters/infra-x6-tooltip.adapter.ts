@@ -207,10 +207,10 @@ export class X6TooltipAdapter {
     this.tooltipElement.style.top = `${position.y}px`;
     this.tooltipElement.style.display = 'block';
 
-    this.logger.debugComponent('X6Tooltip', 'Multi-line tooltip shown', {
-      contentLines: content.split('\n').length,
-      position,
-    });
+    // this.logger.debugComponent('X6Tooltip', 'Multi-line tooltip shown', {
+    //   contentLines: content.split('\n').length,
+    //   position,
+    // });
   }
 
   /**

@@ -724,7 +724,7 @@ export class ZOrderService {
    * Fixes an edge's z-index if it's below its source/target nodes.
    * Returns true if a change was made.
    */
-  private _fixEdgeEndpointViolation(edge: Cell, cells: Cell[], iteration: number): boolean {
+  private _fixEdgeEndpointViolation(edge: Cell, cells: Cell[], _iteration: number): boolean {
     const sourceId = (edge as Edge).getSourceCellId();
     const targetId = (edge as Edge).getTargetCellId();
     if (!sourceId || !targetId) return false;
@@ -741,14 +741,14 @@ export class ZOrderService {
     if (edgeZIndex < requiredZIndex) {
       edge.setZIndex(requiredZIndex);
 
-      this.logger.debugComponent('ZOrderService', 'Adjusted edge z-index', {
-        edgeId: edge.id,
-        oldZIndex: edgeZIndex,
-        newZIndex: requiredZIndex,
-        sourceZIndex,
-        targetZIndex,
-        iteration,
-      });
+      // this.logger.debugComponent('ZOrderService', 'Adjusted edge z-index', {
+      //   edgeId: edge.id,
+      //   oldZIndex: edgeZIndex,
+      //   newZIndex: requiredZIndex,
+      //   sourceZIndex,
+      //   targetZIndex,
+      //   iteration,
+      // });
       return true;
     }
     return false;
