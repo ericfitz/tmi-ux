@@ -83,23 +83,25 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(data: RepositoryEditorDialogData): FormGroup {
+    const repo = data.repository;
+    const params = repo?.parameters;
     return this.fb.group({
-      name: [data.repository?.name || '', [Validators.required, Validators.maxLength(256)]],
-      description: [data.repository?.description || '', Validators.maxLength(2048)],
-      type: [data.repository?.type || 'git', Validators.required],
+      name: [repo?.name || '', [Validators.required, Validators.maxLength(256)]],
+      description: [repo?.description || '', Validators.maxLength(2048)],
+      type: [repo?.type || 'git', Validators.required],
       uri: [
-        data.repository?.uri || '',
+        repo?.uri || '',
         [
           Validators.required,
           Validators.maxLength(1024),
           FormValidationService.validators.uriGuidance,
         ],
       ],
-      refType: [data.repository?.parameters?.refType || 'branch'],
-      refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
-      subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
-      include_in_report: [data.mode === 'create' ? true : data.repository?.include_in_report],
-      timmy_enabled: [data.repository?.timmy_enabled ?? true],
+      refType: [params?.refType || 'branch'],
+      refValue: [params?.refValue || '', Validators.maxLength(256)],
+      subPath: [params?.subPath || '', Validators.maxLength(256)],
+      include_in_report: [data.mode === 'create' ? true : repo?.include_in_report],
+      timmy_enabled: [repo?.timmy_enabled ?? true],
     });
   }
 

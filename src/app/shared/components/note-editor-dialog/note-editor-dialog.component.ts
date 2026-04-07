@@ -124,45 +124,37 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   }
 
   ngOnInit(): void {
+    const note = this.data.note;
+    const isCreate = this.data.mode === 'create';
+
+    const initialName = note?.name || '';
+    const initialContent = note?.content || '';
+    const initialDescription = note?.description || '';
+    const initialIncludeInReport =
+      this.entityType === 'threat_model' ? (isCreate ? true : note?.include_in_report) : undefined;
+    const initialTimmyEnabled = note?.timmy_enabled ?? true;
+    const initialSharable =
+      this.entityType !== 'threat_model' ? (note?.sharable ?? true) : undefined;
+
     this.noteForm = this.fb.group({
-      name: [
-        this.data.note?.name || '',
-        [Validators.required, Validators.maxLength(this.maxNameLength)],
-      ],
-      content: [
-        this.data.note?.content || '',
-        [Validators.required, Validators.maxLength(this.maxContentLength)],
-      ],
-      description: [
-        this.data.note?.description || '',
-        [Validators.maxLength(this.maxDescriptionLength)],
-      ],
-      include_in_report: [
-        this.entityType === 'threat_model'
-          ? this.data.mode === 'create'
-            ? true
-            : this.data.note?.include_in_report
-          : undefined,
-      ],
-      timmy_enabled: [this.data.note?.timmy_enabled ?? true],
-      sharable: [
-        this.entityType !== 'threat_model' ? (this.data.note?.sharable ?? true) : undefined,
-      ],
+      name: [initialName, [Validators.required, Validators.maxLength(this.maxNameLength)]],
+      content: [initialContent, [Validators.required, Validators.maxLength(this.maxContentLength)]],
+      description: [initialDescription, [Validators.maxLength(this.maxDescriptionLength)]],
+      include_in_report: [initialIncludeInReport],
+      timmy_enabled: [initialTimmyEnabled],
+      sharable: [initialSharable],
     });
 
-    this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
-    this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
-    this.originalDescription =
-      (this.noteForm.get('description')?.value as string | undefined) || '';
-    this.originalIncludeInReport = this.noteForm.get('include_in_report')?.value as
-      | boolean
-      | undefined;
-    this.originalTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
-    this.originalSharable = this.noteForm.get('sharable')?.value as boolean | undefined;
+    this.originalName = initialName;
+    this.originalContent = initialContent;
+    this.originalDescription = initialDescription;
+    this.originalIncludeInReport = initialIncludeInReport;
+    this.originalTimmyEnabled = initialTimmyEnabled;
+    this.originalSharable = initialSharable;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
-    const hasExistingContent = this.originalContent.trim().length > 0;
+    const hasExistingContent = initialContent.trim().length > 0;
     this.previewMode = this.isReadOnly || hasExistingContent;
 
     if (this.isReadOnly) {
