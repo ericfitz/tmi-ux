@@ -251,7 +251,6 @@
                   [placeholder]="'cvssCalculator.vectorPlaceholder' | transloco"
                   [formControl]="cvssVectorControl"
                   (keydown.enter)="$event.preventDefault(); addCvssFromVector()"
-                  [disabled]="!canAddCvss"
                 />
                 @if (cvssVectorControl.hasError('invalidVector')) {
                   <mat-error>{{ 'cvssCalculator.vectorInvalid' | transloco }}</mat-error>

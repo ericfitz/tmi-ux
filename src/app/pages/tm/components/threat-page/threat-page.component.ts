@@ -541,6 +541,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Mark form as pristine after initial population
     this.threatForm.markAsPristine();
+    this._syncCvssVectorControlState();
   }
 
   /**
@@ -552,6 +553,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     } else {
       this.threatForm.disable();
     }
+    this._syncCvssVectorControlState();
   }
 
   /**
@@ -892,6 +894,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
         });
         this.threatForm.markAsDirty();
         this.cvssVectorControl.updateValueAndValidity();
+        this._syncCvssVectorControlState();
       });
   }
 
@@ -915,6 +918,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     this.threatForm.markAsDirty();
 
     this.cvssVectorControl.reset('');
+    this._syncCvssVectorControlState();
   }
 
   /**
@@ -998,6 +1002,18 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       this.threatForm.markAsDirty();
       // Re-run vector input validation (duplicate version check may have changed)
       this.cvssVectorControl.updateValueAndValidity();
+      this._syncCvssVectorControlState();
+    }
+  }
+
+  /**
+   * Enable or disable the CVSS vector input based on whether both versions already exist.
+   */
+  private _syncCvssVectorControlState(): void {
+    if (this.canEdit && this.canAddCvss) {
+      this.cvssVectorControl.enable();
+    } else {
+      this.cvssVectorControl.disable();
     }
   }
 
