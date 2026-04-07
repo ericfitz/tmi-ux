@@ -182,8 +182,8 @@
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "Manage teams and team membership",
-        "title": "Teams"
+        "description": "נהל צוותות וחברות בצוות",
+        "title": "צוותות"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
@@ -907,19 +907,19 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "Type to search across all providers",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "Icons not available for this shape",
-      "placement": "Placement",
-      "remove": "Remove",
-      "searchPlaceholder": "Search by provider, service, or category...",
-      "searchToChange": "Search to change icon...",
-      "selectShape": "Select a shape first",
-      "statusAvailable": "{count} icons available",
-      "statusMatches": "{count} matches",
-      "statusShapesSelected": "{count} shape(s) selected",
-      "title": "Architecture Icon",
-      "toolbarTooltip": "Architecture Icon"
+      "emptyStatePrompt": "הקלד לחיפוש בין כל הספקים",
+      "emptyStateTryExamples": "נסה: aws ec2, azure sql, gcp compute",
+      "notAvailable": "אין סמלים זמינים לצורה זו",
+      "placement": "מיקום",
+      "remove": "הסר",
+      "searchPlaceholder": "חפש לפי ספק, שירות או קטגוריה...",
+      "searchToChange": "חפש להחלפת סמל...",
+      "selectShape": "בחר צורה תחילה",
+      "statusAvailable": "{count} סמלים זמינים",
+      "statusMatches": "{count} תוצאות",
+      "statusShapesSelected": "{count} צורות נבחרו",
+      "title": "סמל ארכיטקטורה",
+      "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
       "position.bottom": "למטה",
@@ -941,18 +941,18 @@
       "fillNotApplicable": "מילוי אינו חל על האובייקטים הנבחרים",
       "fillTab": "מילוי",
       "hexColor": "הקס",
-      "labelNotApplicable": "Label position is not applicable to selected objects",
-      "labelPosition.bottom-center": "Bottom center",
-      "labelPosition.bottom-left": "Bottom left",
-      "labelPosition.bottom-right": "Bottom right",
-      "labelPosition.middle-center": "Center (default)",
-      "labelPosition.middle-left": "Middle left",
-      "labelPosition.middle-right": "Middle right",
-      "labelPosition.top-center": "Top center",
-      "labelPosition.top-left": "Top left",
-      "labelPosition.top-right": "Top right",
-      "labelPositionLabel": "Label position",
-      "labelTab": "Label",
+      "labelNotApplicable": "מיקום התווית אינו ישים על האובייקטים שנבחרו",
+      "labelPosition.bottom-center": "מרכז תחתון",
+      "labelPosition.bottom-left": "שמאל תחתון",
+      "labelPosition.bottom-right": "ימין תחתון",
+      "labelPosition.middle-center": "מרכז (ברירת מחדל)",
+      "labelPosition.middle-left": "שמאל אמצע",
+      "labelPosition.middle-right": "ימין אמצע",
+      "labelPosition.top-center": "מרכז עליון",
+      "labelPosition.top-left": "שמאל עליון",
+      "labelPosition.top-right": "ימין עליון",
+      "labelPositionLabel": "מיקום תווית",
+      "labelTab": "תווית",
       "noSelection": "בחר אובייקט לעריכת סגנונות",
       "opacity": "שקיפות",
       "osColorPicker": "בחר צבע מהמערכת",
@@ -1308,7 +1308,7 @@
     "linkedAsset": "נכס קשור",
     "linkedDiagram": "דיאגרמה קשורה",
     "pageOf": "עמוד {{current}} מתוך {{total}}",
-    "refLabel": "Ref",
+    "refLabel": "הפניה",
     "summaryCreatedAt": "מודל האיומים נוצר בתאריך",
     "summaryCreatedBy": "מודל האיומים נוצר על ידי",
     "summaryDescription": "{{common.description}}",
@@ -1399,12 +1399,12 @@
     "viewResponse": "הצג תגובה"
   },
   "teams": {
-    "addButton": "Add Team",
+    "addButton": "הוסף צוות",
     "columns": {
       "members": "{{teams.kebab.members}}",
-      "modified": "Modified",
+      "modified": "שונה",
       "name": "{{common.name}}",
-      "projects": "Projects",
+      "projects": "פרויקטים",
       "status": "{{common.status}}"
     },
     "createDialog": {
@@ -1422,77 +1422,77 @@
     "createNew": "צור צוות חדש",
     "deleteDialog": {
       "confirm": "{{common.delete}}",
-      "message": "Are you sure you want to delete team \"{{name}}\"?",
-      "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
-      "title": "Delete Team"
+      "message": "האם אתה בטוח שברצונך למחוק את הצוות \"{{name}}\"?",
+      "projectWarning": "לצוות זה יש {{count}} פרויקטים. מחיקת הצוות עלולה להשפיע על פרויקטים אלה.",
+      "title": "מחק צוות"
     },
     "editDialog": {
-      "detailsTab": "Details",
+      "detailsTab": "פרטים",
       "save": "{{common.save}}",
-      "title": "Edit Team"
+      "title": "ערוך צוות"
     },
-    "filterLabel": "Filter Teams",
+    "filterLabel": "סנן צוותות",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "Members",
+      "members": "חברים",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
-      "addMember": "Add Member",
-      "customRole": "Custom Role",
-      "noMembers": "No members",
-      "removeMember": "Remove Member",
-      "role": "Role",
-      "title": "Team Members"
+      "addMember": "הוסף חבר",
+      "customRole": "תפקיד מותאם אישית",
+      "noMembers": "אין חברים",
+      "removeMember": "הסר חבר",
+      "role": "תפקיד",
+      "title": "חברי צוות"
     },
-    "noTeams": "No teams found",
+    "noTeams": "לא נמצאו צוותות",
     "relatedTeamsDialog": {
-      "addRelated": "Add Related Team",
-      "customRelationship": "Custom Relationship",
-      "noRelated": "No related teams",
-      "relationship": "Relationship",
-      "removeRelated": "Remove Related Team",
-      "selectTeam": "Select Team",
-      "title": "Related Teams"
+      "addRelated": "הוסף צוות קשור",
+      "customRelationship": "קשר מותאם אישית",
+      "noRelated": "אין צוותות קשורים",
+      "relationship": "קשר",
+      "removeRelated": "הסר צוות קשור",
+      "selectTeam": "בחר צוות",
+      "title": "צוותות קשורים"
     },
     "relationships": {
-      "child": "Child",
-      "dependency": "Dependency",
-      "dependent": "Dependent",
+      "child": "כפוף",
+      "dependency": "תלות",
+      "dependent": "תלוי",
       "other": "{{common.other}}",
-      "parent": "Parent",
-      "related": "Related",
-      "superseded_by": "Superseded By",
-      "supersedes": "Supersedes"
+      "parent": "הורה",
+      "related": "קשור",
+      "superseded_by": "הוחלף על ידי",
+      "supersedes": "מחליף"
     },
     "responsiblePartiesDialog": {
-      "addParty": "Add Responsible Party",
-      "noParties": "No responsible parties",
-      "removeParty": "Remove Responsible Party",
-      "title": "Responsible Parties"
+      "addParty": "הוסף גורם אחראי",
+      "noParties": "אין גורמים אחראיים",
+      "removeParty": "הסר גורם אחראי",
+      "title": "גורמים אחראיים"
     },
     "roles": {
-      "business_leader": "Business Leader",
-      "engineer": "Engineer",
-      "engineering_lead": "Engineering Lead",
+      "business_leader": "מנהיג עסקי",
+      "engineer": "מהנדס",
+      "engineering_lead": "מוביל הנדסה",
       "other": "{{common.other}}",
-      "product_manager": "Product Manager",
-      "security_specialist": "Security Specialist"
+      "product_manager": "מנהל מוצר",
+      "security_specialist": "מומחה אבטחה"
     },
     "status": {
       "active": "{{common.active}}",
-      "archived": "Archived",
-      "forming": "Forming",
-      "merging": "Merging",
-      "on_hold": "On Hold",
-      "splitting": "Splitting",
-      "winding_down": "Winding Down"
+      "archived": "בארכיון",
+      "forming": "בהתהוות",
+      "merging": "במיזוג",
+      "on_hold": "בהמתנה",
+      "splitting": "בפיצול",
+      "winding_down": "בסיום פעילות"
     },
-    "subtitle": "Create, edit, and manage teams, members, and relationships",
-    "title": "Manage Teams"
+    "subtitle": "צור, ערוך וניהל צוותות, חברים וקשרים",
+    "title": "ניהול צוותות"
   },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
@@ -1948,7 +1948,7 @@
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "הצג כלי פיתוח",
-    "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
+    "showShapeBordersWithIcons": "הצג מילוי ומסגרת של צורה כאשר מוצג סמל",
     "tabs": {
       "credentials": "אישורים",
       "danger": "סכנה",

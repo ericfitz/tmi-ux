@@ -902,19 +902,19 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "Type to search across all providers",
+      "emptyStatePrompt": "พิมพ์เพื่อค้นหาจากทุกผู้ให้บริการ",
       "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "Icons not available for this shape",
-      "placement": "Placement",
-      "remove": "Remove",
-      "searchPlaceholder": "Search by provider, service, or category...",
-      "searchToChange": "Search to change icon...",
-      "selectShape": "Select a shape first",
-      "statusAvailable": "{count} icons available",
-      "statusMatches": "{count} matches",
-      "statusShapesSelected": "{count} shape(s) selected",
-      "title": "Architecture Icon",
-      "toolbarTooltip": "Architecture Icon"
+      "notAvailable": "ไม่มีไอคอนสำหรับรูปร่างนี้",
+      "placement": "ตำแหน่งวาง",
+      "remove": "ลบ",
+      "searchPlaceholder": "ค้นหาตามผู้ให้บริการ บริการ หรือหมวดหมู่...",
+      "searchToChange": "ค้นหาเพื่อเปลี่ยนไอคอน...",
+      "selectShape": "กรุณาเลือกรูปร่างก่อน",
+      "statusAvailable": "{count} ไอคอนที่พร้อมใช้งาน",
+      "statusMatches": "{count} รายการที่ตรงกัน",
+      "statusShapesSelected": "{count} รูปร่างที่เลือก",
+      "title": "ไอคอนสถาปัตยกรรม",
+      "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
       "position.bottom": "ด้านล่าง",
@@ -936,7 +936,7 @@
       "fillNotApplicable": "การเติมสีไม่สามารถใช้กับออบเจกต์ที่เลือกได้",
       "fillTab": "เติมสี",
       "hexColor": "Hex",
-      "labelNotApplicable": "Label position is not applicable to selected objects",
+      "labelNotApplicable": "ตำแหน่งป้ายกำกับไม่สามารถใช้กับออบเจกต์ที่เลือกได้",
       "labelPosition.bottom-center": "Bottom center",
       "labelPosition.bottom-left": "Bottom left",
       "labelPosition.bottom-right": "Bottom right",
@@ -946,8 +946,8 @@
       "labelPosition.top-center": "Top center",
       "labelPosition.top-left": "Top left",
       "labelPosition.top-right": "Top right",
-      "labelPositionLabel": "Label position",
-      "labelTab": "Label",
+      "labelPositionLabel": "ตำแหน่งป้ายกำกับ",
+      "labelTab": "ป้ายกำกับ",
       "noSelection": "เลือกออบเจกต์เพื่อแก้ไขสไตล์",
       "opacity": "ความทึบ",
       "osColorPicker": "เลือกสีจากระบบ",
@@ -1303,7 +1303,7 @@
     "linkedAsset": "สินทรัพย์ที่เชื่อมโยง",
     "linkedDiagram": "แผนภาพที่เชื่อมโยง",
     "pageOf": "หน้า {{current}} จาก {{total}}",
-    "refLabel": "Ref",
+    "refLabel": "อ้างอิง",
     "summaryCreatedAt": "แบบจำลองภัยคุกคามสร้างเมื่อ",
     "summaryCreatedBy": "แบบจำลองภัยคุกคามสร้างโดย",
     "summaryDescription": "{{common.description}}",
@@ -1418,7 +1418,7 @@
       "title": "ลบทีม"
     },
     "editDialog": {
-      "detailsTab": "Details",
+      "detailsTab": "รายละเอียด",
       "save": "{{common.save}}",
       "title": "แก้ไขทีม"
     },
@@ -1939,7 +1939,7 @@
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
-    "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
+    "showShapeBordersWithIcons": "แสดงการเติมสีและขอบของรูปร่างเมื่อแสดงไอคอน",
     "tabs": {
       "credentials": "ข้อมูลประจำตัว",
       "danger": "อันตราย",

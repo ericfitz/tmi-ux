@@ -951,7 +951,7 @@
       "statusMatches": "{count} matches",
       "statusShapesSelected": "{count} shape(s) selected",
       "title": "Architecture Icon",
-      "toolbarTooltip": "Architecture Icon"
+      "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
       "position.bottom": "Bottom",

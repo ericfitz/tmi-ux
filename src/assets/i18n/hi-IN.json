@@ -239,7 +239,9 @@
         "config": "कॉन्फ़िगरेशन फ़ाइल",
         "database": "डेटाबेस",
         "environment": "वातावरण",
-        "vault": "वॉल्ट",
+        "vault": {
+          "comment": "Vault एक सुरक्षित IT सीक्रेट स्टोरेज तकनीक (जैसे HashiCorp Vault) को संदर्भित करता है, न कि किसी भौतिक तिजोरी को।"
+        },
         "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
       },
       "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें",
@@ -793,15 +795,25 @@
     "title": "खतरा मॉडल बनाएं"
   },
   "cvssCalculator": {
-    "apply": "लागू करें",
+    "apply": {
+      "comment": "गणना किए गए CVSS वेक्टर और स्कोर को लागू करने के लिए बटन।"
+    },
     "apply.comment": "Button to apply the calculated CVSS vector and score.",
-    "metricsSet": "{{count}}/{{total}} सेट",
+    "metricsSet": {
+      "comment": "यह दिखाता है कि किसी श्रेणी में कितने मेट्रिक्स कॉन्फ़िगर किए गए हैं। 'set' का अर्थ है 'कॉन्फ़िगर किया गया' या 'परिभाषित किया गया'।"
+    },
     "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
-    "openCalculator": "CVSS जोड़ें",
+    "openCalculator": {
+      "comment": "CVSS कैलकुलेटर डायलॉग खोलने के लिए बटन। CVSS एक उचित नाम है और इसका अनुवाद नहीं किया जाना चाहिए।"
+    },
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
-    "parseError": "मौजूदा CVSS वेक्टर स्ट्रिंग को पार्स नहीं किया जा सका",
+    "parseError": {
+      "comment": "यह त्रुटि तब दिखाई देती है जब कोई मौजूदा CVSS वेक्टर स्ट्रिंग पार्स नहीं की जा सकती।"
+    },
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
-    "title": "CVSS कैलकुलेटर",
+    "title": {
+      "comment": "CVSS कैलकुलेटर डायलॉग का शीर्षक। CVSS एक उचित नाम है और इसका अनुवाद नहीं किया जाना चाहिए।"
+    },
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "इस संस्करण के लिए CVSS प्रविष्टि पहले से मौजूद है",
     "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
@@ -809,11 +821,15 @@
     "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "CVSS वेक्टर स्ट्रिंग पेस्ट या टाइप करें और Enter दबाएं",
     "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
-    "vectorString": "वेक्टर स्ट्रिंग",
+    "vectorString": {
+      "comment": "CVSS वेक्टर स्ट्रिंग प्रदर्शन के लिए लेबल।"
+    },
     "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "केवल CVSS 3.1 और 4.0 वेक्टर समर्थित हैं",
     "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "CVSS संस्करण",
+    "version": {
+      "comment": "CVSS संस्करण चयनकर्ता के लिए लेबल। CVSS एक उचित नाम है और इसका अनुवाद नहीं किया जाना चाहिए।"
+    },
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
@@ -907,19 +923,19 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "Type to search across all providers",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "Icons not available for this shape",
-      "placement": "Placement",
-      "remove": "Remove",
-      "searchPlaceholder": "Search by provider, service, or category...",
-      "searchToChange": "Search to change icon...",
-      "selectShape": "Select a shape first",
-      "statusAvailable": "{count} icons available",
-      "statusMatches": "{count} matches",
-      "statusShapesSelected": "{count} shape(s) selected",
-      "title": "Architecture Icon",
-      "toolbarTooltip": "Architecture Icon"
+      "emptyStatePrompt": "सभी प्रदाताओं में खोजने के लिए टाइप करें",
+      "emptyStateTryExamples": "आज़माएं: aws ec2, azure sql, gcp compute",
+      "notAvailable": "इस आकार के लिए आइकन उपलब्ध नहीं हैं",
+      "placement": "स्थान",
+      "remove": "हटाएं",
+      "searchPlaceholder": "प्रदाता, सेवा या श्रेणी द्वारा खोजें...",
+      "searchToChange": "आइकन बदलने के लिए खोजें...",
+      "selectShape": "पहले एक आकार चुनें",
+      "statusAvailable": "{count} आइकन उपलब्ध",
+      "statusMatches": "{count} मिलान",
+      "statusShapesSelected": "{count} आकार चुने गए",
+      "title": "आर्किटेक्चर आइकन",
+      "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
       "position.bottom": "नीचे",
@@ -941,7 +957,18 @@
       "fillNotApplicable": "भरण चयनित ऑब्जेक्ट्स पर लागू नहीं है",
       "fillTab": "भरण",
       "hexColor": "हेक्स",
-      "labelNotApplicable": "Label position is not applicable to selected objects",
+      "labelNotApplicable": "चुने गए ऑब्जेक्ट के लिए लेबल स्थिति लागू नहीं होती",
+      "labelPosition": {
+        "bottom-center": "नीचे केंद्र",
+        "bottom-left": "नीचे बाएं",
+        "bottom-right": "नीचे दाएं",
+        "middle-center": "केंद्र (डिफ़ॉल्ट)",
+        "middle-left": "मध्य बाएं",
+        "middle-right": "मध्य दाएं",
+        "top-center": "ऊपर केंद्र",
+        "top-left": "ऊपर बाएं",
+        "top-right": "ऊपर दाएं"
+      },
       "labelPosition.bottom-center": "Bottom center",
       "labelPosition.bottom-left": "Bottom left",
       "labelPosition.bottom-right": "Bottom right",
@@ -951,8 +978,8 @@
       "labelPosition.top-center": "Top center",
       "labelPosition.top-left": "Top left",
       "labelPosition.top-right": "Top right",
-      "labelPositionLabel": "Label position",
-      "labelTab": "Label",
+      "labelPositionLabel": "लेबल स्थिति",
+      "labelTab": "लेबल",
       "noSelection": "शैलियाँ संपादित करने के लिए एक ऑब्जेक्ट चुनें",
       "opacity": "अपारदर्शिता",
       "osColorPicker": "सिस्टम से रंग चुनें",
@@ -1308,7 +1335,7 @@
     "linkedAsset": "लिंक किया गया संपत्ति",
     "linkedDiagram": "लिंक किया गया आरेख",
     "pageOf": "पृष्ठ {{current}} / {{total}}",
-    "refLabel": "Ref",
+    "refLabel": "संदर्भ",
     "summaryCreatedAt": "खतरा मॉडल निर्माण तिथि",
     "summaryCreatedBy": "खतरा मॉडल निर्माता",
     "summaryDescription": "{{common.description}}",
@@ -1427,7 +1454,7 @@
       "title": "टीम हटाएं"
     },
     "editDialog": {
-      "detailsTab": "Details",
+      "detailsTab": "विवरण",
       "save": "{{common.save}}",
       "title": "टीम संपादित करें"
     },
@@ -1948,7 +1975,7 @@
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
-    "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
+    "showShapeBordersWithIcons": "आइकन प्रदर्शित होने पर आकार भरण और बॉर्डर दिखाएं",
     "tabs": {
       "credentials": "क्रेडेंशियल",
       "danger": "खतरा",
