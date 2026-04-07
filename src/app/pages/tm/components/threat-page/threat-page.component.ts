@@ -94,6 +94,7 @@ interface ThreatFormValues {
   mitigation?: string;
   issue_uri?: string;
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
   cwe_id: string[];
   cvss: CVSSScore[];
 }
@@ -208,6 +209,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
       include_in_report: [true],
+      timmy_enabled: [true],
       cwe_id: [[]],
       cvss: [[]],
     });
@@ -535,6 +537,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: this.threat.mitigation || '',
       issue_uri: this.initialIssueUriValue,
       include_in_report: this.threat.include_in_report,
+      timmy_enabled: this.threat.timmy_enabled ?? true,
       cwe_id: this.threat.cwe_id || [],
       cvss: this.threat.cvss || [],
     });
@@ -642,6 +645,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: formValues.mitigation || '',
       issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
+      timmy_enabled: formValues.timmy_enabled,
       cwe_id: formValues.cwe_id || [],
       cvss: formValues.cvss || [],
     };
