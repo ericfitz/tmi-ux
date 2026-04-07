@@ -143,12 +143,22 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
       }
     });
 
-    // Log the response with component-specific debug logging
+    // Log the response with component-specific debug logging.
+    // Omit large GET response bodies to keep logs readable.
+    let body: unknown;
+    if (response.body) {
+      const serialized = JSON.stringify(response.body);
+      body =
+        serialized.length > 1024 && request.method === 'GET'
+          ? '(omitted, ' + serialized.length + ' chars)'
+          : redactSensitiveData(response.body);
+    }
+
     this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
       status: response.status,
       statusText: response.statusText,
       headers: redactSensitiveData(headers, { isHeaderContext: true }),
-      body: response.body ? redactSensitiveData(response.body) : undefined,
+      body,
     });
   }
 
