@@ -256,15 +256,16 @@ export class InfraEdgeService {
    */
   private _ensureEdgeAttrs(attrs: Edge.Properties['attrs']): Edge.Properties['attrs'] {
     // If attrs is empty or missing critical styling, provide defaults
-    const hasWrapAttrs = attrs?.['wrap'] && typeof attrs['wrap'] === 'object';
+    // Only schema-compliant properties are included (no X6 runtime attrs
+    // like connection, fill, or marker fill/stroke — the 'flow' shape
+    // definition and edge markup handle those)
     const hasLineAttrs = attrs?.['line'] && typeof attrs['line'] === 'object';
 
-    if (!hasWrapAttrs || !hasLineAttrs) {
+    if (!hasLineAttrs) {
       this._logger.debugComponent(
         'InfraEdgeService',
         'Adding missing edge attrs for visual rendering',
         {
-          hasWrapAttrs,
           hasLineAttrs,
           originalAttrs: attrs,
         },
@@ -272,25 +273,12 @@ export class InfraEdgeService {
 
       return {
         ...attrs,
-        wrap: {
-          connection: true,
-          strokeWidth: 10,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round',
-          stroke: 'transparent',
-          fill: 'none',
-          ...(attrs?.['wrap'] || {}),
-        },
         line: {
-          connection: true,
           stroke: DFD_STYLING.EDGES.STROKE,
           strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
-          fill: DFD_STYLING.EDGES.FILL,
           targetMarker: {
             name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
             size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
-            fill: DFD_STYLING.EDGES.TARGET_MARKER.FILL,
-            stroke: DFD_STYLING.EDGES.TARGET_MARKER.STROKE,
           },
           ...(attrs?.['line'] || {}),
         },
