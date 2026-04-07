@@ -255,10 +255,11 @@ export class InfraEdgeService {
    * Ensure edge has proper attrs structure for visual rendering
    */
   private _ensureEdgeAttrs(attrs: Edge.Properties['attrs']): Edge.Properties['attrs'] {
-    // If attrs is empty or missing critical styling, provide defaults
-    // Only schema-compliant properties are included (no X6 runtime attrs
-    // like connection, fill, or marker fill/stroke — the 'flow' shape
-    // definition and edge markup handle those)
+    // If attrs is empty or missing critical styling, provide defaults.
+    // The 'lines' group selector targets both 'wrap' and 'line' paths
+    // (via groupSelector in markup) — connection: true is an X6 runtime
+    // attr that tells the renderer to set the path's 'd' attribute from
+    // the edge route. Without it, paths have no geometry and are invisible.
     const hasLineAttrs = attrs?.['line'] && typeof attrs['line'] === 'object';
 
     if (!hasLineAttrs) {
@@ -273,6 +274,10 @@ export class InfraEdgeService {
 
       return {
         ...attrs,
+        lines: {
+          connection: true,
+          ...(attrs?.['lines'] || {}),
+        },
         line: {
           stroke: DFD_STYLING.EDGES.STROKE,
           strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,
@@ -285,7 +290,16 @@ export class InfraEdgeService {
       };
     }
 
-    return attrs;
+    // Even if line attrs exist, ensure connection: true is present
+    // on the group selector so paths render the edge route
+    const result = { ...attrs };
+    if (!result['lines'] || !(result['lines'] as Record<string, unknown>)['connection']) {
+      result['lines'] = {
+        connection: true,
+        ...(result['lines'] || {}),
+      };
+    }
+    return result;
   }
 
   /**
@@ -296,8 +310,8 @@ export class InfraEdgeService {
       {
         tagName: 'path',
         selector: 'wrap',
+        groupSelector: 'lines',
         attrs: {
-          connection: true,
           fill: 'none',
           cursor: 'pointer',
           stroke: 'transparent',
@@ -307,8 +321,8 @@ export class InfraEdgeService {
       {
         tagName: 'path',
         selector: 'line',
+        groupSelector: 'lines',
         attrs: {
-          connection: true,
           fill: 'none',
           pointerEvents: 'none',
         },

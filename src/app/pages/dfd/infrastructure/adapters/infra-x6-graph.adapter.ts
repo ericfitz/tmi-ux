@@ -478,6 +478,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             connector: DFD_STYLING.EDGES.CONNECTOR,
             router: DFD_STYLING.EDGES.ROUTER,
             attrs: {
+              lines: {
+                connection: true,
+              },
               line: {
                 stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
                 strokeWidth: DFD_STYLING.EDGES.DEFAULT_STROKE_WIDTH,
@@ -2205,8 +2208,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       {
         tagName: 'path',
         selector: 'wrap',
+        groupSelector: 'lines',
         attrs: {
-          connection: true,
           fill: 'none',
           cursor: 'pointer',
           stroke: 'transparent',
@@ -2216,8 +2219,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       {
         tagName: 'path',
         selector: 'line',
+        groupSelector: 'lines',
         attrs: {
-          connection: true,
           fill: 'none',
           pointerEvents: 'none',
         },

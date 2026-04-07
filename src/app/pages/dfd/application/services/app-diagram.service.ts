@@ -619,6 +619,9 @@ export class AppDiagramService {
       connector: mockCell.connector || DFD_STYLING.EDGES.CONNECTOR,
       router: mockCell.router || DFD_STYLING.EDGES.ROUTER,
       attrs: {
+        lines: {
+          connection: true,
+        },
         line: {
           stroke: DFD_STYLING.EDGES.STROKE,
           strokeWidth: DFD_STYLING.EDGES.STROKE_WIDTH,

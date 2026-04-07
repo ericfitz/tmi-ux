@@ -268,7 +268,32 @@ export function registerCustomShapes(): void {
     registeredShapes.add('flow');
     Shape.Edge.define({
       shape: 'flow',
+      markup: [
+        {
+          tagName: 'path',
+          selector: 'wrap',
+          groupSelector: 'lines',
+          attrs: {
+            fill: 'none',
+            cursor: 'pointer',
+            stroke: 'transparent',
+            strokeLinecap: 'round',
+          },
+        },
+        {
+          tagName: 'path',
+          selector: 'line',
+          groupSelector: 'lines',
+          attrs: {
+            fill: 'none',
+            pointerEvents: 'none',
+          },
+        },
+      ],
       attrs: {
+        lines: {
+          connection: true,
+        },
         line: {
           stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
           strokeWidth: DFD_STYLING.EDGES.DEFAULT_STROKE_WIDTH,
