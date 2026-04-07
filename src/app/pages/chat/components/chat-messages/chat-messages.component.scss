@@ -223,7 +223,7 @@
 // Pinned input area — always visible at bottom
 .chat-input {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
   padding: 8px 16px 16px;
   border-top: 1px solid var(--color-border-light, #e0e0e0);
