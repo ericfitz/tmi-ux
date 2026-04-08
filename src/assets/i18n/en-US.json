@@ -1117,6 +1117,10 @@
     },
     "home": "Home",
     "intake": "Intake",
+    "menu": {
+      "home": "Home",
+      "logout": "Sign Out"
+    },
     "logoutButton": "Sign Out",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
