@@ -94,6 +94,12 @@ export interface CVSSScore {
   score: number;
 }
 
+export interface SSVCScore {
+  vector: string;
+  decision: string;
+  methodology: string;
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -117,6 +123,7 @@ export interface Threat {
   metadata?: Metadata[];
   cwe_id?: string[];
   cvss?: CVSSScore[];
+  ssvc?: SSVCScore;
 }
 
 export interface ThreatModel {
