@@ -274,6 +274,41 @@
           }
         </div>
 
+        <!-- SSVC Entry -->
+        <div class="ssvc-section">
+          <mat-label class="section-label">{{ 'ssvcCalculator.title' | transloco }}</mat-label>
+
+          @if (threatForm.get('ssvc')?.value; as ssvc) {
+            <mat-chip-set class="ssvc-chip-set">
+              <mat-chip
+                [removable]="canEdit"
+                (removed)="removeSsvcEntry()"
+                (click)="canEdit ? editSsvcEntry() : null"
+                [class.clickable]="canEdit"
+                [class]="getSsvcDecisionClass()"
+                [matTooltip]="ssvc.vector"
+              >
+                SSVC: {{ 'ssvcCalculator.decisions.' + ssvc.decision | transloco }}
+                @if (canEdit) {
+                  <button matChipRemove [attr.aria-label]="'Remove SSVC entry'">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
+              </mat-chip>
+            </mat-chip-set>
+          } @else if (canEdit) {
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="openSsvcCalculator()"
+              class="ssvc-calculator-button"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'ssvcCalculator.openCalculator' | transloco }}
+            </button>
+          }
+        </div>
+
         <!-- Issue URI field -->
         <div class="form-field-row">
           @if (canEdit) {

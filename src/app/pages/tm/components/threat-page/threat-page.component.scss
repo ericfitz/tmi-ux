@@ -284,6 +284,61 @@
   cursor: pointer;
 }
 
+// SSVC section
+.ssvc-section {
+  margin-top: 4px;
+  margin-bottom: 4px;
+
+  .section-label {
+    display: block;
+    margin-bottom: 8px;
+  }
+}
+
+.ssvc-chip-set {
+  margin-bottom: 8px;
+}
+
+.ssvc-decision-defer {
+  --mdc-chip-elevated-container-color: color-mix(
+    in srgb,
+    var(--color-severity-none) 15%,
+    transparent
+  );
+  --mdc-chip-label-text-color: var(--color-severity-none);
+}
+
+.ssvc-decision-scheduled {
+  --mdc-chip-elevated-container-color: color-mix(
+    in srgb,
+    var(--color-severity-low) 15%,
+    transparent
+  );
+  --mdc-chip-label-text-color: var(--color-severity-low);
+}
+
+.ssvc-decision-out-of-cycle {
+  --mdc-chip-elevated-container-color: color-mix(
+    in srgb,
+    var(--color-severity-high) 15%,
+    transparent
+  );
+  --mdc-chip-label-text-color: var(--color-severity-high);
+}
+
+.ssvc-decision-immediate {
+  --mdc-chip-elevated-container-color: color-mix(
+    in srgb,
+    var(--color-severity-critical) 15%,
+    transparent
+  );
+  --mdc-chip-label-text-color: var(--color-severity-critical);
+}
+
+.ssvc-calculator-button {
+  margin-top: 4px;
+}
+
 // Responsive styles
 @media (width <= 800px) {
   .threat-page-container {

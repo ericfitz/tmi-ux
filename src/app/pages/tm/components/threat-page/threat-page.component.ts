@@ -35,7 +35,7 @@ import { ThreatModelService } from '../../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../../services/threat-model-authorization.service';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
-import { CVSSScore, Threat, ThreatModel } from '../../models/threat-model.model';
+import { CVSSScore, SSVCScore, Threat, ThreatModel } from '../../models/threat-model.model';
 import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 import {
@@ -63,6 +63,11 @@ import {
   CvssCalculatorDialogResult,
   CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
+import { SsvcCalculatorDialogComponent } from '../ssvc-calculator-dialog/ssvc-calculator-dialog.component';
+import {
+  SsvcCalculatorDialogData,
+  SsvcCalculatorDialogResult,
+} from '../ssvc-calculator-dialog/ssvc-calculator-dialog.types';
 import { CwePickerDialogComponent } from '../cwe-picker-dialog/cwe-picker-dialog.component';
 import {
   CwePickerDialogData,
@@ -97,6 +102,7 @@ interface ThreatFormValues {
   timmy_enabled?: boolean;
   cwe_id: string[];
   cvss: CVSSScore[];
+  ssvc: SSVCScore | null;
 }
 
 /**
@@ -212,6 +218,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       timmy_enabled: [true],
       cwe_id: [[]],
       cvss: [[]],
+      ssvc: [null],
     });
   }
 
@@ -540,6 +547,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       timmy_enabled: this.threat.timmy_enabled ?? true,
       cwe_id: this.threat.cwe_id || [],
       cvss: this.threat.cvss || [],
+      ssvc: this.threat.ssvc ?? null,
     });
 
     // Mark form as pristine after initial population
@@ -1027,6 +1035,79 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     if (entries.some(e => e.vector?.startsWith('CVSS:3.'))) versions.push('3.1');
     if (entries.some(e => e.vector?.startsWith('CVSS:4.0'))) versions.push('4.0');
     return versions;
+  }
+
+  /**
+   * Open the SSVC calculator dialog to create a new entry
+   */
+  openSsvcCalculator(): void {
+    const dialogRef = this.dialog.open(SsvcCalculatorDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {} as SsvcCalculatorDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: SsvcCalculatorDialogResult | undefined) => {
+        if (!result) return;
+        this.threatForm.patchValue({ ssvc: result.entry });
+        this.threatForm.markAsDirty();
+      });
+  }
+
+  /**
+   * Open the SSVC calculator dialog to edit the existing entry
+   */
+  editSsvcEntry(): void {
+    const existing = this.threatForm.get('ssvc')?.value as SSVCScore | null;
+    if (!existing) return;
+
+    const dialogRef = this.dialog.open(SsvcCalculatorDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: { existingEntry: existing } as SsvcCalculatorDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: SsvcCalculatorDialogResult | undefined) => {
+        if (!result) return;
+        this.threatForm.patchValue({ ssvc: result.entry });
+        this.threatForm.markAsDirty();
+      });
+  }
+
+  /**
+   * Remove the SSVC entry
+   */
+  removeSsvcEntry(): void {
+    this.threatForm.patchValue({ ssvc: null });
+    this.threatForm.markAsDirty();
+  }
+
+  /**
+   * Get CSS class for the SSVC decision chip
+   */
+  getSsvcDecisionClass(): string {
+    const ssvc = this.threatForm.get('ssvc')?.value as SSVCScore | null;
+    if (!ssvc) return '';
+    switch (ssvc.decision) {
+      case 'Defer':
+        return 'ssvc-decision-defer';
+      case 'Scheduled':
+        return 'ssvc-decision-scheduled';
+      case 'Out-of-Cycle':
+        return 'ssvc-decision-out-of-cycle';
+      case 'Immediate':
+        return 'ssvc-decision-immediate';
+      default:
+        return '';
+    }
   }
 
   /**
