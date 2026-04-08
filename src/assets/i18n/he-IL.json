@@ -366,6 +366,7 @@
       "versionRequired": "גרסה נדרשת"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "לא ניתן למחוק סקר זה מכיוון שיש לו תשובות קיימות. מחק את התשובות תחילה ולאחר מכן נסה שוב.",
     "deleteError": "מחיקת הסקר נכשלה: {{error}}",
     "deleteTooltip": "מחק סקר",
     "editTemplate": "עריכת סקר",

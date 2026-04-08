@@ -366,6 +366,7 @@
       "versionRequired": "バージョンは必須です"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "既存の回答があるため、このアンケートを削除できません。先に回答を削除してから、もう一度お試しください。",
     "deleteError": "アンケートの削除に失敗しました: {{error}}",
     "deleteTooltip": "アンケートを削除",
     "editTemplate": "調査を編集",

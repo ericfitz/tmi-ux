@@ -366,6 +366,7 @@
       "versionRequired": "الإصدار مطلوب"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "لا يمكن حذف هذا الاستبيان لأنه يحتوي على ردود موجودة. احذف الردود أولاً، ثم حاول مرة أخرى.",
     "deleteError": "فشل في حذف الاستبيان: {{error}}",
     "deleteTooltip": "حذف الاستبيان",
     "editTemplate": "تحرير الاستبيان",

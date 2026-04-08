@@ -361,6 +361,7 @@
       "versionRequired": "ต้องระบุเวอร์ชัน"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "ไม่สามารถลบแบบสำรวจนี้ได้เนื่องจากมีคำตอบอยู่แล้ว กรุณาลบคำตอบก่อน แล้วลองอีกครั้ง",
     "deleteError": "ไม่สามารถลบแบบสำรวจ: {{error}}",
     "deleteTooltip": "ลบแบบสำรวจ",
     "editTemplate": "แก้ไขแบบสำรวจ",

@@ -366,6 +366,7 @@
       "versionRequired": "Versi wajib diisi"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Tidak dapat menghapus survei ini karena memiliki tanggapan yang ada. Hapus tanggapan terlebih dahulu, lalu coba lagi.",
     "deleteError": "Gagal menghapus survei: {{error}}",
     "deleteTooltip": "Hapus survei",
     "editTemplate": "Edit survei",

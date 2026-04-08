@@ -381,6 +381,7 @@
       "versionRequired": "Version is required"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Cannot delete this survey because it has existing responses. Delete the responses first, then try again.",
     "deleteError": "Failed to delete survey: {{error}}",
     "deleteTooltip": "Delete survey",
     "editTemplate": "Edit Survey",

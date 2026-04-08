@@ -366,6 +366,7 @@
       "versionRequired": "La version est requise"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Impossible de supprimer cette enquête car elle contient des réponses existantes. Supprimez d'abord les réponses, puis réessayez.",
     "deleteError": "Échec de la suppression du sondage : {{error}}",
     "deleteTooltip": "Supprimer le sondage",
     "editTemplate": "Modifier l'enquête",

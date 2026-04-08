@@ -10,6 +10,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
@@ -412,12 +413,22 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
           this.loadTemplates();
         },
         error: (error: unknown) => {
-          const errorMessage = getErrorMessage(error);
-          this.snackBar.open(
-            this.transloco.translate('adminSurveys.deleteError', { error: errorMessage }),
-            this.transloco.translate('common.dismiss'),
-            { duration: 5000 },
-          );
+          if (error instanceof HttpErrorResponse && error.status === 409) {
+            this.logger.warn('Cannot delete survey with existing responses', error);
+            this.snackBar.open(
+              this.transloco.translate('adminSurveys.deleteConflict'),
+              this.transloco.translate('common.dismiss'),
+              { duration: 8000 },
+            );
+          } else {
+            this.logger.error('Failed to delete survey', error);
+            const errorMessage = getErrorMessage(error);
+            this.snackBar.open(
+              this.transloco.translate('adminSurveys.deleteError', { error: errorMessage }),
+              this.transloco.translate('common.dismiss'),
+              { duration: 5000 },
+            );
+          }
           this.cdr.markForCheck();
         },
       });

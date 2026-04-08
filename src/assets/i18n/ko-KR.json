@@ -366,6 +366,7 @@
       "versionRequired": "버전은 필수입니다"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "기존 응답이 있어 이 설문조사를 삭제할 수 없습니다. 먼저 응답을 삭제한 후 다시 시도하세요.",
     "deleteError": "설문조사 삭제 실패: {{error}}",
     "deleteTooltip": "설문조사 삭제",
     "editTemplate": "설문조사 편집",

@@ -366,6 +366,7 @@
       "versionRequired": "Version ist erforderlich"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Diese Umfrage kann nicht gelöscht werden, da bereits Antworten vorhanden sind. Löschen Sie zuerst die Antworten und versuchen Sie es dann erneut.",
     "deleteError": "Umfrage konnte nicht gelöscht werden: {{error}}",
     "deleteTooltip": "Umfrage löschen",
     "editTemplate": "Umfrage bearbeiten",

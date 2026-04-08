@@ -366,6 +366,7 @@
       "versionRequired": "সংস্করণ প্রয়োজন"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "এই সমীক্ষাটি মুছে ফেলা যাবে না কারণ এতে বিদ্যমান প্রতিক্রিয়া রয়েছে। প্রথমে প্রতিক্রিয়াগুলি মুছে ফেলুন, তারপর আবার চেষ্টা করুন।",
     "deleteError": "সমীক্ষা মুছতে ব্যর্থ: {{error}}",
     "deleteTooltip": "সমীক্ষা মুছুন",
     "editTemplate": "জরিপ সম্পাদনা করুন",

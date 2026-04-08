@@ -366,6 +366,7 @@
       "versionRequired": "版本为必填项"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "无法删除此问卷，因为已有现有回复。请先删除回复，然后重试。",
     "deleteError": "删除问卷失败: {{error}}",
     "deleteTooltip": "删除问卷",
     "editTemplate": "编辑调查问卷",

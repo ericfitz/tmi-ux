@@ -366,6 +366,7 @@
       "versionRequired": "La versión es obligatoria"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "No se puede eliminar esta encuesta porque tiene respuestas existentes. Elimine las respuestas primero e inténtelo de nuevo.",
     "deleteError": "Error al eliminar la encuesta: {{error}}",
     "deleteTooltip": "Eliminar encuesta",
     "editTemplate": "Editar encuesta",

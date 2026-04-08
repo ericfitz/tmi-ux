@@ -2,6 +2,7 @@ import '@angular/compiler';
 
 import { vi, expect, afterEach, beforeEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, ElementRef, Injector, runInInjectionContext } from '@angular/core';
 
 import { AdminSurveysComponent } from './admin-surveys.component';
@@ -155,9 +156,43 @@ describe('AdminSurveysComponent - Delete', () => {
 
       component.deleteTemplate(template);
 
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to delete survey', expect.anything());
       expect(mockSnackBar.open).toHaveBeenCalledWith('adminSurveys.deleteError', 'common.dismiss', {
         duration: 5000,
       });
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
+    });
+
+    it('should show conflict message on 409 error', () => {
+      const template = createMockTemplate();
+      vi.stubGlobal(
+        'confirm',
+        vi.fn(() => true),
+      );
+      const conflictError = new HttpErrorResponse({
+        status: 409,
+        statusText: 'Conflict',
+        error: {
+          error: 'conflict',
+          error_description: 'Cannot delete survey with existing responses',
+        },
+      });
+      mockSurveyService.deleteSurvey.mockReturnValue(throwError(() => conflictError));
+
+      component.deleteTemplate(template);
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Cannot delete survey with existing responses',
+        expect.anything(),
+      );
+      expect(mockLogger.error).not.toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'adminSurveys.deleteConflict',
+        'common.dismiss',
+        {
+          duration: 8000,
+        },
+      );
       expect(mockCdr.markForCheck).toHaveBeenCalled();
     });
 

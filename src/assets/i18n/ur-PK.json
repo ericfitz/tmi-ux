@@ -366,6 +366,7 @@
       "versionRequired": "ورژن ضروری ہے"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "اس سروے کو حذف نہیں کیا جا سکتا کیونکہ اس میں موجودہ جوابات ہیں۔ پہلے جوابات حذف کریں، پھر دوبارہ کوشش کریں۔",
     "deleteError": "سروے حذف کرنے میں ناکامی: {{error}}",
     "deleteTooltip": "سروے حذف کریں",
     "editTemplate": "سروے میں ترمیم کریں",

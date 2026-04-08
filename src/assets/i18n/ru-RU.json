@@ -366,6 +366,7 @@
       "versionRequired": "Требуется указать версию"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Невозможно удалить этот опрос, так как у него есть существующие ответы. Сначала удалите ответы, затем попробуйте снова.",
     "deleteError": "Не удалось удалить опрос: {{error}}",
     "deleteTooltip": "Удалить опрос",
     "editTemplate": "Редактировать опрос",

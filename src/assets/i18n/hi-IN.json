@@ -368,6 +368,7 @@
       "versionRequired": "संस्करण आवश्यक है"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "इस सर्वेक्षण को हटाया नहीं जा सकता क्योंकि इसमें मौजूदा प्रतिक्रियाएँ हैं। पहले प्रतिक्रियाएँ हटाएँ, फिर पुनः प्रयास करें।",
     "deleteError": "सर्वेक्षण हटाने में विफल: {{error}}",
     "deleteTooltip": "सर्वेक्षण हटाएं",
     "editTemplate": "सर्वेक्षण संपादित करें",

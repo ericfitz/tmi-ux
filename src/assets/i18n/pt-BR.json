@@ -366,6 +366,7 @@
       "versionRequired": "Versão é obrigatória"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteConflict": "Não é possível excluir esta pesquisa porque ela possui respostas existentes. Exclua as respostas primeiro e tente novamente.",
     "deleteError": "Falha ao excluir a pesquisa: {{error}}",
     "deleteTooltip": "Excluir pesquisa",
     "editTemplate": "Editar pesquisa",
