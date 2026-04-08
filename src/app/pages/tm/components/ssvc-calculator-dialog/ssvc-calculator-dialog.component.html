@@ -1,0 +1,113 @@
+<div [dir]="currentDirection" *transloco="let t" class="ssvc-calculator-dialog">
+  <!-- Title -->
+  <h2 mat-dialog-title class="dialog-title">
+    <span>{{ t('ssvcCalculator.title') }}</span>
+    @if (decision) {
+      <span class="decision-badge" [class]="decisionClass">
+        {{ t('ssvcCalculator.decisions.' + decision) }}
+      </span>
+    }
+  </h2>
+
+  <mat-dialog-content>
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      @for (dp of decisionPoints; track dp.key; let i = $index) {
+        <div
+          class="step-dot"
+          [class.active]="i === currentStep"
+          [class.complete]="selections[i] !== null && i !== currentStep"
+          [class.clickable]="i <= _firstIncompleteStep()"
+          (click)="goToStep(i)"
+        >
+          <div class="dot">
+            @if (selections[i] !== null && i !== currentStep) {
+              <mat-icon class="check-icon">check</mat-icon>
+            } @else {
+              {{ i + 1 }}
+            }
+          </div>
+          <span class="step-label">{{ t(dp.nameKey) }}</span>
+        </div>
+        @if (i < decisionPoints.length - 1) {
+          <div class="step-connector" [class.complete]="selections[i] !== null"></div>
+        }
+      }
+    </div>
+
+    <!-- Decision point steps -->
+    @if (currentStep < totalSteps) {
+      <div class="step-content">
+        <div class="step-number">
+          {{ t('ssvcCalculator.stepOf', { current: currentStep + 1, total: totalSteps }) }}
+        </div>
+        <h3 class="step-title">{{ t(decisionPoints[currentStep].nameKey) }}</h3>
+        <p class="step-description">{{ t(decisionPoints[currentStep].descriptionKey) }}</p>
+
+        <div class="value-options">
+          @for (value of decisionPoints[currentStep].values; track value.shortName) {
+            <div
+              class="value-card"
+              [class.selected]="selections[currentStep] === value.shortName"
+              (click)="onValueSelect(value.shortName)"
+            >
+              <div class="value-name">{{ t(value.nameKey) }}</div>
+              <div class="value-description">{{ t(value.descriptionKey) }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Summary step -->
+    @if (currentStep === totalSteps && isAllComplete) {
+      <div class="step-content summary-step">
+        <h3 class="step-title">{{ t('ssvcCalculator.summary') }}</h3>
+
+        <div class="summary-grid">
+          @for (dp of decisionPoints; track dp.key; let i = $index) {
+            <div class="summary-row">
+              <span class="summary-label">{{ t(dp.nameKey) }}</span>
+              <span class="summary-value">
+                @for (v of dp.values; track v.shortName) {
+                  @if (v.shortName === selections[i]) {
+                    {{ t(v.nameKey) }}
+                  }
+                }
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="decision-result" [class]="decisionClass">
+          <div class="decision-result-label">{{ t('ssvcCalculator.decisionLabel') }}</div>
+          <div class="decision-result-value">{{ t('ssvcCalculator.decisions.' + decision) }}</div>
+          <div class="decision-result-description">
+            {{ t('ssvcCalculator.decisions.' + decision + 'Desc') }}
+          </div>
+        </div>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    @if (currentStep > 0) {
+      <button mat-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ t('ssvcCalculator.back') }}
+      </button>
+    }
+    <span class="spacer"></span>
+    <button mat-button (click)="cancel()">{{ t('ssvcCalculator.cancel') }}</button>
+    @if (currentStep < totalSteps) {
+      <button mat-flat-button color="primary" [disabled]="!isCurrentStepComplete" (click)="next()">
+        {{ t('ssvcCalculator.next') }}
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    } @else {
+      <button mat-flat-button color="primary" [disabled]="!isAllComplete" (click)="apply()">
+        {{ t('ssvcCalculator.apply') }}
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,254 @@
+.ssvc-calculator-dialog {
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.decision-badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.decision-defer {
+  color: var(--color-severity-none);
+  background-color: color-mix(in srgb, var(--color-severity-none) 15%, transparent);
+}
+
+.decision-scheduled {
+  color: var(--color-severity-low);
+  background-color: color-mix(in srgb, var(--color-severity-low) 15%, transparent);
+}
+
+.decision-out-of-cycle {
+  color: var(--color-severity-high);
+  background-color: color-mix(in srgb, var(--color-severity-high) 15%, transparent);
+}
+
+.decision-immediate {
+  color: var(--color-severity-critical);
+  background-color: color-mix(in srgb, var(--color-severity-critical) 15%, transparent);
+}
+
+// Step indicator
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+  gap: 4px;
+}
+
+.step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  .dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  &.active .dot {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  &.complete .dot {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  .check-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .step-label {
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+  }
+
+  &.active .step-label {
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+  }
+}
+
+.step-connector {
+  width: 32px;
+  height: 1px;
+  background: var(--mat-sys-outline-variant);
+  margin-bottom: 18px; // align with dot center, not label
+
+  &.complete {
+    background: var(--mat-sys-primary);
+  }
+}
+
+// Step content
+.step-content {
+  padding: 8px 0 16px;
+}
+
+.step-number {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.step-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.step-description {
+  margin: 0 0 20px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+// Value cards (radio-card style)
+.value-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.value-card {
+  border: 2px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+
+  &:hover {
+    border-color: var(--mat-sys-outline);
+  }
+
+  &.selected {
+    border-color: var(--mat-sys-primary);
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  }
+
+  .value-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  &.selected .value-name {
+    color: var(--mat-sys-primary);
+  }
+
+  .value-description {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.4;
+  }
+}
+
+// Summary step
+.summary-grid {
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  .summary-label {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .summary-value {
+    font-weight: 600;
+  }
+}
+
+.decision-result {
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 8px;
+
+  .decision-result-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    opacity: 0.8;
+  }
+
+  .decision-result-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .decision-result-description {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+}
+
+// Dialog actions
+.dialog-actions {
+  .spacer {
+    flex: 1;
+  }
+}
+
+// Responsive
+@media (width <= 600px) {
+  .ssvc-calculator-dialog {
+    min-width: unset;
+  }
+
+  .step-indicator {
+    gap: 2px;
+  }
+
+  .step-label {
+    font-size: 9px !important;
+  }
+
+  .step-connector {
+    width: 16px;
+  }
+}
