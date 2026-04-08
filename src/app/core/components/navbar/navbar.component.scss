@@ -18,6 +18,20 @@
   }
 }
 
+.home-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0;
+
+  .menu-caret {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-left: -4px;
+    opacity: 0.7;
+  }
+}
+
 .navbar-left,
 .navbar-right {
   display: flex;
@@ -134,6 +148,13 @@
   .app-title {
     margin-left: 16px;
     margin-right: 8px;
+  }
+
+  .home-menu-trigger {
+    .menu-caret {
+      margin-left: 0;
+      margin-right: -4px;
+    }
   }
 
   .language-selector {
