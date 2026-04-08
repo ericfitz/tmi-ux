@@ -1085,7 +1085,11 @@
     },
     "home": "হোম",
     "intake": "ইনটেক",
-    "logoutButton": "সাইন আউট",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "সাইন আউট"
+    },
     "serverStatus": {
       "noServerConfigured": "কোনো সার্ভার কনফিগার করা নেই",
       "serverConnected": "সার্ভার সংযুক্ত",

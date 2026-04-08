@@ -1085,7 +1085,11 @@
     },
     "home": "Главная",
     "intake": "Приём",
-    "logoutButton": "Выйти",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Выйти"
+    },
     "serverStatus": {
       "noServerConfigured": "Сервер не настроен",
       "serverConnected": "Сервер подключён",

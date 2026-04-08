@@ -1085,7 +1085,11 @@
     },
     "home": "Beranda",
     "intake": "Penerimaan",
-    "logoutButton": "Keluar",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Keluar"
+    },
     "serverStatus": {
       "noServerConfigured": "Server Tidak Dikonfigurasi",
       "serverConnected": "Server Terhubung",

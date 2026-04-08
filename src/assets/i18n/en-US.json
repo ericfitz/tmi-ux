@@ -1117,11 +1117,11 @@
     },
     "home": "Home",
     "intake": "Intake",
+    "logoutButton": "{{navbar.menu.logout}}",
     "menu": {
-      "home": "Home",
+      "home": "{{navbar.home}}",
       "logout": "Sign Out"
     },
-    "logoutButton": "Sign Out",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",

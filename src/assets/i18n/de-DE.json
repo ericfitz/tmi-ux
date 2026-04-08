@@ -1085,7 +1085,11 @@
     },
     "home": "Startseite",
     "intake": "Aufnahme",
-    "logoutButton": "Abmelden",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Abmelden"
+    },
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",
       "serverConnected": "Server verbunden",

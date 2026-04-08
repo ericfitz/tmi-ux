@@ -1085,7 +1085,11 @@
     },
     "home": "Accueil",
     "intake": "Admission",
-    "logoutButton": "Deconnexion",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Deconnexion"
+    },
     "serverStatus": {
       "noServerConfigured": "Aucun serveur configure",
       "serverConnected": "Serveur connecte",

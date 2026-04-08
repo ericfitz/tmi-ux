@@ -1112,7 +1112,11 @@
     },
     "home": "होम",
     "intake": "इनटेक",
-    "logoutButton": "साइन आउट",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "साइन आउट"
+    },
     "serverStatus": {
       "noServerConfigured": "कोई सर्वर कॉन्फ़िगर नहीं",
       "serverConnected": "सर्वर कनेक्टेड",

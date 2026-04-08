@@ -1085,7 +1085,11 @@
     },
     "home": "Inicio",
     "intake": "Recepción",
-    "logoutButton": "Cerrar Sesión",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Cerrar Sesión"
+    },
     "serverStatus": {
       "noServerConfigured": "No Hay Servidor Configurado",
       "serverConnected": "Servidor Conectado",

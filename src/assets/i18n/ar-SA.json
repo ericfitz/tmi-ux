@@ -1096,7 +1096,11 @@
     },
     "home": "الصفحة الرئيسية",
     "intake": "استقبال",
-    "logoutButton": "تسجيل الخروج",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "تسجيل الخروج"
+    },
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",
       "serverConnected": "الخادم متصل",

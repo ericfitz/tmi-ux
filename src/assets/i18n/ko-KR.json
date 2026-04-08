@@ -1085,7 +1085,11 @@
     },
     "home": "홈",
     "intake": "접수",
-    "logoutButton": "로그아웃",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "로그아웃"
+    },
     "serverStatus": {
       "noServerConfigured": "서버 구성 안 됨",
       "serverConnected": "서버 연결됨",

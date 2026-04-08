@@ -1085,7 +1085,11 @@
     },
     "home": "דף הבית",
     "intake": "קליטה",
-    "logoutButton": "התנתק",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "התנתק"
+    },
     "serverStatus": {
       "noServerConfigured": "לא הוגדר שרת",
       "serverConnected": "השרת מחובר",

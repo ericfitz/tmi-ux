@@ -1096,7 +1096,11 @@
     },
     "home": "Inicio",
     "intake": "Triagem",
-    "logoutButton": "Sair",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "Sair"
+    },
     "serverStatus": {
       "noServerConfigured": "Nenhum Servidor Configurado",
       "serverConnected": "Servidor Conectado",

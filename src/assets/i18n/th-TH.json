@@ -1080,7 +1080,11 @@
     },
     "home": "หน้าแรก",
     "intake": "รับเรื่อง",
-    "logoutButton": "ออกจากระบบ",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "ออกจากระบบ"
+    },
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
       "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",

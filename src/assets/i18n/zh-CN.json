@@ -1085,7 +1085,11 @@
     },
     "home": "主页",
     "intake": "受理",
-    "logoutButton": "退出登录",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "退出登录"
+    },
     "serverStatus": {
       "noServerConfigured": "未配置服务器",
       "serverConnected": "服务器已连接",

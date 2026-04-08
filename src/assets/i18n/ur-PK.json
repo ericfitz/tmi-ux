@@ -1085,7 +1085,11 @@
     },
     "home": "ہوم",
     "intake": "انٹیک",
-    "logoutButton": "سائن آؤٹ",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "سائن آؤٹ"
+    },
     "serverStatus": {
       "noServerConfigured": "کوئی سرور ترتیب نہیں دیا گیا",
       "serverConnected": "سرور منسلک",

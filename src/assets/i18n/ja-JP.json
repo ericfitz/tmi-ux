@@ -1096,7 +1096,11 @@
     },
     "home": "ホーム",
     "intake": "受付",
-    "logoutButton": "サインアウト",
+    "logoutButton": "{{navbar.menu.logout}}",
+    "menu": {
+      "home": "{{navbar.home}}",
+      "logout": "サインアウト"
+    },
     "serverStatus": {
       "noServerConfigured": "サーバー未設定",
       "serverConnected": "サーバー接続済み",
