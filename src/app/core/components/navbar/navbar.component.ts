@@ -58,6 +58,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userEmail = '';
   homeLink = '/';
 
+  /** Intake button: shown only for normal users (not admin, not reviewer) */
+  get showIntakeButton(): boolean {
+    return !this.isAdmin && !this.isSecurityReviewer;
+  }
+
+  /** Dashboard button: shown for everyone except admin-only users */
+  get showDashboardButton(): boolean {
+    return !this.isAdmin || this.isSecurityReviewer;
+  }
+
+  /** Triage button: shown for security reviewers */
+  get showTriageButton(): boolean {
+    return this.isSecurityReviewer;
+  }
+
+  /** Admin button: shown for admins */
+  get showAdminButton(): boolean {
+    return this.isAdmin;
+  }
+
   // Flag to determine if we're in development mode
   isDevelopmentMode = isDevMode();
 

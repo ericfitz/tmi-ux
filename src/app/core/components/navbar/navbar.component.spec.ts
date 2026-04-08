@@ -442,4 +442,69 @@ describe('NavbarComponent', () => {
       expect(mockAuthService.logout).toHaveBeenCalled();
     });
   });
+
+  describe('toolbar button visibility', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should show Intake for normal users', () => {
+      mockAuthService.userProfile$.next({
+        display_name: 'User',
+        email: 'user@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+      });
+      expect(component.isAuthenticated).toBe(true);
+      expect(component.showIntakeButton).toBe(true);
+    });
+
+    it('should show Dashboard for normal users', () => {
+      mockAuthService.userProfile$.next({
+        display_name: 'User',
+        email: 'user@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+      });
+      expect(component.showDashboardButton).toBe(true);
+    });
+
+    it('should hide Intake and show Dashboard+Triage for reviewers', () => {
+      mockAuthService.userProfile$.next({
+        display_name: 'Reviewer',
+        email: 'reviewer@example.com',
+        is_admin: false,
+        is_security_reviewer: true,
+      });
+      expect(component.showIntakeButton).toBe(false);
+      expect(component.showDashboardButton).toBe(true);
+      expect(component.showTriageButton).toBe(true);
+    });
+
+    it('should show only Admin for admin-only users', () => {
+      mockAuthService.userProfile$.next({
+        display_name: 'Admin',
+        email: 'admin@example.com',
+        is_admin: true,
+        is_security_reviewer: false,
+      });
+      expect(component.showIntakeButton).toBe(false);
+      expect(component.showDashboardButton).toBe(false);
+      expect(component.showTriageButton).toBe(false);
+      expect(component.showAdminButton).toBe(true);
+    });
+
+    it('should show Dashboard+Triage+Admin for reviewer+admin', () => {
+      mockAuthService.userProfile$.next({
+        display_name: 'SuperUser',
+        email: 'super@example.com',
+        is_admin: true,
+        is_security_reviewer: true,
+      });
+      expect(component.showIntakeButton).toBe(false);
+      expect(component.showDashboardButton).toBe(true);
+      expect(component.showTriageButton).toBe(true);
+      expect(component.showAdminButton).toBe(true);
+    });
+  });
 });
