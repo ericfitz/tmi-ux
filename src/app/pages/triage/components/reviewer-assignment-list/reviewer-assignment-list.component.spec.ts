@@ -169,7 +169,7 @@ describe('ReviewerAssignmentListComponent', () => {
   });
 
   describe('loadThreatModels()', () => {
-    it('should pass unassigned filter as is:blank by default', () => {
+    it('should pass unassigned filter as is:null by default', () => {
       mockThreatModelService.fetchThreatModels.mockReturnValue(of(makeApiResponse([])));
       mockSecurityReviewerService.loadReviewerOptions.mockReturnValue(
         of({ mode: 'picker' } as SecurityReviewerResult),
@@ -178,7 +178,7 @@ describe('ReviewerAssignmentListComponent', () => {
       component.ngOnInit();
 
       const callArgs = mockThreatModelService.fetchThreatModels.mock.calls[0][0];
-      expect(callArgs.security_reviewer).toBe('is:blank');
+      expect(callArgs.security_reviewer).toBe('is:null');
     });
 
     it('should display items returned from server and set total', () => {

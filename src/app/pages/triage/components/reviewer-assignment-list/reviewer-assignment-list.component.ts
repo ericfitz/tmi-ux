@@ -229,7 +229,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
     }
 
     if (this.filters.unassigned) {
-      params.security_reviewer = 'is:blank';
+      params.security_reviewer = 'is:null';
     } else if (this.filters.securityReviewer.trim()) {
       params.security_reviewer = this.filters.securityReviewer.trim();
     }
