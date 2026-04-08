@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "다시 실행 스택",
       "redoStackSize": "다시 실행 스택 크기",
-      "summary": "요약",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "타임스탬프",
       "title": "기록",
       "undoStack": "실행 취소 스택",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}}초"
     },
     "title": "세션이 곧 만료됩니다"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "결정",
+    "decisions": {
+      "Defer": "연기",
+      "DeferDesc": "즉시 조치가 필요하지 않습니다. 일반적인 개발 주기 내에서 해결하세요(약 90일).",
+      "Immediate": "즉시",
+      "ImmediateDesc": "모든 사용 가능한 리소스를 빠른 해결에 동원하세요. 최고 우선순위입니다.",
+      "Out-of-Cycle": "주기 외",
+      "Out-of-CycleDesc": "일반적인 프로세스 외에서 수정사항을 개발하세요. 리소스를 신속한 배포를 위해 재배분하세요.",
+      "Scheduled": "예정됨",
+      "ScheduledDesc": "정기적인 유지보수 또는 개발 주기 동안 해결하세요."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "이 취약점이 실제로 공격자들에 의해 활발하게 악용되고 있다는 확실한 증거가 있습니다.",
+      "description": "이 취약점의 현재 악용 상태는 어떻게 됩니까?",
+      "name": "악용",
+      "none": "{{common.none}}",
+      "noneDesc": "활발한 악용 증거가 없고 공개 PoC가 없습니다.",
+      "poc": "공개 PoC",
+      "pocDesc": "일반적인 공개 PoC가 존재하거나(예: Metasploit 또는 ExploitDB), 잘 알려진 악용 방법이 문서화되어 있습니다."
+    },
+    "methodology": "공급자",
+    "next": "다음",
+    "openCalculator": "SSVC 추가",
+    "publicSafetyImpact": {
+      "description": "이 취약점의 악용이 공공 안전에 위험을 초래합니까?",
+      "minimal": "최소",
+      "minimalDesc": "안전 영향은 미미합니다. 개인이나 중요 인프라에 예상되는 피해가 없습니다.",
+      "name": "공공 안전 영향",
+      "significant": "상당함",
+      "significantDesc": "안전 영향은 약간, 심각하거나 치명적입니다. 개인 피해 가능성 또는 중요 서비스 중단."
+    },
+    "stepOf": "단계 {{current}} / {{total}}",
+    "summary": "요약",
+    "technicalImpact": {
+      "description": "취약점이 악용될 경우 기술적 영향의 심각성은 어떻게 됩니까?",
+      "name": "기술적 영향",
+      "partial": "부분적",
+      "partialDesc": "소프트웨어 동작 또는 정보 공개의 제한된 제어, 또는 전체 제어를 얻을 확률이 작음.",
+      "total": "전체",
+      "totalDesc": "소프트웨어 동작의 완전한 제어, 또는 시스템의 모든 정보의 완전한 공개."
+    },
+    "title": "SSVC 계산기",
+    "utility": {
+      "description": "이 취약점의 악용이 일반적인 공격자에게 얼마나 유용합니까?",
+      "efficient": "효율적",
+      "efficientDesc": "악용을 광범위한 대상으로 자동화할 수 있거나, 수동 작업이 필요하지만 대상이 집중되어 있음 — 중간 정도의 공격자 이득.",
+      "laborious": "번거로움",
+      "laboriousDesc": "악용을 자동화할 수 없고 대상이 광범위함 — 낮은 수익의 수동 작업.",
+      "name": "유용성",
+      "superEffective": "매우 효과적",
+      "superEffectiveDesc": "악용을 자동화할 수 있고 대상이 집중되어 있음 — 고가치 시스템의 자동 악용."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

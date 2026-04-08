@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "重做堆栈",
       "redoStackSize": "重做堆栈大小",
-      "summary": "摘要",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "时间戳",
       "title": "历史记录",
       "undoStack": "撤销堆栈",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}}秒"
     },
     "title": "会话即将过期"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "决策",
+    "decisions": {
+      "Defer": "延迟",
+      "DeferDesc": "不需要立即行动。在正常开发周期内解决（约90天）。",
+      "Immediate": "立即",
+      "ImmediateDesc": "动员所有可用资源进行快速补救。最高紧急程度。",
+      "Out-of-Cycle": "超周期",
+      "Out-of-CycleDesc": "在正常流程外开发修复。重新分配资源以加快交付。",
+      "Scheduled": "定时",
+      "ScheduledDesc": "在定期维护或开发周期中处理。"
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "有可靠证据表明攻击者正在野外积极利用此漏洞。",
+      "description": "此漏洞的当前利用状态是什么？",
+      "name": "利用",
+      "none": "{{common.none}}",
+      "noneDesc": "没有证据表明存在活跃利用，也没有公开的PoC。",
+      "poc": "公开PoC",
+      "pocDesc": "存在典型的公开PoC（例如在Metasploit或ExploitDB上），或者已记录一个众所周知的利用方法。"
+    },
+    "methodology": "供应商",
+    "next": "下一步",
+    "openCalculator": "添加SSVC",
+    "publicSafetyImpact": {
+      "description": "利用此漏洞是否会对公共安全造成风险？",
+      "minimal": "最小",
+      "minimalDesc": "安全影响可以忽略不计。不会对人员或关键基础设施造成预期的伤害。",
+      "name": "公共安全影响",
+      "significant": "显著",
+      "significantDesc": "安全影响边际、关键或灾难性。可能对人员造成伤害或中断关键服务。"
+    },
+    "stepOf": "步骤{{current}}/{{total}}",
+    "summary": "摘要",
+    "technicalImpact": {
+      "description": "如果利用此漏洞，技术影响的严重程度如何？",
+      "name": "技术影响",
+      "partial": "部分",
+      "partialDesc": "对软件行为的控制有限或信息泄露，或获得完全控制的概率较小。",
+      "total": "完全",
+      "totalDesc": "完全控制软件的行为，或完全披露系统上的所有信息。"
+    },
+    "title": "SSVC计算器",
+    "utility": {
+      "description": "利用此漏洞对典型攻击者有多大用处？",
+      "efficient": "高效",
+      "efficientDesc": "可以对分散的目标自动化利用，或需要手动操作但目标集中——攻击者获得中等程度的收益。",
+      "laborious": "费力",
+      "laboriousDesc": "无法自动化利用且目标分散——手动工作且每次攻击的回报低。",
+      "name": "实用性",
+      "superEffective": "超级有效",
+      "superEffectiveDesc": "可以自动化利用且目标集中——对高价值系统的自动化利用。"
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

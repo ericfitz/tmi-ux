@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "مكدس الإعادة",
       "redoStackSize": "حجم مكدس الإعادة",
-      "summary": "ملخص",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "الطابع الزمني",
       "title": "السجل",
       "undoStack": "مكدس التراجع",
@@ -1342,6 +1342,65 @@
       "seconds": "{{seconds}} ثانية"
     },
     "title": "الجلسة على وشك الانتهاء"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "القرار",
+    "decisions": {
+      "Defer": "تأجيل",
+      "DeferDesc": "لا يتطلب إجراء فوري. يتم الحل في دورات التطوير العادية (~90 يوم).",
+      "Immediate": "فوري",
+      "ImmediateDesc": "تعبئة جميع الموارد المتاحة للمعالجة السريعة. أعلى درجة استعجالية.",
+      "Out-of-Cycle": "خارج الدورة",
+      "Out-of-CycleDesc": "تطوير إصلاح خارج العمليات الطبيعية. إعادة تخصيص الموارد للتسليم المعجل.",
+      "Scheduled": "مجدول",
+      "ScheduledDesc": "معالجة الثغرة أثناء دورات الصيانة أو التطوير العادية."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "هناك دليل موثوق على أن هذه الثغرة يتم استغلالها بنشاط من قبل المهاجمين.",
+      "description": "ما هي الحالة الحالية لاستغلال هذه الثغرة؟",
+      "name": "الاستغلال",
+      "none": "{{common.none}}",
+      "noneDesc": "لا يوجد دليل على استغلال نشط وليس هناك دليل إثبات عام.",
+      "poc": "PoC عام",
+      "pocDesc": "يوجد دليل إثبات عام نموذجي (مثل Metasploit أو ExploitDB)، أو يتم توثيق طريقة استغلال معروفة."
+    },
+    "methodology": "المورد",
+    "next": "التالي",
+    "openCalculator": "إضافة SSVC",
+    "publicSafetyImpact": {
+      "description": "هل استغلال هذه الثغرة يشكل خطراً على سلامة الجمهور؟",
+      "minimal": "ضئيل",
+      "minimalDesc": "تأثير السلامة ضئيل. لا يتوقع أي ضرر للأشخاص أو البنية التحتية الحرجة.",
+      "name": "تأثير السلامة العامة",
+      "significant": "كبير",
+      "significantDesc": "تأثير السلامة هامشي أو حرج أو كارثي. احتمال الضرر للأشخاص أو انقطاع الخدمات الحرجة."
+    },
+    "stepOf": "الخطوة {{current}} من {{total}}",
+    "summary": "الملخص",
+    "technicalImpact": {
+      "description": "ما هو مستوى التأثير التقني إذا تم استغلال الثغرة؟",
+      "name": "التأثير التقني",
+      "partial": "جزئي",
+      "partialDesc": "تحكم محدود في سلوك البرنامج أو الكشف عن المعلومات، أو احتمالية صغيرة للحصول على تحكم كامل.",
+      "total": "كامل",
+      "totalDesc": "التحكم الكامل في سلوك البرنامج، أو الكشف الكامل عن جميع المعلومات على النظام."
+    },
+    "title": "حاسبة SSVC",
+    "utility": {
+      "description": "ما مدى فائدة استغلال هذه الثغرة لمهاجم نموذجي؟",
+      "efficient": "فعال",
+      "efficientDesc": "يمكن أتمتة الاستغلال مع أهداف منتشرة، أو يتطلب جهداً يدوياً ولكن الأهداف مركزة - فائدة معتدلة للمهاجم.",
+      "laborious": "شاق",
+      "laboriousDesc": "لا يمكن أتمتة الاستغلال والأهداف منتشرة - جهد يدوي مع عائد منخفض لكل هجوم.",
+      "name": "المنفعة",
+      "superEffective": "فعال جداً",
+      "superEffectiveDesc": "يمكن أتمتة الاستغلال والأهداف مركزة - استغلال آلي للأنظمة ذات القيمة العالية."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

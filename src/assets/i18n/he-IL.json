@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "מחסנית ביצוע שוב",
       "redoStackSize": "גודל מחסנית ביצוע שוב",
-      "summary": "סיכום",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "חותמת זמן",
       "title": "היסטוריה",
       "undoStack": "מחסנית ביטול",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}} שניות"
     },
     "title": "ההפעלה עומדת לפוג בקרוב"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "החלטה",
+    "decisions": {
+      "Defer": "דחיה",
+      "DeferDesc": "לא נדרש פעולה מיידית. פתור בתוך מחזורי פיתוח רגילים (~90 ימים).",
+      "Immediate": "מיידי",
+      "ImmediateDesc": "גייס את כל המשאבים הזמינים לתיקון מהיר. דחיפות מקסימלית.",
+      "Out-of-Cycle": "מחוץ למחזור",
+      "Out-of-CycleDesc": "פתח תיקייה בחוץ לתהליכים רגילים. הקצה מחדש משאבים למסירה מואצת.",
+      "Scheduled": "מתוזמן",
+      "ScheduledDesc": "תייחס בזמן מחזורי תחזוקה או פיתוח רגילים."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "קיימת הוכחה אמינה לכך שפגיעות זו מנוצלת באופן פעיל על ידי תוקפים.",
+      "description": "מה המצב הנוכחי של ניצול של פגיעות זו?",
+      "name": "ניצול",
+      "none": "{{common.none}}",
+      "noneDesc": "אין הוכחה לניצול פעיל ואין הוכחת קונספט ציבורית.",
+      "poc": "PoC ציבורי",
+      "pocDesc": "קיימת הוכחת קונספט ציבורית טיפוסית (למשל ב-Metasploit או ExploitDB), או שיטת ניצול ידועה תועדה."
+    },
+    "methodology": "ספק",
+    "next": "הבא",
+    "openCalculator": "הוסף SSVC",
+    "publicSafetyImpact": {
+      "description": "האם ניצול של פגיעות זו מהווה סיכון לבטיחות הציבור?",
+      "minimal": "מינימלי",
+      "minimalDesc": "השפעת הבטיחות היא זניחה. אין נזק צפוי לאנשים או לתשתית קריטית.",
+      "name": "השפעה על בטיחות הציבור",
+      "significant": "משמעותי",
+      "significantDesc": "השפעת הבטיחות היא שולית, קריטית או קטאסטרופלית. נזק פוטנציאלי לאנשים או הפרעה של שירותים קריטיים."
+    },
+    "stepOf": "שלב {{current}} מתוך {{total}}",
+    "summary": "סיכום",
+    "technicalImpact": {
+      "description": "מה חומרת ההשפעה הטכנית אם הפגיעות מנוצלת?",
+      "name": "השפעה טכנית",
+      "partial": "חלקי",
+      "partialDesc": "שליטה מוגבלת בהתנהגות התוכנה או חשיפת מידע, או הסתברות קטנה להשיג שליטה מלאה.",
+      "total": "מלא",
+      "totalDesc": "שליטה מלאה בהתנהגות התוכנה, או גילוי מלא של כל המידע במערכת."
+    },
+    "title": "מחשבון SSVC",
+    "utility": {
+      "description": "כמה שימושית היא ניצול של פגיעות זו לתוקף טיפוסי?",
+      "efficient": "יעיל",
+      "efficientDesc": "גם שניצול יכול להיות אוטומטי עם מטרות מפוזרות, או שהוא דורש מאמץ ידני אך מטרות מרוכזות — הטבה מתונה של התוקף.",
+      "laborious": "מעייף",
+      "laboriousDesc": "לא ניתן להפוך את הניצול לאוטומטי ומטרות מפוזרות — מאמץ ידני עם החזר נמוך לכל התקפה.",
+      "name": "כלי עזר",
+      "superEffective": "סופר יעיל",
+      "superEffectiveDesc": "ניצול יכול להיות אוטומטי ומטרות מרוכזות — ניצול אוטומטי של מערכות בעלות ערך גבוה."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

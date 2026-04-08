@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "やり直しスタック",
       "redoStackSize": "やり直しスタックサイズ",
-      "summary": "概要",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "タイムスタンプ",
       "title": "履歴",
       "undoStack": "元に戻すスタック",
@@ -1342,6 +1342,65 @@
       "seconds": "{{seconds}} 秒"
     },
     "title": "セッションがまもなく期限切れになります"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "決定",
+    "decisions": {
+      "Defer": "延期",
+      "DeferDesc": "即座の対応は不要です。通常の開発サイクル（～90日）内に解決します。",
+      "Immediate": "即座",
+      "ImmediateDesc": "利用可能なすべてのリソースを動員して迅速な修復を行います。最高の緊急性。",
+      "Out-of-Cycle": "サイクル外",
+      "Out-of-CycleDesc": "通常のプロセス外で修正を開発します。迅速な納期に向けてリソースを再配分します。",
+      "Scheduled": "予定済み",
+      "ScheduledDesc": "定期的なメンテナンスまたは開発サイクル中に対応します。"
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "この脆弱性が攻撃者により野生で積極的に悪用されていることを示す信頼できる証拠があります。",
+      "description": "この脆弱性の悪用の現在の状態は何ですか？",
+      "name": "悪用",
+      "none": "{{common.none}}",
+      "noneDesc": "積極的な悪用の証拠がなく、公開されたPoC（概念実証）もありません。",
+      "poc": "公開 PoC",
+      "pocDesc": "典型的な公開概念実証が存在します（例：MetasploitまたはExploitDB）、または周知の悪用方法が文書化されています。"
+    },
+    "methodology": "サプライヤー",
+    "next": "次へ",
+    "openCalculator": "SSVCを追加",
+    "publicSafetyImpact": {
+      "description": "この脆弱性の悪用は公安に対するリスクをもたらしますか？",
+      "minimal": "最小限",
+      "minimalDesc": "安全への影響は無視できます。人員または重要なインフラストラクチャへの害は予想されません。",
+      "name": "公安への影響",
+      "significant": "重大",
+      "significantDesc": "安全への影響は限定的、重大、または壊滅的です。人員への潜在的害または重要なサービスの中断。"
+    },
+    "stepOf": "ステップ {{current}} / {{total}}",
+    "summary": "概要",
+    "technicalImpact": {
+      "description": "脆弱性が悪用された場合の技術的影響の重大度は何ですか？",
+      "name": "技術的影響",
+      "partial": "部分的",
+      "partialDesc": "ソフトウェアの動作または情報開示に対する限定的な制御、または完全な制御を取得する小さな確率。",
+      "total": "完全",
+      "totalDesc": "ソフトウェアの動作を完全に制御するか、システム上のすべての情報を完全に開示します。"
+    },
+    "title": "SSVCカルキュレーター",
+    "utility": {
+      "description": "典型的な攻撃者にとってこの脆弱性の悪用はどの程度有用ですか？",
+      "efficient": "効率的",
+      "efficientDesc": "悪用を拡散ターゲットで自動化できるか、手動の努力が必要であるが対象が集中している - 攻撃者への中程度の利益。",
+      "laborious": "労力がかかる",
+      "laboriousDesc": "悪用を自動化できず、対象が拡散している - 攻撃あたりの低い収益率での手動の努力。",
+      "name": "ユーティリティ",
+      "superEffective": "スーパー効果的",
+      "superEffectiveDesc": "悪用は自動化可能で、ターゲットが集中している — 高価値システムの自動化された悪用。"
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

@@ -170,5 +170,20 @@
         "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       }
     }
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "exploitation": {
+      "active": "{{common.active}}",
+      "none": "{{common.none}}"
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
+  },
+  "debugDialogs": {
+    "historyDialog": {
+      "summary": "{{ssvcCalculator.summary}}"
+    }
   }
 }

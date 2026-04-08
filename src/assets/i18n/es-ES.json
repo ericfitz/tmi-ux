@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Pila de Rehacer",
       "redoStackSize": "Tamaño de Pila de Rehacer",
-      "summary": "Resumen",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "Marca de Tiempo",
       "title": "Historial",
       "undoStack": "Pila de Deshacer",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}} segundos"
     },
     "title": "La Sesión Expirará Pronto"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "Decisión",
+    "decisions": {
+      "Defer": "Diferir",
+      "DeferDesc": "No se requiere acción inmediata. Resuelva dentro de ciclos normales de desarrollo (~90 días).",
+      "Immediate": "Inmediato",
+      "ImmediateDesc": "Movilice todos los recursos disponibles para remediar rápidamente. Mayor urgencia.",
+      "Out-of-Cycle": "Fuera de Ciclo",
+      "Out-of-CycleDesc": "Desarrolle una corrección fuera de los procesos normales. Reasigne recursos para una entrega acelerada.",
+      "Scheduled": "Programado",
+      "ScheduledDesc": "Aborde durante ciclos de mantenimiento o desarrollo regular."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "Hay evidencia confiable de que esta vulnerabilidad está siendo explotada activamente por atacantes.",
+      "description": "¿Cuál es el estado actual de explotación de esta vulnerabilidad?",
+      "name": "Explotación",
+      "none": "{{common.none}}",
+      "noneDesc": "Sin evidencia de explotación activa y sin prueba de concepto pública.",
+      "poc": "PoC Público",
+      "pocDesc": "Existe una prueba de concepto pública típica (p. ej., en Metasploit o ExploitDB), o se documenta un método de explotación bien conocido."
+    },
+    "methodology": "Proveedor",
+    "next": "Siguiente",
+    "openCalculator": "Agregar SSVC",
+    "publicSafetyImpact": {
+      "description": "¿La explotación de esta vulnerabilidad presenta un riesgo para la seguridad pública?",
+      "minimal": "Mínimo",
+      "minimalDesc": "El impacto en la seguridad es negligible. Sin daño esperado a personas o infraestructura crítica.",
+      "name": "Impacto en la Seguridad Pública",
+      "significant": "Significativo",
+      "significantDesc": "El impacto en la seguridad es marginal, crítico o catastrófico. Daño potencial a personas o interrupción de servicios críticos."
+    },
+    "stepOf": "Paso {{current}} de {{total}}",
+    "summary": "Resumen",
+    "technicalImpact": {
+      "description": "¿Cuál es la gravedad del impacto técnico si se explota la vulnerabilidad?",
+      "name": "Impacto Técnico",
+      "partial": "Parcial",
+      "partialDesc": "Control limitado del comportamiento del software o exposición de información, o una pequeña probabilidad de obtener control total.",
+      "total": "Total",
+      "totalDesc": "Control total del comportamiento del software, o divulgación completa de toda la información del sistema."
+    },
+    "title": "Calculadora SSVC",
+    "utility": {
+      "description": "¿Qué tan útil es la explotación de esta vulnerabilidad para un atacante típico?",
+      "efficient": "Eficiente",
+      "efficientDesc": "Ya sea que la explotación se pueda automatizar con objetivos dispersos, o requiera esfuerzo manual pero los objetivos se concentren — beneficio moderado del atacante.",
+      "laborious": "Laborioso",
+      "laboriousDesc": "La explotación no se puede automatizar y los objetivos son dispersos — esfuerzo manual con bajo rendimiento por ataque.",
+      "name": "Utilidad",
+      "superEffective": "Súper Efectivo",
+      "superEffectiveDesc": "La explotación se puede automatizar y los objetivos se concentran — explotación automatizada de sistemas de alto valor."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

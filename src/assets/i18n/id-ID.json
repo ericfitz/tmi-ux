@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Tumpukan Ulangi",
       "redoStackSize": "Ukuran Tumpukan Ulangi",
-      "summary": "Ringkasan",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "Stempel Waktu",
       "title": "Riwayat",
       "undoStack": "Tumpukan Batalkan",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}} detik"
     },
     "title": "Sesi Akan Segera Berakhir"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "Keputusan",
+    "decisions": {
+      "Defer": "Tunda",
+      "DeferDesc": "Tidak ada tindakan segera yang diperlukan. Selesaikan dalam siklus pengembangan normal (~90 hari).",
+      "Immediate": "Segera",
+      "ImmediateDesc": "Mobilisir semua sumber daya yang tersedia untuk mitigasi cepat. Urgensi tertinggi.",
+      "Out-of-Cycle": "Di Luar Siklus",
+      "Out-of-CycleDesc": "Kembangkan perbaikan di luar proses normal. Alokasikan kembali sumber daya untuk pengiriman yang dipercepat.",
+      "Scheduled": "Terjadwal",
+      "ScheduledDesc": "Tangani selama siklus pemeliharaan atau pengembangan reguler."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "Ada bukti yang dapat diandalkan bahwa kerentanan ini sedang dieksploitasi secara aktif di alam liar oleh penyerang.",
+      "description": "Apa status eksploitasi saat ini dari kerentanan ini?",
+      "name": "Eksploitasi",
+      "none": "{{common.none}}",
+      "noneDesc": "Tidak ada bukti eksploitasi aktif dan tidak ada bukti konsep publik.",
+      "poc": "PoC Publik",
+      "pocDesc": "Bukti konsep publik yang tipikal ada (misalnya, di Metasploit atau ExploitDB), atau metode eksploitasi yang terkenal terdokumentasi."
+    },
+    "methodology": "Pemasok",
+    "next": "Berikutnya",
+    "openCalculator": "Tambah SSVC",
+    "publicSafetyImpact": {
+      "description": "Apakah eksploitasi kerentanan ini menimbulkan risiko terhadap keselamatan publik?",
+      "minimal": "Minimal",
+      "minimalDesc": "Dampak keselamatan dapat diabaikan. Tidak ada kerugian yang diharapkan pada orang atau infrastruktur kritis.",
+      "name": "Dampak Keselamatan Publik",
+      "significant": "Signifikan",
+      "significantDesc": "Dampak keselamatan bersifat marginal, kritis, atau bencana. Potensi kerugian pada orang atau gangguan layanan kritis."
+    },
+    "stepOf": "Langkah {{current}} dari {{total}}",
+    "summary": "Ringkasan",
+    "technicalImpact": {
+      "description": "Apa tingkat keparahan dampak teknis jika kerentanan dieksploitasi?",
+      "name": "Dampak Teknis",
+      "partial": "Parsial",
+      "partialDesc": "Kontrol terbatas atas perilaku perangkat lunak atau pengungkapan informasi, atau kemungkinan kecil mendapatkan kontrol total.",
+      "total": "Total",
+      "totalDesc": "Kontrol total atas perilaku perangkat lunak, atau pengungkapan lengkap semua informasi pada sistem."
+    },
+    "title": "Kalkulator SSVC",
+    "utility": {
+      "description": "Seberapa berguna eksploitasi kerentanan ini untuk penyerang biasa?",
+      "efficient": "Efisien",
+      "efficientDesc": "Eksploitasi dapat diotomatisasi dengan target yang tersebar, atau memerlukan upaya manual tetapi target terkonsentrasi - manfaat penyerang sedang.",
+      "laborious": "Membosankan",
+      "laboriousDesc": "Eksploitasi tidak dapat diotomatisasi dan target tersebar - upaya manual dengan imbal balik rendah per serangan.",
+      "name": "Utilitas",
+      "superEffective": "Super Efektif",
+      "superEffectiveDesc": "Eksploitasi dapat diotomatisasi dan target terkonsentrasi — eksploitasi otomatis terhadap sistem bernilai tinggi."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

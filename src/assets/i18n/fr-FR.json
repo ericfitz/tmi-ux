@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Pile de retablissement",
       "redoStackSize": "Taille de la pile de retablissement",
-      "summary": "Resume",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "Horodatage",
       "title": "Historique",
       "undoStack": "Pile d'annulation",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}} secondes"
     },
     "title": "La Session Expire Bientot"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "Décision",
+    "decisions": {
+      "Defer": "Reporter",
+      "DeferDesc": "Aucune action immédiate requise. Résoudre dans les cycles de développement normaux (~90 jours).",
+      "Immediate": "Immédiat",
+      "ImmediateDesc": "Mobilisez toutes les ressources disponibles pour une correction rapide. Urgence maximale.",
+      "Out-of-Cycle": "Hors Cycle",
+      "Out-of-CycleDesc": "Développer un correctif en dehors des processus normaux. Réaffecter les ressources pour une livraison accélérée.",
+      "Scheduled": "Programmé",
+      "ScheduledDesc": "Aborder lors des cycles de maintenance ou de développement réguliers."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "Il existe des preuves fiables que cette vulnérabilité est activement exploitée par des attaquants.",
+      "description": "Quel est l'état actuel de l'exploitation de cette vulnérabilité?",
+      "name": "Exploitation",
+      "none": "{{common.none}}",
+      "noneDesc": "Aucune preuve d'exploitation active et aucune preuve de concept publique.",
+      "poc": "PoC Public",
+      "pocDesc": "Une preuve de concept publique typique existe (par exemple sur Metasploit ou ExploitDB), ou une méthode d'exploitation bien connue est documentée."
+    },
+    "methodology": "Fournisseur",
+    "next": "Suivant",
+    "openCalculator": "Ajouter SSVC",
+    "publicSafetyImpact": {
+      "description": "L'exploitation de cette vulnérabilité pose-t-elle un risque pour la sécurité publique?",
+      "minimal": "Minimal",
+      "minimalDesc": "L'impact sur la sécurité est négligeable. Aucun dommage attendu aux personnes ou aux infrastructures critiques.",
+      "name": "Impact sur la Sécurité Publique",
+      "significant": "Significatif",
+      "significantDesc": "L'impact sur la sécurité est marginal, critique ou catastrophique. Dommages potentiels aux personnes ou interruption des services critiques."
+    },
+    "stepOf": "Étape {{current}} sur {{total}}",
+    "summary": "Résumé",
+    "technicalImpact": {
+      "description": "Quelle est la gravité de l'impact technique si la vulnérabilité est exploitée?",
+      "name": "Impact Technique",
+      "partial": "Partiel",
+      "partialDesc": "Contrôle limité du comportement du logiciel ou exposition d'informations, ou une petite probabilité de prendre un contrôle total.",
+      "total": "Total",
+      "totalDesc": "Contrôle total du comportement du logiciel, ou divulgation complète de toutes les informations du système."
+    },
+    "title": "Calculatrice SSVC",
+    "utility": {
+      "description": "Quelle est l'utilité de l'exploitation de cette vulnérabilité pour un attaquant typique?",
+      "efficient": "Efficace",
+      "efficientDesc": "Soit l'exploitation peut être automatisée avec des cibles dispersées, soit elle nécessite un effort manuel mais les cibles sont concentrées — bénéfice modéré pour l'attaquant.",
+      "laborious": "Laborieux",
+      "laboriousDesc": "L'exploitation ne peut pas être automatisée et les cibles sont dispersées — effort manuel avec un faible rendement par attaque.",
+      "name": "Utilité",
+      "superEffective": "Super Efficace",
+      "superEffectiveDesc": "L'exploitation peut être automatisée et les cibles sont concentrées — exploitation automatisée de systèmes de haute valeur."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {

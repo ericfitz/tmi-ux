@@ -899,7 +899,7 @@
       "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Wiederholungsstapel",
       "redoStackSize": "Größe des Wiederholungsstapels",
-      "summary": "Zusammenfassung",
+      "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "Zeitstempel",
       "title": "Verlauf",
       "undoStack": "Rückgängig-Stapel",
@@ -1331,6 +1331,65 @@
       "seconds": "{{seconds}} Sekunden"
     },
     "title": "Sitzung läuft bald ab"
+  },
+  "ssvcCalculator": {
+    "apply": "{{cvssCalculator.apply}}",
+    "back": "{{common.back}}",
+    "cancel": "{{common.cancel}}",
+    "decisionLabel": "Entscheidung",
+    "decisions": {
+      "Defer": "Aufschieben",
+      "DeferDesc": "Keine sofortige Maßnahme erforderlich. Behebung in normalen Entwicklungszyklen (~90 Tage).",
+      "Immediate": "Sofort",
+      "ImmediateDesc": "Alle verfügbaren Ressourcen für schnelle Behebung mobilisieren. Höchste Dringlichkeit.",
+      "Out-of-Cycle": "Außerplanmäßig",
+      "Out-of-CycleDesc": "Entwickeln Sie einen Fix außerhalb normaler Prozesse. Ressourcen für beschleunigte Bereitstellung umleiten.",
+      "Scheduled": "Geplant",
+      "ScheduledDesc": "Beheben Sie das Problem während regelmäßiger Wartungs- oder Entwicklungszyklen."
+    },
+    "exploitation": {
+      "active": "{{common.active}}",
+      "activeDesc": "Es gibt zuverlässige Beweise dafür, dass diese Schwachstelle von Angreifern aktiv ausgenutzt wird.",
+      "description": "Wie ist der aktuelle Stand der Ausnutzung dieser Schwachstelle?",
+      "name": "Ausnutzung",
+      "none": "{{common.none}}",
+      "noneDesc": "Keine Belege für aktive Ausnutzung und kein öffentlicher PoC vorhanden.",
+      "poc": "Öffentlicher PoC",
+      "pocDesc": "Ein typischer öffentlicher Proof-of-Concept existiert (z.B. auf Metasploit oder ExploitDB), oder eine bekannte Ausnutzungsmethode ist dokumentiert."
+    },
+    "methodology": "Anbieter",
+    "next": "Weiter",
+    "openCalculator": "SSVC hinzufügen",
+    "publicSafetyImpact": {
+      "description": "Stellt die Ausnutzung dieser Schwachstelle ein Risiko für die öffentliche Sicherheit dar?",
+      "minimal": "Minimal",
+      "minimalDesc": "Sicherheitsauswirkung ist unbedeutend. Kein erwarteter Schaden für Personen oder kritische Infrastruktur.",
+      "name": "Auswirkungen auf die öffentliche Sicherheit",
+      "significant": "Erheblich",
+      "significantDesc": "Sicherheitsauswirkung ist marginal, kritisch oder katastrophal. Möglicher Schaden für Personen oder Unterbrechung kritischer Dienste."
+    },
+    "stepOf": "Schritt {{current}} von {{total}}",
+    "summary": "Zusammenfassung",
+    "technicalImpact": {
+      "description": "Wie schwerwiegend ist die technische Auswirkung, wenn die Schwachstelle ausgenutzt wird?",
+      "name": "Technische Auswirkung",
+      "partial": "Teilweise",
+      "partialDesc": "Begrenzte Kontrolle über das Softwareverhalten oder Informationspreisgabe, oder geringe Wahrscheinlichkeit, vollständige Kontrolle zu erlangen.",
+      "total": "Umfassend",
+      "totalDesc": "Vollständige Kontrolle über das Verhalten der Software oder vollständige Offenlegung aller Informationen auf dem System."
+    },
+    "title": "SSVC-Rechner",
+    "utility": {
+      "description": "Wie nützlich ist die Ausnutzung dieser Schwachstelle für einen typischen Angreifer?",
+      "efficient": "Effizient",
+      "efficientDesc": "Die Ausnutzung kann entweder mit verteilten Zielen automatisiert werden, oder sie erfordert manuelle Anstrengung, aber die Ziele sind konzentriert – moderater Vorteil für Angreifer.",
+      "laborious": "Mühsam",
+      "laboriousDesc": "Die Ausnutzung kann nicht automatisiert werden und die Ziele sind verteilt – manuelle Anstrengung mit geringem Ertrag pro Angriff.",
+      "name": "Nützlichkeit",
+      "superEffective": "Hocheffektiv",
+      "superEffectiveDesc": "Die Ausnutzung kann automatisiert werden und die Ziele sind konzentriert – automatisierte Ausnutzung hochkarätiger Systeme."
+    },
+    "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "surveys": {
     "autoSave": {
