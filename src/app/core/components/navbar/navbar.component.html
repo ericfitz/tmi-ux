@@ -2,19 +2,65 @@
   <div class="navbar-container">
     <!-- Left side: Home, App Title, and Language Selector -->
     <div class="navbar-left">
-      <button
-        mat-icon-button
-        [routerLink]="homeLink"
-        class="logo-button"
-        [matTooltip]="'navbar.home' | transloco"
-        matTooltipPosition="below"
-      >
-        <img
-          [src]="logoImageUrl$ | async"
-          [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
-          class="tmi-logo"
-        />
-      </button>
+      <!-- Home menu button -->
+      @if (isAuthenticated) {
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="homeMenu"
+          class="logo-button home-menu-trigger"
+          [matTooltip]="'navbar.home' | transloco"
+          matTooltipPosition="below"
+        >
+          <img
+            [src]="logoImageUrl$ | async"
+            [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+            class="tmi-logo"
+          />
+          <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #homeMenu="matMenu">
+          <button mat-menu-item routerLink="/">
+            <mat-icon>home</mat-icon>
+            <span [transloco]="'navbar.menu.home'">Home</span>
+          </button>
+          <button mat-menu-item routerLink="/intake">
+            <mat-icon>assignment</mat-icon>
+            <span [transloco]="'navbar.intake'">Intake</span>
+          </button>
+          <button mat-menu-item routerLink="/dashboard">
+            <mat-icon>dashboard</mat-icon>
+            <span [transloco]="'navbar.dashboard'">Dashboard</span>
+          </button>
+          <button mat-menu-item routerLink="/triage" [disabled]="!isSecurityReviewer">
+            <mat-icon>inbox</mat-icon>
+            <span [transloco]="'triage.title'">Triage</span>
+          </button>
+          <button mat-menu-item routerLink="/admin" [disabled]="!isAdmin">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span [transloco]="'navbar.admin'">Admin</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span [transloco]="'navbar.menu.logout'">Sign Out</span>
+          </button>
+        </mat-menu>
+      } @else {
+        <button
+          mat-icon-button
+          [routerLink]="homeLink"
+          class="logo-button"
+          [matTooltip]="'navbar.home' | transloco"
+          matTooltipPosition="below"
+        >
+          <img
+            [src]="logoImageUrl$ | async"
+            [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+            class="tmi-logo"
+          />
+        </button>
+      }
       <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>
 
       <!-- Language Selector -->

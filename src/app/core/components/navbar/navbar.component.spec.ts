@@ -435,4 +435,11 @@ describe('NavbarComponent', () => {
       expect(() => component.ngOnDestroy()).not.toThrow();
     });
   });
+
+  describe('home menu items', () => {
+    it('should have logout method that calls authService.logout', () => {
+      component.logout();
+      expect(mockAuthService.logout).toHaveBeenCalled();
+    });
+  });
 });
