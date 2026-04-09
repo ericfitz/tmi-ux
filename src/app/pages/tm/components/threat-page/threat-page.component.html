@@ -320,14 +320,31 @@
               <mat-label class="mapping-label">{{
                 'threatEditor.frameworkMappings' | transloco
               }}</mat-label>
-              <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-                <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
-                <mat-select formControlName="threat_type" multiple>
-                  <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
-                    {{ threatType }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+              <div class="mapping-chips-row">
+                <mat-chip-set>
+                  @for (type of threatForm.get('threat_type')?.value; track type) {
+                    <mat-chip [removable]="canEdit" (removed)="removeThreatType(type)">
+                      {{ type }}
+                      @if (canEdit) {
+                        <button matChipRemove [attr.aria-label]="'Remove ' + type">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      }
+                    </mat-chip>
+                  }
+                </mat-chip-set>
+                @if (canEdit) {
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="openFrameworkMappingPicker()"
+                    class="mapping-add-button"
+                  >
+                    <mat-icon>add</mat-icon>
+                    {{ 'threatEditor.addMapping' | transloco }}
+                  </button>
+                }
+              </div>
             </div>
 
             <!-- CWE column -->

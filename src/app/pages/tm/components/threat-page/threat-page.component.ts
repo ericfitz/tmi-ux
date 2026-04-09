@@ -73,6 +73,11 @@ import {
   CwePickerDialogData,
   CwePickerDialogResult,
 } from '../cwe-picker-dialog/cwe-picker-dialog.types';
+import { FrameworkMappingPickerDialogComponent } from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.component';
+import {
+  FrameworkMappingPickerDialogData,
+  FrameworkMappingPickerDialogResult,
+} from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
 import {
@@ -893,6 +898,41 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
           this.threatForm.markAsDirty();
         }
       });
+  }
+
+  /**
+   * Open the framework mapping picker dialog to select threat types
+   */
+  openFrameworkMappingPicker(): void {
+    const dialogRef = this.dialog.open(FrameworkMappingPickerDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        availableTypes: this.threatTypeModels,
+        selectedTypes: this.threatForm.get('threat_type')?.value as string[],
+        cellType: this._getSelectedCellType(),
+      } as FrameworkMappingPickerDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: FrameworkMappingPickerDialogResult | undefined) => {
+        if (!result) return;
+        this.threatForm.patchValue({ threat_type: result.selectedTypes });
+        this.threatForm.markAsDirty();
+      });
+  }
+
+  /**
+   * Remove a threat type chip
+   */
+  removeThreatType(typeName: string): void {
+    const current = this.threatForm.get('threat_type')?.value as string[];
+    const updated = current.filter(t => t !== typeName);
+    this.threatForm.patchValue({ threat_type: updated });
+    this.threatForm.markAsDirty();
   }
 
   /**
