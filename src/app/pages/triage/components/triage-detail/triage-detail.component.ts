@@ -490,7 +490,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
             this.transloco.translate('common.close'),
             { duration: 3000 },
           );
-          void this.router.navigate(['/tm', result.threat_model_id]);
+          void this.router.navigate(['/triage']);
         },
         error: err => {
           this.isUpdatingStatus = false;

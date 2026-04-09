@@ -220,7 +220,7 @@
         <th mat-header-cell *matHeaderCellDef>
           {{ 'triage.reviewerAssignment.reviewer' | transloco }}
         </th>
-        <td mat-cell *matCellDef="let row">
+        <td mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
           @if (reviewerMode === 'loading') {
             <mat-spinner diameter="20"></mat-spinner>
           } @else if (reviewerMode === 'dropdown') {
