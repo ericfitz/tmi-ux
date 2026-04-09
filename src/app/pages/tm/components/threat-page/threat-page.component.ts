@@ -201,9 +201,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   ) {
     this.destroyRef = destroyRef ?? null;
     this.threatForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
+      name: ['', [Validators.required, Validators.maxLength(256)]],
       asset_id: [''],
-      description: ['', Validators.maxLength(500)],
+      description: ['', Validators.maxLength(2048)],
       severity: [null],
       threat_type: [[]],
       diagram_id: [''],

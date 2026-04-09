@@ -201,7 +201,7 @@
               }
               @if (threatForm.get('name')?.hasError('maxlength')) {
                 <mat-error>
-                  {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
+                  {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
                 </mat-error>
               }
             </mat-form-field>
@@ -235,7 +235,7 @@
               ></textarea>
               @if (threatForm.get('description')?.hasError('maxlength')) {
                 <mat-error>
-                  {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
+                  {{ 'common.validation.maxLength' | transloco: { max: 2048 } }}
                 </mat-error>
               }
             </mat-form-field>
