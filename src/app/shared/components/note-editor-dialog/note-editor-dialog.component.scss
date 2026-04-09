@@ -12,6 +12,16 @@
   }
 }
 
+.description-textarea {
+  resize: vertical;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 .checkbox-field {
   display: flex;
   align-items: center;
