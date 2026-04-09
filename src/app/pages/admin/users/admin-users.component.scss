@@ -42,6 +42,11 @@
 
     .filter-field {
       flex: 1;
+
+      // Remove the subscript space so the toggle aligns with the input
+      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
     }
 
     .automation-toggle {
