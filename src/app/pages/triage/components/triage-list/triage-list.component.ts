@@ -141,7 +141,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     ): string | number => {
       switch (property) {
         case 'submitter':
-          return (item.owner?.display_name || item.owner?.email || '').toLowerCase();
+          return (item.owner?.display_name ?? item.owner?.email ?? '').toLowerCase();
         case 'template':
           return (item.survey_name ?? '').toLowerCase();
         case 'submitted_at':
