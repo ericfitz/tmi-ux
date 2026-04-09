@@ -52,6 +52,7 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  flex: 1;
   cursor: default;
 
   &.clickable {
@@ -67,21 +68,21 @@
     justify-content: center;
     font-size: 13px;
     font-weight: 600;
-    background: var(--mat-sys-surface-variant);
-    color: var(--mat-sys-on-surface-variant);
+    background: var(--theme-selected, #e0e0e0);
+    color: var(--theme-text-secondary, #757575);
     transition:
       background-color 0.2s,
       color 0.2s;
   }
 
   &.active .dot {
-    background: var(--mat-sys-primary);
-    color: var(--mat-sys-on-primary);
+    background: var(--color-primary);
+    color: #fff;
   }
 
   &.complete .dot {
-    background: var(--mat-sys-primary);
-    color: var(--mat-sys-on-primary);
+    background: var(--color-primary);
+    color: #fff;
   }
 
   .check-icon {
@@ -92,24 +93,24 @@
 
   .step-label {
     font-size: 11px;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--theme-text-secondary, #757575);
     white-space: nowrap;
   }
 
   &.active .step-label {
-    color: var(--mat-sys-primary);
+    color: var(--color-primary);
     font-weight: 600;
   }
 }
 
 .step-connector {
-  width: 32px;
-  height: 1px;
-  background: var(--mat-sys-outline-variant);
+  flex: 1;
+  height: 2px;
+  background: var(--theme-divider, rgb(0 0 0 / 12%));
   margin-bottom: 18px; // align with dot center, not label
 
   &.complete {
-    background: var(--mat-sys-primary);
+    background: var(--color-primary);
   }
 }
 
@@ -122,7 +123,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--theme-text-secondary, #757575);
   margin-bottom: 4px;
 }
 
@@ -133,7 +134,7 @@
 
 .step-description {
   margin: 0 0 20px;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--theme-text-secondary, #757575);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -146,7 +147,7 @@
 }
 
 .value-card {
-  border: 2px solid var(--mat-sys-outline-variant);
+  border: 2px solid var(--color-border, rgb(0 0 0 / 12%));
   border-radius: 8px;
   padding: 12px 16px;
   cursor: pointer;
@@ -155,12 +156,12 @@
     background-color 0.15s;
 
   &:hover {
-    border-color: var(--mat-sys-outline);
+    border-color: var(--color-text-secondary, #757575);
   }
 
   &.selected {
-    border-color: var(--mat-sys-primary);
-    background-color: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
   }
 
   .value-name {
@@ -170,12 +171,12 @@
   }
 
   &.selected .value-name {
-    color: var(--mat-sys-primary);
+    color: var(--color-primary);
   }
 
   .value-description {
     font-size: 12px;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--theme-text-secondary, #757575);
     line-height: 1.4;
   }
 }
@@ -189,11 +190,11 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  border-bottom: 1px solid var(--theme-divider, rgb(0 0 0 / 12%));
 
   .summary-label {
     font-weight: 500;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--theme-text-secondary, #757575);
   }
 
   .summary-value {
@@ -249,6 +250,6 @@
   }
 
   .step-connector {
-    width: 16px;
+    min-width: 8px;
   }
 }

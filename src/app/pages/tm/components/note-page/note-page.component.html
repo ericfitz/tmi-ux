@@ -58,13 +58,13 @@
       <div class="info-field">
         <span class="info-label">{{ 'common.created' | transloco }}:</span>
         <span class="info-value">{{
-          note.created_at | date: 'short' : undefined : currentLocale
+          note.created_at ? (note.created_at | date: 'short' : undefined : currentLocale) : '—'
         }}</span>
       </div>
       <div class="info-field">
         <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
         <span class="info-value">{{
-          note.modified_at | date: 'short' : undefined : currentLocale
+          note.modified_at ? (note.modified_at | date: 'short' : undefined : currentLocale) : '—'
         }}</span>
       </div>
     </div>
@@ -113,18 +113,18 @@
           </mat-form-field>
         </div>
 
-        <!-- Include in Report -->
-        <div class="checkbox-field">
-          <mat-checkbox formControlName="include_in_report">
-            {{ 'common.includeInReport' | transloco }}
-          </mat-checkbox>
-        </div>
-
-        <!-- Include in Timmy Chat -->
-        <div class="checkbox-field">
-          <mat-checkbox formControlName="timmy_enabled">
-            {{ 'common.includeInTimmyChat' | transloco }}
-          </mat-checkbox>
+        <!-- Checkboxes -->
+        <div class="checkbox-row">
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="include_in_report">
+              {{ 'common.includeInReport' | transloco }}
+            </mat-checkbox>
+          </div>
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="timmy_enabled">
+              {{ 'common.includeInTimmyChat' | transloco }}
+            </mat-checkbox>
+          </div>
         </div>
 
         <!-- Markdown Toolbar -->

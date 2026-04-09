@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+.checkbox-row {
+  display: flex;
+  gap: 24px;
+}
+
 .checkbox-field {
   display: flex;
   align-items: center;
