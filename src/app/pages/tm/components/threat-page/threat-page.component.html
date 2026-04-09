@@ -382,11 +382,10 @@
           </div>
 
           <!-- CVSS Entries -->
-          <div class="cvss-section">
-            <mat-label class="section-label">{{ 'threatEditor.cvss' | transloco }}</mat-label>
-
-            @if (threatForm.get('cvss')?.value?.length > 0) {
-              <mat-chip-set class="cvss-chip-set">
+          <div class="mapping-section">
+            <mat-label class="mapping-label">{{ 'threatEditor.cvss' | transloco }}</mat-label>
+            <div class="mapping-chips-row">
+              <mat-chip-set>
                 @for (entry of threatForm.get('cvss')?.value; track entry.vector; let i = $index) {
                   <mat-chip
                     [removable]="canEdit"
@@ -403,43 +402,19 @@
                   </mat-chip>
                 }
               </mat-chip-set>
-            }
-
-            @if (canEdit) {
-              <div class="cvss-input-row">
-                <mat-form-field
-                  appearance="outline"
-                  class="cvss-vector-input"
-                  subscriptSizing="dynamic"
-                >
-                  <input
-                    matInput
-                    [placeholder]="'cvssCalculator.vectorPlaceholder' | transloco"
-                    [formControl]="cvssVectorControl"
-                    (keydown.enter)="$event.preventDefault(); addCvssFromVector()"
-                  />
-                  @if (cvssVectorControl.hasError('invalidVector')) {
-                    <mat-error>{{ 'cvssCalculator.vectorInvalid' | transloco }}</mat-error>
-                  } @else if (cvssVectorControl.hasError('duplicateVersion')) {
-                    <mat-error>{{ 'cvssCalculator.vectorDuplicateVersion' | transloco }}</mat-error>
-                  } @else if (cvssVectorControl.hasError('unsupportedVersion')) {
-                    <mat-error>{{
-                      'cvssCalculator.vectorUnsupportedVersion' | transloco
-                    }}</mat-error>
-                  }
-                </mat-form-field>
+              @if (canEdit) {
                 <button
                   mat-stroked-button
                   color="primary"
                   (click)="openCvssCalculator()"
                   [disabled]="!canAddCvss"
-                  class="cvss-calculator-button"
+                  class="mapping-add-button"
                 >
                   <mat-icon>add</mat-icon>
                   {{ 'cvssCalculator.openCalculator' | transloco }}
                 </button>
-              </div>
-            }
+              }
+            </div>
           </div>
         </div>
 

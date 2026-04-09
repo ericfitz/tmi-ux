@@ -1,20 +1,11 @@
 import { Component, DestroyRef, OnDestroy, OnInit, Optional } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Cvss3P1, Cvss4P0 } from 'ae-cvss-calculator';
 import { identity, MonoTypeOperatorFunction, Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
@@ -178,9 +169,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // Track if save is in progress
   isSaving = false;
 
-  // CVSS vector string input control (validator set in ngOnInit)
-  cvssVectorControl = new FormControl('');
-
   // Addons for threat
   addonsForThreat: Addon[] = [];
 
@@ -286,9 +274,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Load frameworks and initialize
     this.loadFrameworksAndInitialize();
-
-    // Set up CVSS vector input validator
-    this.cvssVectorControl.setValidators(this._cvssVectorValidator());
 
     // Load addons
     this.loadAddons();
@@ -574,7 +559,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Mark form as pristine after initial population
     this.threatForm.markAsPristine();
-    this._syncCvssVectorControlState();
   }
 
   /**
@@ -586,7 +570,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     } else {
       this.threatForm.disable();
     }
-    this._syncCvssVectorControlState();
   }
 
   /**
@@ -934,72 +917,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
           cvss: [...current, result.entry],
         });
         this.threatForm.markAsDirty();
-        this.cvssVectorControl.updateValueAndValidity();
-        this._syncCvssVectorControlState();
       });
-  }
-
-  /**
-   * Add a CVSS entry from the vector string input field.
-   * Only acts when the input is valid and non-empty.
-   */
-  addCvssFromVector(): void {
-    const vector = this.cvssVectorControl.value?.trim() ?? '';
-    if (!vector || this.cvssVectorControl.invalid) return;
-
-    // Parse and score the vector (already validated by the reactive validator)
-    const cvssInstance = vector.startsWith('CVSS:4.0') ? new Cvss4P0(vector) : new Cvss3P1(vector);
-    const scores = cvssInstance.calculateScores();
-    const score = scores.overall;
-
-    const current = this.threatForm.get('cvss')?.value as CVSSScore[];
-    this.threatForm.patchValue({
-      cvss: [...current, { vector, score }],
-    });
-    this.threatForm.markAsDirty();
-
-    this.cvssVectorControl.reset('');
-    this._syncCvssVectorControlState();
-  }
-
-  /**
-   * Creates a validator for the CVSS vector string input.
-   * Checks version support, duplicate versions, and parse validity.
-   * Uses a closure to access the component's existing CVSS versions.
-   */
-  private _cvssVectorValidator(): (control: AbstractControl) => ValidationErrors | null {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value as string)?.trim() ?? '';
-      if (!value) return null;
-
-      // Check supported version prefix
-      let version: CvssVersion;
-      if (value.startsWith('CVSS:4.0')) {
-        version = '4.0';
-      } else if (value.startsWith('CVSS:3.1')) {
-        version = '3.1';
-      } else {
-        return { unsupportedVersion: true };
-      }
-
-      // Check for duplicate version
-      const existingVersions = this._getExistingCvssVersions();
-      if (existingVersions.includes(version)) {
-        return { duplicateVersion: true };
-      }
-
-      // Parse and validate the vector string
-      try {
-        const cvssInstance = version === '4.0' ? new Cvss4P0(value) : new Cvss3P1(value);
-        if (!cvssInstance.isBaseFullyDefined()) {
-          return { invalidVector: true };
-        }
-      } catch {
-        return { invalidVector: true };
-      }
-
-      return null;
-    };
   }
 
   /**
@@ -1041,20 +959,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       updated.splice(index, 1);
       this.threatForm.patchValue({ cvss: updated });
       this.threatForm.markAsDirty();
-      // Re-run vector input validation (duplicate version check may have changed)
-      this.cvssVectorControl.updateValueAndValidity();
-      this._syncCvssVectorControlState();
-    }
-  }
-
-  /**
-   * Enable or disable the CVSS vector input based on whether both versions already exist.
-   */
-  private _syncCvssVectorControlState(): void {
-    if (this.canEdit && this.canAddCvss) {
-      this.cvssVectorControl.enable();
-    } else {
-      this.cvssVectorControl.disable();
     }
   }
 
