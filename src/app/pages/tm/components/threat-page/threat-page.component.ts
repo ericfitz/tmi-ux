@@ -445,9 +445,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     if (this.threatModel?.diagrams) {
       for (const diagram of this.threatModel.diagrams) {
-        const cells = (diagram as any).cells as any[] | undefined;
+        const cells = diagram.cells;
         if (cells) {
-          const cell = cells.find((c: any) => c.id === cellId);
+          const cell = cells.find(c => c.id === cellId);
           if (cell?.shape) return cell.shape;
         }
       }
