@@ -826,6 +826,8 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Could not parse the existing CVSS vector string",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "Paste a CVSS vector string and press Enter",
+    "pasteVectorPlaceholder.comment": "Placeholder for the vector paste input inside the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "title": "CVSS Calculator",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "A CVSS entry for this version already exists",
@@ -1667,6 +1669,14 @@
     "cweIds.comment": "Common Weakness Enumeration identifiers. CWE is an abbreviation and should not be translated.",
     "cweMappings": "CWE Mappings",
     "cweMappings.comment": "Sub-label for the CWE IDs section. CWE = Common Weakness Enumeration, should not be translated.",
+    "addMapping": "Add Mapping",
+    "addMapping.comment": "Button label to open the framework mapping picker dialog.",
+    "frameworkMappingPicker": {
+      "notApplicable": "Not applicable to the current cell type",
+      "notApplicable.comment": "Hint shown next to disabled mapping options that don't apply to the associated cell's DFD element type.",
+      "title": "Select Framework Mappings",
+      "title.comment": "Title for the framework mapping picker dialog."
+    },
     "frameworkMappings": "Threat Model Framework Mappings",
     "frameworkMappings.comment": "Sub-label for the Threat Type section within the Classification area.",
     "notAssociatedWithAsset": "Not associated with an asset",
