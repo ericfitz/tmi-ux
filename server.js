@@ -84,6 +84,16 @@ app.get('/config.json', (req, res) => {
   res.json(config);
 });
 
+// Long-lived cache for self-hosted font files (used by PDF report generation).
+// Font filenames contain version identifiers; cache is busted by redeployment.
+app.use(
+  '/assets/fonts',
+  express.static(path.join(__dirname, 'dist/tmi-ux/browser/assets/fonts'), {
+    maxAge: '1y',
+    immutable: true,
+  })
+);
+
 // Serve static files from the Angular app build output
 app.use(express.static(path.join(__dirname, 'dist/tmi-ux/browser')));
 
