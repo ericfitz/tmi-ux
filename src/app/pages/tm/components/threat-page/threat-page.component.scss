@@ -301,55 +301,26 @@
   }
 }
 
-.cwe-input-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-
-  mat-form-field {
-    flex: 1;
-    margin-bottom: 0;
-  }
-
-  .cwe-picker-button {
-    // Vertically center with the outline form field input area
-    margin-top: 10px;
-    white-space: nowrap;
-  }
-}
-
-// CVSS section
-.cvss-section {
+// Unified mapping chip + button layout (Framework, CWE, CVSS)
+.mapping-section {
   margin-top: 4px;
   margin-bottom: 4px;
-
-  .section-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--theme-text-primary);
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .cvss-chip-set {
-    margin-bottom: 8px;
-  }
 }
 
-.cvss-input-row {
+.mapping-chips-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
 
-  .cvss-vector-input {
+  mat-chip-set {
     flex: 1;
+    min-width: 0;
   }
 
-  .cvss-calculator-button {
-    // Vertically center with the outline form field input area
-    // (outline form field is ~56px tall with ~10px top padding for the notch)
-    margin-top: 10px;
+  .mapping-add-button {
+    margin-top: 2px;
+    white-space: nowrap;
   }
 }
 
