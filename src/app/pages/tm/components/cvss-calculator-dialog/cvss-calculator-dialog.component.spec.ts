@@ -382,6 +382,52 @@ describe('CvssCalculatorDialogComponent', () => {
     });
   });
 
+  describe('vector paste', () => {
+    it('should apply a valid CVSS 3.1 vector', () => {
+      createComponent({ existingVersions: [] });
+      component.ngOnInit();
+      component.vectorPasteControl.setValue('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H');
+      component.applyPastedVector();
+      expect(component.selectedVersion).toBe('3.1');
+      expect(component.isVersionLocked).toBe(true);
+      expect(component.isValid).toBe(true);
+      expect(component.vectorPasteControl.value).toBe('');
+      expect(component.vectorPasteError).toBe('');
+    });
+
+    it('should set error for unsupported version prefix', () => {
+      createComponent({});
+      component.ngOnInit();
+      component.vectorPasteControl.setValue('CVSS:2.0/AV:N');
+      component.applyPastedVector();
+      expect(component.vectorPasteError).toBe('cvssCalculator.vectorUnsupportedVersion');
+    });
+
+    it('should set error for duplicate version in create mode', () => {
+      createComponent({ existingVersions: ['3.1'] });
+      component.ngOnInit();
+      component.vectorPasteControl.setValue('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H');
+      component.applyPastedVector();
+      expect(component.vectorPasteError).toBe('cvssCalculator.vectorDuplicateVersion');
+    });
+
+    it('should set error for invalid vector', () => {
+      createComponent({});
+      component.ngOnInit();
+      component.vectorPasteControl.setValue('CVSS:3.1/INVALID');
+      component.applyPastedVector();
+      expect(component.vectorPasteError).toBe('cvssCalculator.vectorInvalid');
+    });
+
+    it('should do nothing for empty input', () => {
+      createComponent({});
+      component.ngOnInit();
+      component.vectorPasteControl.setValue('');
+      component.applyPastedVector();
+      expect(component.vectorPasteError).toBe('');
+    });
+  });
+
   describe('getGroupSummary', () => {
     beforeEach(() => {
       component.ngOnInit();
