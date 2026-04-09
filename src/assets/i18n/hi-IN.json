@@ -812,6 +812,7 @@
       "comment": "यह त्रुटि तब दिखाई देती है जब कोई मौजूदा CVSS वेक्टर स्ट्रिंग पार्स नहीं की जा सकती।"
     },
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "एक CVSS वेक्टर स्ट्रिंग पेस्ट करें और Enter दबाएं",
     "title": {
       "comment": "CVSS कैलकुलेटर डायलॉग का शीर्षक। CVSS एक उचित नाम है और इसका अनुवाद नहीं किया जाना चाहिए।"
     },
@@ -1587,10 +1588,15 @@
     "title": "टीमों का प्रबंधन करें"
   },
   "threatEditor": {
+    "addMapping": "मैपिंग जोड़ें",
     "createNewThreat": "नया खतरा बनाएं",
     "cvssVectorPlaceholder": "उदा., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE ID दर्ज करें (उदा., CWE-79)",
     "cweMappings": "CWE मैपिंग",
+    "frameworkMappingPicker": {
+      "notApplicable": "वर्तमान सेल प्रकार पर लागू नहीं",
+      "title": "फ्रेमवर्क मैपिंग चुनें"
+    },
     "frameworkMappings": "खतरा मॉडल ढांचा मैपिंग",
     "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
     "notAssociatedWithCell": "किसी सेल से संबद्ध नहीं",

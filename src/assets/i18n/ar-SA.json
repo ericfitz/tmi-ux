@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "تعذر تحليل سلسلة متجه CVSS الموجودة",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "الصق سلسلة متجه CVSS واضغط Enter",
     "title": "حاسبة CVSS",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "يوجد بالفعل إدخال CVSS لهذا الإصدار",
@@ -1571,10 +1572,15 @@
     "title": "إدارة الفرق"
   },
   "threatEditor": {
+    "addMapping": "إضافة التعيين",
     "createNewThreat": "إنشاء تهديد جديد",
     "cvssVectorPlaceholder": "مثال، CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "أدخل معرف CWE (مثال، CWE-79)",
     "cweMappings": "تعيينات CWE",
+    "frameworkMappingPicker": {
+      "notApplicable": "غير قابل للتطبيق على نوع الخلية الحالي",
+      "title": "تحديد تعيينات الإطار عمل"
+    },
     "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",

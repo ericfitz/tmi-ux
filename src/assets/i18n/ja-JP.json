@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "既存のCVSSベクター文字列を解析できませんでした",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "CVSSベクトル文字列を貼り付けてEnterキーを押してください",
     "title": "CVSS計算機",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "このバージョンのCVSSエントリは既に存在します",
@@ -1571,10 +1572,15 @@
     "title": "チームを管理"
   },
   "threatEditor": {
+    "addMapping": "マッピングを追加",
     "createNewThreat": "新しい脅威を作成",
     "cvssVectorPlaceholder": "例: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE IDを入力（例: CWE-79）",
     "cweMappings": "CWEマッピング",
+    "frameworkMappingPicker": {
+      "notApplicable": "現在のセルタイプには適用されません",
+      "title": "フレームワークマッピングを選択"
+    },
     "frameworkMappings": "脅威モデルフレームワークマッピング",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
     "notAssociatedWithCell": "セルに関連付けられていません",

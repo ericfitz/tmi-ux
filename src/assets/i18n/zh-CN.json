@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "无法解析现有的 CVSS 向量字符串",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "粘贴 CVSS 向量字符串并按 Enter",
     "title": "CVSS 计算器",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "该版本的CVSS条目已存在",
@@ -1560,10 +1561,15 @@
     "title": "管理团队"
   },
   "threatEditor": {
+    "addMapping": "添加映射",
     "createNewThreat": "创建新威胁",
     "cvssVectorPlaceholder": "例如，CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "输入 CWE ID（例如，CWE-79）",
     "cweMappings": "CWE映射",
+    "frameworkMappingPicker": {
+      "notApplicable": "不适用于当前单元格类型",
+      "title": "选择框架映射"
+    },
     "frameworkMappings": "威胁建模框架映射",
     "notAssociatedWithAsset": "未关联资产",
     "notAssociatedWithCell": "未关联单元格",

@@ -797,6 +797,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "ไม่สามารถแยกวิเคราะห์สตริงเวกเตอร์ CVSS ที่มีอยู่ได้",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "วางสตริงเวกเตอร์ CVSS และกด Enter",
     "title": "เครื่องคำนวณ CVSS",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "มีรายการ CVSS สำหรับเวอร์ชันนี้อยู่แล้ว",
@@ -1551,10 +1552,15 @@
     "title": "จัดการทีม"
   },
   "threatEditor": {
+    "addMapping": "เพิ่มการแมป",
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "cvssVectorPlaceholder": "เช่น CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "ป้อนรหัส CWE (เช่น CWE-79)",
     "cweMappings": "การแมป CWE",
+    "frameworkMappingPicker": {
+      "notApplicable": "ไม่ใช้บังคับกับประเภทเซลล์ปัจจุบัน",
+      "title": "เลือกการแมป Framework"
+    },
     "frameworkMappings": "การแมปกรอบแบบจำลองภัยคุณกรรม",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",

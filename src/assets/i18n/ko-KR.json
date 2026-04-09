@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "기존 CVSS 벡터 문자열을 구문 분석할 수 없습니다",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "CVSS 벡터 문자열을 붙여넣고 Enter를 누르세요",
     "title": "CVSS 계산기",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "이 버전의 CVSS 항목이 이미 존재합니다",
@@ -1560,10 +1561,15 @@
     "title": "팀 관리"
   },
   "threatEditor": {
+    "addMapping": "매핑 추가",
     "createNewThreat": "새 위협 생성",
     "cvssVectorPlaceholder": "예: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE ID 입력 (예: CWE-79)",
     "cweMappings": "CWE 매핑",
+    "frameworkMappingPicker": {
+      "notApplicable": "현재 셀 유형에 적용되지 않음",
+      "title": "프레임워크 매핑 선택"
+    },
     "frameworkMappings": "위협 모델 프레임워크 매핑",
     "notAssociatedWithAsset": "자산과 연결되지 않음",
     "notAssociatedWithCell": "셀과 연결되지 않음",

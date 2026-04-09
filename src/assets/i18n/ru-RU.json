@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Не удалось разобрать существующую строку вектора CVSS",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "Вставьте строку вектора CVSS и нажмите Enter",
     "title": "Калькулятор CVSS",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Запись CVSS для этой версии уже существует",
@@ -1560,10 +1561,15 @@
     "title": "Управление командами"
   },
   "threatEditor": {
+    "addMapping": "Добавить сопоставление",
     "createNewThreat": "Создать новую угрозу",
     "cvssVectorPlaceholder": "напр., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Введите идентификатор CWE (напр., CWE-79)",
     "cweMappings": "Сопоставления CWE",
+    "frameworkMappingPicker": {
+      "notApplicable": "Неприменимо к текущему типу ячейки",
+      "title": "Выбрать сопоставления фреймворка"
+    },
     "frameworkMappings": "Сопоставления инфраструктуры модели угроз",
     "notAssociatedWithAsset": "Не связано с активом",
     "notAssociatedWithCell": "Не связано с ячейкой",

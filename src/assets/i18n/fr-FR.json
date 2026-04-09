@@ -802,6 +802,7 @@
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Impossible d'analyser la chaîne de vecteur CVSS existante",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "pasteVectorPlaceholder": "Collez une chaîne de vecteur CVSS et appuyez sur Entrée",
     "title": "Calculateur CVSS",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Une entrée CVSS pour cette version existe déjà",
@@ -1560,10 +1561,15 @@
     "title": "Gérer les Équipes"
   },
   "threatEditor": {
+    "addMapping": "Ajouter une cartographie",
     "createNewThreat": "Creer une nouvelle menace",
     "cvssVectorPlaceholder": "p. ex., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Saisir l'identifiant CWE (p. ex., CWE-79)",
     "cweMappings": "Mappages CWE",
+    "frameworkMappingPicker": {
+      "notApplicable": "Non applicable au type de cellule actuel",
+      "title": "Sélectionner les cartographies des cadres"
+    },
     "frameworkMappings": "Mappages du Framework de Modélisation des Menaces",
     "notAssociatedWithAsset": "Non associe a un actif",
     "notAssociatedWithCell": "Non associe a une cellule",

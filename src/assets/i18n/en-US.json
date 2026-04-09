@@ -1656,6 +1656,8 @@
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry",
     "addCvssEntry.comment": "Tooltip for button that adds a CVSS vector/score pair. CVSS should not be translated.",
+    "addMapping": "Add Mapping",
+    "addMapping.comment": "Button label to open the framework mapping picker dialog.",
     "createNewThreat": "Create New Threat",
     "cvss": "{{report.cvss}}",
     "cvss.comment": "Common Vulnerability Scoring System. CVSS is an abbreviation and should not be translated.",
@@ -1669,8 +1671,6 @@
     "cweIds.comment": "Common Weakness Enumeration identifiers. CWE is an abbreviation and should not be translated.",
     "cweMappings": "CWE Mappings",
     "cweMappings.comment": "Sub-label for the CWE IDs section. CWE = Common Weakness Enumeration, should not be translated.",
-    "addMapping": "Add Mapping",
-    "addMapping.comment": "Button label to open the framework mapping picker dialog.",
     "frameworkMappingPicker": {
       "notApplicable": "Not applicable to the current cell type",
       "notApplicable.comment": "Hint shown next to disabled mapping options that don't apply to the associated cell's DFD element type.",
