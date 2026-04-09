@@ -24,6 +24,7 @@
             <mat-icon>home</mat-icon>
             <span [transloco]="'navbar.menu.home'">Home</span>
           </button>
+          <mat-divider></mat-divider>
           <button mat-menu-item routerLink="/intake">
             <mat-icon>assignment</mat-icon>
             <span [transloco]="'navbar.intake'">Intake</span>
@@ -32,6 +33,16 @@
             <mat-icon>dashboard</mat-icon>
             <span [transloco]="'navbar.dashboard'">Dashboard</span>
           </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item routerLink="/projects">
+            <mat-icon>folder</mat-icon>
+            <span [transloco]="'userProjects.title'">My Projects</span>
+          </button>
+          <button mat-menu-item routerLink="/teams">
+            <mat-icon>groups</mat-icon>
+            <span [transloco]="'userTeams.title'">My Teams</span>
+          </button>
+          <mat-divider></mat-divider>
           <button mat-menu-item routerLink="/triage" [disabled]="!isSecurityReviewer">
             <mat-icon>inbox</mat-icon>
             <span [transloco]="'triage.title'">Triage</span>
