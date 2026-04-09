@@ -49,11 +49,7 @@
         <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
         <mat-select formControlName="diagram_id" tabindex="2">
           <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
-            {{
-              diagram.id === NOT_ASSOCIATED_VALUE
-                ? diagram.name
-                : diagram.name + ' (' + diagram.id + ')'
-            }}
+            {{ diagram.name || diagram.id }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -65,7 +61,7 @@
         <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
         <mat-select formControlName="cell_id" tabindex="3">
           <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
-            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')' }}
+            {{ cell.label || cell.id }}
           </mat-option>
         </mat-select>
       </mat-form-field>
