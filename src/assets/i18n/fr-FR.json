@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "Ajouter un CWE",
     "addCweReference": "Ajouter une référence CWE à la menace",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "Description étendue",
@@ -1562,9 +1563,18 @@
     "createNewThreat": "Creer une nouvelle menace",
     "cvssVectorPlaceholder": "p. ex., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Saisir l'identifiant CWE (p. ex., CWE-79)",
+    "cweMappings": "Mappages CWE",
+    "frameworkMappings": "Mappages du Framework de Modélisation des Menaces",
     "notAssociatedWithAsset": "Non associe a un actif",
     "notAssociatedWithCell": "Non associe a une cellule",
     "notAssociatedWithDiagram": "Non associe a un diagramme",
+    "sections": {
+      "classification": "Classification",
+      "description": "Description",
+      "diagramReferences": "Références du Diagramme",
+      "mitigation": "Atténuation",
+      "tracking": "Suivi"
+    },
     "threatPriority": {
       "deferred": "Differe (P4)",
       "deferred.description": "Reporte avec approbation documentee de l'entreprise ; suivi mais non planifie.",

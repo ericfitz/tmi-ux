@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "CWE شامل کریں",
     "addCweReference": "خطرے میں CWE حوالہ شامل کریں",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "تفصیلی وضاحت",
@@ -1562,9 +1563,18 @@
     "createNewThreat": "نیا خطرہ بنائیں",
     "cvssVectorPlaceholder": "مثلاً، CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE شناخت کنندہ درج کریں (مثلاً، CWE-79)",
+    "cweMappings": "CWE نقشہ سازی",
+    "frameworkMappings": "دھمکی ماڈلنگ فریم ورک کی نقشہ سازی",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں",
     "notAssociatedWithCell": "کسی سیل سے منسلک نہیں",
     "notAssociatedWithDiagram": "کسی ڈایاگرام سے منسلک نہیں",
+    "sections": {
+      "classification": "درجہ بندی",
+      "description": "تفصیل",
+      "diagramReferences": "ڈایاگرام حوالہ جات",
+      "mitigation": "تخفیف",
+      "tracking": "نگرانی"
+    },
     "threatPriority": {
       "deferred": "ملتوی (P4)",
       "deferred.description": "دستاویزی کاروباری منظوری کے ساتھ ملتوی؛ ٹریک کیا گیا لیکن شیڈول نہیں۔",

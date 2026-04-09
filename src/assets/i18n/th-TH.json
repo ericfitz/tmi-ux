@@ -813,6 +813,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "เพิ่ม CWE",
     "addCweReference": "เพิ่มการอ้างอิง CWE ไปยังภัยคุกคาม",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "คำอธิบายเพิ่มเติม",
@@ -1553,9 +1554,18 @@
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "cvssVectorPlaceholder": "เช่น CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "ป้อนรหัส CWE (เช่น CWE-79)",
+    "cweMappings": "การแมป CWE",
+    "frameworkMappings": "การแมปกรอบแบบจำลองภัยคุณกรรม",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
     "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
+    "sections": {
+      "classification": "การจัดประเภท",
+      "description": "คำอธิบาย",
+      "diagramReferences": "การอ้างอิงแผนภาพ",
+      "mitigation": "การลดความเสี่ยง",
+      "tracking": "การติดตาม"
+    },
     "threatPriority": {
       "deferred": "เลื่อน (P4)",
       "deferred.description": "เลื่อนออกไปพร้อมการอนุมัติทางธุรกิจที่บันทึกไว้ ติดตามแต่ไม่ได้กำหนดเวลา",

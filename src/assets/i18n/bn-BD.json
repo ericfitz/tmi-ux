@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "CWE যোগ করুন",
     "addCweReference": "হুমকিতে CWE রেফারেন্স যোগ করুন",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "বিস্তারিত বিবরণ",
@@ -1562,9 +1563,18 @@
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
     "cvssVectorPlaceholder": "যেমন, CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE আইডি লিখুন (যেমন, CWE-79)",
+    "cweMappings": "CWE ম্যাপিং",
+    "frameworkMappings": "হুমকি মডেল ফ্রেমওয়ার্ক ম্যাপিং",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
     "notAssociatedWithCell": "কোনো সেলের সাথে সম্পর্কিত নয়",
     "notAssociatedWithDiagram": "কোনো ডায়াগ্রামের সাথে সম্পর্কিত নয়",
+    "sections": {
+      "classification": "শ্রেণীবিভাগ",
+      "description": "বর্ণনা",
+      "diagramReferences": "ডায়াগ্রাম রেফারেন্স",
+      "mitigation": "প্রশমন",
+      "tracking": "ট্র্যাকিং"
+    },
     "threatPriority": {
       "deferred": "স্থগিত (P4)",
       "deferred.description": "নথিভুক্ত ব্যবসায়িক অনুমোদন সহ স্থগিত; ট্র্যাক করা হয়েছে কিন্তু নির্ধারিত নয়।",

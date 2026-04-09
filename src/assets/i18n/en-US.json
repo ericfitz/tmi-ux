@@ -842,10 +842,10 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
-    "addCweReference": "Add CWE Reference to Threat",
-    "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
     "addCwe": "Add CWE",
     "addCwe.comment": "Button label to open the CWE picker dialog. CWE = Common Weakness Enumeration, should not be translated.",
+    "addCweReference": "Add CWE Reference to Threat",
+    "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
     "chooseCwe": "{{cwePicker.title}}",
     "chooseCwe.comment": "Tooltip for the action button that opens the CWE picker dialog. CWE = Common Weakness Enumeration.",
     "extendedDescription": "Extended Description",

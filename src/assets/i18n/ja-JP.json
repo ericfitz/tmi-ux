@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "CWEを追加",
     "addCweReference": "CWEリファレンスを脅威に追加",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "拡張説明",
@@ -1573,9 +1574,18 @@
     "createNewThreat": "新しい脅威を作成",
     "cvssVectorPlaceholder": "例: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE IDを入力（例: CWE-79）",
+    "cweMappings": "CWEマッピング",
+    "frameworkMappings": "脅威モデルフレームワークマッピング",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
     "notAssociatedWithCell": "セルに関連付けられていません",
     "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません",
+    "sections": {
+      "classification": "分類",
+      "description": "説明",
+      "diagramReferences": "図参照",
+      "mitigation": "軽減",
+      "tracking": "追跡"
+    },
     "threatPriority": {
       "deferred": "延期 (P4)",
       "deferred.description": "ビジネス承認を文書化して延期。追跡されるがスケジュールされていない。",

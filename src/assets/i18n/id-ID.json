@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "Tambah CWE",
     "addCweReference": "Tambahkan Referensi CWE ke Ancaman",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "Deskripsi Lengkap",
@@ -1562,9 +1563,18 @@
     "createNewThreat": "Buat Ancaman Baru",
     "cvssVectorPlaceholder": "mis., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Masukkan ID CWE (mis., CWE-79)",
+    "cweMappings": "Pemetaan CWE",
+    "frameworkMappings": "Pemetaan Kerangka Model Ancaman",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
     "notAssociatedWithCell": "Tidak Terkait dengan Sel",
     "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram",
+    "sections": {
+      "classification": "Klasifikasi",
+      "description": "Deskripsi",
+      "diagramReferences": "Referensi Diagram",
+      "mitigation": "Mitigasi",
+      "tracking": "Pelacakan"
+    },
     "threatPriority": {
       "deferred": "Ditunda (P4)",
       "deferred.description": "Ditunda dengan persetujuan bisnis terdokumentasi; dilacak tetapi tidak dijadwalkan.",

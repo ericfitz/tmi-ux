@@ -818,6 +818,7 @@
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
+    "addCwe": "إضافة CWE",
     "addCweReference": "إضافة مرجع CWE إلى التهديد",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "الوصف الموسَّع",
@@ -1573,9 +1574,18 @@
     "createNewThreat": "إنشاء تهديد جديد",
     "cvssVectorPlaceholder": "مثال، CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "أدخل معرف CWE (مثال، CWE-79)",
+    "cweMappings": "تعيينات CWE",
+    "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط",
+    "sections": {
+      "classification": "التصنيف",
+      "description": "الوصف",
+      "diagramReferences": "مراجع الرسم البياني",
+      "mitigation": "التخفيف",
+      "tracking": "التتبع"
+    },
     "threatPriority": {
       "deferred": "مؤجل (P4)",
       "deferred.description": "تم تأجيله بموافقة موثقة من الأعمال؛ يُتابع ولكن غير مجدول.",
