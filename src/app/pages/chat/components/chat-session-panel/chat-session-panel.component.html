@@ -44,7 +44,7 @@
         (click)="onSelect(session.id)"
       >
         <div class="session-info">
-          <span class="session-title">{{ session.title }}</span>
+          <span class="session-title">{{ getSessionTitle(session) }}</span>
           <span class="session-meta">
             {{ formatDate(session.modified_at) }}
           </span>

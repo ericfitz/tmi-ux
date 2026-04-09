@@ -552,7 +552,7 @@ describe('ChatPageComponent', () => {
       expect(mockThreatModelService.createNote).toHaveBeenCalledWith(
         'tm-123',
         expect.objectContaining({
-          name: expect.stringContaining('Timmy session'),
+          name: expect.stringContaining('Chat'),
           include_in_report: false,
           timmy_enabled: false,
         }),
@@ -787,7 +787,7 @@ describe('ChatPageComponent', () => {
       expect(mockThreatModelService.createNote).toHaveBeenCalledWith(
         'tm-123',
         expect.objectContaining({
-          name: 'Three threats found.',
+          name: 'What threats?',
           include_in_report: false,
           timmy_enabled: false,
         }),

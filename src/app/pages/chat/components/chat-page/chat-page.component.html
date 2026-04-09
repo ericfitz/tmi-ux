@@ -1,8 +1,5 @@
 <ng-container *transloco="let t">
   <mat-toolbar class="chat-toolbar" color="primary">
-    <button mat-icon-button [matTooltip]="t('chat.back')" (click)="navigateBack()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
     <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-icon" />
     <span class="toolbar-title">{{ t('chat.title') }}</span>
     <span class="toolbar-spacer"></span>
@@ -12,6 +9,9 @@
       (click)="toggleSidePanel()"
     >
       <mat-icon>{{ sidePanelOpen ? 'right_panel_close' : 'right_panel_open' }}</mat-icon>
+    </button>
+    <button mat-icon-button [matTooltip]="t('common.close')" (click)="navigateBack()">
+      <mat-icon>close</mat-icon>
     </button>
   </mat-toolbar>
 

@@ -39,7 +39,7 @@ import { environment } from '../../../../../environments/environment';
  * Filter state for triage list
  */
 interface TriageFilters {
-  status: ResponseStatus | 'all';
+  status: ResponseStatus[];
   surveyId: string | null;
   searchTerm: string;
   isConfidential: boolean | null;
@@ -86,15 +86,14 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Current filters */
   filters: TriageFilters = {
-    status: 'submitted',
+    status: ['submitted'],
     surveyId: null,
     searchTerm: '',
     isConfidential: null,
   };
 
   /** Status options for the filter dropdown */
-  filterStatusOptions: { value: ResponseStatus | 'all'; labelKey: string }[] = [
-    { value: 'all', labelKey: 'common.allStatuses' },
+  filterStatusOptions: { value: ResponseStatus; labelKey: string }[] = [
     { value: 'submitted', labelKey: 'surveys.status.submitted' },
     { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
     { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
@@ -197,8 +196,8 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
       offset: this.pageIndex * this.pageSize,
     };
 
-    if (this.filters.status !== 'all') {
-      filter.status = this.filters.status;
+    if (this.filters.status.length > 0) {
+      filter.status = this.filters.status.join(',');
     }
     if (this.filters.surveyId) {
       filter.survey_id = this.filters.surveyId;
@@ -246,7 +245,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   clearFilters(): void {
     this.filters = {
-      status: 'all',
+      status: ['submitted'],
       surveyId: null,
       searchTerm: '',
       isConfidential: null,
@@ -402,8 +401,10 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
    * Check if there are any active filters
    */
   get hasActiveFilters(): boolean {
+    const isDefaultStatus =
+      this.filters.status.length === 1 && this.filters.status[0] === 'submitted';
     return (
-      this.filters.status !== 'submitted' ||
+      !isDefaultStatus ||
       !!this.filters.surveyId ||
       !!this.filters.searchTerm ||
       this.filters.isConfidential !== null

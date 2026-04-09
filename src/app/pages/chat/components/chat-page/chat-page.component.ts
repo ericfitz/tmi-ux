@@ -171,9 +171,7 @@ export class ChatPageComponent implements OnInit {
     if (!session) return;
 
     const content = this.formatSessionAsMarkdown(this.messages);
-    const date =
-      this.datePipe.transform(new Date(), 'mediumDate') ?? new Date().toLocaleDateString();
-    const name = session.title || `Timmy session — ${date}`;
+    const name = session.title || this.generateSessionTitle(session.created_at);
 
     this.saveAsNote(name, content);
   }
@@ -181,11 +179,19 @@ export class ChatPageComponent implements OnInit {
   onMessageSavedAsNote(messageId: string): void {
     if (this.savingNote) return;
 
-    const message = this.messages.find(m => m.id === messageId);
+    const msgIndex = this.messages.findIndex(m => m.id === messageId);
+    const message = msgIndex >= 0 ? this.messages[msgIndex] : null;
     if (!message || message.role !== 'assistant') return;
 
     const content = this.formatMessageAsMarkdown(messageId, this.messages);
-    const name = this.generateNoteTitle(message.content);
+
+    const precedingUserMsg =
+      msgIndex > 0 && this.messages[msgIndex - 1].role === 'user'
+        ? this.messages[msgIndex - 1]
+        : null;
+    const name = precedingUserMsg
+      ? this.generateNoteTitle(precedingUserMsg.content)
+      : this.generateNoteTitle(message.content);
 
     this.saveAsNote(name, content);
   }
@@ -553,6 +559,13 @@ export class ChatPageComponent implements OnInit {
     const role = message.role === 'user' ? 'You' : 'Timmy';
     const timestamp = this.datePipe.transform(message.created_at, 'long') ?? message.created_at;
     return `**${role}** (${timestamp}): ${message.content}`;
+  }
+
+  private generateSessionTitle(createdAt: string): string {
+    const date = new Date(createdAt);
+    const dateStr = this.datePipe.transform(date, 'mediumDate') ?? date.toLocaleDateString();
+    const timeStr = this.datePipe.transform(date, 'shortTime') ?? date.toLocaleTimeString();
+    return `Chat \u2014 ${dateStr}, ${timeStr}`;
   }
 
   private generateNoteTitle(assistantContent: string): string {

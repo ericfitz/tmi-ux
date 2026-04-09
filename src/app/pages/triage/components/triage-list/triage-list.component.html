@@ -39,7 +39,11 @@
 
         <mat-form-field appearance="outline" class="status-filter">
           <mat-label>{{ 'common.status' | transloco }}</mat-label>
-          <mat-select [(ngModel)]="filters.status" (selectionChange)="onFilterChange()">
+          <mat-select
+            [(ngModel)]="filters.status"
+            (selectionChange)="onFilterChange()"
+            [multiple]="true"
+          >
             @for (option of filterStatusOptions; track option.value) {
               <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
             }

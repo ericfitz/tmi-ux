@@ -89,6 +89,12 @@ export class ChatSessionPanelComponent {
     this.sourceSummaryExpanded = !this.sourceSummaryExpanded;
   }
 
+  getSessionTitle(session: ChatSession): string {
+    if (session.title) return session.title;
+    const date = new Date(session.created_at);
+    return `Chat \u2014 ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}, ${date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`;
+  }
+
   formatDate(isoString: string): string {
     const date = new Date(isoString);
     const now = new Date();

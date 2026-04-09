@@ -157,6 +157,10 @@ interface CheckboxChangeEvent {
                     Downloads the most recent application log entries as a JSONL file for
                     troubleshooting.
                   </p>
+                  <button mat-stroked-button (click)="onSignOut()" class="sign-out-button">
+                    <mat-icon>logout</mat-icon>
+                    <span [transloco]="'navbar.menu.logout'">Sign Out</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -611,6 +615,13 @@ interface CheckboxChangeEvent {
         line-height: 1.4;
       }
 
+      .sign-out-button {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
       .profile-item {
         display: flex;
         flex-direction: column;
@@ -995,6 +1006,11 @@ export class UserPreferencesDialogComponent implements OnInit {
         this.dialogRef.close();
       }
     });
+  }
+
+  onSignOut(): void {
+    this.dialogRef.close();
+    this.authService.logout();
   }
 
   close(): void {

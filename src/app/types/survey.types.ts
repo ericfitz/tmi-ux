@@ -436,8 +436,8 @@ export interface UpdateSurveyRequest {
 export interface SurveyResponseFilter {
   /** Filter by survey */
   survey_id?: string;
-  /** Filter by status */
-  status?: ResponseStatus;
+  /** Filter by status (single value or comma-separated for multi-select) */
+  status?: string;
   /** Filter by confidentiality (triage only) */
   is_confidential?: boolean;
   /** Sort order (e.g., "created_at:desc") */
