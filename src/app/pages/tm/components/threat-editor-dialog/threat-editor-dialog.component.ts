@@ -6,12 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TooltipAriaLabelDirective, UrlDropZoneDirective } from '@app/shared/imports';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { isValidUrl } from '../../../../shared/utils/url.util';
 import { Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
@@ -104,9 +102,7 @@ export interface ThreatEditorDialogData {
     MatIconModule,
     MatTooltipModule,
     TooltipAriaLabelDirective,
-    UrlDropZoneDirective,
     MatSelectModule,
-    MatCheckboxModule,
     ReactiveFormsModule,
     TranslocoModule,
   ],
@@ -120,27 +116,16 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   isViewOnly: boolean = false;
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
-  isEditingIssueUri = false;
-  initialIssueUriValue = '';
-
   // Dropdown options
-  diagramOptions: DiagramOption[] = [];
-  cellOptions: CellOption[] = []; // Currently displayed cell options
   assetOptions: AssetOption[] = [];
   threatTypeOptions: string[] = [];
   severityOptions: FieldOption[] = [];
-  statusOptions: FieldOption[] = [];
-  priorityOptions: FieldOption[] = [];
-
-  // Complete cell data (all cells from all diagrams) for filtering
-  private allCellOptions: CellOption[] = [];
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
 
   private langSubscription: Subscription | null = null;
   private directionSubscription: Subscription | null = null;
-  private diagramChangeSubscription: Subscription | null = null;
 
   // Track dialog source for debugging
   dialogSource: string = '';
@@ -173,127 +158,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       issue_uri: [''],
       include_in_report: [true],
       timmy_enabled: [true],
-    });
-  }
-
-  /**
-   * Copy text to clipboard
-   * @param text Text to copy
-   */
-  copyToClipboard(text: string): void {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        // Could add a snackbar notification here if desired
-        this.logger.info('Text copied to clipboard');
-      })
-      .catch((err: unknown) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        this.logger.error('Could not copy text: ', errorMessage);
-      });
-  }
-
-  /**
-   * Handles a URL dropped onto the issue URI container.
-   * Sets the issue_uri form control value to the dropped URL.
-   */
-  onIssueUriUrlDropped(url: string): void {
-    if (this.isViewOnly) return;
-    this.threatForm.get('issue_uri')?.setValue(url);
-    this.threatForm.get('issue_uri')?.markAsDirty();
-    this.initialIssueUriValue = url;
-    this.isEditingIssueUri = false;
-  }
-
-  /**
-   * Enter edit mode for issue URI
-   */
-  editIssueUri(): void {
-    this.isEditingIssueUri = true;
-    // Focus the input field after the view updates
-    setTimeout(() => {
-      const input = document.querySelector(
-        'input[formControlName="issue_uri"]',
-      ) as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
-    }, 0);
-  }
-
-  /**
-   * Handle blur event on issue URI input
-   */
-  onIssueUriBlur(): void {
-    // Update the initial value with the current form value
-    const currentValue = (this.threatForm.get('issue_uri')?.value as string) || '';
-    this.initialIssueUriValue = currentValue;
-    // Exit edit mode when user clicks away from the input
-    this.isEditingIssueUri = false;
-  }
-
-  /**
-   * Check if we should show the hyperlink view for issue URI
-   */
-  shouldShowIssueUriHyperlink(): boolean {
-    return !this.isEditingIssueUri && !!this.initialIssueUriValue;
-  }
-
-  /**
-   * Opens URI in new tab when clicked
-   */
-  openUriInNewTab(uri: string): void {
-    if (isValidUrl(uri)) {
-      window.open(uri, '_blank', 'noopener,noreferrer');
-    }
-  }
-
-  /**
-   * Initialize diagram options for the dropdown
-   */
-  private initializeDiagramOptions(): void {
-    // Initialize with "Not associated" option
-    this.diagramOptions = [
-      {
-        id: this.NOT_ASSOCIATED_VALUE,
-        name: this.translocoService.translate('threatEditor.notAssociatedWithDiagram'),
-      },
-    ];
-
-    // If there's a current diagram ID, find it and add as second option
-    let currentDiagramOption: DiagramOption | null = null;
-    if (this.data.diagramId) {
-      // Look for current diagram in provided diagrams
-      if (this.data.diagrams && this.data.diagrams.length > 0) {
-        currentDiagramOption =
-          this.data.diagrams.find(diagram => diagram.id === this.data.diagramId) || null;
-      }
-
-      // If not found in provided diagrams, create option with ID as name
-      if (!currentDiagramOption) {
-        currentDiagramOption = {
-          id: this.data.diagramId,
-          name: this.data.diagramId, // Use ID as name if no name provided
-        };
-      }
-
-      // Add current diagram as second option
-      this.diagramOptions.push(currentDiagramOption);
-    }
-
-    // Add remaining diagrams from input (excluding the current one already added)
-    if (this.data.diagrams && this.data.diagrams.length > 0) {
-      const remainingDiagrams = this.data.diagrams.filter(
-        diagram => diagram.id !== this.data.diagramId,
-      );
-      this.diagramOptions = [...this.diagramOptions, ...remainingDiagrams];
-    }
-
-    this.logger.debugComponent('ThreatEditorDialog', 'Diagram options initialized:', {
-      currentDiagramId: this.data.diagramId,
-      optionsCount: this.diagramOptions.length,
-      firstOption: this.diagramOptions[0]?.name,
-      secondOption: this.diagramOptions[1]?.name,
     });
   }
 
@@ -359,38 +223,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   /**
-   * Initialize field options for severity, status, and priority dropdowns
+   * Initialize field options for severity dropdown
    */
   private initializeFieldOptions(): void {
     this.severityOptions = getFieldOptions('threatEditor.threatSeverity', this.translocoService);
-    this.statusOptions = getFieldOptions('threatEditor.threatStatus', this.translocoService);
-    this.priorityOptions = getFieldOptions('threatEditor.threatPriority', this.translocoService);
-
-    this.logger.debugComponent('ThreatEditorDialog', 'Field options initialized', {
-      severityCount: this.severityOptions.length,
-      statusCount: this.statusOptions.length,
-      priorityCount: this.priorityOptions.length,
-    });
-  }
-
-  /**
-   * Initialize cell options for the dropdown
-   */
-  private initializeCellOptions(): void {
-    // Store all cells for filtering
-    this.allCellOptions = this.data.cells || [];
-
-    // Apply initial filtering based on current diagram selection
-    this.filterCellOptions();
-
-    this.logger.debugComponent('ThreatEditorDialog', 'Cell options initialized:', {
-      currentCellId: this.data.cellId,
-      currentDiagramId: this.data.diagramId,
-      totalCells: this.allCellOptions.length,
-      filteredCells: this.cellOptions.length,
-      firstOption: this.cellOptions[0]?.label,
-      secondOption: this.cellOptions[1]?.label,
-    });
   }
 
   /**
@@ -436,122 +272,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       firstOption: this.assetOptions[0]?.name,
       secondOption: this.assetOptions[1]?.name,
     });
-  }
-
-  /**
-   * Filters cell options based on the currently selected diagram.
-   * This method is called initially and whenever the diagram selection changes.
-   */
-  private filterCellOptions(selectedDiagramId?: string): void {
-    const diagramId =
-      selectedDiagramId ||
-      (this.threatForm?.get('diagram_id')?.value as string) ||
-      this.data.diagramId;
-
-    // Start with "Not associated" option
-    const notAssociatedOption: CellOption = {
-      id: this.NOT_ASSOCIATED_VALUE,
-      label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
-    };
-
-    let filteredCells: CellOption[];
-
-    if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
-      // Filter cells for the selected diagram
-      filteredCells = this.allCellOptions.filter(cell => cell.diagramId === diagramId);
-    } else {
-      // If no diagram selected, show all cells
-      filteredCells = [...this.allCellOptions];
-    }
-
-    // If there's a current cell ID, ensure it's included and appears as second option
-    let currentCellOption: CellOption | null = null;
-    if (this.data.cellId) {
-      currentCellOption = filteredCells.find(cell => cell.id === this.data.cellId) || null;
-
-      // If current cell not found in filtered list (e.g., from different diagram), create it
-      if (!currentCellOption) {
-        // Check if it exists in all cells
-        const currentInAll = this.allCellOptions.find(cell => cell.id === this.data.cellId);
-        if (currentInAll) {
-          currentCellOption = currentInAll;
-        } else {
-          // Create fallback option
-          currentCellOption = {
-            id: this.data.cellId,
-            label: this.data.cellId, // Use ID as label if no label provided
-            diagramId: this.data.diagramId, // Associate with current diagram
-          };
-        }
-      }
-    }
-
-    // Build final options: [Not associated, Current cell (if any), Other cells]
-    this.cellOptions = [notAssociatedOption];
-
-    if (currentCellOption) {
-      this.cellOptions.push(currentCellOption);
-      // Add remaining cells (excluding current one)
-      const remainingCells = filteredCells.filter(cell => cell.id !== this.data.cellId);
-      this.cellOptions = [...this.cellOptions, ...remainingCells];
-    } else {
-      // No current cell, add all filtered cells
-      this.cellOptions = [...this.cellOptions, ...filteredCells];
-    }
-
-    this.logger.debugComponent('ThreatEditorDialog', 'Filtered cell options:', {
-      selectedDiagramId: diagramId as string,
-      totalAvailableCells: this.allCellOptions.length,
-      filteredCellCount: filteredCells.length,
-      finalOptionsCount: this.cellOptions.length,
-      currentCellId: this.data.cellId,
-      hasCurrentCell: !!currentCellOption,
-    });
-  }
-
-  /**
-   * Sets up reactive subscription to filter cell options when diagram selection changes.
-   */
-  private setupDiagramChangeFiltering(): void {
-    // Subscribe to diagram_id field changes
-    const diagramControl = this.threatForm.get('diagram_id');
-    if (diagramControl) {
-      this.diagramChangeSubscription = diagramControl.valueChanges.subscribe(
-        (diagramId: string) => {
-          this.logger.debugComponent(
-            'ThreatEditorDialog',
-            'Diagram selection changed, filtering cells',
-            {
-              newDiagramId: diagramId,
-              previousCellId: this.threatForm.get('cell_id')?.value as string,
-            },
-          );
-
-          // Filter cell options based on new diagram selection
-          this.filterCellOptions(diagramId);
-
-          // If the current cell_id doesn't exist in the new filtered list, reset it
-          const currentCellId = this.threatForm.get('cell_id')?.value as string;
-          if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
-            const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
-            if (!cellExists) {
-              this.logger.debugComponent(
-                'ThreatEditorDialog',
-                'Current cell not available in selected diagram, resetting to not associated',
-                {
-                  currentCellId: currentCellId,
-                  newDiagramId: diagramId,
-                },
-              );
-              this.threatForm.patchValue(
-                { cell_id: this.NOT_ASSOCIATED_VALUE },
-                { emitEvent: false },
-              );
-            }
-          }
-        },
-      );
-    }
   }
 
   ngOnInit(): void {
@@ -620,9 +340,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.forceTranslationUpdate();
     });
 
-    // Set up reactive filtering for cell options based on diagram selection
-    this.setupDiagramChangeFiltering();
-
     // Initialize enhanced save behavior
     this.initializeEnhancedSaveBehavior();
   }
@@ -690,8 +407,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   private _populateFormFromThreat(): void {
     if (!this.data.threat) return;
 
-    this.initialIssueUriValue = this.data.threat.issue_uri || '';
-
     this.logger.debugComponent(
       'ThreatEditorDialog',
       'Populating threat editor form with threat data',
@@ -758,7 +473,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       mitigated: this.data.threat.mitigated || false,
       status: migratedStatus,
       mitigation: this.data.threat.mitigation || '',
-      issue_uri: this.initialIssueUriValue,
+      issue_uri: this.data.threat.issue_uri || '',
       include_in_report: this.data.threat.include_in_report,
       timmy_enabled: this.data.threat.timmy_enabled ?? true,
     });
@@ -824,8 +539,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * Initializes all dropdown option lists from translations.
    */
   private _initializeAllDropdownOptions(): void {
-    this.initializeDiagramOptions();
-    this.initializeCellOptions();
     this.initializeAssetOptions();
     this.initializeThreatTypeOptions();
     this.initializeFieldOptions();
@@ -901,16 +614,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'common.threatDescription',
         'common.threatType',
         'common.severity',
-        'common.score',
-        'common.priority',
-        'common.issueUri',
-        'common.status',
-        'common.mitigated',
-        'common.diagramId',
-        'common.cellId',
         'threatEditor.notAssociatedWithAsset',
-        'threatEditor.notAssociatedWithDiagram',
-        'threatEditor.notAssociatedWithCell',
         'common.cancel',
         'common.save',
         'common.close',
@@ -992,11 +696,6 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     if (this.directionSubscription) {
       this.directionSubscription.unsubscribe();
       this.directionSubscription = null;
-    }
-
-    if (this.diagramChangeSubscription) {
-      this.diagramChangeSubscription.unsubscribe();
-      this.diagramChangeSubscription = null;
     }
 
     // Clean up subscriptions

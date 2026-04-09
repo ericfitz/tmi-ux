@@ -1,5 +1,3 @@
-@use '../../../../../styles/link-colors' as links;
-
 .full-width {
   width: 100%;
 }
@@ -51,12 +49,6 @@ mat-dialog-actions {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
-
-  &.three-columns {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
 }
 
 // Common styles for button icons (placeholder selectors)
@@ -76,114 +68,6 @@ mat-dialog-actions {
   width: var(--icon-size-sm);
   height: var(--icon-size-sm);
   line-height: var(--icon-size-sm);
-}
-
-// Issue URL container with form field and external edit button
-.issue-uri-container {
-  display: flex;
-  align-items: center; // Center both items
-  gap: 8px;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease;
-
-  &.url-drop-active {
-    position: relative;
-    border: 2px dashed var(--color-primary);
-    border-radius: 8px;
-    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
-
-    &::after {
-      content: attr(data-drop-hint);
-      position: absolute;
-      top: -18px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 12px;
-      color: var(--color-theme-cyan);
-      font-weight: 500;
-      pointer-events: none;
-    }
-  }
-
-  .issue-uri-field {
-    flex: 1; // Take up remaining space
-  }
-
-  .external-edit-button {
-    flex-shrink: 0;
-    margin-top: -8px; // Bump up 8px for better visual centering
-  }
-}
-
-// Specific styling for external edit button icons
-.issue-uri-container .external-edit-button .mat-icon {
-  font-size: var(--icon-size-lg);
-  width: var(--icon-size-lg);
-  height: var(--icon-size-lg);
-}
-
-// Specific styling for view-only URL links
-/* stylelint-disable no-descending-specificity */
-.view-only-url .issue-uri-link {
-  color: var(--color-primary);
-  text-decoration: none;
-  word-break: break-all;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--color-primary-dark);
-  }
-
-  &:visited {
-    color: var(--color-link-visited);
-  }
-}
-/* stylelint-enable no-descending-specificity */
-
-// URL view content - readonly input styled as hyperlink
-.url-view-content {
-  @include links.url-link-styles;
-}
-
-// View-only URL display (for readonly mode)
-.view-only-url {
-  padding: 8px 12px;
-
-  // Remove background color to maintain consistency
-  border-radius: 8px;
-  border-left: 3px solid var(--color-primary);
-  font-size: 14px;
-
-  .url-label {
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    margin-right: 8px;
-  }
-}
-
-// For smaller screens, adjust the grid
-@media (width <= 800px) {
-  .form-field-row.three-columns {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width <= 600px) {
-  .form-field-row.three-columns,
-  .form-field-row.two-columns {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Checkbox field styling
-.checkbox-field {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0;
-  height: 56px; // Match height of form fields with some extra space for alignment
 }
 
 // Info section styles

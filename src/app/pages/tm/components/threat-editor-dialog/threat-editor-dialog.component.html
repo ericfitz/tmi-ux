@@ -43,30 +43,6 @@
       </mat-form-field>
     </div>
 
-    <!-- Diagram ID field -->
-    <div class="form-field-row">
-      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
-        <mat-select formControlName="diagram_id" tabindex="2">
-          <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
-            {{ diagram.name || diagram.id }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- Cell ID field -->
-    <div class="form-field-row">
-      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
-        <mat-select formControlName="cell_id" tabindex="3">
-          <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
-            {{ cell.label || cell.id }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
     <!-- Asset field -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
@@ -111,10 +87,9 @@
       </mat-form-field>
     </div>
 
-    <!-- Severity, Score, Priority row -->
-    <div class="form-field-row three-columns">
-      <!-- Severity field -->
-      <mat-form-field appearance="outline" floatLabel="always">
+    <!-- Severity field -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
         <mat-select formControlName="severity" tabindex="7">
           <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
@@ -124,159 +99,6 @@
             </mat-option>
           }
         </mat-select>
-      </mat-form-field>
-
-      <!-- Score field -->
-      <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'common.score' | transloco }}</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="score"
-          min="0"
-          max="10"
-          step="0.1"
-          tabindex="8"
-        />
-      </mat-form-field>
-
-      <!-- Priority field -->
-      <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'common.priority' | transloco }}</mat-label>
-        <mat-select formControlName="priority" tabindex="9">
-          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
-          @for (option of priorityOptions; track option.key) {
-            <mat-option [value]="option.key" [matTooltip]="option.tooltip">
-              {{ option.label }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- Status, Mitigated, and Include in Report row -->
-    <div class="form-field-row three-columns">
-      <!-- Status field -->
-      <mat-form-field appearance="outline" floatLabel="always">
-        <mat-label>{{ 'common.status' | transloco }}</mat-label>
-        <mat-select formControlName="status" tabindex="10">
-          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
-          @for (option of statusOptions; track option.key) {
-            <mat-option
-              [value]="option.key"
-              [matTooltip]="'threatEditor.threatStatus.' + option.key + '.description' | transloco"
-            >
-              {{ 'threatEditor.threatStatus.' + option.key | transloco }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <!-- Mitigated field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="mitigated" tabindex="11">
-          {{ 'common.mitigated' | transloco }}
-        </mat-checkbox>
-      </div>
-
-      <!-- Include in Report field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="include_in_report" tabindex="12">
-          {{ 'common.includeInReport' | transloco }}
-        </mat-checkbox>
-      </div>
-
-      <!-- Include in Timmy Chat field -->
-      <div class="checkbox-field">
-        <mat-checkbox formControlName="timmy_enabled" tabindex="13">
-          {{ 'common.includeInTimmyChat' | transloco }}
-        </mat-checkbox>
-      </div>
-    </div>
-
-    <!-- Issue URI field - on its own row -->
-    <div class="form-field-row">
-      <!-- Edit mode: Toggle between form input and hyperlink display -->
-      @if (!isViewOnly) {
-        <div
-          class="issue-uri-container"
-          appUrlDropZone
-          (urlDropped)="onIssueUriUrlDropped($event)"
-          [attr.data-drop-hint]="'threatModels.tooltips.dropToSetIssueUri' | transloco"
-        >
-          <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
-            <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
-
-            <!-- Use ng-container with if-else to ensure exactly one control is always present -->
-            @if (shouldShowIssueUriHyperlink()) {
-              <ng-container>
-                <input
-                  matInput
-                  readonly
-                  [value]="initialIssueUriValue"
-                  class="uri-view-content"
-                  (click)="openUriInNewTab(initialIssueUriValue)"
-                  style="cursor: pointer; color: #1976d2; text-decoration: underline"
-                />
-              </ng-container>
-            } @else {
-              <input
-                matInput
-                formControlName="issue_uri"
-                type="url"
-                tabindex="13"
-                (blur)="onIssueUriBlur()"
-              />
-            }
-          </mat-form-field>
-
-          <!-- Edit button outside the form field -->
-          @if (shouldShowIssueUriHyperlink()) {
-            <button
-              mat-icon-button
-              class="external-edit-button"
-              (click)="editIssueUri()"
-              [matTooltip]="'common.edit' | transloco"
-              tabindex="14"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-          }
-        </div>
-      }
-
-      <!-- View-only mode: Show only hyperlink if URI exists -->
-      @if (isViewOnly && data.threat?.issue_uri) {
-        <div class="view-only-uri">
-          <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
-          <a
-            [href]="data.threat?.issue_uri"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="issue-uri-link"
-          >
-            {{ data.threat?.issue_uri }}
-          </a>
-        </div>
-      }
-    </div>
-
-    <!-- Mitigation field - on its own row -->
-    <div class="form-field-container">
-      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.mitigation' | transloco }}</mat-label>
-        <textarea
-          matInput
-          formControlName="mitigation"
-          rows="3"
-          tabindex="15"
-          placeholder="{{ 'common.mitigationPlaceholder' | transloco }}"
-        ></textarea>
-        @if (threatForm.get('mitigation')?.hasError('maxlength')) {
-          <mat-error>
-            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-          </mat-error>
-        }
       </mat-form-field>
     </div>
   </form>
