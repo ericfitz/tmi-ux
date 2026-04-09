@@ -37,7 +37,7 @@ import { CellDataExtractionService } from '../../../../shared/services/cell-data
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { CVSSScore, SSVCScore, Threat, ThreatModel } from '../../models/threat-model.model';
 import type { ApiThreatInput } from '@app/generated/api-type-helpers';
-import { FrameworkModel } from '../../../../shared/models/framework.model';
+import { FrameworkModel, ThreatTypeModel } from '../../../../shared/models/framework.model';
 import {
   FieldOption,
   getFieldOptions,
@@ -154,6 +154,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   cellOptions: CellOption[] = [];
   assetOptions: AssetOption[] = [];
   threatTypeOptions: string[] = [];
+  private threatTypeModels: ThreatTypeModel[] = [];
   severityOptions: FieldOption[] = [];
   statusOptions: FieldOption[] = [];
   priorityOptions: FieldOption[] = [];
@@ -419,10 +420,10 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    */
   private initializeThreatTypeOptions(): void {
     if (this.framework?.threatTypes?.length) {
-      this.threatTypeOptions = this.framework.threatTypes.map(tt => tt.name);
+      this.threatTypeModels = this.framework.threatTypes;
+      this.threatTypeOptions = this.threatTypeModels.map(tt => tt.name);
     } else {
-      // Fallback to default STRIDE threat types
-      this.threatTypeOptions = [
+      const defaultTypes = [
         'Spoofing',
         'Tampering',
         'Repudiation',
@@ -430,7 +431,28 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
         'Denial of Service',
         'Elevation of Privilege',
       ];
+      this.threatTypeModels = defaultTypes.map(name => ({ name, appliesTo: [] }));
+      this.threatTypeOptions = defaultTypes;
     }
+  }
+
+  /**
+   * Get the shape of the currently selected cell from the threat model diagrams.
+   */
+  private _getSelectedCellType(): string | null {
+    const cellId = this.threatForm.get('cell_id')?.value as string;
+    if (!cellId || cellId === this.NOT_ASSOCIATED_VALUE) return null;
+
+    if (this.threatModel?.diagrams) {
+      for (const diagram of this.threatModel.diagrams) {
+        const cells = (diagram as any).cells as any[] | undefined;
+        if (cells) {
+          const cell = cells.find((c: any) => c.id === cellId);
+          if (cell?.shape) return cell.shape;
+        }
+      }
+    }
+    return null;
   }
 
   /**
