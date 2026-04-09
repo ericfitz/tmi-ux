@@ -7,8 +7,6 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, BehaviorSubject } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
-import { MatChipInputEvent } from '@angular/material/chips';
-
 import { ThreatPageComponent } from './threat-page.component';
 import { CVSSScore, ThreatModel, Threat } from '../../models/threat-model.model';
 import {
@@ -68,6 +66,10 @@ interface MockAddonService {
   list: ReturnType<typeof vi.fn>;
 }
 
+interface MockCweService {
+  loadWeaknesses: ReturnType<typeof vi.fn>;
+}
+
 describe('ThreatPageComponent', () => {
   let component: ThreatPageComponent;
   let route: MockActivatedRoute;
@@ -83,6 +85,7 @@ describe('ThreatPageComponent', () => {
   let cellDataExtractionService: MockCellDataExtractionService;
   let frameworkService: MockFrameworkService;
   let addonService: MockAddonService;
+  let cweService: MockCweService;
 
   const mockThreat: Threat = {
     id: 'threat-1',
@@ -173,6 +176,9 @@ describe('ThreatPageComponent', () => {
     addonService = {
       list: vi.fn().mockReturnValue(of({ addons: [], total: 0, limit: 0, offset: 0 })),
     };
+    cweService = {
+      loadWeaknesses: vi.fn().mockReturnValue(of([])),
+    };
 
     component = new ThreatPageComponent(
       route as any,
@@ -188,6 +194,7 @@ describe('ThreatPageComponent', () => {
       cellDataExtractionService as any,
       frameworkService as any,
       addonService as any,
+      cweService as any,
     );
   });
 
@@ -381,120 +388,20 @@ describe('ThreatPageComponent', () => {
       expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
     });
 
-    it('should add a CWE ID via chip input', () => {
-      const mockEvent = {
-        value: 'CWE-22',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
+    it('should open CWE picker dialog', () => {
+      const mockAfterClosed = { subscribe: vi.fn() };
+      dialog.open.mockReturnValue({ afterClosed: () => ({ pipe: () => mockAfterClosed }) });
 
-      component.addCweId(mockEvent);
+      component.openCwePicker();
 
-      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should normalize numeric-only CWE ID input', () => {
-      const mockEvent = {
-        value: '22',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
-    });
-
-    it('should normalize CWE ID without hyphen', () => {
-      const mockEvent = {
-        value: 'CWE22',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
-    });
-
-    it('should not add duplicate CWE IDs', () => {
-      const mockEvent = {
-        value: 'CWE-79',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      const values = component.threatForm.get('cwe_id')?.value as string[];
-      expect(values.filter(v => v === 'CWE-79').length).toBe(1);
-    });
-
-    it('should clear input even when adding duplicate', () => {
-      const mockEvent = {
-        value: 'CWE-79',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should handle empty input gracefully', () => {
-      const mockEvent = {
-        value: '',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should reject non-numeric CWE input', () => {
-      const mockEvent = {
-        value: 'a1b2c3',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should reject CWE input with more than 4 digits', () => {
-      const mockEvent = {
-        value: '12345',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should reject CWE- prefix with non-numeric suffix', () => {
-      const mockEvent = {
-        value: 'CWE-abc',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
-      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
-    });
-
-    it('should accept case-insensitive cwe- prefix', () => {
-      const mockEvent = {
-        value: 'cwe-22',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
-
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            existingCweIds: ['CWE-79', 'CWE-89'],
+          }),
+        }),
+      );
     });
 
     it('should remove a CWE ID', () => {
@@ -504,16 +411,10 @@ describe('ThreatPageComponent', () => {
       expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-89');
     });
 
-    it('should mark form dirty when adding a CWE ID', () => {
-      component.threatForm.markAsPristine();
-      const mockEvent = {
-        value: 'CWE-22',
-        chipInput: { clear: vi.fn() },
-      } as unknown as MatChipInputEvent;
+    it('should not remove a CWE ID that does not exist', () => {
+      component.removeCweId('CWE-999');
 
-      component.addCweId(mockEvent);
-
-      expect(component.threatForm.dirty).toBe(true);
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
     });
 
     it('should mark form dirty when removing a CWE ID', () => {
@@ -521,6 +422,15 @@ describe('ThreatPageComponent', () => {
       component.removeCweId('CWE-79');
 
       expect(component.threatForm.dirty).toBe(true);
+    });
+
+    it('should return CWE name from map via getCweName', () => {
+      component['cweNameMap'].set('CWE-79', 'Improper Neutralization of Input');
+      expect(component.getCweName('CWE-79')).toBe('Improper Neutralization of Input');
+    });
+
+    it('should return CWE ID as fallback when name not in map', () => {
+      expect(component.getCweName('CWE-999')).toBe('CWE-999');
     });
   });
 
