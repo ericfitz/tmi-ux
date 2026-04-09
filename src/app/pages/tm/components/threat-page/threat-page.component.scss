@@ -312,6 +312,9 @@
   align-items: flex-start;
   gap: 8px;
   flex-wrap: wrap;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 8px;
 
   mat-chip-set {
     flex: 1;
