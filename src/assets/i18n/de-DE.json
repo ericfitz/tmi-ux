@@ -771,7 +771,8 @@
     "view": "Ansicht",
     "viewMetadata": "Metadaten anzeigen",
     "viewPermissions": "Berechtigungen anzeigen",
-    "viewThreat": "Bedrohung anzeigen"
+    "viewThreat": "Bedrohung anzeigen",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
@@ -1628,7 +1629,9 @@
       "resolved.description": "Die Bedrohung ist vollständig gemindert und verifiziert; Restrisiko ist akzeptabel.",
       "verification_pending": "Überprüfung ausstehend",
       "verification_pending.description": "Minderung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",

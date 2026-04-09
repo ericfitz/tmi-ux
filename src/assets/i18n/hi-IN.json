@@ -773,7 +773,8 @@
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियां देखें",
-    "viewThreat": "खतरा देखें"
+    "viewThreat": "खतरा देखें",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",
@@ -1655,7 +1656,9 @@
       "resolved.description": "खतरा पूरी तरह से कम और सत्यापित है; अवशिष्ट जोखिम स्वीकार्य है।",
       "verification_pending": "सत्यापन प्रतीक्षित",
       "verification_pending.description": "शमन पूर्ण है; सुरक्षा टीम को प्रभावशीलता का परीक्षण या समीक्षा करनी चाहिए।"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "अनुमति जोड़ें",

@@ -771,7 +771,8 @@
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
-    "viewThreat": "Просмотр Угрозы"
+    "viewThreat": "Просмотр Угрозы",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",
@@ -1628,7 +1629,9 @@
       "resolved.description": "Угроза полностью смягчена и проверена; остаточный риск приемлем.",
       "verification_pending": "Ожидает проверки",
       "verification_pending.description": "Смягчение завершено; команда безопасности должна проверить эффективность."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "Добавить разрешение",

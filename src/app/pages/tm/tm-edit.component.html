@@ -335,7 +335,7 @@
                 [matTooltip]="
                   isValidUrl(threatModelForm.get('issue_uri')?.value)
                     ? threatModelForm.get('issue_uri')?.value
-                    : 'Enter a valid URI to open'
+                    : ('common.issueUriOpenHint' | transloco)
                 "
                 matTooltipPosition="above"
                 tabindex="5"

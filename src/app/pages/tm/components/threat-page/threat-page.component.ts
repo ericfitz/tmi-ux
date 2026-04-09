@@ -67,6 +67,7 @@ import {
   FrameworkMappingPickerDialogData,
   FrameworkMappingPickerDialogResult,
 } from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.types';
+import { isValidUrl } from '../../../../shared/utils/url.util';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
 import { CweService } from '../../../../shared/services/cwe.service';
@@ -139,10 +140,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // Localization
   currentLocale = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
-
-  // Issue URI state
-  isEditingIssueUri = false;
-  initialIssueUriValue = '';
 
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
@@ -521,8 +518,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   private populateForm(): void {
     if (!this.threat) return;
 
-    this.initialIssueUriValue = this.threat.issue_uri || '';
-
     // Migrate old string values to numeric keys
     const migratedSeverity = migrateFieldValue(
       this.threat.severity,
@@ -564,7 +559,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigated: this.threat.mitigated || false,
       status: migratedStatus,
       mitigation: this.threat.mitigation || '',
-      issue_uri: this.initialIssueUriValue,
+      issue_uri: this.threat.issue_uri || '',
       include_in_report: this.threat.include_in_report,
       timmy_enabled: this.threat.timmy_enabled ?? true,
       cwe_id: this.threat.cwe_id || [],
@@ -781,46 +776,20 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     if (!this.canEdit) return;
     this.threatForm.get('issue_uri')?.setValue(url);
     this.threatForm.get('issue_uri')?.markAsDirty();
-    this.initialIssueUriValue = url;
-    this.isEditingIssueUri = false;
   }
 
   /**
-   * Enter edit mode for issue URI
+   * Check if a string is a valid URL
    */
-  editIssueUri(): void {
-    this.isEditingIssueUri = true;
-    setTimeout(() => {
-      const input = document.querySelector(
-        'input[formControlName="issue_uri"]',
-      ) as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
-    }, 0);
+  isValidUrl(url: string): boolean {
+    return isValidUrl(url);
   }
 
   /**
-   * Handle blur event on issue URI input
-   */
-  onIssueUriBlur(): void {
-    const currentValue = (this.threatForm.get('issue_uri')?.value as string) || '';
-    this.initialIssueUriValue = currentValue;
-    this.isEditingIssueUri = false;
-  }
-
-  /**
-   * Check if we should show the hyperlink view for issue URI
-   */
-  shouldShowIssueUriHyperlink(): boolean {
-    return !this.isEditingIssueUri && !!this.initialIssueUriValue;
-  }
-
-  /**
-   * Opens URI in new tab when clicked
+   * Opens URI in new tab
    */
   openUriInNewTab(uri: string): void {
-    if (uri?.trim()) {
+    if (isValidUrl(uri)) {
       window.open(uri, '_blank', 'noopener,noreferrer');
     }
   }

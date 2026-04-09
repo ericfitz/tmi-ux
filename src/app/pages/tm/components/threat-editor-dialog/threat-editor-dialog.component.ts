@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { isValidUrl } from '../../../../shared/utils/url.util';
 import { Threat } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
@@ -242,7 +243,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * Opens URI in new tab when clicked
    */
   openUriInNewTab(uri: string): void {
-    if (uri && uri.trim()) {
+    if (isValidUrl(uri)) {
       window.open(uri, '_blank', 'noopener,noreferrer');
     }
   }

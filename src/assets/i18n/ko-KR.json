@@ -771,7 +771,8 @@
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
-    "viewThreat": "위협 보기"
+    "viewThreat": "위협 보기",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "역방향 연결 추가",
@@ -1628,7 +1629,9 @@
       "resolved.description": "위협이 완전히 완화되고 검증됨; 잔여 위험이 허용 가능합니다.",
       "verification_pending": "검증 대기 중",
       "verification_pending.description": "완화가 완료됨; 보안 팀이 효과를 테스트하거나 검토해야 합니다."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "권한 추가",

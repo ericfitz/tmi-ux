@@ -771,7 +771,8 @@
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
-    "viewThreat": "হুমকি দেখুন"
+    "viewThreat": "হুমকি দেখুন",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",
@@ -1628,7 +1629,9 @@
       "resolved.description": "হুমকিটি সম্পূর্ণরূপে প্রশমিত এবং যাচাইকৃত; অবশিষ্ট ঝুঁকি গ্রহণযোগ্য।",
       "verification_pending": "যাচাইকরণ বাকি",
       "verification_pending.description": "প্রশমন সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা পরীক্ষা বা পর্যালোচনা করতে হবে।"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "অনুমতি যোগ করুন",

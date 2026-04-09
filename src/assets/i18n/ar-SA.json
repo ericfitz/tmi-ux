@@ -771,7 +771,8 @@
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
-    "viewThreat": "عرض التهديد"
+    "viewThreat": "عرض التهديد",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",
@@ -1639,7 +1640,9 @@
       "resolved.description": "تم تخفيف التهديد بالكامل والتحقق منه؛ المخاطر المتبقية مقبولة.",
       "verification_pending": "في انتظار التحقق",
       "verification_pending.description": "اكتمل التخفيف؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "إضافة إذن",

@@ -766,7 +766,8 @@
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
-    "viewThreat": "ดูภัยคุกคาม"
+    "viewThreat": "ดูภัยคุกคาม",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
@@ -1619,7 +1620,9 @@
       "resolved.description": "ภัยคุกคามได้รับการบรรเทาและตรวจสอบอย่างสมบูรณ์ ความเสี่ยงที่เหลืออยู่ในระดับที่ยอมรับได้",
       "verification_pending": "รอการตรวจสอบ",
       "verification_pending.description": "การบรรเทาเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",

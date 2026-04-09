@@ -771,7 +771,8 @@
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
-    "viewThreat": "Lihat Ancaman"
+    "viewThreat": "Lihat Ancaman",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "Tambah Koneksi Terbalik",
@@ -1628,7 +1629,9 @@
       "resolved.description": "Ancaman telah sepenuhnya dimitigasi dan diverifikasi; risiko residual dapat diterima.",
       "verification_pending": "Menunggu Verifikasi",
       "verification_pending.description": "Mitigasi selesai; tim keamanan harus menguji atau meninjau efektivitas."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "Tambah Izin",

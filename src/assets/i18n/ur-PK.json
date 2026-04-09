@@ -771,7 +771,8 @@
     "view": "دیکھیں",
     "viewMetadata": "میٹا ڈیٹا دیکھیں",
     "viewPermissions": "اجازتیں دیکھیں",
-    "viewThreat": "خطرہ دیکھیں"
+    "viewThreat": "خطرہ دیکھیں",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "الٹا کنکشن شامل کریں",
@@ -1628,7 +1629,9 @@
       "resolved.description": "خطرے کی مکمل تخفیف اور تصدیق ہو گئی ہے؛ باقی خطرہ قابل قبول ہے۔",
       "verification_pending": "تصدیق زیر التواء",
       "verification_pending.description": "تخفیف مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی جانچ یا جائزہ لینا ہوگا۔"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "اجازت شامل کریں",

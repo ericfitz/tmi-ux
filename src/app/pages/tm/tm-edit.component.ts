@@ -19,6 +19,7 @@ import {
   SUBTABLE_PAGE_SIZE_OPTIONS,
 } from '@app/types/pagination.types';
 import { calculateOffset } from '@app/shared/utils/pagination.util';
+import { isValidUrl } from '@app/shared/utils/url.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
@@ -538,7 +539,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens URI in new tab when clicked
    */
   openUriInNewTab(uri: string): void {
-    if (uri && uri.trim()) {
+    if (isValidUrl(uri)) {
       window.open(uri, '_blank', 'noopener,noreferrer');
     }
   }
@@ -547,13 +548,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Check if a URL is valid
    */
   isValidUrl(url: string): boolean {
-    if (!url || !url.trim()) return false;
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
+    return isValidUrl(url);
   }
 
   /** Gets the translated label for a threat severity value, handling legacy numeric values. */

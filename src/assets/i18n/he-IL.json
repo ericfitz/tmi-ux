@@ -771,7 +771,8 @@
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
-    "viewThreat": "צפה באיום"
+    "viewThreat": "צפה באיום",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "הוסף חיבור הפוך",
@@ -1628,7 +1629,9 @@
       "resolved.description": "האיום הופחת במלואו ואומת; הסיכון השיורי מקובל.",
       "verification_pending": "ממתין לאימות",
       "verification_pending.description": "ההפחתה הושלמה; צוות האבטחה חייב לבדוק או לסקור את האפקטיביות."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "הוסף הרשאה",

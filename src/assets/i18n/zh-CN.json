@@ -771,7 +771,8 @@
     "view": "查看",
     "viewMetadata": "查看元数据",
     "viewPermissions": "查看权限",
-    "viewThreat": "查看威胁"
+    "viewThreat": "查看威胁",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
@@ -1628,7 +1629,9 @@
       "resolved.description": "威胁已完全缓解并验证；剩余风险可接受。",
       "verification_pending": "待验证",
       "verification_pending.description": "缓解已完成；安全团队必须测试或审查有效性。"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "添加权限",

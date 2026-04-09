@@ -771,7 +771,8 @@
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
-    "viewThreat": "Visualizar Ameaca"
+    "viewThreat": "Visualizar Ameaca",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "Adicionar Conexao Inversa",
@@ -1656,7 +1657,9 @@
       "resolved.description": "A ameaca esta totalmente mitigada e verificada; o risco residual e aceitavel.",
       "verification_pending": "Verificacao Pendente",
       "verification_pending.description": "A mitigacao esta completa; a equipe de seguranca deve testar ou revisar a eficacia."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "Adicionar Permissao",

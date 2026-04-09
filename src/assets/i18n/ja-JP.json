@@ -771,7 +771,8 @@
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
-    "viewThreat": "脅威を表示"
+    "viewThreat": "脅威を表示",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",
@@ -1639,7 +1640,9 @@
       "resolved.description": "脅威は完全に軽減され検証されました。残存リスクは許容範囲内です。",
       "verification_pending": "検証待ち",
       "verification_pending.description": "軽減策が完了。セキュリティチームが有効性をテストまたはレビューする必要があります。"
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "権限を追加",

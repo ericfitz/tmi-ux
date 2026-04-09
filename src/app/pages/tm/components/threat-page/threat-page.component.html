@@ -85,60 +85,39 @@
 
           <!-- Issue URI field -->
           <div class="form-field-row">
-            @if (canEdit) {
-              <div
-                class="issue-uri-container"
-                appUrlDropZone
-                (urlDropped)="onIssueUriUrlDropped($event)"
-                [attr.data-drop-hint]="'threatModels.tooltips.dropToSetIssueUri' | transloco"
+            <div
+              class="issue-uri-container"
+              appUrlDropZone
+              (urlDropped)="onIssueUriUrlDropped($event)"
+              [attr.data-drop-hint]="'threatModels.tooltips.dropToSetIssueUri' | transloco"
+            >
+              <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
+                <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
+                <input
+                  matInput
+                  formControlName="issue_uri"
+                  type="url"
+                  [placeholder]="'threatEditor.issueUriPlaceholder' | transloco"
+                />
+                <mat-hint>{{ 'threatEditor.issueUriHint' | transloco }}</mat-hint>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                class="issue-uri-open-button"
+                [disabled]="!isValidUrl(threatForm.get('issue_uri')?.value)"
+                (click)="openUriInNewTab(threatForm.get('issue_uri')?.value)"
+                [matTooltip]="
+                  isValidUrl(threatForm.get('issue_uri')?.value)
+                    ? threatForm.get('issue_uri')?.value
+                    : ('common.issueUriOpenHint' | transloco)
+                "
+                matTooltipPosition="above"
+                [attr.aria-label]="'common.openInNewTab' | transloco"
               >
-                <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
-                  <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
-                  @if (shouldShowIssueUriHyperlink()) {
-                    <input
-                      matInput
-                      readonly
-                      [value]="initialIssueUriValue"
-                      class="uri-view-content"
-                      (click)="openUriInNewTab(initialIssueUriValue)"
-                      style="cursor: pointer; color: #1976d2; text-decoration: underline"
-                    />
-                  } @else {
-                    <input
-                      matInput
-                      formControlName="issue_uri"
-                      type="url"
-                      (blur)="onIssueUriBlur()"
-                    />
-                  }
-                </mat-form-field>
-
-                @if (shouldShowIssueUriHyperlink()) {
-                  <button
-                    mat-icon-button
-                    class="external-edit-button"
-                    (click)="editIssueUri()"
-                    [matTooltip]="'common.edit' | transloco"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                }
-              </div>
-            }
-
-            @if (!canEdit && threat?.issue_uri) {
-              <div class="view-only-uri">
-                <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
-                <a
-                  [href]="threat?.issue_uri"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="issue-uri-link"
-                >
-                  {{ threat?.issue_uri }}
-                </a>
-              </div>
-            }
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </button>
+            </div>
           </div>
 
           <!-- Status, Mitigated, Include in Timmy Chat, Include in Report row -->

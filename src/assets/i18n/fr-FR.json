@@ -771,7 +771,8 @@
     "view": "Voir",
     "viewMetadata": "Voir les Metadonnees",
     "viewPermissions": "Voir les Permissions",
-    "viewThreat": "Voir la Menace"
+    "viewThreat": "Voir la Menace",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
   },
   "contextMenu": {
     "addInverseConnection": "Ajouter une connexion inverse",
@@ -1628,7 +1629,9 @@
       "resolved.description": "La menace est entierement attenuee et verifiee ; le risque residuel est acceptable.",
       "verification_pending": "Verification en attente",
       "verification_pending.description": "L'attenuation est terminee ; l'equipe de securite doit tester ou verifier l'efficacite."
-    }
+    },
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
   },
   "threatModels": {
     "addPermission": "Ajouter une permission",

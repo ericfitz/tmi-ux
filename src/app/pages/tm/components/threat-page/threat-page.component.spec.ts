@@ -353,29 +353,29 @@ describe('ThreatPageComponent', () => {
       component.ngOnInit();
     });
 
-    it('should toggle edit mode for issue URI', () => {
-      expect(component.isEditingIssueUri).toBe(false);
-      component.editIssueUri();
-      expect(component.isEditingIssueUri).toBe(true);
+    it('should validate a valid URL', () => {
+      expect(component.isValidUrl('https://example.com')).toBe(true);
+      expect(component.isValidUrl('http://example.com/issue/123')).toBe(true);
     });
 
-    it('should update initial value on blur', () => {
-      component.threatForm.get('issue_uri')?.setValue('https://example.com');
-      component.onIssueUriBlur();
-      expect(component.initialIssueUriValue).toBe('https://example.com');
-      expect(component.isEditingIssueUri).toBe(false);
+    it('should reject invalid URLs', () => {
+      expect(component.isValidUrl('')).toBe(false);
+      expect(component.isValidUrl('not-a-url')).toBe(false);
+      expect(component.isValidUrl('   ')).toBe(false);
     });
 
-    it('should show hyperlink when not editing and has value', () => {
-      component.initialIssueUriValue = 'https://example.com';
-      component.isEditingIssueUri = false;
-      expect(component.shouldShowIssueUriHyperlink()).toBe(true);
+    it('should open valid URI in new tab', () => {
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      component.openUriInNewTab('https://example.com');
+      expect(openSpy).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener,noreferrer');
+      openSpy.mockRestore();
     });
 
-    it('should not show hyperlink when editing', () => {
-      component.initialIssueUriValue = 'https://example.com';
-      component.isEditingIssueUri = true;
-      expect(component.shouldShowIssueUriHyperlink()).toBe(false);
+    it('should not open invalid URI in new tab', () => {
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      component.openUriInNewTab('not-a-url');
+      expect(openSpy).not.toHaveBeenCalled();
+      openSpy.mockRestore();
     });
   });
 
