@@ -352,38 +352,25 @@
               <mat-label class="mapping-label">{{
                 'threatEditor.cweMappings' | transloco
               }}</mat-label>
-              <div class="cwe-input-row">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-chip-grid #cweChipGrid>
-                    @for (cweId of threatForm.get('cwe_id')?.value; track cweId) {
-                      <mat-chip-row
-                        (removed)="canEdit ? removeCweId(cweId) : null"
-                        [removable]="canEdit"
-                      >
-                        {{ cweId }}
-                        @if (canEdit) {
-                          <button matChipRemove [attr.aria-label]="'Remove ' + cweId">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        }
-                      </mat-chip-row>
-                    }
-                  </mat-chip-grid>
-                  @if (canEdit) {
-                    <input
-                      [placeholder]="'threatEditor.cweIdPlaceholder' | transloco"
-                      [matChipInputFor]="cweChipGrid"
-                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                      (matChipInputTokenEnd)="addCweId($event)"
-                    />
+              <div class="mapping-chips-row">
+                <mat-chip-set>
+                  @for (cweId of threatForm.get('cwe_id')?.value; track cweId) {
+                    <mat-chip [removable]="canEdit" (removed)="removeCweId(cweId)">
+                      {{ cweId }}
+                      @if (canEdit) {
+                        <button matChipRemove [attr.aria-label]="'Remove ' + cweId">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      }
+                    </mat-chip>
                   }
-                </mat-form-field>
+                </mat-chip-set>
                 @if (canEdit) {
                   <button
                     mat-stroked-button
                     color="primary"
                     (click)="openCwePicker()"
-                    class="cwe-picker-button"
+                    class="mapping-add-button"
                     [matTooltip]="'cwePicker.chooseCwe' | transloco"
                   >
                     <mat-icon>add</mat-icon>

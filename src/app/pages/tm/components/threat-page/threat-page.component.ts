@@ -14,8 +14,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { Cvss3P1, Cvss4P0 } from 'ae-cvss-calculator';
 import { identity, MonoTypeOperatorFunction, Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
@@ -166,9 +164,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
   // Complete cell data (all cells from all diagrams) for filtering
   private allCellOptions: CellOption[] = [];
-
-  // Chip input configuration
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
@@ -830,34 +825,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     if (uri?.trim()) {
       window.open(uri, '_blank', 'noopener,noreferrer');
     }
-  }
-
-  /**
-   * Add a CWE ID chip.
-   * Normalizes input to "CWE-" prefix format.
-   */
-  addCweId(event: MatChipInputEvent): void {
-    const raw = (event.value || '').trim();
-    if (!raw) {
-      event.chipInput.clear();
-      return;
-    }
-
-    // Normalize: accept "79", "CWE79", "CWE-79", "cwe-79" -> "CWE-79"
-    const stripped = raw.toUpperCase().replace(/^CWE-?/, '');
-    if (!/^\d{1,4}$/.test(stripped)) {
-      event.chipInput.clear();
-      return;
-    }
-    const normalized = `CWE-${stripped}`;
-
-    const current = this.threatForm.get('cwe_id')?.value as string[];
-    if (!current.includes(normalized)) {
-      this.threatForm.patchValue({ cwe_id: [...current, normalized] });
-      this.threatForm.markAsDirty();
-    }
-
-    event.chipInput.clear();
   }
 
   /**
