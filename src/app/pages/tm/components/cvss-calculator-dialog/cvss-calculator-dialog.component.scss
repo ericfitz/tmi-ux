@@ -153,6 +153,14 @@
   font-weight: 600;
 }
 
+.vector-paste-row {
+  margin-top: 8px;
+
+  .vector-paste-input {
+    width: 100%;
+  }
+}
+
 .action-buttons {
   display: flex;
   justify-content: flex-end;

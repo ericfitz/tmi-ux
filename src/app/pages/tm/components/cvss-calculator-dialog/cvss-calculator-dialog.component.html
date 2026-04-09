@@ -94,6 +94,21 @@
         }
       </div>
     </div>
+    @if (!isEditMode) {
+      <div class="vector-paste-row">
+        <mat-form-field appearance="outline" class="vector-paste-input" subscriptSizing="dynamic">
+          <input
+            matInput
+            [placeholder]="'cvssCalculator.pasteVectorPlaceholder' | transloco"
+            [formControl]="vectorPasteControl"
+            (keydown.enter)="$event.preventDefault(); applyPastedVector()"
+          />
+          @if (vectorPasteError) {
+            <mat-error>{{ vectorPasteError | transloco }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    }
     <div class="action-buttons">
       <button mat-button (click)="cancel()">
         {{ 'common.cancel' | transloco }}

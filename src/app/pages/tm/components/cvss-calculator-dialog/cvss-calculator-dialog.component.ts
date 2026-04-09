@@ -8,6 +8,7 @@ import {
   Optional,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -19,7 +20,7 @@ import type {
   VectorComponentValue,
 } from 'ae-cvss-calculator/dist/types/src/CvssVector';
 
-import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import {
@@ -36,7 +37,7 @@ type CvssInstance = Cvss3P1 | Cvss4P0;
 @Component({
   selector: 'app-cvss-calculator-dialog',
   standalone: true,
-  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, ...FORM_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './cvss-calculator-dialog.component.html',
   styleUrls: ['./cvss-calculator-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +53,8 @@ export class CvssCalculatorDialogComponent implements OnInit {
   isVersionLocked = false;
   isValid = false;
   currentDirection: 'ltr' | 'rtl' = 'ltr';
+  vectorPasteControl = new FormControl('');
+  vectorPasteError = '';
 
   private _cvssInstance: CvssInstance | null = null;
 
@@ -130,6 +133,57 @@ export class CvssCalculatorDialogComponent implements OnInit {
       },
       err => this._logger.error('Failed to copy vector to clipboard', err),
     );
+  }
+
+  /**
+   * Handle pasting a CVSS vector string into the dialog.
+   * Validates, detects version, and initializes the dialog from the vector.
+   */
+  applyPastedVector(): void {
+    const value = (this.vectorPasteControl.value ?? '').trim();
+    if (!value) return;
+
+    this.vectorPasteError = '';
+
+    // Detect version
+    let version: CvssVersion;
+    if (value.startsWith('CVSS:4.0')) {
+      version = '4.0';
+    } else if (value.startsWith('CVSS:3.1')) {
+      version = '3.1';
+    } else {
+      this.vectorPasteError = 'cvssCalculator.vectorUnsupportedVersion';
+      this._cdr.markForCheck();
+      return;
+    }
+
+    // Check for duplicate version (only in create mode)
+    if (!this.isEditMode && this.data?.existingVersions?.includes(version)) {
+      this.vectorPasteError = 'cvssCalculator.vectorDuplicateVersion';
+      this._cdr.markForCheck();
+      return;
+    }
+
+    // Validate by attempting to parse the vector before applying
+    try {
+      if (version === '4.0') {
+        new Cvss4P0(value);
+      } else {
+        new Cvss3P1(value);
+      }
+    } catch {
+      this.vectorPasteError = 'cvssCalculator.vectorInvalid';
+      this._cdr.markForCheck();
+      return;
+    }
+
+    // Apply the validated vector
+    this.selectedVersion = version;
+    this.isVersionLocked = true;
+    this._initializeFromVector(value);
+    this.vectorPasteControl.reset('');
+
+    this._cdr.markForCheck();
   }
 
   getGroupSummary(group: MetricGroup): string {
