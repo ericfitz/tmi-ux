@@ -91,6 +91,30 @@
   padding: 8px 0;
 }
 
+// Form sections with divider headers
+.form-section {
+  margin-bottom: 8px;
+}
+
+.section-header {
+  margin: 24px 0 12px;
+
+  .section-label-text {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 4px;
+  }
+}
+
+// First section needs no top margin
+.form-section:first-child .section-header {
+  margin-top: 0;
+}
+
 .full-width {
   width: 100%;
 }
@@ -116,15 +140,60 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
+
+  // Severity, Score, Priority, SSVC row
+  &.severity-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    .severity-field {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .score-field {
+      flex: 0 0 100px;
+    }
+
+    .priority-field {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .inline-ssvc {
+      // Vertically center with the outline form field input area
+      margin-top: 10px;
+    }
+
+    .ssvc-calculator-button {
+      // Vertically center with the outline form field input area
+      // (outline form field is ~56px tall with ~10px top padding for the notch)
+      margin-top: 10px;
+      white-space: nowrap;
+    }
+  }
+
+  // Status, Mitigated, Include in Timmy, Include in Report row
+  &.status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .status-field {
+      flex: 1;
+      min-width: 140px;
+    }
+  }
 }
 
 // Checkbox field styling
 .checkbox-field {
   display: flex;
   align-items: center;
-  justify-content: center;
   margin-top: 0;
   height: 56px;
+  white-space: nowrap;
 }
 
 // Issue URI styles
@@ -212,36 +281,40 @@
   }
 }
 
-// CWE chip input section
-.chip-input-section {
+// Threat Type + CWE mappings row
+.mappings-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  gap: 12px;
   margin-top: 4px;
   margin-bottom: 4px;
 
-  .chip-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--theme-text-primary);
-    margin-bottom: 4px;
+  .mapping-column {
+    flex: 1;
+    min-width: 0;
   }
 
-  .chip-input-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-
-    // Vertically center the action button with the mat-form-field input area,
-    // offsetting for the subscript space mat-form-field reserves at the bottom.
-    > button {
-      margin-top: 4px;
-    }
+  .mapping-label {
+    display: block;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 8px;
   }
+}
+
+.cwe-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 
   mat-form-field {
     flex: 1;
     margin-bottom: 0;
+  }
+
+  .cwe-picker-button {
+    // Vertically center with the outline form field input area
+    margin-top: 10px;
+    white-space: nowrap;
   }
 }
 
@@ -284,19 +357,9 @@
   cursor: pointer;
 }
 
-// SSVC section
-.ssvc-section {
-  margin-top: 4px;
-  margin-bottom: 4px;
-
-  .section-label {
-    display: block;
-    margin-bottom: 8px;
-  }
-}
-
+// SSVC chip set (used inline in severity row)
 .ssvc-chip-set {
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .ssvc-decision-defer {
@@ -335,10 +398,6 @@
   --mdc-chip-label-text-color: var(--color-severity-critical);
 }
 
-.ssvc-calculator-button {
-  margin-top: 4px;
-}
-
 // Responsive styles
 @media (width <= 800px) {
   .threat-page-container {
@@ -347,6 +406,18 @@
 
   .form-field-row.three-columns {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-field-row.severity-row {
+    flex-wrap: wrap;
+  }
+
+  .form-field-row.status-row {
+    flex-wrap: wrap;
+  }
+
+  .mappings-row {
+    flex-wrap: wrap;
   }
 
   .info-section {
@@ -373,6 +444,16 @@
   .form-field-row.three-columns,
   .form-field-row.two-columns {
     grid-template-columns: 1fr;
+  }
+
+  .form-field-row.severity-row,
+  .form-field-row.status-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mappings-row {
+    flex-direction: column;
   }
 
   .cvss-add-row {
