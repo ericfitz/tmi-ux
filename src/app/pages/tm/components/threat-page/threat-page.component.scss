@@ -99,6 +99,10 @@
 .section-header {
   margin: 24px 0 12px;
 
+  mat-divider {
+    --mat-divider-color: var(--mat-form-field-outlined-outline-color, var(--color-border));
+  }
+
   .section-label-text {
     display: block;
     font-size: 13px;
@@ -288,6 +292,11 @@
   margin-top: 4px;
   margin-bottom: 4px;
 
+  // Add spacing between stacked mapping rows
+  & + .mappings-row {
+    margin-top: 12px;
+  }
+
   .mapping-column {
     flex: 1;
     min-width: 0;
@@ -312,7 +321,7 @@
   align-items: flex-start;
   gap: 8px;
   flex-wrap: wrap;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--mat-form-field-outlined-outline-color, var(--color-border));
   border-radius: 8px;
   padding: 8px;
 

@@ -317,9 +317,7 @@
           <div class="mappings-row">
             <!-- Threat Type column -->
             <div class="mapping-column">
-              <mat-label class="mapping-label">{{
-                'threatEditor.frameworkMappings' | transloco
-              }}</mat-label>
+              <span class="mapping-label">{{ 'threatEditor.frameworkMappings' | transloco }}</span>
               <div class="mapping-chips-row">
                 <mat-chip-set>
                   @for (type of threatForm.get('threat_type')?.value; track type) {
@@ -349,9 +347,7 @@
 
             <!-- CWE column -->
             <div class="mapping-column">
-              <mat-label class="mapping-label">{{
-                'threatEditor.cweMappings' | transloco
-              }}</mat-label>
+              <span class="mapping-label">{{ 'threatEditor.cweMappings' | transloco }}</span>
               <div class="mapping-chips-row">
                 <mat-chip-set>
                   @for (cweId of threatForm.get('cwe_id')?.value; track cweId) {
@@ -382,38 +378,44 @@
           </div>
 
           <!-- CVSS Entries -->
-          <div class="mapping-section">
-            <mat-label class="mapping-label">{{ 'threatEditor.cvss' | transloco }}</mat-label>
-            <div class="mapping-chips-row">
-              <mat-chip-set>
-                @for (entry of threatForm.get('cvss')?.value; track entry.vector; let i = $index) {
-                  <mat-chip
-                    [removable]="canEdit"
-                    (removed)="removeCvssEntry(i)"
-                    (click)="canEdit ? editCvssEntry(i) : null"
-                    [class.clickable]="canEdit"
+          <div class="mappings-row">
+            <div class="mapping-column">
+              <span class="mapping-label">{{ 'threatEditor.cvss' | transloco }}</span>
+              <div class="mapping-chips-row">
+                <mat-chip-set>
+                  @for (
+                    entry of threatForm.get('cvss')?.value;
+                    track entry.vector;
+                    let i = $index
+                  ) {
+                    <mat-chip
+                      [removable]="canEdit"
+                      (removed)="removeCvssEntry(i)"
+                      (click)="canEdit ? editCvssEntry(i) : null"
+                      [class.clickable]="canEdit"
+                    >
+                      {{ entry.vector }} ({{ entry.score }})
+                      @if (canEdit) {
+                        <button matChipRemove [attr.aria-label]="'Remove CVSS entry'">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      }
+                    </mat-chip>
+                  }
+                </mat-chip-set>
+                @if (canEdit) {
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="openCvssCalculator()"
+                    [disabled]="!canAddCvss"
+                    class="mapping-add-button"
                   >
-                    {{ entry.vector }} ({{ entry.score }})
-                    @if (canEdit) {
-                      <button matChipRemove [attr.aria-label]="'Remove CVSS entry'">
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                    }
-                  </mat-chip>
+                    <mat-icon>add</mat-icon>
+                    {{ 'cvssCalculator.openCalculator' | transloco }}
+                  </button>
                 }
-              </mat-chip-set>
-              @if (canEdit) {
-                <button
-                  mat-stroked-button
-                  color="primary"
-                  (click)="openCvssCalculator()"
-                  [disabled]="!canAddCvss"
-                  class="mapping-add-button"
-                >
-                  <mat-icon>add</mat-icon>
-                  {{ 'cvssCalculator.openCalculator' | transloco }}
-                </button>
-              }
+              </div>
             </div>
           </div>
         </div>
