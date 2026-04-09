@@ -69,6 +69,7 @@ import {
 } from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
+import { CweService } from '../../../../shared/services/cwe.service';
 import {
   DeleteConfirmationDialogComponent,
   DeleteConfirmationDialogData,
@@ -172,6 +173,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // Addons for threat
   addonsForThreat: Addon[] = [];
 
+  // CWE name lookup
+  private cweNameMap = new Map<string, string>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -186,6 +190,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     private cellDataExtractionService: CellDataExtractionService,
     private frameworkService: FrameworkService,
     private addonService: AddonService,
+    private cweService: CweService,
     @Optional() destroyRef?: DestroyRef,
   ) {
     this.destroyRef = destroyRef ?? null;
@@ -277,6 +282,16 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Load addons
     this.loadAddons();
+
+    // Load CWE names for tooltips
+    this.cweService
+      .loadWeaknesses()
+      .pipe(this.untilDestroyed())
+      .subscribe(weaknesses => {
+        for (const w of weaknesses) {
+          this.cweNameMap.set(w.cwe_id, w.name);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -813,6 +828,10 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Remove a CWE ID chip
    */
+  getCweName(cweId: string): string {
+    return this.cweNameMap.get(cweId) || cweId;
+  }
+
   removeCweId(cweId: string): void {
     const current = this.threatForm.get('cwe_id')?.value as string[];
     const index = current.indexOf(cweId);

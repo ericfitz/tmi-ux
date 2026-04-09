@@ -351,7 +351,11 @@
               <div class="mapping-chips-row">
                 <mat-chip-set>
                   @for (cweId of threatForm.get('cwe_id')?.value; track cweId) {
-                    <mat-chip [removable]="canEdit" (removed)="removeCweId(cweId)">
+                    <mat-chip
+                      [removable]="canEdit"
+                      (removed)="removeCweId(cweId)"
+                      [matTooltip]="getCweName(cweId)"
+                    >
                       {{ cweId }}
                       @if (canEdit) {
                         <button matChipRemove [attr.aria-label]="'Remove ' + cweId">
