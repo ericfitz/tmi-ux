@@ -1,10 +1,10 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
-import { AuthFlow } from '../flows/auth.flow';
-import { ThreatModelFlow } from '../flows/threat-model.flow';
-import { ThreatFlow } from '../flows/threat.flow';
-import { TmEditPage } from '../pages/tm-edit.page';
-import { ThreatPage } from '../pages/threat-page.page';
-import { DashboardPage } from '../pages/dashboard.page';
+import { AuthFlow } from '../../flows/auth.flow';
+import { ThreatModelFlow } from '../../flows/threat-model.flow';
+import { ThreatFlow } from '../../flows/threat.flow';
+import { TmEditPage } from '../../pages/tm-edit.page';
+import { ThreatPage } from '../../pages/threat-page.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
 /**
  * Threat editing integration test.
@@ -19,7 +19,6 @@ test.describe.serial('Threat Editing', () => {
   let context: BrowserContext;
   let page: Page;
 
-  let authFlow: AuthFlow;
   let threatModelFlow: ThreatModelFlow;
   let threatFlow: ThreatFlow;
   let tmEditPage: TmEditPage;
@@ -34,7 +33,6 @@ test.describe.serial('Threat Editing', () => {
     context = await browser.newContext();
     page = await context.newPage();
 
-    authFlow = new AuthFlow(page);
     threatModelFlow = new ThreatModelFlow(page);
     threatFlow = new ThreatFlow(page);
     tmEditPage = new TmEditPage(page);
@@ -42,7 +40,7 @@ test.describe.serial('Threat Editing', () => {
     dashboardPage = new DashboardPage(page);
 
     // Login and create a threat model for testing
-    await authFlow.login();
+    await new AuthFlow(page).loginAs('test-user');
     await threatModelFlow.createFromDashboard(testTmName);
   });
 
