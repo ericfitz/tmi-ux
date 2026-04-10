@@ -22,11 +22,23 @@ export class CvssCalculatorDialog {
   readonly cancelButton = () => this.dialog.getByTestId('cvss-cancel-button');
 
   async selectVersion(v: '3.1' | '4.0') {
-    await this.versionToggle(v).click();
+    // Check if the version toggle is already selected (active) — skip if so.
+    // When the dialog auto-selects a version (e.g., 4.0 when 3.1 exists),
+    // the toggle group may be locked and clicking it would fail.
+    const toggle = this.versionToggle(v);
+    const isChecked = await toggle.getAttribute('class');
+    if (isChecked?.includes('mat-button-toggle-checked')) {
+      return;
+    }
+    await toggle.locator('button').dispatchEvent('click');
   }
 
   async setMetric(metric: string, value: string) {
-    await this.metricValue(metric, value).click();
+    const toggle = this.metricValue(metric, value);
+    // Scroll into view first — metric may be outside the dialog viewport
+    await toggle.scrollIntoViewIfNeeded();
+    // Use dispatchEvent to bypass tooltip overlay interception
+    await toggle.locator('button').dispatchEvent('click');
   }
 
   async apply() {

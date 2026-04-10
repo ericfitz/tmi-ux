@@ -12,6 +12,8 @@ export class CreateTmDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
+    // Wait for dialog animation to settle before interacting
+    await this.nameInput().click();
     await this.nameInput().fill(name);
   }
 

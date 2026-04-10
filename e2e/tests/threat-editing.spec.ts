@@ -74,11 +74,13 @@ test.describe.serial('Threat Editing', () => {
     // Edit fields
     await threatPage.fillName(updatedThreatName);
     await threatPage.fillDescription('A test threat for E2E testing');
-    await threatPage.save();
 
-    // Wait for save to complete (button becomes disabled while saving, then re-enables)
-    await expect(threatPage.saveButton()).toBeDisabled({ timeout: 5000 });
-    await expect(threatPage.saveButton()).toBeEnabled({ timeout: 10000 });
+    // Wait for the save API response to confirm persistence
+    const saveResponse = page.waitForResponse(
+      resp => resp.url().includes('/threats/') && resp.request().method() === 'PUT',
+    );
+    await threatPage.save();
+    await saveResponse;
 
     // Reload page to verify persistence
     await page.reload();
@@ -126,9 +128,9 @@ test.describe.serial('Threat Editing', () => {
   });
 
   test('add CWE reference', async () => {
-    await threatFlow.addCweReference('79');
+    await threatFlow.addCweReference('CWE-79');
 
-    // Verify CWE chip appears
+    // Verify CWE chip appears — the first result for "CWE-79" should be CWE-79
     await expect(threatPage.cweChips()).toHaveCount(1, { timeout: 5000 });
     await expect(threatPage.cweChips().first()).toContainText('CWE-79');
   });
