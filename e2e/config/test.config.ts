@@ -10,8 +10,8 @@ export interface E2ETestConfig {
 }
 
 export const testConfig: E2ETestConfig = {
-  appUrl: process.env.E2E_APP_URL || 'http://localhost:4200',
-  apiUrl: process.env.E2E_API_URL || 'http://localhost:8080',
-  testOAuthProvider: process.env.E2E_OAUTH_PROVIDER || 'tmi',
+  appUrl: process.env['E2E_APP_URL'] || 'http://localhost:4200',
+  apiUrl: process.env['E2E_API_URL'] || 'http://localhost:8080',
+  testOAuthProvider: process.env['E2E_OAUTH_PROVIDER'] || 'tmi',
   serviceAvailabilityTimeout: 30000,
 };

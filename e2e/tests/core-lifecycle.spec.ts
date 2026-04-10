@@ -1,5 +1,5 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
-import { loginWithTmiProvider } from '../helpers/auth';
+import { AuthFlow } from '../flows/auth.flow';
 
 /**
  * Core lifecycle integration test.
@@ -32,7 +32,7 @@ test.describe.serial('Core Lifecycle', () => {
   });
 
   test('login via OAuth', async () => {
-    await loginWithTmiProvider(page);
+    await new AuthFlow(page).login();
 
     // Verify we landed on a protected page (not login, not callback)
     const url = page.url();
