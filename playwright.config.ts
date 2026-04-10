@@ -23,10 +23,24 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'chromium',
+      name: 'workflows',
+      testDir: './e2e/tests/workflows',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'field-coverage',
+      testDir: './e2e/tests/field-coverage',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'visual-regression',
+      testDir: './e2e/tests/visual-regression',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'admin',
+      testDir: './e2e/tests/admin',
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-
-  /* Web server is managed externally — start both frontend and backend before running tests */
 });
