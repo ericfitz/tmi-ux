@@ -9,6 +9,7 @@ dist/
 # Testing
 coverage/
 .nyc_output/
+
 # IDE
 .vscode/
 .idea/
