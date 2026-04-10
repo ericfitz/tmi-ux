@@ -28,7 +28,12 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatName' | transloco }}</mat-label>
-        <input matInput formControlName="name" tabindex="1" />
+        <input
+          matInput
+          formControlName="name"
+          tabindex="1"
+          data-testid="threat-editor-name-input"
+        />
         @if (threatForm.get('name')?.hasError('required')) {
           <mat-error>
             {{ 'common.validation.required' | transloco }}
@@ -66,6 +71,7 @@
           rows="3"
           tabindex="5"
           placeholder="{{ 'common.threatDescriptionPlaceholder' | transloco }}"
+          data-testid="threat-editor-description-input"
         ></textarea>
         @if (threatForm.get('description')?.hasError('maxlength')) {
           <mat-error>
@@ -79,7 +85,12 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
-        <mat-select formControlName="threat_type" tabindex="6" multiple>
+        <mat-select
+          formControlName="threat_type"
+          tabindex="6"
+          multiple
+          data-testid="threat-editor-type-select"
+        >
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -91,7 +102,11 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-        <mat-select formControlName="severity" tabindex="7">
+        <mat-select
+          formControlName="severity"
+          tabindex="7"
+          data-testid="threat-editor-severity-select"
+        >
           <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
           @for (option of severityOptions; track option.key) {
             <mat-option [value]="option.key" [matTooltip]="option.tooltip">
@@ -109,6 +124,7 @@
     (click)="onCancel()"
     tabindex="16"
     [attr.aria-label]="'common.cancel' | transloco"
+    data-testid="threat-editor-cancel-button"
   >
     {{ 'common.cancel' | transloco }}
   </button>
@@ -120,6 +136,7 @@
       (click)="onSubmit()"
       tabindex="17"
       [attr.aria-label]="'common.save' | transloco"
+      data-testid="threat-editor-save-button"
     >
       {{ 'common.save' | transloco }}
     </button>

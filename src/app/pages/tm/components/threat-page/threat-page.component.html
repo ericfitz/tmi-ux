@@ -33,6 +33,7 @@
           [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
           (click)="save()"
           [matTooltip]="'common.save' | transloco"
+          data-testid="threat-page-save-button"
         >
           <mat-icon>save</mat-icon>
         </button>
@@ -124,7 +125,7 @@
           <div class="form-field-row status-row">
             <mat-form-field appearance="outline" floatLabel="always" class="status-field">
               <mat-label>{{ 'common.status' | transloco }}</mat-label>
-              <mat-select formControlName="status">
+              <mat-select formControlName="status" data-testid="threat-page-status-select">
                 <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                 @for (option of statusOptions; track option.key) {
                   <mat-option
@@ -172,7 +173,7 @@
           <div class="form-field-container">
             <mat-form-field appearance="outline" class="full-width" floatLabel="always">
               <mat-label>{{ 'common.threatName' | transloco }}</mat-label>
-              <input matInput formControlName="name" />
+              <input matInput formControlName="name" data-testid="threat-page-name-input" />
               @if (threatForm.get('name')?.hasError('required')) {
                 <mat-error>
                   {{ 'common.validation.required' | transloco }}
@@ -211,6 +212,7 @@
                 formControlName="description"
                 rows="3"
                 [placeholder]="'common.threatDescriptionPlaceholder' | transloco"
+                data-testid="threat-page-description-input"
               ></textarea>
               @if (threatForm.get('description')?.hasError('maxlength')) {
                 <mat-error>
@@ -234,7 +236,7 @@
           <div class="form-field-row severity-row">
             <mat-form-field appearance="outline" floatLabel="always" class="severity-field">
               <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-              <mat-select formControlName="severity">
+              <mat-select formControlName="severity" data-testid="threat-page-severity-select">
                 <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                 @for (option of severityOptions; track option.key) {
                   <mat-option [value]="option.key" [matTooltip]="option.tooltip">
@@ -246,12 +248,20 @@
 
             <mat-form-field appearance="outline" floatLabel="always" class="score-field">
               <mat-label>{{ 'common.score' | transloco }}</mat-label>
-              <input matInput type="number" formControlName="score" min="0" max="10" step="0.1" />
+              <input
+                matInput
+                type="number"
+                formControlName="score"
+                min="0"
+                max="10"
+                step="0.1"
+                data-testid="threat-page-score-input"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" floatLabel="always" class="priority-field">
               <mat-label>{{ 'common.priority' | transloco }}</mat-label>
-              <mat-select formControlName="priority">
+              <mat-select formControlName="priority" data-testid="threat-page-priority-select">
                 <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                 @for (option of priorityOptions; track option.key) {
                   <mat-option [value]="option.key" [matTooltip]="option.tooltip">
@@ -300,7 +310,11 @@
               <div class="mapping-chips-row">
                 <mat-chip-set>
                   @for (type of threatForm.get('threat_type')?.value; track type) {
-                    <mat-chip [removable]="canEdit" (removed)="removeThreatType(type)">
+                    <mat-chip
+                      [removable]="canEdit"
+                      (removed)="removeThreatType(type)"
+                      data-testid="threat-page-threat-type-chip"
+                    >
                       {{ type }}
                       @if (canEdit) {
                         <button matChipRemove [attr.aria-label]="'Remove ' + type">
@@ -316,6 +330,7 @@
                     color="primary"
                     (click)="openFrameworkMappingPicker()"
                     class="mapping-add-button"
+                    data-testid="threat-page-add-mapping-button"
                   >
                     <mat-icon>add</mat-icon>
                     {{ 'threatEditor.addMapping' | transloco }}
@@ -334,6 +349,7 @@
                       [removable]="canEdit"
                       (removed)="removeCweId(cweId)"
                       [matTooltip]="getCweName(cweId)"
+                      data-testid="threat-page-cwe-chip"
                     >
                       {{ cweId }}
                       @if (canEdit) {
@@ -351,6 +367,7 @@
                     (click)="openCwePicker()"
                     class="mapping-add-button"
                     [matTooltip]="'cwePicker.chooseCwe' | transloco"
+                    data-testid="threat-page-add-cwe-button"
                   >
                     <mat-icon>add</mat-icon>
                     {{ 'cwePicker.addCwe' | transloco }}
@@ -376,6 +393,7 @@
                       (removed)="removeCvssEntry(i)"
                       (click)="canEdit ? editCvssEntry(i) : null"
                       [class.clickable]="canEdit"
+                      data-testid="threat-page-cvss-chip"
                     >
                       {{ entry.vector }} ({{ entry.score }})
                       @if (canEdit) {
@@ -393,6 +411,7 @@
                     (click)="openCvssCalculator()"
                     [disabled]="!canAddCvss"
                     class="mapping-add-button"
+                    data-testid="threat-page-open-cvss-button"
                   >
                     <mat-icon>add</mat-icon>
                     {{ 'cvssCalculator.openCalculator' | transloco }}
@@ -470,7 +489,7 @@
       <span>{{ 'common.addons' | transloco }}</span>
     </button>
     <mat-divider></mat-divider>
-    <button mat-menu-item (click)="deleteThreat()">
+    <button mat-menu-item (click)="deleteThreat()" data-testid="threat-page-delete-button">
       <mat-icon>delete</mat-icon>
       <span>{{ 'common.delete' | transloco }}</span>
     </button>

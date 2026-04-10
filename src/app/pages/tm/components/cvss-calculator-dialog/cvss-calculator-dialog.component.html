@@ -19,8 +19,8 @@
         (change)="onVersionChange($event.value)"
         [disabled]="isVersionLocked"
       >
-        <mat-button-toggle value="3.1">CVSS 3.1</mat-button-toggle>
-        <mat-button-toggle value="4.0">CVSS 4.0</mat-button-toggle>
+        <mat-button-toggle value="3.1" data-testid="cvss-version-3.1">CVSS 3.1</mat-button-toggle>
+        <mat-button-toggle value="4.0" data-testid="cvss-version-4.0">CVSS 4.0</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
 
@@ -52,6 +52,7 @@
                 [value]="metric.selectedValue"
                 (change)="onMetricChange(metric.shortName, $event.value)"
                 class="metric-toggle-group"
+                [attr.data-testid]="'cvss-metric-' + metric.shortName"
               >
                 @for (val of metric.values; track val.shortName) {
                   <mat-button-toggle
@@ -59,6 +60,9 @@
                     [matTooltip]="val.name + ': ' + val.description"
                     matTooltipClass="metric-tooltip"
                     [class.not-defined]="val.shortName === 'X'"
+                    [attr.data-testid]="
+                      'cvss-metric-value-' + metric.shortName + '-' + val.shortName
+                    "
                   >
                     {{ val.shortName }}
                   </mat-button-toggle>
@@ -75,7 +79,9 @@
     <div class="score-display">
       <div class="vector-string-row">
         <span class="vector-label"> {{ 'cvssCalculator.vectorString' | transloco }}: </span>
-        <code class="vector-value">{{ vectorString || '--' }}</code>
+        <code class="vector-value" data-testid="cvss-vector-display">{{
+          vectorString || '--'
+        }}</code>
         @if (vectorString) {
           <button mat-icon-button (click)="copyVector()" [matTooltip]="'common.copy' | transloco">
             <mat-icon>content_copy</mat-icon>
@@ -84,7 +90,7 @@
       </div>
       <div class="score-info">
         <span class="score-label"> {{ 'common.score' | transloco }}: </span>
-        <span class="score-value" [ngClass]="severityClass">
+        <span class="score-value" [ngClass]="severityClass" data-testid="cvss-score-display">
           {{ currentScore !== null ? currentScore : '--' }}
         </span>
         @if (currentScore !== null) {
@@ -110,10 +116,16 @@
       </div>
     }
     <div class="action-buttons">
-      <button mat-button (click)="cancel()">
+      <button mat-button (click)="cancel()" data-testid="cvss-cancel-button">
         {{ 'common.cancel' | transloco }}
       </button>
-      <button mat-raised-button color="primary" (click)="apply()" [disabled]="!isValid">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="apply()"
+        [disabled]="!isValid"
+        data-testid="cvss-apply-button"
+      >
         {{ (isEditMode ? 'common.save' : 'cvssCalculator.apply') | transloco }}
       </button>
     </div>

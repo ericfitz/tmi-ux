@@ -10,6 +10,7 @@
           class="logo-button home-menu-trigger"
           [matTooltip]="'navbar.home' | transloco"
           matTooltipPosition="below"
+          data-testid="navbar-home-menu"
         >
           <img
             [src]="logoImageUrl$ | async"
@@ -52,7 +53,7 @@
             <span [transloco]="'navbar.admin'">Admin</span>
           </button>
           <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
+          <button mat-menu-item (click)="logout()" data-testid="navbar-logout-button">
             <mat-icon>logout</mat-icon>
             <span [transloco]="'navbar.menu.logout'">Sign Out</span>
           </button>
@@ -97,7 +98,13 @@
     @if (isAuthenticated) {
       <div class="navbar-nav">
         @if (showIntakeButton) {
-          <button mat-button routerLink="/intake" routerLinkActive="active-link" class="nav-link">
+          <button
+            mat-button
+            routerLink="/intake"
+            routerLinkActive="active-link"
+            class="nav-link"
+            data-testid="navbar-intake-link"
+          >
             <mat-icon>assignment</mat-icon>
             <span [transloco]="'navbar.intake'">Intake</span>
           </button>
@@ -108,19 +115,32 @@
             routerLink="/dashboard"
             routerLinkActive="active-link"
             class="nav-link"
+            data-testid="navbar-dashboard-link"
           >
             <mat-icon>dashboard</mat-icon>
             <span [transloco]="'navbar.dashboard'">Dashboard</span>
           </button>
         }
         @if (showTriageButton) {
-          <button mat-button routerLink="/triage" routerLinkActive="active-link" class="nav-link">
+          <button
+            mat-button
+            routerLink="/triage"
+            routerLinkActive="active-link"
+            class="nav-link"
+            data-testid="navbar-triage-link"
+          >
             <mat-icon>inbox</mat-icon>
             <span [transloco]="'triage.title'">Triage</span>
           </button>
         }
         @if (showAdminButton) {
-          <button mat-button routerLink="/admin" routerLinkActive="active-link" class="nav-link">
+          <button
+            mat-button
+            routerLink="/admin"
+            routerLinkActive="active-link"
+            class="nav-link"
+            data-testid="navbar-admin-link"
+          >
             <mat-icon>admin_panel_settings</mat-icon>
             <span [transloco]="'navbar.admin'">Admin</span>
           </button>
@@ -201,6 +221,7 @@
             [matTooltip]="userEmail"
             matTooltipPosition="below"
             #userProfileButton
+            data-testid="navbar-user-menu"
           >
             <mat-icon>person</mat-icon>
             <span>{{ username }}</span>

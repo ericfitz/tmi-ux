@@ -1533,6 +1533,7 @@
                     color="primary"
                     (click)="openThreatEditor()"
                     [matTooltip]="'common.addThreat' | transloco"
+                    data-testid="add-threat-button"
                   >
                     <mat-icon>add</mat-icon>
                   </button>
@@ -1885,6 +1886,7 @@
                     matTooltipClass="entity-description-tooltip"
                     matTooltipPosition="above"
                     (click)="openThreatEditor(row)"
+                    data-testid="threat-row"
                   ></tr>
                 </table>
               </div>

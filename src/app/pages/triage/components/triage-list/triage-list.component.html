@@ -29,6 +29,7 @@
             [(ngModel)]="filters.searchTerm"
             (ngModelChange)="onFilterChange()"
             [placeholder]="'triage.list.searchPlaceholder' | transloco"
+            data-testid="triage-search-input"
           />
           @if (filters.searchTerm) {
             <button matSuffix mat-icon-button (click)="filters.searchTerm = ''; onFilterChange()">
@@ -43,6 +44,7 @@
             [(ngModel)]="filters.status"
             (selectionChange)="onFilterChange()"
             [multiple]="true"
+            data-testid="triage-status-filter"
           >
             @for (option of filterStatusOptions; track option.value) {
               <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
@@ -52,7 +54,11 @@
 
         <mat-form-field appearance="outline" class="template-filter">
           <mat-label>{{ 'common.template' | transloco }}</mat-label>
-          <mat-select [(ngModel)]="filters.surveyId" (selectionChange)="onFilterChange()">
+          <mat-select
+            [(ngModel)]="filters.surveyId"
+            (selectionChange)="onFilterChange()"
+            data-testid="triage-template-filter"
+          >
             <mat-option [value]="null">{{ 'triage.list.allSurveys' | transloco }}</mat-option>
             @for (survey of surveys; track survey.id) {
               <mat-option [value]="survey.id">{{ survey.name }}</mat-option>
@@ -76,7 +82,11 @@
         }
 
         @if (hasActiveFilters) {
-          <button mat-stroked-button (click)="clearFilters()">
+          <button
+            mat-stroked-button
+            (click)="clearFilters()"
+            data-testid="triage-clear-filters-button"
+          >
             <mat-icon>filter_list_off</mat-icon>
             {{ 'triage.filters.clearFilters' | transloco }}
           </button>
@@ -93,7 +103,12 @@
           <mat-icon>error_outline</mat-icon>
           <h2>{{ 'common.error' | transloco }}</h2>
           <p>{{ error }}</p>
-          <button mat-raised-button color="primary" (click)="loadResponses()">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="loadResponses()"
+            data-testid="triage-error-retry-button"
+          >
             {{ 'common.retry' | transloco }}
           </button>
         </div>
@@ -234,6 +249,7 @@
               *matRowDef="let row; columns: displayedColumns"
               class="response-row"
               (click)="viewResponse(row)"
+              data-testid="triage-response-row"
             ></tr>
           </table>
 

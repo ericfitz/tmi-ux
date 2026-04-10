@@ -5,7 +5,7 @@
     <!-- Search field -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'cwePicker.searchLabel' | transloco }}</mat-label>
-      <input matInput [formControl]="searchControl" />
+      <input matInput [formControl]="searchControl" data-testid="cwe-picker-search-input" />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
@@ -27,7 +27,11 @@
         class="weakness-list"
       >
         @for (cwe of filteredWeaknesses; track cwe.cwe_id) {
-          <mat-list-option [value]="cwe" [selected]="selectedCwe?.cwe_id === cwe.cwe_id">
+          <mat-list-option
+            [value]="cwe"
+            [selected]="selectedCwe?.cwe_id === cwe.cwe_id"
+            data-testid="cwe-picker-item"
+          >
             <span matListItemTitle>{{ cwe.cwe_id }}</span>
             <span matListItemLine>{{ cwe.name }}</span>
           </mat-list-option>
@@ -50,10 +54,16 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="action-buttons">
-    <button mat-button (click)="cancel()">
+    <button mat-button (click)="cancel()" data-testid="cwe-picker-cancel-button">
       {{ 'common.cancel' | transloco }}
     </button>
-    <button mat-raised-button color="primary" (click)="addCwe()" [disabled]="!selectedCwe">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addCwe()"
+      [disabled]="!selectedCwe"
+      data-testid="cwe-picker-add-button"
+    >
       {{ 'cwePicker.addCweReference' | transloco }}
     </button>
   </mat-dialog-actions>
