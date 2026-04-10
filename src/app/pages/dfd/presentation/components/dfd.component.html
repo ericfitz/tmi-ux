@@ -71,6 +71,7 @@
       <button
         mat-icon-button
         color="primary"
+        data-testid="add-actor-button"
         (click)="addGraphNode('actor')"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addActor' | transloco"
@@ -85,6 +86,7 @@
       <button
         mat-icon-button
         color="accent"
+        data-testid="add-process-button"
         (click)="addGraphNode('process')"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addProcess' | transloco"
@@ -99,6 +101,7 @@
       <button
         mat-icon-button
         color="warn"
+        data-testid="add-store-button"
         (click)="addGraphNode('store')"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addStore' | transloco"
@@ -383,7 +386,12 @@
         >
       </button>
 
-      <button mat-icon-button (click)="closeDiagram()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="close-diagram-button"
+        (click)="closeDiagram()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon
           fontSet="material-symbols-outlined"
           fontWeight="100"
@@ -395,7 +403,7 @@
   </div>
 
   <div class="graph-container">
-    <div #graphContainer class="x6-graph"></div>
+    <div #graphContainer class="x6-graph" data-testid="graph-container"></div>
 
     <!-- Style panel -->
     @if (isStylePanelOpen) {
