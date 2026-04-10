@@ -1,0 +1,213 @@
+{
+  "version": "1.0",
+  "description": "E2E test seed data specification. The server team builds idempotent ingestion tooling around this format.",
+  "users": [
+    {
+      "id": "test-user",
+      "email": "test-user@tmi.local",
+      "display_name": "Test User",
+      "roles": { "is_admin": false, "is_security_reviewer": false },
+      "oauth_provider": "tmi"
+    },
+    {
+      "id": "test-reviewer",
+      "email": "test-reviewer@tmi.local",
+      "display_name": "Test Reviewer",
+      "roles": { "is_admin": false, "is_security_reviewer": true },
+      "oauth_provider": "tmi"
+    },
+    {
+      "id": "test-admin",
+      "email": "test-admin@tmi.local",
+      "display_name": "Test Admin",
+      "roles": { "is_admin": true, "is_security_reviewer": true },
+      "oauth_provider": "tmi"
+    }
+  ],
+  "teams": [
+    {
+      "name": "Seed Team Alpha",
+      "status": "active",
+      "members": [
+        { "user_id": "test-user", "role": "member" },
+        { "user_id": "test-reviewer", "role": "lead" }
+      ],
+      "metadata": [{ "key": "department", "value": "Engineering" }]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Seed Project One",
+      "team": "Seed Team Alpha",
+      "status": "active",
+      "metadata": [{ "key": "fiscal_year", "value": "2026" }]
+    }
+  ],
+  "threat_models": [
+    {
+      "name": "Seed TM - Full Fields",
+      "description": "Threat model with all fields populated for field-coverage testing",
+      "owner": "test-reviewer",
+      "threat_model_framework": "STRIDE",
+      "status": "active",
+      "is_confidential": false,
+      "project_id": "Seed Project One",
+      "security_reviewer": "test-reviewer",
+      "issue_uri": "https://example.com/issues/1",
+      "alias": ["seed-tm-1", "full-fields-tm"],
+      "metadata": [{ "key": "risk_level", "value": "high" }],
+      "authorization": [
+        { "user_id": "test-user", "role": "reader" },
+        { "user_id": "test-reviewer", "role": "writer" }
+      ],
+      "threats": [
+        {
+          "name": "Seed Threat - All Fields",
+          "description": "A fully populated threat for field testing",
+          "threat_type": ["spoofing", "tampering"],
+          "severity": "high",
+          "score": 9.8,
+          "priority": "critical",
+          "status": "open",
+          "mitigated": false,
+          "mitigation": "Implement input validation and CSRF tokens",
+          "cwe_id": ["CWE-79", "CWE-352"],
+          "cvss": [
+            { "version": "3.1", "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", "score": 9.8 }
+          ],
+          "issue_uri": "https://example.com/issues/2",
+          "include_in_report": true
+        }
+      ],
+      "assets": [
+        {
+          "name": "Seed Asset - User Database",
+          "description": "Primary user data store",
+          "type": "data",
+          "criticality": "high",
+          "classification": ["confidential", "pii"],
+          "sensitivity": "high",
+          "include_in_report": true
+        },
+        {
+          "name": "Seed Asset - Web Server",
+          "type": "infrastructure",
+          "criticality": "high"
+        }
+      ],
+      "documents": [
+        {
+          "name": "Architecture Doc",
+          "uri": "https://example.com/docs/architecture.pdf",
+          "description": "System architecture documentation",
+          "include_in_report": true
+        }
+      ],
+      "repositories": [
+        {
+          "name": "Main Codebase",
+          "type": "git",
+          "uri": "https://github.com/example/repo",
+          "description": "Primary application repository"
+        }
+      ],
+      "notes": [
+        {
+          "name": "Review Notes",
+          "content": "## Initial Review\n\nFindings from the first pass:\n- Input validation gaps\n- Missing CSRF protection",
+          "description": "Security review findings",
+          "include_in_report": true
+        }
+      ],
+      "diagrams": [
+        {
+          "name": "Simple DFD",
+          "type": "dfd",
+          "nodes": [
+            { "id": "actor-1", "type": "actor", "label": "End User", "x": 100, "y": 200 },
+            { "id": "process-1", "type": "process", "label": "Web App", "x": 400, "y": 200 },
+            { "id": "store-1", "type": "store", "label": "Database", "x": 700, "y": 200 }
+          ],
+          "edges": [
+            { "source": "actor-1", "target": "process-1", "label": "HTTP Request" },
+            { "source": "process-1", "target": "store-1", "label": "SQL Query" }
+          ]
+        },
+        {
+          "name": "Complex DFD",
+          "type": "dfd",
+          "description": "Complex diagram for rendering regression testing",
+          "nodes": [
+            { "id": "actor-ext", "type": "actor", "label": "External User", "x": 50, "y": 150 },
+            { "id": "actor-int", "type": "actor", "label": "Internal Admin", "x": 50, "y": 450 },
+            { "id": "process-gw", "type": "process", "label": "API Gateway", "x": 300, "y": 300 },
+            { "id": "process-auth", "type": "process", "label": "Auth Service", "x": 550, "y": 150 },
+            { "id": "process-core", "type": "process", "label": "Core Service", "x": 550, "y": 300 },
+            { "id": "process-notify", "type": "process", "label": "Notification Service", "x": 550, "y": 450 },
+            { "id": "store-db", "type": "store", "label": "Primary DB", "x": 800, "y": 200 },
+            { "id": "store-cache", "type": "store", "label": "Redis Cache", "x": 800, "y": 400 },
+            { "id": "store-queue", "type": "store", "label": "Message Queue", "x": 800, "y": 550 },
+            { "id": "process-embedded", "type": "process", "label": "Validator", "x": 320, "y": 320, "parent": "process-gw" }
+          ],
+          "edges": [
+            { "source": "actor-ext", "target": "process-gw", "label": "HTTPS Request" },
+            { "source": "actor-int", "target": "process-gw", "label": "Admin API" },
+            { "source": "process-gw", "target": "process-auth", "label": "Auth Check" },
+            { "source": "process-gw", "target": "process-core", "label": "Business Logic" },
+            { "source": "process-auth", "target": "store-db", "label": "User Lookup" },
+            { "source": "process-core", "target": "store-db", "label": "CRUD Operations" },
+            { "source": "process-core", "target": "store-cache", "label": "Cache Read/Write" },
+            { "source": "process-core", "target": "process-notify", "label": "Event Trigger" },
+            { "source": "process-notify", "target": "store-queue", "label": "Enqueue Message" },
+            { "source": "process-embedded", "target": "process-auth", "label": "Validate Token" }
+          ]
+        }
+      ]
+    }
+  ],
+  "surveys": [
+    {
+      "name": "Kitchen Sink Survey",
+      "description": "Survey with all supported question types for integration testing",
+      "status": "active",
+      "survey_json": { "_placeholder": "Full SurveyJS JSON to be authored during Phase 3 implementation" },
+      "settings": { "link_threat_model": true }
+    },
+    {
+      "name": "Simple Workflow Survey",
+      "description": "Minimal survey for workflow testing (fill, submit, triage)",
+      "status": "active",
+      "survey_json": { "_placeholder": "Full SurveyJS JSON to be authored during Phase 3 implementation" },
+      "settings": {}
+    }
+  ],
+  "survey_responses": [
+    {
+      "survey": "Simple Workflow Survey",
+      "user": "test-user",
+      "status": "submitted",
+      "responses": { "_placeholder": "Authored during Phase 3 implementation" }
+    }
+  ],
+  "admin_entities": {
+    "groups": [
+      { "name": "Seed Group - Engineering", "members": ["test-user", "test-reviewer"] }
+    ],
+    "quotas": [
+      { "user": "test-user", "rate_limit": 100, "period": "hour" }
+    ],
+    "webhooks": [
+      {
+        "name": "Seed Webhook",
+        "url": "https://example.com/webhook",
+        "events": ["threat_model.created", "threat_model.updated"],
+        "hmac_secret": "test-secret-value"
+      }
+    ],
+    "addons": [],
+    "settings": [
+      { "key": "default_theme", "value": "light" },
+      { "key": "max_upload_size_mb", "value": "50" }
+    ]
+  }
+}
