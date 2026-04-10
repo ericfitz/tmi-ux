@@ -39,6 +39,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
           <input
             matInput
             formControlName="name"
+            data-testid="create-tm-name-input"
             [placeholder]="'createThreatModel.namePlaceholder' | transloco"
             maxlength="256"
             cdkFocusInitial
@@ -86,7 +87,13 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
       <button mat-button (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="form.invalid">
+      <button
+        mat-raised-button
+        color="primary"
+        data-testid="create-tm-submit"
+        (click)="onCreate()"
+        [disabled]="form.invalid"
+      >
         <span [transloco]="'common.create'">Create</span>
       </button>
     </mat-dialog-actions>
