@@ -7,6 +7,8 @@ export class LoginPage {
   readonly providerButton = () =>
     this.page.locator(`button[data-provider="${testConfig.testOAuthProvider}"]`);
 
+  readonly loginHintInput = () => this.page.getByLabel('Username');
+
   readonly signInButton = () =>
     this.page.getByRole('button', { name: 'Sign In', exact: true });
 }
