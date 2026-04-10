@@ -6,7 +6,7 @@
       } @else {
         <span class="title-prefix">{{ 'threatModels.threatModelPrefix' | transloco }}:</span>
         {{ ' ' }}
-        <span class="title-name">{{ threatModel?.name }}</span>
+        <span class="title-name" data-testid="threat-model-name">{{ threatModel?.name }}</span>
       }
       @if (!canEdit && !isNewThreatModel) {
         <mat-icon
@@ -1295,6 +1295,7 @@
                   <button
                     mat-icon-button
                     color="primary"
+                    data-testid="add-diagram-button"
                     (click)="addDiagram()"
                     [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
                   >
@@ -1457,7 +1458,11 @@
                           </button>
                           @if (canEdit) {
                             <mat-divider></mat-divider>
-                            <button mat-menu-item (click)="deleteDiagram(diagram, $event)">
+                            <button
+                              mat-menu-item
+                              data-testid="diagram-delete-button"
+                              (click)="deleteDiagram(diagram, $event)"
+                            >
                               <mat-icon>delete</mat-icon>
                               <span>{{ 'common.delete' | transloco }}</span>
                             </button>
@@ -1483,6 +1488,7 @@
                     mat-row
                     *matRowDef="let row; columns: diagramsDisplayedColumns"
                     class="clickable-row"
+                    data-testid="diagram-row"
                     [matTooltip]="row.description"
                     matTooltipClass="entity-description-tooltip"
                     matTooltipPosition="above"
