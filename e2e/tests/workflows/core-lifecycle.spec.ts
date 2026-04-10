@@ -1,11 +1,10 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
-import { AuthFlow } from '../flows/auth.flow';
-import { ThreatModelFlow } from '../flows/threat-model.flow';
-import { DiagramFlow } from '../flows/diagram.flow';
-import { DashboardPage } from '../pages/dashboard.page';
-import { TmEditPage } from '../pages/tm-edit.page';
-import { DfdEditorPage } from '../pages/dfd-editor.page';
-import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
+import { AuthFlow } from '../../flows/auth.flow';
+import { ThreatModelFlow } from '../../flows/threat-model.flow';
+import { DiagramFlow } from '../../flows/diagram.flow';
+import { DashboardPage } from '../../pages/dashboard.page';
+import { TmEditPage } from '../../pages/tm-edit.page';
+import { DfdEditorPage } from '../../pages/dfd-editor.page';
 
 /**
  * Core lifecycle integration test.
@@ -24,13 +23,11 @@ test.describe.serial('Core Lifecycle', () => {
   let page: Page;
 
   // Page objects and flows — instantiated manually for serial shared context
-  let authFlow: AuthFlow;
   let threatModelFlow: ThreatModelFlow;
   let diagramFlow: DiagramFlow;
   let dashboardPage: DashboardPage;
   let tmEditPage: TmEditPage;
   let dfdEditorPage: DfdEditorPage;
-  let deleteConfirmDialog: DeleteConfirmDialog;
 
   // State shared across tests
   const testTmName = `E2E Test TM ${Date.now()}`;
@@ -40,22 +37,20 @@ test.describe.serial('Core Lifecycle', () => {
     context = await browser.newContext();
     page = await context.newPage();
 
-    authFlow = new AuthFlow(page);
+    await new AuthFlow(page).loginAs('test-user');
+
     threatModelFlow = new ThreatModelFlow(page);
     diagramFlow = new DiagramFlow(page);
     dashboardPage = new DashboardPage(page);
     tmEditPage = new TmEditPage(page);
     dfdEditorPage = new DfdEditorPage(page);
-    deleteConfirmDialog = new DeleteConfirmDialog(page);
   });
 
   test.afterAll(async () => {
     await context.close();
   });
 
-  test('login via OAuth', async () => {
-    await authFlow.login();
-
+  test('login completed successfully', async () => {
     const url = page.url();
     expect(url).not.toContain('/login');
     expect(url).not.toContain('/oauth2/callback');
