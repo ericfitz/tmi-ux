@@ -12,6 +12,9 @@ import { loginWithTmiProvider } from '../helpers/auth';
  * All test data is created and cleaned up within the suite.
  */
 test.describe.serial('Core Lifecycle', () => {
+  // Give each test enough time for Angular bootstrap + API calls
+  test.setTimeout(60000);
+
   let context: BrowserContext;
   let page: Page;
 
@@ -54,7 +57,7 @@ test.describe.serial('Core Lifecycle', () => {
     await page.locator('[data-testid="create-tm-submit"]').click();
 
     // Wait for navigation to the new threat model's edit page
-    await page.waitForURL(/\/tm\/[a-f0-9-]+$/, { timeout: 10000 });
+    await page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
 
     // Verify we're on the TM edit page with the correct name
     const tmName = page.locator('[data-testid="threat-model-name"]');
@@ -79,7 +82,7 @@ test.describe.serial('Core Lifecycle', () => {
     await ourCard.click();
 
     // Wait for TM edit page
-    await page.waitForURL(/\/tm\/[a-f0-9-]+$/, { timeout: 10000 });
+    await page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
 
     // Verify name
     const tmName = page.locator('[data-testid="threat-model-name"]');
@@ -87,14 +90,17 @@ test.describe.serial('Core Lifecycle', () => {
   });
 
   test('create a diagram', async () => {
-    // Click add diagram button
+    // Click add diagram button (scroll into view — it may be below the fold)
     const addButton = page.locator('[data-testid="add-diagram-button"]');
-    await addButton.waitFor({ state: 'visible' });
+    await addButton.waitFor({ state: 'visible', timeout: 15000 });
+    await addButton.scrollIntoViewIfNeeded();
+    // Small delay to ensure Angular rendering is complete after scroll
+    await page.waitForTimeout(500);
     await addButton.click();
 
-    // Fill the create diagram dialog
+    // Wait for the create diagram dialog to appear
     const nameInput = page.locator('[data-testid="diagram-name-input"]');
-    await nameInput.waitFor({ state: 'visible' });
+    await nameInput.waitFor({ state: 'visible', timeout: 5000 });
     await nameInput.fill(testDiagramName);
 
     // Submit
@@ -123,8 +129,6 @@ test.describe.serial('Core Lifecycle', () => {
   });
 
   test('add nodes to the diagram', async () => {
-    const graphContainer = page.locator('[data-testid="graph-container"]');
-
     // Wait for the graph to initialize (toolbar buttons become enabled)
     const actorButton = page.locator('[data-testid="add-actor-button"]');
     await expect(actorButton).toBeEnabled({ timeout: 15000 });
@@ -132,24 +136,18 @@ test.describe.serial('Core Lifecycle', () => {
     // Count initial nodes
     const initialNodeCount = await page.locator('.x6-node').count();
 
-    // Add an actor node
+    // Clicking toolbar buttons creates nodes directly (no canvas click needed)
     await actorButton.click();
-    await graphContainer.click({ position: { x: 200, y: 200 } });
-    // Wait for node to appear
     await expect(page.locator('.x6-node')).toHaveCount(initialNodeCount + 1, {
       timeout: 5000,
     });
 
-    // Add a process node
     await page.locator('[data-testid="add-process-button"]').click();
-    await graphContainer.click({ position: { x: 400, y: 200 } });
     await expect(page.locator('.x6-node')).toHaveCount(initialNodeCount + 2, {
       timeout: 5000,
     });
 
-    // Add a store node
     await page.locator('[data-testid="add-store-button"]').click();
-    await graphContainer.click({ position: { x: 300, y: 400 } });
     await expect(page.locator('.x6-node')).toHaveCount(initialNodeCount + 3, {
       timeout: 5000,
     });
@@ -160,7 +158,7 @@ test.describe.serial('Core Lifecycle', () => {
     await page.locator('[data-testid="close-diagram-button"]').click();
 
     // Should navigate back to TM edit page
-    await page.waitForURL(/\/tm\/[a-f0-9-]+$/, { timeout: 10000 });
+    await page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
 
     // Verify we're on the TM detail page
     const tmName = page.locator('[data-testid="threat-model-name"]');

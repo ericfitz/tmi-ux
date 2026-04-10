@@ -28,10 +28,5 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'pnpm run dev:local',
-    url: testConfig.appUrl,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  /* Web server is managed externally — start both frontend and backend before running tests */
 });
