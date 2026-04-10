@@ -30,7 +30,6 @@ paths-ignore:
   - "scripts/**"
 
   # E2E tests
-  - "cypress/**"
   - "e2e/**"
   - "playwright/**"
 

@@ -139,20 +139,14 @@ export const graphMatchers: ChaiPlugin = (chai, _utils) => {
 };
 
 /**
- * Register the graph matchers with Cypress
+ * Register the graph matchers with Chai (Vitest)
  */
 export const registerGraphMatchers = (): void => {
   if (typeof window !== 'undefined') {
-    // Check if Cypress and chai are available
-    const cypressExists = 'Cypress' in window;
     const chaiExists = 'chai' in window;
 
-    if (cypressExists && chaiExists) {
-      // Safely access chai with proper type checking
-      // First cast to unknown to avoid type errors
-      const windowAny = window as unknown;
-      // Then cast to the specific type we need
-      const windowWithChai = windowAny as { chai: { use: (plugin: ChaiPlugin) => void } };
+    if (chaiExists) {
+      const windowWithChai = window as unknown as { chai: { use: (plugin: ChaiPlugin) => void } };
 
       if (typeof windowWithChai.chai?.use === 'function') {
         windowWithChai.chai.use(graphMatchers);

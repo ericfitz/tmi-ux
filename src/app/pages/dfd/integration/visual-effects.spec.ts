@@ -85,7 +85,7 @@ global.window = dom.window as any;
 global.document = dom.window.document;
 global.navigator = dom.window.navigator;
 
-// TODO: Convert to Cypress due to Angular CDK JIT compilation issues in vitest environment
+// TODO: Convert to Playwright due to Angular CDK JIT compilation issues in vitest environment
 // SKIPPED: This test suite is skipped because InfraX6HistoryAdapter has been removed.
 // History is now managed by AppHistoryService. These tests need to be updated
 // to work without the history adapter dependency.

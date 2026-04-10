@@ -9,10 +9,6 @@ dist/
 # Testing
 coverage/
 .nyc_output/
-cypress/screenshots/
-cypress/videos/
-cypress/downloads/
-
 # IDE
 .vscode/
 .idea/

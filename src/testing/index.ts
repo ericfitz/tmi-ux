@@ -14,10 +14,6 @@ export * from './helpers/graph-test.helper';
 // Custom matchers
 export * from './matchers/graph-matchers';
 
-// Page objects
-export * from './page-objects/page-object.base';
-export * from './page-objects/threat-model-list.page';
-
 // Test utilities
 export * from './async-utils';
 export * from './component-test-harness';
