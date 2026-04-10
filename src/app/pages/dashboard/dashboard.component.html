@@ -29,6 +29,7 @@
       <button
         mat-icon-button
         color="primary"
+        data-testid="create-threat-model-button"
         (click)="createThreatModel()"
         [matTooltip]="'common.create' | transloco"
       >
@@ -250,6 +251,7 @@
         <mat-card
           *ngFor="let threatModel of filteredThreatModels"
           class="threat-model-card"
+          data-testid="threat-model-card"
           [class.has-active-session]="hasActiveSessions(threatModel.id)"
           (click)="openThreatModel(threatModel.id)"
         >
@@ -391,6 +393,7 @@
               mat-icon-button
               color="warn"
               class="delete-button"
+              data-testid="threat-model-delete-button"
               (click)="deleteThreatModel(threatModel.id, $event)"
               [matTooltip]="'common.delete' | transloco"
             >
