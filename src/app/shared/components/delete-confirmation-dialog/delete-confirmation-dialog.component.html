@@ -55,6 +55,7 @@
           <input
             matInput
             type="text"
+            data-testid="delete-confirm-input"
             [(ngModel)]="confirmationInput"
             [placeholder]="'common.deleteWarningConfirmationValue' | transloco"
             autocomplete="off"
@@ -103,6 +104,7 @@
   <button
     mat-button
     color="warn"
+    data-testid="delete-confirm-button"
     (click)="onConfirmDelete()"
     [disabled]="!canDelete"
     [tabindex]="requiresTypedConfirmation ? 3 : 2"
