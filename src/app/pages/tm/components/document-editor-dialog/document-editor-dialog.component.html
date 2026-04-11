@@ -21,7 +21,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
-        <input matInput formControlName="name" tabindex="1" />
+        <input matInput formControlName="name" data-testid="document-name-input" tabindex="1" />
         @if (documentForm.get('name')?.hasError('required')) {
           <mat-error>
             {{ 'common.validation.required' | transloco }}
@@ -37,7 +37,13 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
-        <input matInput formControlName="uri" type="url" tabindex="2" />
+        <input
+          matInput
+          formControlName="uri"
+          data-testid="document-uri-input"
+          type="url"
+          tabindex="2"
+        />
         @if (getUriSuggestion()) {
           <mat-hint class="uri-suggestion-hint">
             {{ getUriSuggestion() }}
@@ -62,6 +68,7 @@
         <textarea
           matInput
           formControlName="description"
+          data-testid="document-description-input"
           rows="3"
           placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
           tabindex="3"
@@ -74,13 +81,21 @@
       </mat-form-field>
 
       <div class="checkbox-field">
-        <mat-checkbox formControlName="include_in_report" tabindex="4">
+        <mat-checkbox
+          formControlName="include_in_report"
+          data-testid="document-include-report-checkbox"
+          tabindex="4"
+        >
           {{ 'common.includeInReport' | transloco }}
         </mat-checkbox>
       </div>
 
       <div class="checkbox-field">
-        <mat-checkbox formControlName="timmy_enabled" tabindex="5">
+        <mat-checkbox
+          formControlName="timmy_enabled"
+          data-testid="document-timmy-checkbox"
+          tabindex="5"
+        >
           {{ 'common.includeInTimmyChat' | transloco }}
         </mat-checkbox>
       </div>
@@ -90,6 +105,7 @@
 <mat-dialog-actions align="end">
   <button
     mat-button
+    data-testid="document-cancel-button"
     (click)="onCancel()"
     tabindex="6"
     [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
@@ -100,6 +116,7 @@
     <button
       mat-raised-button
       color="primary"
+      data-testid="document-save-button"
       [disabled]="documentForm.invalid"
       (click)="onSubmit()"
       tabindex="7"

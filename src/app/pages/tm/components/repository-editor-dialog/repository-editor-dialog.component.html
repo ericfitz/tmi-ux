@@ -21,7 +21,7 @@
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.repositoryName' | transloco }}</mat-label>
-        <input matInput formControlName="name" tabindex="1" />
+        <input matInput formControlName="name" data-testid="repository-name-input" tabindex="1" />
         @if (repositoryForm.get('name')?.hasError('required')) {
           <mat-error>
             {{ 'common.validation.required' | transloco }}
@@ -40,6 +40,7 @@
         <textarea
           matInput
           formControlName="description"
+          data-testid="repository-description-input"
           rows="3"
           placeholder="{{ 'threatModels.repositoryDescriptionPlaceholder' | transloco }}"
           tabindex="2"
@@ -53,7 +54,7 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.repositoryType' | transloco }}</mat-label>
-        <mat-select formControlName="type" tabindex="3">
+        <mat-select formControlName="type" data-testid="repository-type-select" tabindex="3">
           <mat-option value="git">Git</mat-option>
           <mat-option value="svn">SVN</mat-option>
           <mat-option value="mercurial">Mercurial</mat-option>
@@ -68,7 +69,13 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.repositoryUri' | transloco }}</mat-label>
-        <input matInput formControlName="uri" type="url" tabindex="4" />
+        <input
+          matInput
+          formControlName="uri"
+          data-testid="repository-uri-input"
+          type="url"
+          tabindex="4"
+        />
         @if (getUriSuggestion()) {
           <mat-hint class="uri-suggestion-hint">
             {{ getUriSuggestion() }}
@@ -93,7 +100,11 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.repositoryRefType' | transloco }}</mat-label>
-          <mat-select formControlName="refType" tabindex="5">
+          <mat-select
+            formControlName="refType"
+            data-testid="repository-ref-type-select"
+            tabindex="5"
+          >
             <mat-option value="branch">{{ 'threatModels.branch' | transloco }}</mat-option>
             <mat-option value="tag">{{ 'threatModels.tag' | transloco }}</mat-option>
             <mat-option value="commit">{{ 'threatModels.commit' | transloco }}</mat-option>
@@ -102,7 +113,12 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.repositoryRefValue' | transloco }}</mat-label>
-          <input matInput formControlName="refValue" tabindex="6" />
+          <input
+            matInput
+            formControlName="refValue"
+            data-testid="repository-ref-value-input"
+            tabindex="6"
+          />
           <mat-hint>{{ 'threatModels.repositoryRefValueHint' | transloco }}</mat-hint>
           @if (repositoryForm.get('refValue')?.hasError('maxlength')) {
             <mat-error>
@@ -113,7 +129,12 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.repositorySubPath' | transloco }}</mat-label>
-          <input matInput formControlName="subPath" tabindex="7" />
+          <input
+            matInput
+            formControlName="subPath"
+            data-testid="repository-sub-path-input"
+            tabindex="7"
+          />
           <mat-hint>{{ 'threatModels.repositorySubPathHint' | transloco }}</mat-hint>
           @if (repositoryForm.get('subPath')?.hasError('maxlength')) {
             <mat-error>
@@ -124,13 +145,21 @@
       </div>
 
       <div class="checkbox-field">
-        <mat-checkbox formControlName="include_in_report" tabindex="8">
+        <mat-checkbox
+          formControlName="include_in_report"
+          data-testid="repository-include-report-checkbox"
+          tabindex="8"
+        >
           {{ 'common.includeInReport' | transloco }}
         </mat-checkbox>
       </div>
 
       <div class="checkbox-field">
-        <mat-checkbox formControlName="timmy_enabled" tabindex="9">
+        <mat-checkbox
+          formControlName="timmy_enabled"
+          data-testid="repository-timmy-checkbox"
+          tabindex="9"
+        >
           {{ 'common.includeInTimmyChat' | transloco }}
         </mat-checkbox>
       </div>
@@ -140,6 +169,7 @@
 <mat-dialog-actions align="end">
   <button
     mat-button
+    data-testid="repository-cancel-button"
     (click)="onCancel()"
     tabindex="10"
     [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
@@ -150,6 +180,7 @@
     <button
       mat-raised-button
       color="primary"
+      data-testid="repository-save-button"
       [disabled]="repositoryForm.invalid"
       (click)="onSubmit()"
       tabindex="11"

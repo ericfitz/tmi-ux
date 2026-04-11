@@ -22,7 +22,7 @@
     <!-- Asset Name -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.name'">Asset Name</mat-label>
-      <input matInput formControlName="name" required />
+      <input matInput formControlName="name" data-testid="asset-name-input" required />
       @if (assetForm.get('name')?.hasError('required')) {
         <mat-error>
           {{ 'common.validation.required' | transloco }}
@@ -39,7 +39,12 @@
     <!-- Description -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'common.description'">Description</mat-label>
-      <textarea matInput formControlName="description" rows="3"></textarea>
+      <textarea
+        matInput
+        formControlName="description"
+        data-testid="asset-description-input"
+        rows="3"
+      ></textarea>
       @if (assetForm.get('description')?.hasError('maxlength')) {
         <mat-error>
           {{ 'common.validation.maxLength' | transloco: { max: 2048 } }}
@@ -50,7 +55,7 @@
     <!-- Asset Type -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.type'">Asset Type</mat-label>
-      <mat-select formControlName="type">
+      <mat-select formControlName="type" data-testid="asset-type-select">
         <mat-option [value]="">{{ 'common.none' | transloco }}</mat-option>
         <mat-option *ngFor="let type of assetTypes" [value]="type">
           {{ 'assetEditor.types.' + type | transloco }}
@@ -61,7 +66,7 @@
     <!-- Criticality -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.criticality'">Criticality</mat-label>
-      <input matInput formControlName="criticality" />
+      <input matInput formControlName="criticality" data-testid="asset-criticality-input" />
       @if (assetForm.get('criticality')?.hasError('maxlength')) {
         <mat-error>
           {{ 'common.validation.maxLength' | transloco: { max: 64 } }}
@@ -73,7 +78,7 @@
     <div class="chip-input-section">
       <mat-label class="chip-label">{{ 'assetEditor.classification' | transloco }}</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-chip-grid #classificationChipGrid>
+        <mat-chip-grid #classificationChipGrid data-testid="asset-classification-chips">
           <mat-chip-row
             *ngFor="let classification of assetForm.get('classification')?.value"
             (removed)="!isReadOnly ? removeClassification(classification) : null"
@@ -104,6 +109,7 @@
       <input
         matInput
         formControlName="sensitivity"
+        data-testid="asset-sensitivity-input"
         [placeholder]="'assetEditor.sensitivity' | transloco"
       />
       @if (assetForm.get('sensitivity')?.hasError('maxlength')) {
@@ -115,14 +121,14 @@
 
     <!-- Include in Report -->
     <div class="checkbox-field">
-      <mat-checkbox formControlName="include_in_report">
+      <mat-checkbox formControlName="include_in_report" data-testid="asset-include-report-checkbox">
         {{ 'common.includeInReport' | transloco }}
       </mat-checkbox>
     </div>
 
     <!-- Include in Timmy Chat -->
     <div class="checkbox-field">
-      <mat-checkbox formControlName="timmy_enabled">
+      <mat-checkbox formControlName="timmy_enabled" data-testid="asset-timmy-checkbox">
         {{ 'common.includeInTimmyChat' | transloco }}
       </mat-checkbox>
     </div>
@@ -130,11 +136,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button data-testid="asset-cancel-button" (click)="onCancel()">
     {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
   </button>
   @if (!isReadOnly) {
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="assetForm.invalid">
+    <button
+      mat-raised-button
+      color="primary"
+      data-testid="asset-save-button"
+      (click)="onSubmit()"
+      [disabled]="assetForm.invalid"
+    >
       {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
     </button>
   }
