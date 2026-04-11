@@ -179,6 +179,12 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 
 **E2E Tests (Playwright):** Config: `playwright.config.ts`
 
+## Automated Workflows
+
+### Visual Regression Triage
+
+When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `visual-regression-triage` skill to present the baseline, actual, and diff images, describe the differences, and guide resolution (fix bug or update baseline).
+
 ## Versioning
 
 Automatic semantic versioning via git hooks using [Conventional Commits](https://www.conventionalcommits.org/):
