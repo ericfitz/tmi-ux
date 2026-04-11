@@ -14,8 +14,14 @@ The backend must have the `tmi` OAuth provider configured (auto-grants tokens wi
 ## Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (all projects)
 pnpm test:e2e
+
+# Run a specific project
+pnpm test:e2e:workflows
+pnpm test:e2e:field-coverage
+pnpm test:e2e:visual-regression
+pnpm test:e2e:admin
 
 # Run with visible browser
 pnpm test:e2e:headed
@@ -25,6 +31,9 @@ pnpm test:e2e:ui
 
 # Run in debug mode
 pnpm test:e2e:debug
+
+# Validate field definitions against OpenAPI spec
+pnpm run e2e:validate-schema
 ```
 
 ## Environment Variables
@@ -35,38 +44,69 @@ pnpm test:e2e:debug
 | `E2E_API_URL` | `http://localhost:8080` | Backend API URL |
 | `E2E_OAUTH_PROVIDER` | `tmi` | OAuth provider for test login |
 
-## Test Structure
+## Test Users
+
+| User ID | Role | Description |
+|---------|------|-------------|
+| `test-user` | Normal user | Dashboard, intake, TM creation |
+| `test-reviewer` | Security reviewer | + triage access |
+| `test-admin` | Admin | + admin panel access |
+
+Users are selected via the `login_hint` parameter in the TMI OAuth provider dialog.
+
+## Project Structure
 
 ```
 e2e/
-├── config/test.config.ts       # Environment-based configuration
-├── setup/global-setup.ts       # Pre-test service availability check
-├── helpers/auth.ts             # OAuth login helper
-└── tests/core-lifecycle.spec.ts # Core lifecycle test suite
+├── config/          # Environment configuration
+├── setup/           # Global setup (service availability check)
+├── fixtures/        # Playwright test fixtures
+│   ├── test-fixtures.ts   # Page object + flow fixtures
+│   └── auth-fixtures.ts   # Role-aware auth (userTest, reviewerTest, adminTest, multiRoleTest)
+├── schema/          # Field definitions and OpenAPI validator
+├── seed/            # Seed data specification (server ingestion contract)
+├── helpers/         # Reusable test utilities
+│   ├── theme-utils.ts          # Theme mode toggling
+│   ├── translation-scanner.ts  # Unresolved Transloco key detection
+│   ├── icon-checker.ts         # Material icon rendering verification
+│   ├── screenshot.ts           # Theme matrix screenshot baselines
+│   └── accessibility.ts        # Accessibility checks across themes
+├── pages/           # Page objects (element locators)
+├── dialogs/         # Dialog objects (dialog-scoped locators)
+├── flows/           # Multi-step user workflows (no assertions)
+└── tests/
+    ├── workflows/          # Scenario/lifecycle tests
+    ├── field-coverage/     # Schema-driven field validation
+    ├── visual-regression/  # Screenshot baselines + DOM assertions
+    └── admin/              # Admin-specific tests
 ```
 
-## What It Tests
+## Test Architecture
 
-The core lifecycle test runs a serial flow:
+```
+Tests (*.spec.ts)        — Scenarios with assertions
+  └── Flows (*-flow.ts)  — Multi-step user workflows (no assertions)
+    └── Page Objects      — Element locators and single-step helpers
+      └── Dialog Objects  — Dialog-scoped locators
+```
 
-1. Login via OAuth
-2. Create a threat model
-3. Verify it appears in the list
-4. Open the threat model
-5. Create a diagram
-6. Open the DFD editor
-7. Add nodes (actor, process, store)
-8. Close the diagram
-9. Delete the diagram
-10. Delete the threat model
+## Auth Fixtures
 
-Each step depends on the previous one. If auth fails, everything after it fails. All test data is created and cleaned up within the test run.
+```typescript
+// Single-role test (most common)
+import { userTest as test } from '../../fixtures/auth-fixtures';
+test('does something', async ({ userPage }) => { ... });
+
+// Cross-role test
+import { multiRoleTest as test } from '../../fixtures/auth-fixtures';
+test('cross-role workflow', async ({ userPage, reviewerPage }) => { ... });
+```
 
 ## Troubleshooting
 
 **Tests fail at global setup:** Both services must be running. Check that the backend is accessible at the configured API URL.
 
-**Auth test fails:** Verify the `tmi` OAuth provider is configured on the backend and auto-grants without interactive login.
+**Auth test fails:** Verify the `tmi` OAuth provider is configured on the backend. The login dialog should accept a `login_hint` value.
 
 **View test report:**
 
