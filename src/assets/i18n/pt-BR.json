@@ -1070,7 +1070,7 @@
     "tmiDialog": {
       "errorMaxLength": "O nome de usuário deve ter no máximo 20 caracteres",
       "errorMinLength": "O nome de usuário deve ter pelo menos 3 caracteres",
-      "errorPattern": "O nome de usuário deve conter apenas letras e dígitos",
+      "errorPattern": "O nome de usuário deve conter apenas letras, dígitos, pontos, sublinhados, sinais de porcentagem, sinais de mais e hífens",
       "signIn": "Entrar",
       "title": "Entrar com TMI Provider",
       "usernameLabel": "Nome de usuário",

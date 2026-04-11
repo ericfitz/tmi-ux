@@ -38,6 +38,26 @@ describe('TmiLoginDialogComponent', () => {
     expect(component.usernameControl.valid).toBe(true);
   });
 
+  it('should accept username with hyphens', () => {
+    component.usernameControl.setValue('test-user');
+    expect(component.usernameControl.valid).toBe(true);
+  });
+
+  it('should accept username with periods', () => {
+    component.usernameControl.setValue('test.user');
+    expect(component.usernameControl.valid).toBe(true);
+  });
+
+  it('should accept username with underscores', () => {
+    component.usernameControl.setValue('test_user');
+    expect(component.usernameControl.valid).toBe(true);
+  });
+
+  it('should accept username with percent and plus signs', () => {
+    component.usernameControl.setValue('user%2B+name');
+    expect(component.usernameControl.valid).toBe(true);
+  });
+
   it('should reject username shorter than 3 chars', () => {
     component.usernameControl.setValue('ab');
     expect(component.usernameControl.valid).toBe(false);
@@ -48,7 +68,7 @@ describe('TmiLoginDialogComponent', () => {
     expect(component.usernameControl.valid).toBe(false);
   });
 
-  it('should reject username with special characters', () => {
+  it('should reject username with disallowed characters', () => {
     component.usernameControl.setValue('user@name');
     expect(component.usernameControl.valid).toBe(false);
   });

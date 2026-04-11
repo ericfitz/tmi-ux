@@ -63,7 +63,7 @@ export interface TmiLoginDialogResult {
 })
 export class TmiLoginDialogComponent {
   usernameControl = new FormControl('', [
-    Validators.pattern(/^[a-zA-Z0-9]*$/),
+    Validators.pattern(/^[a-zA-Z0-9._%+-]*$/),
     Validators.minLength(3),
     Validators.maxLength(20),
   ]);

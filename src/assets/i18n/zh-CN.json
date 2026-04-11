@@ -1059,7 +1059,7 @@
     "tmiDialog": {
       "errorMaxLength": "用户名最多为20个字符",
       "errorMinLength": "用户名至少为3个字符",
-      "errorPattern": "用户名只能包含字母和数字",
+      "errorPattern": "用户名只能包含字母、数字、句点、下划线、百分号、加号和连字符",
       "signIn": "登录",
       "title": "使用TMI Provider登录",
       "usernameLabel": "用户名",

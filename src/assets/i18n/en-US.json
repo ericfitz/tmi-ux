@@ -1094,7 +1094,7 @@
     "tmiDialog": {
       "errorMaxLength": "Username must be at most 20 characters",
       "errorMinLength": "Username must be at least 3 characters",
-      "errorPattern": "Username must contain only letters and digits",
+      "errorPattern": "Username must contain only letters, digits, periods, underscores, percent signs, plus signs, and hyphens",
       "signIn": "Sign In",
       "title": "Sign In with TMI Provider",
       "usernameLabel": "Username",

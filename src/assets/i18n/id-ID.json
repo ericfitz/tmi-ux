@@ -1059,7 +1059,7 @@
     "tmiDialog": {
       "errorMaxLength": "Nama pengguna harus maksimal 20 karakter",
       "errorMinLength": "Nama pengguna harus minimal 3 karakter",
-      "errorPattern": "Nama pengguna hanya boleh mengandung huruf dan angka",
+      "errorPattern": "Nama pengguna hanya boleh mengandung huruf, angka, titik, garis bawah, tanda persen, tanda tambah, dan tanda hubung",
       "signIn": "Masuk",
       "title": "Masuk dengan TMI Provider",
       "usernameLabel": "Nama pengguna",

@@ -1059,7 +1059,7 @@
     "tmiDialog": {
       "errorMaxLength": "사용자 이름은 최대 20자여야 합니다",
       "errorMinLength": "사용자 이름은 최소 3자여야 합니다",
-      "errorPattern": "사용자 이름은 문자와 숫자만 포함해야 합니다",
+      "errorPattern": "사용자 이름은 문자, 숫자, 마침표, 밑줄, 퍼센트 기호, 더하기 기호, 하이픈만 포함해야 합니다",
       "signIn": "로그인",
       "title": "TMI Provider로 로그인",
       "usernameLabel": "사용자 이름",

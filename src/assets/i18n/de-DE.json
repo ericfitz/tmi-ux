@@ -1059,7 +1059,7 @@
     "tmiDialog": {
       "errorMaxLength": "Der Benutzername darf maximal 20 Zeichen lang sein",
       "errorMinLength": "Der Benutzername muss mindestens 3 Zeichen lang sein",
-      "errorPattern": "Der Benutzername darf nur Buchstaben und Ziffern enthalten",
+      "errorPattern": "Der Benutzername darf nur Buchstaben, Ziffern, Punkte, Unterstriche, Prozentzeichen, Pluszeichen und Bindestriche enthalten",
       "signIn": "Anmelden",
       "title": "Mit TMI Provider anmelden",
       "usernameLabel": "Benutzername",
