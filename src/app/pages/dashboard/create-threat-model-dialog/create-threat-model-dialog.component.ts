@@ -54,6 +54,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
           <textarea
             matInput
             formControlName="description"
+            data-testid="create-tm-description-input"
             [placeholder]="'createThreatModel.descriptionPlaceholder' | transloco"
             maxlength="1024"
             rows="3"
@@ -62,7 +63,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label [transloco]="'createThreatModel.framework'">Framework</mat-label>
-          <mat-select formControlName="framework">
+          <mat-select formControlName="framework" data-testid="create-tm-framework-select">
             @for (fw of frameworkOptions; track fw) {
               <mat-option [value]="fw">{{ fw }}</mat-option>
             }
@@ -71,7 +72,11 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
 
         @if (showConfidential) {
           <div class="confidential-section">
-            <mat-slide-toggle formControlName="isConfidential" color="primary">
+            <mat-slide-toggle
+              formControlName="isConfidential"
+              data-testid="create-tm-confidential-toggle"
+              color="primary"
+            >
               <span [transloco]="'createThreatModel.confidentialLabel'">Confidential</span>
             </mat-slide-toggle>
             <p class="confidential-hint" [transloco]="'createThreatModel.confidentialHint'">
