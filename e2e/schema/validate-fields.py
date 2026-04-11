@@ -18,11 +18,9 @@ import json
 import sys
 from pathlib import Path
 
-import httpx
+import httpx  # pyright: ignore[reportMissingImports] # ty:ignore[unresolved-import]
 
-DEFAULT_SPEC_URL = (
-    "https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json"
-)
+DEFAULT_SPEC_URL = "https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json"
 FIELD_DEFS_PATH = Path(__file__).parent / "field-definitions.json"
 
 # Map from field-definitions.json entity key to OpenAPI schema name(s).
@@ -119,7 +117,9 @@ def collect_api_fields(spec: dict, schema_names: list[str]) -> set[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate field definitions against OpenAPI spec")
+    parser = argparse.ArgumentParser(
+        description="Validate field definitions against OpenAPI spec"
+    )
     parser.add_argument(
         "--spec",
         default=DEFAULT_SPEC_URL,
@@ -143,23 +143,29 @@ def main() -> int:
         # Check for stale definitions (error)
         stale = def_field_names - api_fields
         for field in sorted(stale):
-            print(f"  ERROR  [{entity_key}] STALE: '{field}' in field-definitions but not in API schema")
+            print(
+                f"  ERROR  [{entity_key}] STALE: '{field}' in field-definitions but not in API schema"
+            )
             stale_count += 1
 
         # Check for missing definitions (warning)
         missing = api_fields - def_field_names - IGNORED_API_FIELDS
         for field in sorted(missing):
-            print(f"  WARN   [{entity_key}] MISSING: '{field}' in API schema but not in field-definitions")
+            print(
+                f"  WARN   [{entity_key}] MISSING: '{field}' in API schema but not in field-definitions"
+            )
             missing_count += 1
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Entities checked: {len(ENTITY_SCHEMA_MAP)}")
     print(f"Stale definitions (errors): {stale_count}")
     print(f"Missing definitions (warnings): {missing_count}")
 
     if stale_count > 0:
-        print("\nFAILED: Remove stale field definitions that reference nonexistent API fields.")
+        print(
+            "\nFAILED: Remove stale field definitions that reference nonexistent API fields."
+        )
         return 1
 
     print("\nPASSED")
