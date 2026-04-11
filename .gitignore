@@ -38,6 +38,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Local project references
+.local-projects.json
+
 # Local environment files
 src/environments/environment.local.ts
 src/environments/environment.dev.ts

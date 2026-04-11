@@ -128,10 +128,14 @@ The application has three sets of users:
 - End users/requesters - request security reviews by filling out intake surveys; check status
 - Administrators - manage the application and its configuration at runtime
 
+## Related Projects
+
+TMI has several sibling projects. When you need to read files from or interact with these projects, check `.local-projects.json` in the project root for local filesystem paths before fetching from GitHub. This file is gitignored (local to each developer's machine).
+
 ## API and Backend
 
-- API specs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json` (REST), `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml` (WebSocket)
-- Integration: `https://github.com/ericfitz/tmi/wiki/API-Integration`
+- API specs: check `.local-projects.json` for the local `tmi` project path, then read `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallback URLs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json`, `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml`
+- Wiki: check `.local-projects.json` for the local `tmi-wiki` project path. Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
 - Server repo: `https://github.com/ericfitz/tmi`
 
 ### Suspected Server Bugs
