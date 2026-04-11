@@ -35,7 +35,7 @@
         <mat-card-header>
           <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
           @if (showConfidential && threatModel.is_confidential) {
-            <div class="confidential-project-badge">
+            <div class="confidential-project-badge" data-testid="tm-confidential-badge">
               <mat-icon aria-hidden="true">warning</mat-icon>
               <span>{{ 'threatModels.confidentialProject' | transloco }}</span>
             </div>
@@ -44,6 +44,7 @@
             <button
               mat-icon-button
               color="primary"
+              data-testid="tm-metadata-button"
               (click)="openMetadataDialog()"
               [matTooltip]="'common.manageMetadata' | transloco"
             >
@@ -58,7 +59,7 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #detailsKebabMenu="matMenu">
-              <button mat-menu-item (click)="downloadToDesktop()">
+              <button mat-menu-item data-testid="tm-export-button" (click)="downloadToDesktop()">
                 <mat-icon>file_download</mat-icon>
                 <span>{{ 'threatModels.export' | transloco }}</span>
               </button>
@@ -76,7 +77,11 @@
                 <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
                 <span>{{ 'auditTrail.title' | transloco }}</span>
               </button>
-              <button mat-menu-item (click)="openPermissionsDialog()">
+              <button
+                mat-menu-item
+                data-testid="tm-permissions-button"
+                (click)="openPermissionsDialog()"
+              >
                 <mat-icon>lock</mat-icon>
                 <span>{{ 'common.permissions' | transloco }}</span>
               </button>
@@ -352,6 +357,7 @@
                 <mat-select
                   formControlName="threat_model_framework"
                   tabindex="3"
+                  data-testid="tm-framework-select"
                   [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
                   (selectionChange)="onFrameworkChange($event)"
                 >
@@ -476,6 +482,7 @@
                   <button
                     mat-icon-button
                     color="primary"
+                    data-testid="add-asset-button"
                     (click)="addAsset()"
                     [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
                   >
@@ -654,6 +661,7 @@
                   <tr mat-header-row *matHeaderRowDef="assetsDisplayedColumns"></tr>
                   <tr
                     mat-row
+                    data-testid="asset-row"
                     *matRowDef="let row; columns: assetsDisplayedColumns"
                     class="clickable-row"
                     [matTooltip]="row.description"
@@ -703,6 +711,7 @@
                   <button
                     mat-icon-button
                     color="primary"
+                    data-testid="add-document-button"
                     (click)="addDocument()"
                     [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
                   >
@@ -853,6 +862,7 @@
                   <tr mat-header-row *matHeaderRowDef="documentsDisplayedColumns"></tr>
                   <tr
                     mat-row
+                    data-testid="document-row"
                     *matRowDef="let row; columns: documentsDisplayedColumns"
                     class="clickable-row"
                     [matTooltip]="row.description"
@@ -901,6 +911,7 @@
                   <button
                     mat-icon-button
                     color="primary"
+                    data-testid="add-repository-button"
                     (click)="addRepository()"
                     [matTooltip]="'threatModels.createNewRepository' | transloco"
                   >
@@ -1056,6 +1067,7 @@
                   <tr mat-header-row *matHeaderRowDef="repositoriesDisplayedColumns"></tr>
                   <tr
                     mat-row
+                    data-testid="repository-row"
                     *matRowDef="let row; columns: repositoriesDisplayedColumns"
                     class="clickable-row"
                     [matTooltip]="row.description"
@@ -1124,6 +1136,7 @@
                   <button
                     mat-icon-button
                     color="primary"
+                    data-testid="add-note-button"
                     (click)="addNote()"
                     [matTooltip]="'threatModels.tooltips.addNote' | transloco"
                   >
@@ -1251,6 +1264,7 @@
                   <tr mat-header-row *matHeaderRowDef="notesDisplayedColumns"></tr>
                   <tr
                     mat-row
+                    data-testid="note-row"
                     *matRowDef="let row; columns: notesDisplayedColumns"
                     class="clickable-row"
                     [matTooltip]="row.description"
