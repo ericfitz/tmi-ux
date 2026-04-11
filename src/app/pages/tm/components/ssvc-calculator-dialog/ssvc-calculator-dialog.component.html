@@ -3,7 +3,7 @@
   <h2 mat-dialog-title class="dialog-title">
     <span>{{ t('ssvcCalculator.title') }}</span>
     @if (decision) {
-      <span class="decision-badge" [class]="decisionClass">
+      <span class="decision-badge" data-testid="ssvc-decision-badge" [class]="decisionClass">
         {{ t('ssvcCalculator.decisions.' + decision) }}
       </span>
     }
@@ -15,6 +15,7 @@
       @for (dp of decisionPoints; track dp.key; let i = $index) {
         <div
           class="step-dot"
+          data-testid="ssvc-step-dot"
           [class.active]="i === currentStep"
           [class.complete]="selections[i] !== null && i !== currentStep"
           [class.clickable]="i <= _firstIncompleteStep()"
@@ -48,6 +49,7 @@
           @for (value of decisionPoints[currentStep].values; track value.shortName) {
             <div
               class="value-card"
+              data-testid="ssvc-value-card"
               [class.selected]="selections[currentStep] === value.shortName"
               (click)="onValueSelect(value.shortName)"
             >
@@ -66,7 +68,7 @@
 
         <div class="summary-grid">
           @for (dp of decisionPoints; track dp.key; let i = $index) {
-            <div class="summary-row">
+            <div class="summary-row" data-testid="ssvc-summary-row">
               <span class="summary-label">{{ t(dp.nameKey) }}</span>
               <span class="summary-value">
                 @for (v of dp.values; track v.shortName) {
@@ -92,20 +94,34 @@
 
   <mat-dialog-actions align="end" class="dialog-actions">
     @if (currentStep > 0) {
-      <button mat-button (click)="back()">
+      <button mat-button data-testid="ssvc-back-button" (click)="back()">
         <mat-icon>arrow_back</mat-icon>
         {{ t('ssvcCalculator.back') }}
       </button>
     }
     <span class="spacer"></span>
-    <button mat-button (click)="cancel()">{{ t('ssvcCalculator.cancel') }}</button>
+    <button mat-button data-testid="ssvc-cancel-button" (click)="cancel()">
+      {{ t('ssvcCalculator.cancel') }}
+    </button>
     @if (currentStep < totalSteps) {
-      <button mat-flat-button color="primary" [disabled]="!isCurrentStepComplete" (click)="next()">
+      <button
+        mat-flat-button
+        color="primary"
+        data-testid="ssvc-next-button"
+        [disabled]="!isCurrentStepComplete"
+        (click)="next()"
+      >
         {{ t('ssvcCalculator.next') }}
         <mat-icon iconPositionEnd>arrow_forward</mat-icon>
       </button>
     } @else {
-      <button mat-flat-button color="primary" [disabled]="!isAllComplete" (click)="apply()">
+      <button
+        mat-flat-button
+        color="primary"
+        data-testid="ssvc-apply-button"
+        [disabled]="!isAllComplete"
+        (click)="apply()"
+      >
         {{ t('ssvcCalculator.apply') }}
       </button>
     }

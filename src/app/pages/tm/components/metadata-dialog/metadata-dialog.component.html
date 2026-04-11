@@ -31,6 +31,7 @@
             <mat-form-field class="table-field" appearance="outline">
               <input
                 matInput
+                data-testid="metadata-key-input"
                 [value]="item.key"
                 (blur)="updateKey(i, $event)"
                 [placeholder]="'common.metadataKey' | transloco"
@@ -50,6 +51,7 @@
             <mat-form-field class="table-field" appearance="outline">
               <input
                 matInput
+                data-testid="metadata-value-input"
                 [value]="item.value"
                 (blur)="updateValue(i, $event)"
                 [placeholder]="'common.metadataValue' | transloco"
@@ -69,6 +71,7 @@
             <button
               mat-icon-button
               color="warn"
+              data-testid="metadata-delete-button"
               (click)="deleteItem(i)"
               [matTooltip]="'common.delete' | transloco"
               [disabled]="data.isReadOnly"
@@ -95,6 +98,7 @@
     <button
       mat-button
       color="primary"
+      data-testid="metadata-add-button"
       (click)="addItem()"
       [disabled]="data.isReadOnly"
       [attr.tabindex]="getAddButtonTabIndex()"
@@ -105,6 +109,7 @@
     </button>
     <button
       mat-button
+      data-testid="metadata-cancel-button"
       (click)="cancel()"
       [attr.tabindex]="getCancelButtonTabIndex()"
       [attr.aria-label]="'common.cancel' | transloco"
@@ -114,6 +119,7 @@
     <button
       mat-raised-button
       color="primary"
+      data-testid="metadata-save-button"
       (click)="save()"
       [disabled]="data.isReadOnly"
       [attr.tabindex]="getSaveButtonTabIndex()"

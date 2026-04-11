@@ -6,6 +6,7 @@
       @for (option of options; track option.name; let i = $index) {
         <div class="option-row" [class.disabled]="option.disabled">
           <mat-checkbox
+            data-testid="framework-mapping-checkbox"
             [checked]="option.checked"
             [disabled]="option.disabled"
             (change)="onCheckChange(i, $event.checked)"
@@ -23,8 +24,15 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()">{{ t('common.cancel') }}</button>
-    <button mat-raised-button color="primary" (click)="apply()">
+    <button mat-button data-testid="framework-mapping-cancel-button" (click)="cancel()">
+      {{ t('common.cancel') }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      data-testid="framework-mapping-save-button"
+      (click)="apply()"
+    >
       {{ t('common.ok') }}
     </button>
   </mat-dialog-actions>

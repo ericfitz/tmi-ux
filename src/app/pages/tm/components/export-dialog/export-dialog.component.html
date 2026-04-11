@@ -4,7 +4,7 @@
 </h2>
 
 <mat-dialog-content>
-  <div class="export-dialog-content">
+  <div class="export-dialog-content" data-testid="export-status">
     @switch (state) {
       @case ('loading') {
         <div class="status-row">
@@ -32,6 +32,7 @@
   <button
     mat-raised-button
     color="primary"
+    data-testid="export-cancel-button"
     (click)="onCancel()"
     tabindex="1"
     [attr.aria-label]="'common.cancel' | transloco"
@@ -43,6 +44,7 @@
     <button
       mat-button
       color="primary"
+      data-testid="export-retry-button"
       (click)="fetchData()"
       tabindex="2"
       [attr.aria-label]="'threatModels.exportDialog.retry' | transloco"
@@ -55,6 +57,7 @@
     <button
       mat-button
       color="primary"
+      data-testid="export-save-button"
       (click)="onSave()"
       cdkFocusInitial
       tabindex="2"

@@ -19,6 +19,7 @@
     <div class="action-buttons">
       <button
         mat-icon-button
+        data-testid="note-metadata-button"
         (click)="openMetadataDialog()"
         [matTooltip]="
           canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
@@ -30,6 +31,7 @@
         <button
           mat-icon-button
           color="primary"
+          data-testid="note-save-button"
           [disabled]="noteForm.invalid || !noteForm.dirty || isSaving"
           (click)="save()"
           [matTooltip]="'common.save' | transloco"
@@ -46,7 +48,12 @@
           <mat-icon>more_vert</mat-icon>
         </button>
       }
-      <button mat-icon-button (click)="cancel()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="note-close-button"
+        (click)="cancel()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -80,6 +87,7 @@
             <mat-label>{{ 'common.name' | transloco }}</mat-label>
             <input
               matInput
+              data-testid="note-name-input"
               formControlName="name"
               [placeholder]="'noteEditor.namePlaceholder' | transloco"
             />
@@ -102,6 +110,7 @@
             <mat-label>{{ 'common.description' | transloco }}</mat-label>
             <input
               matInput
+              data-testid="note-description-input"
               formControlName="description"
               [placeholder]="'noteEditor.descriptionPlaceholder' | transloco"
             />
@@ -116,12 +125,15 @@
         <!-- Checkboxes -->
         <div class="checkbox-row">
           <div class="checkbox-field">
-            <mat-checkbox formControlName="include_in_report">
+            <mat-checkbox
+              data-testid="note-include-report-checkbox"
+              formControlName="include_in_report"
+            >
               {{ 'common.includeInReport' | transloco }}
             </mat-checkbox>
           </div>
           <div class="checkbox-field">
-            <mat-checkbox formControlName="timmy_enabled">
+            <mat-checkbox data-testid="note-timmy-checkbox" formControlName="timmy_enabled">
               {{ 'common.includeInTimmyChat' | transloco }}
             </mat-checkbox>
           </div>
@@ -197,6 +209,7 @@
               <textarea
                 #contentTextarea
                 matInput
+                data-testid="note-content-textarea"
                 formControlName="content"
                 rows="20"
                 class="markdown-editor-textarea"
@@ -238,7 +251,7 @@
       <span>{{ 'common.addons' | transloco }}</span>
     </button>
     <mat-divider></mat-divider>
-    <button mat-menu-item (click)="deleteNote()">
+    <button mat-menu-item data-testid="note-delete-button" (click)="deleteNote()">
       <mat-icon>delete</mat-icon>
       <span>{{ 'common.delete' | transloco }}</span>
     </button>

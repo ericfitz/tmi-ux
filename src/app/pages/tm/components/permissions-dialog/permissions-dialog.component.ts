@@ -103,6 +103,7 @@ export interface PermissionsDialogData {
                   @if (!data.isReadOnly) {
                     <mat-form-field appearance="outline" class="table-field type-field">
                       <mat-select
+                        data-testid="permissions-type-select"
                         [value]="auth.principal_type"
                         (selectionChange)="updatePermissionPrincipalType(i, $event)"
                         [attr.tabindex]="i * 5 + 1"
@@ -156,6 +157,7 @@ export interface PermissionsDialogData {
                   @if (!data.isReadOnly) {
                     <mat-form-field appearance="outline" class="table-field provider-field">
                       <mat-select
+                        data-testid="permissions-provider-select"
                         [value]="auth.provider"
                         (selectionChange)="updatePermissionProvider(i, $event)"
                         [attr.tabindex]="i * 5 + 2"
@@ -192,6 +194,7 @@ export interface PermissionsDialogData {
                     <mat-form-field appearance="outline" class="table-field">
                       <input
                         matInput
+                        data-testid="permissions-subject-input"
                         [value]="getSubjectValue(auth)"
                         (blur)="updatePermissionSubject(i, $event)"
                         [placeholder]="getSubjectPlaceholder(auth)"
@@ -214,6 +217,7 @@ export interface PermissionsDialogData {
                   @if (!data.isReadOnly) {
                     <mat-form-field appearance="outline" class="table-field">
                       <mat-select
+                        data-testid="permissions-role-select"
                         [value]="auth.role"
                         (selectionChange)="updatePermissionRole(i, $event)"
                         [attr.tabindex]="i * 5 + 5"
@@ -245,6 +249,7 @@ export interface PermissionsDialogData {
                       <button
                         mat-icon-button
                         color="primary"
+                        data-testid="permissions-set-owner-button"
                         (click)="setAsOwner(i)"
                         [matTooltip]="'threatModels.setAsOwner' | transloco"
                         [disabled]="
@@ -258,6 +263,7 @@ export interface PermissionsDialogData {
                       <button
                         mat-icon-button
                         color="warn"
+                        data-testid="permissions-delete-button"
                         (click)="deletePermission(i)"
                         [matTooltip]="'common.delete' | transloco"
                         [attr.tabindex]="i * 5 + 7"
@@ -288,6 +294,7 @@ export interface PermissionsDialogData {
           <button
             mat-button
             color="primary"
+            data-testid="permissions-add-button"
             (click)="addPermission()"
             [attr.tabindex]="getAddPermissionButtonTabIndex()"
             [attr.aria-label]="'threatModels.addPermission' | transloco"
@@ -298,6 +305,7 @@ export interface PermissionsDialogData {
         }
         <button
           mat-button
+          data-testid="permissions-cancel-button"
           (click)="close()"
           [attr.tabindex]="getCloseButtonTabIndex()"
           [attr.aria-label]="'common.cancel' | transloco"
@@ -308,6 +316,7 @@ export interface PermissionsDialogData {
           <button
             mat-raised-button
             color="primary"
+            data-testid="permissions-save-button"
             (click)="save()"
             [attr.tabindex]="getSaveButtonTabIndex()"
             [attr.aria-label]="'common.save' | transloco"
