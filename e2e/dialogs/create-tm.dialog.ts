@@ -8,6 +8,9 @@ export class CreateTmDialog {
   }
 
   readonly nameInput = () => this.dialog.getByTestId('create-tm-name-input');
+  readonly descriptionInput = () => this.dialog.getByTestId('create-tm-description-input');
+  readonly frameworkSelect = () => this.dialog.getByTestId('create-tm-framework-select');
+  readonly confidentialToggle = () => this.dialog.getByTestId('create-tm-confidential-toggle');
   readonly submitButton = () => this.dialog.getByTestId('create-tm-submit');
 
   async fillName(name: string) {
@@ -15,6 +18,22 @@ export class CreateTmDialog {
     // Wait for dialog animation to settle before interacting
     await this.nameInput().click();
     await this.nameInput().fill(name);
+  }
+
+  async fillDescription(desc: string) {
+    await this.descriptionInput().fill(desc);
+  }
+
+  async selectFramework(framework: string) {
+    await this.frameworkSelect().click();
+    await this.page.locator('mat-option').filter({ hasText: framework }).click();
+  }
+
+  async setConfidential(enabled: boolean) {
+    const isChecked = await this.confidentialToggle().isChecked();
+    if (isChecked !== enabled) {
+      await this.confidentialToggle().click();
+    }
   }
 
   async submit() {
