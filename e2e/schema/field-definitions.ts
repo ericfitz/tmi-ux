@@ -1,4 +1,4 @@
-import fieldData from './field-definitions.json';
+import fieldData from './field-definitions.json' with { type: 'json' };
 
 export interface FieldDef {
   apiName: string;
