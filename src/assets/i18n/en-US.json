@@ -1870,7 +1870,9 @@
       "remediation_required": "Remediation Required",
       "remediation_required.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
       "verification_pending": "Verification Pending",
-      "verification_pending.tooltip": "Remediation is complete; security team must verify effectiveness."
+      "verification_pending.tooltip": "Remediation is complete; security team must verify effectiveness.",
+      "active": "Active",
+      "active.tooltip": "The threat model is actively being worked on."
     },
     "statusLastUpdated": "Status Last Updated",
     "tag": "Tag",

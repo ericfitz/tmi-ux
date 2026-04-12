@@ -1759,7 +1759,9 @@
       "remediation_required": "مطلوب المعالجة",
       "remediation_required.tooltip": "تم تحديد الثغرات الأمنية أو المشكلات؛ يجب على فريق التطوير معالجتها.",
       "verification_pending": "في انتظار التحقق",
-      "verification_pending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
+      "verification_pending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية.",
+      "active": "نشط",
+      "active.tooltip": "نموذج التهديد قيد العمل النشط."
     },
     "statusLastUpdated": "آخر تحديث للحالة",
     "tag": "علامة",

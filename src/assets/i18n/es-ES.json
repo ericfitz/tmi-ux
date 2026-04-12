@@ -1748,7 +1748,9 @@
       "remediation_required": "Remediación Requerida",
       "remediation_required.tooltip": "Se han identificado vulnerabilidades o problemas; el desarrollo debe abordarlos.",
       "verification_pending": "Verificación Pendiente",
-      "verification_pending.tooltip": "La remediación está completa; el equipo de seguridad debe verificar la efectividad."
+      "verification_pending.tooltip": "La remediación está completa; el equipo de seguridad debe verificar la efectividad.",
+      "active": "Activo",
+      "active.tooltip": "El modelo de amenazas está siendo trabajado activamente."
     },
     "statusLastUpdated": "Última Actualización del Estado",
     "tag": "Etiqueta",

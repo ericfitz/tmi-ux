@@ -1748,7 +1748,9 @@
       "remediation_required": "Remediasi Diperlukan",
       "remediation_required.tooltip": "Kerentanan atau masalah telah diidentifikasi; pengembangan harus mengatasinya.",
       "verification_pending": "Menunggu Verifikasi",
-      "verification_pending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas."
+      "verification_pending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas.",
+      "active": "Aktif",
+      "active.tooltip": "Model ancaman sedang dikerjakan secara aktif."
     },
     "statusLastUpdated": "Status Terakhir Diperbarui",
     "tag": "Tag",

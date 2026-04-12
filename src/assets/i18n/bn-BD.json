@@ -1748,7 +1748,9 @@
       "remediation_required": "প্রতিকার প্রয়োজন",
       "remediation_required.tooltip": "দুর্বলতা বা সমস্যা চিহ্নিত করা হয়েছে; ডেভেলপমেন্টকে সেগুলো সমাধান করতে হবে।",
       "verification_pending": "যাচাইকরণ বাকি",
-      "verification_pending.tooltip": "প্রতিকার সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা যাচাই করতে হবে।"
+      "verification_pending.tooltip": "প্রতিকার সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা যাচাই করতে হবে।",
+      "active": "সক্রিয়",
+      "active.tooltip": "হুমকি মডেলটিতে সক্রিয়ভাবে কাজ চলছে।"
     },
     "statusLastUpdated": "স্থিতি সর্বশেষ আপডেট হয়েছে",
     "tag": "ট্যাগ",

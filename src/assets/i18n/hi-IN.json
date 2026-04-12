@@ -1775,7 +1775,9 @@
       "remediation_required": "सुधार आवश्यक",
       "remediation_required.tooltip": "भेद्यताएं या समस्याएं पहचानी गई हैं; विकास को उन्हें संबोधित करना चाहिए।",
       "verification_pending": "सत्यापन प्रतीक्षित",
-      "verification_pending.tooltip": "सुधार पूर्ण है; सुरक्षा टीम को प्रभावशीलता सत्यापित करनी चाहिए।"
+      "verification_pending.tooltip": "सुधार पूर्ण है; सुरक्षा टीम को प्रभावशीलता सत्यापित करनी चाहिए।",
+      "active": "सक्रिय",
+      "active.tooltip": "खतरा मॉडल पर सक्रिय रूप से काम किया जा रहा है।"
     },
     "statusLastUpdated": "स्थिति अंतिम बार अपडेट की गई",
     "tag": "टैग",

@@ -1748,7 +1748,9 @@
       "remediation_required": "تدارک درکار",
       "remediation_required.tooltip": "کمزوریاں یا مسائل کی شناخت ہو گئی ہے؛ ترقی کو ان کو حل کرنا ہوگا۔",
       "verification_pending": "تصدیق زیر التواء",
-      "verification_pending.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔"
+      "verification_pending.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔",
+      "active": "فعال",
+      "active.tooltip": "خطرے کے ماڈل پر فعال طور پر کام ہو رہا ہے۔"
     },
     "statusLastUpdated": "حیثیت آخری بار اپ ڈیٹ ہوئی",
     "tag": "ٹیگ",

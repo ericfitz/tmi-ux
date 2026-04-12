@@ -1739,7 +1739,9 @@
       "remediation_required": "ต้องแก้ไข",
       "remediation_required.tooltip": "ระบุช่องโหว่หรือปัญหาแล้ว การพัฒนาต้องแก้ไข",
       "verification_pending": "รอการตรวจสอบความถูกต้อง",
-      "verification_pending.tooltip": "การแก้ไขเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล"
+      "verification_pending.tooltip": "การแก้ไขเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล",
+      "active": "ใช้งานอยู่",
+      "active.tooltip": "แบบจำลองภัยคุกคามกำลังถูกดำเนินการอยู่"
     },
     "statusLastUpdated": "อัปเดตสถานะล่าสุด",
     "tag": "แท็ก",

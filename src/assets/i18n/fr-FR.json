@@ -1748,7 +1748,9 @@
       "remediation_required": "Remediation requise",
       "remediation_required.tooltip": "Des vulnerabilites ou problemes ont ete identifies ; le developpement doit les traiter.",
       "verification_pending": "Verification en attente",
-      "verification_pending.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite."
+      "verification_pending.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite.",
+      "active": "Actif",
+      "active.tooltip": "Le modèle de menaces est en cours de travail actif."
     },
     "statusLastUpdated": "Derniere mise a jour du statut",
     "tag": "Étiquette",

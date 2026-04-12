@@ -1748,7 +1748,9 @@
       "remediation_required": "נדרש תיקון",
       "remediation_required.tooltip": "זוהו פגיעויות או בעיות; הפיתוח חייב לטפל בהן.",
       "verification_pending": "ממתין לאימות",
-      "verification_pending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות."
+      "verification_pending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות.",
+      "active": "פעיל",
+      "active.tooltip": "מודל האיומים נמצא בעבודה פעילה."
     },
     "statusLastUpdated": "סטטוס עודכן לאחרונה",
     "tag": "תג",

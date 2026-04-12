@@ -1748,7 +1748,9 @@
       "remediation_required": "수정 필요",
       "remediation_required.tooltip": "취약점 또는 문제가 식별되었으며 개발팀이 해결해야 합니다.",
       "verification_pending": "검증 대기 중",
-      "verification_pending.tooltip": "수정이 완료됨; 보안 팀이 효과를 검증해야 합니다."
+      "verification_pending.tooltip": "수정이 완료됨; 보안 팀이 효과를 검증해야 합니다.",
+      "active": "활성",
+      "active.tooltip": "위협 모델이 활발히 작업 중입니다."
     },
     "statusLastUpdated": "상태 마지막 업데이트",
     "tag": "태그",

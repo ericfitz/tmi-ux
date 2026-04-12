@@ -1759,7 +1759,9 @@
       "remediation_required": "修復が必要",
       "remediation_required.tooltip": "脆弱性または問題が特定されました。開発チームが対処する必要があります。",
       "verification_pending": "検証待ち",
-      "verification_pending.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。"
+      "verification_pending.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。",
+      "active": "アクティブ",
+      "active.tooltip": "脅威モデルは現在作業中です。"
     },
     "statusLastUpdated": "ステータス最終更新",
     "tag": "タグ",

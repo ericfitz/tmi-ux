@@ -1748,7 +1748,9 @@
       "remediation_required": "Behebung erforderlich",
       "remediation_required.tooltip": "Schwachstellen oder Probleme wurden identifiziert; Entwicklung muss sie beheben.",
       "verification_pending": "Überprüfung ausstehend",
-      "verification_pending.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
+      "verification_pending.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen.",
+      "active": "Aktiv",
+      "active.tooltip": "Das Bedrohungsmodell wird aktiv bearbeitet."
     },
     "statusLastUpdated": "Status zuletzt aktualisiert",
     "tag": "Tag",
