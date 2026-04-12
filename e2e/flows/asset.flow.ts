@@ -46,7 +46,8 @@ export class AssetFlow {
 
   async editFromTmEdit(name: string, updates: Record<string, string>) {
     const assetRow = this.page.getByTestId('asset-row').filter({ hasText: name });
-    await assetRow.click();
+    // Click the name cell specifically to avoid hitting action buttons
+    await assetRow.locator('td.column-name').click();
     await this.assetEditorDialog.nameInput().waitFor({ state: 'visible' });
     if (updates['name']) {
       await this.assetEditorDialog.nameInput().clear();
