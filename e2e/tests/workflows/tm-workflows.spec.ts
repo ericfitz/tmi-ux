@@ -78,9 +78,11 @@ userTest.describe('TM Workflows - Single Role', () => {
     await tmFlow.createFromDashboard(testName);
 
     // Project picker is a custom component — click the inner mat-select.
-    // Selecting a project auto-saves (no manual save button).
+    // Selecting a project auto-saves (PUT or PATCH).
     const projectSaveResponse = userPage.waitForResponse(
-      resp => resp.url().includes('/threat_models/') && resp.request().method() === 'PUT',
+      resp =>
+        resp.url().includes('/threat_models/') &&
+        (resp.request().method() === 'PUT' || resp.request().method() === 'PATCH'),
     );
     await userPage.getByTestId('tm-project-select').locator('mat-select').click();
     await userPage.locator('mat-option').filter({ hasText: 'Seed Project One' }).first().click();

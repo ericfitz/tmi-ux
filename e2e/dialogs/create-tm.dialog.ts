@@ -31,8 +31,9 @@ export class CreateTmDialog {
 
   async setConfidential(enabled: boolean) {
     const toggle = this.confidentialToggle();
-    const input = toggle.locator('input[type="checkbox"]');
-    const isChecked = await input.isChecked();
+    // mat-slide-toggle uses a button role internally
+    const button = toggle.locator('button[role="switch"]');
+    const isChecked = (await button.getAttribute('aria-checked')) === 'true';
     if (isChecked !== enabled) {
       await toggle.click();
     }
