@@ -7,21 +7,24 @@
       "email": "test-user@tmi.local",
       "display_name": "Test User",
       "roles": { "is_admin": false, "is_security_reviewer": false },
-      "oauth_provider": "tmi"
+      "oauth_provider": "tmi",
+      "api_quota": { "rpm": 100000, "rph": 1000000 }
     },
     {
       "id": "test-reviewer",
       "email": "test-reviewer@tmi.local",
       "display_name": "Test Reviewer",
       "roles": { "is_admin": false, "is_security_reviewer": true },
-      "oauth_provider": "tmi"
+      "oauth_provider": "tmi",
+      "api_quota": { "rpm": 100000, "rph": 1000000 }
     },
     {
       "id": "test-admin",
       "email": "test-admin@tmi.local",
       "display_name": "Test Admin",
       "roles": { "is_admin": true, "is_security_reviewer": true },
-      "oauth_provider": "tmi"
+      "oauth_provider": "tmi",
+      "api_quota": { "rpm": 100000, "rph": 1000000 }
     }
   ],
   "teams": [
@@ -169,15 +172,17 @@
     {
       "name": "Kitchen Sink Survey",
       "description": "Survey with all supported question types for integration testing",
+      "version": "v1-seed",
       "status": "active",
-      "survey_json": { "_placeholder": "Full SurveyJS JSON to be authored during Phase 3 implementation" },
-      "settings": { "link_threat_model": true }
+      "survey_json": { "pages": [{ "name": "placeholder", "elements": [{ "type": "text", "name": "placeholder_field", "title": "Placeholder" }] }] },
+      "settings": { "allow_threat_model_linking": true }
     },
     {
       "name": "Simple Workflow Survey",
       "description": "Minimal survey for workflow testing (fill, submit, triage)",
+      "version": "v1-seed",
       "status": "active",
-      "survey_json": { "_placeholder": "Full SurveyJS JSON to be authored during Phase 3 implementation" },
+      "survey_json": { "pages": [{ "name": "placeholder", "elements": [{ "type": "text", "name": "placeholder_field", "title": "Placeholder" }] }] },
       "settings": {}
     }
   ],
@@ -186,16 +191,14 @@
       "survey": "Simple Workflow Survey",
       "user": "test-user",
       "status": "submitted",
-      "responses": { "_placeholder": "Authored during Phase 3 implementation" }
+      "responses": { "placeholder_field": "placeholder value" }
     }
   ],
   "admin_entities": {
     "groups": [
       { "name": "Seed Group - Engineering", "members": ["test-user", "test-reviewer"] }
     ],
-    "quotas": [
-      { "user": "test-user", "rate_limit": 100, "period": "hour" }
-    ],
+    "quotas": [],
     "webhooks": [
       {
         "name": "Seed Webhook",
