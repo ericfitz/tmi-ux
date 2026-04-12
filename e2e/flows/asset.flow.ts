@@ -46,11 +46,11 @@ export class AssetFlow {
 
   async editFromTmEdit(name: string, updates: Record<string, string>) {
     const assetRow = this.page.getByTestId('asset-row').filter({ hasText: name });
-    // Click the name cell specifically to avoid hitting action buttons
-    await assetRow.locator('td.column-name').click();
-    await this.assetEditorDialog.nameInput().waitFor({ state: 'visible' });
+    // Click the icon cell (first column) to trigger the row click handler
+    // without hitting action buttons or chips in other columns
+    await assetRow.locator('td').first().click();
+    await this.assetEditorDialog.nameInput().waitFor({ state: 'visible', timeout: 5000 });
     if (updates['name']) {
-      await this.assetEditorDialog.nameInput().clear();
       await this.assetEditorDialog.fillName(updates['name']);
     }
     if (updates['description']) {
