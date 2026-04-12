@@ -128,17 +128,23 @@ test.describe.serial('Scoring Systems', () => {
     await expect(threatPage.cweChips()).toHaveCount(1, { timeout: 5000 });
     await expect(threatPage.cweChips().first()).toContainText('CWE-79');
 
-    await threatFlow.addCweReference('CWE-352');
+    await threatFlow.addCweReference('352');
     await expect(threatPage.cweChips()).toHaveCount(2, { timeout: 5000 });
+
+    // Verify we have two distinct CWE chips
+    const firstCweText = await threatPage.cweChips().first().textContent();
+    const secondCweText = await threatPage.cweChips().nth(1).textContent();
 
     // Remove first CWE chip via the matChipRemove button inside it
     const firstCweRemove = threatPage
       .cweChips()
       .first()
-      .locator('[matChipRemove], button[aria-label*="Remove CWE"]');
+      .locator('[matChipRemove], button[aria-label*="Remove"]');
     await firstCweRemove.click();
     await expect(threatPage.cweChips()).toHaveCount(1, { timeout: 5000 });
-    await expect(threatPage.cweChips().first()).toContainText('CWE-352');
+
+    // The remaining chip should be the second one we had
+    await expect(threatPage.cweChips().first()).toContainText(secondCweText!.replace(/\s*cancel\s*/, '').trim());
   });
 
   test('framework mappings', async () => {

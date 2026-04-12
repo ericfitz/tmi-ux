@@ -49,6 +49,8 @@ export class PermissionsDialog {
     await this.page.locator('mat-option').filter({ hasText: new RegExp(`^.*${provider}$`) }).click();
 
     await this.subjectInput(lastIndex).fill(subject);
+    // Trigger blur to commit the subject value before moving to the next field
+    await this.subjectInput(lastIndex).press('Tab');
 
     await this.roleSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: role }).click();

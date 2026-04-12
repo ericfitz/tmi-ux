@@ -30,9 +30,11 @@ export class CreateTmDialog {
   }
 
   async setConfidential(enabled: boolean) {
-    const isChecked = await this.confidentialToggle().isChecked();
+    const toggle = this.confidentialToggle();
+    const input = toggle.locator('input[type="checkbox"]');
+    const isChecked = await input.isChecked();
     if (isChecked !== enabled) {
-      await this.confidentialToggle().click();
+      await toggle.click();
     }
   }
 
