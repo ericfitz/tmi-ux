@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
+import { testConfig } from '../config/test.config';
 
 export class AuthFlow {
   private loginPage: LoginPage;
@@ -20,10 +21,20 @@ export class AuthFlow {
     await this.loginPage.signInButton().waitFor({ state: 'visible', timeout: 5000 });
     await this.loginPage.signInButton().click();
 
+    // Wait for the OAuth flow to complete and return to the app.
+    // The flow redirects through the server's /oauth2/authorize endpoint
+    // (different origin), so we must wait until the URL is back on the
+    // app origin AND not on /login or /oauth2/callback.
+    const appOrigin = new URL(testConfig.appUrl).origin;
     await this.page.waitForURL(
-      url =>
-        !url.pathname.includes('/login') &&
-        !url.pathname.includes('/oauth2/callback'),
+      url => {
+        const u = new URL(url);
+        return (
+          u.origin === appOrigin &&
+          !u.pathname.includes('/login') &&
+          !u.pathname.includes('/oauth2/callback')
+        );
+      },
       { timeout: 30000 },
     );
   }
