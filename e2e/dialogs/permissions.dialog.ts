@@ -48,11 +48,9 @@ export class PermissionsDialog {
     await this.providerSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: new RegExp(`^.*${provider}$`) }).click();
 
-    // Type the subject character by character to ensure Angular form updates,
-    // then blur to trigger updatePermissionSubject
-    await this.subjectInput(lastIndex).click();
-    await this.subjectInput(lastIndex).pressSequentially(subject);
-    await this.subjectInput(lastIndex).evaluate(el => el.blur());
+    await this.subjectInput(lastIndex).fill(subject);
+    // Dispatch blur event to trigger updatePermissionSubject handler
+    await this.subjectInput(lastIndex).dispatchEvent('blur');
 
     await this.roleSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: role }).click();
