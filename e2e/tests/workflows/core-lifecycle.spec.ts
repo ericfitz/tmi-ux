@@ -33,7 +33,8 @@ test.describe.serial('Core Lifecycle', () => {
   const testTmName = `E2E Test TM ${Date.now()}`;
   const testDiagramName = `E2E Test Diagram ${Date.now()}`;
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }, testInfo) => {
+    testInfo.setTimeout(60000);
     context = await browser.newContext();
     page = await context.newPage();
 

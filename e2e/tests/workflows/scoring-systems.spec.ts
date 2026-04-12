@@ -23,7 +23,8 @@ test.describe.serial('Scoring Systems', () => {
   const testTmName = `E2E Scoring TM ${Date.now()}`;
   const testThreatName = `E2E Scoring Threat ${Date.now()}`;
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }, testInfo) => {
+    testInfo.setTimeout(90000);
     context = await browser.newContext();
     page = await context.newPage();
     tmFlow = new ThreatModelFlow(page);

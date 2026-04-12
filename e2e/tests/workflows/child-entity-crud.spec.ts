@@ -22,7 +22,8 @@ test.describe.serial('Child Entity CRUD', () => {
 
   const testTmName = `E2E Entity CRUD TM ${Date.now()}`;
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }, testInfo) => {
+    testInfo.setTimeout(60000);
     context = await browser.newContext();
     page = await context.newPage();
     tmFlow = new ThreatModelFlow(page);

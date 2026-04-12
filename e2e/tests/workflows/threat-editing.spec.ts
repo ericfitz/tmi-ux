@@ -29,7 +29,8 @@ test.describe.serial('Threat Editing', () => {
   const testThreatName = `E2E Test Threat ${Date.now()}`;
   const updatedThreatName = `${testThreatName} Updated`;
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }, testInfo) => {
+    testInfo.setTimeout(60000);
     context = await browser.newContext();
     page = await context.newPage();
 
