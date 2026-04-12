@@ -77,8 +77,9 @@ userTest.describe('TM Workflows - Single Role', () => {
 
     await tmFlow.createFromDashboard(testName);
 
-    await userPage.getByTestId('tm-project-select').click();
-    await userPage.locator('mat-option').filter({ hasText: 'Seed Project One' }).click();
+    // Project picker is a custom component — click the inner mat-select
+    await userPage.getByTestId('tm-project-select').locator('mat-select').click();
+    await userPage.locator('mat-option').filter({ hasText: 'Seed Project One' }).first().click();
 
     await Promise.all([
       userPage.waitForResponse(

@@ -7,10 +7,14 @@ import { TmEditPage } from '../../pages/tm-edit.page';
 const SEEDED_TM = 'Seed TM - Full Fields';
 const SEEDED_THREAT = 'Seed Threat - All Fields';
 
+// Skip fields whose visibility depends on populated data (chips only render when values exist)
+// or complex components. These are covered by scoring-systems workflow tests.
+const SKIP_FIELDS = ['threat_type', 'cwe_id', 'cvss', 'ssvc', 'metadata'];
+
 userTest.describe('Threat Field Coverage', () => {
   userTest.setTimeout(30000);
 
-  for (const field of THREAT_FIELDS.filter(f => f.editable)) {
+  for (const field of THREAT_FIELDS.filter(f => f.editable && !SKIP_FIELDS.includes(f.apiName))) {
     userTest(`field: ${field.apiName}`, async ({ userPage }) => {
       await userPage.goto('/dashboard');
       await userPage.waitForLoadState('networkidle');

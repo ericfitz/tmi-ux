@@ -21,7 +21,7 @@ export class SsvcCalculatorDialog {
   }
 
   valueCard(name: string): Locator {
-    return this.valueCards().filter({ has: this.dialog.locator('.value-name', { hasText: name }) });
+    return this.valueCards().filter({ has: this.page.locator('.value-name', { hasText: name }) });
   }
 
   summaryRow(index: number): Locator {
