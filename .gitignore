@@ -73,3 +73,5 @@ workspace/**
 .playwright-mcp/**
 .superpowers/**
 docs/superpowers/**
+e2e/tests/visual-regression/tm-visual-regression.spec.ts-snapshots/**
+
