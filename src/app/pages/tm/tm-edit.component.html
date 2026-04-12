@@ -105,6 +105,7 @@
                 matInput
                 formControlName="name"
                 tabindex="1"
+                data-testid="tm-name-input"
                 (blur)="onFieldBlur('name', $event)"
               />
               @if (threatModelForm.get('name')?.hasError('required')) {
@@ -127,6 +128,7 @@
                 formControlName="description"
                 rows="4"
                 tabindex="2"
+                data-testid="tm-description-input"
                 placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
                 (blur)="onFieldBlur('description', $event)"
               ></textarea>
@@ -141,6 +143,7 @@
             <div>
               @if (canEdit) {
                 <app-project-picker
+                  data-testid="tm-project-select"
                   [projectId]="threatModel.project_id ?? null"
                   (projectChange)="onProjectChange($event)"
                 />
@@ -210,7 +213,7 @@
               @if (canEdit) {
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>{{ 'common.status' | transloco }}</mat-label>
-                  <mat-select formControlName="status">
+                  <mat-select formControlName="status" data-testid="tm-status-select">
                     <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                     @for (option of statusOptions; track option.key) {
                       <mat-option
@@ -253,6 +256,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>{{ 'threatModels.securityReviewer' | transloco }}</mat-label>
                   <mat-select
+                    data-testid="tm-reviewer-select"
                     [value]="threatModel.security_reviewer"
                     [compareWith]="compareReviewers"
                     (selectionChange)="onSecurityReviewerChange($event)"
@@ -266,7 +270,7 @@
                   </mat-select>
                 </mat-form-field>
               } @else if (canEdit && securityReviewerMode === 'picker') {
-                <div class="readonly-field">
+                <div class="readonly-field" data-testid="tm-reviewer-display">
                   <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
                   @if (threatModel.security_reviewer) {
                     <span class="info-value"
@@ -322,6 +326,7 @@
                   formControlName="issue_uri"
                   type="url"
                   tabindex="4"
+                  data-testid="tm-issue-uri-input"
                   placeholder="https://example.com/issue/123"
                 />
                 <mat-hint>{{ 'threatModels.issueUriHint' | transloco }}</mat-hint>

@@ -19,6 +19,7 @@
     <div class="action-buttons">
       <button
         mat-icon-button
+        data-testid="threat-page-metadata-button"
         (click)="openMetadataDialog()"
         [matTooltip]="
           canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
@@ -98,6 +99,7 @@
                   matInput
                   formControlName="issue_uri"
                   type="url"
+                  data-testid="threat-page-issue-uri-input"
                   [placeholder]="'threatEditor.issueUriPlaceholder' | transloco"
                 />
                 <mat-hint>{{ 'threatEditor.issueUriHint' | transloco }}</mat-hint>
@@ -141,19 +143,28 @@
             </mat-form-field>
 
             <div class="checkbox-field">
-              <mat-checkbox formControlName="mitigated">
+              <mat-checkbox
+                formControlName="mitigated"
+                data-testid="threat-page-mitigated-checkbox"
+              >
                 {{ 'common.mitigated' | transloco }}
               </mat-checkbox>
             </div>
 
             <div class="checkbox-field">
-              <mat-checkbox formControlName="timmy_enabled">
+              <mat-checkbox
+                formControlName="timmy_enabled"
+                data-testid="threat-page-timmy-checkbox"
+              >
                 {{ 'common.includeInTimmyChat' | transloco }}
               </mat-checkbox>
             </div>
 
             <div class="checkbox-field">
-              <mat-checkbox formControlName="include_in_report">
+              <mat-checkbox
+                formControlName="include_in_report"
+                data-testid="threat-page-include-report-checkbox"
+              >
                 {{ 'common.includeInReport' | transloco }}
               </mat-checkbox>
             </div>
@@ -272,7 +283,10 @@
             </mat-form-field>
 
             @if (threatForm.get('ssvc')?.value; as ssvc) {
-              <mat-chip-set class="ssvc-chip-set inline-ssvc">
+              <mat-chip-set
+                class="ssvc-chip-set inline-ssvc"
+                data-testid="threat-page-ssvc-section"
+              >
                 <mat-chip
                   [removable]="canEdit"
                   (removed)="removeSsvcEntry()"
@@ -438,6 +452,7 @@
                 matInput
                 formControlName="mitigation"
                 rows="3"
+                data-testid="threat-page-mitigation-input"
                 [placeholder]="'common.mitigationPlaceholder' | transloco"
               ></textarea>
               @if (threatForm.get('mitigation')?.hasError('maxlength')) {
