@@ -77,8 +77,12 @@
     <!-- Classification -->
     <div class="chip-input-section">
       <mat-label class="chip-label">{{ 'assetEditor.classification' | transloco }}</mat-label>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-chip-grid #classificationChipGrid data-testid="asset-classification-chips">
+      <mat-form-field
+        appearance="outline"
+        class="full-width"
+        data-testid="asset-classification-chips"
+      >
+        <mat-chip-grid #classificationChipGrid>
           <mat-chip-row
             *ngFor="let classification of assetForm.get('classification')?.value"
             (removed)="!isReadOnly ? removeClassification(classification) : null"

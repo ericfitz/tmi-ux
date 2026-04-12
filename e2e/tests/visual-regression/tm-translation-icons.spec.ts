@@ -24,7 +24,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('TM edit page', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');
     await assertNoMissingTranslations(userPage);
@@ -34,7 +34,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('threat page', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await new TmEditPage(userPage).threatRow(SEEDED_THREAT).click();
     await userPage.waitForURL(
@@ -49,7 +49,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('note page', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.getByTestId('note-row')
       .filter({ hasText: SEEDED_NOTE }).click();
@@ -65,7 +65,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('asset dialog', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.getByTestId('asset-row')
       .filter({ hasText: SEEDED_ASSET }).click();
@@ -79,7 +79,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('document dialog', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.getByTestId('document-row')
       .filter({ hasText: SEEDED_DOC }).click();
@@ -93,7 +93,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('repository dialog', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.getByTestId('repository-row')
       .filter({ hasText: SEEDED_REPO }).click();
@@ -107,7 +107,7 @@ userTest.describe('TM Translation & Icon Integrity', () => {
   userTest('metadata dialog', async ({ userPage }) => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await new DashboardPage(userPage).tmCard(SEEDED_TM).click();
+    await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.getByTestId('tm-metadata-button').click();
     await userPage.locator('mat-dialog-container')

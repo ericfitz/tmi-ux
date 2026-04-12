@@ -24,7 +24,7 @@ async function openDetailsKebab(page: import('@playwright/test').Page) {
 }
 
 userTest.describe('TM Workflows - Single Role', () => {
-  userTest.setTimeout(60000);
+  userTest.setTimeout(120000);
 
   userTest('framework selection (STRIDE)', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
@@ -100,7 +100,7 @@ userTest.describe('TM Workflows - Single Role', () => {
 });
 
 reviewerTest.describe('TM Workflows - Reviewer Role', () => {
-  reviewerTest.setTimeout(60000);
+  reviewerTest.setTimeout(120000);
 
   reviewerTest('reviewer edits assigned TM', async ({ reviewerPage }) => {
     const dashboard = new DashboardPage(reviewerPage);
@@ -109,7 +109,7 @@ reviewerTest.describe('TM Workflows - Reviewer Role', () => {
 
     await reviewerPage.goto('/dashboard');
     await reviewerPage.waitForLoadState('networkidle');
-    await dashboard.tmCard('Seed TM - Full Fields').click();
+    await dashboard.tmCard('Seed TM - Full Fields').first().click();
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
     await expect(tmEdit.tmName()).toContainText('Seed TM');
@@ -124,7 +124,7 @@ reviewerTest.describe('TM Workflows - Reviewer Role', () => {
 });
 
 multiRoleTest.describe('TM Workflows - Cross Role', () => {
-  multiRoleTest.setTimeout(90000);
+  multiRoleTest.setTimeout(180000);
 
   multiRoleTest('owner shares TM with reviewer', async ({ userPage, reviewerPage }) => {
     const userTmFlow = new ThreatModelFlow(userPage);

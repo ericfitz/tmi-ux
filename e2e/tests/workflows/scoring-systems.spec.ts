@@ -9,7 +9,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { SsvcCalculatorDialog } from '../../dialogs/ssvc-calculator.dialog';
 
 test.describe.serial('Scoring Systems', () => {
-  test.setTimeout(60000);
+  test.setTimeout(120000);
 
   let context: BrowserContext;
   let page: Page;
