@@ -46,7 +46,7 @@ export class PermissionsDialog {
     await this.page.locator('mat-option').filter({ hasText: type }).click();
 
     await this.providerSelect(lastIndex).click();
-    await this.page.locator('mat-option').filter({ hasText: provider }).click();
+    await this.page.getByRole('option', { name: provider, exact: true }).click();
 
     await this.subjectInput(lastIndex).fill(subject);
 

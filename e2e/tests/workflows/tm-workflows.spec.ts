@@ -136,7 +136,7 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await openDetailsKebab(userPage);
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
-    await permissionsFlow.addPermission('user', 'tmi', 'test-reviewer', 'writer');
+    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'writer');
     await permissionsFlow.saveAndClose();
 
     await reviewerPage.goto('/dashboard');
@@ -181,7 +181,7 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await openDetailsKebab(userPage);
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
-    await permissionsFlow.addPermission('user', 'tmi', 'test-reviewer', 'reader');
+    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');
     await permissionsFlow.saveAndClose();
 
     await reviewerPage.goto('/dashboard');

@@ -191,7 +191,7 @@ test.describe.serial('Child Entity CRUD', () => {
 
     const initialCount = await permissionsDialog.rows().count();
 
-    await permissionsFlow.addPermission('user', 'tmi', 'test-reviewer', 'reader');
+    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');
     await permissionsFlow.saveAndClose();
 
     await page

@@ -16,6 +16,13 @@ userTest.describe('Threat Model Field Coverage', () => {
       await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
       await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
+      // Expand the Review Process panel so fields inside are visible
+      const reviewProcessPanel = userPage
+        .locator('mat-expansion-panel')
+        .filter({ hasText: /Review Process/i });
+      await reviewProcessPanel.locator('mat-expansion-panel-header').click();
+      await userPage.waitForTimeout(300); // wait for animation
+
       const locator = userPage.locator(field.uiSelector);
       await expect(locator).toBeVisible({ timeout: 5000 });
     });
