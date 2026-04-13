@@ -57,13 +57,12 @@ export class AssetFlow {
       await this.assetEditorDialog.fillDescription(updates['description']);
     }
     if (updates['criticality']) {
-      await this.assetEditorDialog.criticalityInput().clear();
       await this.assetEditorDialog.fillCriticality(updates['criticality']);
     }
     if (updates['sensitivity']) {
-      await this.assetEditorDialog.sensitivityInput().clear();
       await this.assetEditorDialog.fillSensitivity(updates['sensitivity']);
     }
+
     await this.assetEditorDialog.save();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
   }

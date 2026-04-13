@@ -196,7 +196,7 @@ export interface PermissionsDialogData {
                         matInput
                         data-testid="permissions-subject-input"
                         [value]="getSubjectValue(auth)"
-                        (blur)="updatePermissionSubject(i, $event)"
+                        (input)="updatePermissionSubject(i, $event)"
                         [placeholder]="getSubjectPlaceholder(auth)"
                         [attr.tabindex]="i * 5 + 3"
                       />
@@ -664,19 +664,16 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Updates the subject of a permission
    * @param index The index of the permission to update
-   * @param event The blur event containing the new subject value
+   * @param event The input event containing the new subject value
    */
   updatePermissionSubject(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const subject = input.value.trim();
 
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
 
-      // Store in temporary field for later parsing by AuthorizationPrepareService
-      auth._subject = subject;
-
-      this.permissionsTable.renderRows();
+      // Store raw value; trimming is handled at save time by AuthorizationPrepareService
+      auth._subject = input.value;
     }
   }
 

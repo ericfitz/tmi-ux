@@ -42,15 +42,15 @@ export class PermissionsDialog {
     await this.addButton().click();
     const lastIndex = (await this.typeSelects().count()) - 1;
 
-    await this.typeSelect(lastIndex).click();
-    await this.page.locator('mat-option').filter({ hasText: type }).click();
-
+    // Select provider before type — provider selection may auto-constrain principal_type
     await this.providerSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: new RegExp(`^.*${provider}$`) }).click();
 
-    await this.subjectInput(lastIndex).fill(subject);
-    // Dispatch blur event to trigger updatePermissionSubject handler
-    await this.subjectInput(lastIndex).dispatchEvent('blur');
+    await this.typeSelect(lastIndex).click();
+    await this.page.locator('mat-option').filter({ hasText: type }).click();
+
+    await this.subjectInput(lastIndex).clear();
+    await this.subjectInput(lastIndex).pressSequentially(subject);
 
     await this.roleSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: role }).click();

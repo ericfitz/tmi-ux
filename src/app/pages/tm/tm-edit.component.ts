@@ -1255,6 +1255,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
           if (index !== -1 && this.threatModel?.threats) {
             this.threatModel.threats[index] = updatedThreat;
+            this.threatsDataSource.data = this.threatModel.threats;
           }
         }),
     );
@@ -1523,6 +1524,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   if (index !== -1) {
                     this.threatModel.documents[index] = updatedDocument;
                   }
+                  this.documentsDataSource.data = this.threatModel.documents;
                 }
               }),
           );
@@ -1712,6 +1714,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   if (index !== -1) {
                     this.threatModel.repositories[index] = updatedRepository;
                   }
+                  this.repositoriesDataSource.data = this.threatModel.repositories;
                 }
               }),
           );
@@ -1904,6 +1907,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                       if (index !== -1) {
                         this.threatModel.notes[index] = updatedNote;
                       }
+                      this.notesDataSource.data = this.threatModel.notes;
                       this.logger.info('Updated note via API', { note: updatedNote });
                     }
                   },
@@ -3518,6 +3522,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   if (index !== -1) {
                     this.threatModel.assets[index] = updatedAsset;
                   }
+                  this.assetsDataSource.data = this.threatModel.assets;
                   this.logger.info('Updated asset via API', { asset: updatedAsset });
                 }
               },

@@ -321,7 +321,7 @@ describe('PermissionsDialogComponent', () => {
   });
 
   describe('updatePermissionSubject', () => {
-    it('should trim whitespace from subject input', () => {
+    it('should store raw value without trimming (trimming deferred to save)', () => {
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
 
@@ -329,7 +329,7 @@ describe('PermissionsDialogComponent', () => {
       component.updatePermissionSubject(0, event);
 
       const auth = component.permissionsDataSource.data[0] as Record<string, unknown>;
-      expect(auth._subject).toBe('user@test.com');
+      expect(auth._subject).toBe('  user@test.com  ');
     });
 
     it('should not crash on out-of-bounds index', () => {
