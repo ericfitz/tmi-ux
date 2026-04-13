@@ -57,6 +57,7 @@
             type="text"
             data-testid="delete-confirm-input"
             [(ngModel)]="confirmationInput"
+            (input)="onConfirmationInput($event)"
             [placeholder]="'common.deleteWarningConfirmationValue' | transloco"
             autocomplete="off"
             tabindex="1"

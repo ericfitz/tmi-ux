@@ -130,6 +130,14 @@ export class DeleteConfirmationDialogComponent {
   }
 
   /**
+   * Handle native input events to ensure confirmationInput stays in sync.
+   * This supplements ngModel for compatibility with programmatic input methods.
+   */
+  onConfirmationInput(event: Event): void {
+    this.confirmationInput = (event.target as HTMLInputElement).value;
+  }
+
+  /**
    * Handle cancel action.
    */
   onCancel(): void {
