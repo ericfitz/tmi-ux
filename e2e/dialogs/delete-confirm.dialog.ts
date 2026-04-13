@@ -14,7 +14,8 @@ export class DeleteConfirmDialog {
     await this.confirmButton().waitFor({ state: 'visible' });
     // Typed confirmation is only required for some object types (not documents/repositories)
     if (await this.confirmInput().isVisible()) {
-      await this.confirmInput().fill('gone forever');
+      await this.confirmInput().clear();
+      await this.confirmInput().pressSequentially('gone forever');
     }
     await expect(this.confirmButton()).toBeEnabled({ timeout: 5000 });
     await this.confirmButton().click();

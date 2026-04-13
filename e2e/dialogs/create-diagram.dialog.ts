@@ -13,7 +13,8 @@ export class CreateDiagramDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await this.nameInput().click({ clickCount: 3 });
+    await this.nameInput().pressSequentially(name);
   }
 
   async submit() {

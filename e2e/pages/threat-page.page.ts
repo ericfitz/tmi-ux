@@ -20,12 +20,12 @@ export class ThreatPage {
 
   async fillName(name: string) {
     await this.nameInput().clear();
-    await this.nameInput().fill(name);
+    await this.nameInput().pressSequentially(name);
   }
 
   async fillDescription(desc: string) {
     await this.descriptionInput().clear();
-    await this.descriptionInput().fill(desc);
+    await this.descriptionInput().pressSequentially(desc);
   }
 
   async save() {

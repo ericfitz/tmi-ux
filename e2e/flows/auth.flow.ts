@@ -17,7 +17,8 @@ export class AuthFlow {
 
     // Dialog appears — type the login hint to select the test user
     await this.loginPage.loginHintInput().waitFor({ state: 'visible', timeout: 5000 });
-    await this.loginPage.loginHintInput().fill(userId);
+    await this.loginPage.loginHintInput().clear();
+    await this.loginPage.loginHintInput().pressSequentially(userId);
     await this.loginPage.signInButton().waitFor({ state: 'visible', timeout: 5000 });
     await this.loginPage.signInButton().click();
 

@@ -54,7 +54,7 @@ export async function editField(
     case 'text':
     case 'textarea':
       await locator.clear();
-      await locator.fill(newValue as string);
+      await locator.pressSequentially(newValue as string);
       break;
     case 'select':
       await locator.click();

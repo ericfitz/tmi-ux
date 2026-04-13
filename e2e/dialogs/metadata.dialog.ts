@@ -30,9 +30,11 @@ export class MetadataDialog {
   async addEntry(key: string, value: string) {
     await this.addButton().click();
     const lastIndex = (await this.keyInputs().count()) - 1;
-    await this.keyInput(lastIndex).fill(key);
+    await this.keyInput(lastIndex).clear();
+    await this.keyInput(lastIndex).pressSequentially(key);
     await this.keyInput(lastIndex).press('Tab');
-    await this.valueInput(lastIndex).fill(value);
+    await this.valueInput(lastIndex).clear();
+    await this.valueInput(lastIndex).pressSequentially(value);
     await this.valueInput(lastIndex).press('Tab');
   }
 

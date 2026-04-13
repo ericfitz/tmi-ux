@@ -22,11 +22,13 @@ export class RepositoryEditorDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await this.nameInput().click({ clickCount: 3 });
+    await this.nameInput().pressSequentially(name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await this.descriptionInput().clear();
+    await this.descriptionInput().pressSequentially(desc);
   }
 
   async selectType(type: string) {
@@ -35,7 +37,8 @@ export class RepositoryEditorDialog {
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().fill(uri);
+    await this.uriInput().clear();
+    await this.uriInput().pressSequentially(uri);
   }
 
   async selectRefType(refType: string) {
@@ -44,11 +47,13 @@ export class RepositoryEditorDialog {
   }
 
   async fillRefValue(value: string) {
-    await this.refValueInput().fill(value);
+    await this.refValueInput().clear();
+    await this.refValueInput().pressSequentially(value);
   }
 
   async fillSubPath(path: string) {
-    await this.subPathInput().fill(path);
+    await this.subPathInput().clear();
+    await this.subPathInput().pressSequentially(path);
   }
 
   async save() {

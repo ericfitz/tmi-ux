@@ -70,12 +70,12 @@ userTest.describe('Error Scenarios (User)', () => {
     await expect(deleteConfirmDialog.confirmButton()).toBeDisabled();
 
     // Type wrong text — button should still be disabled
-    await deleteConfirmDialog.confirmInput().fill('wrong text');
+    await deleteConfirmDialog.confirmInput().pressSequentially('wrong text');
     await expect(deleteConfirmDialog.confirmButton()).toBeDisabled();
 
     // Type correct text — button should enable
     await deleteConfirmDialog.confirmInput().clear();
-    await deleteConfirmDialog.confirmInput().fill('gone forever');
+    await deleteConfirmDialog.confirmInput().pressSequentially('gone forever');
     await expect(deleteConfirmDialog.confirmButton()).toBeEnabled();
 
     // Complete the deletion (cleanup)
@@ -97,7 +97,7 @@ userTest.describe('Error Scenarios (User)', () => {
     await expect(createTmDialog.submitButton()).toBeDisabled();
 
     // Type a name — submit should enable
-    await createTmDialog.nameInput().fill('Test Name');
+    await createTmDialog.nameInput().pressSequentially('Test Name');
     await expect(createTmDialog.submitButton()).toBeEnabled();
 
     // Clear the name — submit should disable again
