@@ -133,9 +133,9 @@ reviewerTest.describe('Navigation & Routing (Reviewer)', () => {
     await reviewerPage.waitForLoadState('networkidle');
 
     await expect(navbar.dashboardLink()).toBeVisible();
-    await expect(navbar.intakeLink()).toBeVisible();
     await expect(navbar.triageLink()).toBeVisible();
-    // Reviewer should NOT see admin
+    // Reviewer should NOT see intake or admin
+    await expect(navbar.intakeLink()).toHaveCount(0);
     await expect(navbar.adminLink()).toHaveCount(0);
   });
 
@@ -167,9 +167,10 @@ adminTest.describe('Navigation & Routing (Admin)', () => {
     await adminPage.waitForLoadState('networkidle');
 
     await expect(navbar.dashboardLink()).toBeVisible();
-    await expect(navbar.intakeLink()).toBeVisible();
     await expect(navbar.triageLink()).toBeVisible();
     await expect(navbar.adminLink()).toBeVisible();
+    // Admin should NOT see intake
+    await expect(navbar.intakeLink()).toHaveCount(0);
   });
 
   adminTest('admin can access admin page', async ({ adminPage }) => {

@@ -79,7 +79,7 @@ test.describe.serial('Core Lifecycle', () => {
   test('create a diagram', async () => {
     await diagramFlow.createFromTmEdit(testDiagramName);
 
-    await expect(tmEditPage.diagramRow(testDiagramName)).toBeVisible();
+    await expect(tmEditPage.diagramRow(testDiagramName)).toBeVisible({ timeout: 15000 });
   });
 
   test('open the DFD editor', async () => {

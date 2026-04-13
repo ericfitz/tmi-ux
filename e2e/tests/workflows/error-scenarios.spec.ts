@@ -33,14 +33,23 @@ userTest.describe('Error Scenarios (User)', () => {
     await userPage.goto('/this-route-does-not-exist');
     await userPage.waitForLoadState('networkidle');
 
-    // Wildcard route redirects to /
+    // Wildcard route redirects to / or the user's default landing page
     await userPage.waitForURL(
-      url => url.pathname === '/' || url.pathname.includes('/login'),
+      url =>
+        url.pathname === '/' ||
+        url.pathname.includes('/login') ||
+        url.pathname.includes('/intake') ||
+        url.pathname.includes('/dashboard'),
       { timeout: 10000 },
     );
 
     const currentUrl = userPage.url();
-    expect(currentUrl.endsWith('/') || currentUrl.includes('/login')).toBeTruthy();
+    expect(
+      currentUrl.endsWith('/') ||
+        currentUrl.includes('/login') ||
+        currentUrl.includes('/intake') ||
+        currentUrl.includes('/dashboard'),
+    ).toBeTruthy();
   });
 
   userTest('delete confirmation requires exact text', async ({ userPage }) => {

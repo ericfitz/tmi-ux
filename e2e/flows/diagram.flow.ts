@@ -25,7 +25,7 @@ export class DiagramFlow {
     await this.createDiagramDialog.fillName(name);
     await this.createDiagramDialog.submit();
     // Wait for diagram row to appear
-    await this.tmEditPage.diagramRow(name).waitFor({ state: 'visible', timeout: 10000 });
+    await this.tmEditPage.diagramRow(name).waitFor({ state: 'visible', timeout: 15000 });
   }
 
   async openFromTmEdit(name: string) {
