@@ -209,7 +209,7 @@ describe('SecurityReviewerService', () => {
           groups: [
             {
               internal_uuid: 'admin-group-uuid',
-              provider: '*',
+              provider: 'tmi',
               group_name: 'security-reviewers',
               first_used: '2024-01-01',
               last_used: '2024-01-01',
@@ -243,7 +243,7 @@ describe('SecurityReviewerService', () => {
           groups: [
             {
               internal_uuid: 'admin-group-uuid',
-              provider: '*',
+              provider: 'tmi',
               group_name: 'security-reviewers',
               first_used: '2024-01-01',
               last_used: '2024-01-01',

@@ -38,7 +38,7 @@ describe('GroupAdminService', () => {
   // Test data
   const mockGroup: AdminGroup = {
     internal_uuid: '123e4567-e89b-12d3-a456-426614174000',
-    provider: '*',
+    provider: 'tmi',
     group_name: 'developers',
     name: 'Developers',
     description: 'Development team',
@@ -143,7 +143,7 @@ describe('GroupAdminService', () => {
 
     it('should build query parameters from filter', () => {
       const filter: GroupFilter = {
-        provider: '*',
+        provider: 'tmi',
         group_name: 'dev',
         used_in_authorizations: true,
         limit: 10,
@@ -156,7 +156,7 @@ describe('GroupAdminService', () => {
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('admin/groups', {
-          provider: '*',
+          provider: 'tmi',
           group_name: 'dev',
           used_in_authorizations: true,
           limit: 10,
@@ -183,7 +183,7 @@ describe('GroupAdminService', () => {
 
     it('should omit undefined filter values from query parameters', () => {
       const filter: GroupFilter = {
-        provider: '*',
+        provider: 'tmi',
         group_name: undefined,
         limit: undefined,
       };
@@ -192,7 +192,7 @@ describe('GroupAdminService', () => {
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('admin/groups', {
-          provider: '*',
+          provider: 'tmi',
         });
       });
     });

@@ -9,7 +9,7 @@
 export interface AdminGroup {
   /** Internal system UUID for the group */
   internal_uuid: string;
-  /** OAuth/SAML provider identifier, or "*" for provider-independent groups */
+  /** OAuth/SAML provider identifier (e.g., "tmi", "google", "github") */
   provider: string;
   /** Provider-assigned group name */
   group_name: string;
@@ -35,7 +35,7 @@ export interface AdminGroup {
  * Filter parameters for listing groups
  */
 export interface GroupFilter {
-  /** Filter by OAuth/SAML provider (use "*" for provider-independent groups) */
+  /** Filter by OAuth/SAML provider (e.g., "tmi", "google", "github") */
   provider?: string;
   /** Filter by group name (case-insensitive substring match) */
   group_name?: string;

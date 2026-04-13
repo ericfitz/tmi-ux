@@ -107,10 +107,10 @@ describe('ProviderAdapterService', () => {
   });
 
   describe('transformProviderForApi()', () => {
-    it('should transform "tmi" to "*"', () => {
+    it('should pass through "tmi" as-is', () => {
       const result = service.transformProviderForApi('tmi');
 
-      expect(result).toBe('*');
+      expect(result).toBe('tmi');
     });
 
     it('should return OAuth provider as-is (google)', () => {
@@ -139,10 +139,10 @@ describe('ProviderAdapterService', () => {
   });
 
   describe('transformProviderForDisplay()', () => {
-    it('should transform "*" to "tmi"', () => {
+    it('should pass through "*" as-is (no longer mapped)', () => {
       const result = service.transformProviderForDisplay('*');
 
-      expect(result).toBe('tmi');
+      expect(result).toBe('*');
     });
 
     it('should return OAuth provider as-is (google)', () => {
@@ -169,11 +169,11 @@ describe('ProviderAdapterService', () => {
       expect(result).toBe('');
     });
 
-    it('should correctly reverse transform tmi → * → tmi', () => {
+    it('should pass through tmi unchanged in both directions', () => {
       const apiProvider = service.transformProviderForApi('tmi');
       const uiProvider = service.transformProviderForDisplay(apiProvider);
 
-      expect(apiProvider).toBe('*');
+      expect(apiProvider).toBe('tmi');
       expect(uiProvider).toBe('tmi');
     });
   });
@@ -266,7 +266,7 @@ describe('ProviderAdapterService', () => {
       expect(service.isValidForPrincipalType('tmi', 'user')).toBe(false);
       expect(service.isValidForPrincipalType('tmi', 'group')).toBe(true);
       expect(service.getDefaultSubject('tmi', 'group')).toBe('everyone');
-      expect(service.transformProviderForApi('tmi')).toBe('*');
+      expect(service.transformProviderForApi('tmi')).toBe('tmi');
       expect(service.getProviderDisplayName('tmi')).toBe('TMI');
     });
 
@@ -309,7 +309,7 @@ describe('ProviderAdapterService', () => {
     it('should handle case-sensitive provider lookup', () => {
       // Provider rules are case-sensitive
       expect(service.transformProviderForApi('TMI')).toBe('TMI'); // Not 'tmi', so no transformation
-      expect(service.transformProviderForApi('tmi')).toBe('*'); // Exact match
+      expect(service.transformProviderForApi('tmi')).toBe('tmi'); // Exact match, pass-through
     });
   });
 });

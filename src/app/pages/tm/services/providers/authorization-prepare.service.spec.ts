@@ -252,7 +252,7 @@ describe('AuthorizationPrepareService', () => {
 
   describe('prepareForApi()', () => {
     it('should prepare authorization with provider_id', () => {
-      mockProviderAdapter.transformProviderForApi.mockReturnValue('*');
+      mockProviderAdapter.transformProviderForApi.mockReturnValue('tmi');
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
       const authorizations = [
@@ -268,7 +268,7 @@ describe('AuthorizationPrepareService', () => {
 
       expect(result).toEqual([
         {
-          provider: '*',
+          provider: 'tmi',
           provider_id: 'user-123',
           email: undefined,
           principal_type: 'user',
@@ -399,7 +399,7 @@ describe('AuthorizationPrepareService', () => {
     });
 
     it('should prepare multiple authorizations', () => {
-      mockProviderAdapter.transformProviderForApi.mockImplementation(p => (p === 'tmi' ? '*' : p));
+      mockProviderAdapter.transformProviderForApi.mockImplementation(p => p);
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
       const authorizations = [
@@ -427,7 +427,7 @@ describe('AuthorizationPrepareService', () => {
 
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({
-        provider: '*',
+        provider: 'tmi',
         provider_id: 'user-123',
         email: undefined,
         principal_type: 'user',

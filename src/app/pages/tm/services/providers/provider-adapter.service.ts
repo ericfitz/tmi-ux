@@ -54,7 +54,6 @@ export class ProviderAdapterService {
       supportsUser: false,
       supportsGroup: true,
       defaultSubject: () => 'everyone',
-      apiProvider: '*',
       displayName: 'TMI',
     },
     // Note: OAuth/SAML providers are not listed here
@@ -104,8 +103,7 @@ export class ProviderAdapterService {
 
   /**
    * Transform a provider ID for API submission
-   * Maps UI provider IDs to their API equivalents
-   * Example: 'tmi' → '*'
+   * Maps UI provider IDs to their API equivalents (if any mapping is configured)
    * @param provider - The provider identifier from the UI
    * @returns The provider identifier to send to the API
    */
@@ -116,8 +114,7 @@ export class ProviderAdapterService {
 
   /**
    * Transform a provider ID from API for display in the UI
-   * Maps API provider IDs back to their UI equivalents
-   * Example: '*' → 'tmi'
+   * Maps API provider IDs back to their UI equivalents (if any mapping is configured)
    * @param provider - The provider identifier from the API
    * @returns The provider identifier to display in the UI
    */

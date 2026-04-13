@@ -296,7 +296,7 @@ This action cannot be undone.`);
   }
 
   isEveryoneGroup(group: AdminGroup): boolean {
-    return group.provider === '*' && group.group_name.toLowerCase() === 'everyone';
+    return group.provider === 'tmi' && group.group_name.toLowerCase() === 'everyone';
   }
 
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
