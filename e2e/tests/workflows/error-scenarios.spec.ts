@@ -4,6 +4,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { CreateTmDialog } from '../../dialogs/create-tm.dialog';
 import { DeleteConfirmDialog } from '../../dialogs/delete-confirm.dialog';
+import { angularFill } from '../../helpers/angular-fill';
 
 // === Error Scenarios (User) ===
 
@@ -70,12 +71,11 @@ userTest.describe('Error Scenarios (User)', () => {
     await expect(deleteConfirmDialog.confirmButton()).toBeDisabled();
 
     // Type wrong text — button should still be disabled
-    await deleteConfirmDialog.confirmInput().pressSequentially('wrong text');
+    await angularFill(deleteConfirmDialog.confirmInput(), 'wrong text');
     await expect(deleteConfirmDialog.confirmButton()).toBeDisabled();
 
     // Type correct text — button should enable
-    await deleteConfirmDialog.confirmInput().clear();
-    await deleteConfirmDialog.confirmInput().pressSequentially('gone forever');
+    await angularFill(deleteConfirmDialog.confirmInput(), 'gone forever');
     await expect(deleteConfirmDialog.confirmButton()).toBeEnabled();
 
     // Complete the deletion (cleanup)
@@ -97,7 +97,7 @@ userTest.describe('Error Scenarios (User)', () => {
     await expect(createTmDialog.submitButton()).toBeDisabled();
 
     // Type a name — submit should enable
-    await createTmDialog.nameInput().pressSequentially('Test Name');
+    await createTmDialog.nameInput().fill('Test Name');
     await expect(createTmDialog.submitButton()).toBeEnabled();
 
     // Clear the name — submit should disable again
