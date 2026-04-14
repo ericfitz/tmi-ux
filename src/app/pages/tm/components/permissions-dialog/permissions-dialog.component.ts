@@ -195,8 +195,7 @@ export interface PermissionsDialogData {
                       <input
                         matInput
                         data-testid="permissions-subject-input"
-                        [value]="getSubjectValue(auth)"
-                        (input)="updatePermissionSubject(i, $event)"
+                        [(ngModel)]="auth._subject"
                         [placeholder]="getSubjectPlaceholder(auth)"
                         [attr.tabindex]="i * 5 + 3"
                       />
@@ -561,7 +560,10 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.permissionsDataSource.data = [...this.data.permissions];
+    this.permissionsDataSource.data = this.data.permissions.map(auth => ({
+      ...auth,
+      _subject: auth.email || auth.provider_id || '',
+    }));
     this._originalPermissions = [...this.data.permissions];
 
     // Updated column order: type, provider, subject, role, actions
@@ -643,13 +645,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The subject value to display
    */
   getSubjectValue(auth: Authorization): string {
-    // Check if there's a cached _subject value first
-    const cachedSubject = (auth as AuthorizationWithSubject)._subject;
-    if (cachedSubject !== undefined) {
-      return cachedSubject;
-    }
-    // Otherwise return email or provider_id
-    return auth.email || auth.provider_id;
+    return (auth as AuthorizationWithSubject)._subject ?? auth.email ?? auth.provider_id ?? '';
   }
 
   /**
@@ -659,22 +655,6 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getSubjectPlaceholder(auth: Authorization): string {
     return auth.principal_type === 'group' ? 'Group name (e.g., everyone)' : 'Email or user ID';
-  }
-
-  /**
-   * Updates the subject of a permission
-   * @param index The index of the permission to update
-   * @param event The input event containing the new subject value
-   */
-  updatePermissionSubject(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
-
-      // Store raw value; trimming is handled at save time by AuthorizationPrepareService
-      auth._subject = input.value;
-    }
   }
 
   /**
@@ -747,6 +727,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
       provider_id: '',
       email: '',
       role: 'reader',
+      _subject: '',
       // Note: display_name is intentionally omitted as it's a server-managed field
     } as Authorization);
     this.permissionsTable.renderRows();

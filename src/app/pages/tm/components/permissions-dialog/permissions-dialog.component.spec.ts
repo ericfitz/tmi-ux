@@ -112,6 +112,27 @@ describe('PermissionsDialogComponent', () => {
       expect(component.permissionsDataSource.data).toHaveLength(1);
       expect(component.permissionsDataSource.data[0].provider_id).toBe('user@test.com');
     });
+
+    it('should initialize _subject from email or provider_id', () => {
+      dialogData.permissions = [
+        createPermission({ email: 'a@test.com', provider_id: 'pid' }),
+        createPermission({ email: undefined, provider_id: 'fallback-id' }),
+        createPermission({ email: '', provider_id: '' }),
+      ];
+      component = new PermissionsDialogComponent(
+        mockDialogRef as unknown as MatDialogRef<PermissionsDialogComponent>,
+        dialogData,
+        mockAuthService as unknown as AuthService,
+        mockProviderAdapter as unknown as ProviderAdapterService,
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      const data = component.permissionsDataSource.data as Record<string, unknown>[];
+      expect(data[0]._subject).toBe('a@test.com');
+      expect(data[1]._subject).toBe('fallback-id');
+      expect(data[2]._subject).toBe('');
+    });
   });
 
   describe('addPermission', () => {
@@ -138,6 +159,19 @@ describe('PermissionsDialogComponent', () => {
       const lastPerm =
         component.permissionsDataSource.data[component.permissionsDataSource.data.length - 1];
       expect(lastPerm.provider).toBe('google');
+    });
+
+    it('should initialize _subject as empty string on new permission', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.availableProviders = mockProviders;
+      component.ngOnInit();
+
+      component.addPermission();
+
+      const lastPerm = component.permissionsDataSource.data[
+        component.permissionsDataSource.data.length - 1
+      ] as Record<string, unknown>;
+      expect(lastPerm._subject).toBe('');
     });
 
     it('should fallback to google when no providers available', () => {
@@ -317,27 +351,6 @@ describe('PermissionsDialogComponent', () => {
       const auth = createPermission({ email: undefined, provider_id: 'provider-id' });
 
       expect(component.getSubjectValue(auth)).toBe('provider-id');
-    });
-  });
-
-  describe('updatePermissionSubject', () => {
-    it('should store raw value without trimming (trimming deferred to save)', () => {
-      component.permissionsTable = { renderRows: vi.fn() } as never;
-      component.ngOnInit();
-
-      const event = { target: { value: '  user@test.com  ' } } as unknown as Event;
-      component.updatePermissionSubject(0, event);
-
-      const auth = component.permissionsDataSource.data[0] as Record<string, unknown>;
-      expect(auth._subject).toBe('  user@test.com  ');
-    });
-
-    it('should not crash on out-of-bounds index', () => {
-      component.permissionsTable = { renderRows: vi.fn() } as never;
-      component.ngOnInit();
-
-      const event = { target: { value: 'test' } } as unknown as Event;
-      expect(() => component.updatePermissionSubject(999, event)).not.toThrow();
     });
   });
 
