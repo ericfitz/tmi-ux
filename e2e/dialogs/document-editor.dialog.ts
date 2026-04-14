@@ -28,6 +28,7 @@ export class DocumentEditorDialog {
   }
 
   async fillDescription(desc: string) {
+    await this.descriptionInput().click();
     await this.descriptionInput().clear();
     await this.descriptionInput().pressSequentially(desc);
   }

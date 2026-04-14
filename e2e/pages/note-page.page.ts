@@ -24,6 +24,14 @@ export class NotePage {
   }
 
   async fillContent(content: string) {
+    // Switch to edit mode if the content textarea is not visible (preview mode)
+    if (!(await this.contentTextarea().isVisible())) {
+      await this.page
+        .locator('button')
+        .filter({ has: this.page.locator('mat-icon:has-text("edit_note")') })
+        .click();
+      await this.contentTextarea().waitFor({ state: 'visible', timeout: 5000 });
+    }
     await this.contentTextarea().clear();
     await this.contentTextarea().pressSequentially(content);
   }

@@ -11,14 +11,28 @@ export class NoteFlow {
     this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
-  async createFromTmEdit(name: string) {
+  async createFromTmEdit(name: string, content = 'E2E test note content') {
     const addButton = this.page.getByTestId('add-note-button');
     await addButton.scrollIntoViewIfNeeded();
     await this.page.waitForTimeout(500);
     await addButton.click();
-    await this.page.waitForURL(/\/tm\/[a-f0-9-]+\/note\/[a-f0-9-]+/, { timeout: 10000 });
-    await this.notePage.fillName(name);
-    await this.notePage.save();
+    // Note creation opens a dialog (not a route navigation)
+    const dialog = this.page.locator('mat-dialog-container');
+    await dialog.waitFor({ state: 'visible', timeout: 5000 });
+    const nameInput = dialog.locator('input[formcontrolname="name"]');
+    await nameInput.waitFor({ state: 'visible', timeout: 5000 });
+    // Use click + clear + type to ensure reliable Angular reactive form input
+    await nameInput.click();
+    await nameInput.clear();
+    await nameInput.pressSequentially(name, { delay: 10 });
+    // Content is required
+    const contentInput = dialog.locator('textarea[formcontrolname="content"]');
+    await contentInput.click();
+    await contentInput.pressSequentially(content, { delay: 10 });
+    // Click "Save and Close" to create and dismiss the dialog
+    const saveButton = dialog.locator('button').filter({ hasText: 'Save and Close' });
+    await saveButton.click();
+    await dialog.waitFor({ state: 'hidden', timeout: 10000 });
   }
 
   async openFromTmEdit(name: string) {

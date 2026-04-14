@@ -24,6 +24,10 @@ export class CwePickerDialog {
     await this.items().first().click();
   }
 
+  async selectById(cweId: string) {
+    await this.items().filter({ hasText: cweId }).first().click();
+  }
+
   async add() {
     await this.addButton().click();
   }

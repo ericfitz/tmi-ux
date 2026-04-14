@@ -52,7 +52,13 @@ export class ThreatFlow {
   async addCweReference(searchTerm: string) {
     await this.threatPage.addCweButton().click();
     await this.cwePickerDialog.search(searchTerm);
-    await this.cwePickerDialog.selectFirst();
+    // If the search term looks like a CWE ID, select that specific entry;
+    // otherwise select the first result
+    if (/^CWE-\d+$/i.test(searchTerm)) {
+      await this.cwePickerDialog.selectById(searchTerm);
+    } else {
+      await this.cwePickerDialog.selectFirst();
+    }
     await this.cwePickerDialog.add();
     // Wait for dialog to close
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 5000 });

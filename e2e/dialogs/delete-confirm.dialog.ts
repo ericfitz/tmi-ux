@@ -12,13 +12,15 @@ export class DeleteConfirmDialog {
 
   async confirmDeletion() {
     await this.confirmButton().waitFor({ state: 'visible' });
-    // Typed confirmation is only required for some object types (not documents/repositories)
-    if (await this.confirmInput().isVisible()) {
-      await this.confirmInput().clear();
+    // Typed confirmation is only required for some object types (not documents/repositories).
+    // The input renders inside an @if block that may take an extra change detection cycle,
+    // so we wait for it rather than using an instant isVisible() check.
+    try {
+      await this.confirmInput().waitFor({ state: 'visible', timeout: 2000 });
       await this.confirmInput().pressSequentially('gone forever');
-      // Dispatch input event to sync Angular's ngModel — pressSequentially fires
-      // per-character key events but doesn't reliably trigger the (input) handler
       await this.confirmInput().dispatchEvent('input');
+    } catch {
+      // Input not present — typed confirmation not required for this object type
     }
     await expect(this.confirmButton()).toBeEnabled({ timeout: 5000 });
     await this.confirmButton().click();

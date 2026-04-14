@@ -122,13 +122,25 @@ test.describe.serial('Child Entity CRUD', () => {
     const notePage = new NotePage(page);
     const noteName = `E2E Note ${Date.now()}`;
 
+    // Create note via dialog (stays on TM edit page)
     await noteFlow.createFromTmEdit(noteName);
+    await expect(page.getByTestId('note-row').filter({ hasText: noteName })).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Open note to navigate to full note page
+    await noteFlow.openFromTmEdit(noteName);
     await expect(notePage.nameInput()).toHaveValue(noteName, { timeout: 10000 });
 
+    // Wait for the API save response to confirm persistence
+    const saveResponse = page.waitForResponse(
+      resp => resp.url().includes('/notes/') && resp.request().method() === 'PUT',
+    );
     await noteFlow.editNote({
       description: 'Test note description',
       content: '## Test Content\n\nSome markdown here.',
     });
+    await saveResponse;
 
     await page.reload();
     await page.waitForLoadState('networkidle');

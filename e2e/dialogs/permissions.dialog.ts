@@ -40,6 +40,8 @@ export class PermissionsDialog {
 
   async addPermission(type: string, provider: string, subject: string, role: string) {
     await this.addButton().click();
+    // Wait for the new row to appear in the table
+    await this.page.waitForTimeout(500);
     const lastIndex = (await this.typeSelects().count()) - 1;
 
     // Select provider before type — provider selection may auto-constrain principal_type
@@ -51,6 +53,7 @@ export class PermissionsDialog {
 
     await this.subjectInput(lastIndex).clear();
     await this.subjectInput(lastIndex).pressSequentially(subject);
+    await this.subjectInput(lastIndex).dispatchEvent('input');
 
     await this.roleSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: role }).click();

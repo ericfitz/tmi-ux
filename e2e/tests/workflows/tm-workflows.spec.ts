@@ -53,13 +53,11 @@ userTest.describe('TM Workflows - Single Role', () => {
   });
 
   userTest('export dialog', async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
     const exportDialog = new ExportDialog(userPage);
+    const testName = `E2E Export TM ${Date.now()}`;
 
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    const tmCard = userPage.getByTestId('threat-model-card').filter({ hasText: 'Seed TM' });
-    await tmCard.first().click();
-    await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
+    await tmFlow.createFromDashboard(testName);
 
     // The export button is inside the details kebab menu — open the menu first
     await openDetailsKebab(userPage);
@@ -68,6 +66,15 @@ userTest.describe('TM Workflows - Single Role', () => {
     await exportDialog.status().waitFor({ state: 'visible' });
     await expect(exportDialog.saveButton()).toBeVisible({ timeout: 10000 });
     await exportDialog.cancel();
+
+    // Cleanup
+    await userPage.goto('/dashboard');
+    await userPage.waitForLoadState('networkidle');
+    try {
+      await tmFlow.deleteFromDashboard(testName);
+    } catch {
+      /* best effort */
+    }
   });
 
   userTest('project association and dashboard filter', async ({ userPage }) => {

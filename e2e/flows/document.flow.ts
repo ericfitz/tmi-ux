@@ -45,6 +45,8 @@ export class DocumentFlow {
   }
 
   async deleteFromTmEdit(name: string) {
+    // Wait for any pending API saves to complete before interacting with the row
+    await this.page.waitForLoadState('networkidle');
     const documentRow = this.page.getByTestId('document-row').filter({ hasText: name });
     const kebabButton = documentRow.locator('button[mat-icon-button]').filter({
       has: this.page.locator('mat-icon:has-text("more_vert")'),
