@@ -17,7 +17,7 @@
     <mat-card-content>
       <mat-form-field class="filter-field" appearance="outline">
         <mat-label [transloco]="'teams.filterLabel'">Filter Teams</mat-label>
-        <input matInput [value]="filterText" (input)="onFilterChange($any($event.target).value)" />
+        <input matInput [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)" />
         <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
     </mat-card-content>
