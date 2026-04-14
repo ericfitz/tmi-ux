@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class PermissionsDialog {
   private dialog: Locator;
@@ -51,9 +52,7 @@ export class PermissionsDialog {
     await this.typeSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: type }).click();
 
-    await this.subjectInput(lastIndex).clear();
-    await this.subjectInput(lastIndex).pressSequentially(subject);
-    await this.subjectInput(lastIndex).dispatchEvent('input');
+    await angularFill(this.subjectInput(lastIndex), subject);
 
     await this.roleSelect(lastIndex).click();
     await this.page.locator('mat-option').filter({ hasText: role }).click();
