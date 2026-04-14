@@ -167,12 +167,15 @@ test.describe.serial('Child Entity CRUD', () => {
 
     // tm-metadata-button is a standalone action button — click directly.
     await page.getByTestId('tm-metadata-button').click();
+    await page.locator('mat-dialog-container').waitFor({ state: 'visible', timeout: 5000 });
 
     await metadataFlow.addEntry('test-key', 'test-value');
     await metadataFlow.saveAndClose();
+    await page.waitForLoadState('networkidle');
 
     await page.getByTestId('tm-metadata-button').click();
-    await expect(metadataDialog.keyInputs().last()).toHaveValue('test-key', { timeout: 5000 });
+    await page.locator('mat-dialog-container').waitFor({ state: 'visible', timeout: 5000 });
+    await expect(metadataDialog.keyInputs().last()).toHaveValue('test-key', { timeout: 10000 });
     await expect(metadataDialog.valueInputs().last()).toHaveValue('test-value');
 
     const lastIndex = (await metadataDialog.valueInputs().count()) - 1;
@@ -194,10 +197,12 @@ test.describe.serial('Child Entity CRUD', () => {
     const permissionsDialog = new PermissionsDialog(page);
 
     // tm-permissions-button is inside the detailsKebabMenu (mat-menu).
-    // The kebab trigger is the more_vert button inside .action-buttons; it has no testid.
-    await page
-      .locator('.action-buttons button[mat-icon-button][matMenuTriggerFor]')
-      .click();
+    // Locate the kebab trigger by scoping to .details-card and matching the more_vert icon.
+    const kebabButton = page
+      .locator('.details-card .action-buttons button')
+      .filter({ has: page.locator('mat-icon:text("more_vert")') });
+
+    await kebabButton.click();
     await page.getByTestId('tm-permissions-button').waitFor({ state: 'visible' });
     await page.getByTestId('tm-permissions-button').click();
 
@@ -206,9 +211,7 @@ test.describe.serial('Child Entity CRUD', () => {
     await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');
     await permissionsFlow.saveAndClose();
 
-    await page
-      .locator('.action-buttons button[mat-icon-button][matMenuTriggerFor]')
-      .click();
+    await kebabButton.click();
     await page.getByTestId('tm-permissions-button').waitFor({ state: 'visible' });
     await page.getByTestId('tm-permissions-button').click();
     await expect(permissionsDialog.rows()).toHaveCount(initialCount + 1, { timeout: 5000 });

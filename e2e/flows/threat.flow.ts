@@ -65,13 +65,15 @@ export class ThreatFlow {
   }
 
   async deleteThreatFromPage() {
-    // Open kebab menu on threat page, click delete
-    const kebabButton = this.page.locator('button[mat-icon-button]').filter({
-      has: this.page.locator('mat-icon:has-text("more_vert")'),
-    });
+    // Scope to the threat page's header action buttons
+    const kebabButton = this.page
+      .locator('.threat-page-container .page-header .action-buttons button[mat-icon-button]')
+      .filter({ has: this.page.locator('mat-icon:has-text("more_vert")') });
     await kebabButton.click();
+    const menuPanel = this.page.locator('.mat-mdc-menu-panel');
+    await menuPanel.waitFor({ state: 'visible' });
     await this.threatPage.deleteButton().waitFor({ state: 'visible' });
-    await this.threatPage.deleteButton().click();
+    await this.threatPage.deleteButton().dispatchEvent('click');
     await this.deleteConfirmDialog.confirmDeletion();
   }
 }

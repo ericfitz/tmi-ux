@@ -48,13 +48,20 @@ export class DocumentFlow {
     // Wait for any pending API saves to complete before interacting with the row
     await this.page.waitForLoadState('networkidle');
     const documentRow = this.page.getByTestId('document-row').filter({ hasText: name });
+    await documentRow.waitFor({ state: 'visible', timeout: 10000 });
     const kebabButton = documentRow.locator('button[mat-icon-button]').filter({
       has: this.page.locator('mat-icon:has-text("more_vert")'),
     });
     await kebabButton.click();
-    const deleteMenuItem = this.page.locator('button[mat-menu-item]').filter({ hasText: /delete/i });
+    // Wait for the mat-menu overlay panel to appear and stabilize after animation.
+    const menuPanel = this.page.locator('.mat-mdc-menu-panel');
+    await menuPanel.waitFor({ state: 'visible' });
+    const deleteMenuItem = menuPanel.locator('button[mat-menu-item]').filter({ hasText: /delete/i });
     await deleteMenuItem.waitFor({ state: 'visible' });
-    await deleteMenuItem.click();
+    // Use dispatchEvent('click') to trigger Angular's click handler directly,
+    // avoiding Playwright's stability check which fails when Angular Material's
+    // menu animation causes brief element detach/reattach cycles.
+    await deleteMenuItem.dispatchEvent('click');
     await this.deleteConfirmDialog.confirmDeletion();
   }
 }

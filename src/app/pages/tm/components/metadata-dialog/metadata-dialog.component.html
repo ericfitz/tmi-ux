@@ -33,7 +33,7 @@
                 matInput
                 data-testid="metadata-key-input"
                 [value]="item.key"
-                (blur)="updateKey(i, $event)"
+                (input)="updateKey(i, $event)"
                 [placeholder]="'common.metadataKey' | transloco"
                 [readonly]="data.isReadOnly"
                 [attr.tabindex]="i * 3 + 1"
@@ -53,7 +53,7 @@
                 matInput
                 data-testid="metadata-value-input"
                 [value]="item.value"
-                (blur)="updateValue(i, $event)"
+                (input)="updateValue(i, $event)"
                 [placeholder]="'common.metadataValue' | transloco"
                 [readonly]="data.isReadOnly"
                 [attr.tabindex]="i * 3 + 2"

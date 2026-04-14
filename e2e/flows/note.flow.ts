@@ -55,12 +55,17 @@ export class NoteFlow {
   }
 
   async deleteNote() {
-    const kebabButton = this.page.locator('button[mat-icon-button]').filter({
-      has: this.page.locator('mat-icon:has-text("more_vert")'),
-    });
+    // Verify we're on the note page before attempting delete
+    await this.page.waitForURL(/\/tm\/[a-f0-9-]+\/note\/[a-f0-9-]+/, { timeout: 10000 });
+    // Scope to the note page's header action buttons
+    const kebabButton = this.page
+      .locator('.note-page-container .page-header .action-buttons button[mat-icon-button]')
+      .filter({ has: this.page.locator('mat-icon:has-text("more_vert")') });
     await kebabButton.click();
+    const menuPanel = this.page.locator('.mat-mdc-menu-panel');
+    await menuPanel.waitFor({ state: 'visible' });
     await this.notePage.deleteButton().waitFor({ state: 'visible' });
-    await this.notePage.deleteButton().click();
+    await this.notePage.deleteButton().dispatchEvent('click');
     await this.deleteConfirmDialog.confirmDeletion();
   }
 

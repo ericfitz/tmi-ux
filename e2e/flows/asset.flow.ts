@@ -73,9 +73,11 @@ export class AssetFlow {
       has: this.page.locator('mat-icon:has-text("more_vert")'),
     });
     await kebabButton.click();
-    const deleteMenuItem = this.page.locator('button[mat-menu-item]').filter({ hasText: /delete/i });
+    const menuPanel = this.page.locator('.mat-mdc-menu-panel');
+    await menuPanel.waitFor({ state: 'visible' });
+    const deleteMenuItem = menuPanel.locator('button[mat-menu-item]').filter({ hasText: /delete/i });
     await deleteMenuItem.waitFor({ state: 'visible' });
-    await deleteMenuItem.click();
+    await deleteMenuItem.dispatchEvent('click');
     await this.deleteConfirmDialog.confirmDeletion();
   }
 }

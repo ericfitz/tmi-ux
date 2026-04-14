@@ -17,8 +17,18 @@ export class DeleteConfirmDialog {
     // so we wait for it rather than using an instant isVisible() check.
     try {
       await this.confirmInput().waitFor({ state: 'visible', timeout: 2000 });
-      await this.confirmInput().pressSequentially('gone forever');
-      await this.confirmInput().dispatchEvent('input');
+      // Use evaluate() to set the value directly via the native input setter,
+      // bypassing pressSequentially() which drops characters due to Angular's
+      // change detection racing with keystroke events (see #590).
+      await this.confirmInput().evaluate(el => {
+        const input = el as HTMLInputElement;
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+          HTMLInputElement.prototype,
+          'value',
+        )!.set!;
+        nativeSetter.call(input, 'gone forever');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
     } catch {
       // Input not present — typed confirmation not required for this object type
     }

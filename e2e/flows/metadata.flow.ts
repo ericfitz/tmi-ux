@@ -14,12 +14,10 @@ export class MetadataFlow {
 
   async editEntry(index: number, key?: string, value?: string) {
     if (key !== undefined) {
-      await this.metadataDialog.keyInput(index).clear();
-      await this.metadataDialog.keyInput(index).pressSequentially(key);
+      await this.metadataDialog.fillInput(this.metadataDialog.keyInput(index), key);
     }
     if (value !== undefined) {
-      await this.metadataDialog.valueInput(index).clear();
-      await this.metadataDialog.valueInput(index).pressSequentially(value);
+      await this.metadataDialog.fillInput(this.metadataDialog.valueInput(index), value);
     }
   }
 
