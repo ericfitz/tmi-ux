@@ -14,13 +14,11 @@ export class NotePage {
   readonly closeButton = () => this.page.getByTestId('note-close-button');
 
   async fillName(name: string) {
-    await this.nameInput().clear();
-    await this.nameInput().pressSequentially(name);
+    await this.nameInput().fill(name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().clear();
-    await this.descriptionInput().pressSequentially(desc);
+    await this.descriptionInput().fill(desc);
   }
 
   async fillContent(content: string) {
@@ -32,8 +30,7 @@ export class NotePage {
         .click();
       await this.contentTextarea().waitFor({ state: 'visible', timeout: 5000 });
     }
-    await this.contentTextarea().clear();
-    await this.contentTextarea().pressSequentially(content);
+    await this.contentTextarea().fill(content);
   }
 
   async save() {

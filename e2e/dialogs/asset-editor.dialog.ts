@@ -20,13 +20,11 @@ export class AssetEditorDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().click({ clickCount: 3 });
-    await this.nameInput().pressSequentially(name);
+    await this.nameInput().fill(name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().clear();
-    await this.descriptionInput().pressSequentially(desc);
+    await this.descriptionInput().fill(desc);
   }
 
   async selectType(type: string) {
@@ -35,8 +33,7 @@ export class AssetEditorDialog {
   }
 
   async fillCriticality(value: string) {
-    await this.criticalityInput().clear();
-    await this.criticalityInput().pressSequentially(value);
+    await this.criticalityInput().fill(value);
   }
 
   async addClassification(value: string) {
@@ -46,8 +43,7 @@ export class AssetEditorDialog {
   }
 
   async fillSensitivity(value: string) {
-    await this.sensitivityInput().clear();
-    await this.sensitivityInput().pressSequentially(value);
+    await this.sensitivityInput().fill(value);
   }
 
   async save() {

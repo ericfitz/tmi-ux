@@ -18,19 +18,15 @@ export class DocumentEditorDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().click({ clickCount: 3 });
-    await this.nameInput().pressSequentially(name);
+    await this.nameInput().fill(name);
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().clear();
-    await this.uriInput().pressSequentially(uri);
+    await this.uriInput().fill(uri);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().click();
-    await this.descriptionInput().clear();
-    await this.descriptionInput().pressSequentially(desc);
+    await this.descriptionInput().fill(desc);
   }
 
   async save() {

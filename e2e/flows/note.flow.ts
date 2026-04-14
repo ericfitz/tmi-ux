@@ -21,14 +21,10 @@ export class NoteFlow {
     await dialog.waitFor({ state: 'visible', timeout: 5000 });
     const nameInput = dialog.locator('input[formcontrolname="name"]');
     await nameInput.waitFor({ state: 'visible', timeout: 5000 });
-    // Use click + clear + type to ensure reliable Angular reactive form input
-    await nameInput.click();
-    await nameInput.clear();
-    await nameInput.pressSequentially(name, { delay: 10 });
+    await nameInput.fill(name);
     // Content is required
     const contentInput = dialog.locator('textarea[formcontrolname="content"]');
-    await contentInput.click();
-    await contentInput.pressSequentially(content, { delay: 10 });
+    await contentInput.fill(content);
     // Click "Save and Close" to create and dismiss the dialog
     const saveButton = dialog.locator('button').filter({ hasText: 'Save and Close' });
     await saveButton.click();

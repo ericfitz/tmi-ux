@@ -14,8 +14,7 @@ export class CwePickerDialog {
 
   async search(term: string) {
     await this.searchInput().waitFor({ state: 'visible' });
-    await this.searchInput().clear();
-    await this.searchInput().pressSequentially(term);
+    await this.searchInput().fill(term);
     // Wait for search results to update
     await this.dialog.page().waitForTimeout(500);
   }

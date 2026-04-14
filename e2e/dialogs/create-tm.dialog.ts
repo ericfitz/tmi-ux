@@ -15,13 +15,11 @@ export class CreateTmDialog {
 
   async fillName(name: string) {
     await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().click({ clickCount: 3 });
-    await this.nameInput().pressSequentially(name);
+    await this.nameInput().fill(name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().clear();
-    await this.descriptionInput().pressSequentially(desc);
+    await this.descriptionInput().fill(desc);
   }
 
   async selectFramework(framework: string) {
