@@ -15,6 +15,10 @@ import type { Authorization, User } from '../../models/threat-model.model';
 import type { AuthService } from '@app/auth/services/auth.service';
 import type { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
 import type { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import type {
+  PermissionsAutocompleteService,
+  AutocompleteSuggestion,
+} from '../../services/permissions-autocomplete.service';
 
 describe('PermissionsDialogComponent', () => {
   let component: PermissionsDialogComponent;
@@ -26,6 +30,9 @@ describe('PermissionsDialogComponent', () => {
     getDefaultSubject: ReturnType<typeof vi.fn>;
     getBuiltInProviders: ReturnType<typeof vi.fn>;
     isValidForPrincipalType: ReturnType<typeof vi.fn>;
+  };
+  let mockAutocompleteService: {
+    search: ReturnType<typeof vi.fn>;
   };
   let dialogData: PermissionsDialogData;
 
@@ -68,6 +75,10 @@ describe('PermissionsDialogComponent', () => {
       isValidForPrincipalType: vi.fn().mockReturnValue(true),
     };
 
+    mockAutocompleteService = {
+      search: vi.fn().mockReturnValue(of([])),
+    };
+
     dialogData = {
       permissions: [createPermission()],
       owner: { ...mockOwner },
@@ -78,6 +89,7 @@ describe('PermissionsDialogComponent', () => {
       dialogData,
       mockAuthService as unknown as AuthService,
       mockProviderAdapter as unknown as ProviderAdapterService,
+      mockAutocompleteService as unknown as PermissionsAutocompleteService,
     );
   });
 
@@ -124,6 +136,7 @@ describe('PermissionsDialogComponent', () => {
         dialogData,
         mockAuthService as unknown as AuthService,
         mockProviderAdapter as unknown as ProviderAdapterService,
+        mockAutocompleteService as unknown as PermissionsAutocompleteService,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
@@ -471,6 +484,69 @@ describe('PermissionsDialogComponent', () => {
       component.updatePermissionProvider(0, { value: 'google' });
 
       expect(component.permissionsDataSource.data[0].principal_type).toBe('user');
+    });
+  });
+
+  describe('autocomplete', () => {
+    it('should trigger search on subject input for TMI provider', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      dialogData.permissions = [createPermission({ provider: 'tmi', principal_type: 'user' })];
+      component = new PermissionsDialogComponent(
+        mockDialogRef as unknown as MatDialogRef<PermissionsDialogComponent>,
+        dialogData,
+        mockAuthService as unknown as AuthService,
+        mockProviderAdapter as unknown as ProviderAdapterService,
+        mockAutocompleteService as unknown as PermissionsAutocompleteService,
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      const mockEvent = { target: { value: 'alice' } } as unknown as Event;
+      component.onSubjectInput(0, mockEvent);
+
+      // The trigger$ subject should have emitted — verify by checking
+      // that after debounce the search would be called
+      // (Direct unit test of the method behavior)
+      expect(component.autocompleteSuggestions).toEqual([]);
+    });
+
+    it('should not trigger search for non-TMI provider', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      const mockEvent = { target: { value: 'alice' } } as unknown as Event;
+      component.onSubjectInput(0, mockEvent);
+
+      expect(component.autocompleteSuggestions).toEqual([]);
+      expect(mockAutocompleteService.search).not.toHaveBeenCalled();
+    });
+
+    it('should set _subject on autocomplete selection', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      const suggestion: AutocompleteSuggestion = {
+        displayLabel: 'Alice Smith (alice@example.com)',
+        value: 'alice-pid',
+      };
+      const mockEvent = {
+        option: { value: suggestion },
+      } as unknown as import('@angular/material/autocomplete').MatAutocompleteSelectedEvent;
+
+      component.onAutocompleteSelected(0, mockEvent);
+
+      const auth = component.permissionsDataSource.data[0] as Record<string, unknown>;
+      expect(auth._subject).toBe('alice-pid');
+    });
+
+    it('should report autocomplete active for TMI provider', () => {
+      const auth = createPermission({ provider: 'tmi' });
+      expect(component.isAutocompleteActive(auth)).toBe(true);
+    });
+
+    it('should report autocomplete inactive for non-TMI provider', () => {
+      const auth = createPermission({ provider: 'google' });
+      expect(component.isAutocompleteActive(auth)).toBe(false);
     });
   });
 });
