@@ -268,36 +268,6 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Updates the key of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new key value
-   */
-  updateKey(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newKey = input.value.trim();
-
-    if (index >= 0 && index < this.dataSource.data.length) {
-      const currentItem = this.dataSource.data[index];
-      currentItem.key = newKey;
-    }
-  }
-
-  /**
-   * Updates the value of a metadata item
-   * @param index The index of the metadata item to update
-   * @param event The blur event containing the new value
-   */
-  updateValue(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newValue = input.value.trim();
-
-    if (index >= 0 && index < this.dataSource.data.length) {
-      const currentItem = this.dataSource.data[index];
-      currentItem.value = newValue;
-    }
-  }
-
-  /**
    * Gets filtered metadata - removes empty entries and validates
    * @returns Valid metadata entries (both key and value must be non-empty)
    */

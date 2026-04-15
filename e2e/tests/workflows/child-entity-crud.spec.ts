@@ -206,6 +206,8 @@ test.describe.serial('Child Entity CRUD', () => {
     await page.getByTestId('tm-permissions-button').waitFor({ state: 'visible' });
     await page.getByTestId('tm-permissions-button').click();
 
+    // Wait for the dialog's data to load — the TM always has at least the owner permission
+    await permissionsDialog.rows().first().waitFor({ state: 'visible', timeout: 5000 });
     const initialCount = await permissionsDialog.rows().count();
 
     await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');

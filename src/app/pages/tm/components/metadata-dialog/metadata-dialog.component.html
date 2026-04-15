@@ -32,8 +32,7 @@
               <input
                 matInput
                 data-testid="metadata-key-input"
-                [value]="item.key"
-                (input)="updateKey(i, $event)"
+                [(ngModel)]="item.key"
                 [placeholder]="'common.metadataKey' | transloco"
                 [readonly]="data.isReadOnly"
                 [attr.tabindex]="i * 3 + 1"
@@ -52,8 +51,7 @@
               <input
                 matInput
                 data-testid="metadata-value-input"
-                [value]="item.value"
-                (input)="updateValue(i, $event)"
+                [(ngModel)]="item.value"
                 [placeholder]="'common.metadataValue' | transloco"
                 [readonly]="data.isReadOnly"
                 [attr.tabindex]="i * 3 + 2"
