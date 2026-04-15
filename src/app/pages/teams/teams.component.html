@@ -7,7 +7,12 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="teams-close-button"
+        (click)="onClose()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -17,7 +22,12 @@
     <mat-card-content>
       <mat-form-field class="filter-field" appearance="outline">
         <mat-label [transloco]="'teams.filterLabel'">Filter Teams</mat-label>
-        <input matInput [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)" />
+        <input
+          matInput
+          data-testid="teams-search-input"
+          [(ngModel)]="filterText"
+          (ngModelChange)="onFilterChange($event)"
+        />
         <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
     </mat-card-content>
@@ -27,7 +37,12 @@
     <mat-card-header>
       <mat-card-title [transloco]="'userTeams.listTitle'">Teams</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddTeam()">
+        <button
+          mat-raised-button
+          color="primary"
+          data-testid="teams-add-button"
+          (click)="onAddTeam()"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'teams.addButton'">Add Team</span>
         </button>
@@ -39,7 +54,13 @@
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (dataSource.data.length > 0) {
-        <table mat-table [dataSource]="dataSource" matSort class="teams-table">
+        <table
+          mat-table
+          data-testid="teams-table"
+          [dataSource]="dataSource"
+          matSort
+          class="teams-table"
+        >
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'teams.columns.name' | transloco }}
@@ -97,6 +118,7 @@
               <div class="action-buttons">
                 <button
                   mat-icon-button
+                  data-testid="teams-edit-button"
                   (click)="onEditDetails(team)"
                   [matTooltip]="'common.edit' | transloco"
                 >
@@ -104,6 +126,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  data-testid="teams-members-button"
                   (click)="onMembers(team)"
                   [matTooltip]="'teams.kebab.members' | transloco"
                 >
@@ -111,6 +134,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  data-testid="teams-more-button"
                   [matMenuTriggerFor]="rowKebab"
                   [matTooltip]="'common.moreActions' | transloco"
                   (click)="$event.stopPropagation()"
@@ -118,17 +142,29 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #rowKebab="matMenu">
-                  <button mat-menu-item (click)="onResponsibleParties(team)">
+                  <button
+                    mat-menu-item
+                    data-testid="teams-responsible-parties-item"
+                    (click)="onResponsibleParties(team)"
+                  >
                     <mat-icon>supervisor_account</mat-icon>
                     <span [transloco]="'teams.kebab.responsibleParties'">
                       Responsible Parties
                     </span>
                   </button>
-                  <button mat-menu-item (click)="onRelatedTeams(team)">
+                  <button
+                    mat-menu-item
+                    data-testid="teams-related-teams-item"
+                    (click)="onRelatedTeams(team)"
+                  >
                     <mat-icon>link</mat-icon>
                     <span [transloco]="'teams.kebab.relatedTeams'">Related Teams</span>
                   </button>
-                  <button mat-menu-item (click)="onMetadata(team)">
+                  <button
+                    mat-menu-item
+                    data-testid="teams-metadata-item"
+                    (click)="onMetadata(team)"
+                  >
                     <mat-icon>list</mat-icon>
                     <span [transloco]="'teams.kebab.metadata'">Metadata</span>
                   </button>
@@ -138,7 +174,7 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-row data-testid="teams-row" *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       } @else {
         <div class="no-items-message">
@@ -149,6 +185,7 @@
 
       @if (!loading && totalTeams > 0) {
         <mat-paginator
+          data-testid="teams-paginator"
           [length]="totalTeams"
           [pageSize]="pageSize"
           [pageIndex]="pageIndex"
