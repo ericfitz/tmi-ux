@@ -174,7 +174,53 @@
       "description": "Survey with all supported question types for integration testing",
       "version": "v1-seed",
       "status": "active",
-      "survey_json": { "pages": [{ "name": "placeholder", "elements": [{ "type": "text", "name": "placeholder_field", "title": "Placeholder" }] }] },
+      "survey_json": {
+        "title": "Kitchen Sink Survey",
+        "description": "Comprehensive survey for E2E testing",
+        "pages": [
+          {
+            "name": "basicInputs",
+            "title": "Basic Inputs",
+            "elements": [
+              { "type": "text", "name": "project_name", "title": "Project Name", "isRequired": true },
+              { "type": "comment", "name": "project_description", "title": "Describe Your Project" },
+              { "type": "boolean", "name": "has_external_users", "title": "Does this project have external users?", "labelTrue": "Yes", "labelFalse": "No" }
+            ]
+          },
+          {
+            "name": "selectionInputs",
+            "title": "Selection Inputs",
+            "elements": [
+              { "type": "radiogroup", "name": "data_sensitivity", "title": "Data Sensitivity Level", "choices": [{ "value": "public", "text": "Public" }, { "value": "internal", "text": "Internal" }, { "value": "confidential", "text": "Confidential" }, { "value": "restricted", "text": "Restricted" }] },
+              { "type": "checkbox", "name": "compliance_frameworks", "title": "Applicable Compliance Frameworks", "choices": [{ "value": "soc2", "text": "SOC 2" }, { "value": "hipaa", "text": "HIPAA" }, { "value": "pci", "text": "PCI DSS" }, { "value": "gdpr", "text": "GDPR" }] },
+              { "type": "dropdown", "name": "deployment_model", "title": "Deployment Model", "choices": [{ "value": "cloud", "text": "Cloud (SaaS)" }, { "value": "on_prem", "text": "On-Premises" }, { "value": "hybrid", "text": "Hybrid" }] }
+            ]
+          },
+          {
+            "name": "conditionalLogic",
+            "title": "Conditional Logic",
+            "elements": [
+              { "type": "radiogroup", "name": "stores_pii", "title": "Does this system store PII?", "choices": [{ "value": "yes", "text": "Yes" }, { "value": "no", "text": "No" }] },
+              { "type": "comment", "name": "pii_details", "title": "Describe what PII is stored and how it is protected", "visibleIf": "{stores_pii} = 'yes'" },
+              { "type": "text", "name": "pii_retention_days", "title": "PII retention period (days)", "inputType": "number", "visibleIf": "{stores_pii} = 'yes'" }
+            ]
+          },
+          {
+            "name": "groupedInputs",
+            "title": "Grouped Inputs",
+            "elements": [
+              { "type": "panel", "name": "infrastructure_panel", "title": "Infrastructure Details", "elements": [
+                { "type": "text", "name": "cloud_provider", "title": "Cloud Provider" },
+                { "type": "text", "name": "region", "title": "Primary Region" }
+              ]},
+              { "type": "paneldynamic", "name": "integrations", "title": "Third-Party Integrations", "templateTitle": "Integration #{panelIndex}", "templateElements": [
+                { "type": "text", "name": "integration_name", "title": "Integration Name" },
+                { "type": "dropdown", "name": "integration_type", "title": "Integration Type", "choices": [{ "value": "api", "text": "API" }, { "value": "sdk", "text": "SDK" }, { "value": "webhook", "text": "Webhook" }] }
+              ], "panelCount": 1, "minPanelCount": 0, "maxPanelCount": 5 }
+            ]
+          }
+        ]
+      },
       "settings": { "allow_threat_model_linking": true }
     },
     {
@@ -182,7 +228,21 @@
       "description": "Minimal survey for workflow testing (fill, submit, triage)",
       "version": "v1-seed",
       "status": "active",
-      "survey_json": { "pages": [{ "name": "placeholder", "elements": [{ "type": "text", "name": "placeholder_field", "title": "Placeholder" }] }] },
+      "survey_json": {
+        "title": "Quick Security Review Request",
+        "description": "Submit a request for security review",
+        "pages": [
+          {
+            "name": "request",
+            "title": "Review Request",
+            "elements": [
+              { "type": "text", "name": "system_name", "title": "System Name", "isRequired": true },
+              { "type": "comment", "name": "review_reason", "title": "Reason for Review Request" },
+              { "type": "radiogroup", "name": "urgency", "title": "Urgency", "choices": [{ "value": "low", "text": "Low" }, { "value": "medium", "text": "Medium" }, { "value": "high", "text": "High" }] }
+            ]
+          }
+        ]
+      },
       "settings": {}
     }
   ],
@@ -191,7 +251,7 @@
       "survey": "Simple Workflow Survey",
       "user": "test-user",
       "status": "submitted",
-      "responses": { "placeholder_field": "placeholder value" }
+      "responses": { "system_name": "E2E Seed System", "review_reason": "Annual security review", "urgency": "medium" }
     }
   ],
   "admin_entities": {
