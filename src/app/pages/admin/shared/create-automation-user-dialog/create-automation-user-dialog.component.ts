@@ -160,7 +160,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<CreateAutomationUserDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: CreateAutomationUserDialogData,
+    @Inject(MAT_DIALOG_DATA) private data: CreateAutomationUserDialogData | null,
     private userAdminService: UserAdminService,
     private fb: FormBuilder,
     private logger: LoggerService,
