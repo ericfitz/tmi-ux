@@ -5,7 +5,12 @@
       <p class="subtitle" [transloco]="'userProjects.subtitle'"></p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="projects-close-button"
+        (click)="onClose()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -18,6 +23,7 @@
           <mat-label [transloco]="'projects.filterNameLabel'">Filter by Name</mat-label>
           <input
             matInput
+            data-testid="projects-name-filter"
             [value]="filterName"
             (input)="onNameFilterChange($any($event.target).value)"
           />
@@ -28,6 +34,7 @@
           <mat-label [transloco]="'projects.filterTeamLabel'">Filter by Team</mat-label>
           <input
             matInput
+            data-testid="projects-team-filter"
             [value]="filterTeamName"
             (input)="onTeamFilterInput($any($event.target).value)"
             [matAutocomplete]="teamAuto"
@@ -37,6 +44,7 @@
             <button
               matSuffix
               mat-icon-button
+              data-testid="projects-team-filter-clear"
               (click)="clearTeamFilter()"
               [matTooltip]="'common.clear' | transloco"
             >
@@ -56,7 +64,11 @@
 
         <mat-form-field class="filter-field" appearance="outline">
           <mat-label [transloco]="'projects.filterStatusLabel'">Filter by Status</mat-label>
-          <mat-select [value]="filterStatus" (selectionChange)="onStatusFilterChange($event.value)">
+          <mat-select
+            data-testid="projects-status-filter"
+            [value]="filterStatus"
+            (selectionChange)="onStatusFilterChange($event.value)"
+          >
             <mat-option [value]="null">
               {{ 'projects.allStatuses' | transloco }}
             </mat-option>
@@ -69,7 +81,12 @@
         </mat-form-field>
 
         @if (hasActiveFilters()) {
-          <button mat-stroked-button class="clear-filters-btn" (click)="clearFilters()">
+          <button
+            mat-stroked-button
+            data-testid="projects-clear-filters-button"
+            class="clear-filters-btn"
+            (click)="clearFilters()"
+          >
             <mat-icon>filter_list_off</mat-icon>
             <span [transloco]="'projects.clearFilters'">Clear Filters</span>
           </button>
@@ -82,7 +99,12 @@
     <mat-card-header>
       <mat-card-title [transloco]="'userProjects.listTitle'">Projects</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddProject()">
+        <button
+          mat-raised-button
+          color="primary"
+          data-testid="projects-add-button"
+          (click)="onAddProject()"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'projects.addButton'">Add Project</span>
         </button>
@@ -94,7 +116,13 @@
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (dataSource.data.length > 0) {
-        <table mat-table [dataSource]="dataSource" matSort class="projects-table">
+        <table
+          mat-table
+          data-testid="projects-table"
+          [dataSource]="dataSource"
+          matSort
+          class="projects-table"
+        >
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'projects.columns.name' | transloco }}
@@ -143,6 +171,7 @@
               <div class="action-buttons">
                 <button
                   mat-icon-button
+                  data-testid="projects-edit-button"
                   (click)="onEditDetails(project)"
                   [matTooltip]="'common.edit' | transloco"
                 >
@@ -150,6 +179,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  data-testid="projects-more-button"
                   [matMenuTriggerFor]="rowKebab"
                   [matTooltip]="'common.moreActions' | transloco"
                   (click)="$event.stopPropagation()"
@@ -157,17 +187,29 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #rowKebab="matMenu">
-                  <button mat-menu-item (click)="onResponsibleParties(project)">
+                  <button
+                    mat-menu-item
+                    data-testid="projects-responsible-parties-item"
+                    (click)="onResponsibleParties(project)"
+                  >
                     <mat-icon>supervisor_account</mat-icon>
                     <span [transloco]="'projects.kebab.responsibleParties'">
                       Responsible Parties
                     </span>
                   </button>
-                  <button mat-menu-item (click)="onRelatedProjects(project)">
+                  <button
+                    mat-menu-item
+                    data-testid="projects-related-projects-item"
+                    (click)="onRelatedProjects(project)"
+                  >
                     <mat-icon>link</mat-icon>
                     <span [transloco]="'projects.kebab.relatedProjects'">Related Projects</span>
                   </button>
-                  <button mat-menu-item (click)="onMetadata(project)">
+                  <button
+                    mat-menu-item
+                    data-testid="projects-metadata-item"
+                    (click)="onMetadata(project)"
+                  >
                     <mat-icon>list</mat-icon>
                     <span [transloco]="'projects.kebab.metadata'">Metadata</span>
                   </button>
@@ -177,7 +219,11 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr
+            mat-row
+            data-testid="projects-row"
+            *matRowDef="let row; columns: displayedColumns"
+          ></tr>
         </table>
       } @else {
         <div class="no-items-message">
@@ -188,6 +234,7 @@
 
       @if (!loading && totalProjects > 0) {
         <mat-paginator
+          data-testid="projects-paginator"
           [length]="totalProjects"
           [pageSize]="pageSize"
           [pageIndex]="pageIndex"
