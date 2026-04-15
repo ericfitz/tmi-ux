@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class MetadataDialog {
   private dialog: Locator;
@@ -37,12 +38,11 @@ export class MetadataDialog {
 
   /**
    * Sets an input value for metadata dialog inputs.
-   * Uses Playwright's fill() which dispatches input events that the
-   * component's (input) handler processes to update the model.
+   * Uses angularFill() which sets the value atomically to avoid
+   * Angular change detection race conditions.
    */
   async fillInput(locator: Locator, value: string) {
-    await locator.waitFor({ state: 'visible' });
-    await locator.fill(value);
+    await angularFill(locator, value);
   }
 
   async save() {

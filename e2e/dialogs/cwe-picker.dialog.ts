@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class CwePickerDialog {
   private dialog: Locator;
@@ -13,8 +14,7 @@ export class CwePickerDialog {
   readonly cancelButton = () => this.dialog.getByTestId('cwe-picker-cancel-button');
 
   async search(term: string) {
-    await this.searchInput().waitFor({ state: 'visible' });
-    await this.searchInput().fill(term);
+    await angularFill(this.searchInput(), term);
     // Wait for search results to update
     await this.dialog.page().waitForTimeout(500);
   }

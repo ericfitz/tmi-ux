@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class NotePage {
   constructor(private page: Page) {}
@@ -14,11 +15,11 @@ export class NotePage {
   readonly closeButton = () => this.page.getByTestId('note-close-button');
 
   async fillName(name: string) {
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async fillContent(content: string) {
@@ -30,7 +31,7 @@ export class NotePage {
         .click();
       await this.contentTextarea().waitFor({ state: 'visible', timeout: 5000 });
     }
-    await this.contentTextarea().fill(content);
+    await angularFill(this.contentTextarea(), content);
   }
 
   async save() {

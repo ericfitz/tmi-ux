@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { angularFill } from './angular-fill';
 import { FieldDef } from '../schema/field-definitions';
 
 /**
@@ -53,7 +54,7 @@ export async function editField(
   switch (field.type) {
     case 'text':
     case 'textarea':
-      await locator.fill(newValue as string);
+      await angularFill(locator, newValue as string);
       break;
     case 'select':
       await locator.click();

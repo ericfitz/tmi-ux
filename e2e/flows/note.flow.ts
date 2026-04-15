@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 import { NotePage } from '../pages/note-page.page';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
@@ -21,10 +22,10 @@ export class NoteFlow {
     await dialog.waitFor({ state: 'visible', timeout: 5000 });
     const nameInput = dialog.locator('input[formcontrolname="name"]');
     await nameInput.waitFor({ state: 'visible', timeout: 5000 });
-    await nameInput.fill(name);
+    await angularFill(nameInput, name);
     // Content is required
     const contentInput = dialog.locator('textarea[formcontrolname="content"]');
-    await contentInput.fill(content);
+    await angularFill(contentInput, content);
     // Click "Save and Close" to create and dismiss the dialog
     const saveButton = dialog.locator('button').filter({ hasText: 'Save and Close' });
     await saveButton.click();

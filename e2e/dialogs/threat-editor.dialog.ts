@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class ThreatEditorDialog {
   private dialog: Locator;
@@ -15,12 +16,11 @@ export class ThreatEditorDialog {
   readonly cancelButton = () => this.dialog.getByTestId('threat-editor-cancel-button');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async save() {

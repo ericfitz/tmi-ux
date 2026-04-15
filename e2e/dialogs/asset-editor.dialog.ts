@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class AssetEditorDialog {
   private dialog: Locator;
@@ -19,12 +20,11 @@ export class AssetEditorDialog {
   readonly cancelButton = () => this.dialog.getByTestId('asset-cancel-button');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async selectType(type: string) {
@@ -33,7 +33,7 @@ export class AssetEditorDialog {
   }
 
   async fillCriticality(value: string) {
-    await this.criticalityInput().fill(value);
+    await angularFill(this.criticalityInput(), value);
   }
 
   async addClassification(value: string) {
@@ -43,7 +43,7 @@ export class AssetEditorDialog {
   }
 
   async fillSensitivity(value: string) {
-    await this.sensitivityInput().fill(value);
+    await angularFill(this.sensitivityInput(), value);
   }
 
   async save() {

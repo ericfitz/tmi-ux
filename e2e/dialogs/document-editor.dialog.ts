@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class DocumentEditorDialog {
   private dialog: Locator;
@@ -17,16 +18,15 @@ export class DocumentEditorDialog {
   readonly cancelButton = () => this.dialog.getByTestId('document-cancel-button');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().fill(uri);
+    await angularFill(this.uriInput(), uri);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async save() {

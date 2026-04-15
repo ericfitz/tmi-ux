@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class CreateDiagramDialog {
   private dialog: Locator;
@@ -12,8 +13,7 @@ export class CreateDiagramDialog {
   readonly submitButton = () => this.dialog.getByTestId('create-diagram-submit');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async submit() {

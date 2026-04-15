@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class RepositoryEditorDialog {
   private dialog: Locator;
@@ -21,12 +22,11 @@ export class RepositoryEditorDialog {
   readonly cancelButton = () => this.dialog.getByTestId('repository-cancel-button');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async selectType(type: string) {
@@ -35,7 +35,7 @@ export class RepositoryEditorDialog {
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().fill(uri);
+    await angularFill(this.uriInput(), uri);
   }
 
   async selectRefType(refType: string) {
@@ -44,11 +44,11 @@ export class RepositoryEditorDialog {
   }
 
   async fillRefValue(value: string) {
-    await this.refValueInput().fill(value);
+    await angularFill(this.refValueInput(), value);
   }
 
   async fillSubPath(path: string) {
-    await this.subPathInput().fill(path);
+    await angularFill(this.subPathInput(), path);
   }
 
   async save() {

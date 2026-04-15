@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class CreateTmDialog {
   private dialog: Locator;
@@ -14,12 +15,11 @@ export class CreateTmDialog {
   readonly submitButton = () => this.dialog.getByTestId('create-tm-submit');
 
   async fillName(name: string) {
-    await this.nameInput().waitFor({ state: 'visible' });
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(desc: string) {
-    await this.descriptionInput().fill(desc);
+    await angularFill(this.descriptionInput(), desc);
   }
 
   async selectFramework(framework: string) {
