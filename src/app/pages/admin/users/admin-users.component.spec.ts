@@ -116,6 +116,7 @@ describe('AdminUsersComponent', () => {
         clientId: 'client-123',
         clientSecret: 'secret-456',
       });
+      expect(credConfig.width).toBe('600px');
       expect(credConfig.disableClose).toBe(true);
     });
 
@@ -143,12 +144,13 @@ describe('AdminUsersComponent', () => {
         .mockReturnValueOnce({ afterClosed: () => of(mockResponse) })
         .mockReturnValueOnce({ afterClosed: () => of(undefined) });
 
-      const listSpy = mockUserAdminService.list.mockReturnValue(of({ users: [], total: 0 }));
+      mockUserAdminService.list.mockReturnValue(of({ users: [], total: 0 }));
+      mockUserAdminService.list.mockClear();
 
       component.onCreateAutomationUser();
 
-      // loadUsers is called during init + once after credential dialog closes
-      expect(listSpy).toHaveBeenCalled();
+      // loadUsers called once after credential dialog closes
+      expect(mockUserAdminService.list).toHaveBeenCalledTimes(1);
     });
 
     it('should not open credential dialog when creation dialog is cancelled', () => {
