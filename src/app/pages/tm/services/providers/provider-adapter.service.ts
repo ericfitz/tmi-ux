@@ -51,9 +51,9 @@ export class ProviderAdapterService {
    */
   private readonly providerRules: Record<string, ProviderRule> = {
     tmi: {
-      supportsUser: false,
+      supportsUser: true,
       supportsGroup: true,
-      defaultSubject: () => 'everyone',
+      defaultSubject: principalType => (principalType === 'group' ? 'everyone' : null),
       apiProvider: '*',
       displayName: 'TMI',
     },
