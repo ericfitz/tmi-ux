@@ -88,6 +88,18 @@
       { "apiName": "responsible_parties", "uiSelector": "[data-testid='project-responsible-parties-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "related_projects", "uiSelector": "[data-testid='project-related-projects-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "metadata", "uiSelector": "[data-testid='project-metadata-button']", "type": "chips", "required": false, "editable": true }
+    ],
+    "survey_response": [
+      { "apiName": "submitter", "uiSelector": "[data-testid='triage-detail-submitter']", "type": "text", "required": false, "editable": false },
+      { "apiName": "status", "uiSelector": "[data-testid='triage-detail-status']", "type": "text", "required": false, "editable": false },
+      { "apiName": "survey_name", "uiSelector": ".info-item:has(.info-label:text('Survey'))", "type": "text", "required": false, "editable": false },
+      { "apiName": "created_at", "uiSelector": ".info-item:has(.info-label:text('Created'))", "type": "text", "required": false, "editable": false },
+      { "apiName": "version", "uiSelector": ".info-item:has(.info-label:text('Version'))", "type": "text", "required": false, "editable": false }
+    ],
+    "survey_template": [
+      { "apiName": "name", "uiSelector": "[data-testid='admin-surveys-row'] .template-name", "type": "text", "required": true, "editable": true },
+      { "apiName": "version", "uiSelector": "[data-testid='admin-surveys-row'] .editable", "type": "text", "required": false, "editable": false },
+      { "apiName": "status", "uiSelector": "[data-testid='admin-surveys-row'] mat-chip", "type": "text", "required": false, "editable": false }
     ]
   }
 }

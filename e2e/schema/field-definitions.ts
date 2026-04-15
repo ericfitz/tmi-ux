@@ -26,3 +26,5 @@ export const REPOSITORY_FIELDS: FieldDef[] = data.entities.repository;
 export const NOTE_FIELDS: FieldDef[] = data.entities.note;
 export const TEAM_FIELDS: FieldDef[] = data.entities.team;
 export const PROJECT_FIELDS: FieldDef[] = data.entities.project;
+export const SURVEY_RESPONSE_FIELDS: FieldDef[] = data.entities.survey_response;
+export const SURVEY_TEMPLATE_FIELDS: FieldDef[] = data.entities.survey_template;
