@@ -577,9 +577,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.authService.getAvailableProviders().subscribe({
         next: providers => {
-          const builtInIds = new Set(builtInProviders.map(p => p.id));
-          const filteredProviders = providers.filter(p => !builtInIds.has(p.id));
-          this.availableProviders = [...filteredProviders, ...builtInProviders];
+          this.availableProviders = [...providers, ...builtInProviders];
           this.providersLoading = false;
         },
         error: () => {

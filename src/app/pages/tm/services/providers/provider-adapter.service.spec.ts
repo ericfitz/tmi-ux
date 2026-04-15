@@ -24,10 +24,10 @@ describe('ProviderAdapterService', () => {
 
   describe('isValidForPrincipalType()', () => {
     describe('TMI Provider', () => {
-      it('should support user-type principals', () => {
+      it('should not support user-type principals', () => {
         const result = service.isValidForPrincipalType('tmi', 'user');
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
       });
 
       it('should support group-type principals', () => {
@@ -83,16 +83,12 @@ describe('ProviderAdapterService', () => {
       expect(result).toBe('everyone');
     });
 
-    it('should return "everyone" for tmi provider with group principal type', () => {
+    it('should return "everyone" for tmi provider regardless of principal type', () => {
+      const userResult = service.getDefaultSubject('tmi', 'user');
       const groupResult = service.getDefaultSubject('tmi', 'group');
 
+      expect(userResult).toBe('everyone');
       expect(groupResult).toBe('everyone');
-    });
-
-    it('should return null for tmi provider with user principal type', () => {
-      const userResult = service.getDefaultSubject('tmi', 'user');
-
-      expect(userResult).toBeNull();
     });
 
     it('should return null for OAuth providers', () => {
@@ -267,7 +263,7 @@ describe('ProviderAdapterService', () => {
   describe('Provider Rule Integration', () => {
     it('should consistently handle tmi provider across all methods', () => {
       // tmi provider rules
-      expect(service.isValidForPrincipalType('tmi', 'user')).toBe(true);
+      expect(service.isValidForPrincipalType('tmi', 'user')).toBe(false);
       expect(service.isValidForPrincipalType('tmi', 'group')).toBe(true);
       expect(service.getDefaultSubject('tmi', 'group')).toBe('everyone');
       expect(service.transformProviderForApi('tmi')).toBe('*');

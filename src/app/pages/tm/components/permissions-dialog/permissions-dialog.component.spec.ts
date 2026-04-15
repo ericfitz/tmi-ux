@@ -411,21 +411,6 @@ describe('PermissionsDialogComponent', () => {
       expect(component.availableProviders.some(p => p.id === 'tmi')).toBe(true);
     });
 
-    it('should deduplicate when server returns a provider matching a built-in', () => {
-      const serverProviders: OAuthProviderInfo[] = [
-        { id: 'google', name: 'Google', icon: 'google' } as OAuthProviderInfo,
-        { id: 'tmi', name: 'TMI Provider', icon: '' } as OAuthProviderInfo,
-      ];
-      mockAuthService.getAvailableProviders.mockReturnValue(of(serverProviders));
-      component.permissionsTable = { renderRows: vi.fn() } as never;
-      component.ngOnInit();
-
-      const tmiEntries = component.availableProviders.filter(p => p.id === 'tmi');
-      expect(tmiEntries).toHaveLength(1);
-      expect(tmiEntries[0].name).toBe('TMI'); // built-in version wins
-      expect(component.availableProviders).toHaveLength(2); // google + tmi
-    });
-
     it('should include built-in providers even when OAuth loading fails', () => {
       mockAuthService.getAvailableProviders.mockReturnValue(
         throwError(() => new Error('API error')),
@@ -439,8 +424,13 @@ describe('PermissionsDialogComponent', () => {
   });
 
   describe('updatePermissionProvider (principal type auto-constraint)', () => {
-    it('should not change principal type when TMI is selected (supports both)', () => {
-      mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
+    it('should auto-constrain principal type to group when TMI is selected', () => {
+      mockProviderAdapter.isValidForPrincipalType.mockImplementation(
+        (provider: string, type: string) => {
+          if (provider === 'tmi') return type === 'group';
+          return true;
+        },
+      );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
 
@@ -448,7 +438,7 @@ describe('PermissionsDialogComponent', () => {
 
       component.updatePermissionProvider(0, { value: 'tmi' });
 
-      expect(component.permissionsDataSource.data[0].principal_type).toBe('user');
+      expect(component.permissionsDataSource.data[0].principal_type).toBe('group');
     });
 
     it('should not change principal type when provider supports it', () => {
