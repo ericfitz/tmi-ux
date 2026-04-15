@@ -19,7 +19,7 @@ import {
 import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { AdminUser } from '@app/types/user.types';
+import { AdminUser, CreateAutomationAccountResponse } from '@app/types/user.types';
 import {
   UserPickerDialogComponent,
   UserPickerDialogData,
@@ -29,6 +29,14 @@ import {
   ManageCredentialsDialogComponent,
   ManageCredentialsDialogData,
 } from './manage-credentials-dialog/manage-credentials-dialog.component';
+import {
+  CreateAutomationUserDialogComponent,
+  CreateAutomationUserDialogData,
+} from '../shared/create-automation-user-dialog/create-automation-user-dialog.component';
+import {
+  CredentialSecretDialogComponent,
+  CredentialSecretDialogData,
+} from '@app/core/components/user-preferences-dialog/credential-secret-dialog/credential-secret-dialog.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { LanguageService } from '@app/i18n/language.service';
@@ -228,6 +236,38 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       maxWidth: '1200px',
       data: dialogData,
     });
+  }
+
+  onCreateAutomationUser(): void {
+    const dialogData: CreateAutomationUserDialogData = {};
+    const dialogRef = this.dialog.open(CreateAutomationUserDialogComponent, {
+      width: '500px',
+      data: dialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: CreateAutomationAccountResponse | null) => {
+        if (result) {
+          const secretData: CredentialSecretDialogData = {
+            clientId: result.client_credential.client_id,
+            clientSecret: result.client_credential.client_secret,
+          };
+          const credDialogRef = this.dialog.open(CredentialSecretDialogComponent, {
+            width: '600px',
+            disableClose: true,
+            data: secretData,
+          });
+
+          credDialogRef
+            .afterClosed()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+              this.loadUsers();
+            });
+        }
+      });
   }
 
   onPageChange(event: PageEvent): void {
