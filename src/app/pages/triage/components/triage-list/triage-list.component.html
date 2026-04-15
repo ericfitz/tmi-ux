@@ -9,9 +9,13 @@
     </div>
   </div>
 
-  <mat-tab-group [(selectedIndex)]="selectedTabIndex" animationDuration="200ms">
+  <mat-tab-group
+    [(selectedIndex)]="selectedTabIndex"
+    animationDuration="200ms"
+    data-testid="triage-tab-group"
+  >
     <!-- Tab 1: Survey Responses -->
-    <mat-tab>
+    <mat-tab data-testid="triage-responses-tab">
       <ng-template mat-tab-label>
         {{ 'triage.tabs.surveyResponses' | transloco }}
         @if (totalResponses > 0) {
@@ -209,6 +213,7 @@
                     mat-icon-button
                     (click)="viewResponse(row); $event.stopPropagation()"
                     [matTooltip]="'triage.viewDetails' | transloco"
+                    data-testid="triage-view-button"
                   >
                     <mat-icon>visibility</mat-icon>
                   </button>
@@ -217,6 +222,7 @@
                       mat-icon-button
                       (click)="approveResponse(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.approve' | transloco"
+                      data-testid="triage-approve-button"
                     >
                       <mat-icon>check_circle</mat-icon>
                     </button>
@@ -226,6 +232,7 @@
                       mat-icon-button
                       (click)="openRevisionDialogForRow(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.returnForRevision' | transloco"
+                      data-testid="triage-revision-button"
                     >
                       <mat-icon>undo</mat-icon>
                     </button>
@@ -235,6 +242,7 @@
                       mat-icon-button
                       (click)="createThreatModel(row); $event.stopPropagation()"
                       [matTooltip]="'triage.list.createThreatModel' | transloco"
+                      data-testid="triage-create-tm-button"
                     >
                       <mat-icon>add_circle</mat-icon>
                     </button>
@@ -260,6 +268,7 @@
             [pageSizeOptions]="[10, 25, 50, 100]"
             (page)="onPageChange($event)"
             showFirstLastButtons
+            data-testid="triage-paginator"
           >
           </mat-paginator>
         </div>
@@ -273,7 +282,7 @@
     </mat-tab>
 
     <!-- Tab 2: Unassigned Reviews -->
-    <mat-tab>
+    <mat-tab data-testid="triage-assignment-tab">
       <ng-template mat-tab-label>
         {{ 'triage.tabs.unassignedReviews' | transloco }}
         @if (unassignedCount > 0) {

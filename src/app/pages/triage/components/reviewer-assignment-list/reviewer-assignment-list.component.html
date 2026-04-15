@@ -9,6 +9,7 @@
       [value]="filters.searchTerm"
       (input)="onSearchChange($any($event.target).value)"
       [placeholder]="'triage.reviewerAssignment.searchPlaceholder' | transloco"
+      data-testid="reviewer-assignment-search-input"
     />
     @if (filters.searchTerm) {
       <button matSuffix mat-icon-button (click)="filters.searchTerm = ''; onFilterChange()">
@@ -20,7 +21,11 @@
   <!-- Status dropdown -->
   <mat-form-field appearance="outline" class="status-filter">
     <mat-label>{{ 'common.status' | transloco }}</mat-label>
-    <mat-select [(ngModel)]="filters.status" (selectionChange)="onFilterChange()">
+    <mat-select
+      [(ngModel)]="filters.status"
+      (selectionChange)="onFilterChange()"
+      data-testid="reviewer-assignment-status-filter"
+    >
       @for (option of filterStatusOptions; track option.value) {
         <mat-option [value]="option.value">{{ option.label }}</mat-option>
       }
@@ -32,6 +37,7 @@
     [checked]="filters.unassigned"
     (change)="onUnassignedChange($event.checked)"
     class="unassigned-checkbox"
+    data-testid="reviewer-assignment-unassigned-checkbox"
   >
     {{ 'triage.reviewerAssignment.unassigned' | transloco }}
   </mat-checkbox>
@@ -58,13 +64,19 @@
         : ('dashboard.moreFilters' | transloco)
     "
     [class.filter-toggle-active]="showAdvancedFilters || hasAdvancedFilters"
+    data-testid="reviewer-assignment-more-filters-button"
   >
     <mat-icon>{{ showAdvancedFilters ? 'filter_list_off' : 'filter_list' }}</mat-icon>
   </button>
 
   <!-- Clear Filters button -->
   @if (hasActiveFilters) {
-    <button mat-stroked-button (click)="clearFilters()" class="clear-filters-button">
+    <button
+      mat-stroked-button
+      (click)="clearFilters()"
+      class="clear-filters-button"
+      data-testid="reviewer-assignment-clear-filters-button"
+    >
       <mat-icon>filter_list_off</mat-icon>
       {{ 'triage.filters.clearFilters' | transloco }}
     </button>
@@ -230,6 +242,7 @@
               [compareWith]="compareReviewers"
               [placeholder]="'triage.reviewerAssignment.selectReviewer' | transloco"
               class="reviewer-select"
+              data-testid="reviewer-assignment-reviewer-select"
             >
               <mat-option [value]="null">&mdash;</mat-option>
               @for (reviewer of reviewerOptions; track reviewer.provider_id) {
@@ -268,6 +281,7 @@
                 (click)="
                   assignReviewer(row.id, selectedReviewers.get(row.id)!); $event.stopPropagation()
                 "
+                data-testid="reviewer-assignment-assign-button"
               >
                 @if (isAssigning.has(row.id)) {
                   <mat-spinner diameter="16"></mat-spinner>
@@ -280,6 +294,7 @@
                 mat-raised-button
                 [disabled]="isAssigning.has(row.id)"
                 (click)="assignToMe(row.id); $event.stopPropagation()"
+                data-testid="reviewer-assignment-assign-me-button"
               >
                 @if (isAssigning.has(row.id)) {
                   <mat-spinner diameter="16"></mat-spinner>
@@ -292,6 +307,7 @@
               mat-icon-button
               (click)="viewThreatModel(row); $event.stopPropagation()"
               [matTooltip]="'triage.viewDetails' | transloco"
+              data-testid="reviewer-assignment-open-tm-button"
             >
               <mat-icon>open_in_new</mat-icon>
             </button>
@@ -305,6 +321,7 @@
         *matRowDef="let row; columns: displayedColumns"
         class="tm-row"
         (click)="viewThreatModel(row)"
+        data-testid="reviewer-assignment-row"
       ></tr>
     </table>
 
@@ -315,6 +332,7 @@
       [pageSizeOptions]="[10, 25, 50, 100]"
       (page)="onPageChange($event)"
       showFirstLastButtons
+      data-testid="reviewer-assignment-paginator"
     >
     </mat-paginator>
   </div>

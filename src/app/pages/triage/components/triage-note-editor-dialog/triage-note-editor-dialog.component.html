@@ -20,6 +20,7 @@
         matInput
         formControlName="name"
         [placeholder]="'triage.noteEditor.namePlaceholder' | transloco"
+        data-testid="triage-note-name-input"
       />
       @if (noteForm.get('name')?.hasError('required')) {
         <mat-error>
@@ -43,6 +44,7 @@
             [class.active]="!previewMode"
             (click)="previewMode = false"
             [matTooltip]="'noteEditor.editMode' | transloco"
+            data-testid="triage-note-edit-toggle"
           >
             <mat-icon fontSet="material-symbols-outlined">edit_note</mat-icon>
           </button>
@@ -52,6 +54,7 @@
             [class.active]="previewMode"
             (click)="togglePreview()"
             [matTooltip]="'noteEditor.previewMode' | transloco"
+            data-testid="triage-note-preview-toggle"
           >
             <mat-icon fontSet="material-symbols-outlined">preview</mat-icon>
           </button>
@@ -109,6 +112,7 @@
           (select)="onTextareaSelect($event)"
           (keyup)="onTextareaSelect($event)"
           (mouseup)="onTextareaSelect($event)"
+          data-testid="triage-note-content-textarea"
         ></textarea>
         @if (noteForm.get('content')?.hasError('required')) {
           <mat-error>
@@ -135,11 +139,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" data-testid="triage-note-cancel-button">
     {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
   </button>
   @if (!isReadOnly) {
-    <button mat-raised-button color="primary" [disabled]="noteForm.invalid" (click)="onSave()">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="noteForm.invalid"
+      (click)="onSave()"
+      data-testid="triage-note-save-button"
+    >
       {{ 'common.save' | transloco }}
     </button>
   }

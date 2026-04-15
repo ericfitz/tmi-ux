@@ -18,6 +18,7 @@
         rows="5"
         cdkFocusInitial
         tabindex="1"
+        data-testid="revision-notes-textarea"
       ></textarea>
       <mat-hint>{{ 'triage.revisionDialog.hint' | transloco }}</mat-hint>
     </mat-form-field>
@@ -31,6 +32,7 @@
     (click)="onCancel()"
     tabindex="2"
     [attr.aria-label]="'common.cancel' | transloco"
+    data-testid="revision-notes-cancel-button"
   >
     {{ 'common.cancel' | transloco }}
   </button>
@@ -41,6 +43,7 @@
     [disabled]="!canSubmit"
     tabindex="3"
     [attr.aria-label]="'triage.revisionDialog.confirm' | transloco"
+    data-testid="revision-notes-confirm-button"
   >
     <mat-icon>rate_review</mat-icon>
     {{ 'triage.revisionDialog.confirm' | transloco }}
