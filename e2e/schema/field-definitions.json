@@ -69,22 +69,22 @@
       { "apiName": "timmy_enabled", "uiSelector": "[data-testid='note-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
     ],
     "team": [
-      { "apiName": "name", "uiSelector": "[data-testid='team-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='team-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "status", "uiSelector": "[data-testid='team-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "email_address", "uiSelector": "[data-testid='team-email-input']", "type": "text", "required": false, "editable": true, "validationRules": ["email"] },
-      { "apiName": "uri", "uiSelector": "[data-testid='team-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
+      { "apiName": "name", "uiSelector": "[data-testid='edit-team-name-input']", "type": "text", "required": true, "editable": true },
+      { "apiName": "description", "uiSelector": "[data-testid='edit-team-description-input']", "type": "textarea", "required": false, "editable": true },
+      { "apiName": "status", "uiSelector": "[data-testid='edit-team-status-select']", "type": "select", "required": false, "editable": true },
+      { "apiName": "email_address", "uiSelector": "[data-testid='edit-team-email-input']", "type": "text", "required": false, "editable": true, "validationRules": ["email"] },
+      { "apiName": "uri", "uiSelector": "[data-testid='edit-team-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
       { "apiName": "members", "uiSelector": "[data-testid='team-members-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "responsible_parties", "uiSelector": "[data-testid='team-responsible-parties-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "related_teams", "uiSelector": "[data-testid='team-related-teams-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "metadata", "uiSelector": "[data-testid='team-metadata-button']", "type": "chips", "required": false, "editable": true }
     ],
     "project": [
-      { "apiName": "name", "uiSelector": "[data-testid='project-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='project-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "status", "uiSelector": "[data-testid='project-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "team_id", "uiSelector": "[data-testid='project-team-select']", "type": "select", "required": true, "editable": true },
-      { "apiName": "uri", "uiSelector": "[data-testid='project-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
+      { "apiName": "name", "uiSelector": "[data-testid='edit-project-name-input']", "type": "text", "required": true, "editable": true },
+      { "apiName": "description", "uiSelector": "[data-testid='edit-project-description-input']", "type": "textarea", "required": false, "editable": true },
+      { "apiName": "status", "uiSelector": "[data-testid='edit-project-status-select']", "type": "select", "required": false, "editable": true },
+      { "apiName": "team_id", "uiSelector": "[data-testid='edit-project-team-select']", "type": "select", "required": true, "editable": true },
+      { "apiName": "uri", "uiSelector": "[data-testid='edit-project-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
       { "apiName": "responsible_parties", "uiSelector": "[data-testid='project-responsible-parties-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "related_projects", "uiSelector": "[data-testid='project-related-projects-button']", "type": "chips", "required": false, "editable": true },
       { "apiName": "metadata", "uiSelector": "[data-testid='project-metadata-button']", "type": "chips", "required": false, "editable": true }
@@ -100,6 +100,13 @@
       { "apiName": "name", "uiSelector": "[data-testid='admin-surveys-row'] .template-name", "type": "text", "required": true, "editable": true },
       { "apiName": "version", "uiSelector": "[data-testid='admin-surveys-row'] .editable", "type": "text", "required": false, "editable": false },
       { "apiName": "status", "uiSelector": "[data-testid='admin-surveys-row'] mat-chip", "type": "text", "required": false, "editable": false }
+    ],
+    "dashboard": [
+      { "apiName": "name", "uiSelector": ".mat-column-name", "type": "text", "required": false, "editable": false },
+      { "apiName": "lastModified", "uiSelector": ".mat-column-lastModified", "type": "text", "required": false, "editable": false },
+      { "apiName": "status", "uiSelector": ".mat-column-status", "type": "text", "required": false, "editable": false },
+      { "apiName": "owner", "uiSelector": ".mat-column-owner", "type": "text", "required": false, "editable": false },
+      { "apiName": "created", "uiSelector": ".mat-column-created", "type": "text", "required": false, "editable": false }
     ]
   }
 }
