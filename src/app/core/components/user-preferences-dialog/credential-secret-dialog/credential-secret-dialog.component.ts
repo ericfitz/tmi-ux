@@ -8,6 +8,7 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
+import { environment } from '../../../../../environments/environment';
 
 export interface CredentialSecretDialogData {
   clientId: string;
@@ -69,6 +70,7 @@ export interface CredentialSecretDialogData {
       </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
+      <button mat-button (click)="onDownload()" [transloco]="'common.download'">Download</button>
       <button mat-raised-button color="primary" (click)="onClose()" [transloco]="'common.done'">
         Done
       </button>
@@ -146,6 +148,24 @@ export class CredentialSecretDialogComponent {
     } else {
       this.logger.error('Failed to copy client secret to clipboard');
     }
+  }
+
+  onDownload(): void {
+    const content =
+      [
+        `export TMI_CLIENT_ID=${this.data.clientId}`,
+        `export TMI_CLIENT_SECRET=${this.data.clientSecret}`,
+        `export TMI_SERVER=${environment.apiUrl}`,
+      ].join('\n') + '\n';
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'client-credentials.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    this.logger.info('Client credentials downloaded');
   }
 
   onClose(): void {
