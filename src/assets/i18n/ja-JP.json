@@ -222,16 +222,6 @@
       "filterLabel": "フィルター",
       "filterPlaceholder": "キー、値、説明、またはソースでフィルター",
       "listTitle": "システム設定",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "サーバーの設定ファイルまたは環境変数から設定をデータベースにインポートします。",
-        "migrate": "マイグレート",
-        "overwriteLabel": "既存の設定を上書きする",
-        "overwriteWarning": "警告: これにより、以前にカスタマイズされたデータベース内の設定が置き換えられます。",
-        "resultMigrated": "{{count}}件の設定をマイグレートしました",
-        "resultSkipped": "{{count}}件の設定をスキップしました",
-        "title": "設定をマイグレート"
-      },
       "noSettings": "設定が見つかりません",
       "readOnlyTooltip": "この設定は読み取り専用で、ここでは変更できません",
       "saveTooltip": "変更を保存",

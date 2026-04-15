@@ -222,16 +222,6 @@
       "filterLabel": "סנן",
       "filterPlaceholder": "סנן לפי מפתח, ערך, תיאור או מקור",
       "listTitle": "הגדרות מערכת",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "ייבא הגדרות מקובץ התצורה של השרת או ממשתני הסביבה למסד הנתונים.",
-        "migrate": "העבר",
-        "overwriteLabel": "החלף הגדרות קיימות",
-        "overwriteWarning": "אזהרה: זה יחליף כל הגדרה במסד הנתונים שהותאמה אישית בעבר.",
-        "resultMigrated": "{{count}} הגדרות הועברו",
-        "resultSkipped": "{{count}} הגדרות דולגו",
-        "title": "העבר הגדרות"
-      },
       "noSettings": "לא נמצאו הגדרות",
       "readOnlyTooltip": "הגדרה זו לקריאה בלבד ולא ניתן לשנות אותה כאן",
       "saveTooltip": "שמור שינויים",

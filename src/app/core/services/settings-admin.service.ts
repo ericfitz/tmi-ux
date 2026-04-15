@@ -1,27 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { LoggerService } from './logger.service';
-import {
-  SystemSetting,
-  SystemSettingUpdate,
-  MigrateSettingsResponse,
-} from '@app/types/settings.types';
+import { SystemSetting, SystemSettingUpdate } from '@app/types/settings.types';
 
 /**
  * Settings Admin Service
  *
  * Manages system settings through the /admin/settings API.
- * Provides CRUD operations and settings migration functionality.
+ * Provides CRUD operations for system settings.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsAdminService {
-  constructor(
-    private apiService: ApiService,
-    private logger: LoggerService,
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   /**
    * List all system settings
@@ -49,15 +41,5 @@ export class SettingsAdminService {
    */
   deleteSetting(key: string): Observable<void> {
     return this.apiService.delete<void>(`/admin/settings/${key}`);
-  }
-
-  /**
-   * Migrate settings from server configuration to database
-   */
-  migrateSettings(overwrite: boolean): Observable<MigrateSettingsResponse> {
-    return this.apiService.post<MigrateSettingsResponse>(
-      `/admin/settings/migrate${overwrite ? '?overwrite=true' : ''}`,
-      {},
-    );
   }
 }

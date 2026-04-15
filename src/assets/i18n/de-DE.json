@@ -222,16 +222,6 @@
       "filterLabel": "Filter",
       "filterPlaceholder": "Nach Schlüssel, Wert, Beschreibung oder Quelle filtern",
       "listTitle": "Systemeinstellungen",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "Einstellungen aus der Konfigurationsdatei oder Umgebungsvariablen des Servers in die Datenbank importieren.",
-        "migrate": "Migrieren",
-        "overwriteLabel": "Bestehende Einstellungen überschreiben",
-        "overwriteWarning": "Warnung: Dies ersetzt alle Einstellungen in der Datenbank, die zuvor angepasst wurden.",
-        "resultMigrated": "{{count}} Einstellungen migriert",
-        "resultSkipped": "{{count}} Einstellungen übersprungen",
-        "title": "Einstellungen migrieren"
-      },
       "noSettings": "Keine Einstellungen gefunden",
       "readOnlyTooltip": "Diese Einstellung ist schreibgeschützt und kann hier nicht geändert werden",
       "saveTooltip": "Änderungen speichern",

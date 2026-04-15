@@ -222,16 +222,6 @@
       "filterLabel": "फ़िल्टर",
       "filterPlaceholder": "कुंजी, मान, विवरण या स्रोत द्वारा फ़िल्टर करें",
       "listTitle": "सिस्टम सेटिंग्स",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "सर्वर की कॉन्फ़िगरेशन फ़ाइल या वातावरण चर से डेटाबेस में सेटिंग्स आयात करें।",
-        "migrate": "माइग्रेट करें",
-        "overwriteLabel": "मौजूदा सेटिंग्स को अधिलेखित करें",
-        "overwriteWarning": "चेतावनी: यह डेटाबेस में किसी भी सेटिंग्स को बदल देगा जो पहले कस्टमाइज़ की गई थीं।",
-        "resultMigrated": "{{count}} सेटिंग्स माइग्रेट की गईं",
-        "resultSkipped": "{{count}} सेटिंग्स छोड़ दी गईं",
-        "title": "सेटिंग्स माइग्रेट करें"
-      },
       "noSettings": "कोई सेटिंग नहीं मिली",
       "readOnlyTooltip": "यह सेटिंग केवल पढ़ने योग्य है और इसे यहाँ से संशोधित नहीं किया जा सकता",
       "saveTooltip": "परिवर्तन सहेजें",

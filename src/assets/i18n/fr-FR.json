@@ -222,16 +222,6 @@
       "filterLabel": "Filtrer",
       "filterPlaceholder": "Filtrer par clé, valeur, description ou source",
       "listTitle": "Paramètres système",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "Importer les paramètres du fichier de configuration du serveur ou des variables d'environnement dans la base de données.",
-        "migrate": "Migrer",
-        "overwriteLabel": "Écraser les paramètres existants",
-        "overwriteWarning": "Attention : Cela remplacera tous les paramètres de la base de données qui ont été personnalisés précédemment.",
-        "resultMigrated": "{{count}} paramètres migrés",
-        "resultSkipped": "{{count}} paramètres ignorés",
-        "title": "Migrer les paramètres"
-      },
       "noSettings": "Aucun paramètre trouvé",
       "readOnlyTooltip": "Ce paramètre est en lecture seule et ne peut pas être modifié ici",
       "saveTooltip": "Enregistrer les modifications",

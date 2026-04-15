@@ -222,16 +222,6 @@
       "filterLabel": "فلٹر",
       "filterPlaceholder": "کلید، قدر، وضاحت، یا ماخذ کے ذریعے فلٹر کریں",
       "listTitle": "سسٹم کی ترتیبات",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "سرور کی تشکیل فائل یا ماحولیاتی متغیرات سے ڈیٹا بیس میں ترتیبات درآمد کریں۔",
-        "migrate": "منتقل کریں",
-        "overwriteLabel": "موجودہ ترتیبات کو اوور رائٹ کریں",
-        "overwriteWarning": "انتباہ: یہ ڈیٹا بیس میں ان ترتیبات کو تبدیل کر دے گا جو پہلے حسب ضرورت کی گئی تھیں۔",
-        "resultMigrated": "{{count}} ترتیبات منتقل کی گئیں",
-        "resultSkipped": "{{count}} ترتیبات چھوڑی گئیں",
-        "title": "ترتیبات منتقل کریں"
-      },
       "noSettings": "کوئی ترتیبات نہیں ملیں",
       "readOnlyTooltip": "یہ ترتیب صرف پڑھنے کے لیے ہے اور اسے یہاں سے تبدیل نہیں کیا جا سکتا",
       "saveTooltip": "تبدیلیاں محفوظ کریں",

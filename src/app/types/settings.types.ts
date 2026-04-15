@@ -42,12 +42,3 @@ export interface EditableSystemSetting extends SystemSetting {
     description: string;
   };
 }
-
-/**
- * Response from POST /admin/settings/migrate
- */
-export interface MigrateSettingsResponse {
-  migrated: number;
-  skipped: number;
-  settings: SystemSetting[];
-}

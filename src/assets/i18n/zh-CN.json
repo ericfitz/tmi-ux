@@ -222,16 +222,6 @@
       "filterLabel": "筛选",
       "filterPlaceholder": "按键名、值、描述或来源筛选",
       "listTitle": "系统设置",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "从服务器配置文件或环境变量导入设置到数据库。",
-        "migrate": "迁移",
-        "overwriteLabel": "覆盖现有设置",
-        "overwriteWarning": "警告：这将替换数据库中之前自定义的任何设置。",
-        "resultMigrated": "已迁移 {{count}} 个设置",
-        "resultSkipped": "已跳过 {{count}} 个设置",
-        "title": "迁移设置"
-      },
       "noSettings": "未找到设置",
       "readOnlyTooltip": "此设置为只读，无法在此处修改",
       "saveTooltip": "保存更改",

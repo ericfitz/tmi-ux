@@ -222,16 +222,6 @@
       "filterLabel": "تصفية",
       "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف أو المصدر",
       "listTitle": "إعدادات النظام",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "استيراد الإعدادات من ملف تكوين الخادم أو متغيرات البيئة إلى قاعدة البيانات.",
-        "migrate": "ترحيل",
-        "overwriteLabel": "استبدال الإعدادات الموجودة",
-        "overwriteWarning": "تحذير: سيؤدي هذا إلى استبدال أي إعدادات في قاعدة البيانات تم تخصيصها مسبقاً.",
-        "resultMigrated": "تم ترحيل {{count}} من الإعدادات",
-        "resultSkipped": "تم تخطي {{count}} من الإعدادات",
-        "title": "ترحيل الإعدادات"
-      },
       "noSettings": "لم يتم العثور على إعدادات",
       "readOnlyTooltip": "هذا الإعداد للقراءة فقط ولا يمكن تعديله من هنا",
       "saveTooltip": "حفظ التغييرات",

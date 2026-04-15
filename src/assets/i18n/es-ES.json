@@ -222,16 +222,6 @@
       "filterLabel": "Filtrar",
       "filterPlaceholder": "Filtrar por clave, valor, descripción u origen",
       "listTitle": "Configuraciones del Sistema",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "Importar configuraciones desde el archivo de configuración del servidor o variables de entorno a la base de datos.",
-        "migrate": "Migrar",
-        "overwriteLabel": "Sobrescribir configuraciones existentes",
-        "overwriteWarning": "Advertencia: Esto reemplazará cualquier configuración en la base de datos que haya sido personalizada previamente.",
-        "resultMigrated": "{{count}} configuraciones migradas",
-        "resultSkipped": "{{count}} configuraciones omitidas",
-        "title": "Migrar Configuraciones"
-      },
       "noSettings": "No se encontraron configuraciones",
       "readOnlyTooltip": "Esta configuración es de solo lectura y no se puede modificar aquí",
       "saveTooltip": "Guardar cambios",

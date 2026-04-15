@@ -20,7 +20,6 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { EditableSystemSetting, SystemSetting } from '@app/types/settings.types';
 import { AddSettingDialogComponent } from './add-setting-dialog/add-setting-dialog.component';
-import { MigrateDialogComponent } from './migrate-dialog/migrate-dialog.component';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -37,7 +36,7 @@ import {
  * Admin Settings Component
  *
  * Displays and manages system settings via the /admin/settings API.
- * Supports listing, inline editing, creating, deleting, and migrating settings.
+ * Supports listing, inline editing, creating, and deleting settings.
  */
 @Component({
   selector: 'app-admin-settings',
@@ -195,23 +194,6 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   onAddSetting(): void {
     const dialogRef = this.dialog.open(AddSettingDialogComponent, {
       width: '600px',
-      maxWidth: '90vw',
-      disableClose: false,
-    });
-
-    dialogRef
-      .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
-        if (result) {
-          this.loadSettings();
-        }
-      });
-  }
-
-  onMigrateSettings(): void {
-    const dialogRef = this.dialog.open(MigrateDialogComponent, {
-      width: '500px',
       maxWidth: '90vw',
       disableClose: false,
     });

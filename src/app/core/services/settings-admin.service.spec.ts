@@ -11,25 +11,14 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { SettingsAdminService } from './settings-admin.service';
 import { ApiService } from './api.service';
-import { LoggerService } from './logger.service';
-import {
-  SystemSetting,
-  SystemSettingUpdate,
-  MigrateSettingsResponse,
-} from '@app/types/settings.types';
+import { SystemSetting, SystemSettingUpdate } from '@app/types/settings.types';
 
 describe('SettingsAdminService', () => {
   let service: SettingsAdminService;
   let mockApiService: {
     get: ReturnType<typeof vi.fn>;
     put: ReturnType<typeof vi.fn>;
-    post: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
-  };
-  let mockLoggerService: {
-    debug: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
   };
 
   const mockSetting: SystemSetting = {
@@ -56,32 +45,16 @@ describe('SettingsAdminService', () => {
     },
   ];
 
-  const mockMigrateResponse: MigrateSettingsResponse = {
-    migrated: 5,
-    skipped: 2,
-    settings: [mockSetting],
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockApiService = {
       get: vi.fn(),
       put: vi.fn(),
-      post: vi.fn(),
       delete: vi.fn(),
     };
 
-    mockLoggerService = {
-      debug: vi.fn(),
-      info: vi.fn(),
-      error: vi.fn(),
-    };
-
-    service = new SettingsAdminService(
-      mockApiService as unknown as ApiService,
-      mockLoggerService as unknown as LoggerService,
-    );
+    service = new SettingsAdminService(mockApiService as unknown as ApiService);
   });
 
   describe('Service Initialization', () => {
@@ -190,31 +163,6 @@ describe('SettingsAdminService', () => {
         error: err => {
           expect(err).toBe(error);
         },
-      });
-    });
-  });
-
-  describe('migrateSettings()', () => {
-    it('should call API with overwrite=true', () => {
-      mockApiService.post.mockReturnValue(of(mockMigrateResponse));
-
-      service.migrateSettings(true).subscribe(response => {
-        expect(mockApiService.post).toHaveBeenCalledWith(
-          '/admin/settings/migrate?overwrite=true',
-          {},
-        );
-        expect(response).toEqual(mockMigrateResponse);
-        expect(response.migrated).toBe(5);
-        expect(response.skipped).toBe(2);
-      });
-    });
-
-    it('should call API without overwrite param when false', () => {
-      mockApiService.post.mockReturnValue(of(mockMigrateResponse));
-
-      service.migrateSettings(false).subscribe(response => {
-        expect(mockApiService.post).toHaveBeenCalledWith('/admin/settings/migrate', {});
-        expect(response).toEqual(mockMigrateResponse);
       });
     });
   });

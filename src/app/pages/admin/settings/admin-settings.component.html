@@ -32,10 +32,6 @@
     <mat-card-header>
       <mat-card-title [transloco]="'admin.settings.listTitle'">System Settings</mat-card-title>
       <div class="action-buttons">
-        <button mat-stroked-button (click)="onMigrateSettings()">
-          <mat-icon>sync</mat-icon>
-          <span [transloco]="'admin.settings.migrateButton'">Migrate Settings</span>
-        </button>
         <button mat-raised-button color="primary" (click)="onAddSetting()">
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.settings.addButton'">Add Setting</span>

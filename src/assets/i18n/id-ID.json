@@ -222,16 +222,6 @@
       "filterLabel": "Filter",
       "filterPlaceholder": "Filter berdasarkan kunci, nilai, deskripsi, atau sumber",
       "listTitle": "Pengaturan Sistem",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "Impor pengaturan dari file konfigurasi server atau variabel lingkungan ke dalam database.",
-        "migrate": "Migrasikan",
-        "overwriteLabel": "Timpa pengaturan yang ada",
-        "overwriteWarning": "Peringatan: Ini akan mengganti pengaturan apa pun dalam database yang sebelumnya disesuaikan.",
-        "resultMigrated": "{{count}} pengaturan dimigrasikan",
-        "resultSkipped": "{{count}} pengaturan dilewati",
-        "title": "Migrasikan Pengaturan"
-      },
       "noSettings": "Tidak ada pengaturan ditemukan",
       "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
       "saveTooltip": "Simpan perubahan",

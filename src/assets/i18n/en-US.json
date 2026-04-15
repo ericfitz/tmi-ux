@@ -231,16 +231,6 @@
       "filterLabel": "Filter",
       "filterPlaceholder": "Filter by key, value, description, or source",
       "listTitle": "System Settings",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "Import settings from the server's configuration file or environment variables into the database.",
-        "migrate": "Migrate",
-        "overwriteLabel": "Overwrite existing settings",
-        "overwriteWarning": "Warning: This will replace any settings in the database that were previously customized.",
-        "resultMigrated": "{{count}} settings migrated",
-        "resultSkipped": "{{count}} settings skipped",
-        "title": "Migrate Settings"
-      },
       "noSettings": "No settings found",
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "saveTooltip": "Save changes",
@@ -534,8 +524,8 @@
   "auth": {
     "unauthorized": {
       "401": "401 Unauthorized",
-      "401.comment": "This is a standard error message and should not be translated.",
       "403": "403 Forbidden",
+      "401.comment": "This is a standard error message and should not be translated.",
       "403.comment": "This is a standard error message and should not be translated.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",

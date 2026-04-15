@@ -222,16 +222,6 @@
       "filterLabel": "필터",
       "filterPlaceholder": "키, 값, 설명 또는 출처로 필터링",
       "listTitle": "시스템 설정",
-      "migrateButton": "{{admin.settings.migrateDialog.title}}",
-      "migrateDialog": {
-        "description": "서버의 구성 파일 또는 환경 변수에서 데이터베이스로 설정을 가져옵니다.",
-        "migrate": "마이그레이션",
-        "overwriteLabel": "기존 설정 덮어쓰기",
-        "overwriteWarning": "경고: 이전에 사용자 정의된 데이터베이스의 모든 설정이 대체됩니다.",
-        "resultMigrated": "{{count}}개 설정 마이그레이션됨",
-        "resultSkipped": "{{count}}개 설정 건너뜀",
-        "title": "설정 마이그레이션"
-      },
       "noSettings": "설정을 찾을 수 없습니다",
       "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
       "saveTooltip": "변경 사항 저장",
