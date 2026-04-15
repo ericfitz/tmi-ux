@@ -1,7 +1,11 @@
 <div class="survey-list-container">
   <div class="page-header">
     <h1 class="page-title">{{ 'surveys.list.pageTitle' | transloco }}</h1>
-    <button mat-stroked-button (click)="viewMyResponses()">
+    <button
+      mat-stroked-button
+      (click)="viewMyResponses()"
+      data-testid="survey-list-my-responses-button"
+    >
       <mat-icon>history</mat-icon>
       {{ 'surveys.myResponses' | transloco }}
     </button>
@@ -32,7 +36,7 @@
   } @else {
     <div class="survey-grid">
       @for (survey of surveys; track survey.id) {
-        <mat-card class="survey-card">
+        <mat-card class="survey-card" data-testid="survey-list-survey-card">
           <mat-card-header>
             <mat-icon mat-card-avatar>assignment</mat-icon>
             <mat-card-title class="survey-name">{{ survey.name }}</mat-card-title>
@@ -59,7 +63,11 @@
                   {{ 'surveys.list.yourDrafts' | transloco }}
                 </h4>
                 @for (draft of getDrafts(survey.id); track draft.id) {
-                  <div class="draft-item" (click)="continueDraft(draft)">
+                  <div
+                    class="draft-item"
+                    (click)="continueDraft(draft)"
+                    data-testid="survey-list-draft-item"
+                  >
                     <div class="draft-info">
                       <span class="draft-title">
                         {{
@@ -84,7 +92,11 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #draftItemKebabMenu="matMenu">
-                      <button mat-menu-item (click)="deleteDraft(draft, $event)">
+                      <button
+                        mat-menu-item
+                        (click)="deleteDraft(draft, $event)"
+                        data-testid="survey-list-draft-delete-button"
+                      >
                         <mat-icon>delete</mat-icon>
                         <span>{{ 'surveys.list.deleteDraft' | transloco }}</span>
                       </button>
@@ -97,12 +109,21 @@
 
           <mat-card-actions align="end">
             @if (getDrafts(survey.id).length > 0) {
-              <button mat-stroked-button (click)="continueDraft(getDrafts(survey.id)[0])">
+              <button
+                mat-stroked-button
+                (click)="continueDraft(getDrafts(survey.id)[0])"
+                data-testid="survey-list-draft-continue-button"
+              >
                 <mat-icon>edit</mat-icon>
                 {{ 'surveys.continueDraft' | transloco }}
               </button>
             }
-            <button mat-flat-button color="primary" (click)="startSurvey(survey)">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="startSurvey(survey)"
+              data-testid="survey-list-start-button"
+            >
               <mat-icon>add</mat-icon>
               {{ 'surveys.startNew' | transloco }}
             </button>

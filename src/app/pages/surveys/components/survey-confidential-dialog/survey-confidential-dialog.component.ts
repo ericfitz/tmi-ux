@@ -30,10 +30,15 @@ import {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onNo()">
+      <button mat-button (click)="onNo()" data-testid="confidential-no-button">
         <span [transloco]="'surveys.confidentialDialog.no'">No</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onYes()">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onYes()"
+        data-testid="confidential-yes-button"
+      >
         <span [transloco]="'surveys.confidentialDialog.yes'">Yes, mark as confidential</span>
       </button>
     </mat-dialog-actions>

@@ -5,14 +5,24 @@
     <div class="action-buttons">
       <mat-form-field appearance="outline" class="status-filter">
         <mat-label>{{ 'surveys.responses.filterByStatus' | transloco }}</mat-label>
-        <mat-select multiple [(value)]="statusFilter" (selectionChange)="onFilterChange()">
+        <mat-select
+          multiple
+          [(value)]="statusFilter"
+          (selectionChange)="onFilterChange()"
+          data-testid="my-responses-status-filter"
+        >
           @for (option of statusOptions; track option.value) {
             <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <button mat-icon-button (click)="goBack()" [attr.aria-label]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        (click)="goBack()"
+        [attr.aria-label]="'common.close' | transloco"
+        data-testid="my-responses-close-button"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -116,6 +126,7 @@
                 mat-icon-button
                 (click)="continueDraft(row)"
                 [matTooltip]="'surveys.responses.continueEditing' | transloco"
+                data-testid="my-responses-edit-button"
               >
                 <mat-icon>edit</mat-icon>
               </button>
@@ -128,7 +139,11 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #draftResponseKebabMenu="matMenu">
-                <button mat-menu-item (click)="deleteDraft(row, $event)">
+                <button
+                  mat-menu-item
+                  (click)="deleteDraft(row, $event)"
+                  data-testid="my-responses-delete-button"
+                >
                   <mat-icon>delete</mat-icon>
                   <span>{{ 'surveys.list.deleteDraft' | transloco }}</span>
                 </button>
@@ -138,6 +153,7 @@
                 mat-icon-button
                 (click)="viewResponse(row)"
                 [matTooltip]="'surveys.viewResponse' | transloco"
+                data-testid="my-responses-view-button"
               >
                 <mat-icon>visibility</mat-icon>
               </button>
@@ -151,6 +167,7 @@
           *matRowDef="let row; columns: displayedColumns"
           class="response-row"
           (click)="viewResponse(row)"
+          data-testid="my-responses-row"
         ></tr>
       </table>
     </div>

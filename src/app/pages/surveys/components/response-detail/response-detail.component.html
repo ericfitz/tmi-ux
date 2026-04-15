@@ -19,7 +19,10 @@
       <div class="header-info">
         <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
         <div class="header-meta">
-          <mat-chip [highlighted]="response.status !== 'draft'">
+          <mat-chip
+            [highlighted]="response.status !== 'draft'"
+            data-testid="response-detail-status"
+          >
             <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
             {{ getStatusInfo(response.status).label }}
           </mat-chip>
@@ -32,7 +35,12 @@
         </div>
       </div>
       <div class="action-buttons">
-        <button mat-icon-button (click)="goBack()" [attr.aria-label]="'common.close' | transloco">
+        <button
+          mat-icon-button
+          (click)="goBack()"
+          [attr.aria-label]="'common.close' | transloco"
+          data-testid="response-detail-close-button"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -67,7 +75,11 @@
           @if (response.created_threat_model_id) {
             <div class="info-item">
               <span class="info-label">Threat Model</span>
-              <a [routerLink]="['/tm', response.created_threat_model_id]" class="info-link">
+              <a
+                [routerLink]="['/tm', response.created_threat_model_id]"
+                class="info-link"
+                data-testid="response-detail-tm-link"
+              >
                 <mat-icon>open_in_new</mat-icon>
                 View Threat Model
               </a>

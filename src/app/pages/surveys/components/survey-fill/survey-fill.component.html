@@ -19,11 +19,20 @@
       <h2>Survey Submitted!</h2>
       <p>Thank you for completing this survey. Your response has been recorded.</p>
       <div class="success-actions">
-        <button mat-stroked-button (click)="viewResponse()">
+        <button
+          mat-stroked-button
+          (click)="viewResponse()"
+          data-testid="survey-fill-view-response-button"
+        >
           <mat-icon>visibility</mat-icon>
           View Response
         </button>
-        <button mat-flat-button color="primary" (click)="startAnother()">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="startAnother()"
+          data-testid="survey-fill-start-another-button"
+        >
           <mat-icon>add</mat-icon>
           Start Another Survey
         </button>
@@ -39,7 +48,7 @@
         }
       </div>
 
-      <div class="save-status">
+      <div class="save-status" data-testid="survey-fill-status">
         @if (isSaving$ | async) {
           <mat-spinner diameter="16"></mat-spinner>
           <span>Saving...</span>
@@ -57,6 +66,7 @@
           mat-icon-button
           (click)="saveAndExit()"
           [matTooltip]="'intake.fill.saveAndExit' | transloco"
+          data-testid="survey-fill-save-button"
         >
           <mat-icon>save</mat-icon>
         </button>
@@ -64,6 +74,7 @@
           mat-icon-button
           (click)="saveAndExit()"
           [attr.aria-label]="'common.close' | transloco"
+          data-testid="survey-fill-close-button"
         >
           <mat-icon>close</mat-icon>
         </button>
@@ -72,7 +83,7 @@
 
     <!-- Revision notes (shown when returned for revision) -->
     @if (response?.status === 'needs_revision') {
-      <mat-card class="revision-notes-card">
+      <mat-card class="revision-notes-card" data-testid="survey-fill-revision-notes">
         <mat-card-header>
           <mat-card-title>{{ 'intake.fill.revisionNotesTitle' | transloco }}</mat-card-title>
         </mat-card-header>
@@ -120,7 +131,7 @@
 
     <!-- Footer with save button -->
     <div class="survey-footer">
-      <button mat-stroked-button (click)="saveAndExit()">
+      <button mat-stroked-button (click)="saveAndExit()" data-testid="survey-fill-save-exit-button">
         <mat-icon>save</mat-icon>
         Save &amp; Exit
       </button>
