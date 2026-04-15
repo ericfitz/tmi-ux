@@ -9,6 +9,7 @@
       <button
         mat-icon-button
         color="primary"
+        data-testid="dashboard-view-toggle"
         (click)="toggleViewMode()"
         [matTooltip]="
           dashboardListView
@@ -46,6 +47,7 @@
       <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
+        data-testid="dashboard-search-input"
         [value]="searchText"
         (input)="onSearchChange($any($event.target).value)"
         [placeholder]="'dashboard.searchPlaceholder' | transloco"
@@ -54,6 +56,7 @@
         <button
           matSuffix
           mat-icon-button
+          data-testid="dashboard-search-clear"
           (click)="clearSearch()"
           [matTooltip]="'dashboard.clearSearch' | transloco"
         >
@@ -67,6 +70,7 @@
       <mat-label>{{ 'dashboard.nameFilter' | transloco }}</mat-label>
       <input
         matInput
+        data-testid="dashboard-name-filter"
         [value]="filters.name"
         (input)="onNameFilterChange($any($event.target).value)"
         [placeholder]="'dashboard.namePlaceholder' | transloco"
@@ -78,6 +82,7 @@
       <mat-label>{{ 'common.status' | transloco }}</mat-label>
       <mat-select
         multiple
+        data-testid="dashboard-status-filter"
         [(ngModel)]="filters.statuses"
         (selectionChange)="onServerFilterChange()"
       >
@@ -92,6 +97,7 @@
     <!-- More Filters toggle -->
     <button
       mat-icon-button
+      data-testid="dashboard-more-filters-button"
       (click)="showAdvancedFilters = !showAdvancedFilters"
       [matTooltip]="
         showAdvancedFilters
@@ -105,7 +111,12 @@
 
     <!-- Clear All Filters button -->
     @if (hasActiveFilters || searchText) {
-      <button mat-stroked-button (click)="clearAllFilters()" class="clear-filters-button">
+      <button
+        mat-stroked-button
+        data-testid="dashboard-clear-filters-button"
+        (click)="clearAllFilters()"
+        class="clear-filters-button"
+      >
         <mat-icon>filter_list_off</mat-icon>
         {{ 'dashboard.clearAllFilters' | transloco }}
       </button>
@@ -120,6 +131,7 @@
         <mat-label>{{ 'dashboard.descriptionFilter' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-description-filter"
           [value]="filters.description"
           (input)="onDescriptionFilterChange($any($event.target).value)"
           [placeholder]="'dashboard.descriptionPlaceholder' | transloco"
@@ -131,6 +143,7 @@
         <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-owner-filter"
           [value]="filters.owner"
           (input)="onOwnerFilterChange($any($event.target).value)"
           [placeholder]="'dashboard.ownerPlaceholder' | transloco"
@@ -142,6 +155,7 @@
         <mat-label>{{ 'dashboard.issueUriFilter' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-issue-uri-filter"
           [value]="filters.issueUri"
           (input)="onIssueUriFilterChange($any($event.target).value)"
           [placeholder]="'dashboard.issueUriPlaceholder' | transloco"
@@ -153,6 +167,7 @@
         <mat-label>{{ 'dashboard.createdAfter' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-created-after"
           [matDatepicker]="createdAfterPicker"
           [value]="filters.createdAfter"
           (dateChange)="
@@ -167,6 +182,7 @@
         <mat-label>{{ 'dashboard.createdBefore' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-created-before"
           [matDatepicker]="createdBeforePicker"
           [value]="filters.createdBefore"
           (dateChange)="
@@ -182,6 +198,7 @@
         <mat-label>{{ 'dashboard.modifiedAfter' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-modified-after"
           [matDatepicker]="modifiedAfterPicker"
           [value]="filters.modifiedAfter"
           (dateChange)="
@@ -196,6 +213,7 @@
         <mat-label>{{ 'dashboard.modifiedBefore' | transloco }}</mat-label>
         <input
           matInput
+          data-testid="dashboard-modified-before"
           [matDatepicker]="modifiedBeforePicker"
           [value]="filters.modifiedBefore"
           (dateChange)="
@@ -409,6 +427,7 @@
       <div class="table-container">
         <table
           mat-table
+          data-testid="dashboard-table"
           [dataSource]="dataSource"
           matSort
           multiTemplateDataRows
@@ -564,6 +583,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr
             mat-row
+            data-testid="dashboard-table-row"
             *matRowDef="let row; columns: displayedColumns"
             class="clickable-row"
             (click)="openThreatModel(row.id)"
@@ -611,6 +631,7 @@
     <!-- Paginator (hidden when all items fit on one page) -->
     @if (!isLoadingThreatModels && totalItems > pageSize) {
       <mat-paginator
+        data-testid="dashboard-paginator"
         [length]="totalItems"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex"
