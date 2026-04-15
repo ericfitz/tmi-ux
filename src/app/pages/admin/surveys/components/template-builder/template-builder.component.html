@@ -23,6 +23,7 @@
           (click)="deleteSurvey()"
           [disabled]="isSaving"
           [matTooltip]="'adminSurveys.deleteTooltip' | transloco"
+          data-testid="builder-delete-button"
         >
           <mat-icon>delete</mat-icon>
         </button>
@@ -33,6 +34,7 @@
         (click)="save()"
         [disabled]="isSaving"
         [matTooltip]="'common.save' | transloco"
+        data-testid="builder-save-button"
       >
         @if (isSaving) {
           <mat-spinner diameter="20"></mat-spinner>
@@ -45,6 +47,7 @@
         color="warn"
         (click)="goBack()"
         [matTooltip]="'common.close' | transloco"
+        data-testid="builder-close-button"
       >
         <mat-icon>close</mat-icon>
       </button>
@@ -81,6 +84,7 @@
                   matInput
                   [value]="template.name"
                   (input)="updateTemplateName($any($event.target).value)"
+                  data-testid="builder-survey-name"
                 />
               </mat-form-field>
               <mat-form-field appearance="outline" class="version-field">
@@ -91,6 +95,7 @@
                   matInput
                   [value]="template.version"
                   (input)="updateTemplateVersion($any($event.target).value)"
+                  data-testid="builder-survey-version"
                 />
               </mat-form-field>
             </div>
@@ -103,6 +108,7 @@
                 [value]="surveyJson.title ?? ''"
                 (input)="updateSurveyTitle($any($event.target).value)"
                 [placeholder]="'adminSurveys.templateBuilder.enterSurveyTitle' | transloco"
+                data-testid="builder-survey-title"
               />
             </mat-form-field>
             <mat-form-field appearance="outline" class="description-field">
@@ -113,6 +119,7 @@
                 (input)="updateSurveyDescription($any($event.target).value)"
                 [placeholder]="'adminSurveys.templateBuilder.enterSurveyDescription' | transloco"
                 rows="2"
+                data-testid="builder-survey-description"
               ></textarea>
             </mat-form-field>
           </div>
@@ -135,6 +142,7 @@
                   class="palette-item"
                   (click)="addQuestion(qType.type)"
                   [matTooltip]="qType.description | transloco"
+                  [attr.data-testid]="'builder-add-question-' + qType.type"
                 >
                   <mat-icon>{{ qType.icon }}</mat-icon>
                   <span>{{ qType.label | transloco }}</span>
@@ -166,6 +174,7 @@
                   (click)="previousPage()"
                   [disabled]="selectedPageIndex === 0"
                   [matTooltip]="'adminSurveys.templateBuilder.previousPage' | transloco"
+                  data-testid="builder-page-prev"
                 >
                   <mat-icon>chevron_left</mat-icon>
                 </button>
@@ -174,6 +183,7 @@
                   (click)="nextPage()"
                   [disabled]="selectedPageIndex === surveyJson.pages.length - 1"
                   [matTooltip]="'adminSurveys.templateBuilder.nextPage' | transloco"
+                  data-testid="builder-page-next"
                 >
                   <mat-icon>chevron_right</mat-icon>
                 </button>
@@ -182,6 +192,7 @@
                 mat-icon-button
                 (click)="addPage()"
                 [matTooltip]="'adminSurveys.templateBuilder.addPage' | transloco"
+                data-testid="builder-page-add"
               >
                 <mat-icon>note_add</mat-icon>
               </button>
@@ -191,6 +202,7 @@
                 (click)="deletePage()"
                 [disabled]="!surveyJson.pages || surveyJson.pages.length <= 1"
                 [matTooltip]="'adminSurveys.templateBuilder.deletePage' | transloco"
+                data-testid="builder-page-delete"
               >
                 <mat-icon>scan_delete</mat-icon>
               </button>
@@ -210,6 +222,7 @@
                     class="question-item"
                     [class.selected]="selectedQuestion === question"
                     (click)="selectQuestion(question, i)"
+                    data-testid="builder-question-item"
                   >
                     <mat-icon class="question-icon">{{ getQuestionIcon(question.type) }}</mat-icon>
                     <div class="question-info">
@@ -221,6 +234,7 @@
                         mat-icon-button
                         (click)="moveQuestionUp(); $event.stopPropagation()"
                         [disabled]="i === 0"
+                        data-testid="builder-question-move-up"
                       >
                         <mat-icon>arrow_upward</mat-icon>
                       </button>
@@ -342,6 +356,7 @@
                     matInput
                     [(ngModel)]="selectedQuestion.name"
                     (ngModelChange)="hasUnsavedChanges = true"
+                    data-testid="builder-question-name"
                   />
                   <mat-hint>{{ 'adminSurveys.templateBuilder.nameIdHint' | transloco }}</mat-hint>
                 </mat-form-field>
@@ -352,6 +367,7 @@
                     matInput
                     [(ngModel)]="selectedQuestion.title"
                     (ngModelChange)="hasUnsavedChanges = true"
+                    data-testid="builder-question-title"
                   />
                 </mat-form-field>
 
@@ -362,6 +378,7 @@
                     [(ngModel)]="selectedQuestion.description"
                     (ngModelChange)="hasUnsavedChanges = true"
                     rows="2"
+                    data-testid="builder-question-description"
                   ></textarea>
                 </mat-form-field>
 
@@ -369,6 +386,7 @@
                   <mat-checkbox
                     [(ngModel)]="selectedQuestion.isRequired"
                     (ngModelChange)="hasUnsavedChanges = true"
+                    data-testid="builder-question-required"
                   >
                     {{ 'adminSurveys.templateBuilder.required' | transloco }}
                   </mat-checkbox>
@@ -384,6 +402,7 @@
                       [ngModel]="getChoicesText()"
                       (ngModelChange)="updateChoicesFromText($event)"
                       rows="4"
+                      data-testid="builder-question-choices"
                     ></textarea>
                   </mat-form-field>
                 }
@@ -416,6 +435,7 @@
                         matInput
                         [(ngModel)]="selectedQuestion.visibleIf"
                         (ngModelChange)="hasUnsavedChanges = true"
+                        data-testid="builder-question-visible-if"
                       />
                       <mat-hint>{{
                         'adminSurveys.templateBuilder.visibleIfHint' | transloco
@@ -430,6 +450,7 @@
                         matInput
                         [(ngModel)]="selectedQuestion.enableIf"
                         (ngModelChange)="hasUnsavedChanges = true"
+                        data-testid="builder-question-enable-if"
                       />
                       <mat-hint>{{
                         'adminSurveys.templateBuilder.enableIfHint' | transloco
@@ -444,6 +465,7 @@
                         matInput
                         [(ngModel)]="selectedQuestion.requiredIf"
                         (ngModelChange)="hasUnsavedChanges = true"
+                        data-testid="builder-question-required-if"
                       />
                       <mat-hint>{{
                         'adminSurveys.templateBuilder.requiredIfHint' | transloco
@@ -461,6 +483,7 @@
                     <mat-select
                       [ngModel]="getSelectedTmFieldPath()"
                       (ngModelChange)="updateTmFieldPath($event)"
+                      data-testid="builder-question-tm-field"
                     >
                       <mat-option value="">{{ 'common.none' | transloco }}</mat-option>
                       @for (option of tmFieldOptions; track option.value) {
@@ -492,7 +515,12 @@
                 </div>
 
                 <div class="editor-actions">
-                  <button mat-raised-button color="warn" (click)="deleteSelectedQuestion()">
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    (click)="deleteSelectedQuestion()"
+                    data-testid="builder-question-delete"
+                  >
                     <mat-icon>delete</mat-icon>
                     {{ 'adminSurveys.templateBuilder.deleteQuestion' | transloco }}
                   </button>

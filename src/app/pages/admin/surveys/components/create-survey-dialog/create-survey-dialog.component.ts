@@ -40,6 +40,7 @@ export interface CreateSurveyDialogResult {
             formControlName="name"
             [placeholder]="'adminSurveys.createDialog.namePlaceholder' | transloco"
             cdkFocusInitial
+            data-testid="create-survey-name-input"
           />
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error>{{ 'adminSurveys.createDialog.nameRequired' | transloco }}</mat-error>
@@ -52,6 +53,7 @@ export interface CreateSurveyDialogResult {
             matInput
             formControlName="version"
             [placeholder]="'adminSurveys.createDialog.versionPlaceholder' | transloco"
+            data-testid="create-survey-version-input"
           />
           <mat-hint>{{ 'adminSurveys.createDialog.versionHint' | transloco }}</mat-hint>
           @if (form.get('version')?.hasError('required') && form.get('version')?.touched) {
@@ -61,10 +63,16 @@ export interface CreateSurveyDialogResult {
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="create-survey-cancel-button">
         {{ 'common.cancel' | transloco }}
       </button>
-      <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="!form.valid">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCreate()"
+        [disabled]="!form.valid"
+        data-testid="create-survey-submit-button"
+      >
         {{ 'adminSurveys.createSurvey' | transloco }}
       </button>
     </mat-dialog-actions>
