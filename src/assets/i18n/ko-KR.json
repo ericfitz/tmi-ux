@@ -80,6 +80,20 @@
       "subtitle": "TMI 기능 확장을 위한 애드온 구성",
       "title": "애드온 관리"
     },
+    "createAutomationUserDialog": {
+      "email": "이메일 (선택 사항)",
+      "emailHint": "선택 사항 — 기본값은 자동 생성된 @tmi.local 주소",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64자, 문자로 시작",
+      "nameMaxLength": "이름은 최대 64자여야 합니다",
+      "nameMinLength": "최소 2자 이상이어야 합니다",
+      "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "자동화 사용자 생성",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\uc790\ub3d9\ud654 \uc0ac\uc6a9\uc790 \uc0dd\uc131",
       "deleteTooltip": "사용자 계정 삭제",
       "filter": {
         "automationOnly": "자동화 계정만 표시"
@@ -304,20 +319,6 @@
         "urlInvalid": "유효한 URL이어야 합니다",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL은 필수입니다"
-      },
-      "createAutomationUserDialog": {
-        "email": "이메일 (선택 사항)",
-        "emailHint": "선택 사항 — 기본값은 자동 생성된 @tmi.local 주소",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64자, 문자로 시작",
-        "nameMaxLength": "이름은 최대 64자여야 합니다",
-        "nameMinLength": "최소 2자 이상이어야 합니다",
-        "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "자동화 사용자 생성",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "웹훅 삭제",

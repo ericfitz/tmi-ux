@@ -80,6 +80,20 @@
       "subtitle": "Configurar complementos para ampliar la funcionalidad de TMI",
       "title": "Gestionar Complementos"
     },
+    "createAutomationUserDialog": {
+      "email": "Correo Electrónico (Opcional)",
+      "emailHint": "Opcional — el valor predeterminado es una dirección @tmi.local generada automáticamente",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 caracteres, comienza con letra",
+      "nameMaxLength": "El nombre debe tener como máximo 64 caracteres",
+      "nameMinLength": "Debe tener al menos 2 caracteres",
+      "namePattern": "Debe comenzar con una letra y terminar con una letra o dígito",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Crear Usuario de Automatización",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "Crear Usuario de Automatizaci\u00f3n",
       "deleteTooltip": "Eliminar cuenta de usuario",
       "filter": {
         "automationOnly": "Mostrar solo cuentas de automatización"
@@ -304,20 +319,6 @@
         "urlInvalid": "Debe ser una URL válida",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "La URL es obligatoria"
-      },
-      "createAutomationUserDialog": {
-        "email": "Correo Electrónico (Opcional)",
-        "emailHint": "Opcional — el valor predeterminado es una dirección @tmi.local generada automáticamente",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 caracteres, comienza con letra",
-        "nameMaxLength": "El nombre debe tener como máximo 64 caracteres",
-        "nameMinLength": "Debe tener al menos 2 caracteres",
-        "namePattern": "Debe comenzar con una letra y terminar con una letra o dígito",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Crear Usuario de Automatización",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Eliminar webhook",

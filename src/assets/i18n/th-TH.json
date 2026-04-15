@@ -78,6 +78,20 @@
       "subtitle": "กำหนดค่าส่วนเสริมสำหรับการขยายฟังก์ชันการทำงานของ TMI",
       "title": "จัดการส่วนเสริม"
     },
+    "createAutomationUserDialog": {
+      "email": "อีเมล (ไม่บังคับ)",
+      "emailHint": "ไม่บังคับ — ค่าเริ่มต้นคือที่อยู่ @tmi.local ที่สร้างอัตโนมัติ",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 ตัวอักษร ขึ้นต้นด้วยตัวอักษร",
+      "nameMaxLength": "ชื่อต้องมีไม่เกิน 64 ตัวอักษร",
+      "nameMinLength": "ต้องมีอย่างน้อย 2 ตัวอักษร",
+      "namePattern": "ต้องขึ้นต้นด้วยตัวอักษรและลงท้ายด้วยตัวอักษรหรือตัวเลข",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "สร้างผู้ใช้อัตโนมัติ",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -251,6 +265,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e1c\u0e39\u0e49\u0e43\u0e0a\u0e49\u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34",
       "deleteTooltip": "ลบบัญชีผู้ใช้",
       "filter": {
         "automationOnly": "แสดงเฉพาะบัญชีอัตโนมัติ"
@@ -299,20 +314,6 @@
         "urlHttpWarningTitle": "URL ของ Webhook ที่ไม่ใช่ HTTPS",
         "urlInvalid": "ต้องเป็น URL ที่ถูกต้อง",
         "urlRequired": "ต้องระบุ URL"
-      },
-      "createAutomationUserDialog": {
-        "email": "อีเมล (ไม่บังคับ)",
-        "emailHint": "ไม่บังคับ — ค่าเริ่มต้นคือที่อยู่ @tmi.local ที่สร้างอัตโนมัติ",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 ตัวอักษร ขึ้นต้นด้วยตัวอักษร",
-        "nameMaxLength": "ชื่อต้องมีไม่เกิน 64 ตัวอักษร",
-        "nameMinLength": "ต้องมีอย่างน้อย 2 ตัวอักษร",
-        "namePattern": "ต้องขึ้นต้นด้วยตัวอักษรและลงท้ายด้วยตัวอักษรหรือตัวเลข",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "สร้างผู้ใช้อัตโนมัติ",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ลบ webhook",

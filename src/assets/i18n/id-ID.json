@@ -80,6 +80,20 @@
       "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI",
       "title": "Kelola Addon"
     },
+    "createAutomationUserDialog": {
+      "email": "Email (Opsional)",
+      "emailHint": "Opsional — default ke alamat @tmi.local yang dibuat otomatis",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 karakter, diawali huruf",
+      "nameMaxLength": "Nama harus maksimal 64 karakter",
+      "nameMinLength": "Harus minimal 2 karakter",
+      "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Buat Pengguna Otomasi",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "Buat Pengguna Otomasi",
       "deleteTooltip": "Hapus akun pengguna",
       "filter": {
         "automationOnly": "Tampilkan hanya akun otomasi"
@@ -304,20 +319,6 @@
         "urlInvalid": "Harus berupa URL yang valid",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL wajib diisi"
-      },
-      "createAutomationUserDialog": {
-        "email": "Email (Opsional)",
-        "emailHint": "Opsional — default ke alamat @tmi.local yang dibuat otomatis",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 karakter, diawali huruf",
-        "nameMaxLength": "Nama harus maksimal 64 karakter",
-        "nameMinLength": "Harus minimal 2 karakter",
-        "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Buat Pengguna Otomasi",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Hapus webhook",

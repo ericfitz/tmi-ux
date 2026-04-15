@@ -80,6 +80,20 @@
       "subtitle": "TMI कार्यक्षमता बढ़ाने के लिए ऐडऑन कॉन्फ़िगर करें",
       "title": "ऐडऑन प्रबंधित करें"
     },
+    "createAutomationUserDialog": {
+      "email": "ईमेल (वैकल्पिक)",
+      "emailHint": "वैकल्पिक — स्वचालित रूप से उत्पन्न @tmi.local पते पर डिफ़ॉल्ट",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 वर्ण, अक्षर से शुरू",
+      "nameMaxLength": "नाम अधिकतम 64 वर्णों का होना चाहिए",
+      "nameMinLength": "कम से कम 2 वर्ण होने चाहिए",
+      "namePattern": "एक अक्षर से शुरू होना चाहिए और एक अक्षर या अंक पर समाप्त होना चाहिए",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "ऑटोमेशन उपयोगकर्ता बनाएं",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -256,6 +270,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u0911\u091f\u094b\u092e\u0947\u0936\u0928 \u0909\u092a\u092f\u094b\u0917\u0915\u0930\u094d\u0924\u093e \u092c\u0928\u093e\u090f\u0902",
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
       "filter": {
         "automationOnly": "केवल ऑटोमेशन खाते दिखाएं"
@@ -306,20 +321,6 @@
         "urlInvalid": "एक वैध URL होना चाहिए",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL आवश्यक है"
-      },
-      "createAutomationUserDialog": {
-        "email": "ईमेल (वैकल्पिक)",
-        "emailHint": "वैकल्पिक — स्वचालित रूप से उत्पन्न @tmi.local पते पर डिफ़ॉल्ट",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 वर्ण, अक्षर से शुरू",
-        "nameMaxLength": "नाम अधिकतम 64 वर्णों का होना चाहिए",
-        "nameMinLength": "कम से कम 2 वर्ण होने चाहिए",
-        "namePattern": "एक अक्षर से शुरू होना चाहिए और एक अक्षर या अंक पर समाप्त होना चाहिए",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "ऑटोमेशन उपयोगकर्ता बनाएं",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook हटाएं",

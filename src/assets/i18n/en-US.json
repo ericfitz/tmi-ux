@@ -86,6 +86,20 @@
       "subtitle": "Configure addons for extending TMI functionality",
       "title": "Manage Addons"
     },
+    "createAutomationUserDialog": {
+      "email": "Email (Optional)",
+      "emailHint": "Optional — defaults to auto-generated @tmi.local address",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 characters, starts with letter",
+      "nameMaxLength": "Name must be at most 64 characters",
+      "nameMinLength": "Must be at least 2 characters",
+      "namePattern": "Must start with a letter and end with a letter or digit",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Create Automation User",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -263,6 +277,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "Create Automation User",
       "deleteTooltip": "Delete user account",
       "filter": {
         "automationOnly": "Show automation accounts only"
@@ -319,20 +334,6 @@
         "urlPlaceholder": "https://example.com/webhook",
         "urlPlaceholder.comment": "This is a URL and should not be translated.",
         "urlRequired": "URL is required"
-      },
-      "createAutomationUserDialog": {
-        "email": "Email (Optional)",
-        "emailHint": "Optional — defaults to auto-generated @tmi.local address",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 characters, starts with letter",
-        "nameMaxLength": "Name must be at most 64 characters",
-        "nameMinLength": "Must be at least 2 characters",
-        "namePattern": "Must start with a letter and end with a letter or digit",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Create Automation User",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Delete webhook",

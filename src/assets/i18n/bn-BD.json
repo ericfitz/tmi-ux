@@ -80,6 +80,20 @@
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
       "title": "অ্যাডঅন পরিচালনা করুন"
     },
+    "createAutomationUserDialog": {
+      "email": "ইমেইল (ঐচ্ছিক)",
+      "emailHint": "ঐচ্ছিক — ডিফল্ট হলো স্বয়ংক্রিয়ভাবে তৈরি @tmi.local ঠিকানা",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "২-৬৪ অক্ষর, অক্ষর দিয়ে শুরু",
+      "nameMaxLength": "নাম সর্বোচ্চ ৬৪ অক্ষর হতে হবে",
+      "nameMinLength": "কমপক্ষে ২ অক্ষর হতে হবে",
+      "namePattern": "একটি অক্ষর দিয়ে শুরু এবং একটি অক্ষর বা সংখ্যা দিয়ে শেষ হতে হবে",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "অটোমেশন ব্যবহারকারী তৈরি করুন",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u0985\u099f\u09cb\u09ae\u09c7\u09b6\u09a8 \u09ac\u09cd\u09af\u09ac\u09b9\u09be\u09b0\u0995\u09be\u09b0\u09c0 \u09a4\u09c8\u09b0\u09bf \u0995\u09b0\u09c1\u09a8",
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
       "filter": {
         "automationOnly": "শুধুমাত্র অটোমেশন অ্যাকাউন্ট দেখান"
@@ -304,20 +319,6 @@
         "urlInvalid": "একটি বৈধ URL হতে হবে",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL প্রয়োজন"
-      },
-      "createAutomationUserDialog": {
-        "email": "ইমেইল (ঐচ্ছিক)",
-        "emailHint": "ঐচ্ছিক — ডিফল্ট হলো স্বয়ংক্রিয়ভাবে তৈরি @tmi.local ঠিকানা",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "২-৬৪ অক্ষর, অক্ষর দিয়ে শুরু",
-        "nameMaxLength": "নাম সর্বোচ্চ ৬৪ অক্ষর হতে হবে",
-        "nameMinLength": "কমপক্ষে ২ অক্ষর হতে হবে",
-        "namePattern": "একটি অক্ষর দিয়ে শুরু এবং একটি অক্ষর বা সংখ্যা দিয়ে শেষ হতে হবে",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "অটোমেশন ব্যবহারকারী তৈরি করুন",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ওয়েবহুক মুছুন",

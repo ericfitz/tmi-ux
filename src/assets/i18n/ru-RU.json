@@ -80,6 +80,20 @@
       "subtitle": "Настройка дополнений для расширения функциональности TMI",
       "title": "Управление Дополнениями"
     },
+    "createAutomationUserDialog": {
+      "email": "Электронная почта (необязательно)",
+      "emailHint": "Необязательно — по умолчанию используется автоматически сгенерированный адрес @tmi.local",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "От 2 до 64 символов, начинается с буквы",
+      "nameMaxLength": "Имя должно содержать не более 64 символов",
+      "nameMinLength": "Должно содержать не менее 2 символов",
+      "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Создать пользователя автоматизации",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u0438",
       "deleteTooltip": "Удалить учётную запись пользователя",
       "filter": {
         "automationOnly": "Показать только учётные записи автоматизации"
@@ -304,20 +319,6 @@
         "urlInvalid": "Должен быть действительный URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL обязателен"
-      },
-      "createAutomationUserDialog": {
-        "email": "Электронная почта (необязательно)",
-        "emailHint": "Необязательно — по умолчанию используется автоматически сгенерированный адрес @tmi.local",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "От 2 до 64 символов, начинается с буквы",
-        "nameMaxLength": "Имя должно содержать не более 64 символов",
-        "nameMinLength": "Должно содержать не менее 2 символов",
-        "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Создать пользователя автоматизации",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Удалить вебхук",

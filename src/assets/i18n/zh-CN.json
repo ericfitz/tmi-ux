@@ -80,6 +80,20 @@
       "subtitle": "配置插件以扩展TMI功能",
       "title": "管理插件"
     },
+    "createAutomationUserDialog": {
+      "email": "电子邮件（可选）",
+      "emailHint": "可选 — 默认为自动生成的 @tmi.local 地址",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 个字符，以字母开头",
+      "nameMaxLength": "名称最多 64 个字符",
+      "nameMinLength": "至少需要 2 个字符",
+      "namePattern": "必须以字母开头，以字母或数字结尾",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "创建自动化用户",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u521b\u5efa\u81ea\u52a8\u5316\u7528\u6237",
       "deleteTooltip": "删除用户账户",
       "filter": {
         "automationOnly": "仅显示自动化账户"
@@ -304,20 +319,6 @@
         "urlInvalid": "必须是有效的URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL为必填项"
-      },
-      "createAutomationUserDialog": {
-        "email": "电子邮件（可选）",
-        "emailHint": "可选 — 默认为自动生成的 @tmi.local 地址",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 个字符，以字母开头",
-        "nameMaxLength": "名称最多 64 个字符",
-        "nameMinLength": "至少需要 2 个字符",
-        "namePattern": "必须以字母开头，以字母或数字结尾",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "创建自动化用户",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "删除webhook",

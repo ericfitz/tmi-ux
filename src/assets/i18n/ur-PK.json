@@ -80,6 +80,20 @@
       "subtitle": "TMI کی فعالیت بڑھانے کے لیے ایڈ آنز ترتیب دیں",
       "title": "ایڈ آنز کا انتظام"
     },
+    "createAutomationUserDialog": {
+      "email": "ای میل (اختیاری)",
+      "emailHint": "اختیاری — ڈیفالٹ خودکار پیدا شدہ @tmi.local پتہ ہے",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2-64 حروف، حرف سے شروع ہو",
+      "nameMaxLength": "نام زیادہ سے زیادہ 64 حروف کا ہونا چاہیے",
+      "nameMinLength": "کم از کم 2 حروف ہونے چاہئیں",
+      "namePattern": "حرف سے شروع ہو اور حرف یا ہندسے پر ختم ہو",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "آٹومیشن صارف بنائیں",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u0622\u0679\u0648\u0645\u06cc\u0634\u0646 \u0635\u0627\u0631\u0641 \u0628\u0646\u0627\u0626\u06cc\u06ba",
       "deleteTooltip": "صارف اکاؤنٹ حذف کریں",
       "filter": {
         "automationOnly": "صرف آٹومیشن اکاؤنٹس دکھائیں"
@@ -304,20 +319,6 @@
         "urlInvalid": "ایک درست URL ہونا ضروری ہے",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ضروری ہے"
-      },
-      "createAutomationUserDialog": {
-        "email": "ای میل (اختیاری)",
-        "emailHint": "اختیاری — ڈیفالٹ خودکار پیدا شدہ @tmi.local پتہ ہے",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2-64 حروف، حرف سے شروع ہو",
-        "nameMaxLength": "نام زیادہ سے زیادہ 64 حروف کا ہونا چاہیے",
-        "nameMinLength": "کم از کم 2 حروف ہونے چاہئیں",
-        "namePattern": "حرف سے شروع ہو اور حرف یا ہندسے پر ختم ہو",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "آٹومیشن صارف بنائیں",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook حذف کریں",

@@ -80,6 +80,20 @@
       "subtitle": "Erweiterungen zur Erweiterung der TMI-Funktionalität konfigurieren",
       "title": "Erweiterungen verwalten"
     },
+    "createAutomationUserDialog": {
+      "email": "E-Mail (Optional)",
+      "emailHint": "Optional — Standard ist eine automatisch generierte @tmi.local-Adresse",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2–64 Zeichen, beginnt mit einem Buchstaben",
+      "nameMaxLength": "Der Name darf maximal 64 Zeichen lang sein",
+      "nameMinLength": "Muss mindestens 2 Zeichen lang sein",
+      "namePattern": "Muss mit einem Buchstaben beginnen und mit einem Buchstaben oder einer Ziffer enden",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Automatisierungsbenutzer erstellen",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "Automatisierungsbenutzer erstellen",
       "deleteTooltip": "Benutzerkonto löschen",
       "filter": {
         "automationOnly": "Nur Automatisierungskonten anzeigen"
@@ -304,20 +319,6 @@
         "urlInvalid": "Muss eine gültige URL sein",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ist erforderlich"
-      },
-      "createAutomationUserDialog": {
-        "email": "E-Mail (Optional)",
-        "emailHint": "Optional — Standard ist eine automatisch generierte @tmi.local-Adresse",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2–64 Zeichen, beginnt mit einem Buchstaben",
-        "nameMaxLength": "Der Name darf maximal 64 Zeichen lang sein",
-        "nameMinLength": "Muss mindestens 2 Zeichen lang sein",
-        "namePattern": "Muss mit einem Buchstaben beginnen und mit einem Buchstaben oder einer Ziffer enden",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Automatisierungsbenutzer erstellen",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook löschen",

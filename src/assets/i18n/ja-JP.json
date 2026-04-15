@@ -80,6 +80,20 @@
       "subtitle": "TMI機能を拡張するアドオンを設定",
       "title": "アドオンの管理"
     },
+    "createAutomationUserDialog": {
+      "email": "メール (任意)",
+      "emailHint": "任意 — デフォルトは自動生成された @tmi.local アドレス",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2〜64文字、文字で始まる",
+      "nameMaxLength": "名前は最大64文字である必要があります",
+      "nameMinLength": "最低2文字必要です",
+      "namePattern": "文字で始まり、文字または数字で終わる必要があります",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "自動化ユーザーを作成",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "\u81ea\u52d5\u5316\u30e6\u30fc\u30b6\u30fc\u3092\u4f5c\u6210",
       "deleteTooltip": "ユーザーアカウントを削除",
       "filter": {
         "automationOnly": "自動化アカウントのみ表示"
@@ -304,20 +319,6 @@
         "urlInvalid": "有効なURLである必要があります",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URLは必須です"
-      },
-      "createAutomationUserDialog": {
-        "email": "メール (任意)",
-        "emailHint": "任意 — デフォルトは自動生成された @tmi.local アドレス",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2〜64文字、文字で始まる",
-        "nameMaxLength": "名前は最大64文字である必要があります",
-        "nameMinLength": "最低2文字必要です",
-        "namePattern": "文字で始まり、文字または数字で終わる必要があります",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "自動化ユーザーを作成",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhookを削除",

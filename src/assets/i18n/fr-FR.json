@@ -80,6 +80,20 @@
       "subtitle": "Configurer les addons pour etendre les fonctionnalites de TMI",
       "title": "Gerer les Modules"
     },
+    "createAutomationUserDialog": {
+      "email": "Adresse e-mail (Optionnelle)",
+      "emailHint": "Optionnel — par défaut, une adresse @tmi.local générée automatiquement",
+      "emailPlaceholder": "user@example.com",
+      "name": "{{common.name}}",
+      "nameHint": "2 à 64 caractères, commence par une lettre",
+      "nameMaxLength": "Le nom doit comporter au maximum 64 caractères",
+      "nameMinLength": "Doit comporter au moins 2 caractères",
+      "namePattern": "Doit commencer par une lettre et se terminer par une lettre ou un chiffre",
+      "namePlaceholder": "automation-user",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "save": "Créer un utilisateur d'automatisation",
+      "title": "{{admin.createAutomationUserDialog.save}}"
+    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -254,6 +268,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
+      "createAutomationUser": "Cr\u00e9er un utilisateur d'automatisation",
       "deleteTooltip": "Supprimer le compte utilisateur",
       "filter": {
         "automationOnly": "Afficher uniquement les comptes d'automatisation"
@@ -304,20 +319,6 @@
         "urlInvalid": "Doit être une URL valide",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "L'URL est requise"
-      },
-      "createAutomationUserDialog": {
-        "email": "Adresse e-mail (Optionnelle)",
-        "emailHint": "Optionnel — par défaut, une adresse @tmi.local générée automatiquement",
-        "emailPlaceholder": "user@example.com",
-        "name": "{{common.name}}",
-        "nameHint": "2 à 64 caractères, commence par une lettre",
-        "nameMaxLength": "Le nom doit comporter au maximum 64 caractères",
-        "nameMinLength": "Doit comporter au moins 2 caractères",
-        "namePattern": "Doit commencer par une lettre et se terminer par une lettre ou un chiffre",
-        "namePlaceholder": "automation-user",
-        "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Créer un utilisateur d'automatisation",
-        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Supprimer le webhook",
