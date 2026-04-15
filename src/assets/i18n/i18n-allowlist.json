@@ -167,6 +167,9 @@
     "createAutomationUserDialog": {
       "name": "{{common.name}}",
       "title": "{{admin.createAutomationUserDialog.save}}"
+    },
+    "users": {
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}"
     }
   },
   "ssvcCalculator": {
@@ -182,6 +185,13 @@
   "debugDialogs": {
     "historyDialog": {
       "summary": "{{ssvcCalculator.summary}}"
+    }
+  },
+  "threatEditor": {
+    "sections": {
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
+      "mitigation": "{{common.mitigation}}"
     }
   }
 }

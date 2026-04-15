@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "自动化账户不允许成为管理员组的成员。自动化账户绝不能拥有应用程序管理功能的访问权限。",
         "currentMembers": "当前成员",
         "noMembers": "此组中没有成员",
         "removeTooltip": "从组中移除",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u521b\u5efa\u81ea\u52a8\u5316\u7528\u6237",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "删除用户账户",
       "filter": {
         "automationOnly": "仅显示自动化账户"
@@ -657,6 +658,7 @@
     "includeInReport": "包含在报告中",
     "includeInTimmyChat": "包含在 Timmy 聊天中",
     "issueUri": "问题URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "最后修改",
     "lastUpdated": "最后更新",
@@ -762,8 +764,7 @@
     "view": "查看",
     "viewMetadata": "查看元数据",
     "viewPermissions": "查看权限",
-    "viewThreat": "查看威胁",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "查看威胁"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
@@ -1563,14 +1564,16 @@
       "title": "选择框架映射"
     },
     "frameworkMappings": "威胁建模框架映射",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "未关联资产",
     "notAssociatedWithCell": "未关联单元格",
     "notAssociatedWithDiagram": "未关联图表",
     "sections": {
-      "classification": "分类",
-      "description": "描述",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "图表参考",
-      "mitigation": "缓解",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "跟踪"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "威胁已完全缓解并验证；剩余风险可接受。",
       "verification_pending": "待验证",
       "verification_pending.description": "缓解已完成；安全团队必须测试或审查有效性。"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "添加权限",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "设为所有者",
     "sourcesCount": "仓库",
     "status": {
+      "active": "活跃",
+      "active.tooltip": "威胁模型正在积极处理中。",
       "approved": "已批准",
       "approved.tooltip": "所有问题已解决并验证；应用程序符合发布或部署的安全标准。",
       "closed": "已关闭",
@@ -1739,9 +1742,7 @@
       "remediation_required": "需要修复",
       "remediation_required.tooltip": "已识别漏洞或问题；开发团队必须解决它们。",
       "verification_pending": "待验证",
-      "verification_pending.tooltip": "修复已完成；安全团队必须测试或审查有效性。",
-      "active": "活跃",
-      "active.tooltip": "威胁模型正在积极处理中。"
+      "verification_pending.tooltip": "修复已完成；安全团队必须测试或审查有效性。"
     },
     "statusLastUpdated": "状态最后更新",
     "tag": "标签",

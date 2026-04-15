@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Учётные записи автоматизации не могут быть участниками группы «Администраторы». Учётные записи автоматизации не должны иметь доступа к административным функциям приложения.",
         "currentMembers": "Текущие участники",
         "noMembers": "В этой группе нет участников",
         "removeTooltip": "Удалить из группы",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u0438",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Удалить учётную запись пользователя",
       "filter": {
         "automationOnly": "Показать только учётные записи автоматизации"
@@ -657,6 +658,7 @@
     "includeInReport": "Включить в отчет",
     "includeInTimmyChat": "Включить в чат Timmy",
     "issueUri": "URL Задачи",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",
     "lastUpdated": "Последнее обновление",
@@ -762,8 +764,7 @@
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
-    "viewThreat": "Просмотр Угрозы",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Просмотр Угрозы"
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",
@@ -1563,14 +1564,16 @@
       "title": "Выбрать сопоставления фреймворка"
     },
     "frameworkMappings": "Сопоставления инфраструктуры модели угроз",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "Не связано с активом",
     "notAssociatedWithCell": "Не связано с ячейкой",
     "notAssociatedWithDiagram": "Не связано с диаграммой",
     "sections": {
-      "classification": "Классификация",
-      "description": "Описание",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Ссылки на диаграммы",
-      "mitigation": "Смягчение",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Отслеживание"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "Угроза полностью смягчена и проверена; остаточный риск приемлем.",
       "verification_pending": "Ожидает проверки",
       "verification_pending.description": "Смягчение завершено; команда безопасности должна проверить эффективность."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Добавить разрешение",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "Назначить владельцем",
     "sourcesCount": "Репозитории",
     "status": {
+      "active": "Активный",
+      "active.tooltip": "Модель угроз находится в активной разработке.",
       "approved": "Одобрено",
       "approved.tooltip": "Все проблемы устранены и проверены; приложение соответствует критериям безопасности для релиза или развёртывания.",
       "closed": "Закрыто",
@@ -1739,9 +1742,7 @@
       "remediation_required": "Требуется исправление",
       "remediation_required.tooltip": "Выявлены уязвимости или проблемы; разработка должна их устранить.",
       "verification_pending": "Ожидает проверки",
-      "verification_pending.tooltip": "Исправление завершено; команда безопасности должна проверить эффективность.",
-      "active": "Активный",
-      "active.tooltip": "Модель угроз находится в активной разработке."
+      "verification_pending.tooltip": "Исправление завершено; команда безопасности должна проверить эффективность."
     },
     "statusLastUpdated": "Статус последнего обновления",
     "tag": "Тег",

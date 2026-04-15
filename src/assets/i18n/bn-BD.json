@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "অটোমেশন অ্যাকাউন্টগুলোকে প্রশাসক গ্রুপের সদস্য হওয়ার অনুমতি নেই। অটোমেশন অ্যাকাউন্টগুলোর কখনোই অ্যাপ্লিকেশনের প্রশাসনিক কার্যাবলীতে অ্যাক্সেস থাকা উচিত নয়।",
         "currentMembers": "বর্তমান সদস্য",
         "noMembers": "এই গ্রুপে কোনো সদস্য নেই",
         "removeTooltip": "গ্রুপ থেকে সরান",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0985\u099f\u09cb\u09ae\u09c7\u09b6\u09a8 \u09ac\u09cd\u09af\u09ac\u09b9\u09be\u09b0\u0995\u09be\u09b0\u09c0 \u09a4\u09c8\u09b0\u09bf \u0995\u09b0\u09c1\u09a8",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
       "filter": {
         "automationOnly": "শুধুমাত্র অটোমেশন অ্যাকাউন্ট দেখান"
@@ -657,6 +658,7 @@
     "includeInReport": "প্রতিবেদনে অন্তর্ভুক্ত করুন",
     "includeInTimmyChat": "Timmy চ্যাটে অন্তর্ভুক্ত করুন",
     "issueUri": "সমস্যা URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "সর্বশেষ পরিবর্তিত",
     "lastUpdated": "সর্বশেষ আপডেট",
@@ -762,8 +764,7 @@
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
-    "viewThreat": "হুমকি দেখুন",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "হুমকি দেখুন"
   },
   "contextMenu": {
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",
@@ -1563,14 +1564,16 @@
       "title": "ফ্রেমওয়ার্ক ম্যাপিং নির্বাচন করুন"
     },
     "frameworkMappings": "হুমকি মডেল ফ্রেমওয়ার্ক ম্যাপিং",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
     "notAssociatedWithCell": "কোনো সেলের সাথে সম্পর্কিত নয়",
     "notAssociatedWithDiagram": "কোনো ডায়াগ্রামের সাথে সম্পর্কিত নয়",
     "sections": {
-      "classification": "শ্রেণীবিভাগ",
-      "description": "বর্ণনা",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "ডায়াগ্রাম রেফারেন্স",
-      "mitigation": "প্রশমন",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "ট্র্যাকিং"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "হুমকিটি সম্পূর্ণরূপে প্রশমিত এবং যাচাইকৃত; অবশিষ্ট ঝুঁকি গ্রহণযোগ্য।",
       "verification_pending": "যাচাইকরণ বাকি",
       "verification_pending.description": "প্রশমন সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা পরীক্ষা বা পর্যালোচনা করতে হবে।"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "অনুমতি যোগ করুন",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "মালিক হিসেবে সেট করুন",
     "sourcesCount": "রিপো",
     "status": {
+      "active": "সক্রিয়",
+      "active.tooltip": "হুমকি মডেলটিতে সক্রিয়ভাবে কাজ চলছে।",
       "approved": "অনুমোদিত",
       "approved.tooltip": "সমস্ত সমস্যা সমাধান এবং যাচাই করা হয়েছে; অ্যাপ্লিকেশনটি রিলিজ বা ডিপ্লয়মেন্টের জন্য নিরাপত্তা মানদণ্ড পূরণ করে।",
       "closed": "বন্ধ",
@@ -1739,9 +1742,7 @@
       "remediation_required": "প্রতিকার প্রয়োজন",
       "remediation_required.tooltip": "দুর্বলতা বা সমস্যা চিহ্নিত করা হয়েছে; ডেভেলপমেন্টকে সেগুলো সমাধান করতে হবে।",
       "verification_pending": "যাচাইকরণ বাকি",
-      "verification_pending.tooltip": "প্রতিকার সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা যাচাই করতে হবে।",
-      "active": "সক্রিয়",
-      "active.tooltip": "হুমকি মডেলটিতে সক্রিয়ভাবে কাজ চলছে।"
+      "verification_pending.tooltip": "প্রতিকার সম্পূর্ণ; নিরাপত্তা দলকে কার্যকারিতা যাচাই করতে হবে।"
     },
     "statusLastUpdated": "স্থিতি সর্বশেষ আপডেট হয়েছে",
     "tag": "ট্যাগ",

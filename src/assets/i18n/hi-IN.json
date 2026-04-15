@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "ऑटोमेशन खातों को प्रशासक समूह का सदस्य बनने की अनुमति नहीं है। ऑटोमेशन खातों को एप्लिकेशन के प्रशासनिक कार्यों तक कभी भी पहुंच नहीं होनी चाहिए।",
         "currentMembers": "वर्तमान सदस्य",
         "noMembers": "इस समूह में कोई सदस्य नहीं",
         "removeTooltip": "समूह से हटाएं",
@@ -270,7 +271,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0911\u091f\u094b\u092e\u0947\u0936\u0928 \u0909\u092a\u092f\u094b\u0917\u0915\u0930\u094d\u0924\u093e \u092c\u0928\u093e\u090f\u0902",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
       "filter": {
         "automationOnly": "केवल ऑटोमेशन खाते दिखाएं"
@@ -659,6 +660,7 @@
     "includeInReport": "रिपोर्ट में शामिल करें",
     "includeInTimmyChat": "Timmy चैट में शामिल करें",
     "issueUri": "समस्या URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "अंतिम संशोधित",
     "lastUpdated": "अंतिम अपडेट",
@@ -764,8 +766,7 @@
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियां देखें",
-    "viewThreat": "खतरा देखें",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "खतरा देखें"
   },
   "contextMenu": {
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",
@@ -1590,14 +1591,16 @@
       "title": "फ्रेमवर्क मैपिंग चुनें"
     },
     "frameworkMappings": "खतरा मॉडल ढांचा मैपिंग",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
     "notAssociatedWithCell": "किसी सेल से संबद्ध नहीं",
     "notAssociatedWithDiagram": "किसी डायग्राम से संबद्ध नहीं",
     "sections": {
-      "classification": "वर्गीकरण",
-      "description": "विवरण",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "आरेख संदर्भ",
-      "mitigation": "शमन",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "ट्रैकिंग"
     },
     "threatPriority": {
@@ -1647,9 +1650,7 @@
       "resolved.description": "खतरा पूरी तरह से कम और सत्यापित है; अवशिष्ट जोखिम स्वीकार्य है।",
       "verification_pending": "सत्यापन प्रतीक्षित",
       "verification_pending.description": "शमन पूर्ण है; सुरक्षा टीम को प्रभावशीलता का परीक्षण या समीक्षा करनी चाहिए।"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "अनुमति जोड़ें",
@@ -1747,6 +1748,8 @@
     "setAsOwner": "स्वामी के रूप में सेट करें",
     "sourcesCount": "रिपोज़",
     "status": {
+      "active": "सक्रिय",
+      "active.tooltip": "खतरा मॉडल पर सक्रिय रूप से काम किया जा रहा है।",
       "approved": "स्वीकृत",
       "approved.tooltip": "सभी समस्याएं हल और सत्यापित हैं; एप्लिकेशन रिलीज़ या परिनियोजन के लिए सुरक्षा मानदंडों को पूरा करता है।",
       "closed": "बंद",
@@ -1766,9 +1769,7 @@
       "remediation_required": "सुधार आवश्यक",
       "remediation_required.tooltip": "भेद्यताएं या समस्याएं पहचानी गई हैं; विकास को उन्हें संबोधित करना चाहिए।",
       "verification_pending": "सत्यापन प्रतीक्षित",
-      "verification_pending.tooltip": "सुधार पूर्ण है; सुरक्षा टीम को प्रभावशीलता सत्यापित करनी चाहिए।",
-      "active": "सक्रिय",
-      "active.tooltip": "खतरा मॉडल पर सक्रिय रूप से काम किया जा रहा है।"
+      "verification_pending.tooltip": "सुधार पूर्ण है; सुरक्षा टीम को प्रभावशीलता सत्यापित करनी चाहिए।"
     },
     "statusLastUpdated": "स्थिति अंतिम बार अपडेट की गई",
     "tag": "टैग",

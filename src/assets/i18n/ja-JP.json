@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "自動化アカウントは管理者グループのメンバーになることが許可されていません。自動化アカウントはアプリケーションの管理機能にアクセスできてはなりません。",
         "currentMembers": "現在のメンバー",
         "noMembers": "このグループにメンバーはいません",
         "removeTooltip": "グループから削除",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u81ea\u52d5\u5316\u30e6\u30fc\u30b6\u30fc\u3092\u4f5c\u6210",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "ユーザーアカウントを削除",
       "filter": {
         "automationOnly": "自動化アカウントのみ表示"
@@ -657,6 +658,7 @@
     "includeInReport": "レポートに含める",
     "includeInTimmyChat": "Timmyチャットに含める",
     "issueUri": "課題URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "最終更新日",
     "lastUpdated": "最終更新",
@@ -762,8 +764,7 @@
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
-    "viewThreat": "脅威を表示",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "脅威を表示"
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",
@@ -1574,14 +1575,16 @@
       "title": "フレームワークマッピングを選択"
     },
     "frameworkMappings": "脅威モデルフレームワークマッピング",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
     "notAssociatedWithCell": "セルに関連付けられていません",
     "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません",
     "sections": {
-      "classification": "分類",
-      "description": "説明",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "図参照",
-      "mitigation": "軽減",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "追跡"
     },
     "threatPriority": {
@@ -1631,9 +1634,7 @@
       "resolved.description": "脅威は完全に軽減され検証されました。残存リスクは許容範囲内です。",
       "verification_pending": "検証待ち",
       "verification_pending.description": "軽減策が完了。セキュリティチームが有効性をテストまたはレビューする必要があります。"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "権限を追加",
@@ -1731,6 +1732,8 @@
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
+      "active": "アクティブ",
+      "active.tooltip": "脅威モデルは現在作業中です。",
       "approved": "承認済み",
       "approved.tooltip": "すべての問題が解決され検証されました。アプリケーションはリリースまたはデプロイのセキュリティ基準を満たしています。",
       "closed": "クローズ",
@@ -1750,9 +1753,7 @@
       "remediation_required": "修復が必要",
       "remediation_required.tooltip": "脆弱性または問題が特定されました。開発チームが対処する必要があります。",
       "verification_pending": "検証待ち",
-      "verification_pending.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。",
-      "active": "アクティブ",
-      "active.tooltip": "脅威モデルは現在作業中です。"
+      "verification_pending.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。"
     },
     "statusLastUpdated": "ステータス最終更新",
     "tag": "タグ",

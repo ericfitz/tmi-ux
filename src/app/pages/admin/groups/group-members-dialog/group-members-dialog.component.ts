@@ -8,7 +8,7 @@ import {
 } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
   FORM_MATERIAL_IMPORTS,
@@ -68,6 +68,7 @@ export class GroupMembersDialogComponent implements OnInit {
     private userAdminService: UserAdminService,
     private logger: LoggerService,
     private authService: AuthService,
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -157,6 +158,14 @@ export class GroupMembersDialogComponent implements OnInit {
   addMember(user: AdminUser): void {
     this.addingMember = true;
     this.errorMessage = '';
+
+    if (this.data.group.group_name === 'administrators' && user.automation) {
+      this.errorMessage = this.translocoService.translate(
+        'admin.groups.membersDialog.automationAdminBlocked',
+      );
+      this.addingMember = false;
+      return;
+    }
 
     const request: AddGroupMemberRequest = {
       user_internal_uuid: user.internal_uuid,

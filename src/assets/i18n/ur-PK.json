@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "آٹومیشن اکاؤنٹس کو ایڈمنسٹریٹرز گروپ کا رکن بننے کی اجازت نہیں ہے۔ آٹومیشن اکاؤنٹس کو ایپلیکیشن کے انتظامی افعال تک کبھی رسائی نہیں ہونی چاہیے۔",
         "currentMembers": "موجودہ اراکین",
         "noMembers": "اس گروپ میں کوئی اراکین نہیں",
         "removeTooltip": "گروپ سے ہٹائیں",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0622\u0679\u0648\u0645\u06cc\u0634\u0646 \u0635\u0627\u0631\u0641 \u0628\u0646\u0627\u0626\u06cc\u06ba",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "صارف اکاؤنٹ حذف کریں",
       "filter": {
         "automationOnly": "صرف آٹومیشن اکاؤنٹس دکھائیں"
@@ -657,6 +658,7 @@
     "includeInReport": "رپورٹ میں شامل کریں",
     "includeInTimmyChat": "Timmy چیٹ میں شامل کریں",
     "issueUri": "مسئلہ URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "آخری ترمیم",
     "lastUpdated": "آخری اپڈیٹ",
@@ -762,8 +764,7 @@
     "view": "دیکھیں",
     "viewMetadata": "میٹا ڈیٹا دیکھیں",
     "viewPermissions": "اجازتیں دیکھیں",
-    "viewThreat": "خطرہ دیکھیں",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "خطرہ دیکھیں"
   },
   "contextMenu": {
     "addInverseConnection": "الٹا کنکشن شامل کریں",
@@ -1563,14 +1564,16 @@
       "title": "Framework Mappings منتخب کریں"
     },
     "frameworkMappings": "دھمکی ماڈلنگ فریم ورک کی نقشہ سازی",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں",
     "notAssociatedWithCell": "کسی سیل سے منسلک نہیں",
     "notAssociatedWithDiagram": "کسی ڈایاگرام سے منسلک نہیں",
     "sections": {
-      "classification": "درجہ بندی",
-      "description": "تفصیل",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "ڈایاگرام حوالہ جات",
-      "mitigation": "تخفیف",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "نگرانی"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "خطرے کی مکمل تخفیف اور تصدیق ہو گئی ہے؛ باقی خطرہ قابل قبول ہے۔",
       "verification_pending": "تصدیق زیر التواء",
       "verification_pending.description": "تخفیف مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی جانچ یا جائزہ لینا ہوگا۔"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "اجازت شامل کریں",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
+      "active": "فعال",
+      "active.tooltip": "خطرے کے ماڈل پر فعال طور پر کام ہو رہا ہے۔",
       "approved": "منظور شدہ",
       "approved.tooltip": "تمام مسائل حل اور تصدیق شدہ ہیں؛ ایپلیکیشن ریلیز یا تعیناتی کے سیکیورٹی معیار پر پورا اترتی ہے۔",
       "closed": "بند",
@@ -1739,9 +1742,7 @@
       "remediation_required": "تدارک درکار",
       "remediation_required.tooltip": "کمزوریاں یا مسائل کی شناخت ہو گئی ہے؛ ترقی کو ان کو حل کرنا ہوگا۔",
       "verification_pending": "تصدیق زیر التواء",
-      "verification_pending.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔",
-      "active": "فعال",
-      "active.tooltip": "خطرے کے ماڈل پر فعال طور پر کام ہو رہا ہے۔"
+      "verification_pending.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔"
     },
     "statusLastUpdated": "حیثیت آخری بار اپ ڈیٹ ہوئی",
     "tag": "ٹیگ",

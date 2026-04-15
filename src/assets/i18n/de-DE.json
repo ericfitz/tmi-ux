@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Automatisierungskonten dürfen nicht Mitglieder der Administratorengruppe sein. Automatisierungskonten dürfen niemals Zugriff auf administrative Funktionen der Anwendung haben.",
         "currentMembers": "Aktuelle Mitglieder",
         "noMembers": "Keine Mitglieder in dieser Gruppe",
         "removeTooltip": "Aus Gruppe entfernen",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Automatisierungsbenutzer erstellen",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Benutzerkonto löschen",
       "filter": {
         "automationOnly": "Nur Automatisierungskonten anzeigen"
@@ -657,6 +658,7 @@
     "includeInReport": "In Bericht aufnehmen",
     "includeInTimmyChat": "In Timmy-Chat einbeziehen",
     "issueUri": "Problem-URL",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Zuletzt geändert",
     "lastUpdated": "Zuletzt aktualisiert",
@@ -762,8 +764,7 @@
     "view": "Ansicht",
     "viewMetadata": "Metadaten anzeigen",
     "viewPermissions": "Berechtigungen anzeigen",
-    "viewThreat": "Bedrohung anzeigen",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Bedrohung anzeigen"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
@@ -1563,14 +1564,16 @@
       "title": "Framework-Zuordnungen auswählen"
     },
     "frameworkMappings": "Bedrohungsmodell-Framework-Zuordnungen",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
     "sections": {
-      "classification": "Klassifizierung",
-      "description": "Beschreibung",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Diagrammverweise",
-      "mitigation": "Risikominderung",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Verfolgung"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "Die Bedrohung ist vollständig gemindert und verifiziert; Restrisiko ist akzeptabel.",
       "verification_pending": "Überprüfung ausstehend",
       "verification_pending.description": "Minderung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "Als Besitzer festlegen",
     "sourcesCount": "Repos",
     "status": {
+      "active": "Aktiv",
+      "active.tooltip": "Das Bedrohungsmodell wird aktiv bearbeitet.",
       "approved": "Genehmigt",
       "approved.tooltip": "Alle Probleme sind gelöst und verifiziert; die Anwendung erfüllt Sicherheitskriterien für Freigabe oder Bereitstellung.",
       "closed": "Geschlossen",
@@ -1739,9 +1742,7 @@
       "remediation_required": "Behebung erforderlich",
       "remediation_required.tooltip": "Schwachstellen oder Probleme wurden identifiziert; Entwicklung muss sie beheben.",
       "verification_pending": "Überprüfung ausstehend",
-      "verification_pending.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen.",
-      "active": "Aktiv",
-      "active.tooltip": "Das Bedrohungsmodell wird aktiv bearbeitet."
+      "verification_pending.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
     },
     "statusLastUpdated": "Status zuletzt aktualisiert",
     "tag": "Tag",

@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Les comptes d'automatisation ne sont pas autorisés à être membres du groupe Administrateurs. Les comptes d'automatisation ne doivent jamais avoir accès aux fonctions d'administration de l'application.",
         "currentMembers": "Membres actuels",
         "noMembers": "Aucun membre dans ce groupe",
         "removeTooltip": "Retirer du groupe",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Cr\u00e9er un utilisateur d'automatisation",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Supprimer le compte utilisateur",
       "filter": {
         "automationOnly": "Afficher uniquement les comptes d'automatisation"
@@ -657,6 +658,7 @@
     "includeInReport": "Inclure dans le Rapport",
     "includeInTimmyChat": "Inclure dans le chat Timmy",
     "issueUri": "URL du Probleme",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Derniere Modification",
     "lastUpdated": "Derniere mise a jour",
@@ -762,8 +764,7 @@
     "view": "Voir",
     "viewMetadata": "Voir les Metadonnees",
     "viewPermissions": "Voir les Permissions",
-    "viewThreat": "Voir la Menace",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Voir la Menace"
   },
   "contextMenu": {
     "addInverseConnection": "Ajouter une connexion inverse",
@@ -1563,14 +1564,16 @@
       "title": "Sélectionner les cartographies des cadres"
     },
     "frameworkMappings": "Mappages du Framework de Modélisation des Menaces",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "Non associe a un actif",
     "notAssociatedWithCell": "Non associe a une cellule",
     "notAssociatedWithDiagram": "Non associe a un diagramme",
     "sections": {
-      "classification": "Classification",
-      "description": "Description",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Références du Diagramme",
-      "mitigation": "Atténuation",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Suivi"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "La menace est entierement attenuee et verifiee ; le risque residuel est acceptable.",
       "verification_pending": "Verification en attente",
       "verification_pending.description": "L'attenuation est terminee ; l'equipe de securite doit tester ou verifier l'efficacite."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Ajouter une permission",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "Definir comme proprietaire",
     "sourcesCount": "Depots",
     "status": {
+      "active": "Actif",
+      "active.tooltip": "Le modèle de menaces est en cours de travail actif.",
       "approved": "Approuve",
       "approved.tooltip": "Tous les problemes sont resolus et verifies ; l'application repond aux criteres de securite pour la mise en production ou le deploiement.",
       "closed": "Clos",
@@ -1739,9 +1742,7 @@
       "remediation_required": "Remediation requise",
       "remediation_required.tooltip": "Des vulnerabilites ou problemes ont ete identifies ; le developpement doit les traiter.",
       "verification_pending": "Verification en attente",
-      "verification_pending.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite.",
-      "active": "Actif",
-      "active.tooltip": "Le modèle de menaces est en cours de travail actif."
+      "verification_pending.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite."
     },
     "statusLastUpdated": "Derniere mise a jour du statut",
     "tag": "Étiquette",

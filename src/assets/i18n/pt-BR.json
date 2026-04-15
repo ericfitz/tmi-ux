@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Contas de automação não podem ser membros do grupo Administradores. Contas de automação nunca devem ter acesso às funções administrativas do aplicativo.",
         "currentMembers": "Membros Atuais",
         "noMembers": "Nenhum membro neste grupo",
         "removeTooltip": "Remover do grupo",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Criar Usu\u00e1rio de Automa\u00e7\u00e3o",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Excluir conta de usuario",
       "filter": {
         "automationOnly": "Mostrar somente contas de automação"
@@ -657,6 +658,7 @@
     "includeInReport": "Incluir no Relatório",
     "includeInTimmyChat": "Incluir no chat do Timmy",
     "issueUri": "URL do Problema",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Ultima Modificacao",
     "lastUpdated": "Ultima atualizacao",
@@ -762,8 +764,7 @@
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
-    "viewThreat": "Visualizar Ameaca",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Visualizar Ameaca"
   },
   "contextMenu": {
     "addInverseConnection": "Adicionar Conexao Inversa",
@@ -1591,14 +1592,16 @@
       "title": "Selecionar Mapeamentos de Framework"
     },
     "frameworkMappings": "Mapeamentos de Estrutura de Modelo de Ameaça",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "Nao associado a um ativo",
     "notAssociatedWithCell": "Nao Associado a uma Celula",
     "notAssociatedWithDiagram": "Nao Associado a um Diagrama",
     "sections": {
-      "classification": "Classificação",
-      "description": "Descrição",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Referências de Diagramas",
-      "mitigation": "Mitigação",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Rastreamento"
     },
     "threatPriority": {
@@ -1648,9 +1651,7 @@
       "resolved.description": "A ameaca esta totalmente mitigada e verificada; o risco residual e aceitavel.",
       "verification_pending": "Verificacao Pendente",
       "verification_pending.description": "A mitigacao esta completa; a equipe de seguranca deve testar ou revisar a eficacia."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Adicionar Permissao",
@@ -1748,6 +1749,8 @@
     "setAsOwner": "Definir como Proprietario",
     "sourcesCount": "Repositorios",
     "status": {
+      "active": "Ativo",
+      "active.tooltip": "O modelo de ameaças está sendo trabalhado ativamente.",
       "approved": "Aprovada",
       "approved.tooltip": "Todos os problemas foram resolvidos e verificados; a aplicacao atende aos criterios de seguranca para lancamento ou implantacao.",
       "closed": "Fechada",
@@ -1767,9 +1770,7 @@
       "remediation_required": "Remediacao Necessaria",
       "remediation_required.tooltip": "Vulnerabilidades ou problemas foram identificados; o desenvolvimento deve trata-los.",
       "verification_pending": "Verificacao Pendente",
-      "verification_pending.tooltip": "A remediacao esta completa; a equipe de seguranca deve verificar a eficacia.",
-      "active": "Ativo",
-      "active.tooltip": "O modelo de ameaças está sendo trabalhado ativamente."
+      "verification_pending.tooltip": "A remediacao esta completa; a equipe de seguranca deve verificar a eficacia."
     },
     "statusLastUpdated": "Ultima Atualizacao do Status",
     "tag": "Etiqueta",

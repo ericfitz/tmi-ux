@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Akun otomasi tidak diizinkan menjadi anggota grup Administrator. Akun otomasi tidak boleh memiliki akses ke fungsi administratif aplikasi.",
         "currentMembers": "Anggota Saat Ini",
         "noMembers": "Tidak ada anggota dalam grup ini",
         "removeTooltip": "Keluarkan dari grup",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Buat Pengguna Otomasi",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Hapus akun pengguna",
       "filter": {
         "automationOnly": "Tampilkan hanya akun otomasi"
@@ -657,6 +658,7 @@
     "includeInReport": "Sertakan dalam Laporan",
     "includeInTimmyChat": "Sertakan dalam obrolan Timmy",
     "issueUri": "URL Isu",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
     "lastUpdated": "Terakhir diperbarui",
@@ -762,8 +764,7 @@
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
-    "viewThreat": "Lihat Ancaman",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Lihat Ancaman"
   },
   "contextMenu": {
     "addInverseConnection": "Tambah Koneksi Terbalik",
@@ -1563,14 +1564,16 @@
       "title": "Pilih Pemetaan Kerangka"
     },
     "frameworkMappings": "Pemetaan Kerangka Model Ancaman",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
     "notAssociatedWithCell": "Tidak Terkait dengan Sel",
     "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram",
     "sections": {
-      "classification": "Klasifikasi",
-      "description": "Deskripsi",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Referensi Diagram",
-      "mitigation": "Mitigasi",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Pelacakan"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "Ancaman telah sepenuhnya dimitigasi dan diverifikasi; risiko residual dapat diterima.",
       "verification_pending": "Menunggu Verifikasi",
       "verification_pending.description": "Mitigasi selesai; tim keamanan harus menguji atau meninjau efektivitas."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Tambah Izin",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
+      "active": "Aktif",
+      "active.tooltip": "Model ancaman sedang dikerjakan secara aktif.",
       "approved": "Disetujui",
       "approved.tooltip": "Semua masalah telah diselesaikan dan diverifikasi; aplikasi memenuhi kriteria keamanan untuk rilis atau penyebaran.",
       "closed": "Ditutup",
@@ -1739,9 +1742,7 @@
       "remediation_required": "Remediasi Diperlukan",
       "remediation_required.tooltip": "Kerentanan atau masalah telah diidentifikasi; pengembangan harus mengatasinya.",
       "verification_pending": "Menunggu Verifikasi",
-      "verification_pending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas.",
-      "active": "Aktif",
-      "active.tooltip": "Model ancaman sedang dikerjakan secara aktif."
+      "verification_pending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas."
     },
     "statusLastUpdated": "Status Terakhir Diperbarui",
     "tag": "Tag",

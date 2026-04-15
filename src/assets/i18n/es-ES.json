@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "No se permite que las cuentas de automatización sean miembros del grupo de Administradores. Las cuentas de automatización nunca deben tener acceso a las funciones administrativas de la aplicación.",
         "currentMembers": "Miembros Actuales",
         "noMembers": "No hay miembros en este grupo",
         "removeTooltip": "Eliminar del grupo",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Crear Usuario de Automatizaci\u00f3n",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Eliminar cuenta de usuario",
       "filter": {
         "automationOnly": "Mostrar solo cuentas de automatización"
@@ -657,6 +658,7 @@
     "includeInReport": "Incluir en el Informe",
     "includeInTimmyChat": "Incluir en el chat de Timmy",
     "issueUri": "URL del Problema",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "Última Modificación",
     "lastUpdated": "Última actualización",
@@ -762,8 +764,7 @@
     "view": "Ver",
     "viewMetadata": "Ver Metadatos",
     "viewPermissions": "Ver Permisos",
-    "viewThreat": "Ver Amenaza",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "Ver Amenaza"
   },
   "contextMenu": {
     "addInverseConnection": "Añadir Conexión Inversa",
@@ -1563,14 +1564,16 @@
       "title": "Seleccionar asignaciones del marco"
     },
     "frameworkMappings": "Asignaciones de Marco de Modelado de Amenazas",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "No asociado con un activo",
     "notAssociatedWithCell": "No Asociado con una Celda",
     "notAssociatedWithDiagram": "No Asociado con un Diagrama",
     "sections": {
-      "classification": "Clasificación",
-      "description": "Descripción",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "Referencias de Diagrama",
-      "mitigation": "Mitigación",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "Seguimiento"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "La amenaza está completamente mitigada y verificada; el riesgo residual es aceptable.",
       "verification_pending": "Verificación Pendiente",
       "verification_pending.description": "La mitigación está completa; el equipo de seguridad debe probar o revisar la efectividad."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "Añadir Permiso",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "Establecer como Propietario",
     "sourcesCount": "Repositorios",
     "status": {
+      "active": "Activo",
+      "active.tooltip": "El modelo de amenazas está siendo trabajado activamente.",
       "approved": "Aprobado",
       "approved.tooltip": "Todos los problemas están resueltos y verificados; la aplicación cumple los criterios de seguridad para lanzamiento o despliegue.",
       "closed": "Cerrado",
@@ -1739,9 +1742,7 @@
       "remediation_required": "Remediación Requerida",
       "remediation_required.tooltip": "Se han identificado vulnerabilidades o problemas; el desarrollo debe abordarlos.",
       "verification_pending": "Verificación Pendiente",
-      "verification_pending.tooltip": "La remediación está completa; el equipo de seguridad debe verificar la efectividad.",
-      "active": "Activo",
-      "active.tooltip": "El modelo de amenazas está siendo trabajado activamente."
+      "verification_pending.tooltip": "La remediación está completa; el equipo de seguridad debe verificar la efectividad."
     },
     "statusLastUpdated": "Última Actualización del Estado",
     "tag": "Etiqueta",

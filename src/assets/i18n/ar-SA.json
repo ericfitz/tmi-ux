@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "لا يُسمح لحسابات الأتمتة بأن تكون أعضاءً في مجموعة المسؤولين. يجب ألا تحصل حسابات الأتمتة على حق الوصول إلى الوظائف الإدارية للتطبيق مطلقاً.",
         "currentMembers": "الأعضاء الحاليون",
         "noMembers": "لا يوجد أعضاء في هذه المجموعة",
         "removeTooltip": "إزالة من المجموعة",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0625\u0646\u0634\u0627\u0621 \u0645\u0633\u062a\u062e\u062f\u0645 \u0623\u062a\u0645\u062a\u0629",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "حذف حساب المستخدم",
       "filter": {
         "automationOnly": "عرض حسابات الأتمتة فقط"
@@ -657,6 +658,7 @@
     "includeInReport": "تضمين في التقرير",
     "includeInTimmyChat": "تضمين في محادثة Timmy",
     "issueUri": "رابط المشكلة",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "آخر تعديل",
     "lastUpdated": "آخر تحديث",
@@ -762,8 +764,7 @@
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
-    "viewThreat": "عرض التهديد",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "عرض التهديد"
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",
@@ -1574,14 +1575,16 @@
       "title": "تحديد تعيينات الإطار عمل"
     },
     "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط",
     "sections": {
-      "classification": "التصنيف",
-      "description": "الوصف",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "مراجع الرسم البياني",
-      "mitigation": "التخفيف",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "التتبع"
     },
     "threatPriority": {
@@ -1631,9 +1634,7 @@
       "resolved.description": "تم تخفيف التهديد بالكامل والتحقق منه؛ المخاطر المتبقية مقبولة.",
       "verification_pending": "في انتظار التحقق",
       "verification_pending.description": "اكتمل التخفيف؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "إضافة إذن",
@@ -1731,6 +1732,8 @@
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
+      "active": "نشط",
+      "active.tooltip": "نموذج التهديد قيد العمل النشط.",
       "approved": "موافق عليه",
       "approved.tooltip": "تم حل جميع المشكلات والتحقق منها؛ يلبي التطبيق معايير الأمان للإصدار أو النشر.",
       "closed": "مغلق",
@@ -1750,9 +1753,7 @@
       "remediation_required": "مطلوب المعالجة",
       "remediation_required.tooltip": "تم تحديد الثغرات الأمنية أو المشكلات؛ يجب على فريق التطوير معالجتها.",
       "verification_pending": "في انتظار التحقق",
-      "verification_pending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية.",
-      "active": "نشط",
-      "active.tooltip": "نموذج التهديد قيد العمل النشط."
+      "verification_pending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
     },
     "statusLastUpdated": "آخر تحديث للحالة",
     "tag": "علامة",

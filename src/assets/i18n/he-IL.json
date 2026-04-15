@@ -123,6 +123,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "חשבונות אוטומציה אינם רשאים להיות חברים בקבוצת המנהלים. לחשבונות אוטומציה אסור לעולם לקבל גישה לפונקציות ניהול של היישום.",
         "currentMembers": "חברים נוכחיים",
         "noMembers": "אין חברים בקבוצה זו",
         "removeTooltip": "הסר מהקבוצה",
@@ -268,7 +269,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u05e6\u05d5\u05e8 \u05de\u05e9\u05ea\u05de\u05e9 \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d4",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "מחק חשבון משתמש",
       "filter": {
         "automationOnly": "הצג חשבונות אוטומציה בלבד"
@@ -657,6 +658,7 @@
     "includeInReport": "כלול בדוח",
     "includeInTimmyChat": "כלול בצ'אט של Timmy",
     "issueUri": "כתובת URL של הבעיה",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",
     "lastUpdated": "עודכן לאחרונה",
@@ -762,8 +764,7 @@
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
-    "viewThreat": "צפה באיום",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "צפה באיום"
   },
   "contextMenu": {
     "addInverseConnection": "הוסף חיבור הפוך",
@@ -1563,14 +1564,16 @@
       "title": "בחר מיפויי מסגרות"
     },
     "frameworkMappings": "מיפוי מסגרת מודלים של איומים",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "לא משויך לנכס",
     "notAssociatedWithCell": "לא משויך לתא",
     "notAssociatedWithDiagram": "לא משויך לדיאגרמה",
     "sections": {
-      "classification": "סיווג",
-      "description": "תיאור",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "הפניות דיאגרמה",
-      "mitigation": "הפחתת סיכון",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "מעקב"
     },
     "threatPriority": {
@@ -1620,9 +1623,7 @@
       "resolved.description": "האיום הופחת במלואו ואומת; הסיכון השיורי מקובל.",
       "verification_pending": "ממתין לאימות",
       "verification_pending.description": "ההפחתה הושלמה; צוות האבטחה חייב לבדוק או לסקור את האפקטיביות."
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "הוסף הרשאה",
@@ -1720,6 +1721,8 @@
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
+      "active": "פעיל",
+      "active.tooltip": "מודל האיומים נמצא בעבודה פעילה.",
       "approved": "מאושר",
       "approved.tooltip": "כל הבעיות נפתרו ואומתו; היישום עומד בקריטריוני האבטחה לשחרור או פריסה.",
       "closed": "סגור",
@@ -1739,9 +1742,7 @@
       "remediation_required": "נדרש תיקון",
       "remediation_required.tooltip": "זוהו פגיעויות או בעיות; הפיתוח חייב לטפל בהן.",
       "verification_pending": "ממתין לאימות",
-      "verification_pending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות.",
-      "active": "פעיל",
-      "active.tooltip": "מודל האיומים נמצא בעבודה פעילה."
+      "verification_pending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות."
     },
     "statusLastUpdated": "סטטוס עודכן לאחרונה",
     "tag": "תג",

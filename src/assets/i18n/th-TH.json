@@ -121,6 +121,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "บัญชีอัตโนมัติไม่ได้รับอนุญาตให้เป็นสมาชิกของกลุ่มผู้ดูแลระบบ บัญชีอัตโนมัติจะต้องไม่มีสิทธิ์เข้าถึงฟังก์ชันการดูแลระบบของแอปพลิเคชัน",
         "currentMembers": "สมาชิกปัจจุบัน",
         "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
         "removeTooltip": "ลบออกจากกลุ่ม",
@@ -265,7 +266,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e1c\u0e39\u0e49\u0e43\u0e0a\u0e49\u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "ลบบัญชีผู้ใช้",
       "filter": {
         "automationOnly": "แสดงเฉพาะบัญชีอัตโนมัติ"
@@ -652,6 +653,7 @@
     "includeInReport": "รวมในรายงาน",
     "includeInTimmyChat": "รวมในแชท Timmy",
     "issueUri": "URL ปัญหา",
+    "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
     "lastModified": "แก้ไขล่าสุด",
     "lastUpdated": "อัปเดตล่าสุด",
@@ -757,8 +759,7 @@
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
-    "viewThreat": "ดูภัยคุกคาม",
-    "issueUriOpenHint": "{{common.issueUriOpenHint}}"
+    "viewThreat": "ดูภัยคุกคาม"
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
@@ -1554,14 +1555,16 @@
       "title": "เลือกการแมป Framework"
     },
     "frameworkMappings": "การแมปกรอบแบบจำลองภัยคุณกรรม",
+    "issueUriHint": "{{threatEditor.issueUriHint}}",
+    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
     "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
     "sections": {
-      "classification": "การจัดประเภท",
-      "description": "คำอธิบาย",
+      "classification": "{{common.classification}}",
+      "description": "{{common.description}}",
       "diagramReferences": "การอ้างอิงแผนภาพ",
-      "mitigation": "การลดความเสี่ยง",
+      "mitigation": "{{common.mitigation}}",
       "tracking": "การติดตาม"
     },
     "threatPriority": {
@@ -1611,9 +1614,7 @@
       "resolved.description": "ภัยคุกคามได้รับการบรรเทาและตรวจสอบอย่างสมบูรณ์ ความเสี่ยงที่เหลืออยู่ในระดับที่ยอมรับได้",
       "verification_pending": "รอการตรวจสอบ",
       "verification_pending.description": "การบรรเทาเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล"
-    },
-    "issueUriHint": "{{threatEditor.issueUriHint}}",
-    "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}"
+    }
   },
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
@@ -1711,6 +1712,8 @@
     "setAsOwner": "ตั้งเป็นเจ้าของ",
     "sourcesCount": "ที่เก็บ",
     "status": {
+      "active": "ใช้งานอยู่",
+      "active.tooltip": "แบบจำลองภัยคุกคามกำลังถูกดำเนินการอยู่",
       "approved": "อนุมัติ",
       "approved.tooltip": "ปัญหาทั้งหมดได้รับการแก้ไขและตรวจสอบแล้ว แอปพลิเคชันตรงตามเกณฑ์ความปลอดภัยสำหรับการเปิดตัวหรือการปรับใช้",
       "closed": "ปิด",
@@ -1730,9 +1733,7 @@
       "remediation_required": "ต้องแก้ไข",
       "remediation_required.tooltip": "ระบุช่องโหว่หรือปัญหาแล้ว การพัฒนาต้องแก้ไข",
       "verification_pending": "รอการตรวจสอบความถูกต้อง",
-      "verification_pending.tooltip": "การแก้ไขเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล",
-      "active": "ใช้งานอยู่",
-      "active.tooltip": "แบบจำลองภัยคุกคามกำลังถูกดำเนินการอยู่"
+      "verification_pending.tooltip": "การแก้ไขเสร็จสมบูรณ์ ทีมความปลอดภัยต้องทดสอบหรือตรวจสอบประสิทธิผล"
     },
     "statusLastUpdated": "อัปเดตสถานะล่าสุด",
     "tag": "แท็ก",

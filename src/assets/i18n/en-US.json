@@ -130,6 +130,7 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
+        "automationAdminBlocked": "Automation accounts are not permitted to be members of the Administrators group. Automation accounts must never have access to administrative functions of the application.",
         "currentMembers": "Current Members",
         "noMembers": "No members in this group",
         "removeTooltip": "Remove from group",
@@ -277,7 +278,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "Create Automation User",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Delete user account",
       "filter": {
         "automationOnly": "Show automation accounts only"
@@ -525,8 +526,8 @@
   "auth": {
     "unauthorized": {
       "401": "401 Unauthorized",
-      "403": "403 Forbidden",
       "401.comment": "This is a standard error message and should not be translated.",
+      "403": "403 Forbidden",
       "403.comment": "This is a standard error message and should not be translated.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
@@ -1680,13 +1681,13 @@
     "notAssociatedWithCell": "Not Associated With a Cell",
     "notAssociatedWithDiagram": "Not Associated With a Diagram",
     "sections": {
-      "classification": "Classification",
+      "classification": "{{common.classification}}",
       "classification.comment": "Section header for threat classification fields (severity, type, CWE, CVSS).",
-      "description": "Description",
+      "description": "{{common.description}}",
       "description.comment": "Section header for threat description fields (name, asset, description).",
       "diagramReferences": "Diagram References",
       "diagramReferences.comment": "Section header for diagram and cell association fields.",
-      "mitigation": "Mitigation",
+      "mitigation": "{{common.mitigation}}",
       "mitigation.comment": "Section header for the mitigation text area.",
       "tracking": "Tracking",
       "tracking.comment": "Section header for tracking fields (issue URL, status, checkboxes)."
@@ -1842,6 +1843,8 @@
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
+      "active": "Active",
+      "active.tooltip": "The threat model is actively being worked on.",
       "approved": "Approved",
       "approved.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
       "closed": "Closed",
@@ -1861,9 +1864,7 @@
       "remediation_required": "Remediation Required",
       "remediation_required.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
       "verification_pending": "Verification Pending",
-      "verification_pending.tooltip": "Remediation is complete; security team must verify effectiveness.",
-      "active": "Active",
-      "active.tooltip": "The threat model is actively being worked on."
+      "verification_pending.tooltip": "Remediation is complete; security team must verify effectiveness."
     },
     "statusLastUpdated": "Status Last Updated",
     "tag": "Tag",
