@@ -26,6 +26,8 @@ export interface AdminUserFilter {
   provider?: string;
   /** Filter by email (case-insensitive substring match) */
   email?: string;
+  /** Filter by name (case-insensitive substring match) */
+  name?: string;
   /** Filter by automation account status */
   automation?: boolean;
   /** Filter users created after this timestamp (RFC3339) */
