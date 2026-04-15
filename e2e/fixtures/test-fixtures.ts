@@ -51,6 +51,19 @@ import { SurveyResponseFlow } from '../flows/survey-response.flow';
 import { TriageFlow } from '../flows/triage.flow';
 import { TriageDetailFlow } from '../flows/triage-detail.flow';
 import { ReviewerAssignmentFlow } from '../flows/reviewer-assignment.flow';
+import { TeamsPage } from '../pages/teams.page';
+import { ProjectsPage } from '../pages/projects.page';
+import { CreateTeamDialog } from '../dialogs/create-team.dialog';
+import { EditTeamDialog } from '../dialogs/edit-team.dialog';
+import { TeamMembersDialog } from '../dialogs/team-members.dialog';
+import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog';
+import { RelatedTeamsDialog } from '../dialogs/related-teams.dialog';
+import { CreateProjectDialog } from '../dialogs/create-project.dialog';
+import { EditProjectDialog } from '../dialogs/edit-project.dialog';
+import { RelatedProjectsDialog } from '../dialogs/related-projects.dialog';
+import { TeamFlow } from '../flows/team.flow';
+import { ProjectFlow } from '../flows/project.flow';
+import { DashboardFilterFlow } from '../flows/dashboard-filter.flow';
 
 type TestFixtures = {
   // Pages
@@ -107,6 +120,25 @@ type TestFixtures = {
   surveyConfidentialDialog: SurveyConfidentialDialog;
   revisionNotesDialog: RevisionNotesDialog;
   triageNoteEditorDialog: TriageNoteEditorDialog;
+
+  // Pages (Phase 4)
+  teamsPage: TeamsPage;
+  projectsPage: ProjectsPage;
+
+  // Dialogs (Phase 4)
+  createTeamDialog: CreateTeamDialog;
+  editTeamDialog: EditTeamDialog;
+  teamMembersDialog: TeamMembersDialog;
+  responsiblePartiesDialog: ResponsiblePartiesDialog;
+  relatedTeamsDialog: RelatedTeamsDialog;
+  createProjectDialog: CreateProjectDialog;
+  editProjectDialog: EditProjectDialog;
+  relatedProjectsDialog: RelatedProjectsDialog;
+
+  // Flows (Phase 4)
+  teamFlow: TeamFlow;
+  projectFlow: ProjectFlow;
+  dashboardFilterFlow: DashboardFilterFlow;
 
   // Flows (Phase 3)
   surveyAdminFlow: SurveyAdminFlow;
@@ -222,6 +254,51 @@ export const test = base.extend<TestFixtures>({
   },
   scoringFlow: async ({ page }, use) => {
     await use(new ScoringFlow(page));
+  },
+
+  // Pages (Phase 4)
+  teamsPage: async ({ page }, use) => {
+    await use(new TeamsPage(page));
+  },
+  projectsPage: async ({ page }, use) => {
+    await use(new ProjectsPage(page));
+  },
+
+  // Dialogs (Phase 4)
+  createTeamDialog: async ({ page }, use) => {
+    await use(new CreateTeamDialog(page));
+  },
+  editTeamDialog: async ({ page }, use) => {
+    await use(new EditTeamDialog(page));
+  },
+  teamMembersDialog: async ({ page }, use) => {
+    await use(new TeamMembersDialog(page));
+  },
+  responsiblePartiesDialog: async ({ page }, use) => {
+    await use(new ResponsiblePartiesDialog(page));
+  },
+  relatedTeamsDialog: async ({ page }, use) => {
+    await use(new RelatedTeamsDialog(page));
+  },
+  createProjectDialog: async ({ page }, use) => {
+    await use(new CreateProjectDialog(page));
+  },
+  editProjectDialog: async ({ page }, use) => {
+    await use(new EditProjectDialog(page));
+  },
+  relatedProjectsDialog: async ({ page }, use) => {
+    await use(new RelatedProjectsDialog(page));
+  },
+
+  // Flows (Phase 4)
+  teamFlow: async ({ page }, use) => {
+    await use(new TeamFlow(page));
+  },
+  projectFlow: async ({ page }, use) => {
+    await use(new ProjectFlow(page));
+  },
+  dashboardFilterFlow: async ({ page }, use) => {
+    await use(new DashboardFilterFlow(page));
   },
 
   // Pages (Phase 3)
