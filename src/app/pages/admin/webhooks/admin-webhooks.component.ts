@@ -23,7 +23,7 @@ import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dial
 import {
   CreateAutomationUserDialogComponent,
   CreateAutomationUserDialogData,
-} from './create-automation-user-dialog/create-automation-user-dialog.component';
+} from '../shared/create-automation-user-dialog/create-automation-user-dialog.component';
 import {
   CredentialSecretDialogComponent,
   CredentialSecretDialogData,
@@ -246,7 +246,7 @@ export class AdminWebhooksComponent implements OnInit {
   }
 
   private openCreateAutomationUserDialog(webhookName: string): void {
-    const dialogData: CreateAutomationUserDialogData = { webhookName };
+    const dialogData: CreateAutomationUserDialogData = { suggestedName: webhookName };
     const dialogRef = this.dialog.open(CreateAutomationUserDialogComponent, {
       width: '500px',
       data: dialogData,

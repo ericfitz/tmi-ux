@@ -15,14 +15,13 @@ import { CreateAutomationAccountResponse } from '@app/types/user.types';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 export interface CreateAutomationUserDialogData {
-  webhookName: string;
+  suggestedName?: string;
 }
 
 /**
  * Create Automation User Dialog Component
  *
- * Dialog for creating an automation (machine) user account
- * associated with a webhook subscription.
+ * Dialog for creating an automation (machine) user account.
  */
 @Component({
   selector: 'app-create-automation-user-dialog',
@@ -35,48 +34,46 @@ export interface CreateAutomationUserDialogData {
     TranslocoModule,
   ],
   template: `
-    <h2 mat-dialog-title [transloco]="'admin.webhooks.createAutomationUserDialog.title'">
+    <h2 mat-dialog-title [transloco]="'admin.createAutomationUserDialog.title'">
       Create Automation User
     </h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="automation-user-form">
         <mat-form-field class="full-width">
-          <mat-label [transloco]="'admin.webhooks.createAutomationUserDialog.name'">
-            Name
-          </mat-label>
+          <mat-label [transloco]="'admin.createAutomationUserDialog.name'"> Name </mat-label>
           <input
             matInput
             formControlName="name"
-            [placeholder]="'admin.webhooks.createAutomationUserDialog.namePlaceholder' | transloco"
+            [placeholder]="'admin.createAutomationUserDialog.namePlaceholder' | transloco"
             required
           />
-          <mat-hint [transloco]="'admin.webhooks.createAutomationUserDialog.nameHint'">
+          <mat-hint [transloco]="'admin.createAutomationUserDialog.nameHint'">
             Name for the automation user account
           </mat-hint>
           @if (form.get('name')?.hasError('required')) {
             <mat-error>
-              <span [transloco]="'admin.webhooks.createAutomationUserDialog.nameRequired'">
+              <span [transloco]="'admin.createAutomationUserDialog.nameRequired'">
                 Name is required
               </span>
             </mat-error>
           }
           @if (form.get('name')?.hasError('minlength')) {
             <mat-error>
-              <span [transloco]="'admin.webhooks.createAutomationUserDialog.nameMinLength'">
+              <span [transloco]="'admin.createAutomationUserDialog.nameMinLength'">
                 Name must be at least 2 characters
               </span>
             </mat-error>
           }
           @if (form.get('name')?.hasError('maxlength')) {
             <mat-error>
-              <span [transloco]="'admin.webhooks.createAutomationUserDialog.nameMaxLength'">
+              <span [transloco]="'admin.createAutomationUserDialog.nameMaxLength'">
                 Name must be at most 64 characters
               </span>
             </mat-error>
           }
           @if (form.get('name')?.hasError('pattern')) {
             <mat-error>
-              <span [transloco]="'admin.webhooks.createAutomationUserDialog.namePattern'">
+              <span [transloco]="'admin.createAutomationUserDialog.namePattern'">
                 Name must start with a letter and end with a letter or number
               </span>
             </mat-error>
@@ -84,16 +81,16 @@ export interface CreateAutomationUserDialogData {
         </mat-form-field>
 
         <mat-form-field class="full-width">
-          <mat-label [transloco]="'admin.webhooks.createAutomationUserDialog.email'">
+          <mat-label [transloco]="'admin.createAutomationUserDialog.email'">
             Email (Optional)
           </mat-label>
           <input
             matInput
             formControlName="email"
             type="email"
-            [placeholder]="'admin.webhooks.createAutomationUserDialog.emailPlaceholder' | transloco"
+            [placeholder]="'admin.createAutomationUserDialog.emailPlaceholder' | transloco"
           />
-          <mat-hint [transloco]="'admin.webhooks.createAutomationUserDialog.emailHint'">
+          <mat-hint [transloco]="'admin.createAutomationUserDialog.emailHint'">
             Optional email address for the automation user
           </mat-hint>
         </mat-form-field>
@@ -118,9 +115,7 @@ export interface CreateAutomationUserDialogData {
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
-        <span [transloco]="'admin.webhooks.createAutomationUserDialog.save'">
-          Create Automation User
-        </span>
+        <span [transloco]="'admin.createAutomationUserDialog.save'"> Create Automation User </span>
       </button>
     </mat-dialog-actions>
   `,
@@ -172,12 +167,12 @@ export class CreateAutomationUserDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const webhookName = this.data.webhookName;
-    const generatedEmail = this.generateEmail(webhookName);
+    const suggestedName = this.data?.suggestedName || '';
+    const generatedEmail = suggestedName ? this.generateEmail(suggestedName) : '';
 
     this.form = this.fb.group({
       name: [
-        webhookName,
+        suggestedName,
         [
           Validators.required,
           Validators.minLength(2),
@@ -190,12 +185,12 @@ export class CreateAutomationUserDialogComponent implements OnInit {
   }
 
   /**
-   * Generate an email from the webhook name:
+   * Generate an email from the suggested name:
    * lowercase, replace non-alphanumeric sequences with single hyphen,
    * trim leading/trailing hyphens, append @tmi.local
    */
-  private generateEmail(webhookName: string): string {
-    const slug = webhookName
+  private generateEmail(name: string): string {
+    const slug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
