@@ -34,13 +34,12 @@ export async function angularFill(
   // synchronous browser operation. Angular's change detection cannot
   // run between setting the value and dispatching the event.
   await locator.evaluate((el, val) => {
-    const input = el as HTMLInputElement;
-    const nativeSetter = Object.getOwnPropertyDescriptor(
-      HTMLInputElement.prototype,
-      'value',
-    )!.set!;
-    nativeSetter.call(input, val);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Use the correct prototype based on element type (input vs textarea)
+    const proto =
+      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')!.set!;
+    nativeSetter.call(el, val);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
   }, value);
 
   // Verify the value persisted after Angular's change detection cycle.
@@ -48,13 +47,13 @@ export async function angularFill(
   const actual = await locator.inputValue();
   if (actual !== value) {
     await locator.evaluate((el, val) => {
-      const input = el as HTMLInputElement;
-      const nativeSetter = Object.getOwnPropertyDescriptor(
-        HTMLInputElement.prototype,
-        'value',
-      )!.set!;
-      nativeSetter.call(input, val);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      const proto =
+        el instanceof HTMLTextAreaElement
+          ? HTMLTextAreaElement.prototype
+          : HTMLInputElement.prototype;
+      const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')!.set!;
+      nativeSetter.call(el, val);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
     }, value);
   }
 }
