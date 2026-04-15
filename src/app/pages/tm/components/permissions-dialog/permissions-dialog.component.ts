@@ -2,8 +2,13 @@ import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import {
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import {
   DIALOG_IMPORTS,
@@ -22,6 +27,10 @@ import {
   principalsEqual,
 } from '@app/shared/utils/principal-display.utils';
 import { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
+import {
+  PermissionsAutocompleteService,
+  AutocompleteSuggestion,
+} from '../../services/permissions-autocomplete.service';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 /**
@@ -45,6 +54,7 @@ export interface PermissionsDialogData {
     ...DIALOG_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
+    MatAutocompleteModule,
     TranslocoModule,
     ScrollIndicatorDirective,
     PrincipalTypeIconComponent,
@@ -198,7 +208,19 @@ export interface PermissionsDialogData {
                         [(ngModel)]="auth._subject"
                         [placeholder]="getSubjectPlaceholder(auth)"
                         [attr.tabindex]="i * 5 + 3"
+                        [matAutocomplete]="subjectAuto"
+                        (input)="onSubjectInput(i, $event)"
                       />
+                      <mat-autocomplete
+                        #subjectAuto="matAutocomplete"
+                        (optionSelected)="onAutocompleteSelected(i, $event)"
+                      >
+                        @for (suggestion of autocompleteSuggestions; track suggestion.value) {
+                          <mat-option [value]="suggestion">
+                            {{ suggestion.displayLabel }}
+                          </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
@@ -552,11 +574,21 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   getCompositeKey = getCompositeKey;
   principalsEqual = principalsEqual;
 
+  /** Subject that emits search terms for autocomplete */
+  autocompleteTrigger$ = new Subject<{ term: string; principalType: 'user' | 'group' }>();
+
+  /** Current autocomplete suggestions */
+  autocompleteSuggestions: AutocompleteSuggestion[] = [];
+
+  /** Index of the row currently being edited (for autocomplete context) */
+  private _activeRowIndex = -1;
+
   constructor(
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
     private authService: AuthService,
     private providerAdapter: ProviderAdapterService,
+    private autocompleteService: PermissionsAutocompleteService,
   ) {}
 
   ngOnInit(): void {
@@ -573,6 +605,23 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
     // Load available providers
     this.loadProviders();
+
+    // Set up autocomplete search pipeline
+    this._subscriptions.add(
+      this.autocompleteTrigger$
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged(
+            (prev, curr) => prev.term === curr.term && prev.principalType === curr.principalType,
+          ),
+          switchMap(({ term, principalType }) =>
+            this.autocompleteService.search(term, principalType),
+          ),
+        )
+        .subscribe(suggestions => {
+          this.autocompleteSuggestions = suggestions;
+        }),
+    );
   }
 
   ngOnDestroy(): void {
@@ -848,5 +897,41 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getRoleTranslationKey(role: string): string {
     return `common.roles.${role}`;
+  }
+
+  /**
+   * Handle input events on the subject field for autocomplete
+   * Only triggers search when the provider is TMI
+   */
+  onSubjectInput(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const auth = this.permissionsDataSource.data[index];
+
+    if (auth.provider !== 'tmi') {
+      this.autocompleteSuggestions = [];
+      return;
+    }
+
+    this._activeRowIndex = index;
+    this.autocompleteTrigger$.next({
+      term: input.value,
+      principalType: auth.principal_type,
+    });
+  }
+
+  /**
+   * Handle autocomplete option selection
+   */
+  onAutocompleteSelected(index: number, event: MatAutocompleteSelectedEvent): void {
+    const suggestion = event.option.value as AutocompleteSuggestion;
+    const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
+    auth._subject = suggestion.value;
+  }
+
+  /**
+   * Check if autocomplete should be active for a given row
+   */
+  isAutocompleteActive(auth: Authorization): boolean {
+    return auth.provider === 'tmi';
   }
 }
