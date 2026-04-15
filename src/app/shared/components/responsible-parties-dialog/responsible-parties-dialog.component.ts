@@ -45,7 +45,7 @@ export interface ResponsiblePartiesDialogData {
           </div>
         }
         @for (party of parties; track party.user_id) {
-          <div class="party-row">
+          <div class="party-row" data-testid="responsible-parties-row">
             <div class="party-info">
               <span class="party-name">{{ party.user?.display_name || party.user_id }}</span>
               @if (party.user?.email) {
@@ -64,6 +64,7 @@ export interface ResponsiblePartiesDialogData {
               mat-icon-button
               (click)="removeParty(party)"
               [matTooltip]="i18nPrefix + '.responsiblePartiesDialog.removeParty' | transloco"
+              data-testid="responsible-parties-remove-button"
             >
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
@@ -71,7 +72,11 @@ export interface ResponsiblePartiesDialogData {
         }
       </div>
       <div class="add-button">
-        <button mat-stroked-button (click)="addParty()">
+        <button
+          mat-stroked-button
+          (click)="addParty()"
+          data-testid="responsible-parties-add-button"
+        >
           <mat-icon>person_add</mat-icon>
           <span [transloco]="i18nPrefix + '.responsiblePartiesDialog.addParty'">
             Add Responsible Party
@@ -83,10 +88,16 @@ export interface ResponsiblePartiesDialogData {
       }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="responsible-parties-cancel-button">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!dirty || saving">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSave()"
+        [disabled]="!dirty || saving"
+        data-testid="responsible-parties-save-button"
+      >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }

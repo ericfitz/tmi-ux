@@ -55,14 +55,21 @@ export interface EditTeamDialogData {
   template: `
     <h2 mat-dialog-title [transloco]="'teams.editDialog.title'">Edit Team</h2>
     <mat-dialog-content>
-      <mat-tab-group (selectedTabChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex">
+      <mat-tab-group
+        (selectedTabChange)="onTabChange($event)"
+        [selectedIndex]="selectedTabIndex"
+        data-testid="edit-team-tab-group"
+      >
         <!-- Details Tab -->
-        <mat-tab [label]="'teams.editDialog.detailsTab' | transloco">
+        <mat-tab
+          [label]="'teams.editDialog.detailsTab' | transloco"
+          data-testid="edit-team-details-tab"
+        >
           <div class="tab-content">
             <form [formGroup]="form" class="admin-form">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.name'">Name</mat-label>
-                <input matInput formControlName="name" />
+                <input matInput formControlName="name" data-testid="edit-team-name-input" />
                 @if (form.get('name')?.hasError('required')) {
                   <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
                 }
@@ -75,7 +82,12 @@ export interface EditTeamDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.description'">Description</mat-label>
-                <textarea matInput formControlName="description" rows="3"></textarea>
+                <textarea
+                  matInput
+                  formControlName="description"
+                  rows="3"
+                  data-testid="edit-team-description-input"
+                ></textarea>
                 @if (form.get('description')?.hasError('maxlength')) {
                   <mat-error>{{
                     'common.validation.maxLength' | transloco: { max: 2048 }
@@ -85,7 +97,12 @@ export interface EditTeamDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
-                <input matInput formControlName="email_address" type="email" />
+                <input
+                  matInput
+                  formControlName="email_address"
+                  type="email"
+                  data-testid="edit-team-email-input"
+                />
                 @if (form.get('email_address')?.hasError('email')) {
                   <mat-error>{{ 'common.validation.invalidEmail' | transloco }}</mat-error>
                 }
@@ -93,12 +110,17 @@ export interface EditTeamDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>URI</mat-label>
-                <input matInput formControlName="uri" type="url" />
+                <input
+                  matInput
+                  formControlName="uri"
+                  type="url"
+                  data-testid="edit-team-uri-input"
+                />
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.status'">Status</mat-label>
-                <mat-select formControlName="status">
+                <mat-select formControlName="status" data-testid="edit-team-status-select">
                   <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                   @for (status of teamStatuses; track status) {
                     <mat-option [value]="status">
@@ -116,7 +138,7 @@ export interface EditTeamDialogData {
         </mat-tab>
 
         <!-- Notes Tab -->
-        <mat-tab>
+        <mat-tab data-testid="edit-team-notes-tab">
           <ng-template mat-tab-label>
             {{
               (totalNotes > 0 ? 'notes.tabWithCount' : 'notes.tab')
@@ -125,7 +147,12 @@ export interface EditTeamDialogData {
           </ng-template>
           <div class="tab-content">
             <div class="notes-header">
-              <button mat-raised-button color="primary" (click)="addNote()">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="addNote()"
+                data-testid="edit-team-add-note-button"
+              >
                 <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
                 {{ 'notes.addNote' | transloco }}
               </button>
@@ -139,7 +166,13 @@ export interface EditTeamDialogData {
               <table mat-table [dataSource]="notes" class="notes-table">
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>{{ 'notes.columns.name' | transloco }}</th>
-                  <td mat-cell *matCellDef="let note" class="clickable" (click)="editNote(note)">
+                  <td
+                    mat-cell
+                    *matCellDef="let note"
+                    class="clickable"
+                    (click)="editNote(note)"
+                    data-testid="edit-team-note-row"
+                  >
                     {{ note.name }}
                   </td>
                 </ng-container>
@@ -158,6 +191,7 @@ export interface EditTeamDialogData {
                       mat-icon-button
                       (click)="editNote(note); $event.stopPropagation()"
                       [matTooltip]="'common.edit' | transloco"
+                      data-testid="edit-team-edit-note-button"
                     >
                       <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
                     </button>
@@ -165,6 +199,7 @@ export interface EditTeamDialogData {
                       mat-icon-button
                       (click)="deleteNote(note); $event.stopPropagation()"
                       [matTooltip]="'common.delete' | transloco"
+                      data-testid="edit-team-delete-note-button"
                     >
                       <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
                     </button>
@@ -190,7 +225,7 @@ export interface EditTeamDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       @if (selectedTabIndex === 0) {
-        <button mat-button (click)="onCancel()">
+        <button mat-button (click)="onCancel()" data-testid="edit-team-cancel-button">
           <span [transloco]="'common.cancel'">Cancel</span>
         </button>
         <button
@@ -198,6 +233,7 @@ export interface EditTeamDialogData {
           color="primary"
           (click)="onSave()"
           [disabled]="!form.valid || !form.dirty || saving"
+          data-testid="edit-team-save-button"
         >
           @if (saving) {
             <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
@@ -205,7 +241,7 @@ export interface EditTeamDialogData {
           <span [transloco]="'teams.editDialog.save'">Save</span>
         </button>
       } @else {
-        <button mat-button (click)="onCancel()">
+        <button mat-button (click)="onCancel()" data-testid="edit-team-cancel-button">
           <span [transloco]="'common.close'">Close</span>
         </button>
       }

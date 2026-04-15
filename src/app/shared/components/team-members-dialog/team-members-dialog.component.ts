@@ -38,7 +38,7 @@ export interface TeamMembersDialogData {
           <div class="no-items">{{ 'teams.membersDialog.noMembers' | transloco }}</div>
         }
         @for (member of members; track member.user_id) {
-          <div class="member-row">
+          <div class="member-row" data-testid="team-members-row">
             <div class="member-info">
               <span class="member-name">{{ member.user?.display_name || member.user_id }}</span>
               @if (member.user?.email) {
@@ -57,6 +57,7 @@ export interface TeamMembersDialogData {
               mat-icon-button
               (click)="removeMember(member)"
               [matTooltip]="'common.remove' | transloco"
+              data-testid="team-members-remove-button"
             >
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
@@ -64,7 +65,7 @@ export interface TeamMembersDialogData {
         }
       </div>
       <div class="add-button">
-        <button mat-stroked-button (click)="addMember()">
+        <button mat-stroked-button (click)="addMember()" data-testid="team-members-add-button">
           <mat-icon>person_add</mat-icon>
           <span [transloco]="'teams.membersDialog.addMember'">Add Member</span>
         </button>
@@ -74,10 +75,16 @@ export interface TeamMembersDialogData {
       }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="team-members-cancel-button">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!dirty || saving">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSave()"
+        [disabled]="!dirty || saving"
+        data-testid="team-members-save-button"
+      >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }

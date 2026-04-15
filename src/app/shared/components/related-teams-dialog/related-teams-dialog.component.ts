@@ -46,7 +46,7 @@ export interface RelatedTeamsDialogData {
           <div class="no-items">{{ 'teams.relatedTeamsDialog.noRelated' | transloco }}</div>
         }
         @for (related of relatedTeams; track related.related_team_id) {
-          <div class="related-row">
+          <div class="related-row" data-testid="related-teams-row">
             <div class="related-info">
               <span class="related-name">
                 {{ teamNames.get(related.related_team_id) || related.related_team_id }}
@@ -62,6 +62,7 @@ export interface RelatedTeamsDialogData {
               mat-icon-button
               (click)="removeRelated(related)"
               [matTooltip]="'common.remove' | transloco"
+              data-testid="related-teams-remove-button"
             >
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
@@ -71,7 +72,11 @@ export interface RelatedTeamsDialogData {
 
       @if (!showAddForm) {
         <div class="add-button">
-          <button mat-stroked-button (click)="showAddForm = true">
+          <button
+            mat-stroked-button
+            (click)="showAddForm = true"
+            data-testid="related-teams-add-button"
+          >
             <mat-icon>group_add</mat-icon>
             <span [transloco]="'teams.relatedTeamsDialog.addRelated'">Add Related Team</span>
           </button>
@@ -82,7 +87,12 @@ export interface RelatedTeamsDialogData {
         <div class="add-form" [formGroup]="addForm">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'teams.relatedTeamsDialog.selectTeam'">Select Team</mat-label>
-            <input matInput formControlName="teamSearch" [matAutocomplete]="teamAuto" />
+            <input
+              matInput
+              formControlName="teamSearch"
+              [matAutocomplete]="teamAuto"
+              data-testid="related-teams-team-input"
+            />
             <mat-autocomplete
               #teamAuto="matAutocomplete"
               [displayWith]="displayTeam"
@@ -98,7 +108,10 @@ export interface RelatedTeamsDialogData {
             <mat-label [transloco]="'teams.relatedTeamsDialog.relationship'">
               Relationship
             </mat-label>
-            <mat-select formControlName="relationship">
+            <mat-select
+              formControlName="relationship"
+              data-testid="related-teams-relationship-select"
+            >
               @for (type of relationshipTypes; track type) {
                 <mat-option [value]="type">
                   {{ 'teams.relationships.' + type | transloco }}
@@ -112,12 +125,20 @@ export interface RelatedTeamsDialogData {
               <mat-label [transloco]="'teams.relatedTeamsDialog.customRelationship'">
                 Custom Relationship
               </mat-label>
-              <input matInput formControlName="customRelationship" />
+              <input
+                matInput
+                formControlName="customRelationship"
+                data-testid="related-teams-custom-relationship-input"
+              />
             </mat-form-field>
           }
 
           <div class="add-form-actions">
-            <button mat-button (click)="cancelAddForm()">
+            <button
+              mat-button
+              (click)="cancelAddForm()"
+              data-testid="related-teams-cancel-add-button"
+            >
               <span [transloco]="'common.cancel'">Cancel</span>
             </button>
             <button
@@ -125,6 +146,7 @@ export interface RelatedTeamsDialogData {
               color="primary"
               (click)="addRelated()"
               [disabled]="!selectedTeam || !addForm.get('relationship')?.value"
+              data-testid="related-teams-confirm-add-button"
             >
               <span [transloco]="'common.add'">Add</span>
             </button>
@@ -137,10 +159,16 @@ export interface RelatedTeamsDialogData {
       }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="related-teams-cancel-button">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!dirty || saving">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSave()"
+        [disabled]="!dirty || saving"
+        data-testid="related-teams-save-button"
+      >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }

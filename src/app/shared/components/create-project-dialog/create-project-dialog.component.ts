@@ -48,6 +48,7 @@ export interface CreateProjectDialogResult {
             [placeholder]="'projects.createDialog.namePlaceholder' | transloco"
             maxlength="256"
             cdkFocusInitial
+            data-testid="create-project-name-input"
           />
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error [transloco]="'projects.createDialog.nameRequired'">

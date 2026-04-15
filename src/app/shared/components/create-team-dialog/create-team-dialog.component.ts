@@ -41,6 +41,7 @@ export interface CreateTeamDialogResult {
             [placeholder]="'teams.createDialog.namePlaceholder' | transloco"
             maxlength="256"
             cdkFocusInitial
+            data-testid="create-team-name-input"
           />
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error [transloco]="'teams.createDialog.nameRequired'">
@@ -57,6 +58,7 @@ export interface CreateTeamDialogResult {
             [placeholder]="'teams.createDialog.descriptionPlaceholder' | transloco"
             maxlength="2048"
             rows="3"
+            data-testid="create-team-description-input"
           ></textarea>
         </mat-form-field>
 
@@ -67,6 +69,7 @@ export interface CreateTeamDialogResult {
             formControlName="email_address"
             type="email"
             [placeholder]="'teams.createDialog.emailPlaceholder' | transloco"
+            data-testid="create-team-email-input"
           />
           @if (form.get('email_address')?.hasError('email')) {
             <mat-error [transloco]="'common.validation.email'">
@@ -82,12 +85,13 @@ export interface CreateTeamDialogResult {
             formControlName="uri"
             type="url"
             [placeholder]="'teams.createDialog.uriPlaceholder' | transloco"
+            data-testid="create-team-uri-input"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label [transloco]="'common.status'">Status</mat-label>
-          <mat-select formControlName="status">
+          <mat-select formControlName="status" data-testid="create-team-status-select">
             <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
             @for (status of teamStatuses; track status) {
               <mat-option [value]="status">
@@ -100,7 +104,7 @@ export interface CreateTeamDialogResult {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="create-team-cancel-button">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
@@ -108,6 +112,7 @@ export interface CreateTeamDialogResult {
         color="primary"
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
+        data-testid="create-team-submit-button"
       >
         <span [transloco]="'common.create'">Create</span>
       </button>

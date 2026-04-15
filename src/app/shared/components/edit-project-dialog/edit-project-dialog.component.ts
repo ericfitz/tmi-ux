@@ -57,14 +57,21 @@ export interface EditProjectDialogData {
   template: `
     <h2 mat-dialog-title [transloco]="'projects.editDialog.title'">Edit Project</h2>
     <mat-dialog-content>
-      <mat-tab-group (selectedTabChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex">
+      <mat-tab-group
+        data-testid="edit-project-tab-group"
+        (selectedTabChange)="onTabChange($event)"
+        [selectedIndex]="selectedTabIndex"
+      >
         <!-- Details Tab -->
-        <mat-tab [label]="'projects.editDialog.detailsTab' | transloco">
+        <mat-tab
+          data-testid="edit-project-details-tab"
+          [label]="'projects.editDialog.detailsTab' | transloco"
+        >
           <div class="tab-content">
             <form [formGroup]="form" class="admin-form">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.name'">Name</mat-label>
-                <input matInput formControlName="name" />
+                <input matInput formControlName="name" data-testid="edit-project-name-input" />
                 @if (form.get('name')?.hasError('required')) {
                   <mat-error>{{ 'common.validation.required' | transloco }}</mat-error>
                 }
@@ -77,7 +84,12 @@ export interface EditProjectDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.description'">Description</mat-label>
-                <textarea matInput formControlName="description" rows="3"></textarea>
+                <textarea
+                  matInput
+                  formControlName="description"
+                  rows="3"
+                  data-testid="edit-project-description-input"
+                ></textarea>
                 @if (form.get('description')?.hasError('maxlength')) {
                   <mat-error>{{
                     'common.validation.maxLength' | transloco: { max: 2048 }
@@ -87,7 +99,7 @@ export interface EditProjectDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.team'">Team</mat-label>
-                <mat-select formControlName="team_id">
+                <mat-select formControlName="team_id" data-testid="edit-project-team-select">
                   @if (loadingTeams) {
                     <mat-option disabled>{{ 'common.loading' | transloco }}</mat-option>
                   }
@@ -102,12 +114,17 @@ export interface EditProjectDialogData {
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.uri'">URI</mat-label>
-                <input matInput formControlName="uri" type="url" />
+                <input
+                  matInput
+                  formControlName="uri"
+                  type="url"
+                  data-testid="edit-project-uri-input"
+                />
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'common.status'">Status</mat-label>
-                <mat-select formControlName="status">
+                <mat-select formControlName="status" data-testid="edit-project-status-select">
                   <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                   @for (status of projectStatuses; track status) {
                     <mat-option [value]="status">
@@ -125,7 +142,7 @@ export interface EditProjectDialogData {
         </mat-tab>
 
         <!-- Notes Tab -->
-        <mat-tab>
+        <mat-tab data-testid="edit-project-notes-tab">
           <ng-template mat-tab-label>
             {{
               (totalNotes > 0 ? 'notes.tabWithCount' : 'notes.tab')
@@ -134,7 +151,12 @@ export interface EditProjectDialogData {
           </ng-template>
           <div class="tab-content">
             <div class="notes-header">
-              <button mat-raised-button color="primary" (click)="addNote()">
+              <button
+                mat-raised-button
+                color="primary"
+                data-testid="edit-project-add-note-button"
+                (click)="addNote()"
+              >
                 <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
                 {{ 'notes.addNote' | transloco }}
               </button>
@@ -165,6 +187,7 @@ export interface EditProjectDialogData {
                   <td mat-cell *matCellDef="let note">
                     <button
                       mat-icon-button
+                      data-testid="edit-project-edit-note-button"
                       (click)="editNote(note); $event.stopPropagation()"
                       [matTooltip]="'common.edit' | transloco"
                     >
@@ -172,6 +195,7 @@ export interface EditProjectDialogData {
                     </button>
                     <button
                       mat-icon-button
+                      data-testid="edit-project-delete-note-button"
                       (click)="deleteNote(note); $event.stopPropagation()"
                       [matTooltip]="'common.delete' | transloco"
                     >
@@ -180,7 +204,11 @@ export interface EditProjectDialogData {
                   </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="notesDisplayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: notesDisplayedColumns"></tr>
+                <tr
+                  mat-row
+                  data-testid="edit-project-note-row"
+                  *matRowDef="let row; columns: notesDisplayedColumns"
+                ></tr>
               </table>
 
               @if (totalNotes > notesPageSize) {
@@ -199,12 +227,13 @@ export interface EditProjectDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       @if (selectedTabIndex === 0) {
-        <button mat-button (click)="onCancel()">
+        <button mat-button data-testid="edit-project-cancel-button" (click)="onCancel()">
           <span [transloco]="'common.cancel'">Cancel</span>
         </button>
         <button
           mat-raised-button
           color="primary"
+          data-testid="edit-project-save-button"
           (click)="onSave()"
           [disabled]="!form.valid || !form.dirty || saving"
         >

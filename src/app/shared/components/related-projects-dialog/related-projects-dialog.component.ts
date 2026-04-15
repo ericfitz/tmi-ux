@@ -43,7 +43,7 @@ export interface RelatedProjectsDialogData {
           <div class="no-items">{{ 'projects.relatedProjectsDialog.noRelated' | transloco }}</div>
         }
         @for (related of relatedProjects; track related.related_project_id) {
-          <div class="related-row">
+          <div class="related-row" data-testid="related-projects-row">
             <div class="related-info">
               <span class="related-name">
                 {{ projectNames.get(related.related_project_id) || related.related_project_id }}
@@ -57,6 +57,7 @@ export interface RelatedProjectsDialogData {
             </div>
             <button
               mat-icon-button
+              data-testid="related-projects-remove-button"
               (click)="removeRelated(related)"
               [matTooltip]="'common.remove' | transloco"
             >
@@ -68,7 +69,11 @@ export interface RelatedProjectsDialogData {
 
       @if (!showAddForm) {
         <div class="add-button">
-          <button mat-stroked-button (click)="showAddForm = true">
+          <button
+            mat-stroked-button
+            data-testid="related-projects-add-button"
+            (click)="showAddForm = true"
+          >
             <mat-icon>group_add</mat-icon>
             <span [transloco]="'projects.relatedProjectsDialog.addRelated'">
               Add Related Project
@@ -83,7 +88,12 @@ export interface RelatedProjectsDialogData {
             <mat-label [transloco]="'projects.relatedProjectsDialog.selectProject'">
               Select Project
             </mat-label>
-            <input matInput formControlName="projectSearch" [matAutocomplete]="projectAuto" />
+            <input
+              matInput
+              formControlName="projectSearch"
+              data-testid="related-projects-project-input"
+              [matAutocomplete]="projectAuto"
+            />
             <mat-autocomplete
               #projectAuto="matAutocomplete"
               [displayWith]="displayProject"
@@ -99,7 +109,10 @@ export interface RelatedProjectsDialogData {
             <mat-label [transloco]="'projects.relatedProjectsDialog.relationship'">
               Relationship
             </mat-label>
-            <mat-select formControlName="relationship">
+            <mat-select
+              formControlName="relationship"
+              data-testid="related-projects-relationship-select"
+            >
               @for (type of relationshipTypes; track type) {
                 <mat-option [value]="type">
                   {{ 'teams.relationships.' + type | transloco }}
@@ -113,17 +126,26 @@ export interface RelatedProjectsDialogData {
               <mat-label [transloco]="'projects.relatedProjectsDialog.customRelationship'">
                 Custom Relationship
               </mat-label>
-              <input matInput formControlName="customRelationship" />
+              <input
+                matInput
+                formControlName="customRelationship"
+                data-testid="related-projects-custom-relationship-input"
+              />
             </mat-form-field>
           }
 
           <div class="add-form-actions">
-            <button mat-button (click)="cancelAddForm()">
+            <button
+              mat-button
+              data-testid="related-projects-cancel-add-button"
+              (click)="cancelAddForm()"
+            >
               <span [transloco]="'common.cancel'">Cancel</span>
             </button>
             <button
               mat-raised-button
               color="primary"
+              data-testid="related-projects-confirm-add-button"
               (click)="addRelated()"
               [disabled]="!selectedProject || !addForm.get('relationship')?.value"
             >
@@ -138,10 +160,16 @@ export interface RelatedProjectsDialogData {
       }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button data-testid="related-projects-cancel-button" (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!dirty || saving">
+      <button
+        mat-raised-button
+        color="primary"
+        data-testid="related-projects-save-button"
+        (click)="onSave()"
+        [disabled]="!dirty || saving"
+      >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
