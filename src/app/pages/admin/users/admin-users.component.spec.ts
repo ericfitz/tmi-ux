@@ -144,7 +144,6 @@ describe('AdminUsersComponent', () => {
         .mockReturnValueOnce({ afterClosed: () => of(mockResponse) })
         .mockReturnValueOnce({ afterClosed: () => of(undefined) });
 
-      mockUserAdminService.list.mockReturnValue(of({ users: [], total: 0 }));
       mockUserAdminService.list.mockClear();
 
       component.onCreateAutomationUser();

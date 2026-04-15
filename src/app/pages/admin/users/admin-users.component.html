@@ -5,10 +5,6 @@
       <p class="subtitle" [transloco]="'admin.users.subtitle'">View and manage system users</p>
     </div>
     <div class="action-buttons">
-      <button mat-raised-button color="primary" (click)="onCreateAutomationUser()">
-        <mat-icon>add</mat-icon>
-        <span [transloco]="'admin.users.createAutomationUser'">Create Automation User</span>
-      </button>
       <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
@@ -45,6 +41,12 @@
   <mat-card class="users-card">
     <mat-card-header>
       <mat-card-title [transloco]="'admin.users.listTitle'">Users</mat-card-title>
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="onCreateAutomationUser()">
+          <mat-icon>add</mat-icon>
+          <span [transloco]="'admin.users.createAutomationUser'">Create Automation User</span>
+        </button>
+      </div>
     </mat-card-header>
     <mat-card-content>
       @if (loading) {
