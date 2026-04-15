@@ -32,6 +32,25 @@ import { NoteFlow } from '../flows/note.flow';
 import { MetadataFlow } from '../flows/metadata.flow';
 import { PermissionsFlow } from '../flows/permissions.flow';
 import { ScoringFlow } from '../flows/scoring.flow';
+import { SurveyListPage } from '../pages/survey-list.page';
+import { SurveyFillPage } from '../pages/survey-fill.page';
+import { MyResponsesPage } from '../pages/my-responses.page';
+import { ResponseDetailPage } from '../pages/response-detail.page';
+import { AdminSurveysPage } from '../pages/admin-surveys.page';
+import { TemplateBuilderPage } from '../pages/template-builder.page';
+import { TriageDetailPage } from '../pages/triage-detail.page';
+import { ReviewerAssignmentPage } from '../pages/reviewer-assignment.page';
+import { CreateSurveyDialog } from '../dialogs/create-survey.dialog';
+import { SurveyConfidentialDialog } from '../dialogs/survey-confidential.dialog';
+import { RevisionNotesDialog } from '../dialogs/revision-notes.dialog';
+import { TriageNoteEditorDialog } from '../dialogs/triage-note-editor.dialog';
+import { SurveyAdminFlow } from '../flows/survey-admin.flow';
+import { SurveyBuilderFlow } from '../flows/survey-builder.flow';
+import { SurveyFillFlow } from '../flows/survey-fill.flow';
+import { SurveyResponseFlow } from '../flows/survey-response.flow';
+import { TriageFlow } from '../flows/triage.flow';
+import { TriageDetailFlow } from '../flows/triage-detail.flow';
+import { ReviewerAssignmentFlow } from '../flows/reviewer-assignment.flow';
 
 type TestFixtures = {
   // Pages
@@ -72,6 +91,31 @@ type TestFixtures = {
   metadataFlow: MetadataFlow;
   permissionsFlow: PermissionsFlow;
   scoringFlow: ScoringFlow;
+
+  // Pages (Phase 3)
+  surveyListPage: SurveyListPage;
+  surveyFillPage: SurveyFillPage;
+  myResponsesPage: MyResponsesPage;
+  responseDetailPage: ResponseDetailPage;
+  adminSurveysPage: AdminSurveysPage;
+  templateBuilderPage: TemplateBuilderPage;
+  triageDetailPage: TriageDetailPage;
+  reviewerAssignmentPage: ReviewerAssignmentPage;
+
+  // Dialogs (Phase 3)
+  createSurveyDialog: CreateSurveyDialog;
+  surveyConfidentialDialog: SurveyConfidentialDialog;
+  revisionNotesDialog: RevisionNotesDialog;
+  triageNoteEditorDialog: TriageNoteEditorDialog;
+
+  // Flows (Phase 3)
+  surveyAdminFlow: SurveyAdminFlow;
+  surveyBuilderFlow: SurveyBuilderFlow;
+  surveyFillFlow: SurveyFillFlow;
+  surveyResponseFlow: SurveyResponseFlow;
+  triageFlow: TriageFlow;
+  triageDetailFlow: TriageDetailFlow;
+  reviewerAssignmentFlow: ReviewerAssignmentFlow;
 };
 
 export const test = base.extend<TestFixtures>({
@@ -178,6 +222,69 @@ export const test = base.extend<TestFixtures>({
   },
   scoringFlow: async ({ page }, use) => {
     await use(new ScoringFlow(page));
+  },
+
+  // Pages (Phase 3)
+  surveyListPage: async ({ page }, use) => {
+    await use(new SurveyListPage(page));
+  },
+  surveyFillPage: async ({ page }, use) => {
+    await use(new SurveyFillPage(page));
+  },
+  myResponsesPage: async ({ page }, use) => {
+    await use(new MyResponsesPage(page));
+  },
+  responseDetailPage: async ({ page }, use) => {
+    await use(new ResponseDetailPage(page));
+  },
+  adminSurveysPage: async ({ page }, use) => {
+    await use(new AdminSurveysPage(page));
+  },
+  templateBuilderPage: async ({ page }, use) => {
+    await use(new TemplateBuilderPage(page));
+  },
+  triageDetailPage: async ({ page }, use) => {
+    await use(new TriageDetailPage(page));
+  },
+  reviewerAssignmentPage: async ({ page }, use) => {
+    await use(new ReviewerAssignmentPage(page));
+  },
+
+  // Dialogs (Phase 3)
+  createSurveyDialog: async ({ page }, use) => {
+    await use(new CreateSurveyDialog(page));
+  },
+  surveyConfidentialDialog: async ({ page }, use) => {
+    await use(new SurveyConfidentialDialog(page));
+  },
+  revisionNotesDialog: async ({ page }, use) => {
+    await use(new RevisionNotesDialog(page));
+  },
+  triageNoteEditorDialog: async ({ page }, use) => {
+    await use(new TriageNoteEditorDialog(page));
+  },
+
+  // Flows (Phase 3)
+  surveyAdminFlow: async ({ page }, use) => {
+    await use(new SurveyAdminFlow(page));
+  },
+  surveyBuilderFlow: async ({ page }, use) => {
+    await use(new SurveyBuilderFlow(page));
+  },
+  surveyFillFlow: async ({ page }, use) => {
+    await use(new SurveyFillFlow(page));
+  },
+  surveyResponseFlow: async ({ page }, use) => {
+    await use(new SurveyResponseFlow(page));
+  },
+  triageFlow: async ({ page }, use) => {
+    await use(new TriageFlow(page));
+  },
+  triageDetailFlow: async ({ page }, use) => {
+    await use(new TriageDetailFlow(page));
+  },
+  reviewerAssignmentFlow: async ({ page }, use) => {
+    await use(new ReviewerAssignmentFlow(page));
   },
 });
 
