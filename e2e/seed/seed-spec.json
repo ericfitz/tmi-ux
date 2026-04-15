@@ -31,11 +31,26 @@
     {
       "name": "Seed Team Alpha",
       "status": "active",
+      "description": "Primary engineering team for E2E testing",
+      "email_address": "team-alpha@tmi.local",
+      "uri": "https://example.com/teams/alpha",
       "members": [
-        { "user_id": "test-user", "role": "member" },
-        { "user_id": "test-reviewer", "role": "lead" }
+        { "user_id": "test-user", "role": "engineer" },
+        { "user_id": "test-reviewer", "role": "engineering_lead" }
+      ],
+      "responsible_parties": [
+        { "user_id": "test-reviewer", "role": "engineering_lead" }
       ],
       "metadata": [{ "key": "department", "value": "Engineering" }]
+    },
+    {
+      "name": "Seed Team Beta",
+      "status": "active",
+      "description": "Secondary team for relationship testing",
+      "members": [
+        { "user_id": "test-user", "role": "member" }
+      ],
+      "metadata": []
     }
   ],
   "projects": [
@@ -43,7 +58,19 @@
       "name": "Seed Project One",
       "team": "Seed Team Alpha",
       "status": "active",
+      "description": "Primary project for E2E testing",
+      "uri": "https://example.com/projects/one",
+      "responsible_parties": [
+        { "user_id": "test-user", "role": "engineer" }
+      ],
       "metadata": [{ "key": "fiscal_year", "value": "2026" }]
+    },
+    {
+      "name": "Seed Project Two",
+      "team": "Seed Team Beta",
+      "status": "planning",
+      "description": "Secondary project for relationship testing",
+      "metadata": []
     }
   ],
   "threat_models": [
