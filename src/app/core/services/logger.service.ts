@@ -338,6 +338,9 @@ export class LoggerService {
       // Use Object.create(null) to prevent prototype pollution via user-controlled keys
       const sanitized: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
       for (const [key, value] of Object.entries(param)) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+          continue;
+        }
         const sanitizedKey = this.sanitizeForLog(key);
         sanitized[sanitizedKey] = this.redactSensitiveData(value);
       }
