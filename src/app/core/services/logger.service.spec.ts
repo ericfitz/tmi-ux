@@ -440,8 +440,8 @@ describe('LoggerService', () => {
       expect(list[1]).toBe('hasnewline');
     });
 
-    it('should produce null-prototype objects to prevent prototype pollution', () => {
-      const input = { constructor: 'evil', toString: 'overwritten', normal: 'good' };
+    it('should produce null-prototype objects and filter dangerous keys to prevent prototype pollution', () => {
+      const input = { __proto__: 'evil', constructor: 'evil', prototype: 'evil', toString: 'safe', normal: 'good' };
       service.debug('Message', input);
 
       const calls = consoleSpy.debug.mock.calls;
@@ -449,8 +449,9 @@ describe('LoggerService', () => {
       const sanitized = lastCall[1] as Record<string, unknown>;
 
       expect(sanitized['normal']).toBe('good');
-      expect(sanitized['constructor']).toBe('evil');
-      expect(sanitized['toString']).toBe('overwritten');
+      expect(sanitized['toString']).toBe('safe');
+      expect(sanitized['constructor']).toBeUndefined();
+      expect(sanitized['prototype']).toBeUndefined();
       expect(Object.getPrototypeOf(sanitized)).toBeNull();
     });
 
