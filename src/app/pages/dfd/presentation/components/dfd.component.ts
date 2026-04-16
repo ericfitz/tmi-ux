@@ -453,13 +453,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Expose E2E testing bridge when enabled
     if (environment.enableE2eTools) {
-      const adapter = this.dfdInfrastructure.graphAdapter;
+      const facade = this.dfdInfrastructure;
+      const dfdBridge: Record<string, unknown> = {
+        orchestrator: this.appDfdOrchestrator,
+      };
+      // Use a getter so the graph reference is always current
+      // (the graph initializes after diagram loading, not at ngAfterViewInit time)
+      Object.defineProperty(dfdBridge, 'graph', {
+        get: () => {
+          const adapter = facade.graphAdapter;
+          return adapter?.isInitialized() ? adapter.getGraph() : null;
+        },
+        enumerable: true,
+      });
       (window as any).__e2e = {
         ...(window as any).__e2e,
-        dfd: {
-          orchestrator: this.appDfdOrchestrator,
-          graph: adapter?.isInitialized() ? adapter.getGraph() : null,
-        },
+        dfd: dfdBridge,
       };
     }
   }

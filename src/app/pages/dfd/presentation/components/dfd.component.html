@@ -116,6 +116,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="add-security-boundary-button"
         (click)="addGraphNode('security-boundary')"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addSecurityBoundary' | transloco"
@@ -125,6 +126,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="add-text-box-button"
         (click)="addGraphNode('text-box')"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.addTextbox' | transloco"
@@ -139,6 +141,7 @@
 
       <button
         mat-icon-button
+        data-testid="style-panel-toggle"
         (click)="toggleStylePanel()"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'dfd.stylePanel.toggleStylePanel' | transloco"
@@ -149,6 +152,7 @@
 
       <button
         mat-icon-button
+        data-testid="icon-picker-toggle"
         (click)="toggleIconPickerPanel()"
         [disabled]="isReadOnlyMode || !isSystemInitialized"
         [matTooltip]="'dfd.iconPicker.toolbarTooltip' | transloco"
@@ -162,6 +166,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="cut-button"
         (click)="cut()"
         [disabled]="!hasSelectedCells || isReadOnlyMode"
         [matTooltip]="'common.cut' | transloco"
@@ -176,6 +181,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="copy-button"
         (click)="copy()"
         [disabled]="!hasSelectedCells"
         [matTooltip]="'common.copy' | transloco"
@@ -190,6 +196,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="paste-button"
         (click)="paste()"
         [disabled]="!hasClipboardContent || isReadOnlyMode"
         [matTooltip]="'common.paste' | transloco"
@@ -204,6 +211,7 @@
       <button
         mat-icon-button
         color="basic"
+        data-testid="delete-button"
         (click)="deleteSelected()"
         [disabled]="!hasSelectedCells || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.deleteSelected' | transloco"
@@ -221,6 +229,7 @@
       @if (showDeveloperTools) {
         <button
           mat-icon-button
+          data-testid="show-graph-data-button"
           (click)="showGraphData()"
           [matTooltip]="'editor.toolbar.tooltips.showGraphData' | transloco"
         >
@@ -231,6 +240,7 @@
       @if (showDeveloperTools) {
         <button
           mat-icon-button
+          data-testid="show-history-button"
           (click)="showHistory()"
           [matTooltip]="'editor.toolbar.tooltips.showHistory' | transloco"
         >
@@ -241,6 +251,7 @@
       @if (showDeveloperTools) {
         <button
           mat-icon-button
+          data-testid="show-clipboard-button"
           (click)="showClipboard()"
           [matTooltip]="'editor.toolbar.tooltips.showClipboard' | transloco"
         >
@@ -250,6 +261,7 @@
 
       <button
         mat-icon-button
+        data-testid="undo-button"
         (click)="undo()"
         [disabled]="!canUndo || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.undo' | transloco"
@@ -258,6 +270,7 @@
       </button>
       <button
         mat-icon-button
+        data-testid="redo-button"
         (click)="redo()"
         [disabled]="!canRedo || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.redo' | transloco"
@@ -267,6 +280,7 @@
 
       <button
         mat-icon-button
+        data-testid="zoom-to-fit-button"
         (click)="zoomToFit()"
         [disabled]="!isSystemInitialized"
         [matTooltip]="'editor.toolbar.tooltips.zoomToFit' | transloco"
@@ -282,6 +296,7 @@
       <button
         mat-icon-button
         color="primary"
+        data-testid="manage-metadata-button"
         [disabled]="!hasExactlyOneSelectedCell"
         (click)="manageMetadata()"
         [matTooltip]="'common.manageMetadata' | transloco"
@@ -291,6 +306,7 @@
 
       <button
         mat-icon-button
+        data-testid="add-threat-button"
         [disabled]="
           !threatModelId ||
           !hasExactlyOneSelectedCell ||
@@ -319,6 +335,7 @@
 
       <button
         mat-icon-button
+        data-testid="manage-threats-button"
         [disabled]="!hasExactlyOneSelectedCell"
         (click)="manageThreats()"
         [matTooltip]="'common.manageThreats' | transloco"
@@ -342,25 +359,27 @@
 
       <button
         mat-icon-button
+        data-testid="export-menu-button"
         [matMenuTriggerFor]="exportMenu"
         [matTooltip]="'editor.toolbar.tooltips.export' | transloco"
       >
         <mat-icon>save_alt</mat-icon>
       </button>
       <mat-menu #exportMenu="matMenu">
-        <button mat-menu-item (click)="exportDiagram('svg')">
+        <button mat-menu-item data-testid="export-svg-option" (click)="exportDiagram('svg')">
           <span>{{ 'editor.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
         </button>
-        <button mat-menu-item (click)="exportDiagram('png')">
+        <button mat-menu-item data-testid="export-png-option" (click)="exportDiagram('png')">
           <span>{{ 'editor.toolbar.exportMenu.exportAsPng' | transloco }}</span>
         </button>
-        <button mat-menu-item (click)="exportDiagram('jpeg')">
+        <button mat-menu-item data-testid="export-jpeg-option" (click)="exportDiagram('jpeg')">
           <span>{{ 'editor.toolbar.exportMenu.exportAsJpeg' | transloco }}</span>
         </button>
       </mat-menu>
 
       <button
         mat-icon-button
+        data-testid="save-button"
         (click)="onSaveManually()"
         [disabled]="isReadOnlyMode || isCollaborating || !isSystemInitialized"
         [matTooltip]="'common.save' | transloco"
@@ -375,6 +394,7 @@
 
       <button
         mat-icon-button
+        data-testid="help-button"
         (click)="showHelp()"
         [matTooltip]="'editor.toolbar.tooltips.help' | transloco"
       >
