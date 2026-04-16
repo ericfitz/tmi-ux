@@ -77,16 +77,24 @@ export class DfdEditorPage {
   // --- Locators: DOM elements ---
   readonly nodes = () => this.page.locator('.x6-node');
   readonly edges = () => this.page.locator('.x6-edge');
-  readonly stylePanel = () => this.page.locator('app-style-panel');
-  readonly iconPickerPanel = () => this.page.locator('app-icon-picker-panel');
+  readonly stylePanel = () => this.page.locator('app-style-panel .style-panel');
+  readonly iconPickerPanel = () => this.page.locator('app-icon-picker-panel .icon-picker-panel');
 
   /**
-   * Select a node in the graph by clicking its DOM element.
-   * Uses the node's bounding box center for the click.
+   * Select a node in the graph via the X6 graph API.
+   * Uses graph.select() for stability over DOM clicks during layout animations.
    */
   async selectNodeByIndex(index: number): Promise<void> {
-    const node = this.nodes().nth(index);
-    await node.click();
+    // Select via the graph API to avoid SVG element stability issues
+    // during X6 layout animations
+    await this.page.evaluate((idx) => {
+      const graph = (window as any).__e2e?.dfd?.graph;
+      if (!graph) throw new Error('Graph not available');
+      const nodes = graph.getNodes();
+      if (idx >= nodes.length) throw new Error(`Node index ${idx} out of range (${nodes.length} nodes)`);
+      graph.cleanSelection();
+      graph.select(nodes[idx]);
+    }, index);
     await this.page.waitForTimeout(300);
   }
 
@@ -163,7 +171,13 @@ export class DfdEditorPage {
       if (!graph) return [];
       const parent = graph.getCellById(pid);
       if (!parent) return [];
-      return (parent.getChildren() || []).map((c: any) => c.id);
+      // Try getChildren() first, fall back to scanning all nodes by parentId
+      const children = (parent.getChildren() || []).map((c: any) => c.id);
+      if (children.length > 0) return children;
+      // Fallback: find nodes whose parentId matches
+      return graph.getNodes()
+        .filter((n: any) => n.getParentId?.() === pid)
+        .map((n: any) => n.id);
     }, parentId);
   }
 
@@ -216,16 +230,20 @@ export class DfdEditorPage {
   // --- Graph mutation methods (thin wrappers through orchestrator, for test setup) ---
 
   async addNodeViaOrchestrator(nodeType: string): Promise<string> {
-    return this.page.evaluate(async (type) => {
+    const nodeId = await this.page.evaluate(async (type) => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       if (!orchestrator) throw new Error('E2E bridge not available');
       return new Promise<string>((resolve, reject) => {
         orchestrator.addNode(type).subscribe({
-          next: (result: any) => resolve(result?.nodeId || result?.id || ''),
+          next: (result: any) => resolve(result?.affectedCellIds?.[0] || result?.nodeId || result?.id || ''),
           error: (err: any) => reject(err),
         });
       });
     }, nodeType);
+    // Allow X6 to render the node to the DOM and the retroactive
+    // history handler to complete
+    await this.page.waitForTimeout(1000);
+    return nodeId;
   }
 
   async deleteSelectedViaOrchestrator(): Promise<void> {
@@ -242,7 +260,7 @@ export class DfdEditorPage {
   }
 
   async undoViaOrchestrator(): Promise<void> {
-    return this.page.evaluate(async () => {
+    await this.page.evaluate(async () => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       if (!orchestrator) throw new Error('E2E bridge not available');
       return new Promise<void>((resolve, reject) => {
@@ -252,10 +270,12 @@ export class DfdEditorPage {
         });
       });
     });
+    // Allow graph to settle after undo operation
+    await this.page.waitForTimeout(500);
   }
 
   async redoViaOrchestrator(): Promise<void> {
-    return this.page.evaluate(async () => {
+    await this.page.evaluate(async () => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       if (!orchestrator) throw new Error('E2E bridge not available');
       return new Promise<void>((resolve, reject) => {
@@ -265,6 +285,8 @@ export class DfdEditorPage {
         });
       });
     });
+    // Allow graph to settle after redo operation
+    await this.page.waitForTimeout(500);
   }
 
   async selectAllViaOrchestrator(): Promise<void> {

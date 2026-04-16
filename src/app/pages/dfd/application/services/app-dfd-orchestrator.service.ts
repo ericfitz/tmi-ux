@@ -774,43 +774,8 @@ export class AppDfdOrchestrator {
 
           return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true).pipe(
             map(({ nodeId }) => {
-              // Record history for broadcasting to collaborators
-              const graph = this.dfdInfrastructure.getGraph();
-              if (graph) {
-                const cells = graph.getCells().map((cell: any) => ({
-                  id: cell.id,
-                  shape: cell.shape,
-                  x: cell.isNode() ? cell.position().x : 0,
-                  y: cell.isNode() ? cell.position().y : 0,
-                  width: cell.isNode() ? cell.size().width : 0,
-                  height: cell.isNode() ? cell.size().height : 0,
-                  zIndex: cell.getZIndex(),
-                  label: cell.isNode() ? cell.attr('text/text') || '' : '',
-                  attrs: cell.getAttrs(),
-                  data: cell.getData(),
-                  ports: cell.isNode() ? cell.getPorts() : undefined,
-                  source: cell.isEdge() ? cell.getSourceCellId() : undefined,
-                  target: cell.isEdge() ? cell.getTargetCellId() : undefined,
-                  vertices: cell.isEdge() ? cell.getVertices() : undefined,
-                }));
-
-                const historyEntry = {
-                  id: `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                  timestamp: Date.now(),
-                  operationType: 'add-node' as const,
-                  description: `Create ${nodeType}`,
-                  cells,
-                  previousCells: cells.filter((c: any) => c.id !== nodeId), // All cells except the new one
-                  providerId: this.authService.providerId,
-                  metadata: {
-                    nodeType,
-                    usedIntelligentPositioning: true,
-                    affectedCellIds: [nodeId],
-                  },
-                };
-
-                this.appHistoryService.addHistoryEntry(historyEntry);
-              }
+              // History is recorded by the retroactive handleNodeAdded handler
+              // (triggered by X6's node:added event) — no explicit addHistoryEntry needed here
 
               return {
                 success: true,

@@ -16,7 +16,7 @@ const SEEDED_TM = 'Seed TM - Full Fields';
  *
  * Uses the "Seed TM - Full Fields" threat model which contains:
  * - "Simple DFD": 3 nodes (actor, process, store), 2 edges
- * - "Complex DFD": 10 nodes (2 actors, 4 processes, 3 stores), 10 edges,
+ * - "Complex DFD": 10 nodes (2 actors, 5 processes, 3 stores), 10 edges,
  *   1 embedded node (Validator inside API Gateway)
  *
  * Opens each seeded diagram and validates its structure.
@@ -54,6 +54,12 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
   async function openSeededTm() {
     await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');
+
+    // Use the name filter to find the seeded TM (it may be paginated away)
+    await dashboardPage.nameFilter().fill('Seed TM');
+    await page.waitForTimeout(1000); // Wait for debounced filter
+
+    await dashboardPage.tmCard(SEEDED_TM).first().waitFor({ state: 'visible', timeout: 15000 });
     await dashboardPage.tmCard(SEEDED_TM).first().click();
     await page.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await expect(tmEditPage.tmName()).toContainText('Seed TM');
@@ -79,7 +85,7 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
     const storeNodes = nodes.filter(n => n.shape === 'store');
 
     expect(actorNodes.length).toBe(2);
-    expect(processNodes.length).toBe(4);
+    expect(processNodes.length).toBe(5);
     expect(storeNodes.length).toBe(3);
   });
 

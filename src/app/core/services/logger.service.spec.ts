@@ -441,7 +441,13 @@ describe('LoggerService', () => {
     });
 
     it('should produce null-prototype objects and filter dangerous keys to prevent prototype pollution', () => {
-      const input = { __proto__: 'evil', constructor: 'evil', prototype: 'evil', toString: 'safe', normal: 'good' };
+      const input = {
+        __proto__: 'evil',
+        constructor: 'evil',
+        prototype: 'evil',
+        toString: 'safe',
+        normal: 'good',
+      };
       service.debug('Message', input);
 
       const calls = consoleSpy.debug.mock.calls;

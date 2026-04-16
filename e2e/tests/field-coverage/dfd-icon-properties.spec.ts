@@ -47,6 +47,8 @@ test.describe.serial('DFD Icon Properties', () => {
     await diagramFlow.createFromTmEdit(testDiagramName);
     await diagramFlow.openFromTmEdit(testDiagramName);
     await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
+    // Wait for orchestrator to be fully initialized
+    await expect(dfdEditorPage.addProcessButton()).toBeEnabled({ timeout: 15000 });
   });
 
   test.afterAll(async () => {
@@ -73,15 +75,16 @@ test.describe.serial('DFD Icon Properties', () => {
   }
 
   test('icon search and select', async () => {
-    // Add a process node
+    // Add a process node and wait for DOM rendering
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     expect(nodeId).toBeTruthy();
+    await expect(dfdEditorPage.nodes()).toHaveCount(1, { timeout: 10000 });
 
     await dfdEditorPage.selectNodeByIndex(0);
     await ensureIconPickerOpen();
 
     // The search field should be visible when an eligible node is selected
-    const searchInput = dfdEditorPage.iconPickerPanel().locator('input[matInput]');
+    const searchInput = dfdEditorPage.iconPickerPanel().locator('.search-field input');
     await expect(searchInput).toBeVisible({ timeout: 5000 });
 
     // Search for "compute"

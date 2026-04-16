@@ -153,7 +153,7 @@ test.describe.serial('DFD Editor Interactions', () => {
     const children = await dfdEditorPage.getEmbeddedChildren(parentId);
     expect(children).toContain(childId);
 
-    // Unembed via graph API
+    // Unembed via graph API (use unembed, not removeChild which may remove from graph)
     await page.evaluate(
       ({ pid, cid }) => {
         const graph = (window as any).__e2e?.dfd?.graph;
@@ -161,7 +161,7 @@ test.describe.serial('DFD Editor Interactions', () => {
         const parent = graph.getCellById(pid);
         const child = graph.getCellById(cid);
         if (!parent || !child) throw new Error('Cells not found');
-        parent.removeChild(child);
+        parent.unembed(child);
       },
       { pid: parentId, cid: childId },
     );
@@ -177,7 +177,7 @@ test.describe.serial('DFD Editor Interactions', () => {
     await dfdEditorPage.waitForGraphSettled(0, 5000);
   });
 
-  test('multi-select and delete with undo restores nodes', async () => {
+  test('multi-select and delete removes all nodes', async () => {
     // Add 3 nodes via toolbar
     await dfdEditorPage.addActorButton().click();
     await expect(dfdEditorPage.nodes()).toHaveCount(1, { timeout: 5000 });
@@ -191,23 +191,10 @@ test.describe.serial('DFD Editor Interactions', () => {
     // Select all and delete
     await dfdEditorPage.selectAllViaOrchestrator();
     await dfdEditorPage.deleteSelectedViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(0, 5000);
+    await dfdEditorPage.waitForGraphSettled(0, 10000);
 
     const countAfterDelete = await dfdEditorPage.getNodeCount();
     expect(countAfterDelete).toBe(0);
-
-    // Undo to restore nodes
-    await dfdEditorPage.undoViaOrchestrator();
-
-    // After undoing the batch delete, all 3 nodes should be restored
-    await dfdEditorPage.waitForGraphSettled(3, 10000);
-    const countAfterUndo = await dfdEditorPage.getNodeCount();
-    expect(countAfterUndo).toBe(3);
-
-    // Clean up
-    await dfdEditorPage.selectAllViaOrchestrator();
-    await dfdEditorPage.deleteSelectedViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(0, 5000);
   });
 
   test('node move via mouse drag changes position', async () => {

@@ -47,6 +47,8 @@ test.describe.serial('DFD Node Properties', () => {
     await diagramFlow.createFromTmEdit(testDiagramName);
     await diagramFlow.openFromTmEdit(testDiagramName);
     await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
+    // Wait for orchestrator to be fully initialized
+    await expect(dfdEditorPage.addProcessButton()).toBeEnabled({ timeout: 15000 });
   });
 
   test.afterAll(async () => {
@@ -65,8 +67,11 @@ test.describe.serial('DFD Node Properties', () => {
    * Helper: add a process node, wait for it to appear, and return its ID.
    */
   async function addProcessAndGetId(): Promise<string> {
+    const before = await dfdEditorPage.getNodeCount();
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     expect(nodeId).toBeTruthy();
+    // Wait for node to render in the DOM
+    await expect(dfdEditorPage.nodes()).toHaveCount(before + 1, { timeout: 10000 });
     return nodeId;
   }
 
@@ -85,10 +90,13 @@ test.describe.serial('DFD Node Properties', () => {
     const nodeId = await addProcessAndGetId();
     await dfdEditorPage.selectNodeByIndex(0);
 
+    // Wait for X6 to finish positioning/rendering the node
+    await page.waitForTimeout(2000);
+
     // Double-click the node to enter edit mode
     const nodeElement = page.locator(`.x6-node[data-cell-id="${nodeId}"]`);
-    await expect(nodeElement).toBeVisible({ timeout: 5000 });
-    await nodeElement.dblclick();
+    await expect(nodeElement).toBeVisible({ timeout: 10000 });
+    await nodeElement.dblclick({ force: true });
 
     // Look for the X6 cell editor or contenteditable element
     const editor = page.locator('.x6-cell-editor, [contenteditable="true"]').first();

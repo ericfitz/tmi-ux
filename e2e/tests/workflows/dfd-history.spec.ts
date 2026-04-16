@@ -67,52 +67,49 @@ test.describe.serial('DFD Editor History', () => {
     // Start from empty
     expect(await dfdEditorPage.getNodeCount()).toBe(0);
 
-    // Add node 1
+    // Add node 1 and wait for it to fully register
     await dfdEditorPage.addActorButton().click();
     await expect(dfdEditorPage.nodes()).toHaveCount(1, { timeout: 5000 });
+    await page.waitForTimeout(500);
 
     // Add node 2
     await dfdEditorPage.addProcessButton().click();
     await expect(dfdEditorPage.nodes()).toHaveCount(2, { timeout: 5000 });
+    await page.waitForTimeout(500);
 
     // Add node 3
     await dfdEditorPage.addStoreButton().click();
     await expect(dfdEditorPage.nodes()).toHaveCount(3, { timeout: 5000 });
+    await page.waitForTimeout(500);
 
     // Undo node 3
     await dfdEditorPage.undoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(2, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(2);
+    await dfdEditorPage.waitForGraphSettled(2, 10000);
 
     // Undo node 2
     await dfdEditorPage.undoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(1, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(1);
+    await dfdEditorPage.waitForGraphSettled(1, 10000);
 
     // Undo node 1
     await dfdEditorPage.undoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(0, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(0);
+    await dfdEditorPage.waitForGraphSettled(0, 10000);
 
     // Redo node 1
     await dfdEditorPage.redoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(1, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(1);
+    await dfdEditorPage.waitForGraphSettled(1, 10000);
 
     // Redo node 2
     await dfdEditorPage.redoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(2, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(2);
+    await dfdEditorPage.waitForGraphSettled(2, 10000);
 
     // Redo node 3
     await dfdEditorPage.redoViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(3, 5000);
-    expect(await dfdEditorPage.getNodeCount()).toBe(3);
+    await dfdEditorPage.waitForGraphSettled(3, 10000);
 
     // Clean up for next test
     await dfdEditorPage.selectAllViaOrchestrator();
     await dfdEditorPage.deleteSelectedViaOrchestrator();
-    await dfdEditorPage.waitForGraphSettled(0, 5000);
+    await dfdEditorPage.waitForGraphSettled(0, 10000);
   });
 
   test('undo/redo button state transitions', async () => {

@@ -203,12 +203,13 @@ test.describe.serial('DFD Editor Controls', () => {
 
     // Add one more node to have a clear undo target
     const countBefore = await dfdEditorPage.getNodeCount();
+    await expect(dfdEditorPage.addActorButton()).toBeEnabled({ timeout: 5000 });
     await dfdEditorPage.addActorButton().click();
-    await dfdEditorPage.waitForGraphSettled(countBefore + 1);
+    await expect(dfdEditorPage.nodes()).toHaveCount(countBefore + 1, { timeout: 10000 });
 
     // Undo
     await dfdEditorPage.undoButton().click();
-    await dfdEditorPage.waitForGraphSettled(countBefore);
+    await dfdEditorPage.waitForGraphSettled(countBefore, 10000);
 
     // Redo should now be available
     expect(await dfdEditorPage.canRedo()).toBe(true);
@@ -216,7 +217,7 @@ test.describe.serial('DFD Editor Controls', () => {
 
     // Redo to restore
     await dfdEditorPage.redoButton().click();
-    await dfdEditorPage.waitForGraphSettled(countBefore + 1);
+    await dfdEditorPage.waitForGraphSettled(countBefore + 1, 10000);
   });
 
   test('zoom-to-fit does not crash', async () => {

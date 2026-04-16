@@ -79,17 +79,24 @@ test.describe.serial('DFD Editor Auto-Save', () => {
     await dfdEditorPage.addStoreButton().click();
     await expect(dfdEditorPage.nodes()).toHaveCount(3, { timeout: 5000 });
 
-    // Wait for auto-save by polling hasUnsavedChanges, with a manual save fallback
+    // Ensure all 3 nodes are registered in the graph before saving
+    expect(await dfdEditorPage.getNodeCount()).toBe(3);
+
+    // Manually save to ensure all nodes are persisted reliably
+    await dfdEditorPage.saveButton().click();
+    await page.waitForTimeout(3000);
+
+    // Verify save completed (no unsaved changes)
     try {
       await page.waitForFunction(
         () => {
           const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
           return orchestrator ? !orchestrator.getState().hasUnsavedChanges : false;
         },
-        { timeout: 15000, polling: 500 },
+        { timeout: 10000, polling: 500 },
       );
     } catch {
-      // Auto-save didn't trigger in time — manually save via the save button
+      // If still showing unsaved changes, save again
       await dfdEditorPage.saveButton().click();
       await page.waitForTimeout(3000);
     }
@@ -119,29 +126,27 @@ test.describe.serial('DFD Editor Auto-Save', () => {
     await dfdEditorPage.addProcessButton().click();
     await dfdEditorPage.waitForGraphSettled(4);
 
-    // Change fill color via X6 API
+    // Change fill color via X6 API and mark as unsaved
     await page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
+      const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       if (!graph) return;
       const nodes = graph.getNodes();
       if (nodes.length > 0) {
         nodes[0].setAttrByPath('body/fill', '#00ff00');
+        // Mark state as dirty so save captures the change
+        if (orchestrator) {
+          const state = orchestrator.getState();
+          if (!state.hasUnsavedChanges) {
+            orchestrator._markUnsavedChanges?.();
+          }
+        }
       }
     });
 
-    // Wait for auto-save
-    await page.waitForFunction(
-      () => {
-        const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
-        return orchestrator && !orchestrator.getState().hasUnsavedChanges;
-      },
-      { timeout: 5000 },
-    ).catch(() => {});
-
-    if (await dfdEditorPage.hasUnsavedChanges()) {
-      await dfdEditorPage.saveButton().click();
-      await page.waitForTimeout(2000);
-    }
+    // Explicitly save to capture the style change
+    await dfdEditorPage.saveButton().click();
+    await page.waitForTimeout(3000);
 
     // Reload
     await page.reload({ waitUntil: 'networkidle' });

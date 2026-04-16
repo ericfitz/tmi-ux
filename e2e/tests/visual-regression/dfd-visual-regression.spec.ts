@@ -50,6 +50,8 @@ test.describe('DFD Visual Regression', () => {
     await diagramFlow.createFromTmEdit(diagramName);
     await diagramFlow.openFromTmEdit(diagramName);
     await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
+    // Wait for orchestrator to be fully initialized
+    await expect(dfdEditorPage.addActorButton()).toBeEnabled({ timeout: 15000 });
 
     return { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName };
   }
