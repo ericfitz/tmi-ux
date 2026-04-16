@@ -31,6 +31,7 @@
     "e2e:validate-schema": "uv run e2e/schema/validate-fields.py",
     "dev": "ng serve --open",
     "dev:test": "ng serve --configuration=test --open",
+    "dev:e2e": "ng serve --configuration=e2e --open",
     "dev:prod": "ng serve --configuration=production --open",
     "shannon": "ng serve --configuration=shannon --host 0.0.0.0",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",

@@ -205,4 +205,11 @@ export interface Environment {
      */
     permissionsPolicy?: string;
   };
+
+  /**
+   * Enable E2E testing tools (exposes internal services on window.__e2e)
+   * Only enable in E2E test builds — never in production or normal development
+   * Default: false
+   */
+  enableE2eTools?: boolean;
 }
