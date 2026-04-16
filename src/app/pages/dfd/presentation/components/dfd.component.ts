@@ -450,6 +450,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         );
       }
     }
+
+    // Expose E2E testing bridge when enabled
+    if (environment.enableE2eTools) {
+      const adapter = this.dfdInfrastructure.graphAdapter;
+      (window as any).__e2e = {
+        ...(window as any).__e2e,
+        dfd: {
+          orchestrator: this.appDfdOrchestrator,
+          graph: adapter?.isInitialized() ? adapter.getGraph() : null,
+        },
+      };
+    }
   }
 
   private initializeWithPermission(permission: 'reader' | 'writer' | 'owner'): void {
@@ -587,6 +599,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .catch((error: unknown) => {
           this.logger.error('Error capturing SVG thumbnail on destroy', error);
         });
+    }
+
+    // Clean up E2E testing bridge
+    if (environment.enableE2eTools && (window as any).__e2e?.dfd) {
+      delete (window as any).__e2e.dfd;
     }
 
     this._destroy$.next();
