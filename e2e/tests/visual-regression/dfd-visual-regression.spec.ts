@@ -303,7 +303,7 @@ test.describe('DFD Visual Regression', () => {
       await expect(tmEditPage.tmName()).toContainText('Seed TM');
 
       // Open the Complex DFD
-      await diagramFlow.openSeededDiagram('Complex DFD');
+      await diagramFlow.openFromTmEdit('Complex DFD');
       await dfdEditorPage.waitForGraphSettled(10, 15000);
 
       await dfdEditorPage.zoomToFitButton().click();

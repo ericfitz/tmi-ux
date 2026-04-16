@@ -197,17 +197,26 @@ test.describe.serial('DFD Editor Controls', () => {
   });
 
   test('undo and redo button enabled/disabled states', async () => {
-    // After adding nodes in previous tests, undo should be available
-    const canUndo = await dfdEditorPage.canUndo();
-    if (canUndo) {
-      await expect(dfdEditorPage.undoButton()).toBeEnabled();
-    }
+    // Prior tests added nodes, so undo should be available
+    expect(await dfdEditorPage.canUndo()).toBe(true);
+    await expect(dfdEditorPage.undoButton()).toBeEnabled();
 
-    // Redo should be disabled when no undo has been performed
-    const canRedo = await dfdEditorPage.canRedo();
-    if (!canRedo) {
-      await expect(dfdEditorPage.redoButton()).toBeDisabled();
-    }
+    // Add one more node to have a clear undo target
+    const countBefore = await dfdEditorPage.getNodeCount();
+    await dfdEditorPage.addActorButton().click();
+    await dfdEditorPage.waitForGraphSettled(countBefore + 1);
+
+    // Undo
+    await dfdEditorPage.undoButton().click();
+    await dfdEditorPage.waitForGraphSettled(countBefore);
+
+    // Redo should now be available
+    expect(await dfdEditorPage.canRedo()).toBe(true);
+    await expect(dfdEditorPage.redoButton()).toBeEnabled();
+
+    // Redo to restore
+    await dfdEditorPage.redoButton().click();
+    await dfdEditorPage.waitForGraphSettled(countBefore + 1);
   });
 
   test('zoom-to-fit does not crash', async () => {

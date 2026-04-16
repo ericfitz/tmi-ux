@@ -93,7 +93,8 @@ test.describe.serial('DFD Editor Interactions', () => {
     expect(targetId).toBeTruthy();
     await expect(dfdEditorPage.nodes()).toHaveCount(2, { timeout: 5000 });
 
-    // Add an edge between the two nodes via graph API
+    // Setup: create edge directly via X6 graph API — the orchestrator doesn't expose
+    // a direct edge creation method (edges are created via port interactions in the UI)
     await page.evaluate(
       ({ src, tgt }) => {
         const graph = (window as any).__e2e?.dfd?.graph;
@@ -254,5 +255,44 @@ test.describe.serial('DFD Editor Interactions', () => {
     await dfdEditorPage.selectAllViaOrchestrator();
     await dfdEditorPage.deleteSelectedViaOrchestrator();
     await dfdEditorPage.waitForGraphSettled(0, 5000);
+  });
+
+  test('node resize via drag handle changes dimensions', async () => {
+    const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
+    await dfdEditorPage.waitForGraphSettled(1);
+
+    const nodeBefore = await dfdEditorPage.getNodeById(nodeId);
+    expect(nodeBefore).not.toBeNull();
+
+    // Select the node to show resize handles
+    await dfdEditorPage.selectNodeByIndex(0);
+
+    // Find the node's bottom-right resize handle
+    // X6 resize handles are typically positioned at the node's corners
+    const nodeEl = dfdEditorPage.nodes().first();
+    const box = await nodeEl.boundingBox();
+    expect(box).not.toBeNull();
+
+    if (box) {
+      // Drag from bottom-right corner outward to resize
+      const handleX = box.x + box.width;
+      const handleY = box.y + box.height;
+      await page.mouse.move(handleX, handleY);
+      await page.mouse.down();
+      await page.mouse.move(handleX + 50, handleY + 30, { steps: 10 });
+      await page.mouse.up();
+      await page.waitForTimeout(500);
+
+      const nodeAfter = await dfdEditorPage.getNodeById(nodeId);
+      expect(nodeAfter).not.toBeNull();
+      // Dimensions should have changed (either width or height or both)
+      const widthChanged = nodeAfter!.width !== nodeBefore!.width;
+      const heightChanged = nodeAfter!.height !== nodeBefore!.height;
+      expect(widthChanged || heightChanged).toBe(true);
+    }
+
+    // Clean up
+    await dfdEditorPage.selectAllViaOrchestrator();
+    await dfdEditorPage.deleteSelectedViaOrchestrator();
   });
 });

@@ -64,6 +64,9 @@ test.describe.serial('DFD Edge Properties', () => {
   /**
    * Helper: create two nodes and an edge between them via page.evaluate.
    * Returns { sourceId, targetId, edgeId }.
+   *
+   * Setup: creates edges directly via X6 graph API — the orchestrator doesn't expose
+   * a direct edge creation method (edges are created via port interactions in the UI).
    */
   async function createNodesAndEdge(options?: {
     label?: string;

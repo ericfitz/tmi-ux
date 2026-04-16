@@ -71,22 +71,6 @@ test.describe.serial('DFD Node Properties', () => {
   }
 
   /**
-   * Helper: select a node by ID via the graph.
-   */
-  async function selectNode(nodeId: string): Promise<void> {
-    await page.evaluate((id) => {
-      const graph = (window as any).__e2e?.dfd?.graph;
-      if (!graph) throw new Error('Graph not available');
-      const cell = graph.getCellById(id);
-      if (!cell) throw new Error(`Cell ${id} not found`);
-      graph.cleanSelection();
-      graph.select(cell);
-    }, nodeId);
-    // Allow Angular change detection to propagate
-    await page.waitForTimeout(300);
-  }
-
-  /**
    * Helper: open the style panel if not already open.
    */
   async function ensureStylePanelOpen(): Promise<void> {
@@ -99,7 +83,7 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('label editing via double-click', async () => {
     const nodeId = await addProcessAndGetId();
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
 
     // Double-click the node to enter edit mode
     const nodeElement = page.locator(`.x6-node[data-cell-id="${nodeId}"]`);
@@ -127,7 +111,7 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('stroke color via style panel', async () => {
     const nodeId = await addProcessAndGetId();
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureStylePanelOpen();
 
     // The stroke tab should be visible by default (first tab)
@@ -153,7 +137,7 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('fill color via style panel', async () => {
     const nodeId = await addProcessAndGetId();
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureStylePanelOpen();
 
     // Click the fill tab (second tab — format_color_fill icon)
@@ -182,7 +166,7 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('fill opacity via style panel slider', async () => {
     const nodeId = await addProcessAndGetId();
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureStylePanelOpen();
 
     // Click the fill tab
@@ -212,7 +196,7 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('label position via style panel grid', async () => {
     const nodeId = await addProcessAndGetId();
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureStylePanelOpen();
 
     // Click the label position tab (third tab — "title" icon)

@@ -29,6 +29,7 @@ export class DiagramFlow {
   }
 
   async openFromTmEdit(name: string) {
+    await this.tmEditPage.diagramRow(name).waitFor({ state: 'visible', timeout: 15000 });
     await this.tmEditPage.diagramRow(name).click();
     await this.page.waitForURL(/\/tm\/[a-f0-9-]+\/dfd\/[a-f0-9-]+/, { timeout: 10000 });
     await this.dfdEditorPage.graphContainer().waitFor({ state: 'visible', timeout: 15000 });
@@ -44,16 +45,5 @@ export class DiagramFlow {
     await this.tmEditPage.diagramDeleteButton().waitFor({ state: 'visible' });
     await this.tmEditPage.diagramDeleteButton().click();
     await this.deleteConfirmDialog.confirmDeletion();
-  }
-
-  /**
-   * Open a seeded diagram by name from the TM edit page.
-   * Assumes the TM edit page is already loaded and the diagram exists in the list.
-   */
-  async openSeededDiagram(diagramName: string) {
-    await this.tmEditPage.diagramRow(diagramName).waitFor({ state: 'visible', timeout: 15000 });
-    await this.tmEditPage.diagramRow(diagramName).click();
-    await this.page.waitForURL(/\/tm\/[a-f0-9-]+\/dfd\/[a-f0-9-]+/, { timeout: 10000 });
-    await this.dfdEditorPage.graphContainer().waitFor({ state: 'visible', timeout: 15000 });
   }
 }

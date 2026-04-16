@@ -80,6 +80,16 @@ export class DfdEditorPage {
   readonly stylePanel = () => this.page.locator('app-style-panel');
   readonly iconPickerPanel = () => this.page.locator('app-icon-picker-panel');
 
+  /**
+   * Select a node in the graph by clicking its DOM element.
+   * Uses the node's bounding box center for the click.
+   */
+  async selectNodeByIndex(index: number): Promise<void> {
+    const node = this.nodes().nth(index);
+    await node.click();
+    await this.page.waitForTimeout(300);
+  }
+
   // --- Graph query methods (thin page.evaluate wrappers) ---
 
   async getNodeCount(): Promise<number> {
@@ -182,6 +192,24 @@ export class DfdEditorPage {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       return orchestrator ? orchestrator.getState().hasUnsavedChanges : false;
+    });
+  }
+
+  async getState(): Promise<any> {
+    return this.page.evaluate(() => {
+      const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
+      if (!orchestrator) return null;
+      const state = orchestrator.getState();
+      return JSON.parse(JSON.stringify(state));
+    });
+  }
+
+  async getHistoryState(): Promise<any> {
+    return this.page.evaluate(() => {
+      const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
+      if (!orchestrator) return null;
+      const state = orchestrator.getHistoryState();
+      return JSON.parse(JSON.stringify(state));
     });
   }
 

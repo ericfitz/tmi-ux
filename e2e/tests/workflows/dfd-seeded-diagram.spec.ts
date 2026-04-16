@@ -61,7 +61,7 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
 
   test('Complex DFD: verify node and edge counts and types', async () => {
     await openSeededTm();
-    await diagramFlow.openSeededDiagram('Complex DFD');
+    await diagramFlow.openFromTmEdit('Complex DFD');
 
     // Wait for all 10 nodes to load
     await dfdEditorPage.waitForGraphSettled(10, 15000);
@@ -119,7 +119,7 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
 
   test('Simple DFD: verify node and edge counts', async () => {
     // We're on the TM edit page after closing the Complex DFD
-    await diagramFlow.openSeededDiagram('Simple DFD');
+    await diagramFlow.openFromTmEdit('Simple DFD');
 
     // Wait for all 3 nodes to load
     await dfdEditorPage.waitForGraphSettled(3, 15000);

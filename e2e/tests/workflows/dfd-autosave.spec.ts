@@ -113,4 +113,49 @@ test.describe.serial('DFD Editor Auto-Save', () => {
     expect(shapes).toContain('process');
     expect(shapes).toContain('store');
   });
+
+  test('style changes persist through auto-save and reload', async () => {
+    // Add a process and change its fill color
+    await dfdEditorPage.addProcessButton().click();
+    await dfdEditorPage.waitForGraphSettled(4);
+
+    // Change fill color via X6 API
+    await page.evaluate(() => {
+      const graph = (window as any).__e2e?.dfd?.graph;
+      if (!graph) return;
+      const nodes = graph.getNodes();
+      if (nodes.length > 0) {
+        nodes[0].setAttrByPath('body/fill', '#00ff00');
+      }
+    });
+
+    // Wait for auto-save
+    await page.waitForFunction(
+      () => {
+        const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
+        return orchestrator && !orchestrator.getState().hasUnsavedChanges;
+      },
+      { timeout: 5000 },
+    ).catch(() => {});
+
+    if (await dfdEditorPage.hasUnsavedChanges()) {
+      await dfdEditorPage.saveButton().click();
+      await page.waitForTimeout(2000);
+    }
+
+    // Reload
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
+    await page.waitForTimeout(3000);
+
+    // Verify style persisted
+    const fillColor = await page.evaluate(() => {
+      const graph = (window as any).__e2e?.dfd?.graph;
+      if (!graph) return null;
+      const nodes = graph.getNodes();
+      if (nodes.length === 0) return null;
+      return nodes[0].getAttrByPath('body/fill') || null;
+    });
+    expect(fillColor).toBe('#00ff00');
+  });
 });

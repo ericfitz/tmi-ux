@@ -62,21 +62,6 @@ test.describe.serial('DFD Icon Properties', () => {
   });
 
   /**
-   * Helper: select a node by ID via the graph.
-   */
-  async function selectNode(nodeId: string): Promise<void> {
-    await page.evaluate((id) => {
-      const graph = (window as any).__e2e?.dfd?.graph;
-      if (!graph) throw new Error('Graph not available');
-      const cell = graph.getCellById(id);
-      if (!cell) throw new Error(`Cell ${id} not found`);
-      graph.cleanSelection();
-      graph.select(cell);
-    }, nodeId);
-    await page.waitForTimeout(300);
-  }
-
-  /**
    * Helper: open the icon picker panel if not already open.
    */
   async function ensureIconPickerOpen(): Promise<void> {
@@ -92,7 +77,7 @@ test.describe.serial('DFD Icon Properties', () => {
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     expect(nodeId).toBeTruthy();
 
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureIconPickerOpen();
 
     // The search field should be visible when an eligible node is selected
@@ -152,7 +137,7 @@ test.describe.serial('DFD Icon Properties', () => {
       });
     }, nodeId);
 
-    await selectNode(nodeId);
+    await dfdEditorPage.selectNodeByIndex(0);
     await ensureIconPickerOpen();
 
     // Wait for the current icon section to appear (since we assigned one)
