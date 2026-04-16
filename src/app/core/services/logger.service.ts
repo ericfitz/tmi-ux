@@ -329,8 +329,11 @@ export class LoggerService {
       return param.map(item => this.redactSensitiveData(item));
     }
     if (param !== null && typeof param === 'object') {
-      const sanitized: Record<string, unknown> = {};
+      const sanitized: Record<string, unknown> = Object.create(null);
       for (const [key, value] of Object.entries(param)) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+          continue;
+        }
         sanitized[key] = this.redactSensitiveData(value);
       }
       return sanitized;
