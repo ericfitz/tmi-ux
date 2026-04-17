@@ -133,8 +133,12 @@ test.describe.serial('DFD Editor Auto-Save', () => {
       if (!graph) return;
       const nodes = graph.getNodes();
       if (nodes.length > 0) {
-        nodes[0].setAttrByPath('body/fill', '#00ff00');
-        // Mark state as dirty so save captures the change
+        const node = nodes[0];
+        node.setAttrByPath('body/fill', '#00ff00');
+        // Mark as user-authored style so the embedding-appearance service
+        // doesn't overwrite body/fill on reload (depth 0 default = #FFFFFF).
+        const prevData = node.getData?.() ?? {};
+        node.setData({ ...prevData, customStyles: true });
         if (orchestrator) {
           const state = orchestrator.getState();
           if (!state.hasUnsavedChanges) {
