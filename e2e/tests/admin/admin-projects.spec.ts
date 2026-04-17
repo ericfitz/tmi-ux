@@ -46,7 +46,7 @@ test.describe.serial('Admin Projects Workflows', () => {
   });
 
   test('create a project', async () => {
-    await adminProjectsFlow.createProject(projectName, 'initial desc');
+    await adminProjectsFlow.createProject(projectName, 'Seed Team Alpha', 'initial desc');
     await expect(adminProjectsPage.row(projectName)).toBeVisible({ timeout: 10000 });
   });
 

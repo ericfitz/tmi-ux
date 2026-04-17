@@ -65,6 +65,7 @@ export interface CreateProjectDialogResult {
             [placeholder]="'projects.createDialog.descriptionPlaceholder' | transloco"
             maxlength="1024"
             rows="3"
+            data-testid="create-project-description-input"
           ></textarea>
         </mat-form-field>
 
@@ -76,7 +77,7 @@ export interface CreateProjectDialogResult {
                 <mat-option>{{ 'common.loading' | transloco }}</mat-option>
               </mat-select>
             } @else {
-              <mat-select formControlName="team_id">
+              <mat-select formControlName="team_id" data-testid="create-project-team-select">
                 @for (team of teams; track team.id) {
                   <mat-option [value]="team.id">{{ team.name }}</mat-option>
                 }
@@ -105,6 +106,7 @@ export interface CreateProjectDialogResult {
             formControlName="uri"
             type="url"
             [placeholder]="'projects.createDialog.uriPlaceholder' | transloco"
+            data-testid="create-project-uri-input"
           />
         </mat-form-field>
 
@@ -114,13 +116,14 @@ export interface CreateProjectDialogResult {
             matInput
             formControlName="status"
             [placeholder]="'projects.createDialog.statusPlaceholder' | transloco"
+            data-testid="create-project-status-select"
           />
         </mat-form-field>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="create-project-cancel-button">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
@@ -128,6 +131,7 @@ export interface CreateProjectDialogResult {
         color="primary"
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
+        data-testid="create-project-submit-button"
       >
         <span [transloco]="'common.create'">Create</span>
       </button>

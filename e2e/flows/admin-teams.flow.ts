@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Dialog, expect, Page } from '@playwright/test';
 import { AdminTeamsPage } from '../pages/admin-teams.page';
 import { CreateTeamDialog } from '../dialogs/create-team.dialog';
 import { EditTeamDialog } from '../dialogs/edit-team.dialog';
@@ -6,7 +6,6 @@ import { TeamMembersDialog } from '../dialogs/team-members.dialog';
 import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog';
 import { RelatedTeamsDialog } from '../dialogs/related-teams.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
-import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
 export class AdminTeamsFlow {
   private adminTeamsPage: AdminTeamsPage;
@@ -16,8 +15,6 @@ export class AdminTeamsFlow {
   private responsiblePartiesDialog: ResponsiblePartiesDialog;
   private relatedTeamsDialog: RelatedTeamsDialog;
   private metadataDialog: MetadataDialog;
-  private deleteConfirmDialog: DeleteConfirmDialog;
-
   constructor(private page: Page) {
     this.adminTeamsPage = new AdminTeamsPage(page);
     this.createTeamDialog = new CreateTeamDialog(page);
@@ -26,7 +23,6 @@ export class AdminTeamsFlow {
     this.responsiblePartiesDialog = new ResponsiblePartiesDialog(page);
     this.relatedTeamsDialog = new RelatedTeamsDialog(page);
     this.metadataDialog = new MetadataDialog(page);
-    this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
   async createTeam(name: string, description?: string) {
@@ -36,6 +32,8 @@ export class AdminTeamsFlow {
     if (description) {
       await this.createTeamDialog.fillDescription(description);
     }
+    await this.createTeamDialog.submitButton().waitFor({ state: 'visible' });
+    await expect(this.createTeamDialog.submitButton()).toBeEnabled({ timeout: 5000 });
     await this.createTeamDialog.submit();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
@@ -81,9 +79,8 @@ export class AdminTeamsFlow {
 
   async deleteTeam(name: string) {
     await this.adminTeamsPage.moreButton(name).click();
+    const dialogHandler = (dialog: Dialog) => void dialog.accept();
+    this.page.once('dialog', dialogHandler);
     await this.adminTeamsPage.deleteItem().dispatchEvent('click');
-    await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
-    await this.deleteConfirmDialog.confirmDeletion();
-    await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 }

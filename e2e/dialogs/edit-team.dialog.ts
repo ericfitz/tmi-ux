@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class EditTeamDialog {
   private dialog: Locator;
@@ -40,23 +41,19 @@ export class EditTeamDialog {
   readonly saveButton = () => this.dialog.getByTestId('edit-team-save-button');
 
   async fillName(name: string) {
-    await this.nameInput().clear();
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(description: string) {
-    await this.descriptionInput().clear();
-    await this.descriptionInput().fill(description);
+    await angularFill(this.descriptionInput(), description);
   }
 
   async fillEmail(email: string) {
-    await this.emailInput().clear();
-    await this.emailInput().fill(email);
+    await angularFill(this.emailInput(), email);
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().clear();
-    await this.uriInput().fill(uri);
+    await angularFill(this.uriInput(), uri);
   }
 
   async selectStatus(status: string) {

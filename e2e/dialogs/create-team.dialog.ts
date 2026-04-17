@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class CreateTeamDialog {
   private dialog: Locator;
@@ -16,19 +17,19 @@ export class CreateTeamDialog {
   readonly submitButton = () => this.dialog.getByTestId('create-team-submit-button');
 
   async fillName(name: string) {
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillDescription(description: string) {
-    await this.descriptionInput().fill(description);
+    await angularFill(this.descriptionInput(), description);
   }
 
   async fillEmail(email: string) {
-    await this.emailInput().fill(email);
+    await angularFill(this.emailInput(), email);
   }
 
   async fillUri(uri: string) {
-    await this.uriInput().fill(uri);
+    await angularFill(this.uriInput(), uri);
   }
 
   async selectStatus(status: string) {
