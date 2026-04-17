@@ -786,16 +786,17 @@ export class InfraX6EmbeddingAdapter {
    * Reset visual appearance for unembedded nodes
    */
   private resetEmbeddingAppearance(node: Node): void {
+    // Respect user-authored styles — don't override body/fill when the node
+    // has been marked customStyles via the style panel.
+    if (node.getData?.()?.customStyles) {
+      return;
+    }
+
     // Get original fill color based on shape type
     const originalFillColor = this._getOriginalFillColorForShape(node.shape);
 
     // Reset visual effects
     this.applyEmbeddingVisualEffects(node, originalFillColor, 0);
-
-    // this.logger.info('Reset embedding appearance', {
-    //   nodeId: node.id,
-    //   originalFillColor,
-    // });
   }
 
   /**

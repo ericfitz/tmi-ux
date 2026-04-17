@@ -122,49 +122,50 @@ test.describe.serial('DFD Editor Auto-Save', () => {
   });
 
   test('style changes persist through auto-save and reload', async () => {
-    // Add a process and change its fill color
+    // Add a process so we have a node to style
     await dfdEditorPage.addProcessButton().click();
     await dfdEditorPage.waitForGraphSettled(4);
 
-    // Change fill color via X6 API and mark as unsaved
-    await page.evaluate(() => {
+    // Change fill color via X6 API on a specific node, mark as custom styles,
+    // and flip the unsaved-changes flag so the save button actually persists.
+    const targetId = await page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
-      if (!graph) return;
+      if (!graph) return null;
       const nodes = graph.getNodes();
-      if (nodes.length > 0) {
-        const node = nodes[0];
-        node.setAttrByPath('body/fill', '#00ff00');
-        // Mark as user-authored style so the embedding-appearance service
-        // doesn't overwrite body/fill on reload (depth 0 default = #FFFFFF).
-        const prevData = node.getData?.() ?? {};
-        node.setData({ ...prevData, customStyles: true });
-        if (orchestrator) {
-          const state = orchestrator.getState();
-          if (!state.hasUnsavedChanges) {
-            orchestrator._markUnsavedChanges?.();
-          }
-        }
+      if (!nodes.length) return null;
+      const node = nodes[0];
+      node.setAttrByPath('body/fill', '#00ff00');
+      const prevData = node.getData?.() ?? {};
+      node.setData({ ...prevData, customStyles: true });
+      if (orchestrator && !orchestrator.getState().hasUnsavedChanges) {
+        orchestrator._markUnsavedChanges?.();
       }
+      return node.id as string;
     });
+    expect(targetId).toBeTruthy();
 
-    // Explicitly save to capture the style change
     await dfdEditorPage.saveButton().click();
     await page.waitForTimeout(3000);
 
-    // Reload
     await page.reload({ waitUntil: 'networkidle' });
     await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
     await page.waitForTimeout(3000);
 
-    // Verify style persisted
-    const fillColor = await page.evaluate(() => {
+    const result = await page.evaluate((id) => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) return null;
-      const nodes = graph.getNodes();
-      if (nodes.length === 0) return null;
-      return nodes[0].getAttrByPath('body/fill') || null;
-    });
-    expect(fillColor).toBe('#00ff00');
+      const node = graph.getCellById(id);
+      if (!node) return { missing: true };
+      return {
+        fill: node.getAttrByPath('body/fill') || null,
+        customStyles: !!node.getData?.()?.customStyles,
+      };
+    }, targetId);
+
+    expect(result).not.toBeNull();
+    expect((result as any).missing).toBeFalsy();
+    expect((result as any).customStyles).toBe(true);
+    expect((result as any).fill).toBe('#00ff00');
   });
 });
