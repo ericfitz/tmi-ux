@@ -44,6 +44,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.webhooks.addDialog.name'">Name</mat-label>
           <input
             matInput
+            data-testid="add-webhook-name-input"
             formControlName="name"
             [placeholder]="'admin.webhooks.addDialog.namePlaceholder' | transloco"
             required
@@ -62,6 +63,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.webhooks.addDialog.url'">Webhook URL</mat-label>
           <input
             matInput
+            data-testid="add-webhook-url-input"
             formControlName="url"
             type="url"
             [placeholder]="'admin.webhooks.addDialog.urlPlaceholder' | transloco"
@@ -94,6 +96,7 @@ import { LoggerService } from '@app/core/services/logger.service';
             >Event Types to Subscribe To</mat-label
           >
           <mat-select
+            data-testid="add-webhook-events-select"
             formControlName="events"
             multiple
             required
@@ -119,6 +122,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.webhooks.addDialog.secret'">Secret (Optional)</mat-label>
           <input
             matInput
+            data-testid="add-webhook-secret-input"
             formControlName="secret"
             type="password"
             autocomplete="off"
@@ -143,12 +147,13 @@ import { LoggerService } from '@app/core/services/logger.service';
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button data-testid="add-webhook-cancel-button" (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
         mat-raised-button
         color="primary"
+        data-testid="add-webhook-submit-button"
         (click)="onSave()"
         [disabled]="!form.valid || saving"
       >
