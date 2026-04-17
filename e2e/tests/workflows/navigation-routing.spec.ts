@@ -119,6 +119,18 @@ unauthTest.describe('Auth Guards', () => {
     );
     expect(page.url()).not.toContain('/triage');
   });
+
+  unauthTest('unauthenticated /admin redirect includes returnUrl', async ({ page }) => {
+    await page.goto('/admin');
+    await page.waitForURL(/\/login/, { timeout: 10000 });
+    expect(page.url()).toMatch(/\/login\?.*returnUrl=.*\/admin/);
+  });
+
+  unauthTest('unauthenticated /tm/<id> redirect includes returnUrl', async ({ page }) => {
+    await page.goto('/tm/00000000-0000-0000-0000-000000000000');
+    await page.waitForURL(/\/login/, { timeout: 10000 });
+    expect(page.url()).toMatch(/\/login\?.*returnUrl=.*\/tm/);
+  });
 });
 
 // === Reviewer Navigation ===
@@ -183,5 +195,79 @@ adminTest.describe('Navigation & Routing (Admin)', () => {
     await adminPage.goto('/triage');
     await adminPage.waitForLoadState('networkidle');
     expect(adminPage.url()).toContain('/triage');
+  });
+});
+
+// === Home Guard / Landing Page ===
+
+userTest.describe('Home Guard (User)', () => {
+  userTest.setTimeout(60000);
+
+  userTest('authed user at / lands on /intake', async ({ userPage }) => {
+    await userPage.goto('/');
+    await userPage.waitForURL(/\/intake/, { timeout: 10000 });
+    expect(userPage.url()).toContain('/intake');
+  });
+});
+
+reviewerTest.describe('Home Guard (Reviewer)', () => {
+  reviewerTest.setTimeout(60000);
+
+  reviewerTest('authed reviewer at / lands on /dashboard', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/');
+    await reviewerPage.waitForURL(/\/dashboard/, { timeout: 10000 });
+    expect(reviewerPage.url()).toContain('/dashboard');
+  });
+});
+
+adminTest.describe('Home Guard (Admin)', () => {
+  adminTest.setTimeout(60000);
+
+  adminTest('authed admin at / lands on /admin', async ({ adminPage }) => {
+    await adminPage.goto('/');
+    await adminPage.waitForURL(/\/admin/, { timeout: 10000 });
+    expect(adminPage.url()).toContain('/admin');
+  });
+});
+
+// === Admin Guard – access control ===
+
+userTest.describe('Admin Guard (User)', () => {
+  userTest.setTimeout(60000);
+
+  userTest('/admin redirect includes error=admin_required', async ({ userPage }) => {
+    await userPage.goto('/admin');
+    await userPage.waitForURL(url => !url.pathname.startsWith('/admin'), { timeout: 10000 });
+    const url = userPage.url();
+    expect(url).toContain('error=admin_required');
+    expect(url).toContain('/intake');
+  });
+
+  userTest('/admin/users sub-route is blocked', async ({ userPage }) => {
+    await userPage.goto('/admin/users');
+    await userPage.waitForURL(url => !url.pathname.startsWith('/admin'), { timeout: 10000 });
+    expect(userPage.url()).not.toMatch(/\/admin\/users/);
+  });
+});
+
+reviewerTest.describe('Admin Guard (Reviewer)', () => {
+  reviewerTest.setTimeout(60000);
+
+  reviewerTest('/admin/surveys/new deep sub-route is blocked', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/admin/surveys/new');
+    await reviewerPage.waitForURL(url => !url.pathname.startsWith('/admin'), { timeout: 10000 });
+    expect(reviewerPage.url()).not.toMatch(/\/admin/);
+  });
+});
+
+// === Reviewer Guard – access control ===
+
+userTest.describe('Reviewer Guard (User)', () => {
+  userTest.setTimeout(60000);
+
+  userTest('/triage redirects user to landing page', async ({ userPage }) => {
+    await userPage.goto('/triage');
+    await userPage.waitForURL(url => !url.pathname.startsWith('/triage'), { timeout: 10000 });
+    expect(userPage.url()).toContain('/intake');
   });
 });

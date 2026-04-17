@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { userTest, reviewerTest, adminTest } from '../../fixtures/auth-fixtures';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { NavbarPage } from '../../pages/navbar.page';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { CreateTmDialog } from '../../dialogs/create-tm.dialog';
 import { DeleteConfirmDialog } from '../../dialogs/delete-confirm.dialog';
@@ -156,5 +157,62 @@ adminTest.describe('Error Scenarios (Admin)', () => {
     await adminPage.waitForURL(url => !url.pathname.includes('/unauthorized'), {
       timeout: 10000,
     });
+  });
+
+  adminTest('admin check failure redirects with error=admin_check_failed', async ({ adminPage }) => {
+    await adminPage.route('**/me', route =>
+      route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"internal"}' }),
+    );
+
+    await adminPage.goto('/admin');
+    await adminPage.waitForURL(url => !url.pathname.startsWith('/admin'), { timeout: 10000 });
+
+    await adminPage.unroute('**/me');
+
+    expect(adminPage.url()).toContain('error=admin_check_failed');
+  });
+});
+
+// === Error Scenarios – Network and Session ===
+
+userTest.describe('Error Scenarios – Network and Session', () => {
+  userTest.setTimeout(60000);
+
+  userTest('network failure on dashboard is handled gracefully', async ({ userPage }) => {
+    await userPage.route('**/threat_models**', route =>
+      route.fulfill({ status: 500, body: '{}' }),
+    );
+
+    await userPage.goto('/dashboard');
+    await userPage.waitForLoadState('networkidle');
+
+    await userPage.unroute('**/threat_models**');
+
+    const navbar = new NavbarPage(userPage);
+    await expect(navbar.dashboardLink()).toBeVisible({ timeout: 10000 });
+  });
+
+  userTest('logout ends session and redirects', async ({ userPage }) => {
+    const navbar = new NavbarPage(userPage);
+
+    await userPage.goto('/dashboard');
+    await userPage.waitForLoadState('networkidle');
+
+    await navbar.userMenu().click();
+    await navbar.logoutButton().waitFor({ state: 'visible', timeout: 5000 });
+    await navbar.logoutButton().click();
+
+    await userPage.waitForURL(
+      url => url.pathname === '/' || url.pathname.includes('/login'),
+      { timeout: 10000 },
+    );
+
+    await userPage.reload();
+    await userPage.waitForURL(
+      url => url.pathname.includes('/login') || url.pathname === '/',
+      { timeout: 10000 },
+    );
+
+    expect(userPage.url()).toMatch(/\/(login|$)/);
   });
 });
