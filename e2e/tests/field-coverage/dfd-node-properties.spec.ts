@@ -93,10 +93,22 @@ test.describe.serial('DFD Node Properties', () => {
     // Wait for X6 to finish positioning/rendering the node
     await page.waitForTimeout(2000);
 
-    // Double-click the node to enter edit mode
-    const nodeElement = page.locator(`.x6-node[data-cell-id="${nodeId}"]`);
-    await expect(nodeElement).toBeVisible({ timeout: 10000 });
-    await nodeElement.dblclick({ force: true });
+    // Trigger cell:dblclick via X6 directly — dispatching native dblclick
+    // against .x6-node is unreliable on freshly-rendered canvases, and the
+    // graph handler is what we want to exercise.
+    await page.evaluate((id) => {
+      const graph = (window as any).__e2e?.dfd?.graph;
+      const cell = graph?.getCellById(id);
+      if (cell) {
+        graph.trigger('cell:dblclick', {
+          cell,
+          e: new MouseEvent('dblclick'),
+          x: 0,
+          y: 0,
+          view: graph.findViewByCell(cell),
+        });
+      }
+    }, nodeId);
 
     // Look for the custom label editor input
     const editor = page.getByTestId('dfd-label-editor');

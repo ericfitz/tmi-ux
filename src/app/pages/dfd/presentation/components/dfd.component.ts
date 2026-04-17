@@ -2754,7 +2754,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const previousData = cell.getData() ?? {};
       const { _arch, ...restData } = previousData;
-      cell.setData(restData, { silent: true });
+      cell.setData(restData, { silent: true, overwrite: true });
       cell.setAttrByPath('icon/href', null);
 
       // Restore label position if it was shifted for centered icon

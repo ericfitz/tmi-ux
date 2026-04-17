@@ -8,7 +8,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
  * Handles X6-specific label editing implementation
  * Manages inline text editing for nodes and edges
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class X6LabelEditorAdapter {
   private _isEditing = false;
   private _currentEditingCell: Cell | null = null;

@@ -490,11 +490,12 @@ export class NodeOperationExecutor implements OperationExecutor {
     }
 
     if (updates.properties) {
+      // X6 setData() deep-merges by default and cannot delete keys, so we
+      // compute the full target data locally and pass { overwrite: true }.
       if ('data' in updates.properties) {
-        node.setData(updates.properties['data']);
+        node.setData(updates.properties['data'], { overwrite: true });
       } else {
         const currentData = node.getData() || {};
-        // null/undefined values signal key removal; spread cannot express deletion
         const merged: Record<string, unknown> = { ...currentData };
         for (const [k, v] of Object.entries(updates.properties)) {
           if (v === null || v === undefined) {
@@ -503,7 +504,7 @@ export class NodeOperationExecutor implements OperationExecutor {
             merged[k] = v;
           }
         }
-        node.setData(merged);
+        node.setData(merged, { overwrite: true });
       }
       changed.push('properties');
     }

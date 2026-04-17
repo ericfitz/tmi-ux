@@ -2083,6 +2083,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     const textarea = document.createElement('textarea');
     textarea.value = this.getCellLabel(cell);
     textarea.className = 'x6-custom-label-editor';
+    textarea.setAttribute('data-testid', 'dfd-label-editor');
     textarea.style.cssText = `
       position: fixed;
       left: ${editorX - 60}px;
