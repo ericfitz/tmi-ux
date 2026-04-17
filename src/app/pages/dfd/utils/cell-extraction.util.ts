@@ -123,20 +123,19 @@ function extractEdge(cell: any): Cell {
  * Mirrors the logic from AppDiagramService.convertCellDataToArray().
  */
 function convertCellData(cellData: any): any {
-  if (cellData && cellData._metadata) {
-    return cellData;
-  } else if (cellData && cellData.metadata) {
-    if (Array.isArray(cellData.metadata)) {
-      return { _metadata: cellData.metadata };
-    } else if (typeof cellData.metadata === 'object') {
-      const metadataArray: any[] = [];
-      Object.entries(cellData.metadata).forEach(([key, value]) => {
-        metadataArray.push({ key, value: String(value) });
-      });
-      return { _metadata: metadataArray };
+  if (!cellData) {
+    return { _metadata: [] };
+  }
+  const { metadata, _metadata, ...rest } = cellData;
+  let meta = _metadata;
+  if (!meta && metadata) {
+    if (Array.isArray(metadata)) {
+      meta = metadata;
+    } else if (typeof metadata === 'object') {
+      meta = Object.entries(metadata).map(([key, value]) => ({ key, value: String(value) }));
     }
   }
-  return { _metadata: [] };
+  return { ...rest, _metadata: meta ?? [] };
 }
 
 /**

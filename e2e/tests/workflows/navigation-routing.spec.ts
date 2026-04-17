@@ -123,13 +123,13 @@ unauthTest.describe('Auth Guards', () => {
   unauthTest('unauthenticated /admin redirect includes returnUrl', async ({ page }) => {
     await page.goto('/admin');
     await page.waitForURL(/\/login/, { timeout: 10000 });
-    expect(page.url()).toMatch(/\/login\?.*returnUrl=.*\/admin/);
+    expect(page.url()).toMatch(/\/login\?.*returnUrl=(%2F|\/)admin/);
   });
 
   unauthTest('unauthenticated /tm/<id> redirect includes returnUrl', async ({ page }) => {
     await page.goto('/tm/00000000-0000-0000-0000-000000000000');
     await page.waitForURL(/\/login/, { timeout: 10000 });
-    expect(page.url()).toMatch(/\/login\?.*returnUrl=.*\/tm/);
+    expect(page.url()).toMatch(/\/login\?.*returnUrl=(%2F|\/)tm/);
   });
 });
 
@@ -223,10 +223,10 @@ reviewerTest.describe('Home Guard (Reviewer)', () => {
 adminTest.describe('Home Guard (Admin)', () => {
   adminTest.setTimeout(60000);
 
-  adminTest('authed admin at / lands on /admin', async ({ adminPage }) => {
+  adminTest('authed admin+reviewer at / lands on /dashboard', async ({ adminPage }) => {
     await adminPage.goto('/');
-    await adminPage.waitForURL(/\/admin/, { timeout: 10000 });
-    expect(adminPage.url()).toContain('/admin');
+    await adminPage.waitForURL(/\/dashboard/, { timeout: 10000 });
+    expect(adminPage.url()).toContain('/dashboard');
   });
 });
 
