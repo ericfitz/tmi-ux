@@ -129,7 +129,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" [disabled]="saving">
+  <button mat-button (click)="onCancel()" [disabled]="saving" data-testid="add-quota-cancel-button">
     <span [transloco]="'common.cancel'">Cancel</span>
   </button>
   <button
@@ -137,6 +137,7 @@
     color="primary"
     (click)="onSave()"
     [disabled]="!selectedUser || quotaForm.invalid || saving"
+    data-testid="add-quota-submit-button"
   >
     @if (saving) {
       <mat-spinner diameter="20"></mat-spinner>

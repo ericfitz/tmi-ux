@@ -7,7 +7,12 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        (click)="onClose()"
+        [attr.aria-label]="'common.close' | transloco"
+        data-testid="quotas-close-button"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -29,11 +34,16 @@
   </mat-card>
 
   <!-- User API Quotas Section -->
-  <mat-card class="quotas-card">
+  <mat-card class="quotas-card" data-testid="quotas-users-section">
     <mat-card-header>
       <mat-card-title [transloco]="'admin.quotas.userAPITitle'">API Rate Limits</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddQuota()">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="onAddQuota()"
+          data-testid="quotas-users-add-button"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.quotas.addButton'">Add Quota</span>
         </button>
@@ -237,7 +247,7 @@
   </mat-card>
 
   <!-- Webhook Quotas Section -->
-  <mat-card class="quotas-card">
+  <mat-card class="quotas-card" data-testid="quotas-webhooks-section">
     <mat-card-header>
       <mat-card-title [transloco]="'admin.quotas.webhookTitle'">Webhook Limits</mat-card-title>
     </mat-card-header>
