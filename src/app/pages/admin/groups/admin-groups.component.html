@@ -5,7 +5,12 @@
       <p class="subtitle" [transloco]="'admin.groups.subtitle'">View and manage system groups</p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="groups-close-button"
+        (click)="onClose()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -17,6 +22,7 @@
         <mat-label [transloco]="'admin.groups.filterLabel'">Filter Groups</mat-label>
         <input
           matInput
+          data-testid="groups-search-input"
           [value]="filterText"
           (input)="onFilterChange($any($event.target).value)"
           [placeholder]="'admin.groups.filterPlaceholder' | transloco"
@@ -31,7 +37,12 @@
     <mat-card-header>
       <mat-card-title [transloco]="'admin.groups.listTitle'">Groups</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddGroup()">
+        <button
+          mat-raised-button
+          color="primary"
+          data-testid="groups-add-button"
+          (click)="onAddGroup()"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.groups.addButton'">Add Group</span>
         </button>
@@ -44,7 +55,7 @@
         </div>
       } @else if (dataSource.data.length > 0) {
         <div class="groups-table">
-          <table mat-table [dataSource]="dataSource" matSort>
+          <table mat-table data-testid="groups-table" [dataSource]="dataSource" matSort>
             <!-- Provider Column -->
             <ng-container matColumnDef="provider">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="provider-column">
@@ -108,6 +119,7 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    data-testid="groups-members-button"
                     (click)="onViewMembers(group)"
                     [disabled]="isEveryoneGroup(group)"
                     [matTooltip]="'admin.groups.viewMembersTooltip' | transloco"
@@ -116,6 +128,7 @@
                   </button>
                   <button
                     mat-icon-button
+                    data-testid="groups-more-button"
                     [matMenuTriggerFor]="groupRowKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
@@ -125,6 +138,7 @@
                   <mat-menu #groupRowKebabMenu="matMenu">
                     <button
                       mat-menu-item
+                      data-testid="groups-delete-item"
                       (click)="onDeleteGroup(group)"
                       [disabled]="isEveryoneGroup(group)"
                     >
@@ -139,6 +153,7 @@
             <tr mat-header-row *matHeaderRowDef="['provider', 'group', 'usage', 'actions']"></tr>
             <tr
               mat-row
+              data-testid="groups-row"
               *matRowDef="let row; columns: ['provider', 'group', 'usage', 'actions']"
             ></tr>
           </table>
@@ -153,6 +168,7 @@
       <!-- Paginator -->
       @if (!loading && totalGroups > 0) {
         <mat-paginator
+          data-testid="groups-paginator"
           [length]="totalGroups"
           [pageSize]="pageSize"
           [pageIndex]="pageIndex"

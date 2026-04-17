@@ -37,6 +37,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.groups.addDialog.displayName'">Display Name</mat-label>
           <input
             matInput
+            data-testid="add-group-name-input"
             formControlName="name"
             [placeholder]="'admin.groups.addDialog.displayNamePlaceholder' | transloco"
             required
@@ -55,6 +56,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.groups.addDialog.groupName'">Group Identifier</mat-label>
           <input
             matInput
+            data-testid="add-group-identifier-input"
             formControlName="group_name"
             [placeholder]="'admin.groups.addDialog.groupNamePlaceholder' | transloco"
             (focus)="onGroupNameFocus()"
@@ -81,6 +83,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           >
           <textarea
             matInput
+            data-testid="add-group-description-input"
             formControlName="description"
             [placeholder]="'admin.groups.addDialog.descriptionPlaceholder' | transloco"
             rows="3"
@@ -98,12 +101,13 @@ import { LoggerService } from '@app/core/services/logger.service';
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button data-testid="add-group-cancel-button" (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
         mat-raised-button
         color="primary"
+        data-testid="add-group-submit-button"
         (click)="onSave()"
         [disabled]="!form.valid || saving"
       >
