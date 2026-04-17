@@ -3,6 +3,7 @@ import { test } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DiagramFlow } from '../../flows/diagram.flow';
+import { DashboardFilterFlow } from '../../flows/dashboard-filter.flow';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { DfdEditorPage } from '../../pages/dfd-editor.page';
 import { TmEditPage } from '../../pages/tm-edit.page';
@@ -295,16 +296,24 @@ test.describe('DFD Visual Regression', () => {
     const dashboardPage = new DashboardPage(page);
     const tmEditPage = new TmEditPage(page);
     const dfdEditorPage = new DfdEditorPage(page);
+    const filterFlow = new DashboardFilterFlow(page);
 
     try {
-      // Navigate to seeded TM
       await page.goto('/dashboard');
       await page.waitForLoadState('networkidle');
-      await dashboardPage.tmCard(SEEDED_TM).first().click();
+
+      await filterFlow.searchByName('Seed TM');
+      const seededCard = dashboardPage.tmCard(SEEDED_TM).first();
+      const found = await seededCard.isVisible().catch(() => false);
+      if (!found) {
+        test.skip(true, 'Seed TM "Seed TM - Full Fields" not available — seed data not loaded in test backend.');
+        return;
+      }
+
+      await seededCard.click();
       await page.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
       await expect(tmEditPage.tmName()).toContainText('Seed TM');
 
-      // Open the Complex DFD
       await diagramFlow.openFromTmEdit('Complex DFD');
       await dfdEditorPage.waitForGraphSettled(10, 15000);
 
