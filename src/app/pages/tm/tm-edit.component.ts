@@ -1347,10 +1347,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
             this._subscriptions.add(
               this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe({
-                next: () => {
-                  if (this.threatModel) {
-                    this.loadDiagrams(this.threatModel.id);
-                  }
+                next: created => {
+                  if (!this.threatModel) return;
+                  this.diagrams = [...this.diagrams, created];
+                  this.totalDiagrams = this.totalDiagrams + 1;
+                  this.threatModel.diagrams = [...(this.threatModel.diagrams ?? []), created];
                 },
                 error: error => {
                   this.logger.error('Failed to create diagram', error);
