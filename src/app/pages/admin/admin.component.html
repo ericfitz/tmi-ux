@@ -7,7 +7,12 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="admin-close-button"
+        (click)="onClose()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -17,6 +22,7 @@
     @for (section of adminSections; track section.action) {
       <mat-card
         class="admin-card clickable"
+        [attr.data-testid]="'admin-section-card-' + section.action"
         (click)="onSectionClick(section.action)"
         (keydown.enter)="onSectionClick(section.action)"
         (keydown.space)="onSectionClick(section.action)"
