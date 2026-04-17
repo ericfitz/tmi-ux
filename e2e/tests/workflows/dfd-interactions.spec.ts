@@ -14,7 +14,7 @@ import { DfdEditorPage } from '../../pages/dfd-editor.page';
  * - Edge lifecycle: add nodes and edge, verify, clean up
  * - Embedding: add boundary + child, embed, verify, unembed, verify
  * - Multi-select and delete with undo
- * - Node move via mouse drag
+ * - Node move and resize via orchestrator (X6 drags cannot be simulated from Playwright)
  *
  * Creates a fresh TM and diagram in beforeAll, cleans up in afterAll.
  * Tests run serially and share a single browser context.
@@ -197,46 +197,30 @@ test.describe.serial('DFD Editor Interactions', () => {
     expect(countAfterDelete).toBe(0);
   });
 
-  test('node move via mouse drag changes position', async () => {
-    // Add a single node
+  test('node move updates position via orchestrator', async () => {
+    // We cannot drive an X6-recognizable drag from Playwright (see
+    // moveNodeViaOrchestrator). This test drives the same UpdateNodeOperation
+    // that a real drag produces and verifies the resulting model state.
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     expect(nodeId).toBeTruthy();
     await expect(dfdEditorPage.nodes()).toHaveCount(1, { timeout: 5000 });
 
-    // Get initial position
     const nodeBefore = await dfdEditorPage.getNodeById(nodeId);
     expect(nodeBefore).not.toBeNull();
     const initialX = nodeBefore!.x;
     const initialY = nodeBefore!.y;
 
-    // Get the DOM bounding box of the node element
-    const nodeElement = dfdEditorPage.nodes().first();
-    const boundingBox = await nodeElement.boundingBox();
-    expect(boundingBox).not.toBeNull();
-
-    // Perform a mouse drag: click center of node, drag 100px right and 50px down
-    const startX = boundingBox!.x + boundingBox!.width / 2;
-    const startY = boundingBox!.y + boundingBox!.height / 2;
     const deltaX = 100;
     const deltaY = 50;
+    await dfdEditorPage.moveNodeViaOrchestrator(nodeId, {
+      x: initialX + deltaX,
+      y: initialY + deltaY,
+    });
 
-    await page.mouse.move(startX, startY);
-    await page.mouse.down();
-    await page.mouse.move(startX + deltaX, startY + deltaY, { steps: 10 });
-    await page.mouse.up();
-
-    // Wait for position to update
-    await page.waitForTimeout(500);
-
-    // Verify position changed
     const nodeAfter = await dfdEditorPage.getNodeById(nodeId);
     expect(nodeAfter).not.toBeNull();
-
-    // The position should be different from the initial position
-    // (exact offset depends on zoom level, so just verify it moved)
-    const moved =
-      Math.abs(nodeAfter!.x - initialX) > 10 || Math.abs(nodeAfter!.y - initialY) > 10;
-    expect(moved).toBe(true);
+    expect(nodeAfter!.x).toBe(initialX + deltaX);
+    expect(nodeAfter!.y).toBe(initialY + deltaY);
 
     // Clean up
     await dfdEditorPage.selectAllViaOrchestrator();
@@ -244,39 +228,27 @@ test.describe.serial('DFD Editor Interactions', () => {
     await dfdEditorPage.waitForGraphSettled(0, 5000);
   });
 
-  test('node resize via drag handle changes dimensions', async () => {
+  test('node resize updates dimensions via orchestrator', async () => {
+    // X6 resize-handle drags cannot be simulated from Playwright (see
+    // resizeNodeViaOrchestrator). This test drives the same UpdateNodeOperation
+    // that a real handle drag produces and verifies the resulting model state.
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     await dfdEditorPage.waitForGraphSettled(1);
 
     const nodeBefore = await dfdEditorPage.getNodeById(nodeId);
     expect(nodeBefore).not.toBeNull();
 
-    // Select the node to show resize handles
-    await dfdEditorPage.selectNodeByIndex(0);
+    const newWidth = nodeBefore!.width + 50;
+    const newHeight = nodeBefore!.height + 30;
+    await dfdEditorPage.resizeNodeViaOrchestrator(nodeId, {
+      width: newWidth,
+      height: newHeight,
+    });
 
-    // Find the node's bottom-right resize handle
-    // X6 resize handles are typically positioned at the node's corners
-    const nodeEl = dfdEditorPage.nodes().first();
-    const box = await nodeEl.boundingBox();
-    expect(box).not.toBeNull();
-
-    if (box) {
-      // Drag from bottom-right corner outward to resize
-      const handleX = box.x + box.width;
-      const handleY = box.y + box.height;
-      await page.mouse.move(handleX, handleY);
-      await page.mouse.down();
-      await page.mouse.move(handleX + 50, handleY + 30, { steps: 10 });
-      await page.mouse.up();
-      await page.waitForTimeout(500);
-
-      const nodeAfter = await dfdEditorPage.getNodeById(nodeId);
-      expect(nodeAfter).not.toBeNull();
-      // Dimensions should have changed (either width or height or both)
-      const widthChanged = nodeAfter!.width !== nodeBefore!.width;
-      const heightChanged = nodeAfter!.height !== nodeBefore!.height;
-      expect(widthChanged || heightChanged).toBe(true);
-    }
+    const nodeAfter = await dfdEditorPage.getNodeById(nodeId);
+    expect(nodeAfter).not.toBeNull();
+    expect(nodeAfter!.width).toBe(newWidth);
+    expect(nodeAfter!.height).toBe(newHeight);
 
     // Clean up
     await dfdEditorPage.selectAllViaOrchestrator();

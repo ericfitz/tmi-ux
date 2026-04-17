@@ -303,6 +303,61 @@ export class DfdEditorPage {
     });
   }
 
+  // Playwright cannot simulate X6-recognizable mouse drags: page.mouse.* is
+  // intercepted by the .dfd-container, and locator.dragTo() uses HTML5 DnD
+  // events that X6 ignores. These helpers drive the same UpdateNodeOperation
+  // that a real drag or resize produces at the app layer.
+  async moveNodeViaOrchestrator(
+    nodeId: string,
+    position: { x: number; y: number },
+  ): Promise<void> {
+    await this._updateNodeViaOrchestrator(nodeId, { position });
+  }
+
+  async resizeNodeViaOrchestrator(
+    nodeId: string,
+    size: { width: number; height: number },
+  ): Promise<void> {
+    await this._updateNodeViaOrchestrator(nodeId, { size });
+  }
+
+  private async _updateNodeViaOrchestrator(
+    nodeId: string,
+    updates: {
+      position?: { x: number; y: number };
+      size?: { width: number; height: number };
+    },
+  ): Promise<void> {
+    await this.page.evaluate(
+      async ({ id, upd }) => {
+        const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
+        if (!orchestrator) throw new Error('E2E bridge not available');
+        const operation = {
+          id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+          type: 'update-node',
+          source: 'test',
+          priority: 'normal',
+          timestamp: Date.now(),
+          nodeId: id,
+          updates: upd,
+        };
+        return new Promise<void>((resolve, reject) => {
+          orchestrator.executeOperation(operation).subscribe({
+            next: (result: any) => {
+              if (result?.success === false) {
+                reject(new Error(result?.error || 'update-node operation failed'));
+              } else {
+                resolve();
+              }
+            },
+            error: (err: any) => reject(err),
+          });
+        });
+      },
+      { id: nodeId, upd: updates },
+    );
+  }
+
   // --- Utility methods ---
 
   async waitForGraphSettled(expectedNodeCount: number, timeoutMs = 10000): Promise<void> {
