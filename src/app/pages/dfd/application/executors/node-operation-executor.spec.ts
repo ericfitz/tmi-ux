@@ -390,6 +390,59 @@ describe('NodeOperationExecutor', () => {
         });
       });
     });
+
+    it('should delete a key from node data when its value in properties is null', () => {
+      mockNode.getData.mockReturnValue({ nodeType: 'process', _arch: { provider: 'aws' } });
+      updateNodeOperation.updates = {
+        properties: { _arch: null },
+      };
+      mockGraph.getCellById.mockReturnValue(mockNode);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              const setDataArg = mockNode.setData.mock.calls[0][0];
+              expect(setDataArg).not.toHaveProperty('_arch');
+              expect(setDataArg.nodeType).toBe('process');
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should replace node data entirely when properties contains a data key', () => {
+      mockNode.getData.mockReturnValue({
+        nodeType: 'process',
+        _arch: { provider: 'aws' },
+        extra: 'value',
+      });
+      updateNodeOperation.updates = {
+        properties: { data: { nodeType: 'process' } },
+      };
+      mockGraph.getCellById.mockReturnValue(mockNode);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(updateNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              const setDataArg = mockNode.setData.mock.calls[0][0];
+              expect(setDataArg).toEqual({ nodeType: 'process' });
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
   });
 
   describe('Delete Node Operations', () => {

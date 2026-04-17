@@ -490,8 +490,21 @@ export class NodeOperationExecutor implements OperationExecutor {
     }
 
     if (updates.properties) {
-      const currentData = node.getData() || {};
-      node.setData({ ...currentData, ...updates.properties });
+      if ('data' in updates.properties) {
+        node.setData(updates.properties['data']);
+      } else {
+        const currentData = node.getData() || {};
+        // null/undefined values signal key removal; spread cannot express deletion
+        const merged: Record<string, unknown> = { ...currentData };
+        for (const [k, v] of Object.entries(updates.properties)) {
+          if (v === null || v === undefined) {
+            delete merged[k];
+          } else {
+            merged[k] = v;
+          }
+        }
+        node.setData(merged);
+      }
       changed.push('properties');
     }
 
