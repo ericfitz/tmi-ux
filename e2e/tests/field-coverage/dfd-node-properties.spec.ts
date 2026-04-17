@@ -98,8 +98,8 @@ test.describe.serial('DFD Node Properties', () => {
     await expect(nodeElement).toBeVisible({ timeout: 10000 });
     await nodeElement.dblclick({ force: true });
 
-    // Look for the X6 cell editor or contenteditable element
-    const editor = page.locator('.x6-cell-editor, [contenteditable="true"]').first();
+    // Look for the custom label editor input
+    const editor = page.getByTestId('dfd-label-editor');
     await expect(editor).toBeVisible({ timeout: 5000 });
 
     // Clear existing text and type new label

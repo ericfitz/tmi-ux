@@ -186,6 +186,7 @@ export class X6LabelEditorAdapter {
     // Create input element
     const input = document.createElement('input');
     input.type = 'text';
+    input.setAttribute('data-testid', 'dfd-label-editor');
     input.value = currentText;
     input.style.position = 'absolute';
     input.style.left = `${bounds.x}px`;

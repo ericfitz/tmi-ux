@@ -153,6 +153,7 @@ describe('X6LabelEditorAdapter', () => {
 
       const input = container.querySelector('input[type="text"]') as HTMLInputElement;
       expect(input).toBeTruthy();
+      expect(input.getAttribute('data-testid')).toBe('dfd-label-editor');
       expect(input.value).toBe('Test Node');
       expect(input.style.position).toBe('absolute');
       // Border styling is set in implementation but may not be retrievable in test environment
@@ -277,6 +278,7 @@ describe('X6LabelEditorAdapter', () => {
 
       const input = container.querySelector('input[type="text"]') as HTMLInputElement;
       expect(input).toBeTruthy();
+      expect(input.getAttribute('data-testid')).toBe('dfd-label-editor');
       expect(input.value).toBe('Test Edge Label');
     });
 
