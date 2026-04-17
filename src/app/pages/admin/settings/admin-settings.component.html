@@ -7,7 +7,12 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        data-testid="settings-close-button"
+        (click)="onClose()"
+        [matTooltip]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -21,6 +26,7 @@
           matInput
           [value]="filterText"
           (input)="onFilterChange($any($event.target).value)"
+          data-testid="settings-filter-input"
           [placeholder]="'admin.settings.filterPlaceholder' | transloco"
         />
         <mat-icon matPrefix>search</mat-icon>
@@ -32,7 +38,12 @@
     <mat-card-header>
       <mat-card-title [transloco]="'admin.settings.listTitle'">System Settings</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddSetting()">
+        <button
+          mat-raised-button
+          color="primary"
+          data-testid="settings-add-button"
+          (click)="onAddSetting()"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.settings.addButton'">Add Setting</span>
         </button>
@@ -45,7 +56,7 @@
         </div>
       } @else if (dataSource.data.length > 0) {
         <div class="settings-table">
-          <table mat-table [dataSource]="dataSource" matSort>
+          <table mat-table data-testid="settings-table" [dataSource]="dataSource" matSort>
             <!-- Key Column -->
             <ng-container matColumnDef="key">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -155,6 +166,7 @@
                   <div class="action-buttons">
                     <button
                       mat-icon-button
+                      data-testid="settings-edit-button"
                       (click)="onEditSetting(setting)"
                       [disabled]="setting.read_only"
                       [matTooltip]="
@@ -168,6 +180,7 @@
                     </button>
                     <button
                       mat-icon-button
+                      data-testid="settings-more-button"
                       [matMenuTriggerFor]="settingRowKebabMenu"
                       [matTooltip]="'common.actions' | transloco"
                       (click)="$event.stopPropagation()"
@@ -177,6 +190,7 @@
                     <mat-menu #settingRowKebabMenu="matMenu">
                       <button
                         mat-menu-item
+                        data-testid="settings-delete-item"
                         (click)="onDeleteSetting(setting)"
                         [disabled]="setting.read_only"
                       >
@@ -190,7 +204,11 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr
+              mat-row
+              data-testid="settings-row"
+              *matRowDef="let row; columns: displayedColumns"
+            ></tr>
           </table>
         </div>
       } @else {
@@ -202,6 +220,7 @@
 
       @if (!loading && totalSettings > 0) {
         <mat-paginator
+          data-testid="settings-paginator"
           [length]="dataSource.data.length"
           [pageSize]="pageSize"
           [pageIndex]="pageIndex"

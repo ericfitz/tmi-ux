@@ -37,6 +37,7 @@ import { SettingType } from '@app/types/settings.types';
           <mat-label [transloco]="'admin.settings.addDialog.key'">Key</mat-label>
           <input
             matInput
+            data-testid="add-setting-key-input"
             formControlName="key"
             [placeholder]="'admin.settings.addDialog.keyHint' | transloco"
             required
@@ -145,12 +146,13 @@ import { SettingType } from '@app/types/settings.types';
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button data-testid="add-setting-cancel-button" (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
         mat-raised-button
         color="primary"
+        data-testid="add-setting-submit-button"
         (click)="onSave()"
         [disabled]="!isFormValid() || saving"
       >
