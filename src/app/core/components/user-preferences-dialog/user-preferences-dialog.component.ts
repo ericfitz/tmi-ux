@@ -61,8 +61,14 @@ interface CheckboxChangeEvent {
     UserDisplayComponent,
   ],
   template: `
-    <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
-    <mat-dialog-content>
+    <h2
+      mat-dialog-title
+      [transloco]="'userPreferences.title'"
+      data-testid="user-preferences-dialog-title"
+    >
+      User Preferences
+    </h2>
+    <mat-dialog-content data-testid="user-preferences-dialog">
       <mat-tab-group>
         <!-- Profile Tab -->
         <mat-tab [label]="'userPreferences.tabs.profile' | transloco">
@@ -180,16 +186,17 @@ interface CheckboxChangeEvent {
                 [(ngModel)]="preferences.themeMode"
                 (change)="onThemeModeChange()"
                 class="radio-group"
+                data-testid="pref-theme-group"
               >
-                <mat-radio-button value="automatic">
+                <mat-radio-button value="automatic" data-testid="pref-theme-automatic">
                   <span [transloco]="'userPreferences.themeMode.automatic'">
                     Automatic (System)
                   </span>
                 </mat-radio-button>
-                <mat-radio-button value="light">
+                <mat-radio-button value="light" data-testid="pref-theme-light">
                   <span [transloco]="'userPreferences.themeMode.light'">Light</span>
                 </mat-radio-button>
-                <mat-radio-button value="dark">
+                <mat-radio-button value="dark" data-testid="pref-theme-dark">
                   <span [transloco]="'userPreferences.themeMode.dark'">Dark</span>
                 </mat-radio-button>
               </mat-radio-group>
@@ -199,6 +206,7 @@ interface CheckboxChangeEvent {
               <mat-checkbox
                 [(ngModel)]="preferences.colorBlindMode"
                 (change)="onColorBlindModeChange($event)"
+                data-testid="pref-colorblind-toggle"
               >
                 <span [transloco]="'userPreferences.colorBlindMode'">
                   Color Blind Safe Palette
@@ -504,6 +512,7 @@ interface CheckboxChangeEvent {
         (click)="close()"
         [transloco]="'common.close'"
         [attr.aria-label]="'common.close' | transloco"
+        data-testid="pref-close-button"
       >
         Close
       </button>
