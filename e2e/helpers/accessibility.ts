@@ -105,3 +105,84 @@ export async function assertAccessibility(
     throw new Error(`Found ${allFailures.length} accessibility issue(s):\n${details}`);
   }
 }
+
+/**
+ * Assert that status/severity/priority/CVSS indicators are distinguishable
+ * without relying on color alone. Each element matched by a selector must
+ * either contain a <mat-icon> descendant or carry non-whitespace text content.
+ *
+ * Runs under both colorblind theme modes so regressions that depend on color
+ * encoding surface in the colorblind palettes we ship.
+ */
+export async function assertColorIndependentIndicators(
+  page: Page,
+  selectors: string[],
+  options?: { themes?: ThemeMode[] },
+): Promise<void> {
+  const themes = options?.themes ?? (['light-colorblind', 'dark-colorblind'] as ThemeMode[]);
+  const originalTheme = await detectCurrentTheme(page);
+  const failures: { theme: ThemeMode; selector: string; details: string }[] = [];
+
+  try {
+    for (const theme of themes) {
+      await applyTheme(page, theme);
+
+      for (const selector of selectors) {
+        const results = await page.evaluate(
+          (sel: string): { hasIndicator: boolean; text: string; html: string }[] => {
+            const elements = Array.from(document.querySelectorAll(sel));
+            return elements
+              .filter(el => (el as HTMLElement).offsetParent !== null)
+              .map(el => {
+                const hasIcon = !!el.querySelector('mat-icon');
+                const text = (el.textContent ?? '').trim();
+                return {
+                  hasIndicator: hasIcon || text.length > 0,
+                  text,
+                  html: el.outerHTML.slice(0, 120),
+                };
+              });
+          },
+          selector,
+        );
+
+        if (results.length === 0) {
+          // Not a failure — selectors are tolerated-missing across pages.
+          continue;
+        }
+
+        for (const r of results) {
+          if (!r.hasIndicator) {
+            failures.push({
+              theme,
+              selector,
+              details: `no mat-icon and no text content (${r.html})`,
+            });
+          }
+        }
+      }
+    }
+  } finally {
+    await applyTheme(page, originalTheme);
+  }
+
+  if (failures.length > 0) {
+    const grouped = new Map<ThemeMode, typeof failures>();
+    for (const f of failures) {
+      const list = grouped.get(f.theme) ?? [];
+      list.push(f);
+      grouped.set(f.theme, list);
+    }
+
+    const details = [...grouped.entries()]
+      .map(([theme, list]) => {
+        const items = list.map(f => `    - [${f.selector}] ${f.details}`).join('\n');
+        return `  ${theme}:\n${items}`;
+      })
+      .join('\n');
+
+    throw new Error(
+      `Found ${failures.length} indicator(s) relying on color alone:\n${details}`,
+    );
+  }
+}
