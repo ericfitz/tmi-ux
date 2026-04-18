@@ -3,110 +3,833 @@
   "description": "Field definitions derived from TMI OpenAPI spec. Source of truth for field-coverage tests and OpenAPI validation.",
   "entities": {
     "threat_model": [
-      { "apiName": "name", "uiSelector": "[data-testid='tm-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='tm-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "threat_model_framework", "uiSelector": "[data-testid='tm-framework-select']", "type": "select", "required": true, "editable": true, "options": ["STRIDE", "LINDDUN", "PASTA", "Custom"] },
-      { "apiName": "status", "uiSelector": "[data-testid='tm-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "owner", "uiSelector": "[data-testid='tm-owner-input']", "type": "text", "required": true, "editable": false },
-      { "apiName": "security_reviewer", "uiSelector": "[data-testid='tm-reviewer-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "project_id", "uiSelector": "[data-testid='tm-project-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "issue_uri", "uiSelector": "[data-testid='tm-issue-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "alias", "uiSelector": "[data-testid='tm-alias-chips']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "is_confidential", "uiSelector": "[data-testid='tm-confidential-badge']", "type": "toggle", "required": false, "editable": false },
-      { "apiName": "metadata", "uiSelector": "[data-testid='tm-metadata-button']", "type": "chips", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='tm-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='tm-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "threat_model_framework",
+        "uiSelector": "[data-testid='tm-framework-select']",
+        "type": "select",
+        "required": true,
+        "editable": true,
+        "options": [
+          "STRIDE",
+          "LINDDUN",
+          "PASTA",
+          "Custom"
+        ]
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='tm-status-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "owner",
+        "uiSelector": "[data-testid='tm-owner-input']",
+        "type": "text",
+        "required": true,
+        "editable": false
+      },
+      {
+        "apiName": "security_reviewer",
+        "uiSelector": "[data-testid='tm-reviewer-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "project_id",
+        "uiSelector": "[data-testid='tm-project-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "issue_uri",
+        "uiSelector": "[data-testid='tm-issue-uri-input']",
+        "type": "text",
+        "required": false,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "alias",
+        "uiSelector": "[data-testid='tm-alias-chips']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "is_confidential",
+        "uiSelector": "[data-testid='tm-confidential-badge']",
+        "type": "toggle",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "metadata",
+        "uiSelector": "[data-testid='tm-metadata-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      }
     ],
     "threat": [
-      { "apiName": "name", "uiSelector": "[data-testid='threat-page-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='threat-page-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "threat_type", "uiSelector": "[data-testid='threat-page-threat-type-chip']", "type": "chips", "required": true, "editable": true },
-      { "apiName": "severity", "uiSelector": "[data-testid='threat-page-severity-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "priority", "uiSelector": "[data-testid='threat-page-priority-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "status", "uiSelector": "[data-testid='threat-page-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "score", "uiSelector": "[data-testid='threat-page-score-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "mitigated", "uiSelector": "[data-testid='threat-page-mitigated-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "mitigation", "uiSelector": "[data-testid='threat-page-mitigation-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "cwe_id", "uiSelector": "[data-testid='threat-page-cwe-chip']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "cvss", "uiSelector": "[data-testid='threat-page-cvss-chip']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "ssvc", "uiSelector": "[data-testid='threat-page-ssvc-section']", "type": "text", "required": false, "editable": true },
-      { "apiName": "issue_uri", "uiSelector": "[data-testid='threat-page-issue-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "include_in_report", "uiSelector": "[data-testid='threat-page-include-report-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "metadata", "uiSelector": "[data-testid='threat-page-metadata-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "timmy_enabled", "uiSelector": "[data-testid='threat-page-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='threat-page-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='threat-page-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "threat_type",
+        "uiSelector": "[data-testid='threat-page-threat-type-chip']",
+        "type": "chips",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "severity",
+        "uiSelector": "[data-testid='threat-page-severity-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "priority",
+        "uiSelector": "[data-testid='threat-page-priority-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='threat-page-status-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "score",
+        "uiSelector": "[data-testid='threat-page-score-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "mitigated",
+        "uiSelector": "[data-testid='threat-page-mitigated-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "mitigation",
+        "uiSelector": "[data-testid='threat-page-mitigation-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "cwe_id",
+        "uiSelector": "[data-testid='threat-page-cwe-chip']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "cvss",
+        "uiSelector": "[data-testid='threat-page-cvss-chip']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "ssvc",
+        "uiSelector": "[data-testid='threat-page-ssvc-section']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "issue_uri",
+        "uiSelector": "[data-testid='threat-page-issue-uri-input']",
+        "type": "text",
+        "required": false,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "include_in_report",
+        "uiSelector": "[data-testid='threat-page-include-report-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "metadata",
+        "uiSelector": "[data-testid='threat-page-metadata-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "timmy_enabled",
+        "uiSelector": "[data-testid='threat-page-timmy-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      }
     ],
     "asset": [
-      { "apiName": "name", "uiSelector": "[data-testid='asset-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='asset-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "type", "uiSelector": "[data-testid='asset-type-select']", "type": "select", "required": true, "editable": true, "options": ["data", "hardware", "software", "infrastructure", "service", "personnel"] },
-      { "apiName": "criticality", "uiSelector": "[data-testid='asset-criticality-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "classification", "uiSelector": "[data-testid='asset-classification-chips']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "sensitivity", "uiSelector": "[data-testid='asset-sensitivity-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "include_in_report", "uiSelector": "[data-testid='asset-include-report-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "timmy_enabled", "uiSelector": "[data-testid='asset-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='asset-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='asset-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "type",
+        "uiSelector": "[data-testid='asset-type-select']",
+        "type": "select",
+        "required": true,
+        "editable": true,
+        "options": [
+          "data",
+          "hardware",
+          "software",
+          "infrastructure",
+          "service",
+          "personnel"
+        ]
+      },
+      {
+        "apiName": "criticality",
+        "uiSelector": "[data-testid='asset-criticality-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "classification",
+        "uiSelector": "[data-testid='asset-classification-chips']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "sensitivity",
+        "uiSelector": "[data-testid='asset-sensitivity-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "include_in_report",
+        "uiSelector": "[data-testid='asset-include-report-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "timmy_enabled",
+        "uiSelector": "[data-testid='asset-timmy-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      }
     ],
     "document": [
-      { "apiName": "name", "uiSelector": "[data-testid='document-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='document-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "uri", "uiSelector": "[data-testid='document-uri-input']", "type": "text", "required": true, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "include_in_report", "uiSelector": "[data-testid='document-include-report-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "timmy_enabled", "uiSelector": "[data-testid='document-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='document-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='document-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "uri",
+        "uiSelector": "[data-testid='document-uri-input']",
+        "type": "text",
+        "required": true,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "include_in_report",
+        "uiSelector": "[data-testid='document-include-report-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "timmy_enabled",
+        "uiSelector": "[data-testid='document-timmy-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      }
     ],
     "repository": [
-      { "apiName": "name", "uiSelector": "[data-testid='repository-name-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='repository-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "type", "uiSelector": "[data-testid='repository-type-select']", "type": "select", "required": false, "editable": true, "options": ["git", "svn", "mercurial", "other"] },
-      { "apiName": "uri", "uiSelector": "[data-testid='repository-uri-input']", "type": "text", "required": true, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "include_in_report", "uiSelector": "[data-testid='repository-include-report-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "ref_type", "uiSelector": "[data-testid='repository-ref-type-select']", "type": "select", "required": false, "editable": true, "options": ["branch", "tag", "commit"] },
-      { "apiName": "ref_value", "uiSelector": "[data-testid='repository-ref-value-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "subpath", "uiSelector": "[data-testid='repository-sub-path-input']", "type": "text", "required": false, "editable": true },
-      { "apiName": "timmy_enabled", "uiSelector": "[data-testid='repository-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='repository-name-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='repository-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "type",
+        "uiSelector": "[data-testid='repository-type-select']",
+        "type": "select",
+        "required": false,
+        "editable": true,
+        "options": [
+          "git",
+          "svn",
+          "mercurial",
+          "other"
+        ]
+      },
+      {
+        "apiName": "uri",
+        "uiSelector": "[data-testid='repository-uri-input']",
+        "type": "text",
+        "required": true,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "include_in_report",
+        "uiSelector": "[data-testid='repository-include-report-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "ref_type",
+        "uiSelector": "[data-testid='repository-ref-type-select']",
+        "type": "select",
+        "required": false,
+        "editable": true,
+        "options": [
+          "branch",
+          "tag",
+          "commit"
+        ]
+      },
+      {
+        "apiName": "ref_value",
+        "uiSelector": "[data-testid='repository-ref-value-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "subpath",
+        "uiSelector": "[data-testid='repository-sub-path-input']",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "timmy_enabled",
+        "uiSelector": "[data-testid='repository-timmy-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      }
     ],
     "note": [
-      { "apiName": "name", "uiSelector": "[data-testid='note-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='note-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "content", "uiSelector": "[data-testid='note-content-textarea']", "type": "textarea", "required": true, "editable": true },
-      { "apiName": "include_in_report", "uiSelector": "[data-testid='note-include-report-checkbox']", "type": "checkbox", "required": false, "editable": true },
-      { "apiName": "timmy_enabled", "uiSelector": "[data-testid='note-timmy-checkbox']", "type": "checkbox", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='note-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='note-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "content",
+        "uiSelector": "[data-testid='note-content-textarea']",
+        "type": "textarea",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "include_in_report",
+        "uiSelector": "[data-testid='note-include-report-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "timmy_enabled",
+        "uiSelector": "[data-testid='note-timmy-checkbox']",
+        "type": "checkbox",
+        "required": false,
+        "editable": true
+      }
     ],
     "team": [
-      { "apiName": "name", "uiSelector": "[data-testid='edit-team-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='edit-team-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "status", "uiSelector": "[data-testid='edit-team-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "email_address", "uiSelector": "[data-testid='edit-team-email-input']", "type": "text", "required": false, "editable": true, "validationRules": ["email"] },
-      { "apiName": "uri", "uiSelector": "[data-testid='edit-team-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "members", "uiSelector": "[data-testid='team-members-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "responsible_parties", "uiSelector": "[data-testid='team-responsible-parties-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "related_teams", "uiSelector": "[data-testid='team-related-teams-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "metadata", "uiSelector": "[data-testid='team-metadata-button']", "type": "chips", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='edit-team-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='edit-team-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='edit-team-status-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "email_address",
+        "uiSelector": "[data-testid='edit-team-email-input']",
+        "type": "text",
+        "required": false,
+        "editable": true,
+        "validationRules": [
+          "email"
+        ]
+      },
+      {
+        "apiName": "uri",
+        "uiSelector": "[data-testid='edit-team-uri-input']",
+        "type": "text",
+        "required": false,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "members",
+        "uiSelector": "[data-testid='team-members-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "responsible_parties",
+        "uiSelector": "[data-testid='team-responsible-parties-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "related_teams",
+        "uiSelector": "[data-testid='team-related-teams-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "metadata",
+        "uiSelector": "[data-testid='team-metadata-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      }
     ],
     "project": [
-      { "apiName": "name", "uiSelector": "[data-testid='edit-project-name-input']", "type": "text", "required": true, "editable": true },
-      { "apiName": "description", "uiSelector": "[data-testid='edit-project-description-input']", "type": "textarea", "required": false, "editable": true },
-      { "apiName": "status", "uiSelector": "[data-testid='edit-project-status-select']", "type": "select", "required": false, "editable": true },
-      { "apiName": "team_id", "uiSelector": "[data-testid='edit-project-team-select']", "type": "select", "required": true, "editable": true },
-      { "apiName": "uri", "uiSelector": "[data-testid='edit-project-uri-input']", "type": "text", "required": false, "editable": true, "validationRules": ["uri"] },
-      { "apiName": "responsible_parties", "uiSelector": "[data-testid='project-responsible-parties-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "related_projects", "uiSelector": "[data-testid='project-related-projects-button']", "type": "chips", "required": false, "editable": true },
-      { "apiName": "metadata", "uiSelector": "[data-testid='project-metadata-button']", "type": "chips", "required": false, "editable": true }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='edit-project-name-input']",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "description",
+        "uiSelector": "[data-testid='edit-project-description-input']",
+        "type": "textarea",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='edit-project-status-select']",
+        "type": "select",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "team_id",
+        "uiSelector": "[data-testid='edit-project-team-select']",
+        "type": "select",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "uri",
+        "uiSelector": "[data-testid='edit-project-uri-input']",
+        "type": "text",
+        "required": false,
+        "editable": true,
+        "validationRules": [
+          "uri"
+        ]
+      },
+      {
+        "apiName": "responsible_parties",
+        "uiSelector": "[data-testid='project-responsible-parties-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "related_projects",
+        "uiSelector": "[data-testid='project-related-projects-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "metadata",
+        "uiSelector": "[data-testid='project-metadata-button']",
+        "type": "chips",
+        "required": false,
+        "editable": true
+      }
     ],
     "survey_response": [
-      { "apiName": "submitter", "uiSelector": "[data-testid='triage-detail-submitter']", "type": "text", "required": false, "editable": false },
-      { "apiName": "status", "uiSelector": "[data-testid='triage-detail-status']", "type": "text", "required": false, "editable": false },
-      { "apiName": "survey_name", "uiSelector": ".info-item:has(.info-label:text('Survey'))", "type": "text", "required": false, "editable": false },
-      { "apiName": "created_at", "uiSelector": ".info-item:has(.info-label:text('Created'))", "type": "text", "required": false, "editable": false },
-      { "apiName": "version", "uiSelector": ".info-item:has(.info-label:text('Version'))", "type": "text", "required": false, "editable": false }
+      {
+        "apiName": "submitter",
+        "uiSelector": "[data-testid='triage-detail-submitter']",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='triage-detail-status']",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "survey_name",
+        "uiSelector": ".info-item:has(.info-label:text('Survey'))",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "created_at",
+        "uiSelector": ".info-item:has(.info-label:text('Created'))",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "version",
+        "uiSelector": ".info-item:has(.info-label:text('Version'))",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
     ],
     "survey_template": [
-      { "apiName": "name", "uiSelector": "[data-testid='admin-surveys-row'] .template-name", "type": "text", "required": true, "editable": true },
-      { "apiName": "version", "uiSelector": "[data-testid='admin-surveys-row'] .editable", "type": "text", "required": false, "editable": false },
-      { "apiName": "status", "uiSelector": "[data-testid='admin-surveys-row'] mat-chip", "type": "text", "required": false, "editable": false }
+      {
+        "apiName": "name",
+        "uiSelector": "[data-testid='admin-surveys-row'] .template-name",
+        "type": "text",
+        "required": true,
+        "editable": true
+      },
+      {
+        "apiName": "version",
+        "uiSelector": "[data-testid='admin-surveys-row'] .editable",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "status",
+        "uiSelector": "[data-testid='admin-surveys-row'] mat-chip",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
     ],
     "dashboard": [
-      { "apiName": "name", "uiSelector": ".mat-column-name", "type": "text", "required": false, "editable": false },
-      { "apiName": "lastModified", "uiSelector": ".mat-column-lastModified", "type": "text", "required": false, "editable": false },
-      { "apiName": "status", "uiSelector": ".mat-column-status", "type": "text", "required": false, "editable": false },
-      { "apiName": "owner", "uiSelector": ".mat-column-owner", "type": "text", "required": false, "editable": false },
-      { "apiName": "created", "uiSelector": ".mat-column-created", "type": "text", "required": false, "editable": false }
+      {
+        "apiName": "name",
+        "uiSelector": ".mat-column-name",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "lastModified",
+        "uiSelector": ".mat-column-lastModified",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "status",
+        "uiSelector": ".mat-column-status",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "owner",
+        "uiSelector": ".mat-column-owner",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "created",
+        "uiSelector": ".mat-column-created",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
+    ],
+    "admin_user": [
+      {
+        "apiName": "filter",
+        "uiSelector": "[data-testid=\"users-filter-input\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "automation_toggle",
+        "uiSelector": "[data-testid=\"users-automation-toggle\"]",
+        "type": "toggle",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "create_automation_button",
+        "uiSelector": "[data-testid=\"users-create-automation-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "table",
+        "uiSelector": "[data-testid=\"users-table\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "paginator",
+        "uiSelector": "[data-testid=\"users-paginator\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
+    ],
+    "admin_group": [
+      {
+        "apiName": "search",
+        "uiSelector": "[data-testid=\"groups-search-input\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "add_button",
+        "uiSelector": "[data-testid=\"groups-add-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "table",
+        "uiSelector": "[data-testid=\"groups-table\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "paginator",
+        "uiSelector": "[data-testid=\"groups-paginator\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
+    ],
+    "admin_quota": [
+      {
+        "apiName": "users_section",
+        "uiSelector": "[data-testid=\"quotas-users-section\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "webhooks_section",
+        "uiSelector": "[data-testid=\"quotas-webhooks-section\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "users_add_button",
+        "uiSelector": "[data-testid=\"quotas-users-add-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      }
+    ],
+    "admin_webhook": [
+      {
+        "apiName": "filter",
+        "uiSelector": "[data-testid=\"webhooks-filter-input\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "add_button",
+        "uiSelector": "[data-testid=\"webhooks-add-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "list",
+        "uiSelector": "[data-testid=\"webhooks-list\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "paginator",
+        "uiSelector": "[data-testid=\"webhooks-paginator\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
+    ],
+    "admin_addon": [
+      {
+        "apiName": "filter",
+        "uiSelector": "[data-testid=\"addons-filter-input\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "add_button",
+        "uiSelector": "[data-testid=\"addons-add-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "list",
+        "uiSelector": "[data-testid=\"addons-list\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
+    ],
+    "admin_setting": [
+      {
+        "apiName": "filter",
+        "uiSelector": "[data-testid=\"settings-filter-input\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "add_button",
+        "uiSelector": "[data-testid=\"settings-add-button\"]",
+        "type": "text",
+        "required": false,
+        "editable": true
+      },
+      {
+        "apiName": "table",
+        "uiSelector": "[data-testid=\"settings-table\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      },
+      {
+        "apiName": "paginator",
+        "uiSelector": "[data-testid=\"settings-paginator\"]",
+        "type": "text",
+        "required": false,
+        "editable": false
+      }
     ]
   }
 }

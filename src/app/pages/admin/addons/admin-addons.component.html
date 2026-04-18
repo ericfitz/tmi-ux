@@ -19,6 +19,7 @@
         <mat-label [transloco]="'admin.addons.filterLabel'">Filter Addons</mat-label>
         <input
           matInput
+          data-testid="addons-filter-input"
           [value]="filterText"
           (input)="onFilterChange($any($event.target).value)"
           [placeholder]="'admin.addons.filterPlaceholder' | transloco"
@@ -32,7 +33,12 @@
     <mat-card-header>
       <mat-card-title [transloco]="'admin.addons.listTitle'">System Addons</mat-card-title>
       <div class="action-buttons">
-        <button mat-raised-button color="primary" (click)="onAddAddon()">
+        <button
+          mat-raised-button
+          color="primary"
+          data-testid="addons-add-button"
+          (click)="onAddAddon()"
+        >
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.addons.addButton'">Add Addon</span>
         </button>
@@ -44,9 +50,9 @@
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (filteredAddons.length > 0) {
-        <div class="addons-list">
+        <div class="addons-list" data-testid="addons-list">
           @for (addon of filteredAddons; track addon.id) {
-            <div class="addon-item">
+            <div class="addon-item" data-testid="addons-row">
               <div class="addon-icon">
                 @if (addon.icon) {
                   <mat-icon>{{ addon.icon.replace('material-symbols:', '') }}</mat-icon>
