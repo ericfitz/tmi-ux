@@ -565,6 +565,7 @@ interface CheckboxChangeEvent {
       .radio-group {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 2px;
         margin-left: 8px;
       }
