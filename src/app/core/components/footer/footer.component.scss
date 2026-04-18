@@ -1,7 +1,7 @@
 .footer {
   padding: 16px;
-  background-color: #f5f5f5;
-  border-top: 1px solid #e0e0e0;
+  background-color: var(--theme-surface);
+  border-top: 1px solid var(--theme-divider);
 }
 
 .footer-content {
@@ -15,7 +15,7 @@
 
 .data-classification {
   font-size: 12px;
-  color: #616161; // Gray 700
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
@@ -26,7 +26,7 @@
 }
 
 .footer-links a {
-  color: #0097a7; // Cyan 700
+  color: var(--color-footer-link);
   text-decoration: none;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .org-name {
-  color: #616161; // Gray 700
+  color: var(--color-text-secondary);
 }
 
 // RTL support

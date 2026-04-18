@@ -156,11 +156,25 @@ html {
 
   // Text uses white for maximum contrast on dark backgrounds
   --logo-text-color: #fff;
+
+  // Footer link: lighter cyan (Cyan 300 #4dd0e1) passes WCAG AA on dark surfaces.
+  --color-footer-link: #4dd0e1;
+
+  // Heading colors: light-theme values have insufficient contrast on dark
+  // backgrounds; use lighter tints that pass WCAG AA on --theme-background.
+  --color-heading-primary: #64b5f6; // Blue 300
+  --color-heading-secondary: #4db6ac; // Teal 300
 }
 
 // Dark + Colorblind (both classes)
 .dark-theme.colorblind-palette {
   @include mat.all-component-colors($dark-colorblind-theme);
+
+  // Colorblind-safe accents that still pass contrast on dark background.
+  // Use a lighter sky-blue that achieves WCAG AA on --theme-surface (#424242).
+  --color-footer-link: #8ecae6;
+  --color-heading-primary: #8ecae6;
+  --color-heading-secondary: #f0e442; // Okabe-Ito Yellow
 }
 
 // =============================================================================
@@ -174,7 +188,7 @@ html {
   --theme-surface: #f5f5f5;
   --theme-card: #fff;
   --theme-text-primary: #212121;
-  --theme-text-secondary: #757575;
+  --theme-text-secondary: #6b6b6b;
   --theme-text-disabled: rgb(0 0 0 / 54%);
   --theme-divider: rgb(0 0 0 / 12%);
   --theme-hover: rgb(0 0 0 / 4%);

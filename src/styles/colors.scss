@@ -143,6 +143,15 @@ $role-host-color: #ffc107; // Gold color for session host
   // Link Colors
   --color-link-visited: #7b1fa2;
 
+  // Footer link color: darker cyan (Cyan 900 #006064) passes WCAG AA on
+  // light-theme surface (#f5f5f5) where the unshaded default #0097a7 fails.
+  --color-footer-link: #006064;
+
+  // Heading colors used on dashboard (h1 .page-title and h2 .section-title).
+  // Light-theme values chosen to pass WCAG AA on the dashboard background.
+  --color-heading-primary: #1976d2; // Blue 700 (same as --color-primary)
+  --color-heading-secondary: #00695c; // Teal 800 (darker than original #00796b for AA)
+
   // Hover States (use theme variables)
   --color-hover-background: var(--theme-hover, rgb(0 0 0 / 4%));
 
@@ -189,6 +198,7 @@ $role-host-color: #ffc107; // Gold color for session host
 
   // Link Colors
   --color-link-visited: #cc79a7; // Reddish Purple rgb(204, 121, 167)
+  --color-footer-link: #0072b2; // Okabe-Ito Blue — distinguishable and AA-compliant on light surfaces
 
   // Theme Colors (used in about/tos/privacy pages)
   --color-theme-cyan: #56b4e9; // Sky Blue (more distinguishable)
