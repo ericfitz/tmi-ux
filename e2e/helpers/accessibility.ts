@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 import { type ThemeMode, ALL_THEME_MODES, applyTheme, detectCurrentTheme } from './theme-utils';
 
 interface AccessibilityFailure {
@@ -103,6 +104,136 @@ export async function assertAccessibility(
       .join('\n');
 
     throw new Error(`Found ${allFailures.length} accessibility issue(s):\n${details}`);
+  }
+}
+
+/**
+ * Run axe-core's color-contrast rule under each theme mode. Uses WCAG AA
+ * thresholds (axe default). Violations include the offending selector,
+ * computed contrast ratio, and the required minimum — grouped by theme.
+ *
+ * Scopes the scan to #main-content (or the full page when that selector
+ * isn't present) to avoid flagging browser chrome.
+ */
+export async function assertColorContrast(
+  page: Page,
+  options?: { themes?: ThemeMode[]; include?: string },
+): Promise<void> {
+  const themes = options?.themes ?? ALL_THEME_MODES;
+  const originalTheme = await detectCurrentTheme(page);
+  const include = options?.include;
+  const allFailures: { theme: ThemeMode; id: string; target: string; summary: string }[] = [];
+
+  try {
+    for (const theme of themes) {
+      await applyTheme(page, theme);
+
+      let builder = new AxeBuilder({ page }).withRules(['color-contrast']);
+      if (include) {
+        builder = builder.include(include);
+      }
+      const results = await builder.analyze();
+
+      for (const violation of results.violations) {
+        for (const node of violation.nodes) {
+          allFailures.push({
+            theme,
+            id: violation.id,
+            target: Array.isArray(node.target) ? node.target.join(' ') : String(node.target),
+            summary: node.failureSummary ?? violation.description,
+          });
+        }
+      }
+    }
+  } finally {
+    await applyTheme(page, originalTheme);
+  }
+
+  if (allFailures.length > 0) {
+    const grouped = new Map<ThemeMode, typeof allFailures>();
+    for (const f of allFailures) {
+      const list = grouped.get(f.theme) ?? [];
+      list.push(f);
+      grouped.set(f.theme, list);
+    }
+
+    const details = [...grouped.entries()]
+      .map(([theme, list]) => {
+        const items = list
+          .slice(0, 10)
+          .map(f => `    - ${f.target}\n      ${f.summary.split('\n')[0]}`)
+          .join('\n');
+        const more = list.length > 10 ? `\n    ... and ${list.length - 10} more` : '';
+        return `  ${theme}:\n${items}${more}`;
+      })
+      .join('\n');
+
+    throw new Error(
+      `Found ${allFailures.length} color-contrast violation(s):\n${details}`,
+    );
+  }
+}
+
+/**
+ * Assert that every visible interactive element on the page is reachable
+ * by keyboard — either focusable via the natural tab order (positive or
+ * default tabindex) or programmatically focusable (tabindex >= 0 or native
+ * focus behavior). Skips elements that are hidden, disabled, or have
+ * tabindex="-1".
+ *
+ * Interactive element set: buttons, links (with href), inputs, selects,
+ * textareas, mat-menu triggers, mat-select, mat-checkbox, mat-radio-group.
+ */
+export async function assertKeyboardFocusable(page: Page): Promise<void> {
+  const failures = await page.evaluate((): { tag: string; selector: string }[] => {
+    const selectors = [
+      'button:not([disabled])',
+      'a[href]',
+      'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[matmenutrigger]',
+      'mat-select:not([aria-disabled="true"])',
+      'mat-checkbox:not(.mat-mdc-checkbox-disabled)',
+      'mat-radio-group',
+    ];
+    const results: { tag: string; selector: string }[] = [];
+
+    for (const selector of selectors) {
+      const elements = Array.from(document.querySelectorAll(selector));
+      for (const el of elements) {
+        const html = el as HTMLElement;
+        if (html.offsetParent === null) continue; // hidden
+        const tabIndex = html.tabIndex;
+        if (tabIndex < 0) continue; // deliberately unfocusable
+        // Programmatically focus and check the active element
+        html.focus();
+        if (document.activeElement !== html) {
+          // Try focusing a native focus target inside (e.g. mat-checkbox → input)
+          const innerFocusable = html.querySelector<HTMLElement>(
+            'input, button, select, textarea, [tabindex]',
+          );
+          if (innerFocusable) {
+            innerFocusable.focus();
+            if (document.activeElement === innerFocusable) continue;
+          }
+          const outer = html.outerHTML.slice(0, 100);
+          results.push({ tag: html.tagName.toLowerCase(), selector: outer });
+        }
+      }
+    }
+    return results;
+  });
+
+  if (failures.length > 0) {
+    const details = failures
+      .slice(0, 20)
+      .map(f => `    - <${f.tag}> ${f.selector}`)
+      .join('\n');
+    const more = failures.length > 20 ? `\n    ... and ${failures.length - 20} more` : '';
+    throw new Error(
+      `Found ${failures.length} interactive element(s) that cannot receive focus:\n${details}${more}`,
+    );
   }
 }
 

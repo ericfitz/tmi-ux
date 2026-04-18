@@ -4,7 +4,11 @@ import {
   reviewerTest,
   adminTest,
 } from '../../fixtures/auth-fixtures';
-import { assertAccessibility } from '../../helpers/accessibility';
+import {
+  assertAccessibility,
+  assertColorContrast,
+  assertKeyboardFocusable,
+} from '../../helpers/accessibility';
 
 unauthTest.describe('Accessibility Sweep — Public', () => {
   unauthTest.setTimeout(120000);
@@ -55,5 +59,33 @@ adminTest.describe('Accessibility Sweep — Admin', () => {
     await adminPage.goto('/admin');
     await adminPage.waitForLoadState('networkidle');
     await assertAccessibility(adminPage);
+  });
+});
+
+reviewerTest.describe('Accessibility Sweep — Keyboard Focus', () => {
+  reviewerTest.setTimeout(120000);
+
+  reviewerTest('keyboard focusable — /dashboard', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    await reviewerPage.waitForLoadState('networkidle');
+    await assertKeyboardFocusable(reviewerPage);
+  });
+
+  reviewerTest('keyboard focusable — /triage', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/triage');
+    await reviewerPage.waitForLoadState('networkidle');
+    await assertKeyboardFocusable(reviewerPage);
+  });
+});
+
+reviewerTest.describe('Accessibility Sweep — Color Contrast', () => {
+  reviewerTest.setTimeout(180000);
+
+  reviewerTest('color contrast — /dashboard across all theme modes', async ({
+    reviewerPage,
+  }) => {
+    await reviewerPage.goto('/dashboard');
+    await reviewerPage.waitForLoadState('networkidle');
+    await assertColorContrast(reviewerPage);
   });
 });
