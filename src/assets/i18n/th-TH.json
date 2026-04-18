@@ -837,6 +837,8 @@
     "ownerPlaceholder": "กรองตามชื่อหรืออีเมลของเจ้าของ",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "ค้นหาตามชื่อ คำอธิบาย เจ้าของ หรือสถานะ",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "สถานะอัปเดตหลังจาก",
     "statusUpdatedBefore": "สถานะอัปเดตก่อน",
     "tableHeaders": {

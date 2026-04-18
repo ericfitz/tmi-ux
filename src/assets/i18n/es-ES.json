@@ -842,6 +842,8 @@
     "ownerPlaceholder": "Filtrar por nombre o correo del propietario",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "Buscar por nombre, descripción, propietario o estado",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "Estado Actualizado Después De",
     "statusUpdatedBefore": "Estado Actualizado Antes De",
     "tableHeaders": {

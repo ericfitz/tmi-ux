@@ -858,6 +858,8 @@
     "ownerPlaceholder": "स्वामी के नाम या ईमेल द्वारा फ़िल्टर करें",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "नाम, विवरण, स्वामी, या स्थिति से खोजें",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "स्थिति अपडेट की तिथि के बाद",
     "statusUpdatedBefore": "स्थिति अपडेट की तिथि से पहले",
     "tableHeaders": {

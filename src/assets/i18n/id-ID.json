@@ -842,6 +842,8 @@
     "ownerPlaceholder": "Filter berdasarkan nama atau email pemilik",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "Cari berdasarkan nama, deskripsi, pemilik, atau status",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "Status Diperbarui Setelah",
     "statusUpdatedBefore": "Status Diperbarui Sebelum",
     "tableHeaders": {

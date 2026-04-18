@@ -842,6 +842,8 @@
     "ownerPlaceholder": "オーナーの名前またはメールアドレスでフィルター",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "名前、説明、オーナー、またはステータスで検索",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "ステータス更新日（以降）",
     "statusUpdatedBefore": "ステータス更新日（以前）",
     "tableHeaders": {

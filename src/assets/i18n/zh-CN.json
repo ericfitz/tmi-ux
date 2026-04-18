@@ -842,6 +842,8 @@
     "ownerPlaceholder": "按所有者名称或邮箱筛选",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "按名称、描述、所有者或状态搜索",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "状态更新于之后",
     "statusUpdatedBefore": "状态更新于之前",
     "tableHeaders": {

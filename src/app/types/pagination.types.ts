@@ -48,6 +48,7 @@ export const PAGINATION_QUERY_PARAMS = {
   DESCRIPTION: 'description',
   STATUS: 'status',
   OWNER: 'owner',
+  SECURITY_REVIEWER: 'security_reviewer',
   ISSUE_URI: 'issue_uri',
   CREATED_AFTER: 'created_after',
   CREATED_BEFORE: 'created_before',

@@ -842,6 +842,8 @@
     "ownerPlaceholder": "মালিকের নাম বা ইমেইল দিয়ে ফিল্টার করুন",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "নাম, বিবরণ, মালিক, বা স্ট্যাটাস দিয়ে অনুসন্ধান করুন",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "স্ট্যাটাস এর পরে আপডেট হয়েছে",
     "statusUpdatedBefore": "স্ট্যাটাস এর আগে আপডেট হয়েছে",
     "tableHeaders": {

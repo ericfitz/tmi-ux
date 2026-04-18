@@ -877,6 +877,8 @@
     "ownerPlaceholder": "Filter by owner name or email",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "Search by name, description, owner, or status",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "Status Updated After",
     "statusUpdatedBefore": "Status Updated Before",
     "tableHeaders": {

@@ -842,6 +842,8 @@
     "ownerPlaceholder": "تصفية حسب اسم المالك أو البريد الإلكتروني",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "البحث حسب الاسم أو الوصف أو المالك أو الحالة",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "تاريخ تحديث الحالة بعد",
     "statusUpdatedBefore": "تاريخ تحديث الحالة قبل",
     "tableHeaders": {

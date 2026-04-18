@@ -842,6 +842,8 @@
     "ownerPlaceholder": "مالک کے نام یا ای میل سے فلٹر کریں",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "نام، تفصیل، مالک، یا حالت سے تلاش کریں",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "اس تاریخ کے بعد حالت تبدیل شدہ",
     "statusUpdatedBefore": "اس تاریخ سے پہلے حالت تبدیل شدہ",
     "tableHeaders": {

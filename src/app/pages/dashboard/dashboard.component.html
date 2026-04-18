@@ -150,6 +150,18 @@
         />
       </mat-form-field>
 
+      <!-- Security reviewer filter -->
+      <mat-form-field appearance="outline" class="text-filter">
+        <mat-label>{{ 'dashboard.securityReviewerFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          data-testid="dashboard-security-reviewer-filter"
+          [value]="filters.securityReviewer"
+          (input)="onSecurityReviewerFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.securityReviewerPlaceholder' | transloco"
+        />
+      </mat-form-field>
+
       <!-- Issue URI filter -->
       <mat-form-field appearance="outline" class="text-filter">
         <mat-label>{{ 'dashboard.issueUriFilter' | transloco }}</mat-label>

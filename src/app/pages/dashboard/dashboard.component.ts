@@ -91,6 +91,7 @@ import { UserDisplayComponent } from '../../shared/components/user-display/user-
 import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
 import {
   DashboardFilters,
+  computeDefaultFilters,
   createDefaultFilters,
   hasActiveFilters as hasActiveServerFilters,
   hasAdvancedFilters as hasAdvancedServerFilters,
@@ -162,6 +163,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private nameFilterChanged$ = new Subject<string>();
   private descriptionFilterChanged$ = new Subject<string>();
   private ownerFilterChanged$ = new Subject<string>();
+  private securityReviewerFilterChanged$ = new Subject<string>();
   private issueUriFilterChanged$ = new Subject<string>();
 
   private destroy$ = new Subject<void>();
@@ -241,6 +243,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.filters.description =
         (params[PAGINATION_QUERY_PARAMS.DESCRIPTION] as string | undefined) || '';
       this.filters.owner = (params[PAGINATION_QUERY_PARAMS.OWNER] as string | undefined) || '';
+      this.filters.securityReviewer =
+        (params[PAGINATION_QUERY_PARAMS.SECURITY_REVIEWER] as string | undefined) || '';
       this.filters.issueUri =
         (params[PAGINATION_QUERY_PARAMS.ISSUE_URI] as string | undefined) || '';
       const statusParam = params[PAGINATION_QUERY_PARAMS.STATUS] as string | undefined;
@@ -257,6 +261,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         (params[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_AFTER] as string | undefined) || null;
       this.filters.statusUpdatedBefore =
         (params[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_BEFORE] as string | undefined) || null;
+
+      // Apply role-based defaults on fresh visit (no filter/search params in URL).
+      if (!this.hasAnyFilterOrSearchParam(params)) {
+        this.applyRoleBasedDefaults();
+      }
 
       // Auto-expand advanced filters if any are present in URL
       if (hasAdvancedServerFilters(this.filters)) {
@@ -285,6 +294,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.setupDebouncedServerFilter(this.ownerFilterChanged$, value => {
       this.filters.owner = value;
+    });
+    this.setupDebouncedServerFilter(this.securityReviewerFilterChanged$, value => {
+      this.filters.securityReviewer = value;
     });
     this.setupDebouncedServerFilter(this.issueUriFilterChanged$, value => {
       this.filters.issueUri = value;
@@ -374,6 +386,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onOwnerFilterChange(value: string): void {
     this.ownerFilterChanged$.next(value);
+  }
+
+  onSecurityReviewerFilterChange(value: string): void {
+    this.securityReviewerFilterChanged$.next(value);
   }
 
   onIssueUriFilterChange(value: string): void {
@@ -597,6 +613,43 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // --- Private helpers ---
 
+  /**
+   * True if the URL query params contain any filter or search value.
+   * Pagination params (PAGE, SIZE) do NOT count — only filter/search presence
+   * determines whether defaults apply on fresh visit.
+   */
+  private hasAnyFilterOrSearchParam(params: Params): boolean {
+    const keys = [
+      PAGINATION_QUERY_PARAMS.SEARCH,
+      PAGINATION_QUERY_PARAMS.NAME,
+      PAGINATION_QUERY_PARAMS.DESCRIPTION,
+      PAGINATION_QUERY_PARAMS.OWNER,
+      PAGINATION_QUERY_PARAMS.SECURITY_REVIEWER,
+      PAGINATION_QUERY_PARAMS.ISSUE_URI,
+      PAGINATION_QUERY_PARAMS.STATUS,
+      PAGINATION_QUERY_PARAMS.CREATED_AFTER,
+      PAGINATION_QUERY_PARAMS.CREATED_BEFORE,
+      PAGINATION_QUERY_PARAMS.MODIFIED_AFTER,
+      PAGINATION_QUERY_PARAMS.MODIFIED_BEFORE,
+      PAGINATION_QUERY_PARAMS.STATUS_UPDATED_AFTER,
+      PAGINATION_QUERY_PARAMS.STATUS_UPDATED_BEFORE,
+    ];
+    return keys.some(k => typeof params[k] === 'string' && (params[k]).length > 0);
+  }
+
+  /**
+   * Apply role-based default filters and push them into the URL so refresh is stable.
+   * No-op if the user profile is not yet available.
+   */
+  private applyRoleBasedDefaults(): void {
+    const userEmail = this.authService.userEmail;
+    if (!userEmail) {
+      return;
+    }
+    this.filters = computeDefaultFilters(userEmail, this.authService.isSecurityReviewer);
+    this.updateUrl();
+  }
+
   private _getSortValue(item: TMListItem, property: string): string | number {
     const dateAccessor = (field: string | null | undefined): number =>
       field ? new Date(field).getTime() : 0;
@@ -650,6 +703,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.filters.name.trim()) params.name = this.filters.name.trim();
     if (this.filters.description.trim()) params.description = this.filters.description.trim();
     if (this.filters.owner.trim()) params.owner = this.filters.owner.trim();
+    if (this.filters.securityReviewer.trim())
+      params.security_reviewer = this.filters.securityReviewer.trim();
     if (this.filters.issueUri.trim()) params.issue_uri = this.filters.issueUri.trim();
     if (this.filters.statuses.length > 0) params.status = this.filters.statuses.join(',');
     if (this.filters.createdAfter) params.created_after = this.filters.createdAfter;
@@ -706,6 +761,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.filters.owner.trim()) {
       queryParams[PAGINATION_QUERY_PARAMS.OWNER] = this.filters.owner.trim();
+    }
+    if (this.filters.securityReviewer.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.SECURITY_REVIEWER] = this.filters.securityReviewer.trim();
     }
     if (this.filters.issueUri.trim()) {
       queryParams[PAGINATION_QUERY_PARAMS.ISSUE_URI] = this.filters.issueUri.trim();

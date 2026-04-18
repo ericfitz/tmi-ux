@@ -842,6 +842,8 @@
     "ownerPlaceholder": "סנן לפי שם בעלים או דוא\"ל",
     "searchLabel": "{{common.search}}",
     "searchPlaceholder": "חפש לפי שם, תיאור, בעלים או סטטוס",
+    "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
+    "securityReviewerPlaceholder": "Filter by security reviewer name or email",
     "statusUpdatedAfter": "סטטוס עודכן אחרי",
     "statusUpdatedBefore": "סטטוס עודכן לפני",
     "tableHeaders": {
