@@ -46,6 +46,7 @@ export interface CreateAutomationUserDialogData {
             formControlName="name"
             [placeholder]="'admin.createAutomationUserDialog.namePlaceholder' | transloco"
             required
+            data-testid="create-automation-user-name-input"
           />
           <mat-hint [transloco]="'admin.createAutomationUserDialog.nameHint'">
             Name for the automation user account
@@ -89,6 +90,7 @@ export interface CreateAutomationUserDialogData {
             formControlName="email"
             type="email"
             [placeholder]="'admin.createAutomationUserDialog.emailPlaceholder' | transloco"
+            data-testid="create-automation-user-email-input"
           />
           <mat-hint [transloco]="'admin.createAutomationUserDialog.emailHint'">
             Optional email address for the automation user
@@ -103,7 +105,7 @@ export interface CreateAutomationUserDialogData {
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="create-automation-user-cancel">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
@@ -111,6 +113,7 @@ export interface CreateAutomationUserDialogData {
         color="primary"
         (click)="onSave()"
         [disabled]="!form.valid || saving"
+        data-testid="create-automation-user-submit"
       >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>

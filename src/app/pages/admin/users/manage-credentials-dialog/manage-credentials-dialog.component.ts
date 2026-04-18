@@ -52,17 +52,26 @@ export interface ManageCredentialsDialogData {
     >
       Manage Credentials for {{ data.userName }}
     </h2>
-    <mat-dialog-content>
+    <mat-dialog-content data-testid="manage-credentials-dialog">
       @if (loading) {
         <div class="loading-container">
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (credentials.length === 0) {
-        <p class="no-credentials" [transloco]="'admin.users.manageCredentials.noCredentials'">
+        <p
+          class="no-credentials"
+          data-testid="manage-credentials-empty"
+          [transloco]="'admin.users.manageCredentials.noCredentials'"
+        >
           No credentials found
         </p>
       } @else {
-        <table mat-table [dataSource]="credentials" class="credentials-table">
+        <table
+          mat-table
+          [dataSource]="credentials"
+          class="credentials-table"
+          data-testid="manage-credentials-table"
+        >
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ 'common.name' | transloco }}</th>
             <td mat-cell *matCellDef="let cred">{{ cred.name }}</td>
@@ -104,6 +113,7 @@ export interface ManageCredentialsDialogData {
                 mat-icon-button
                 (click)="onDeleteCredential(cred)"
                 [matTooltip]="'common.delete' | transloco"
+                data-testid="manage-credentials-delete-button"
               >
                 <mat-icon>delete</mat-icon>
               </button>
@@ -111,7 +121,11 @@ export interface ManageCredentialsDialogData {
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr
+            mat-row
+            data-testid="manage-credentials-row"
+            *matRowDef="let row; columns: displayedColumns"
+          ></tr>
         </table>
       }
 
@@ -120,11 +134,11 @@ export interface ManageCredentialsDialogData {
       }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onAddCredential()">
+      <button mat-button (click)="onAddCredential()" data-testid="manage-credentials-add-button">
         <mat-icon>add</mat-icon>
         <span [transloco]="'admin.users.manageCredentials.addCredential'">Add Credential</span>
       </button>
-      <button mat-button mat-dialog-close>
+      <button mat-button mat-dialog-close data-testid="manage-credentials-close">
         <span [transloco]="'common.close'">Close</span>
       </button>
     </mat-dialog-actions>

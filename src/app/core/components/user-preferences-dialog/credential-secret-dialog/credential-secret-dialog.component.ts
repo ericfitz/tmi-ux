@@ -32,7 +32,7 @@ export interface CredentialSecretDialogData {
     <h2 mat-dialog-title [transloco]="'userPreferences.credentials.secretDialog.title'">
       Client Credential Created
     </h2>
-    <mat-dialog-content>
+    <mat-dialog-content data-testid="credential-secret-dialog">
       <p class="warning-text" [transloco]="'userPreferences.credentials.secretDialog.warning'">
         Save these credentials now. The client secret will not be shown again.
       </p>
@@ -71,7 +71,13 @@ export interface CredentialSecretDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="onDownload()" [transloco]="'common.download'">Download</button>
-      <button mat-raised-button color="primary" (click)="onClose()" [transloco]="'common.done'">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onClose()"
+        [transloco]="'common.done'"
+        data-testid="credential-secret-done"
+      >
         Done
       </button>
     </mat-dialog-actions>

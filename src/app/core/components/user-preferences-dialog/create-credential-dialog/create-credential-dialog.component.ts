@@ -54,6 +54,7 @@ export interface CreateCredentialDialogData {
             [placeholder]="'userPreferences.credentials.createDialog.namePlaceholder' | transloco"
             required
             maxlength="100"
+            data-testid="create-credential-name-input"
           />
           <mat-hint [transloco]="'userPreferences.credentials.createDialog.nameHint'">
             A descriptive name for this credential
@@ -119,7 +120,7 @@ export interface CreateCredentialDialogData {
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button (click)="onCancel()" data-testid="create-credential-cancel">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
@@ -127,6 +128,7 @@ export interface CreateCredentialDialogData {
         color="primary"
         (click)="onSave()"
         [disabled]="!form.valid || saving"
+        data-testid="create-credential-submit"
       >
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
