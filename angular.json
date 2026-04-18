@@ -270,12 +270,12 @@
             },
             "local": {
               "buildTarget": "tmi-ux:build:local"
-            },
-            "shannon": {
-              "buildTarget": "tmi-ux:build:shannon"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "allowedHosts": ["localhost", "local.tmi.dev"]
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
