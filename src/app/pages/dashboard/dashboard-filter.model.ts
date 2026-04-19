@@ -40,6 +40,7 @@ export interface DashboardFilters {
  */
 export const ALL_TM_STATUSES: readonly string[] = [
   'not_started',
+  'active',
   'in_progress',
   'pending_review',
   'remediation_required',
@@ -54,9 +55,13 @@ export const ALL_TM_STATUSES: readonly string[] = [
 /**
  * Non-terminal threat-model statuses — used as the default status filter
  * on fresh dashboard visits. Excludes `rejected`, `deferred`, and `closed`.
+ * `active` is included because seeded and server-default TMs sometimes use
+ * it instead of `in_progress`; the server treats `status` as a free-form
+ * string so we include common synonyms.
  */
 export const NON_TERMINAL_TM_STATUSES: readonly string[] = [
   'not_started',
+  'active',
   'in_progress',
   'pending_review',
   'remediation_required',

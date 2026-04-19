@@ -52,10 +52,13 @@ export class SurveyService {
   }
 
   /**
-   * List active surveys (for respondents)
+   * List active surveys (for respondents).
+   * The server caps `limit` at 100; request that so small deployments with
+   * dozens of templates (including seeded ones) fit on a single page
+   * without needing client-side pagination UI.
    */
   public listActive(): Observable<ListSurveysResponse> {
-    return this.apiService.get<ListSurveysResponse>('intake/surveys').pipe(
+    return this.apiService.get<ListSurveysResponse>('intake/surveys?limit=100').pipe(
       tap(response => {
         this.logger.debug('Active surveys loaded', {
           count: response.surveys.length,

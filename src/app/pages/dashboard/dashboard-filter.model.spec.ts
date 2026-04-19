@@ -37,6 +37,7 @@ describe('dashboard-filter.model', () => {
     it('includes all non-terminal statuses in canonical order', () => {
       expect(NON_TERMINAL_TM_STATUSES).toEqual([
         'not_started',
+        'active',
         'in_progress',
         'pending_review',
         'remediation_required',
