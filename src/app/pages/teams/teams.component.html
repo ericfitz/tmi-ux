@@ -65,7 +65,12 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'teams.columns.name' | transloco }}
             </th>
-            <td mat-cell *matCellDef="let team" [matTooltip]="team.description || ''">
+            <td
+              mat-cell
+              *matCellDef="let team"
+              [matTooltip]="team.description || ''"
+              data-testid="teams-row-name"
+            >
               {{ team.name }}
             </td>
           </ng-container>
@@ -167,6 +172,10 @@
                   >
                     <mat-icon>list</mat-icon>
                     <span [transloco]="'teams.kebab.metadata'">Metadata</span>
+                  </button>
+                  <button mat-menu-item data-testid="teams-delete-item" (click)="onDelete(team)">
+                    <mat-icon>delete</mat-icon>
+                    <span [transloco]="'teams.kebab.delete'">Delete</span>
                   </button>
                 </mat-menu>
               </div>

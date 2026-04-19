@@ -12,7 +12,9 @@ export type DeleteObjectType =
   | 'threat'
   | 'note'
   | 'document'
-  | 'repository';
+  | 'repository'
+  | 'project'
+  | 'team';
 
 /**
  * Configuration data for the delete confirmation dialog.
@@ -68,6 +70,8 @@ export const OBJECT_TYPE_TRANSLATION_KEY: Record<DeleteObjectType, string> = {
   note: 'common.objectTypes.note',
   document: 'common.objectTypes.document',
   repository: 'common.objectTypes.repository',
+  project: 'common.objectTypes.project',
+  team: 'common.objectTypes.team',
 };
 
 /**
@@ -81,6 +85,8 @@ export const OBJECT_TYPE_ICON: Record<DeleteObjectType, string> = {
   note: 'article',
   document: 'description',
   repository: 'code',
+  project: 'folder',
+  team: 'groups',
 };
 
 /**
@@ -92,6 +98,8 @@ export const TYPES_REQUIRING_CONFIRMATION: DeleteObjectType[] = [
   'asset',
   'threat',
   'note',
+  'project',
+  'team',
 ];
 
 /**

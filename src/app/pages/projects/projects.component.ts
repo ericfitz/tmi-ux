@@ -47,6 +47,11 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { DeleteConfirmationDialogComponent } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import {
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.types';
 
 /**
  * User Projects Component
@@ -372,6 +377,35 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         error: error => {
           this.logger.error('Failed to load project for metadata', error);
         },
+      });
+  }
+
+  /** Open the delete confirmation dialog and delete the project on confirm. */
+  onDelete(project: ProjectListItem): void {
+    const dialogData: DeleteConfirmationDialogData = {
+      id: project.id,
+      name: project.name,
+      objectType: 'project',
+    };
+
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '700px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+        if (!result?.confirmed) return;
+        this.projectService
+          .delete(project.id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => this.loadProjects(),
+            error: error => this.logger.error('Failed to delete project', error),
+          });
       });
   }
 

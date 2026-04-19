@@ -46,6 +46,11 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { DeleteConfirmationDialogComponent } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import {
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.types';
 
 /**
  * User Teams Component
@@ -306,6 +311,35 @@ export class TeamsComponent implements OnInit, AfterViewInit {
         error: error => {
           this.logger.error('Failed to load team for metadata', error);
         },
+      });
+  }
+
+  /** Open the delete confirmation dialog and delete the team on confirm. */
+  onDelete(team: TeamListItem): void {
+    const dialogData: DeleteConfirmationDialogData = {
+      id: team.id,
+      name: team.name,
+      objectType: 'team',
+    };
+
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '700px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+        if (!result?.confirmed) return;
+        this.teamService
+          .delete(team.id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => this.loadTeams(),
+            error: error => this.logger.error('Failed to delete team', error),
+          });
       });
   }
 
