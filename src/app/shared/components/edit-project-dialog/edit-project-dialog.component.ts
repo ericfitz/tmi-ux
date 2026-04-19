@@ -18,7 +18,8 @@ import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import {
   Project,
-  ProjectInput,
+  ProjectPatch,
+  ProjectStatus,
   PROJECT_STATUSES,
   ProjectNoteListItem,
   ListProjectNotesResponse,
@@ -363,16 +364,16 @@ export class EditProjectDialogComponent implements OnInit {
       uri: string;
       status: string | null;
     };
-    const input: ProjectInput = {
-      ...formValue,
+    const input: ProjectPatch = {
       name: formValue.name?.trim(),
       description: formValue.description?.trim() || undefined,
+      team_id: formValue.team_id,
       uri: formValue.uri?.trim() || undefined,
-      status: formValue.status || undefined,
+      status: (formValue.status as ProjectStatus | null) || undefined,
     };
 
     this.projectService
-      .update(this.data.project.id, input)
+      .patch(this.data.project.id, input)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

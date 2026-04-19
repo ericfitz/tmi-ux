@@ -17,7 +17,8 @@ import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import {
   Team,
-  TeamInput,
+  TeamPatch,
+  TeamStatus,
   TEAM_STATUSES,
   TeamNoteListItem,
   ListTeamNotesResponse,
@@ -343,17 +344,16 @@ export class EditTeamDialogComponent implements OnInit {
       uri: string;
       status: string | null;
     };
-    const input: TeamInput = {
-      ...formValue,
+    const input: TeamPatch = {
       name: formValue.name?.trim(),
       description: formValue.description?.trim(),
       email_address: formValue.email_address?.trim() || undefined,
       uri: formValue.uri?.trim() || undefined,
-      status: formValue.status || undefined,
+      status: (formValue.status as TeamStatus | null) || undefined,
     };
 
     this.teamService
-      .update(this.data.team.id, input)
+      .patch(this.data.team.id, input)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

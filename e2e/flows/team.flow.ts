@@ -67,7 +67,7 @@ export class TeamFlow {
       await this.editTeamDialog.selectStatus(updates.status);
     }
     const responsePromise = this.page.waitForResponse(
-      resp => resp.url().includes('/teams/') && resp.request().method() === 'PUT',
+      resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH',
     );
     await this.editTeamDialog.save();
     await responsePromise;

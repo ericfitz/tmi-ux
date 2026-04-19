@@ -74,7 +74,7 @@ export class ProjectFlow {
       await this.editProjectDialog.selectStatus(updates.status);
     }
     const responsePromise = this.page.waitForResponse(
-      resp => resp.url().includes('/projects/') && resp.request().method() === 'PUT',
+      resp => resp.url().includes('/projects/') && resp.request().method() === 'PATCH',
     );
     await this.editProjectDialog.save();
     await responsePromise;
