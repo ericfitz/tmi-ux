@@ -3,6 +3,17 @@ import { Page } from '@playwright/test';
 export class DashboardPage {
   constructor(private page: Page) {}
 
+  /**
+   * Waits for the dashboard to be interactive. Prefer this over
+   * waitForLoadState('networkidle') — the TMI app has persistent polling
+   * (SessionManager, token guard, WebSocket) that keeps the network active,
+   * so networkidle often doesn't resolve before the Playwright internal
+   * timeout.
+   */
+  async waitForReady(timeout = 10000): Promise<void> {
+    await this.createTmButton().waitFor({ state: 'visible', timeout });
+  }
+
   readonly createTmButton = () =>
     this.page.getByTestId('create-threat-model-button');
 

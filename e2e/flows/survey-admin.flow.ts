@@ -19,8 +19,14 @@ export class SurveyAdminFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
     await this.createSurveyDialog.fillName(name);
     await this.createSurveyDialog.fillVersion(version);
+    const postPromise = this.page.waitForResponse(
+      resp => resp.url().includes('/admin/surveys') && resp.request().method() === 'POST',
+    );
     await this.createSurveyDialog.submit();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
+    await postPromise;
+    // Successful create redirects to the builder — wait for that navigation
+    await this.page.waitForURL(/\/admin\/surveys\/[a-f0-9-]+/, { timeout: 10000 });
   }
 
   async openInBuilder(name: string) {

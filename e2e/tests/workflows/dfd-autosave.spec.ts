@@ -59,7 +59,7 @@ test.describe.serial('DFD Editor Auto-Save', () => {
   test.afterAll(async () => {
     try {
       await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
+      await dashboardPage.waitForReady();
       await threatModelFlow.deleteFromDashboard(testTmName);
       await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
     } catch {

@@ -46,10 +46,11 @@ test.describe.serial('Threat Editing', () => {
   });
 
   test.afterAll(async () => {
+    test.setTimeout(60000);
     // Clean up: navigate to dashboard and delete the TM
-    await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
     try {
+      await page.goto('/dashboard');
+      await dashboardPage.waitForReady();
       await threatModelFlow.deleteFromDashboard(testTmName);
       await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
     } catch {
@@ -83,7 +84,6 @@ test.describe.serial('Threat Editing', () => {
 
     // Reload page to verify persistence
     await page.reload();
-    await page.waitForLoadState('networkidle');
     await expect(threatPage.nameInput()).toHaveValue(updatedThreatName, { timeout: 10000 });
     await expect(threatPage.descriptionInput()).toHaveValue('A test threat for E2E testing');
   });

@@ -53,7 +53,7 @@ test.describe.serial('DFD Editor Controls', () => {
     // Clean up: navigate to dashboard and delete the TM
     try {
       await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
+      await dashboardPage.waitForReady();
       await threatModelFlow.deleteFromDashboard(testTmName);
       await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
     } catch {

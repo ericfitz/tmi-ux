@@ -14,8 +14,15 @@ export class ProjectsPage {
   readonly projectRows = () => this.page.getByTestId('projects-row');
   readonly paginator = () => this.page.getByTestId('projects-paginator');
 
+  /**
+   * Finds a project row by exact name match on the name cell. Substring
+   * match on the whole row would match "Foo" against "Foo Updated",
+   * breaking rename-verification assertions.
+   */
   projectRow(name: string) {
-    return this.projectRows().filter({ hasText: name });
+    return this.projectRows().filter({
+      has: this.page.getByTestId('projects-row-name').getByText(name, { exact: true }),
+    });
   }
 
   editButton(name: string) {

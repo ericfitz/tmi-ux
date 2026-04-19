@@ -10,8 +10,15 @@ export class TeamsPage {
   readonly teamRows = () => this.page.getByTestId('teams-row');
   readonly paginator = () => this.page.getByTestId('teams-paginator');
 
+  /**
+   * Finds a team row by exact name match on the name cell. Substring
+   * match on the whole row would match "Foo" against "Foo Updated",
+   * breaking rename-verification assertions.
+   */
   teamRow(name: string) {
-    return this.teamRows().filter({ hasText: name });
+    return this.teamRows().filter({
+      has: this.page.getByTestId('teams-row-name').getByText(name, { exact: true }),
+    });
   }
 
   editButton(name: string) {

@@ -19,7 +19,7 @@ export class ThreatModelFlow {
 
   async createFromDashboard(name: string) {
     await this.page.goto('/dashboard');
-    await this.page.waitForLoadState('networkidle');
+    await this.dashboardPage.waitForReady();
     await this.dashboardPage.createTmButton().click();
     await this.createTmDialog.fillName(name);
     await this.createTmDialog.submit();
