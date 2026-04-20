@@ -43,10 +43,16 @@ export class SurveyAdminFlow {
   }
 
   async cloneSurvey(name: string) {
-    await this.adminSurveysPage.moreButton(name).click();
-    await this.adminSurveysPage.cloneItem().dispatchEvent('click');
+    // Use the first matching row so "Kitchen Sink Survey" doesn't also pick
+    // up a prior "Kitchen Sink Survey (Copy)" leftover from earlier runs.
+    const row = this.adminSurveysPage.surveyRow(name).first();
+    await row.getByTestId('admin-surveys-more-button').click();
+    const cloneItem = this.adminSurveysPage.cloneItem();
+    await cloneItem.waitFor({ state: 'visible', timeout: 5000 });
+    await cloneItem.click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/surveys') && resp.status() < 300
+      (resp) => resp.url().includes('/surveys') && resp.status() < 300,
+      { timeout: 10000 },
     );
   }
 
@@ -59,13 +65,16 @@ export class SurveyAdminFlow {
   }
 
   async deleteSurvey(name: string) {
+    // The admin-surveys delete uses the browser's native confirm() — accept
+    // it once. The dialog handler must be registered before the click.
+    this.page.once('dialog', dialog => {
+      void dialog.accept();
+    });
     await this.adminSurveysPage.moreButton(name).click();
-    // Wait for the menu overlay to render before clicking the item.
     const deleteItem = this.adminSurveysPage.deleteItem();
     await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
     await deleteItem.click();
-    await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
-    await this.deleteConfirmDialog.confirmDeletion();
-    await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
+    // Wait for the row to disappear from the list
+    await this.adminSurveysPage.surveyRow(name).first().waitFor({ state: 'hidden', timeout: 10000 });
   }
 }

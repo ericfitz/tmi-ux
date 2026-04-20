@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class CreateSurveyDialog {
   private dialog: Locator;
@@ -17,12 +18,11 @@ export class CreateSurveyDialog {
     this.dialog.getByTestId('create-survey-submit-button');
 
   async fillName(name: string) {
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillVersion(version: string) {
-    await this.versionInput().clear();
-    await this.versionInput().fill(version);
+    await angularFill(this.versionInput(), version);
   }
 
   async submit() {

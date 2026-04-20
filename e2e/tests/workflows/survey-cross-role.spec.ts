@@ -88,12 +88,12 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     await expect(adminSurveysPage.surveyRow(crossRoleSurveyName)).toBeVisible({ timeout: 10000 });
 
     // Surveys default to inactive after creation — toggle to active so the
-    // fill-user can see it on /intake.
-    const statusCell = adminSurveysPage.surveyRow(crossRoleSurveyName);
-    const statusText = (await statusCell.textContent()) ?? '';
-    if (!/active/i.test(statusText)) {
+    // fill-user can see it on /intake. The row always contains the word
+    // "active" (Active or Inactive), so check for the exact "Inactive" label.
+    const statusText = (await adminSurveysPage.surveyRow(crossRoleSurveyName).textContent()) ?? '';
+    if (/inactive/i.test(statusText)) {
       await adminFlow.toggleStatus(crossRoleSurveyName);
-      await expect(adminSurveysPage.surveyRow(crossRoleSurveyName)).toContainText(/active/i, {
+      await expect(adminSurveysPage.surveyRow(crossRoleSurveyName)).not.toContainText(/inactive/i, {
         timeout: 10000,
       });
     }

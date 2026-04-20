@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class TriageNoteEditorDialog {
   private dialog: Locator;
@@ -21,11 +22,11 @@ export class TriageNoteEditorDialog {
     this.dialog.getByTestId('triage-note-save-button');
 
   async fillName(name: string) {
-    await this.nameInput().fill(name);
+    await angularFill(this.nameInput(), name);
   }
 
   async fillContent(content: string) {
-    await this.contentTextarea().fill(content);
+    await angularFill(this.contentTextarea(), content);
   }
 
   async save() {

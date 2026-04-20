@@ -139,11 +139,10 @@ test.describe.serial('Survey Admin Workflows', () => {
     await page.locator('.cdk-overlay-backdrop').waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
 
     await expect(adminSurveys.surveyRow(testSurveyName)).toBeVisible({ timeout: 10000 });
-    const initialCount = await adminSurveys.surveyRows().count();
 
     await adminFlow.deleteSurvey(testSurveyName);
 
-    await expect(adminSurveys.surveyRows()).toHaveCount(initialCount - 1, {
+    await expect(adminSurveys.surveyRow(testSurveyName)).toHaveCount(0, {
       timeout: 10000,
     });
   });
