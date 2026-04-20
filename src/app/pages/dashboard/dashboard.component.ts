@@ -634,7 +634,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       PAGINATION_QUERY_PARAMS.STATUS_UPDATED_AFTER,
       PAGINATION_QUERY_PARAMS.STATUS_UPDATED_BEFORE,
     ];
-    return keys.some(k => typeof params[k] === 'string' && (params[k]).length > 0);
+    return keys.some(k => typeof params[k] === 'string' && params[k].length > 0);
   }
 
   /**

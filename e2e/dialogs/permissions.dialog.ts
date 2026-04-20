@@ -1,6 +1,14 @@
 import { Locator, Page } from '@playwright/test';
 import { angularFill } from '../helpers/angular-fill';
 
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function capitalize(s: string): string {
+  return s.length === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export class PermissionsDialog {
   private dialog: Locator;
 
@@ -40,22 +48,40 @@ export class PermissionsDialog {
   }
 
   async addPermission(type: string, provider: string, subject: string, role: string) {
+    const prevCount = await this.typeSelects().count();
     await this.addButton().click();
-    // Wait for the new row to appear in the table
-    await this.page.waitForTimeout(500);
-    const lastIndex = (await this.typeSelects().count()) - 1;
+    // Wait for the new row to appear in the table rather than using a fixed delay
+    await this.page.waitForFunction(
+      expected => document.querySelectorAll('[data-testid="permissions-type-select"]').length >= expected,
+      prevCount + 1,
+      { timeout: 5000 },
+    );
+    const lastIndex = prevCount;
 
-    // Select provider before type — provider selection may auto-constrain principal_type
-    await this.providerSelect(lastIndex).click();
-    await this.page.locator('mat-option').filter({ hasText: new RegExp(`^.*${provider}$`) }).click();
+    // Select provider before type — provider selection may auto-constrain principal_type.
+    // Match the provider display name case-sensitively at end of option text (icon may precede).
+    await this.openSelectAndChoose(
+      this.providerSelect(lastIndex),
+      new RegExp(`${escapeRegex(provider)}\\s*$`),
+    );
 
-    await this.typeSelect(lastIndex).click();
-    await this.page.locator('mat-option').filter({ hasText: type }).click();
+    await this.openSelectAndChoose(this.typeSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`));
 
     await angularFill(this.subjectInput(lastIndex), subject);
 
-    await this.roleSelect(lastIndex).click();
-    await this.page.locator('mat-option').filter({ hasText: role }).click();
+    await this.openSelectAndChoose(this.roleSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`));
+  }
+
+  private async openSelectAndChoose(select: Locator, match: string | RegExp) {
+    await select.click();
+    // Wait for the overlay panel to render options before filtering by text
+    const panel = this.page.locator('.cdk-overlay-pane .mat-mdc-select-panel');
+    await panel.first().waitFor({ state: 'visible', timeout: 5000 });
+    const option = panel.locator('mat-option').filter({ hasText: match });
+    await option.first().waitFor({ state: 'visible', timeout: 5000 });
+    await option.first().click();
+    // Wait for the overlay to close
+    await panel.first().waitFor({ state: 'hidden', timeout: 5000 });
   }
 
   async save() {

@@ -16,4 +16,5 @@ export const environment: Environment = {
   operatorContact: 'contact@example.com',
   operatorJurisdiction: '',
   enableE2eTools: true,
+  enableConfidentialThreatModels: true,
 };

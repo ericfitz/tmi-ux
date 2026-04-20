@@ -210,7 +210,7 @@ test.describe.serial('Child Entity CRUD', () => {
     await permissionsDialog.rows().first().waitFor({ state: 'visible', timeout: 5000 });
     const initialCount = await permissionsDialog.rows().count();
 
-    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');
+    await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'reader');
     await permissionsFlow.saveAndClose();
 
     await kebabButton.click();

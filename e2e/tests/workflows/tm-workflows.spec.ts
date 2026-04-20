@@ -144,12 +144,16 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await openDetailsKebab(userPage);
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
-    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'writer');
+    await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'writer');
     await permissionsFlow.saveAndClose();
 
     await reviewerPage.goto('/dashboard');
-    await reviewerPage.waitForLoadState('networkidle');
     const reviewerDashboard = new DashboardPage(reviewerPage);
+    await reviewerDashboard.waitForReady();
+    // The reviewer's dashboard auto-applies a securityReviewer filter to their
+    // email, which hides newly-shared TMs that have no reviewer assigned.
+    await reviewerDashboard.clearFiltersButton().click();
+    await reviewerDashboard.tmCard(testName).waitFor({ state: 'visible', timeout: 10000 });
     await reviewerDashboard.tmCard(testName).click();
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
@@ -182,18 +186,20 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await expect(userPage.getByTestId('tm-confidential-badge')).toBeVisible();
 
     await reviewerPage.goto('/dashboard');
-    await reviewerPage.waitForLoadState('networkidle');
+    await reviewerDashboard.waitForReady();
+    await reviewerDashboard.clearFiltersButton().click();
     await expect(reviewerDashboard.tmCard(testName)).toHaveCount(0, { timeout: 5000 });
 
     // Open the details kebab menu first, then click permissions
     await openDetailsKebab(userPage);
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
-    await permissionsFlow.addPermission('user', 'TMI Provider', 'test-reviewer', 'reader');
+    await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'reader');
     await permissionsFlow.saveAndClose();
 
     await reviewerPage.goto('/dashboard');
-    await reviewerPage.waitForLoadState('networkidle');
+    await reviewerDashboard.waitForReady();
+    await reviewerDashboard.clearFiltersButton().click();
     await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
 
     await userPage.goto('/dashboard');
