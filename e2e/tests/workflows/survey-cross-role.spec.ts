@@ -158,20 +158,20 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     await userResponseFlow.viewMyResponses();
 
     // Find the response that needs revision for *this* survey (stale rows
-    // from earlier runs may also be in "Needs Revision"). Reload once to
-    // defeat any my-responses cache lagging the reviewer's status change.
+    // from earlier runs may also be in "Needs Revision"). Navigate away and
+    // back to defeat any my-responses cache lagging the reviewer's status
+    // change.
     const myResponses = new MyResponsesPage(userPage);
     const revisionRow = myResponses
       .responseRows()
       .filter({ hasText: crossRoleSurveyName })
       .filter({ hasText: /revision/i });
     if (!(await revisionRow.first().isVisible({ timeout: 5000 }).catch(() => false))) {
-      await userPage.reload();
+      await userPage.goto('/intake', { waitUntil: 'domcontentloaded' });
       await userPage.waitForLoadState('networkidle');
-      // Re-open the my-responses view after the reload
       await userResponseFlow.viewMyResponses();
     }
-    await expect(revisionRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(revisionRow.first()).toBeVisible({ timeout: 15000 });
     await revisionRow.first().getByTestId('my-responses-edit-button').click();
     await userPage.waitForURL(/\/intake\/fill\//, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');

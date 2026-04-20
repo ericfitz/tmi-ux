@@ -386,16 +386,23 @@ test.describe.serial('Survey Fill Workflows', () => {
     await page.waitForLoadState('networkidle');
     await responseFlow.viewMyResponses();
 
-    // Click view on the first submitted response
-    const firstRow = myResponses.responseRows().first();
-    await expect(firstRow).toBeVisible({ timeout: 10000 });
-    await firstRow.click();
+    // Click view on the first row that isn't a draft. Drafts navigate to
+    // /intake/fill/..., submitted responses navigate to /intake/response/...
+    const submittedRow = myResponses
+      .responseRows()
+      .filter({ hasText: /submitted|approved|revision|ready/i })
+      .first();
+    await expect(submittedRow).toBeVisible({ timeout: 10000 });
+    const viewBtn = submittedRow.getByTestId('my-responses-view-button');
+    if (await viewBtn.count()) {
+      await viewBtn.first().click();
+    } else {
+      await submittedRow.click();
+    }
 
-    // Verify response detail loads
     await page.waitForURL(/\/intake\/response\//, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
 
-    // Verify read-only display shows status
     const statusChip = page.getByTestId('response-detail-status');
     await expect(statusChip).toBeVisible();
   });
