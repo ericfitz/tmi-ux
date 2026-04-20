@@ -173,8 +173,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@oxc-project/runtime':
-        specifier: ^0.125.0
-        version: 0.125.0
+        specifier: ^0.126.0
+        version: 0.126.0
       '@playwright/test':
         specifier: ^1.59.1
         version: 1.59.1
@@ -2252,8 +2252,8 @@ packages:
     resolution: {integrity: sha512-mGUWr1uMnf0le2TwfOZY4SFxZGXGfm4Jtay/nwAa2FLNAKXUoUwaGwBMNH36UHPtinWfTSJ3nqFQr0091CxVGg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@oxc-project/runtime@0.125.0':
-    resolution: {integrity: sha512-+Rj/hhm1KNsOlLDlgPjSD5OnCzA0n0pjA66mWuU6e4JyFLpt+2gStAqiiTLHT7OKyrekglzmjEkUzYdHTecvxg==}
+  '@oxc-project/runtime@0.126.0':
+    resolution: {integrity: sha512-oksjxfqDNmIYMGlIgLzYgnz5YjZax27RtQezsPpKEGo9AC5LOaIGHsivCCeaAWdCtPnRyjZXM/7svreCC8kZVQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
   '@oxc-project/types@0.113.0':
@@ -8874,7 +8874,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oxc-project/runtime@0.125.0': {}
+  '@oxc-project/runtime@0.126.0': {}
 
   '@oxc-project/types@0.113.0': {}
 
