@@ -67,14 +67,25 @@ export class PermissionsDialog {
 
     await this.openSelectAndChoose(this.typeSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`));
 
-    // Fill the subject via Playwright's fill() (synthesizes keystrokes and
-    // pairs well with [(ngModel)]). The prior angularFill approach using
-    // a native value setter occasionally left the bound property stale in
-    // the full suite run, producing a server validation error about
-    // missing provider_id/email. Follow with a Tab to force blur.
+    // Type keystrokes one-by-one with pressSequentially and wait for the
+    // bound input value to match before moving on. The atomic setter in
+    // angularFill() sometimes left ngModel stale in the full-suite run,
+    // producing a server validation error about missing provider_id.
     await this.subjectInput(lastIndex).click();
-    await this.subjectInput(lastIndex).fill(subject);
-    await this.subjectInput(lastIndex).press('Tab');
+    await this.subjectInput(lastIndex).fill('');
+    await this.subjectInput(lastIndex).pressSequentially(subject, { delay: 20 });
+    await this.page.waitForFunction(
+      ({ idx, expected }) => {
+        const inputs = document.querySelectorAll<HTMLInputElement>(
+          '[data-testid="permissions-subject-input"]',
+        );
+        return inputs[idx]?.value === expected;
+      },
+      { idx: lastIndex, expected: subject },
+      { timeout: 3000 },
+    ).catch(() => {
+      /* continue; next assertion will catch a truly empty field */
+    });
 
     await this.openSelectAndChoose(this.roleSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`));
   }
