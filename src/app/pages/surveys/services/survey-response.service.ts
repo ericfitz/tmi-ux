@@ -41,7 +41,9 @@ export class SurveyResponseService {
    * List responses for the current user
    */
   public listMine(filter?: SurveyResponseFilter): Observable<ListSurveyResponsesResponse> {
-    const params = buildHttpParams(filter);
+    // Default to the server cap so small deployments (e.g., E2E runs that
+    // accumulate many drafts/responses) show every response without paging.
+    const params = buildHttpParams({ limit: 100, ...filter });
     return this.apiService.get<ListSurveyResponsesResponse>('intake/survey_responses', params).pipe(
       tap(response => {
         this.myResponsesSubject$.next(response.survey_responses);
@@ -61,7 +63,7 @@ export class SurveyResponseService {
    * List all responses (for triage - requires Security Reviewers permissions)
    */
   public listAll(filter?: SurveyResponseFilter): Observable<ListSurveyResponsesResponse> {
-    const params = buildHttpParams(filter);
+    const params = buildHttpParams({ limit: 100, ...filter });
     return this.apiService.get<ListSurveyResponsesResponse>('triage/survey_responses', params).pipe(
       tap(response => {
         this.allResponsesSubject$.next(response.survey_responses);
