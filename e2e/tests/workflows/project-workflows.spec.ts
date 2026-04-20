@@ -33,9 +33,12 @@ test.describe.serial('Project Workflows', () => {
     projectsPage = new ProjectsPage(page);
     teamFlow = new TeamFlow(page);
 
-    await new AuthFlow(page).loginAs('test-user');
+    // Use test-admin so the Responsible parties subtest can search for users
+    // via the admin-only user list API.
+    await new AuthFlow(page).loginAs('test-admin');
 
-    // Create two teams owned by test-user so the full project lifecycle runs.
+    // Create two teams owned by the current user so the full project
+    // lifecycle — including delete — runs without team-creator restrictions.
     await page.goto('/teams');
     await page.waitForLoadState('networkidle');
     await teamFlow.createTeam({ name: testTeamName });
@@ -127,10 +130,8 @@ test.describe.serial('Project Workflows', () => {
     // Open responsible parties dialog
     await projectFlow.openResponsibleParties(updatedProjectName);
 
-    // Add responsible party
-    await rpDialog.addButton().click();
-    await page.locator('mat-dialog-container').last().waitFor({ state: 'visible' });
-    await page.waitForTimeout(500);
+    // Pick a user (the picker also requires selecting a role)
+    await projectFlow.addResponsibleParty('test-reviewer@tmi.local', 'engineering_lead');
 
     // Save
     const responsePromise = page.waitForResponse(
@@ -140,12 +141,14 @@ test.describe.serial('Project Workflows', () => {
     await responsePromise;
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
 
-    // Reopen and verify
+    // Reopen and verify the new party is present
     await projectFlow.openResponsibleParties(updatedProjectName);
-    await expect(rpDialog.partyRows().first()).toBeVisible({ timeout: 5000 });
+    const reviewerParty = rpDialog.partyRows().filter({ hasText: 'test-reviewer@tmi.local' });
+    await expect(reviewerParty).toHaveCount(1, { timeout: 5000 });
+    const initialCount = await rpDialog.partyRows().count();
 
-    // Remove
-    await rpDialog.removeButton(0).click();
+    // Remove the reviewer row
+    await reviewerParty.getByTestId('responsible-parties-remove-button').click();
     const removeResponse = page.waitForResponse(
       resp => resp.url().includes('/projects/') && resp.request().method() === 'PATCH'
     );
@@ -155,7 +158,7 @@ test.describe.serial('Project Workflows', () => {
 
     // Verify removed
     await projectFlow.openResponsibleParties(updatedProjectName);
-    await expect(rpDialog.partyRows()).toHaveCount(0, { timeout: 5000 });
+    await expect(rpDialog.partyRows()).toHaveCount(initialCount - 1, { timeout: 5000 });
     await rpDialog.cancel();
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   });

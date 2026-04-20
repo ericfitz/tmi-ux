@@ -50,6 +50,7 @@ export interface UserPickerDialogResult {
           <mat-label [transloco]="'transfer.userPicker.searchLabel'">Search by email</mat-label>
           <input
             matInput
+            data-testid="user-picker-search"
             [formControl]="userSearchControl"
             [matAutocomplete]="auto"
             [placeholder]="'transfer.userPicker.searchPlaceholder' | transloco"
@@ -62,7 +63,7 @@ export interface UserPickerDialogResult {
             (optionSelected)="onUserSelected($event)"
           >
             @for (user of filteredUsers$ | async; track user.internal_uuid) {
-              <mat-option [value]="user">
+              <mat-option [value]="user" [attr.data-testid]="'user-picker-option-' + user.email">
                 <div class="user-option">
                   <span class="user-name">{{ user.name }}</span>
                   <span class="user-email">{{ user.email }}</span>
@@ -72,7 +73,7 @@ export interface UserPickerDialogResult {
           </mat-autocomplete>
         </mat-form-field>
       } @else {
-        <div class="selected-user">
+        <div class="selected-user" data-testid="user-picker-selected">
           <div class="user-info">
             <div class="user-name">{{ selectedUser.name }}</div>
             <div class="user-email">{{ selectedUser.email }}</div>
@@ -85,9 +86,9 @@ export interface UserPickerDialogResult {
       @if (data.showRoleSelector && selectedUser) {
         <mat-form-field appearance="outline" class="full-width role-field">
           <mat-label [transloco]="'teams.membersDialog.role'">Role</mat-label>
-          <mat-select [(value)]="selectedRole">
+          <mat-select [(value)]="selectedRole" data-testid="user-picker-role-select">
             @for (role of data.roles; track role) {
-              <mat-option [value]="role">
+              <mat-option [value]="role" [attr.data-testid]="'user-picker-role-' + role">
                 {{ data.roleTranslocoPrefix + role | transloco }}
               </mat-option>
             }
@@ -96,19 +97,20 @@ export interface UserPickerDialogResult {
         @if (selectedRole === 'other') {
           <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'teams.membersDialog.customRole'">Custom Role</mat-label>
-            <input matInput [(ngModel)]="customRole" />
+            <input matInput data-testid="user-picker-custom-role" [(ngModel)]="customRole" />
           </mat-form-field>
         }
       }
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
+      <button mat-button data-testid="user-picker-cancel" (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
         mat-raised-button
         color="primary"
+        data-testid="user-picker-confirm"
         (click)="onConfirm()"
         [disabled]="!selectedUser || (data.showRoleSelector && !selectedRole)"
       >

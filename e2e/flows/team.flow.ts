@@ -7,6 +7,7 @@ import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog'
 import { RelatedTeamsDialog } from '../dialogs/related-teams.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
+import { UserPickerDialog } from '../dialogs/user-picker.dialog';
 
 export class TeamFlow {
   private teamsPage: TeamsPage;
@@ -87,12 +88,10 @@ export class TeamFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
   }
 
-  async addMember(_userId: string, _role: string) {
+  async addMember(email: string, role: string) {
     await this.teamMembersDialog.addButton().click();
-    // The add member flow opens a UserPickerDialog — interaction depends on
-    // that dialog's implementation. The UserPickerDialog should provide its own
-    // search + select interaction.
-    await this.page.waitForTimeout(500);
+    const picker = new UserPickerDialog(this.page);
+    await picker.pickUser(email, role);
   }
 
   async removeMember(index: number) {
@@ -105,9 +104,10 @@ export class TeamFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
   }
 
-  async addResponsibleParty(_userId: string, _role: string) {
+  async addResponsibleParty(email: string, role: string) {
     await this.responsiblePartiesDialog.addButton().click();
-    await this.page.waitForTimeout(500);
+    const picker = new UserPickerDialog(this.page);
+    await picker.pickUser(email, role);
   }
 
   async openRelatedTeams(name: string) {

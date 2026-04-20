@@ -27,7 +27,9 @@ test.describe.serial('Team Workflows', () => {
     teamFlow = new TeamFlow(page);
     teamsPage = new TeamsPage(page);
 
-    await new AuthFlow(page).loginAs('test-user');
+    // Team members / responsible-parties use the admin-only user search API,
+    // so run team CRUD as an administrator.
+    await new AuthFlow(page).loginAs('test-admin');
   });
 
   test.afterAll(async () => {
@@ -79,38 +81,37 @@ test.describe.serial('Team Workflows', () => {
     // Open members dialog
     await teamFlow.openMembers(updatedTeamName);
 
-    // Add member — triggers UserPickerDialog
-    await membersDialog.addButton().click();
-    // Wait for UserPickerDialog to appear, search for test-reviewer, select with role
-    await page.locator('mat-dialog-container').last().waitFor({ state: 'visible' });
-    // Interaction with UserPickerDialog depends on its implementation
-    // Select test-reviewer and engineering_lead role
-    await page.waitForTimeout(500);
+    // Pick a user in the UserPickerDialog — adds a row to the members table
+    await teamFlow.addMember('test-reviewer@tmi.local', 'engineering_lead');
 
     // Save members
     const responsePromise = page.waitForResponse(
-      resp => resp.url().includes('/teams/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH'
     );
     await membersDialog.save();
     await responsePromise;
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
 
-    // Reopen and verify member is present
+    // Reopen and verify the new member is present alongside the team creator
     await teamFlow.openMembers(updatedTeamName);
-    await expect(membersDialog.memberRows()).toHaveCount(1, { timeout: 5000 });
+    const reviewerRow = membersDialog
+      .memberRows()
+      .filter({ hasText: 'test-reviewer@tmi.local' });
+    await expect(reviewerRow).toHaveCount(1, { timeout: 5000 });
+    const initialCount = await membersDialog.memberRows().count();
 
-    // Remove member
-    await membersDialog.removeButton(0).click();
+    // Remove the reviewer row
+    await reviewerRow.getByTestId('team-members-remove-button').click();
     const removeResponse = page.waitForResponse(
-      resp => resp.url().includes('/teams/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH'
     );
     await membersDialog.save();
     await removeResponse;
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
 
-    // Verify removed
+    // Verify removed (one less than before)
     await teamFlow.openMembers(updatedTeamName);
-    await expect(membersDialog.memberRows()).toHaveCount(0, { timeout: 5000 });
+    await expect(membersDialog.memberRows()).toHaveCount(initialCount - 1, { timeout: 5000 });
     await membersDialog.cancel();
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   });
@@ -124,10 +125,8 @@ test.describe.serial('Team Workflows', () => {
     // Open responsible parties dialog
     await teamFlow.openResponsibleParties(updatedTeamName);
 
-    // Add responsible party — triggers UserPickerDialog
-    await rpDialog.addButton().click();
-    await page.locator('mat-dialog-container').last().waitFor({ state: 'visible' });
-    await page.waitForTimeout(500);
+    // Pick a user — the responsible-parties picker also requires a role
+    await teamFlow.addResponsibleParty('test-reviewer@tmi.local', 'engineering_lead');
 
     // Save
     const responsePromise = page.waitForResponse(
@@ -137,12 +136,14 @@ test.describe.serial('Team Workflows', () => {
     await responsePromise;
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
 
-    // Reopen and verify
+    // Reopen and verify the new party is present
     await teamFlow.openResponsibleParties(updatedTeamName);
-    await expect(rpDialog.partyRows().first()).toBeVisible({ timeout: 5000 });
+    const reviewerParty = rpDialog.partyRows().filter({ hasText: 'test-reviewer@tmi.local' });
+    await expect(reviewerParty).toHaveCount(1, { timeout: 5000 });
+    const initialCount = await rpDialog.partyRows().count();
 
-    // Remove
-    await rpDialog.removeButton(0).click();
+    // Remove just the reviewer row
+    await reviewerParty.getByTestId('responsible-parties-remove-button').click();
     const removeResponse = page.waitForResponse(
       resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH'
     );
@@ -152,7 +153,7 @@ test.describe.serial('Team Workflows', () => {
 
     // Verify removed
     await teamFlow.openResponsibleParties(updatedTeamName);
-    await expect(rpDialog.partyRows()).toHaveCount(0, { timeout: 5000 });
+    await expect(rpDialog.partyRows()).toHaveCount(initialCount - 1, { timeout: 5000 });
     await rpDialog.cancel();
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   });

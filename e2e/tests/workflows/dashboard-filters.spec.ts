@@ -1,19 +1,24 @@
 import { expect } from '@playwright/test';
-import { userTest } from '../../fixtures/auth-fixtures';
+import { reviewerTest } from '../../fixtures/auth-fixtures';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { DashboardFilterFlow } from '../../flows/dashboard-filter.flow';
 
 const SEEDED_TM = 'Seed TM - Full Fields';
 
-userTest.describe('Dashboard Filters', () => {
-  userTest.setTimeout(30000);
+// The seeded TM is owned by test-reviewer — use the reviewer fixture so the
+// dashboard shows it without permission workarounds.
+reviewerTest.describe('Dashboard Filters', () => {
+  reviewerTest.setTimeout(30000);
 
-  userTest('Name search', async ({ userPage }) => {
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
+  reviewerTest('Name search', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    const dashboard = new DashboardPage(reviewerPage);
+    await dashboard.waitForReady();
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    const dashboard = new DashboardPage(userPage);
-    const filterFlow = new DashboardFilterFlow(userPage);
+    // The reviewer dashboard auto-applies a securityReviewer filter; clear
+    // it so the seeded TM (which has no reviewer assigned) is visible.
+    await filterFlow.clearAllFilters();
 
     // Search for seeded TM
     await filterFlow.searchByName('Seed TM');
@@ -23,20 +28,20 @@ userTest.describe('Dashboard Filters', () => {
 
     // Clear search
     await dashboard.searchClear().click();
-    await userPage.waitForTimeout(500);
 
-    // Verify all TMs restored (at least seeded TM visible)
+    // Verify the seeded TM is restored
     await expect(
       dashboard.tmCard(SEEDED_TM).or(dashboard.tableRow(SEEDED_TM))
     ).toBeVisible({ timeout: 5000 });
   });
 
-  userTest('Status filter', async ({ userPage }) => {
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
+  reviewerTest('Status filter', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    const dashboard = new DashboardPage(reviewerPage);
+    await dashboard.waitForReady();
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    const dashboard = new DashboardPage(userPage);
-    const filterFlow = new DashboardFilterFlow(userPage);
+    await filterFlow.clearAllFilters();
 
     // Filter by active status
     await filterFlow.filterByStatus(['Active']);
@@ -53,36 +58,34 @@ userTest.describe('Dashboard Filters', () => {
     ).toBeVisible({ timeout: 5000 });
   });
 
-  userTest('Owner filter', async ({ userPage }) => {
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
+  reviewerTest('Owner filter', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    const dashboard = new DashboardPage(reviewerPage);
+    await dashboard.waitForReady();
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    const dashboard = new DashboardPage(userPage);
-    const filterFlow = new DashboardFilterFlow(userPage);
+    await filterFlow.clearAllFilters();
 
-    // Toggle advanced and filter by owner
+    // Filter by owner
     await filterFlow.filterByOwner('test-reviewer');
-    await userPage.waitForTimeout(1000);
 
-    // Verify seeded TM (owner: test-reviewer) is visible
     await expect(
       dashboard.tmCard(SEEDED_TM).or(dashboard.tableRow(SEEDED_TM))
     ).toBeVisible({ timeout: 5000 });
 
-    // Clear filters
     await filterFlow.clearAllFilters();
   });
 
-  userTest('Date range filter', async ({ userPage }) => {
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
+  reviewerTest('Date range filter', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    const dashboard = new DashboardPage(reviewerPage);
+    await dashboard.waitForReady();
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    const dashboard = new DashboardPage(userPage);
-    const filterFlow = new DashboardFilterFlow(userPage);
+    await filterFlow.clearAllFilters();
 
     // Set created-after to past date — should show seeded TM
     await filterFlow.filterByDateRange('created', '01/01/2020');
-    await userPage.waitForTimeout(1000);
     await expect(
       dashboard.tmCard(SEEDED_TM).or(dashboard.tableRow(SEEDED_TM))
     ).toBeVisible({ timeout: 5000 });
@@ -90,36 +93,29 @@ userTest.describe('Dashboard Filters', () => {
     // Clear and set created-after to future date — should show no results
     await filterFlow.clearAllFilters();
     await filterFlow.filterByDateRange('created', '01/01/2099');
-    await userPage.waitForTimeout(1000);
 
-    // Verify no matching TMs message or empty state
-    const noResults = userPage.locator('[transloco="dashboard.noMatchingThreatModels"]')
-      .or(userPage.locator('text=No threat models match'));
+    const noResults = reviewerPage.locator('[transloco="dashboard.noMatchingThreatModels"]')
+      .or(reviewerPage.locator('text=No threat models match'));
     await expect(noResults).toBeVisible({ timeout: 5000 });
 
-    // Clear
     await filterFlow.clearAllFilters();
   });
 
-  userTest('Pagination', async ({ userPage }) => {
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
+  reviewerTest('Pagination', async ({ reviewerPage }) => {
+    await reviewerPage.goto('/dashboard');
+    const dashboard = new DashboardPage(reviewerPage);
+    await dashboard.waitForReady();
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    const dashboard = new DashboardPage(userPage);
+    await filterFlow.clearAllFilters();
 
     // Switch to table view to see paginator more reliably
     await dashboard.viewToggle().click();
-    await userPage.waitForTimeout(300);
 
-    // The paginator may only show if there are more items than page size.
-    // With 1 seeded TM, paginator might be hidden. Verify it either
-    // renders or the table shows the seeded TM.
     const paginatorVisible = await dashboard.paginator().isVisible().catch(() => false);
     if (paginatorVisible) {
-      // Paginator is visible — verify it has expected controls
       await expect(dashboard.paginator()).toBeVisible();
     } else {
-      // Only 1 TM — paginator hidden, but table should show the TM
       await expect(dashboard.tableRow(SEEDED_TM)).toBeVisible({ timeout: 5000 });
     }
   });

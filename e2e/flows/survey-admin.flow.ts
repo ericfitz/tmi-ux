@@ -21,12 +21,13 @@ export class SurveyAdminFlow {
     await this.createSurveyDialog.fillVersion(version);
     const postPromise = this.page.waitForResponse(
       resp => resp.url().includes('/admin/surveys') && resp.request().method() === 'POST',
+      { timeout: 15000 },
     );
     await this.createSurveyDialog.submit();
-    await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
     await postPromise;
-    // Successful create redirects to the builder — wait for that navigation
-    await this.page.waitForURL(/\/admin\/surveys\/[a-f0-9-]+/, { timeout: 10000 });
+    // Successful create redirects to the builder — wait for that navigation,
+    // which also closes the dialog.
+    await this.page.waitForURL(/\/admin\/surveys\/[a-f0-9-]+/, { timeout: 15000 });
   }
 
   async openInBuilder(name: string) {

@@ -6,6 +6,7 @@ import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog'
 import { RelatedProjectsDialog } from '../dialogs/related-projects.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
+import { UserPickerDialog } from '../dialogs/user-picker.dialog';
 
 export class ProjectFlow {
   private projectsPage: ProjectsPage;
@@ -95,9 +96,10 @@ export class ProjectFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
   }
 
-  async addResponsibleParty(_userId: string, _role: string) {
+  async addResponsibleParty(email: string, role: string) {
     await this.responsiblePartiesDialog.addButton().click();
-    await this.page.waitForTimeout(500);
+    const picker = new UserPickerDialog(this.page);
+    await picker.pickUser(email, role);
   }
 
   async openRelatedProjects(name: string) {

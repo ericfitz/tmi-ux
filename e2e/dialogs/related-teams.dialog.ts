@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { angularFill } from '../helpers/angular-fill';
 
 export class RelatedTeamsDialog {
   private dialog: Locator;
@@ -24,13 +25,26 @@ export class RelatedTeamsDialog {
   }
 
   async searchTeam(name: string) {
-    await this.teamInput().fill(name);
-    await this.page.locator('mat-option').filter({ hasText: name }).click();
+    // Reactive form input — angularFill triggers the valueChanges stream that
+    // feeds the team autocomplete (the form is debounced by 300ms). The
+    // autocomplete panel only shows when the input has focus.
+    await this.teamInput().click();
+    await angularFill(this.teamInput(), name);
+    const option = this.page
+      .locator('mat-option:not(.mat-mdc-autocomplete-hidden mat-option)')
+      .filter({ hasText: name });
+    await option.first().waitFor({ state: 'visible', timeout: 10000 });
+    await option.first().click();
   }
 
   async selectRelationship(relationship: string) {
     await this.relationshipSelect().click();
-    await this.page.locator('mat-option').filter({ hasText: relationship }).click();
+    const panel = this.page.locator('.cdk-overlay-pane .mat-mdc-select-panel');
+    await panel.first().waitFor({ state: 'visible', timeout: 5000 });
+    const option = panel.locator('mat-option').filter({ hasText: relationship });
+    await option.first().waitFor({ state: 'visible', timeout: 5000 });
+    await option.first().click();
+    await panel.first().waitFor({ state: 'hidden', timeout: 5000 });
   }
 
   async confirmAdd() {

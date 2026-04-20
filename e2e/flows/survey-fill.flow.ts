@@ -11,10 +11,19 @@ export class SurveyFillFlow {
     this.surveyFill = new SurveyFillPage(page);
   }
 
-  async startSurvey(name: string) {
+  async startSurvey(name: string, confidential = false) {
     await this.surveyList.startButton(name).click();
+    // If the confidential-threat-models feature flag is on, a yes/no dialog
+    // appears before navigation. Answer it if present.
+    const confidentialNo = this.page.getByTestId('confidential-no-button');
+    if (await confidentialNo.isVisible({ timeout: 2000 }).catch(() => false)) {
+      if (confidential) {
+        await this.page.getByTestId('confidential-yes-button').click();
+      } else {
+        await confidentialNo.click();
+      }
+    }
     await this.page.waitForURL(/\/intake\/fill\//, { timeout: 10000 });
-    await this.page.waitForLoadState('networkidle');
   }
 
   async fillTextField(name: string, value: string) {
