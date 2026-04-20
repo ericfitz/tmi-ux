@@ -7,6 +7,7 @@ import { ExportDialog } from '../../dialogs/export.dialog';
 import { TmEditPage } from '../../pages/tm-edit.page';
 import { ThreatPage } from '../../pages/threat-page.page';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { DashboardFilterFlow } from '../../flows/dashboard-filter.flow';
 
 /**
  * Opens the details kebab menu (more_vert) in the TM edit page header.
@@ -199,9 +200,20 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
 
     await reviewerPage.goto('/dashboard');
     await reviewerDashboard.waitForReady();
-    await reviewerDashboard.clearFiltersButton().click();
-    // Narrow by the unique test name so pagination doesn't hide the card.
-    await reviewerDashboard.searchInput().fill(testName);
+    // Clear the auto-applied reviewer filter, then search by the unique
+    // test name so pagination doesn't hide the newly shared TM.
+    if (await reviewerDashboard.clearFiltersButton().isVisible().catch(() => false)) {
+      await reviewerDashboard.clearFiltersButton().click();
+    }
+    const filterFlow = new DashboardFilterFlow(reviewerPage);
+    await filterFlow.searchByName(testName);
+    // The reviewer's list may have been loaded before the permission PATCH
+    // replicated — reload if the card isn't visible yet.
+    if (!(await reviewerDashboard.tmCard(testName).isVisible({ timeout: 5000 }).catch(() => false))) {
+      await reviewerPage.reload();
+      await reviewerDashboard.waitForReady();
+      await filterFlow.searchByName(testName);
+    }
     await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
 
     await userPage.goto('/dashboard');
