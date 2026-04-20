@@ -157,13 +157,14 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     const userResponseFlow = new (await import('../../flows/survey-response.flow')).SurveyResponseFlow(userPage);
     await userResponseFlow.viewMyResponses();
 
-    // Find the response that needs revision
+    // Find the response that needs revision for *this* survey (stale rows
+    // from earlier runs may also be in "Needs Revision").
     const myResponses = new MyResponsesPage(userPage);
-    const revisionRow = myResponses.responseRows().filter({ hasText: /revision/i });
-    await expect(revisionRow).toBeVisible({ timeout: 10000 });
-
-    // Continue editing — click the edit button inside the revision row
-    // (the my-responses row does not always contain the survey name).
+    const revisionRow = myResponses
+      .responseRows()
+      .filter({ hasText: crossRoleSurveyName })
+      .filter({ hasText: /revision/i });
+    await expect(revisionRow.first()).toBeVisible({ timeout: 10000 });
     await revisionRow.first().getByTestId('my-responses-edit-button').click();
     await userPage.waitForURL(/\/intake\/fill\//, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');

@@ -37,41 +37,44 @@ export class SurveyFillFlow {
   }
 
   async selectRadioOption(name: string, value: string) {
-    await this.page
+    const item = this.page
       .locator(`.sd-question[data-name="${name}"] .sd-selectbase__item`)
-      .filter({ hasText: value })
-      .click();
+      .filter({ hasText: new RegExp(`^\\s*${value}\\s*$`) });
+    await item.first().scrollIntoViewIfNeeded();
+    await item.first().click({ force: true });
   }
 
   async selectCheckboxOptions(name: string, values: string[]) {
     for (const value of values) {
-      await this.page
+      const item = this.page
         .locator(`.sd-question[data-name="${name}"] .sd-selectbase__item`)
-        .filter({ hasText: value })
-        .click();
+        .filter({ hasText: new RegExp(`^\\s*${value}\\s*$`) });
+      await item.first().scrollIntoViewIfNeeded();
+      await item.first().click({ force: true });
     }
   }
 
   async selectDropdown(name: string, value: string) {
-    await this.page.locator(`.sd-question[data-name="${name}"] .sd-dropdown`).click();
-    await this.page
+    const trigger = this.page.locator(`.sd-question[data-name="${name}"] .sd-dropdown`);
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click();
+    const option = this.page
       .locator('.sv-popup__container .sv-list__item')
-      .filter({ hasText: value })
-      .click();
+      .filter({ hasText: new RegExp(`^\\s*${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`) });
+    await option.first().waitFor({ state: 'visible', timeout: 5000 });
+    await option.first().click({ force: true });
   }
 
   async toggleBoolean(name: string) {
-    // Click the "Yes" label inside the boolean toggle. The centered
-    // switch knob can intercept clicks and cause Playwright to flake.
-    const yesLabel = this.page
-      .locator(`.sd-question[data-name="${name}"] .sd-boolean__label--true`);
-    if (await yesLabel.count()) {
-      await yesLabel.click();
+    // Click the "Yes" text inside the boolean toggle. The centered switch
+    // knob sometimes intercepts clicks, so target the visible label.
+    const question = this.page.locator(`.sd-question[data-name="${name}"]`);
+    const yesText = question.getByText(/^Yes$/).first();
+    if (await yesText.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await yesText.click();
       return;
     }
-    await this.page
-      .locator(`.sd-question[data-name="${name}"] .sd-boolean__switch`)
-      .click({ force: true });
+    await question.locator('.sd-boolean__switch').click({ force: true });
   }
 
   async nextPage() {
