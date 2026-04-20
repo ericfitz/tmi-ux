@@ -50,12 +50,11 @@ test.describe.serial('DFD Editor Controls', () => {
   });
 
   test.afterAll(async () => {
-    // Clean up: navigate to dashboard and delete the TM
+    // Clean up via API — the reviewer's default dashboard filter
+    // may not show a just-created TM if they aren't also assigned as
+    // its security reviewer, so UI-driven cleanup is unreliable here.
     try {
-      await page.goto('/dashboard');
-      await dashboardPage.waitForReady();
-      await threatModelFlow.deleteFromDashboard(testTmName);
-      await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
+      await threatModelFlow.deleteByNameViaApi(testTmName);
     } catch {
       // Best effort cleanup
     }

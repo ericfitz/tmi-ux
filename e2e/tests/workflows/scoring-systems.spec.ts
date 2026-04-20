@@ -128,7 +128,10 @@ test.describe.serial('Scoring Systems', () => {
     await expect(threatPage.cweChips()).toHaveCount(1, { timeout: 5000 });
     await expect(threatPage.cweChips().first()).toContainText('CWE-79');
 
-    await threatFlow.addCweReference('352');
+    // Second CWE (search by partial number). Use a CWE ID that exists in
+    // the bundled src/assets/cwe/cwe-699.json view; "352" (CSRF) isn't in
+    // that view so pick "306" (Missing Authentication for Critical Function).
+    await threatFlow.addCweReference('306');
     await expect(threatPage.cweChips()).toHaveCount(2, { timeout: 5000 });
 
     // Verify we have two distinct CWE chips

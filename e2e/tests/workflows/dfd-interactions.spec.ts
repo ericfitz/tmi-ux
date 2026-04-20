@@ -55,10 +55,7 @@ test.describe.serial('DFD Editor Interactions', () => {
 
   test.afterAll(async () => {
     try {
-      await page.goto('/dashboard');
-      await dashboardPage.waitForReady();
-      await threatModelFlow.deleteFromDashboard(testTmName);
-      await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
+      await threatModelFlow.deleteByNameViaApi(testTmName);
     } catch {
       // Best effort cleanup
     }
