@@ -32,10 +32,13 @@ export class SurveyService {
   ) {}
 
   /**
-   * List all surveys with optional filtering (admin)
+   * List all surveys with optional filtering (admin).
+   * Default limit=100 (the server cap) so the admin table shows every
+   * template in small deployments without pagination; callers that need
+   * explicit paging can override via the filter.
    */
   public listAdmin(filter?: SurveyFilter): Observable<ListSurveysResponse> {
-    const params = buildHttpParams(filter);
+    const params = buildHttpParams({ limit: 100, ...filter });
     return this.apiService.get<ListSurveysResponse>('admin/surveys', params).pipe(
       tap(response => {
         this.surveysSubject$.next(response.surveys);

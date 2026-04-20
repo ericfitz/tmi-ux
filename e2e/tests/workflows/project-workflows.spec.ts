@@ -19,6 +19,7 @@ test.describe.serial('Project Workflows', () => {
 
   const testProjectName = `E2E Project ${Date.now()}`;
   const updatedProjectName = `${testProjectName} Updated`;
+  const relatedProjectName = `E2E Related Project ${Date.now()}`;
   // The server requires the team creator (or an administrator) to delete a
   // project. Create a dedicated test team owned by test-user so project CRUD
   // exercises the full lifecycle without requiring admin privileges.
@@ -49,9 +50,11 @@ test.describe.serial('Project Workflows', () => {
     try {
       await page.goto('/projects');
       await page.waitForLoadState('networkidle');
-      const hasProject = await projectsPage.projectRow(updatedProjectName).count();
-      if (hasProject > 0) {
-        await projectFlow.deleteProject(updatedProjectName);
+      for (const name of [updatedProjectName, relatedProjectName]) {
+        const count = await projectsPage.projectRow(name).count();
+        if (count > 0) {
+          await projectFlow.deleteProject(name);
+        }
       }
     } catch {
       /* best effort */
@@ -167,17 +170,17 @@ test.describe.serial('Project Workflows', () => {
     await page.goto('/projects');
     await page.waitForLoadState('networkidle');
 
+    // Create a second project owned by the current user to use as the target.
+    await projectFlow.createProject({ name: relatedProjectName, team: testTeamName });
+    await expect(projectsPage.projectRow(relatedProjectName)).toBeVisible({ timeout: 10000 });
+
     const relatedDialog = new RelatedProjectsDialog(page);
 
-    // Open related projects dialog
     await projectFlow.openRelatedProjects(updatedProjectName);
+    await projectFlow.addRelatedProject(relatedProjectName, 'related');
 
-    // Add Seed Project Two as related
-    await projectFlow.addRelatedProject('Seed Project Two', 'related');
-
-    // Save
     const responsePromise = page.waitForResponse(
-      resp => resp.url().includes('/projects/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/projects/') && resp.request().method() === 'PATCH'
     );
     await relatedDialog.save();
     await responsePromise;
@@ -186,12 +189,12 @@ test.describe.serial('Project Workflows', () => {
     // Reopen and verify
     await projectFlow.openRelatedProjects(updatedProjectName);
     await expect(relatedDialog.relatedRows().first()).toBeVisible({ timeout: 5000 });
-    await expect(relatedDialog.relatedRows().first()).toContainText('Seed Project Two');
+    await expect(relatedDialog.relatedRows().first()).toContainText(relatedProjectName);
 
     // Remove
     await relatedDialog.removeButton(0).click();
     const removeResponse = page.waitForResponse(
-      resp => resp.url().includes('/projects/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/projects/') && resp.request().method() === 'PATCH'
     );
     await relatedDialog.save();
     await removeResponse;
@@ -202,6 +205,13 @@ test.describe.serial('Project Workflows', () => {
     await expect(relatedDialog.relatedRows()).toHaveCount(0, { timeout: 5000 });
     await relatedDialog.cancel();
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
+
+    // Cleanup the extra project
+    try {
+      await projectFlow.deleteProject(relatedProjectName);
+    } catch {
+      /* best effort */
+    }
   });
 
   test('Project metadata', async () => {

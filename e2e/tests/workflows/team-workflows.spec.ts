@@ -19,6 +19,7 @@ test.describe.serial('Team Workflows', () => {
 
   const testTeamName = `E2E Team ${Date.now()}`;
   const updatedTeamName = `${testTeamName} Updated`;
+  const relatedTeamName = `E2E Related Team ${Date.now()}`;
 
   test.beforeAll(async ({ browser }, testInfo) => {
     testInfo.setTimeout(60000);
@@ -33,13 +34,14 @@ test.describe.serial('Team Workflows', () => {
   });
 
   test.afterAll(async () => {
-    // Best-effort cleanup: delete the test team if it still exists
     try {
       await page.goto('/teams');
       await page.waitForLoadState('networkidle');
-      const hasTeam = await teamsPage.teamRow(updatedTeamName).count();
-      if (hasTeam > 0) {
-        await teamFlow.deleteTeam(updatedTeamName);
+      for (const name of [updatedTeamName, relatedTeamName]) {
+        const count = await teamsPage.teamRow(name).count();
+        if (count > 0) {
+          await teamFlow.deleteTeam(name);
+        }
       }
     } catch {
       /* best effort */
@@ -162,17 +164,17 @@ test.describe.serial('Team Workflows', () => {
     await page.goto('/teams');
     await page.waitForLoadState('networkidle');
 
+    // Create a second team owned by the current user for the relationship.
+    await teamFlow.createTeam({ name: relatedTeamName, status: 'Active' });
+    await expect(teamsPage.teamRow(relatedTeamName)).toBeVisible({ timeout: 10000 });
+
     const relatedDialog = new RelatedTeamsDialog(page);
 
-    // Open related teams dialog
     await teamFlow.openRelatedTeams(updatedTeamName);
+    await teamFlow.addRelatedTeam(relatedTeamName, 'dependency');
 
-    // Add Seed Team Beta as dependency
-    await teamFlow.addRelatedTeam('Seed Team Beta', 'dependency');
-
-    // Save
     const responsePromise = page.waitForResponse(
-      resp => resp.url().includes('/teams/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH'
     );
     await relatedDialog.save();
     await responsePromise;
@@ -181,12 +183,12 @@ test.describe.serial('Team Workflows', () => {
     // Reopen and verify
     await teamFlow.openRelatedTeams(updatedTeamName);
     await expect(relatedDialog.relatedRows().first()).toBeVisible({ timeout: 5000 });
-    await expect(relatedDialog.relatedRows().first()).toContainText('Seed Team Beta');
+    await expect(relatedDialog.relatedRows().first()).toContainText(relatedTeamName);
 
     // Remove
     await relatedDialog.removeButton(0).click();
     const removeResponse = page.waitForResponse(
-      resp => resp.url().includes('/teams/') && resp.request().method() === 'PUT'
+      resp => resp.url().includes('/teams/') && resp.request().method() === 'PATCH'
     );
     await relatedDialog.save();
     await removeResponse;
@@ -197,6 +199,13 @@ test.describe.serial('Team Workflows', () => {
     await expect(relatedDialog.relatedRows()).toHaveCount(0, { timeout: 5000 });
     await relatedDialog.cancel();
     await page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
+
+    // Cleanup
+    try {
+      await teamFlow.deleteTeam(relatedTeamName);
+    } catch {
+      /* best effort */
+    }
   });
 
   test('Team metadata', async () => {

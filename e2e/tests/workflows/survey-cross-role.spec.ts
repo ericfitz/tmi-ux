@@ -84,9 +84,19 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     // Go back to list and ensure it's active
     await adminPage.goto('/admin/surveys');
     await adminPage.waitForLoadState('networkidle');
-    await expect(
-      new AdminSurveysPage(adminPage).surveyRow(crossRoleSurveyName)
-    ).toBeVisible({ timeout: 10000 });
+    const adminSurveysPage = new AdminSurveysPage(adminPage);
+    await expect(adminSurveysPage.surveyRow(crossRoleSurveyName)).toBeVisible({ timeout: 10000 });
+
+    // Surveys default to inactive after creation — toggle to active so the
+    // fill-user can see it on /intake.
+    const statusCell = adminSurveysPage.surveyRow(crossRoleSurveyName);
+    const statusText = (await statusCell.textContent()) ?? '';
+    if (!/active/i.test(statusText)) {
+      await adminFlow.toggleStatus(crossRoleSurveyName);
+      await expect(adminSurveysPage.surveyRow(crossRoleSurveyName)).toContainText(/active/i, {
+        timeout: 10000,
+      });
+    }
 
     // === USER: Fill and submit ===
     const userFillFlow = new SurveyFillFlow(userPage);

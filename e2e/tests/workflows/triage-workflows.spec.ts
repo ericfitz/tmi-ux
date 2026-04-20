@@ -6,6 +6,66 @@ import { ReviewerAssignmentFlow } from '../../flows/reviewer-assignment.flow';
 import { TriagePage } from '../../pages/triage.page';
 import { TriageDetailPage } from '../../pages/triage-detail.page';
 import { ReviewerAssignmentPage } from '../../pages/reviewer-assignment.page';
+import { testConfig } from '../../config/test.config';
+
+/**
+ * Create and submit a survey response against an existing active survey so
+ * the triage queue has something to display. Uses the authenticated page's
+ * cookies via fetch — idempotent enough: running twice just adds another
+ * submitted response.
+ */
+async function ensureSubmittedResponse(page: Page): Promise<void> {
+  const apiUrl = testConfig.apiUrl;
+  const result = await page.evaluate(async (api: string) => {
+    const listRes = await fetch(`${api}/intake/surveys?limit=100`, {
+      credentials: 'include',
+    });
+    if (!listRes.ok) return { ok: false, step: 'list', status: listRes.status };
+    const list = await listRes.json();
+    const survey = (list.surveys || []).find(
+      (s: { name: string }) => s.name === 'Simple Workflow Survey',
+    );
+    if (!survey) return { ok: false, step: 'find' };
+
+    const createRes = await fetch(`${api}/intake/survey_responses`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ survey_id: survey.id, is_confidential: false }),
+    });
+    if (!createRes.ok) return { ok: false, step: 'create', status: createRes.status };
+    const draft = await createRes.json();
+
+    const answersRes = await fetch(`${api}/intake/survey_responses/${draft.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        answers: {
+          system_name: 'E2E Triage Seed',
+          review_reason: 'Automated triage test seed',
+          urgency: 'medium',
+        },
+        survey_id: survey.id,
+      }),
+    });
+    if (!answersRes.ok) return { ok: false, step: 'answers', status: answersRes.status };
+
+    const submitRes = await fetch(`${api}/intake/survey_responses/${draft.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json-patch+json' },
+      credentials: 'include',
+      body: JSON.stringify([{ op: 'replace', path: '/status', value: 'submitted' }]),
+    });
+    if (!submitRes.ok) return { ok: false, step: 'submit', status: submitRes.status };
+    return { ok: true };
+  }, apiUrl);
+
+  if (!result.ok) {
+    // eslint-disable-next-line no-console
+    console.warn('[triage beforeAll] failed to seed submitted response', result);
+  }
+}
 
 test.describe.serial('Triage Workflows', () => {
   test.setTimeout(60000);
@@ -31,6 +91,11 @@ test.describe.serial('Triage Workflows', () => {
     assignmentPage = new ReviewerAssignmentPage(page);
 
     await new AuthFlow(page).loginAs('test-reviewer');
+
+    // Ensure the submitted response is created from a logged-in origin so
+    // same-site cookies are available to fetch.
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+    await ensureSubmittedResponse(page);
   });
 
   test.afterAll(async () => {
@@ -68,7 +133,9 @@ test.describe.serial('Triage Workflows', () => {
     await page.waitForLoadState('networkidle');
 
     // Click view on the seeded response
-    await triagePage.viewButton('E2E Seed System').click();
+    // Triage rows identify the submitter but not the system_name — click the
+    // first row's view button to inspect the seeded response.
+    await triagePage.responseRows().first().getByTestId('triage-view-button').click();
     await page.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
 
@@ -94,7 +161,9 @@ test.describe.serial('Triage Workflows', () => {
     if (!page.url().includes('/triage/')) {
       await page.goto('/triage');
       await page.waitForLoadState('networkidle');
-      await triagePage.viewButton('E2E Seed System').click();
+      // Triage rows identify the submitter but not the system_name — click the
+    // first row's view button to inspect the seeded response.
+    await triagePage.responseRows().first().getByTestId('triage-view-button').click();
       await page.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
       await page.waitForLoadState('networkidle');
     }

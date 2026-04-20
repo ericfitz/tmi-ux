@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { angularFill } from '../helpers/angular-fill';
 
 export class RelatedTeamsDialog {
   private dialog: Locator;
@@ -25,13 +24,14 @@ export class RelatedTeamsDialog {
   }
 
   async searchTeam(name: string) {
-    // Reactive form input — angularFill triggers the valueChanges stream that
-    // feeds the team autocomplete (the form is debounced by 300ms). The
-    // autocomplete panel only shows when the input has focus.
+    // Reactive form — type keystrokes so the valueChanges stream fires for
+    // each character (the form uses a 300ms debounce). Autocomplete panel
+    // opens on focus.
     await this.teamInput().click();
-    await angularFill(this.teamInput(), name);
+    await this.teamInput().fill('');
+    await this.teamInput().pressSequentially(name, { delay: 30 });
     const option = this.page
-      .locator('mat-option:not(.mat-mdc-autocomplete-hidden mat-option)')
+      .locator('.cdk-overlay-pane .mat-mdc-autocomplete-panel mat-option')
       .filter({ hasText: name });
     await option.first().waitFor({ state: 'visible', timeout: 10000 });
     await option.first().click();

@@ -126,17 +126,23 @@ test.describe.serial('Survey Admin Workflows', () => {
   });
 
   test('delete survey', async () => {
-    // Delete the test survey we created (it was archived)
-    // First, adjust filters to show archived surveys
     await page.goto('/admin/surveys');
     await page.waitForLoadState('networkidle');
 
-    // Delete the cloned survey (most recently created)
-    // Find a survey with matching name and delete it
+    // The previous test archived testSurveyName — select the "archived"
+    // status filter so the row is visible before we delete it.
+    await adminSurveys.statusFilter().click();
+    await page.locator('.cdk-overlay-pane mat-option').filter({ hasText: /archived/i }).click();
+    // Close the multi-select overlay and wait for it to fully hide so the
+    // subsequent row click isn't intercepted by a stale backdrop.
+    await page.keyboard.press('Escape');
+    await page.locator('.cdk-overlay-backdrop').waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+
+    await expect(adminSurveys.surveyRow(testSurveyName)).toBeVisible({ timeout: 10000 });
     const initialCount = await adminSurveys.surveyRows().count();
-    // Use the most recent clone or test survey
+
     await adminFlow.deleteSurvey(testSurveyName);
-    // Verify count decreased
+
     await expect(adminSurveys.surveyRows()).toHaveCount(initialCount - 1, {
       timeout: 10000,
     });

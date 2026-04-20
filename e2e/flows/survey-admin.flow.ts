@@ -60,7 +60,10 @@ export class SurveyAdminFlow {
 
   async deleteSurvey(name: string) {
     await this.adminSurveysPage.moreButton(name).click();
-    await this.adminSurveysPage.deleteItem().dispatchEvent('click');
+    // Wait for the menu overlay to render before clicking the item.
+    const deleteItem = this.adminSurveysPage.deleteItem();
+    await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
+    await deleteItem.click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
     await this.deleteConfirmDialog.confirmDeletion();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
