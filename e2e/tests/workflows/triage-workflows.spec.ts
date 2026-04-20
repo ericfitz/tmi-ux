@@ -229,7 +229,6 @@ test.describe.serial('Triage Workflows', () => {
       return;
     }
 
-    const rows = assignmentPage.tmRows();
     const rowCount = await rows.count();
     if (rowCount > 0) {
       const firstRowName = await rows.first().locator('.tm-name').textContent();
