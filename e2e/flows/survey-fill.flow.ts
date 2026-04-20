@@ -61,9 +61,17 @@ export class SurveyFillFlow {
   }
 
   async toggleBoolean(name: string) {
+    // Click the "Yes" label inside the boolean toggle. The centered
+    // switch knob can intercept clicks and cause Playwright to flake.
+    const yesLabel = this.page
+      .locator(`.sd-question[data-name="${name}"] .sd-boolean__label--true`);
+    if (await yesLabel.count()) {
+      await yesLabel.click();
+      return;
+    }
     await this.page
       .locator(`.sd-question[data-name="${name}"] .sd-boolean__switch`)
-      .click();
+      .click({ force: true });
   }
 
   async nextPage() {

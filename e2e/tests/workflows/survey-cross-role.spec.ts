@@ -159,12 +159,12 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
 
     // Find the response that needs revision
     const myResponses = new MyResponsesPage(userPage);
-    await expect(
-      myResponses.responseRows().filter({ hasText: /revision/i })
-    ).toBeVisible({ timeout: 10000 });
+    const revisionRow = myResponses.responseRows().filter({ hasText: /revision/i });
+    await expect(revisionRow).toBeVisible({ timeout: 10000 });
 
-    // Continue editing
-    await myResponses.editButton(crossRoleSurveyName).click();
+    // Continue editing — click the edit button inside the revision row
+    // (the my-responses row does not always contain the survey name).
+    await revisionRow.first().getByTestId('my-responses-edit-button').click();
     await userPage.waitForURL(/\/intake\/fill\//, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');
 

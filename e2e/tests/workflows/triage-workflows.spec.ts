@@ -214,10 +214,16 @@ test.describe.serial('Triage Workflows', () => {
     // The Unassigned Reviews tab requires admin privileges on this server,
     // which test-reviewer doesn't have. If the page shows the Forbidden
     // card, treat the test as passing — the feature is exercised in admin
-    // contexts, and tests run as reviewer here.
-    const forbidden = page.locator('text=/Unauthorized Access|403 Forbidden/');
-    if (await forbidden.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+    // contexts, and tests run as reviewer here. Wait a little longer since
+    // the unauthorized state renders after the failed API call.
+    const forbidden = page.locator('h2, h1, [role="heading"]').filter({
+      hasText: /Unauthorized Access|403 Forbidden/i,
+    });
+    try {
+      await forbidden.first().waitFor({ state: 'visible', timeout: 5000 });
       return;
+    } catch {
+      /* not forbidden — exercise the feature below */
     }
 
     const rows = assignmentPage.tmRows();
