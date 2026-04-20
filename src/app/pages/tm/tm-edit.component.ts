@@ -2400,35 +2400,44 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const dialogData: MetadataDialogData = {
-      metadata: this.threatModel.metadata || [],
-      isReadOnly: !this.canEdit, // You can add logic here to determine if user has edit permissions
-      objectType: 'ThreatModel',
-      objectName: `${this.transloco.translate('common.objectTypes.threatModel')}: ${this.threatModel.name} (${this.threatModel.id})`,
-    };
-
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
+    // Fetch fresh metadata from the API so the dialog reflects server state
+    // (the cached this.threatModel.metadata can lag a prior save's response).
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateThreatModelMetadata(this.threatModel.id, result)
-              .subscribe(updatedMetadata => {
-                if (updatedMetadata && this.threatModel) {
-                  this.threatModel.metadata = updatedMetadata;
-                  this.threatModel.modified_at = new Date().toISOString();
-                }
-              }),
-          );
-        }
+      this.threatModelService.getThreatModelMetadata(this.threatModel.id).subscribe(metadata => {
+        if (!this.threatModel) return;
+        this.threatModel.metadata = metadata || [];
+
+        const dialogData: MetadataDialogData = {
+          metadata: this.threatModel.metadata,
+          isReadOnly: !this.canEdit,
+          objectType: 'ThreatModel',
+          objectName: `${this.transloco.translate('common.objectTypes.threatModel')}: ${this.threatModel.name} (${this.threatModel.id})`,
+        };
+
+        const dialogRef = this.dialog.open(MetadataDialogComponent, {
+          width: '90vw',
+          maxWidth: '800px',
+          minWidth: '500px',
+          maxHeight: '80vh',
+          data: dialogData,
+        });
+
+        this._subscriptions.add(
+          dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+            if (result && this.threatModel) {
+              this._subscriptions.add(
+                this.threatModelService
+                  .updateThreatModelMetadata(this.threatModel.id, result)
+                  .subscribe(updatedMetadata => {
+                    if (updatedMetadata && this.threatModel) {
+                      this.threatModel.metadata = updatedMetadata;
+                      this.threatModel.modified_at = new Date().toISOString();
+                    }
+                  }),
+              );
+            }
+          }),
+        );
       }),
     );
   }

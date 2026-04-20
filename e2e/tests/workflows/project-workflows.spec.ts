@@ -1,9 +1,9 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ProjectFlow } from '../../flows/project.flow';
+import { TeamFlow } from '../../flows/team.flow';
 import { MetadataFlow } from '../../flows/metadata.flow';
 import { ProjectsPage } from '../../pages/projects.page';
-import { EditProjectDialog } from '../../dialogs/edit-project.dialog';
 import { ResponsiblePartiesDialog } from '../../dialogs/responsible-parties.dialog';
 import { RelatedProjectsDialog } from '../../dialogs/related-projects.dialog';
 import { MetadataDialog } from '../../dialogs/metadata.dialog';
@@ -15,9 +15,15 @@ test.describe.serial('Project Workflows', () => {
   let page: Page;
   let projectFlow: ProjectFlow;
   let projectsPage: ProjectsPage;
+  let teamFlow: TeamFlow;
 
   const testProjectName = `E2E Project ${Date.now()}`;
   const updatedProjectName = `${testProjectName} Updated`;
+  // The server requires the team creator (or an administrator) to delete a
+  // project. Create a dedicated test team owned by test-user so project CRUD
+  // exercises the full lifecycle without requiring admin privileges.
+  const testTeamName = `E2E Project Team ${Date.now()}`;
+  const altTeamName = `E2E Project Team Alt ${Date.now()}`;
 
   test.beforeAll(async ({ browser }, testInfo) => {
     testInfo.setTimeout(60000);
@@ -25,8 +31,15 @@ test.describe.serial('Project Workflows', () => {
     page = await context.newPage();
     projectFlow = new ProjectFlow(page);
     projectsPage = new ProjectsPage(page);
+    teamFlow = new TeamFlow(page);
 
     await new AuthFlow(page).loginAs('test-user');
+
+    // Create two teams owned by test-user so the full project lifecycle runs.
+    await page.goto('/teams');
+    await page.waitForLoadState('networkidle');
+    await teamFlow.createTeam({ name: testTeamName });
+    await teamFlow.createTeam({ name: altTeamName });
   });
 
   test.afterAll(async () => {
@@ -40,6 +53,14 @@ test.describe.serial('Project Workflows', () => {
     } catch {
       /* best effort */
     }
+    try {
+      await page.goto('/teams');
+      await page.waitForLoadState('networkidle');
+      await teamFlow.deleteTeam(testTeamName);
+      await teamFlow.deleteTeam(altTeamName);
+    } catch {
+      /* best effort */
+    }
     await context.close();
   });
 
@@ -50,7 +71,7 @@ test.describe.serial('Project Workflows', () => {
     // Create
     await projectFlow.createProject({
       name: testProjectName,
-      team: 'Seed Team Alpha',
+      team: testTeamName,
       status: 'active',
     });
     await expect(projectsPage.projectRow(testProjectName)).toBeVisible({ timeout: 10000 });
@@ -63,14 +84,14 @@ test.describe.serial('Project Workflows', () => {
     await expect(projectsPage.projectRow(updatedProjectName)).toBeVisible({ timeout: 10000 });
     await expect(projectsPage.projectRow(testProjectName)).toHaveCount(0, { timeout: 5000 });
 
-    // Delete
+    // Delete (requires team-creator; test-user owns testTeamName)
     await projectFlow.deleteProject(updatedProjectName);
     await expect(projectsPage.projectRow(updatedProjectName)).toHaveCount(0, { timeout: 10000 });
 
     // Re-create for subsequent tests
     await projectFlow.createProject({
       name: updatedProjectName,
-      team: 'Seed Team Alpha',
+      team: testTeamName,
     });
     await expect(projectsPage.projectRow(updatedProjectName)).toBeVisible({ timeout: 10000 });
   });
@@ -79,21 +100,20 @@ test.describe.serial('Project Workflows', () => {
     await page.goto('/projects');
     await page.waitForLoadState('networkidle');
 
-    // Verify project shows Seed Team Alpha in the team column
+    // Verify project shows the primary team in the team column
     const projectRow = projectsPage.projectRow(updatedProjectName);
-    await expect(projectRow).toContainText('Seed Team Alpha');
+    await expect(projectRow).toContainText(testTeamName);
 
-    // Edit to change team to Seed Team Beta
-    await projectFlow.editProject(updatedProjectName, { team: 'Seed Team Beta' });
+    // Edit to change team to the alt team
+    await projectFlow.editProject(updatedProjectName, { team: altTeamName });
 
-    // Verify team column shows Beta
-    await expect(projectsPage.projectRow(updatedProjectName)).toContainText('Seed Team Beta', {
+    await expect(projectsPage.projectRow(updatedProjectName)).toContainText(altTeamName, {
       timeout: 10000,
     });
 
-    // Change back to Alpha for other tests
-    await projectFlow.editProject(updatedProjectName, { team: 'Seed Team Alpha' });
-    await expect(projectsPage.projectRow(updatedProjectName)).toContainText('Seed Team Alpha', {
+    // Change back to primary for other tests
+    await projectFlow.editProject(updatedProjectName, { team: testTeamName });
+    await expect(projectsPage.projectRow(updatedProjectName)).toContainText(testTeamName, {
       timeout: 10000,
     });
   });
