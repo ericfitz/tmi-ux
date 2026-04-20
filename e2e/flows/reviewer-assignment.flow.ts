@@ -28,14 +28,16 @@ export class ReviewerAssignmentFlow {
     await this.page.locator('mat-option').filter({ hasText: reviewerName }).click();
     await this.assignment.assignButton(tmName).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300
+      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300,
+      { timeout: 10000 },
     );
   }
 
   async assignToMe(tmName: string) {
     await this.assignment.assignMeButton(tmName).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300
+      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300,
+      { timeout: 10000 },
     );
   }
 

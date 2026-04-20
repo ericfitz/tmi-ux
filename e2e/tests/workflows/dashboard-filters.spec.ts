@@ -103,7 +103,7 @@ reviewerTest.describe('Dashboard Filters', () => {
     await dashboard.waitForReady();
     const filterFlow = new DashboardFilterFlow(reviewerPage);
 
-    await filterFlow.clearAllFilters();
+    await filterFlow.searchByName(SEEDED_TM);
 
     // Switch to table view to see paginator more reliably
     await dashboard.viewToggle().click();
