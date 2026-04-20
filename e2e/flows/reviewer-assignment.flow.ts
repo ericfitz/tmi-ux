@@ -12,7 +12,9 @@ export class ReviewerAssignmentFlow {
   }
 
   async switchToAssignmentTab() {
-    await this.triagePage.assignmentTab().click();
+    // mat-tab applies the testid to the content wrapper, not the tab label.
+    // Click the label by its role/name instead.
+    await this.page.getByRole('tab', { name: /Unassigned Reviews/i }).click();
     await this.page.waitForTimeout(300);
   }
 
@@ -26,14 +28,14 @@ export class ReviewerAssignmentFlow {
     await this.page.locator('mat-option').filter({ hasText: reviewerName }).click();
     await this.assignment.assignButton(tmName).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat-models/') && resp.status() < 300
+      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300
     );
   }
 
   async assignToMe(tmName: string) {
     await this.assignment.assignMeButton(tmName).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat-models/') && resp.status() < 300
+      (resp) => resp.url().includes('/threat_models/') && resp.status() < 300
     );
   }
 

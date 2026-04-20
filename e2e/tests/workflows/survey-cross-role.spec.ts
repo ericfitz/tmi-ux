@@ -105,10 +105,15 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     await userPage.goto('/intake');
     await userPage.waitForLoadState('networkidle');
 
-    // Wait for the new survey to appear (may need a short wait for propagation)
-    await expect(
-      new SurveyListPage(userPage).surveyCard(crossRoleSurveyName)
-    ).toBeVisible({ timeout: 15000 });
+    // The active-surveys list may be cached on the user session; reload once
+    // to pick up the freshly-activated template if it isn't visible yet.
+    const userSurveyList = new SurveyListPage(userPage);
+    const newSurveyCard = userSurveyList.surveyCard(crossRoleSurveyName);
+    if (!(await newSurveyCard.isVisible({ timeout: 5000 }).catch(() => false))) {
+      await userPage.reload();
+      await userPage.waitForLoadState('networkidle');
+    }
+    await expect(newSurveyCard).toBeVisible({ timeout: 15000 });
 
     await userFillFlow.startSurvey(crossRoleSurveyName);
     await userFillFlow.fillTextField('system_name', systemName);
@@ -127,13 +132,14 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     await reviewerPage.goto('/triage');
     await reviewerPage.waitForLoadState('networkidle');
 
-    // Find and open the submitted response
-    await reviewerTriageFlow.searchByName(systemName);
+    // The triage row doesn't display the response's system_name. Use the
+    // template-name filter (the cross-role survey name uniquely identifies
+    // this submission) so we open the right response.
+    await reviewerTriageFlow.filterByTemplate(crossRoleSurveyName);
     await expect(reviewerTriagePage.responseRows().first()).toBeVisible({
       timeout: 15000,
     });
-
-    await reviewerTriagePage.viewButton(systemName).click();
+    await reviewerTriagePage.responseRows().first().getByTestId('triage-view-button').click();
     await reviewerPage.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
     await reviewerPage.waitForLoadState('networkidle');
 
@@ -178,12 +184,11 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
     // === REVIEWER: Approve ===
     await reviewerPage.goto('/triage');
     await reviewerPage.waitForLoadState('networkidle');
-    await reviewerTriageFlow.searchByName(systemName);
+    await reviewerTriageFlow.filterByTemplate(crossRoleSurveyName);
     await expect(reviewerTriagePage.responseRows().first()).toBeVisible({
       timeout: 15000,
     });
-
-    await reviewerTriagePage.viewButton(systemName).click();
+    await reviewerTriagePage.responseRows().first().getByTestId('triage-view-button').click();
     await reviewerPage.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
     await reviewerPage.waitForLoadState('networkidle');
 

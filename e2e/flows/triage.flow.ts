@@ -43,7 +43,7 @@ export class TriageFlow {
   async approveResponse(name: string) {
     await this.triagePage.approveButton(name).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/responses/') && resp.status() < 300
+      (resp) => resp.url().includes('/survey_responses/') && resp.status() < 300
     );
   }
 
@@ -58,7 +58,7 @@ export class TriageFlow {
   async createThreatModel(name: string) {
     await this.triagePage.createTmButton(name).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat-models') && resp.status() < 300
+      (resp) => resp.url().includes('/threat_models') && resp.status() < 300
     );
   }
 }

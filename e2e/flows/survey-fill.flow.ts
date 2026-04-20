@@ -79,7 +79,7 @@ export class SurveyFillFlow {
   async completeSurvey() {
     await this.page.locator('.sd-navigation__complete-btn').click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/responses') && resp.status() < 300
+      (resp) => resp.url().includes('/survey_responses') && resp.status() < 300
     );
   }
 
@@ -90,7 +90,7 @@ export class SurveyFillFlow {
   async saveAndExit() {
     await this.surveyFill.saveExitButton().click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/responses') && resp.status() < 300
+      (resp) => resp.url().includes('/survey_responses') && resp.status() < 300
     );
   }
 }
