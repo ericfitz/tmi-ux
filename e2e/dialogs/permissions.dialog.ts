@@ -67,7 +67,15 @@ export class PermissionsDialog {
 
     await this.openSelectAndChoose(this.typeSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`));
 
+    // Fill the subject and blur so [(ngModel)] commits the value to the
+    // backing row. The autocomplete panel may also be open; Escape closes
+    // it so the following role select click isn't intercepted.
     await angularFill(this.subjectInput(lastIndex), subject);
+    await this.subjectInput(lastIndex).evaluate((el: HTMLInputElement) => {
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('blur', { bubbles: true }));
+    });
+    await this.page.keyboard.press('Escape').catch(() => {});
 
     await this.openSelectAndChoose(this.roleSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`));
   }
