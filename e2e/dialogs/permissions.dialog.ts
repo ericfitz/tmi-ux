@@ -67,16 +67,14 @@ export class PermissionsDialog {
 
     await this.openSelectAndChoose(this.typeSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`));
 
-    // Fill the subject and dispatch change+blur so [(ngModel)] commits the
-    // value to the backing row before we move on to the role select. The
-    // full-suite run surfaced cases where the model hadn't caught up with
-    // the input event when save() fired, producing a server validation
-    // error about missing provider_id/email.
-    await angularFill(this.subjectInput(lastIndex), subject);
-    await this.subjectInput(lastIndex).evaluate((el: HTMLInputElement) => {
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-      el.dispatchEvent(new Event('blur', { bubbles: true }));
-    });
+    // Fill the subject via Playwright's fill() (synthesizes keystrokes and
+    // pairs well with [(ngModel)]). The prior angularFill approach using
+    // a native value setter occasionally left the bound property stale in
+    // the full suite run, producing a server validation error about
+    // missing provider_id/email. Follow with a Tab to force blur.
+    await this.subjectInput(lastIndex).click();
+    await this.subjectInput(lastIndex).fill(subject);
+    await this.subjectInput(lastIndex).press('Tab');
 
     await this.openSelectAndChoose(this.roleSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`));
   }
