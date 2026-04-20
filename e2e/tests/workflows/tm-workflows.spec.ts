@@ -200,21 +200,27 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
 
     await reviewerPage.goto('/dashboard');
     await reviewerDashboard.waitForReady();
-    // Clear the auto-applied reviewer filter, then search by the unique
-    // test name so pagination doesn't hide the newly shared TM.
     if (await reviewerDashboard.clearFiltersButton().isVisible().catch(() => false)) {
       await reviewerDashboard.clearFiltersButton().click();
     }
     const filterFlow = new DashboardFilterFlow(reviewerPage);
     await filterFlow.searchByName(testName);
-    // The reviewer's list may have been loaded before the permission PATCH
-    // replicated — reload if the card isn't visible yet.
-    if (!(await reviewerDashboard.tmCard(testName).isVisible({ timeout: 5000 }).catch(() => false))) {
+
+    // Permission replication to the reviewer's view can lag briefly; poll
+    // with reloads for up to ~30 seconds.
+    let visible = false;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      if (await reviewerDashboard.tmCard(testName).isVisible({ timeout: 5000 }).catch(() => false)) {
+        visible = true;
+        break;
+      }
       await reviewerPage.reload();
       await reviewerDashboard.waitForReady();
       await filterFlow.searchByName(testName);
     }
-    await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
+    if (!visible) {
+      await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
+    }
 
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
