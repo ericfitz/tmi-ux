@@ -37,20 +37,32 @@ export class SurveyFillFlow {
   }
 
   async selectRadioOption(name: string, value: string) {
+    // Click the underlying input directly so SurveyJS registers the change
+    // even if label elements intercept clicks.
     const item = this.page
       .locator(`.sd-question[data-name="${name}"] .sd-selectbase__item`)
-      .filter({ hasText: new RegExp(`^\\s*${value}\\s*$`) });
+      .filter({ hasText: value });
     await item.first().scrollIntoViewIfNeeded();
-    await item.first().click({ force: true });
+    const input = item.first().locator('input[type="radio"]');
+    if (await input.count()) {
+      await input.check({ force: true });
+    } else {
+      await item.first().click({ force: true });
+    }
   }
 
   async selectCheckboxOptions(name: string, values: string[]) {
     for (const value of values) {
       const item = this.page
         .locator(`.sd-question[data-name="${name}"] .sd-selectbase__item`)
-        .filter({ hasText: new RegExp(`^\\s*${value}\\s*$`) });
+        .filter({ hasText: value });
       await item.first().scrollIntoViewIfNeeded();
-      await item.first().click({ force: true });
+      const input = item.first().locator('input[type="checkbox"]');
+      if (await input.count()) {
+        await input.check({ force: true });
+      } else {
+        await item.first().click({ force: true });
+      }
     }
   }
 

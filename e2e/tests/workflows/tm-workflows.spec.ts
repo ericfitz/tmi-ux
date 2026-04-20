@@ -200,6 +200,8 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await reviewerPage.goto('/dashboard');
     await reviewerDashboard.waitForReady();
     await reviewerDashboard.clearFiltersButton().click();
+    // Narrow by the unique test name so pagination doesn't hide the card.
+    await reviewerDashboard.searchInput().fill(testName);
     await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
 
     await userPage.goto('/dashboard');
