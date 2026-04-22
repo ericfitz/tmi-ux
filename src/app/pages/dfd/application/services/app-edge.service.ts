@@ -161,8 +161,8 @@ export class AppEdgeService {
       vertices: edge.getVertices?.() || [],
       zIndex: edge.getZIndex(),
       data: edgeData ? { ...edgeData, _metadata: edgeData._metadata || [] } : { _metadata: [] },
-      connector: DFD_STYLING.EDGES.CONNECTOR as any,
-      router: DFD_STYLING.EDGES.ROUTER as any,
+      connector: DFD_STYLING.EDGES.CONNECTOR,
+      router: DFD_STYLING.EDGES.ROUTER,
     });
 
     // Create a CreateEdgeOperation to record in history
@@ -318,8 +318,8 @@ export class AppEdgeService {
             sourcePortId: targetPortId,
             targetPortId: sourcePortId,
             vertices: inverseVertices,
-            connector: DFD_STYLING.EDGES.CONNECTOR as any,
-            router: DFD_STYLING.EDGES.ROUTER as any,
+            connector: DFD_STYLING.EDGES.CONNECTOR,
+            router: DFD_STYLING.EDGES.ROUTER,
             customData: originalMetadata, // Copy metadata from original edge
           });
 
@@ -535,8 +535,8 @@ export class AppEdgeService {
         sourcePortId: sourcePortId || 'right',
         targetPortId: targetPortId || 'left',
         label: label || this.getLocalizedFlowLabel(),
-        connector: DFD_STYLING.EDGES.CONNECTOR as any,
-        router: DFD_STYLING.EDGES.ROUTER as any,
+        connector: DFD_STYLING.EDGES.CONNECTOR,
+        router: DFD_STYLING.EDGES.ROUTER,
       });
 
       // Delegate to InfraEdgeService for X6 operations (proper layered architecture)

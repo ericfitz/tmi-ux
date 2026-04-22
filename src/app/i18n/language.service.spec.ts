@@ -47,7 +47,7 @@ describe('LanguageService', () => {
       }),
       key: vi.fn(),
       length: 0,
-    } as Storage;
+    };
 
     // Mock window.location
     delete (window as { location?: Location }).location;
@@ -55,7 +55,7 @@ describe('LanguageService', () => {
       ...originalLocation,
       search: '',
       href: 'http://localhost:4200',
-    } as Location;
+    };
 
     // Mock window.navigator
     Object.defineProperty(window, 'navigator', {

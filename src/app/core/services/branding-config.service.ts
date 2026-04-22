@@ -163,7 +163,7 @@ export class BrandingConfigService {
         const pngData = await this.fetchAndValidatePng(logoUrl);
         if (pngData) {
           this.logoPngBytes = pngData;
-          const blob = new Blob([new Uint8Array(pngData) as BlobPart], { type: 'image/png' });
+          const blob = new Blob([new Uint8Array(pngData)], { type: 'image/png' });
           this.logoImageUrl.next(URL.createObjectURL(blob));
           return;
         }

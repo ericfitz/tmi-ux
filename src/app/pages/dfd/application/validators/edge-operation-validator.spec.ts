@@ -9,7 +9,6 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeOperationValidator } from './edge-operation-validator';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
@@ -83,7 +82,7 @@ describe('EdgeOperationValidator', () => {
 
   beforeEach(() => {
     loggerService = createTypedMockLoggerService();
-    validator = new EdgeOperationValidator(loggerService as unknown as LoggerService);
+    validator = new EdgeOperationValidator(loggerService);
   });
 
   describe('canValidate', () => {

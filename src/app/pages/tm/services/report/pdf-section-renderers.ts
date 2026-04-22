@@ -19,7 +19,7 @@ import {
   Note,
   Threat,
 } from '../../models/threat-model.model';
-import { getFieldLabel, FieldType } from '../../../../shared/utils/field-value-helpers';
+import { getFieldLabel } from '../../../../shared/utils/field-value-helpers';
 import { getPrincipalDisplayName } from '../../../../shared/utils/principal-display.utils';
 
 /**
@@ -129,7 +129,7 @@ export function renderSummarySection(
     {
       label: transloco.translate('report.summaryStatus'),
       value: tm.status
-        ? getFieldLabel(tm.status, 'threatModels.status' as FieldType, transloco)
+        ? getFieldLabel(tm.status, 'threatModels.status', transloco)
         : noData,
     },
     {
@@ -576,7 +576,7 @@ function buildThreatKvPairs(
   if (threat.severity) {
     kvPairs.push({
       label: transloco.translate('common.severity'),
-      value: getFieldLabel(threat.severity, 'threatEditor.threatSeverity' as FieldType, transloco),
+      value: getFieldLabel(threat.severity, 'threatEditor.threatSeverity', transloco),
     });
   }
   if (threat.score != null) {
@@ -588,13 +588,13 @@ function buildThreatKvPairs(
   if (threat.status) {
     kvPairs.push({
       label: transloco.translate('common.status'),
-      value: getFieldLabel(threat.status, 'threatEditor.threatStatus' as FieldType, transloco),
+      value: getFieldLabel(threat.status, 'threatEditor.threatStatus', transloco),
     });
   }
   if (threat.priority) {
     kvPairs.push({
       label: transloco.translate('common.priority'),
-      value: getFieldLabel(threat.priority, 'threatEditor.threatPriority' as FieldType, transloco),
+      value: getFieldLabel(threat.priority, 'threatEditor.threatPriority', transloco),
     });
   }
   if (threat.threat_type && threat.threat_type.length > 0) {

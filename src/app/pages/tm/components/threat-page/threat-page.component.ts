@@ -59,13 +59,11 @@ import {
 } from '../invoke-addon-dialog/invoke-addon-dialog.component';
 import { CvssCalculatorDialogComponent } from '../cvss-calculator-dialog/cvss-calculator-dialog.component';
 import {
-  CvssCalculatorDialogData,
   CvssCalculatorDialogResult,
   CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
 import { CwePickerDialogComponent } from '../cwe-picker-dialog/cwe-picker-dialog.component';
 import {
-  CwePickerDialogData,
   CwePickerDialogResult,
 } from '../cwe-picker-dialog/cwe-picker-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
@@ -843,7 +841,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       maxHeight: '90vh',
       data: {
         existingCweIds: this.threatForm.get('cwe_id')?.value as string[],
-      } as CwePickerDialogData,
+      },
     });
 
     dialogRef
@@ -878,7 +876,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       maxHeight: '90vh',
       data: {
         existingVersions: this._getExistingCvssVersions(),
-      } as CvssCalculatorDialogData,
+      },
     });
 
     dialogRef
@@ -971,7 +969,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       data: {
         existingEntry: current[index],
         existingIndex: index,
-      } as CvssCalculatorDialogData,
+      },
     });
 
     dialogRef

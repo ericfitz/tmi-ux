@@ -611,10 +611,7 @@ describe('ImportOrchestratorService', () => {
       // null || [] evaluates to [], so this should work
       const result = await lastValueFrom(
         service.orchestrateImport(
-          { assets: null, notes: null, diagrams: null, threats: null } as unknown as Record<
-            string,
-            unknown
-          >,
+          { assets: null, notes: null, diagrams: null, threats: null },
           deps,
         ),
       );

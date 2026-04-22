@@ -5,7 +5,6 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { TooltipAriaLabelDirective } from './tooltip-aria-label.directive';
-import type { ElementRef } from '@angular/core';
 import type { MatTooltip } from '@angular/material/tooltip';
 
 describe('TooltipAriaLabelDirective', () => {
@@ -18,7 +17,7 @@ describe('TooltipAriaLabelDirective', () => {
     mockTooltip = { message: '' };
     directive = new TooltipAriaLabelDirective(
       mockTooltip as unknown as MatTooltip,
-      { nativeElement: mockElement } as ElementRef<HTMLElement>,
+      { nativeElement: mockElement },
     );
   });
 

@@ -53,7 +53,7 @@ describe('AuditTrailService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    loggerService = createMockLoggerService() as unknown as LoggerService;
+    loggerService = createMockLoggerService();
 
     apiService = {
       get: vi.fn().mockReturnValue(of(mockResponse)),

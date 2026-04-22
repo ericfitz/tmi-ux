@@ -122,7 +122,7 @@ describe('InfraX6CoreOperationsService', () => {
         // Create a config with invalid shape to cause an error
         const nodeConfig: NodeCreationConfig = {
           id: 'test-node-error',
-          shape: 'invalid-shape' as any,
+          shape: 'invalid-shape',
           x: 100,
           y: 100,
           width: 120,

@@ -125,7 +125,7 @@ describe('AppGraphOperationManager', () => {
           ...createNodeOperation,
           nodeData: {
             ...createNodeOperation.nodeData,
-            position: undefined as any,
+            position: undefined,
           },
         };
 

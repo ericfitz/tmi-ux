@@ -189,7 +189,7 @@ describe('CreateProjectDialogComponent', () => {
         team_id: 'team-1',
         uri: 'https://example.com',
         status: 'active',
-      } as CreateProjectDialogResult);
+      });
     });
 
     it('should not close dialog when form is invalid', () => {

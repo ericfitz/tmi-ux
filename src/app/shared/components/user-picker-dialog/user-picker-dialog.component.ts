@@ -228,7 +228,7 @@ export class UserPickerDialogComponent implements OnInit {
           user: this.selectedUser,
           role: this.selectedRole || undefined,
           customRole: this.customRole || undefined,
-        } as UserPickerDialogResult);
+        });
       } else {
         this.dialogRef.close(this.selectedUser);
       }

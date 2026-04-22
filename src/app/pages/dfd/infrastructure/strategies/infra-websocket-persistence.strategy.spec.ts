@@ -10,7 +10,6 @@ import '@angular/compiler';
 import { Subject, of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
 import { AppHistoryService } from '../../application/services/app-history.service';
@@ -53,7 +52,7 @@ describe('WebSocketPersistenceStrategy', () => {
     };
 
     strategy = new WebSocketPersistenceStrategy(
-      loggerService as unknown as LoggerService,
+      loggerService,
       mockWebSocketAdapter as unknown as WebSocketAdapter,
       mockCollaborationAdapter as unknown as InfraWebsocketCollaborationAdapter,
       mockHistoryService as unknown as AppHistoryService,

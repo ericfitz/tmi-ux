@@ -342,8 +342,8 @@ export class AppRemoteOperationHandler implements OnDestroy {
       position: normalizedCell.position,
       size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: normalizedCell.attrs as Record<string, any>,
-      properties: normalizedCell as Record<string, any>,
+      style: normalizedCell.attrs,
+      properties: normalizedCell,
     };
 
     switch (cellOp.operation) {
@@ -412,7 +412,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
       sourcePortId,
       targetPortId,
       vertices: (cellData as any).vertices || [],
-      attrs: cellData.attrs as Record<string, any>,
+      attrs: cellData.attrs,
     });
 
     switch (cellOp.operation) {

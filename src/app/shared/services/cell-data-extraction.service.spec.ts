@@ -339,7 +339,7 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.diagrams).toHaveLength(1);
       expect(result.diagrams[0]).toEqual({ id: 'diag1', name: 'Diagram 1' });
@@ -354,7 +354,7 @@ describe('CellDataExtractionService', () => {
         getCells: vi.fn(() => []),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.diagrams).toHaveLength(1);
       expect(result.cells).toEqual([]);
@@ -372,7 +372,7 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.cells[0].label).toBe('Node A');
     });
@@ -389,7 +389,7 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.cells[0].label).toBe('Edge Label');
     });
@@ -405,7 +405,7 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.cells[0].label).toBe('cell1');
     });
@@ -433,7 +433,7 @@ describe('CellDataExtractionService', () => {
         }),
       };
 
-      service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Error extracting cells from X6 graph',
@@ -453,7 +453,7 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.cells[0].label).toBe('Multi Line Label');
     });

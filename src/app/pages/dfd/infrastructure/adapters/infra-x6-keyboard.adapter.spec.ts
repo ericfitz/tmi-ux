@@ -87,7 +87,7 @@ describe('InfraX6KeyboardAdapter', () => {
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = createMockLoggerService() as any;
+    mockLogger = createMockLoggerService();
 
     // Create handler
     handler = new InfraX6KeyboardAdapter(mockLogger);

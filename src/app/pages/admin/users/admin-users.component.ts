@@ -22,7 +22,6 @@ import { AuthService } from '@app/auth/services/auth.service';
 import { AdminUser } from '@app/types/user.types';
 import {
   UserPickerDialogComponent,
-  UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import {
@@ -314,7 +313,7 @@ This action cannot be undone.`;
       data: {
         title: this.transloco.translate('admin.users.transferOwnership.dialogTitle'),
         excludeUserId: user.internal_uuid,
-      } as UserPickerDialogData,
+      },
     });
 
     dialogRef

@@ -11,7 +11,6 @@ import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { HttpClient } from '@angular/common/http';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import {
@@ -50,7 +49,7 @@ describe('InfraRestPersistenceStrategy', () => {
 
     strategy = new InfraRestPersistenceStrategy(
       mockHttpClient as unknown as HttpClient,
-      loggerService as unknown as LoggerService,
+      loggerService,
       mockDiagramService as unknown as AppDiagramService,
       mockThreatModelService as unknown as ThreatModelService,
     );

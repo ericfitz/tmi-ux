@@ -84,7 +84,7 @@ describe('ThreatModelService', () => {
       threats: [],
     };
 
-    loggerService = createMockLoggerService() as unknown as LoggerService;
+    loggerService = createMockLoggerService();
 
     // Create a simple mock for ApiService
     apiService = {

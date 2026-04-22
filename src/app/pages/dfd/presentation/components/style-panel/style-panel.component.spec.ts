@@ -1,6 +1,6 @@
 import '@angular/compiler';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StylePanelComponent, CellStyleInfo, StyleChangeEvent } from './style-panel.component';
+import { StylePanelComponent, CellStyleInfo } from './style-panel.component';
 import { ChangeDetectorRef, SimpleChange } from '@angular/core';
 
 describe('StylePanelComponent - Label Position', () => {
@@ -165,7 +165,7 @@ describe('StylePanelComponent - Label Position', () => {
         property: 'labelPosition',
         value: 'top-center',
         applicableCellIds: ['node-1'],
-      } as StyleChangeEvent);
+      });
     });
 
     it('should only include non-text-box nodes in applicableCellIds', () => {

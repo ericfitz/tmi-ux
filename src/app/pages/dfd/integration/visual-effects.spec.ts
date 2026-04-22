@@ -134,7 +134,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
       infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    historyManager = new InfraX6HistoryAdapter(mockLogger);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);

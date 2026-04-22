@@ -177,11 +177,11 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    historyManager = new InfraX6HistoryAdapter(mockLogger);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
     // Use mock services to avoid Angular Material dependencies
-    infraEdgeService = new MockDfdEdgeService() as any;
-    eventHandlersService = new MockDfdEventHandlersService() as any;
+    infraEdgeService = new MockDfdEdgeService();
+    eventHandlersService = new MockDfdEventHandlersService();
     historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
 
@@ -512,10 +512,10 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
         graph.select(node);
         StylingVerifier.verifySelectionStyling(
           node,
-          TestHelpers.getNodeTypeFromCell(node) as NodeType,
+          TestHelpers.getNodeTypeFromCell(node),
         );
         graph.unselect(node);
-        StylingVerifier.verifyCleanStyling(node, TestHelpers.getNodeTypeFromCell(node) as NodeType);
+        StylingVerifier.verifyCleanStyling(node, TestHelpers.getNodeTypeFromCell(node));
       }
 
       // Should still only have the original legitimate change

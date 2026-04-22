@@ -2,7 +2,7 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UrlDropZoneDirective } from './url-drop-zone.directive';
-import type { ElementRef, Renderer2 } from '@angular/core';
+import type { Renderer2 } from '@angular/core';
 
 function createDragEvent(type: string, data?: Record<string, string>): DragEvent {
   const dataTransfer: Partial<DataTransfer> = {
@@ -28,7 +28,7 @@ describe('UrlDropZoneDirective', () => {
       removeClass: vi.fn(),
     };
     directive = new UrlDropZoneDirective(
-      { nativeElement: mockElement } as ElementRef<HTMLElement>,
+      { nativeElement: mockElement },
       mockRenderer as unknown as Renderer2,
     );
   });

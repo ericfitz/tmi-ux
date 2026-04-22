@@ -19,7 +19,6 @@ import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import {
   UserPickerDialogComponent,
-  UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -217,7 +216,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       data: {
         title: this.transloco.translate('triage.reviewerAssignment.selectReviewer'),
-      } as UserPickerDialogData,
+      },
     });
 
     dialogRef

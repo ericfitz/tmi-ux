@@ -15,7 +15,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { InfraDfdValidationService } from '../../infrastructure/services/infra-dfd-validation.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
@@ -173,7 +172,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     // Create service instance
     service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
-      mockDfdValidation as unknown as InfraDfdValidationService,
+      mockDfdValidation,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,

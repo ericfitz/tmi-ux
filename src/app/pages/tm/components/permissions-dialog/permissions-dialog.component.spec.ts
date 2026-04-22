@@ -50,7 +50,7 @@ describe('PermissionsDialogComponent', () => {
       email: 'user@test.com',
       role: 'reader',
       ...overrides,
-    } as Authorization;
+    };
   }
 
   beforeEach(() => {
