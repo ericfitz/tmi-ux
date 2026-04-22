@@ -17,11 +17,9 @@ import {
 } from '@app/types/client-credential.types';
 import {
   CreateCredentialDialogComponent,
-  CreateCredentialDialogData,
 } from '@app/core/components/user-preferences-dialog/create-credential-dialog/create-credential-dialog.component';
 import {
   CredentialSecretDialogComponent,
-  CredentialSecretDialogData,
 } from '@app/core/components/user-preferences-dialog/credential-secret-dialog/credential-secret-dialog.component';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
@@ -225,7 +223,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
 
   onAddCredential(): void {
     const createDialogRef = this.dialog.open(CreateCredentialDialogComponent, {
-      data: { returnFormOnly: true } as CreateCredentialDialogData,
+      data: { returnFormOnly: true },
     });
 
     createDialogRef
@@ -243,7 +241,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
                 data: {
                   clientId: credential.client_id,
                   clientSecret: credential.client_secret,
-                } as CredentialSecretDialogData,
+                },
                 disableClose: true,
               });
               this.loadCredentials();

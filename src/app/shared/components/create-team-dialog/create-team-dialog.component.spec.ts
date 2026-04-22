@@ -117,7 +117,7 @@ describe('CreateTeamDialogComponent', () => {
         email_address: 'team@example.com',
         uri: 'https://example.com',
         status: 'active',
-      } as CreateTeamDialogResult);
+      });
     });
 
     it('should not close dialog when form is invalid', () => {

@@ -223,7 +223,7 @@ export class CellDataExtractionService {
       const label =
         cellType === 'x6'
           ? this.extractX6CellLabel(cell as X6Cell)
-          : this.extractStoredCellLabel(cell as StoredCell);
+          : this.extractStoredCellLabel(cell);
 
       return this.cleanLabel(label, cell.id);
     } catch (error) {

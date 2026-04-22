@@ -205,7 +205,7 @@ describe('cell-normalization.util', () => {
               args: { x: 0, y: 0 },
             },
           ],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 
@@ -282,7 +282,7 @@ describe('cell-normalization.util', () => {
             { attrs: { text: { text: 'Second' } } },
             { attrs: { text: { text: 'Third' } } },
           ],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 
@@ -297,7 +297,7 @@ describe('cell-normalization.util', () => {
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           labels: [{ attrs: { text: { text: 'Only' } } }],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 
@@ -312,7 +312,7 @@ describe('cell-normalization.util', () => {
           source: { cell: 'node1' },
           target: { cell: 'node2' },
           labels: [],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 
@@ -326,7 +326,7 @@ describe('cell-normalization.util', () => {
           position: { x: 100, y: 100 },
           size: { width: 120, height: 60 },
           labels: [{ attrs: { text: { text: 'First' } } }, { attrs: { text: { text: 'Second' } } }],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 
@@ -353,7 +353,7 @@ describe('cell-normalization.util', () => {
             },
           },
           tools: [{ name: 'button-remove' }],
-        } as any;
+        };
 
         const normalized = normalizeCell(cell);
 

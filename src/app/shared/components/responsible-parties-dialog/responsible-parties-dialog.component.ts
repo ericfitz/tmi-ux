@@ -13,7 +13,6 @@ import { ResponsibleParty, TEAM_MEMBER_ROLES, TeamMemberRole } from '@app/types/
 import { User } from '@app/pages/tm/models/threat-model.model';
 import {
   UserPickerDialogComponent,
-  UserPickerDialogData,
   UserPickerDialogResult,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 
@@ -191,7 +190,7 @@ export class ResponsiblePartiesDialogComponent {
         showRoleSelector: true,
         roles: TEAM_MEMBER_ROLES,
         roleTranslocoPrefix: 'teams.roles.',
-      } as UserPickerDialogData,
+      },
     });
     dialogRef
       .afterClosed()

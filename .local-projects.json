@@ -1,0 +1,35 @@
+{
+  "description": "Local paths to TMI-related projects. Used by Claude Code to prefer local files over GitHub when interacting with sibling projects.",
+  "projects": [
+    {
+      "name": "tmi",
+      "description": "TMI server (Go REST API)",
+      "path": "/Users/efitz/Projects/tmi"
+    },
+    {
+      "name": "tmi-wiki",
+      "description": "TMI GitHub wiki",
+      "path": "/Users/efitz/Projects/tmi.wiki"
+    },
+    {
+      "name": "tmi-ux",
+      "description": "TMI web client application",
+      "path": "/Users/efitz/Projects/tmi-ux"
+    },
+    {
+      "name": "tmi-clients",
+      "description": "TMI auto-generated client libraries for Go, Python, and TypeScript",
+      "path": "/Users/efitz/Projects/tmi-clients"
+    },
+    {
+      "name": "tmi-tf-wh",
+      "description": "TMI Terraform analyzer webhook",
+      "path": "/Users/efitz/Projects/tmi-tf-wh"
+    },
+    {
+      "name": "tmi-webhook-example",
+      "description": "TMI webhook integration example",
+      "path": "/Users/efitz/Projects/tmi-webhook-example"
+    }
+  ]
+}

@@ -149,7 +149,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       infraEmbeddingService,
       zOrderAdapter,
     );
-    historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
+    historyManager = new InfraX6HistoryAdapter(mockLogger);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
@@ -418,7 +418,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
         cleanupRestoredCellStyling(cell);
 
         // CRITICAL: Verify completely clean styling with no artifacts
-        StylingVerifier.verifyCleanStyling(cell, info!.type as NodeType);
+        StylingVerifier.verifyCleanStyling(cell, info!.type);
       });
 
       // CRITICAL: Verify graph selection is empty

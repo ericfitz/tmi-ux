@@ -9,7 +9,6 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeOperationValidator } from './node-operation-validator';
 import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
 
@@ -74,7 +73,7 @@ describe('NodeOperationValidator', () => {
 
   beforeEach(() => {
     loggerService = createTypedMockLoggerService();
-    validator = new NodeOperationValidator(loggerService as unknown as LoggerService);
+    validator = new NodeOperationValidator(loggerService);
   });
 
   describe('canValidate', () => {

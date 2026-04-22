@@ -43,12 +43,10 @@ import {
 import { EditProjectDialogComponent } from '@app/shared/components/edit-project-dialog/edit-project-dialog.component';
 import {
   ResponsiblePartiesDialogComponent,
-  ResponsiblePartiesDialogData,
 } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedProjectsDialogComponent } from '@app/shared/components/related-projects-dialog/related-projects-dialog.component';
 import {
   MetadataDialogComponent,
-  MetadataDialogData,
 } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 
 /**
@@ -296,7 +294,7 @@ export class AdminProjectsComponent implements OnInit, AfterViewInit {
               parties: fullProject.responsible_parties || [],
               patchFn: (id: string, parties: ResponsibleParty[]) =>
                 this.projectService.patch(id, { responsible_parties: parties }),
-            } as ResponsiblePartiesDialogData,
+            },
           });
           dialogRef
             .afterClosed()
@@ -355,7 +353,7 @@ export class AdminProjectsComponent implements OnInit, AfterViewInit {
               isReadOnly: false,
               objectType: 'project',
               objectName: fullProject.name,
-            } as MetadataDialogData,
+            },
           });
           dialogRef
             .afterClosed()

@@ -808,7 +808,7 @@ export class AppDfdOrchestrator {
         } else {
           // Position provided - fall back to operation manager for explicit positioning
           const nodeData: NodeData = {
-            nodeType: nodeType as any,
+            nodeType: nodeType,
             position,
             size: { width: 120, height: 60 },
             label: nodeType,

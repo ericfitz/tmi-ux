@@ -15,8 +15,6 @@ import { LoggerService } from './logger.service';
 import {
   UserAPIQuota,
   WebhookQuota,
-  EnrichedUserAPIQuota,
-  EnrichedWebhookQuota,
 } from '@app/types/quota.types';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
 
@@ -307,7 +305,7 @@ describe('QuotaService', () => {
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
-        } as EnrichedUserAPIQuota);
+        });
       });
     });
   });
@@ -330,7 +328,7 @@ describe('QuotaService', () => {
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
-        } as EnrichedWebhookQuota);
+        });
       });
     });
   });
@@ -368,7 +366,7 @@ describe('QuotaService', () => {
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
-        } as EnrichedUserAPIQuota);
+        });
         expect(response.total).toBe(1);
         expect(response.limit).toBe(100);
         expect(response.offset).toBe(0);
@@ -409,7 +407,7 @@ describe('QuotaService', () => {
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
-        } as EnrichedWebhookQuota);
+        });
         expect(response.total).toBe(1);
         expect(response.limit).toBe(100);
         expect(response.offset).toBe(0);

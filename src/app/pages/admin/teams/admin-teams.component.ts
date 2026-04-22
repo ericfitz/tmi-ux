@@ -39,12 +39,10 @@ import { EditTeamDialogComponent } from '@app/shared/components/edit-team-dialog
 import { TeamMembersDialogComponent } from '@app/shared/components/team-members-dialog/team-members-dialog.component';
 import {
   ResponsiblePartiesDialogComponent,
-  ResponsiblePartiesDialogData,
 } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedTeamsDialogComponent } from '@app/shared/components/related-teams-dialog/related-teams-dialog.component';
 import {
   MetadataDialogComponent,
-  MetadataDialogData,
 } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 
 /**
@@ -228,7 +226,7 @@ export class AdminTeamsComponent implements OnInit, AfterViewInit {
               parties: fullTeam.responsible_parties || [],
               patchFn: (id: string, parties: ResponsibleParty[]) =>
                 this.teamService.patch(id, { responsible_parties: parties }),
-            } as ResponsiblePartiesDialogData,
+            },
           });
           dialogRef
             .afterClosed()
@@ -287,7 +285,7 @@ export class AdminTeamsComponent implements OnInit, AfterViewInit {
               isReadOnly: false,
               objectType: 'team',
               objectName: fullTeam.name,
-            } as MetadataDialogData,
+            },
           });
           dialogRef
             .afterClosed()

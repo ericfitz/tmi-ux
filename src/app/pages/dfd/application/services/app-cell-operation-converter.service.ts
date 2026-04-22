@@ -129,7 +129,7 @@ export class AppCellOperationConverterService {
       position: normalizedCell.position,
       size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: normalizedCell.attrs as Record<string, any>,
+      style: normalizedCell.attrs,
       properties: {
         ...(normalizedCell as Record<string, any>),
         // Include additional X6 properties that may not be in our explicit fields
@@ -172,7 +172,7 @@ export class AppCellOperationConverterService {
       position: normalizedCell.position,
       size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: normalizedCell.attrs as Record<string, any>,
+      style: normalizedCell.attrs,
       properties: {
         ...(normalizedCell as Record<string, any>),
         // Include additional X6 properties that may not be in our explicit fields
@@ -226,7 +226,7 @@ export class AppCellOperationConverterService {
       sourcePortId,
       targetPortId,
       vertices: (normalizedCell as any).vertices || [],
-      attrs: normalizedCell.attrs as Record<string, any>,
+      attrs: normalizedCell.attrs,
       labels: (normalizedCell as any).labels || [],
       // Include additional X6 properties
       connector: (normalizedCell as any).connector,
@@ -268,7 +268,7 @@ export class AppCellOperationConverterService {
           ? (normalizedCell.target as any)
           : undefined,
       vertices: (normalizedCell as any).vertices,
-      attrs: normalizedCell.attrs as Record<string, any>,
+      attrs: normalizedCell.attrs,
       labels: (normalizedCell as any).labels || [],
       // Include additional X6 properties
       connector: (normalizedCell as any).connector,

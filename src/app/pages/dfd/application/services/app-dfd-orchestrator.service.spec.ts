@@ -939,7 +939,7 @@ describe('AppDfdOrchestrator', () => {
 
     it('should handle unsupported export formats', () => {
       return new Promise<void>((resolve, reject) => {
-        service.exportDiagram('pdf' as any).subscribe({
+        service.exportDiagram('pdf').subscribe({
           next: () => reject(new Error('Should have failed')),
           error: error => {
             expect(error.message).toContain('Unsupported export format');

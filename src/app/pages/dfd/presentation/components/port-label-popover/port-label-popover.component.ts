@@ -90,7 +90,7 @@ export class PortLabelPopoverComponent implements OnInit, OnDestroy {
   labelPosition: PortLabelPosition = DEFAULT_PORT_LABEL_POSITION;
 
   private _onClickOutside = (event: MouseEvent): void => {
-    if (!this._elementRef.nativeElement.contains(event.target as HTMLElement)) {
+    if (!this._elementRef.nativeElement.contains(event.target)) {
       this.close();
     }
   };

@@ -124,7 +124,6 @@ import {
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import {
   UserPickerDialogComponent,
-  UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { AdminUser } from '@app/types/user.types';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
@@ -951,7 +950,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       data: {
         title: this.transloco.translate('threatModels.changeSecurityReviewer'),
-      } as UserPickerDialogData,
+      },
     });
 
     this._subscriptions.add(

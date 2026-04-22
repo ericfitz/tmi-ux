@@ -592,7 +592,7 @@ describe('Cell Property Filter Utility', () => {
           visible: true,
           zIndex: 10,
           markup: [{ tagName: 'rect' }],
-        } as Cell;
+        };
 
         const sanitized = sanitizeCellForApi(node);
 
@@ -610,7 +610,7 @@ describe('Cell Property Filter Utility', () => {
           id: 'boundary-1',
           shape: 'security-boundary',
           children: ['node-1', 'node-2'],
-        } as Cell;
+        };
 
         const sanitized = sanitizeCellForApi(node);
 
@@ -629,7 +629,7 @@ describe('Cell Property Filter Utility', () => {
           shape: 'process',
           unknownProp: 'value',
           anotherUnknown: 123,
-        } as Cell;
+        };
 
         sanitizeCellForApi(node, logger);
 
@@ -890,7 +890,7 @@ describe('Cell Property Filter Utility', () => {
           id: 'boundary-1',
           shape: 'security-boundary',
           children: ['node-1', 'node-2'],
-        } as Cell,
+        },
         {
           id: 'node-1',
           shape: 'process',
@@ -952,7 +952,7 @@ describe('Cell Property Filter Utility', () => {
           id: 'node-1',
           shape: 'process',
           unknownProp: 'value',
-        } as Cell,
+        },
       ];
 
       sanitizeCellsForApi(cells, logger);

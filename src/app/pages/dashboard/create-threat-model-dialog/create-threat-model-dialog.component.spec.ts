@@ -97,7 +97,7 @@ describe('CreateThreatModelDialogComponent', () => {
         description: 'A description',
         framework: 'CIA',
         isConfidential: false,
-      } as CreateThreatModelDialogResult);
+      });
     });
 
     it('should not close dialog when form is invalid', () => {

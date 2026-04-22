@@ -330,7 +330,7 @@ export class InfraVisualEffectsService {
     this.activeEffects.set(cell.id, {
       timer: null,
       cell,
-      effectType: 'fade' as any, // Reuse type since TypeScript doesn't allow extending the union
+      effectType: 'fade', // Reuse type since TypeScript doesn't allow extending the union
       startTime: Date.now(),
       color: { r: 255, g: 0, b: 0 },
     });

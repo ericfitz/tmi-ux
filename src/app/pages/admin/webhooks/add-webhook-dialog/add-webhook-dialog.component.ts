@@ -12,7 +12,6 @@ import {
 } from '@app/shared/imports';
 import {
   ConfirmActionDialogComponent,
-  ConfirmActionDialogData,
   ConfirmActionDialogResult,
 } from '@app/shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { WebhookSubscriptionInput } from '@app/types/webhook.types';
@@ -282,7 +281,7 @@ export class AddWebhookDialogComponent implements OnInit {
           confirmLabel: 'admin.webhooks.addDialog.save',
           confirmIsDestructive: false,
           icon: 'warning',
-        } as ConfirmActionDialogData,
+        },
         disableClose: true,
       });
 

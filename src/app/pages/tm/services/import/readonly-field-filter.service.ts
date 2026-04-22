@@ -268,7 +268,7 @@ export class ReadonlyFieldFilterService {
    * @returns Filtered cell object ready for API submission
    */
   filterCell(cell: Record<string, unknown>): Record<string, unknown> {
-    return sanitizeCellForApi(cell as Cell, this._logger) as Record<string, unknown>;
+    return sanitizeCellForApi(cell as Cell, this._logger);
   }
 
   /**

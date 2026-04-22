@@ -146,7 +146,6 @@ import { getLabelPositionFromAttrs, LABEL_POSITION_ATTRS } from '../../types/lab
 
 import {
   ConfirmActionDialogComponent,
-  ConfirmActionDialogData,
   ConfirmActionDialogResult,
 } from '../../../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
@@ -2097,7 +2096,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             },
           };
 
-      this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+      this.appDfdOrchestrator.executeOperation(operation).subscribe({
         next: operationResult => {
           if (operationResult.success) {
             this.logger.debugComponent(
@@ -2425,7 +2424,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       includeInHistory: true,
     };
 
-    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+    this.appDfdOrchestrator.executeOperation(operation).subscribe({
       next: result => {
         if (!result.success) {
           this.logger.error('Port label change operation failed', { error: result.error });
@@ -2506,7 +2505,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               },
             };
 
-        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+        this.appDfdOrchestrator.executeOperation(operation).subscribe({
           next: operationResult => {
             if (operationResult.success) {
               this.logger.debugComponent('DfdComponent', 'Cell metadata updated successfully');
@@ -2914,8 +2913,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private applyNodeStyleChange(cell: Cell, event: StyleChangeEvent): void {
     const previousAttrs = cell.getAttrs() || {};
-    const previousBody = (previousAttrs['body'] || {}) as Record<string, any>;
-    const previousText = (previousAttrs['text'] || {}) as Record<string, any>;
+    const previousBody = previousAttrs['body'] || {};
+    const previousText = previousAttrs['text'] || {};
     const previousData = cell.getData() || {};
 
     // Handle label position changes separately
@@ -2960,7 +2959,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       includeInHistory: true,
     };
 
-    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+    this.appDfdOrchestrator.executeOperation(operation).subscribe({
       next: result => {
         if (!result.success) {
           this.logger.error('Style change operation failed', { error: result.error });
@@ -3019,7 +3018,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       includeInHistory: true,
     };
 
-    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+    this.appDfdOrchestrator.executeOperation(operation).subscribe({
       next: result => {
         if (!result.success) {
           this.logger.error('Label position change failed', { error: result.error });
@@ -3033,7 +3032,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private applyEdgeStyleChange(cell: Cell, event: StyleChangeEvent): void {
     const previousAttrs = cell.getAttrs() || {};
-    const previousLine = (previousAttrs['line'] || {}) as Record<string, any>;
+    const previousLine = previousAttrs['line'] || {};
 
     cell.setAttrByPath('line/stroke', event.value);
 
@@ -3053,7 +3052,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       includeInHistory: true,
     };
 
-    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+    this.appDfdOrchestrator.executeOperation(operation).subscribe({
       next: result => {
         if (!result.success) {
           this.logger.error('Edge style change failed', { error: result.error });
@@ -3113,7 +3112,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           includeInHistory: true,
         };
 
-        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+        this.appDfdOrchestrator.executeOperation(operation).subscribe({
           error: error => {
             this.logger.error('Error clearing custom formatting', { error });
           },
@@ -3135,7 +3134,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           includeInHistory: true,
         };
 
-        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+        this.appDfdOrchestrator.executeOperation(operation).subscribe({
           error: error => {
             this.logger.error('Error clearing edge custom formatting', { error });
           },
@@ -3213,7 +3212,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         message: 'editor.deleteMetadataWarning.message',
         confirmLabel: 'editor.deleteMetadataWarning.confirm',
         confirmIsDestructive: true,
-      } as ConfirmActionDialogData,
+      },
       disableClose: true,
     });
 

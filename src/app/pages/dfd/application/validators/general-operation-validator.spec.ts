@@ -9,7 +9,6 @@ import '@angular/compiler';
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { LoggerService } from '../../../../core/services/logger.service';
 import { GeneralOperationValidator } from './general-operation-validator';
 import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
 
@@ -42,7 +41,7 @@ describe('GeneralOperationValidator', () => {
 
   beforeEach(() => {
     loggerService = createTypedMockLoggerService();
-    validator = new GeneralOperationValidator(loggerService as unknown as LoggerService);
+    validator = new GeneralOperationValidator(loggerService);
   });
 
   describe('canValidate', () => {
