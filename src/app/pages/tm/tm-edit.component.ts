@@ -122,9 +122,7 @@ import {
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import {
-  UserPickerDialogComponent,
-} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { AdminUser } from '@app/types/user.types';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';

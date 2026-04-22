@@ -84,7 +84,7 @@ describe('GroupMembersDialogComponent', () => {
         created_at: '2024-01-01T00:00:00Z',
         modified_at: '2024-01-01T00:00:00Z',
         ...overrides,
-      } as AdminUser;
+      };
     }
 
     it('should block adding an automation user to the administrators group', () => {

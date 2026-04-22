@@ -52,19 +52,11 @@ import {
   CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
 import { SsvcCalculatorDialogComponent } from '../ssvc-calculator-dialog/ssvc-calculator-dialog.component';
-import {
-  SsvcCalculatorDialogData,
-  SsvcCalculatorDialogResult,
-} from '../ssvc-calculator-dialog/ssvc-calculator-dialog.types';
+import { SsvcCalculatorDialogResult } from '../ssvc-calculator-dialog/ssvc-calculator-dialog.types';
 import { CwePickerDialogComponent } from '../cwe-picker-dialog/cwe-picker-dialog.component';
-import {
-  CwePickerDialogResult,
-} from '../cwe-picker-dialog/cwe-picker-dialog.types';
+import { CwePickerDialogResult } from '../cwe-picker-dialog/cwe-picker-dialog.types';
 import { FrameworkMappingPickerDialogComponent } from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.component';
-import {
-  FrameworkMappingPickerDialogData,
-  FrameworkMappingPickerDialogResult,
-} from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.types';
+import { FrameworkMappingPickerDialogResult } from '../framework-mapping-picker-dialog/framework-mapping-picker-dialog.types';
 import { isValidUrl } from '../../../../shared/utils/url.util';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
@@ -848,7 +840,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
         availableTypes: this.threatTypeModels,
         selectedTypes: this.threatForm.get('threat_type')?.value as string[],
         cellType: this._getSelectedCellType(),
-      } as FrameworkMappingPickerDialogData,
+      },
     });
 
     dialogRef
@@ -964,7 +956,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       width: '700px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      data: {} as SsvcCalculatorDialogData,
+      data: {},
     });
 
     dialogRef
@@ -988,7 +980,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       width: '700px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      data: { existingEntry: existing } as SsvcCalculatorDialogData,
+      data: { existingEntry: existing },
     });
 
     dialogRef

@@ -37,15 +37,9 @@ import {
 } from '@app/shared/components/create-team-dialog/create-team-dialog.component';
 import { EditTeamDialogComponent } from '@app/shared/components/edit-team-dialog/edit-team-dialog.component';
 import { TeamMembersDialogComponent } from '@app/shared/components/team-members-dialog/team-members-dialog.component';
-import {
-  ResponsiblePartiesDialogComponent,
-  ResponsiblePartiesDialogData,
-} from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
+import { ResponsiblePartiesDialogComponent } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedTeamsDialogComponent } from '@app/shared/components/related-teams-dialog/related-teams-dialog.component';
-import {
-  MetadataDialogComponent,
-  MetadataDialogData,
-} from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 import { DeleteConfirmationDialogComponent } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import {
   DeleteConfirmationDialogData,
@@ -232,7 +226,7 @@ export class TeamsComponent implements OnInit, AfterViewInit {
               parties: fullTeam.responsible_parties || [],
               patchFn: (id: string, parties: ResponsibleParty[]) =>
                 this.teamService.patch(id, { responsible_parties: parties }),
-            } as ResponsiblePartiesDialogData,
+            },
           });
           dialogRef
             .afterClosed()
@@ -291,7 +285,7 @@ export class TeamsComponent implements OnInit, AfterViewInit {
               isReadOnly: false,
               objectType: 'team',
               objectName: fullTeam.name,
-            } as MetadataDialogData,
+            },
           });
           dialogRef
             .afterClosed()

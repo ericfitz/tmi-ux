@@ -38,15 +38,9 @@ import {
   CreateProjectDialogResult,
 } from '@app/shared/components/create-project-dialog/create-project-dialog.component';
 import { EditProjectDialogComponent } from '@app/shared/components/edit-project-dialog/edit-project-dialog.component';
-import {
-  ResponsiblePartiesDialogComponent,
-  ResponsiblePartiesDialogData,
-} from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
+import { ResponsiblePartiesDialogComponent } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedProjectsDialogComponent } from '@app/shared/components/related-projects-dialog/related-projects-dialog.component';
-import {
-  MetadataDialogComponent,
-  MetadataDialogData,
-} from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 import { DeleteConfirmationDialogComponent } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import {
   DeleteConfirmationDialogData,
@@ -298,7 +292,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
               parties: fullProject.responsible_parties || [],
               patchFn: (id: string, parties: ResponsibleParty[]) =>
                 this.projectService.patch(id, { responsible_parties: parties }),
-            } as ResponsiblePartiesDialogData,
+            },
           });
           dialogRef
             .afterClosed()
@@ -357,7 +351,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
               isReadOnly: false,
               objectType: 'project',
               objectName: fullProject.name,
-            } as MetadataDialogData,
+            },
           });
           dialogRef
             .afterClosed()

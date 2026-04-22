@@ -305,7 +305,7 @@ export class PdfMarkdownRenderer {
           if (strong.tokens && strong.tokens.length > 0) {
             const inner = this.flattenInlineTokens(strong.tokens);
             // Override inner styles to bold
-            segments.push(...inner.map(s => ({ ...s, style: 'bold' })));
+            segments.push(...inner.map((s): TextSegment => ({ ...s, style: 'bold' })));
           } else {
             segments.push({ text: strong.text, style: 'bold' });
           }
@@ -316,7 +316,7 @@ export class PdfMarkdownRenderer {
           const em = token as Tokens.Em;
           if (em.tokens && em.tokens.length > 0) {
             const inner = this.flattenInlineTokens(em.tokens);
-            segments.push(...inner.map(s => ({ ...s, style: 'italic' })));
+            segments.push(...inner.map((s): TextSegment => ({ ...s, style: 'italic' })));
           } else {
             segments.push({ text: em.text, style: 'italic' });
           }

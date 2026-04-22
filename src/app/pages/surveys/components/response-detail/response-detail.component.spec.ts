@@ -11,7 +11,7 @@ import { SurveyThemeService } from '../../services/survey-theme.service';
 import { ThemeService } from '@app/core/services/theme.service';
 import { ProjectService } from '@app/core/services/project.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
-import { SurveyResponse, ResponseStatus } from '@app/types/survey.types';
+import { SurveyResponse } from '@app/types/survey.types';
 import { Project } from '@app/types/project.types';
 
 interface MockSurveyService {
@@ -36,7 +36,7 @@ function createMockResponse(overrides: Partial<SurveyResponse> = {}): SurveyResp
     id: 'response-1',
     survey_id: 'survey-1',
     survey_version: '1',
-    status: 'submitted' as ResponseStatus,
+    status: 'submitted',
     is_confidential: false,
     answers: {},
     owner: 'user@example.com',
@@ -54,7 +54,7 @@ function createMockProject(overrides: Partial<Project> = {}): Project {
     team_id: 'team-1',
     created_at: '2026-01-01T00:00:00Z',
     ...overrides,
-  } as Project;
+  };
 }
 
 describe('ResponseDetailComponent', () => {

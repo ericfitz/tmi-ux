@@ -34,7 +34,7 @@ describe('PermissionsAutocompleteService', () => {
       email_verified: true,
       created_at: '2026-01-01T00:00:00Z',
       modified_at: '2026-01-01T00:00:00Z',
-    } as AdminUser,
+    },
     {
       internal_uuid: 'uuid-2',
       provider: 'tmi',
@@ -44,7 +44,7 @@ describe('PermissionsAutocompleteService', () => {
       email_verified: true,
       created_at: '2026-01-01T00:00:00Z',
       modified_at: '2026-01-01T00:00:00Z',
-    } as AdminUser,
+    },
   ];
 
   const mockGroups: AdminGroup[] = [

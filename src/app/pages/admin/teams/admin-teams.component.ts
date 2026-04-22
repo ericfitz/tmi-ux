@@ -37,13 +37,9 @@ import {
 } from '@app/shared/components/create-team-dialog/create-team-dialog.component';
 import { EditTeamDialogComponent } from '@app/shared/components/edit-team-dialog/edit-team-dialog.component';
 import { TeamMembersDialogComponent } from '@app/shared/components/team-members-dialog/team-members-dialog.component';
-import {
-  ResponsiblePartiesDialogComponent,
-} from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
+import { ResponsiblePartiesDialogComponent } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedTeamsDialogComponent } from '@app/shared/components/related-teams-dialog/related-teams-dialog.component';
-import {
-  MetadataDialogComponent,
-} from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 
 /**
  * Admin Teams Component

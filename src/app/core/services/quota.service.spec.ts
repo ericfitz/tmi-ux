@@ -12,10 +12,7 @@ import { of, throwError } from 'rxjs';
 import { QuotaService } from './quota.service';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import {
-  UserAPIQuota,
-  WebhookQuota,
-} from '@app/types/quota.types';
+import { UserAPIQuota, WebhookQuota } from '@app/types/quota.types';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
 
 describe('QuotaService', () => {

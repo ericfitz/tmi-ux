@@ -48,9 +48,7 @@ describe('mermaid-export.utils', () => {
 
       const anchor = document.createElement('a');
       const clickSpy = vi.spyOn(anchor, 'click').mockImplementation(() => {});
-      const createElementSpy = vi
-        .spyOn(document, 'createElement')
-        .mockReturnValue(anchor as unknown as HTMLAnchorElement);
+      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
       const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
       vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
@@ -87,7 +85,7 @@ describe('mermaid-export.utils', () => {
       vi.spyOn(anchor, 'click').mockImplementation(() => {});
       vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
         if (tag === 'canvas') return mockCanvas as unknown as HTMLCanvasElement;
-        return anchor as unknown as HTMLAnchorElement;
+        return anchor;
       });
       vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
       vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});

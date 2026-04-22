@@ -510,10 +510,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
       for (let i = 0; i < 10; i++) {
         const node = nodes[i % nodes.length];
         graph.select(node);
-        StylingVerifier.verifySelectionStyling(
-          node,
-          TestHelpers.getNodeTypeFromCell(node),
-        );
+        StylingVerifier.verifySelectionStyling(node, TestHelpers.getNodeTypeFromCell(node));
         graph.unselect(node);
         StylingVerifier.verifyCleanStyling(node, TestHelpers.getNodeTypeFromCell(node));
       }

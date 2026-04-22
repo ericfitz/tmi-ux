@@ -15,12 +15,8 @@ import {
   ClientCredentialResponse,
   CreateClientCredentialRequest,
 } from '@app/types/client-credential.types';
-import {
-  CreateCredentialDialogComponent,
-} from '@app/core/components/user-preferences-dialog/create-credential-dialog/create-credential-dialog.component';
-import {
-  CredentialSecretDialogComponent,
-} from '@app/core/components/user-preferences-dialog/credential-secret-dialog/credential-secret-dialog.component';
+import { CreateCredentialDialogComponent } from '@app/core/components/user-preferences-dialog/create-credential-dialog/create-credential-dialog.component';
+import { CredentialSecretDialogComponent } from '@app/core/components/user-preferences-dialog/credential-secret-dialog/credential-secret-dialog.component';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 export interface ManageCredentialsDialogData {

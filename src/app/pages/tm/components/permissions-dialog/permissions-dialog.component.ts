@@ -780,7 +780,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
       role: 'reader',
       _subject: '',
       // Note: display_name is intentionally omitted as it's a server-managed field
-    });
+    } as Authorization);
     this.permissionsTable.renderRows();
   }
 

@@ -2679,7 +2679,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           hasCustomStyles: !!data.customStyles,
           labelPosition,
           hasArchIcon: !!data._arch,
-        } as CellStyleInfo;
+        };
       });
   }
 
@@ -2736,7 +2736,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         previousState: { properties: { _arch: previousData._arch ?? null } },
         includeInHistory: true,
       };
-      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+      this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
     this.updateIconPickerCells();
     this.cdr.detectChanges();
@@ -2780,7 +2780,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         previousState: { properties: { _arch: previousData._arch ?? null } },
         includeInHistory: true,
       };
-      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+      this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
     this.updateIconPickerCells();
     this.cdr.detectChanges();
@@ -2817,7 +2817,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         previousState: { properties: { _arch: previousArch } },
         includeInHistory: true,
       };
-      this.appDfdOrchestrator.executeOperation(operation as any).subscribe();
+      this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
     this.updateIconPickerCells();
     this.cdr.detectChanges();

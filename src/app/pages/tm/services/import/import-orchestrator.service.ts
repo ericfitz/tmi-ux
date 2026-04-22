@@ -692,7 +692,7 @@ export class ImportOrchestratorService {
           }
 
           if (hasImage) {
-            diagramUpdate.image = image as ApiDfdDiagramInput['image'];
+            diagramUpdate.image = image;
           }
 
           if (hasColorPalette) {

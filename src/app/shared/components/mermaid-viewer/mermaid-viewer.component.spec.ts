@@ -46,7 +46,7 @@ describe('MermaidViewerComponent', () => {
     document.body.appendChild(hostElement);
 
     component = new MermaidViewerComponent(
-      { nativeElement: hostElement } as never,
+      { nativeElement: hostElement },
       mockOverlay as never,
       mockInjector as never,
       mockTranslocoService as never,

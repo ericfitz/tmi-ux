@@ -489,7 +489,7 @@ describe('ProjectsComponent', () => {
       mockProjectService.list.mockReturnValue(of(mockListResponse));
 
       component.onEditDetails(mockProjectListItem);
-      afterClosed$.next(mockProject as any);
+      afterClosed$.next(mockProject);
 
       expect(mockProjectService.list).toHaveBeenCalled();
     });
@@ -534,7 +534,7 @@ describe('ProjectsComponent', () => {
       mockProjectService.list.mockReturnValue(of(mockListResponse));
 
       component.onResponsibleParties(mockProjectListItem);
-      afterClosed$.next(true as any);
+      afterClosed$.next(true);
 
       expect(mockProjectService.list).toHaveBeenCalled();
     });
@@ -563,7 +563,7 @@ describe('ProjectsComponent', () => {
       mockProjectService.list.mockReturnValue(of(mockListResponse));
 
       component.onRelatedProjects(mockProjectListItem);
-      afterClosed$.next(true as any);
+      afterClosed$.next(true);
 
       expect(mockProjectService.list).toHaveBeenCalled();
     });
