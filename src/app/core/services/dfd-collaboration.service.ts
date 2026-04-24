@@ -1684,6 +1684,12 @@ export class DfdCollaborationService implements OnDestroy {
         wsUrl = apiUrl.replace('https://', 'wss://');
       } else if (apiUrl.startsWith('http://')) {
         wsUrl = apiUrl.replace('http://', 'ws://');
+      } else if (apiUrl.startsWith('/')) {
+        // Same-origin relative apiUrl (e.g. '/api' when tmi-ux proxies the backend).
+        // Resolve against the current page origin, preserving the path prefix.
+        const wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const trimmed = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        wsUrl = `${wsScheme}//${window.location.host}${trimmed}`;
       } else {
         // Default to ws:// for local development
         wsUrl = `ws://${apiUrl}`;

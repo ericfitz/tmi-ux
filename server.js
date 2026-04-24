@@ -2,11 +2,38 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Optional reverse proxy for the TMI backend API.
+// When TMI_ENABLE_API_PROXY=true and TMI_PROXY_TARGET is set, tmi-ux proxies
+// all /api/* requests (including WebSocket upgrades) to the backend, allowing
+// a single HTTPS endpoint to serve both the SPA and the API.
+const apiProxyEnabled = process.env.TMI_ENABLE_API_PROXY === 'true';
+const apiProxyTarget = process.env.TMI_PROXY_TARGET;
+const API_PROXY_PATH = '/api';
+
+let apiProxy = null;
+if (apiProxyEnabled) {
+  if (!apiProxyTarget) {
+    console.error(
+      'TMI_ENABLE_API_PROXY=true but TMI_PROXY_TARGET is not set; refusing to start with misconfigured proxy.'
+    );
+    process.exit(1);
+  }
+  apiProxy = createProxyMiddleware({
+    target: apiProxyTarget,
+    changeOrigin: true,
+    ws: true,
+    pathRewrite: { [`^${API_PROXY_PATH}`]: '' },
+    logger: console,
+  });
+  app.use(API_PROXY_PATH, apiProxy);
+}
 
 // Set up a basic rate limiter for static file server
 // More permissive limits since this serves an SPA with many static assets
@@ -27,7 +54,12 @@ app.use(limiter);
 app.get('/config.json', (req, res) => {
   const config = {};
 
-  if (process.env.TMI_API_URL) config.apiUrl = process.env.TMI_API_URL;
+  if (process.env.TMI_API_URL) {
+    config.apiUrl = process.env.TMI_API_URL;
+  } else if (apiProxyEnabled) {
+    // When proxying the API, point the client at the same-origin proxy path.
+    config.apiUrl = API_PROXY_PATH;
+  }
   if (process.env.TMI_LOG_LEVEL) config.logLevel = process.env.TMI_LOG_LEVEL;
   if (process.env.TMI_OPERATOR_NAME) config.operatorName = process.env.TMI_OPERATOR_NAME;
   if (process.env.TMI_OPERATOR_CONTACT) config.operatorContact = process.env.TMI_OPERATOR_CONTACT;
@@ -104,6 +136,15 @@ app.use((req, res) => {
 
 // Use the port provided by Heroku or default to 8080
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
+const httpServer = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  if (apiProxyEnabled) {
+    console.log(`API proxy enabled: ${API_PROXY_PATH} -> ${apiProxyTarget}`);
+  }
 });
+
+// http-proxy-middleware handles HTTP via app.use(), but WebSocket upgrades
+// must be routed via the server's 'upgrade' event.
+if (apiProxy) {
+  httpServer.on('upgrade', apiProxy.upgrade);
+}
