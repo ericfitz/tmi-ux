@@ -129,7 +129,11 @@ import {
   PlacementChangedEvent,
 } from './icon-picker-panel/icon-picker-panel.component';
 import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
-import { ArchIconData, ICON_HIDEABLE_BORDER_SHAPES } from '../../types/arch-icon.types';
+import {
+  ArchIconData,
+  ICON_HIDEABLE_BORDER_SHAPES,
+  ICON_HIDEABLE_BORDER_SELECTORS,
+} from '../../types/arch-icon.types';
 import {
   ICON_PLACEMENT_ATTRS,
   ICON_SIZE,
@@ -2857,8 +2861,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       !prefs.showShapeBordersWithIcons &&
       (ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(cell.shape)
     ) {
-      cell.setAttrByPath('body/stroke', 'transparent');
-      cell.setAttrByPath('body/fill', 'transparent');
+      const selectors = ICON_HIDEABLE_BORDER_SELECTORS[cell.shape] ?? ['body'];
+      for (const sel of selectors) {
+        cell.setAttrByPath(`${sel}/stroke`, 'transparent');
+        cell.setAttrByPath(`${sel}/fill`, 'transparent');
+      }
     }
   }
 
@@ -2867,9 +2874,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const nodeStyles = DFD_STYLING.NODES as Record<string, any>;
     const shapeKey = shape.toUpperCase().replace(/-/g, '_');
     const config = nodeStyles[shapeKey];
-    if (config) {
-      cell.setAttrByPath('body/stroke', config.STROKE ?? DFD_STYLING.DEFAULT_STROKE);
-      cell.setAttrByPath('body/fill', config.FILL ?? DFD_STYLING.DEFAULT_FILL);
+    if (!config) return;
+    const stroke = config.STROKE ?? DFD_STYLING.DEFAULT_STROKE;
+    const fill = config.FILL ?? DFD_STYLING.DEFAULT_FILL;
+    const selectors = ICON_HIDEABLE_BORDER_SELECTORS[shape] ?? ['body'];
+    for (const sel of selectors) {
+      cell.setAttrByPath(`${sel}/stroke`, stroke);
+      cell.setAttrByPath(`${sel}/fill`, fill);
     }
   }
 
@@ -2882,14 +2893,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const arch = data?._arch as ArchIconData | undefined;
       if (arch) {
         this.applyIconToCell(node, arch);
-        const prefs = this.userPreferencesService.getPreferences();
-        if (
-          !prefs.showShapeBordersWithIcons &&
-          (ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(node.shape)
-        ) {
-          node.setAttrByPath('body/stroke', 'transparent');
-          node.setAttrByPath('body/fill', 'transparent');
-        }
+        this.applyBorderPreference(node);
       }
     }
   }

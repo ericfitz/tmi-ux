@@ -56,3 +56,17 @@ export const ICON_ELIGIBLE_SHAPES = ['actor', 'process', 'store', 'security-boun
 
 /** Shape types where border/fill hiding applies (excludes security-boundary) */
 export const ICON_HIDEABLE_BORDER_SHAPES = ['actor', 'process', 'store'] as const;
+
+/**
+ * Per-shape SVG selectors whose `stroke` and `fill` attrs must be set to
+ * transparent (or restored) to fully hide/show the shape's body when an
+ * architecture icon is present.
+ *
+ * The cylinder (store) shape is composed of a body path AND a top ellipse;
+ * both must be hidden together or the top arc remains visible above the icon.
+ */
+export const ICON_HIDEABLE_BORDER_SELECTORS: Record<string, readonly string[]> = {
+  actor: ['body'],
+  process: ['body'],
+  store: ['body', 'top'],
+};
