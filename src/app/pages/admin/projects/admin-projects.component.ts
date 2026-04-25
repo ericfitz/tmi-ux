@@ -41,13 +41,9 @@ import {
   CreateProjectDialogResult,
 } from '@app/shared/components/create-project-dialog/create-project-dialog.component';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
-import {
-  ResponsiblePartiesDialogComponent,
-} from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
+import { ResponsiblePartiesDialogComponent } from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedProjectsDialogComponent } from './related-projects-dialog/related-projects-dialog.component';
-import {
-  MetadataDialogComponent,
-} from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
+import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialog/metadata-dialog.component';
 
 /**
  * Admin Projects Component

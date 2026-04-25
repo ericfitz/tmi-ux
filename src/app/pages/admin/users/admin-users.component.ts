@@ -20,9 +20,7 @@ import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AdminUser } from '@app/types/user.types';
-import {
-  UserPickerDialogComponent,
-} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import {
   ManageCredentialsDialogComponent,

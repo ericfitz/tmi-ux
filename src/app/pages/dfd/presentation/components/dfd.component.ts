@@ -2622,8 +2622,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private applyNodeStyleChange(cell: Cell, event: StyleChangeEvent): void {
     const previousAttrs = cell.getAttrs() || {};
-    const previousBody = (previousAttrs['body'] || {});
-    const previousText = (previousAttrs['text'] || {});
+    const previousBody = previousAttrs['body'] || {};
+    const previousText = previousAttrs['text'] || {};
     const previousData = cell.getData() || {};
 
     // Handle label position changes separately
@@ -2741,7 +2741,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private applyEdgeStyleChange(cell: Cell, event: StyleChangeEvent): void {
     const previousAttrs = cell.getAttrs() || {};
-    const previousLine = (previousAttrs['line'] || {});
+    const previousLine = previousAttrs['line'] || {};
 
     cell.setAttrByPath('line/stroke', event.value);
 

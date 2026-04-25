@@ -22,7 +22,7 @@ export function isEdgeTerminal(obj: unknown): obj is EdgeTerminal {
     typeof obj === 'object' &&
     obj !== null &&
     'cell' in obj &&
-    typeof (obj).cell === 'string' &&
+    typeof obj.cell === 'string' &&
     ('port' in obj ? typeof (obj as { port: unknown }).port === 'string' : true)
   );
 }

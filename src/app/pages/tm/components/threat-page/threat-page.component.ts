@@ -63,9 +63,7 @@ import {
   CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
 import { CwePickerDialogComponent } from '../cwe-picker-dialog/cwe-picker-dialog.component';
-import {
-  CwePickerDialogResult,
-} from '../cwe-picker-dialog/cwe-picker-dialog.types';
+import { CwePickerDialogResult } from '../cwe-picker-dialog/cwe-picker-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
 import {

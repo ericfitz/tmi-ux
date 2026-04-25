@@ -15,10 +15,9 @@ describe('TooltipAriaLabelDirective', () => {
   beforeEach(() => {
     mockElement = document.createElement('button');
     mockTooltip = { message: '' };
-    directive = new TooltipAriaLabelDirective(
-      mockTooltip as unknown as MatTooltip,
-      { nativeElement: mockElement },
-    );
+    directive = new TooltipAriaLabelDirective(mockTooltip as unknown as MatTooltip, {
+      nativeElement: mockElement,
+    });
   });
 
   it('should create', () => {

@@ -128,9 +128,7 @@ export function renderSummarySection(
     },
     {
       label: transloco.translate('report.summaryStatus'),
-      value: tm.status
-        ? getFieldLabel(tm.status, 'threatModels.status', transloco)
-        : noData,
+      value: tm.status ? getFieldLabel(tm.status, 'threatModels.status', transloco) : noData,
     },
     {
       label: transloco.translate('report.summarySecurityReviewer'),
