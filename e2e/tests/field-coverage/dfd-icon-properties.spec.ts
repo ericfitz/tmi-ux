@@ -118,11 +118,11 @@ test.describe.serial('DFD Icon Properties', () => {
   });
 
   test('icon removal', async () => {
-    // Add a process node and assign an icon programmatically
+    // Add a process node and assign an icon programmatically using a valid
+    // ArchIconData shape (matches src/app/pages/dfd/types/arch-icon.types.ts).
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
     expect(nodeId).toBeTruthy();
 
-    // Assign an icon programmatically
     await page.evaluate((id) => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const node = graph?.getCellById(id);
@@ -132,15 +132,17 @@ test.describe.serial('DFD Icon Properties', () => {
         ...prevData,
         _arch: {
           provider: 'aws',
-          type: 'service',
-          subcategory: 'Compute',
-          icon: { name: 'Lambda', path: 'aws/Compute/Lambda.svg' },
-          placement: { vertical: 'top', horizontal: 'center' },
+          type: 'services',
+          subcategory: 'compute',
+          icon: 'amazon-ec2',
+          placement: { vertical: 'middle', horizontal: 'center' },
         },
       });
     }, nodeId);
 
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID — tests run serially with shared graph state, so index 0
+    // may point to a leftover node from the previous test.
+    await dfdEditorPage.selectNodeById(nodeId);
     await ensureIconPickerOpen();
 
     // Wait for the current icon section to appear (since we assigned one)

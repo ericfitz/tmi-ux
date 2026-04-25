@@ -98,6 +98,23 @@ export class DfdEditorPage {
     await this.page.waitForTimeout(300);
   }
 
+  /**
+   * Select a node by its ID. Prefer this over selectNodeByIndex when running
+   * serial tests that share graph state, where index-based lookup may pick
+   * a leftover node from an earlier test.
+   */
+  async selectNodeById(nodeId: string): Promise<void> {
+    await this.page.evaluate((id) => {
+      const graph = (window as any).__e2e?.dfd?.graph;
+      if (!graph) throw new Error('Graph not available');
+      const node = graph.getCellById(id);
+      if (!node) throw new Error(`Node ${id} not found`);
+      graph.cleanSelection();
+      graph.select(node);
+    }, nodeId);
+    await this.page.waitForTimeout(300);
+  }
+
   // --- Graph query methods (thin page.evaluate wrappers) ---
 
   async getNodeCount(): Promise<number> {
