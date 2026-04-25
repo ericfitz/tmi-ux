@@ -334,6 +334,7 @@ export class LoggerService {
         if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
           continue;
         }
+        // lgtm[js/remote-property-injection] codeql[js/remote-property-injection] - accumulator is Object.create(null) (no prototype to pollute) and __proto__/constructor/prototype keys are filtered above
         sanitized[key] = this.redactSensitiveData(value);
       }
       return sanitized;
