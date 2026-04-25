@@ -43,6 +43,54 @@ export const ICON_HORIZONTAL_POSITIONS: IconHorizontalPosition[] = ['left', 'cen
 /** Icon size in pixels (square) */
 export const ICON_SIZE = 32;
 
+/** Vertical gap (in pixels) between the icon's bottom edge and the label's top edge */
+export const LABEL_ICON_PADDING = 6;
+
+/**
+ * Label attrs derived from an icon's placement. The label is always horizontally
+ * centered on the icon and sits below it with LABEL_ICON_PADDING gap, regardless
+ * of which 3x3 placement cell the icon occupies.
+ */
+export interface LabelAttrsForIcon {
+  refX: string;
+  refY: string;
+  refX2: number;
+  refY2: number;
+  textAnchor: 'middle';
+  textVerticalAnchor: 'top';
+}
+
+export function getLabelAttrsForIconPlacement(placement: IconPlacement): LabelAttrsForIcon {
+  const key = getIconPlacementKey(placement);
+  const iconAttrs = ICON_PLACEMENT_ATTRS[key];
+  return {
+    refX: iconAttrs.refX,
+    refY: iconAttrs.refY,
+    refX2: 0,
+    refY2: ICON_SIZE / 2 + LABEL_ICON_PADDING,
+    textAnchor: 'middle',
+    textVerticalAnchor: 'top',
+  };
+}
+
+/**
+ * Default label attrs by shape, used to restore label position after the
+ * architecture icon is removed. Mirrors the text attrs declared in
+ * infra-x6-shape-definitions.ts.
+ */
+export interface DefaultLabelAttrs {
+  refX: string;
+  refY: string;
+}
+
+export const DEFAULT_LABEL_ATTRS_BY_SHAPE: Record<string, DefaultLabelAttrs> = {
+  // store has refY=55% to clear the cylinder's top ellipse
+  store: { refX: '50%', refY: '55%' },
+  actor: { refX: '50%', refY: '50%' },
+  process: { refX: '50%', refY: '50%' },
+  'security-boundary': { refX: '50%', refY: '50%' },
+};
+
 /**
  * Build a placement key from an IconPlacement.
  */

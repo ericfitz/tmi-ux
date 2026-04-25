@@ -133,7 +133,9 @@ import { ArchIconData, ICON_HIDEABLE_BORDER_SHAPES } from '../../types/arch-icon
 import {
   ICON_PLACEMENT_ATTRS,
   ICON_SIZE,
+  DEFAULT_LABEL_ATTRS_BY_SHAPE,
   getIconPlacementKey,
+  getLabelAttrsForIconPlacement,
 } from '../../types/icon-placement.types';
 import {
   PortLabelPopoverComponent,
@@ -2752,21 +2754,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!cell || !cell.isNode()) continue;
 
       const previousData = cell.getData() ?? {};
-      const { _arch, ...restData } = previousData;
+      const restData: Record<string, unknown> = { ...previousData };
+      delete restData['_arch'];
       cell.setData(restData, { silent: true, overwrite: true });
       cell.setAttrByPath('icon/href', null);
 
-      // Restore label position if it was shifted for centered icon
-      const previousArch = _arch as ArchIconData | undefined;
-      if (
-        previousArch?.placement.vertical === 'middle' &&
-        previousArch?.placement.horizontal === 'center' &&
-        cell.shape !== 'security-boundary'
-      ) {
-        cell.setAttrByPath('text/refY', '50%');
-        cell.setAttrByPath('text/textVerticalAnchor', 'middle');
-      }
-
+      this.restoreLabelDefaults(cell);
       this.restoreBorder(cell);
 
       const operation = {
@@ -2836,15 +2829,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     cell.setAttrByPath('icon/refX2', -ICON_SIZE / 2);
     cell.setAttrByPath('icon/refY2', -ICON_SIZE / 2);
 
-    // When icon is centered, shift label below the icon (for non-security-boundary shapes)
-    if (
-      arch.placement.vertical === 'middle' &&
-      arch.placement.horizontal === 'center' &&
-      cell.shape !== 'security-boundary'
-    ) {
-      cell.setAttrByPath('text/refY', '75%');
-      cell.setAttrByPath('text/textVerticalAnchor', 'top');
-    }
+    // Label is locked to the icon: horizontally centered on it, below with padding,
+    // for every placement and every eligible shape (including security-boundary).
+    const labelAttrs = getLabelAttrsForIconPlacement(arch.placement);
+    cell.setAttrByPath('text/refX', labelAttrs.refX);
+    cell.setAttrByPath('text/refY', labelAttrs.refY);
+    cell.setAttrByPath('text/refX2', labelAttrs.refX2);
+    cell.setAttrByPath('text/refY2', labelAttrs.refY2);
+    cell.setAttrByPath('text/textAnchor', labelAttrs.textAnchor);
+    cell.setAttrByPath('text/textVerticalAnchor', labelAttrs.textVerticalAnchor);
+  }
+
+  private restoreLabelDefaults(cell: any): void {
+    const defaults = DEFAULT_LABEL_ATTRS_BY_SHAPE[cell.shape];
+    if (!defaults) return;
+    cell.setAttrByPath('text/refX', defaults.refX);
+    cell.setAttrByPath('text/refY', defaults.refY);
+    cell.setAttrByPath('text/refX2', 0);
+    cell.setAttrByPath('text/refY2', 0);
+    cell.setAttrByPath('text/textAnchor', 'middle');
+    cell.setAttrByPath('text/textVerticalAnchor', 'middle');
   }
 
   private applyBorderPreference(cell: any): void {
