@@ -2726,6 +2726,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const cell = graph.getCellById(cellId);
       if (!cell || !cell.isNode()) continue;
 
+      // Snapshot before mutating: handler mutates cell.data in place below,
+      // and the executor captures previousState AFTER the handler runs, so
+      // history would otherwise see no diff. metadata.previousCellState
+      // overrides the executor's capture.
+      const previousCellState = this._captureCellStateForHistory(cell);
+
       const previousData = cell.getData() ?? {};
       cell.setData({ ...previousData, _arch: event.arch }, { silent: true });
       this.applyIconToCell(cell, event.arch);
@@ -2741,6 +2747,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         updates: { properties: { _arch: event.arch } },
         previousState: { properties: { _arch: previousData._arch ?? null } },
         includeInHistory: true,
+        metadata: { previousCellState },
       };
       this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
@@ -2756,6 +2763,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const cellId of event.cellIds) {
       const cell = graph.getCellById(cellId);
       if (!cell || !cell.isNode()) continue;
+
+      const previousCellState = this._captureCellStateForHistory(cell);
 
       const previousData = cell.getData() ?? {};
       const restData: Record<string, unknown> = { ...previousData };
@@ -2776,6 +2785,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         updates: { properties: { _arch: null } },
         previousState: { properties: { _arch: previousData._arch ?? null } },
         includeInHistory: true,
+        metadata: { previousCellState },
       };
       this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
@@ -2796,6 +2806,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const previousArch = previousData._arch as ArchIconData | undefined;
       if (!previousArch) continue;
 
+      const previousCellState = this._captureCellStateForHistory(cell);
+
       const newArch: ArchIconData = {
         ...previousArch,
         placement: event.placement as any,
@@ -2813,11 +2825,36 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         updates: { properties: { _arch: newArch } },
         previousState: { properties: { _arch: previousArch } },
         includeInHistory: true,
+        metadata: { previousCellState },
       };
       this.appDfdOrchestrator.executeOperation(operation).subscribe();
     }
     this.updateIconPickerCells();
     this.cdr.detectChanges();
+  }
+
+  /**
+   * Deep-clone a cell snapshot for history tracking. Used by handlers that
+   * mutate cell.data/attrs before calling executeOperation — the executor's
+   * own previousState capture runs after the mutation, so it would record
+   * the post-mutation state. metadata.previousCellState overrides that.
+   */
+  private _captureCellStateForHistory(cell: any): unknown {
+    const parent = cell.getParent?.();
+    return JSON.parse(
+      JSON.stringify({
+        id: cell.id,
+        shape: cell.shape,
+        position: cell.getPosition(),
+        size: cell.getSize(),
+        attrs: cell.getAttrs(),
+        ports: cell.getPorts?.(),
+        data: cell.getData(),
+        visible: cell.isVisible?.(),
+        zIndex: cell.getZIndex(),
+        parent: parent?.isNode?.() ? parent.id : undefined,
+      }),
+    );
   }
 
   private applyIconToCell(cell: any, arch: ArchIconData): void {
