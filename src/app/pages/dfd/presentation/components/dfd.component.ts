@@ -141,6 +141,7 @@ import {
   getIconPlacementKey,
   getLabelAttrsForIconPlacement,
 } from '../../types/icon-placement.types';
+import { iconOnlyFitGeometry, labelLineHeightForFontSize } from '../../utils/auto-layout.util';
 import {
   PortLabelPopoverComponent,
   PortLabelData,
@@ -334,6 +335,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Load user preferences for developer tools visibility
     this.loadDeveloperToolsPreference();
+    this.subscribeToAutoLayoutPreferences();
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -2575,6 +2577,58 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  /**
+   * Track preference changes that affect auto-layout and re-apply across the
+   * graph when any of: `showShapeBordersWithIcons`, `autoLayoutEnabled`,
+   * `autoLayoutOrientation` toggles. The first emission only seeds state.
+   */
+  private subscribeToAutoLayoutPreferences(): void {
+    let lastBorders: boolean | undefined;
+    let lastEnabled: boolean | undefined;
+    let lastOrientation: string | undefined;
+    this.userPreferencesService.preferences$.pipe(takeUntil(this._destroy$)).subscribe(prefs => {
+      const bordersChanged =
+        lastBorders !== undefined && lastBorders !== prefs.showShapeBordersWithIcons;
+      const enabledChanged = lastEnabled !== undefined && lastEnabled !== prefs.autoLayoutEnabled;
+      const orientationChanged =
+        lastOrientation !== undefined && lastOrientation !== prefs.autoLayoutOrientation;
+
+      if (bordersChanged || enabledChanged) {
+        if (prefs.autoLayoutEnabled && !prefs.showShapeBordersWithIcons) {
+          this.applyAutoLayoutToAllEligibleCells();
+        } else {
+          this.revertAutoFitOnAllAutoFitCells();
+          // When borders flip back ON, re-apply the existing border-pref logic
+          // (existing applyBorderPreference / restoreBorder per-cell run only at
+          // icon-set time, so we need to walk all iconned cells here).
+          this.reapplyBorderPreferenceToAllIconnedCells(prefs.showShapeBordersWithIcons);
+        }
+      } else if (orientationChanged && prefs.autoLayoutEnabled) {
+        // Container layout reads orientation; icon-only fit doesn't depend on it.
+        // 3a leaves this as a no-op; 3b will iterate container-fit cells.
+        this.applyAutoLayoutToAllEligibleCells();
+      }
+
+      lastBorders = prefs.showShapeBordersWithIcons;
+      lastEnabled = prefs.autoLayoutEnabled;
+      lastOrientation = prefs.autoLayoutOrientation;
+    });
+  }
+
+  private reapplyBorderPreferenceToAllIconnedCells(showBorders: boolean): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+    for (const node of graph.getNodes()) {
+      const data = node.getData();
+      if (!data?._arch) continue;
+      if (showBorders) {
+        this.restoreBorder(node);
+      } else {
+        this.applyBorderPreference(node);
+      }
+    }
+  }
+
   private updateSelectionState(): void {
     if (!this.appDfdOrchestrator.getState().initialized) {
       return;
@@ -2736,6 +2790,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cell.setData({ ...previousData, _arch: event.arch }, { silent: true });
       this.applyIconToCell(cell, event.arch);
       this.applyBorderPreference(cell);
+      this.applyAutoLayout(cell);
 
       const operation = {
         id: `icon-set-${Date.now()}-${cellId}`,
@@ -2774,6 +2829,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.restoreLabelDefaults(cell);
       this.restoreBorder(cell);
+      this.revertAutoFit(cell);
 
       const operation = {
         id: `icon-remove-${Date.now()}-${cellId}`,
@@ -2931,8 +2987,171 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (arch) {
         this.applyIconToCell(node, arch);
         this.applyBorderPreference(node);
+        this.applyAutoLayout(node);
       }
     }
+  }
+
+  // -------- Auto-layout (#638) --------
+
+  /**
+   * Top-level auto-layout entry point. Returns true if any change was applied.
+   *
+   * Phase 3a: implements icon-only fit (leaf iconned shapes). Container fit
+   * (shapes with embedded children) lands in 3b.
+   */
+  private applyAutoLayout(cell: any): boolean {
+    if (!this.userPreferencesService.getPreferences().autoLayoutEnabled) return false;
+    const data = cell.getData() ?? {};
+    if (!data._arch) return false;
+    const childCount = (cell.getChildren?.() ?? []).length;
+    if (childCount > 0) {
+      // Container fit lands in 3b. For now we leave children-bearing cells
+      // alone; revertAutoFit will still fire on toggles to clear stale flags.
+      return false;
+    }
+    return this.applyIconOnlyFit(cell);
+  }
+
+  /**
+   * Apply the icon-only fit: 32 × (32 + labelLineHeight). Only fires when:
+   *   - shape ∈ {actor, process, store}
+   *   - showShapeBordersWithIcons === false (icon-only mode)
+   *   - cell has no embedded children
+   *   - current size is shape default OR is the size we previously set
+   */
+  private applyIconOnlyFit(cell: any): boolean {
+    if (!(ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(cell.shape)) return false;
+
+    const prefs = this.userPreferencesService.getPreferences();
+    if (prefs.showShapeBordersWithIcons) return false;
+
+    const shapeKey = cell.shape.toUpperCase().replace(/-/g, '_');
+    const shapeConfig = (DFD_STYLING.NODES as Record<string, any>)[shapeKey];
+    if (!shapeConfig) return false;
+    const defaultWidth = shapeConfig.DEFAULT_WIDTH as number;
+    const defaultHeight = shapeConfig.DEFAULT_HEIGHT as number;
+
+    const data = cell.getData() ?? {};
+    const previousAutoFit = data._archAutoFit as
+      | { kind: 'icon-only' | 'container'; width: number; height: number }
+      | undefined;
+    const { width: currentWidth, height: currentHeight } = cell.getSize();
+    const atDefaultSize = currentWidth === defaultWidth && currentHeight === defaultHeight;
+    const stillAtPreviousAutoFit =
+      !!previousAutoFit &&
+      currentWidth === previousAutoFit.width &&
+      currentHeight === previousAutoFit.height;
+    if (!atDefaultSize && !stillAtPreviousAutoFit) return false;
+
+    const lineHeight = labelLineHeightForFontSize(DFD_STYLING.DEFAULT_FONT_SIZE);
+    const geom = iconOnlyFitGeometry(lineHeight);
+
+    if (currentWidth !== geom.width || currentHeight !== geom.height) {
+      cell.resize(geom.width, geom.height);
+    }
+    this._setAbsoluteIconAttrs(cell, geom.iconAttrs);
+    this._setAbsoluteLabelAttrs(cell, geom.labelAttrs);
+
+    cell.setData(
+      {
+        ...cell.getData(),
+        _archAutoFit: { kind: 'icon-only', width: geom.width, height: geom.height },
+      },
+      { silent: true },
+    );
+    return true;
+  }
+
+  /**
+   * Reverse a prior auto-fit (icon-only or container). Only acts on cells
+   * whose current size still matches the dimensions we recorded — if the
+   * user has resized the cell since, leave size alone and just clear the
+   * flag.
+   */
+  private revertAutoFit(cell: any): boolean {
+    const data = cell.getData() ?? {};
+    const previousAutoFit = data._archAutoFit as
+      | { kind: 'icon-only' | 'container'; width: number; height: number }
+      | undefined;
+    if (!previousAutoFit) return false;
+
+    const { width, height } = cell.getSize();
+    const stillAtAutoFitSize = width === previousAutoFit.width && height === previousAutoFit.height;
+
+    if (stillAtAutoFitSize) {
+      const shapeKey = cell.shape.toUpperCase().replace(/-/g, '_');
+      const shapeConfig = (DFD_STYLING.NODES as Record<string, any>)[shapeKey];
+      if (shapeConfig) {
+        cell.resize(shapeConfig.DEFAULT_WIDTH as number, shapeConfig.DEFAULT_HEIGHT as number);
+      }
+      // Restore icon and label to user-chosen placement.
+      const arch = data._arch as ArchIconData | undefined;
+      if (arch) {
+        this.applyIconToCell(cell, arch);
+      }
+    }
+
+    const next = { ...cell.getData() };
+    delete next._archAutoFit;
+    cell.setData(next, { silent: true, overwrite: true });
+    return true;
+  }
+
+  /**
+   * Apply auto-layout to every eligible iconned cell. Used when a global
+   * preference (showShapeBordersWithIcons, autoLayoutEnabled, autoLayoutOrientation)
+   * changes — newly-placed icons handle themselves through onIconSelected.
+   */
+  private applyAutoLayoutToAllEligibleCells(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+    for (const node of graph.getNodes()) {
+      const data = node.getData();
+      if (data?._arch) this.applyAutoLayout(node);
+    }
+  }
+
+  /**
+   * Revert auto-fit on every cell that has an `_archAutoFit` tag.
+   * Used when a global preference flips the auto-layout system off.
+   */
+  private revertAutoFitOnAllAutoFitCells(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+    for (const node of graph.getNodes()) {
+      const data = node.getData();
+      if (data?._archAutoFit) this.revertAutoFit(node);
+    }
+  }
+
+  private _setAbsoluteIconAttrs(
+    cell: any,
+    attrs: { refX: number; refY: number; refX2: number; refY2: number },
+  ): void {
+    cell.setAttrByPath('icon/refX', attrs.refX);
+    cell.setAttrByPath('icon/refY', attrs.refY);
+    cell.setAttrByPath('icon/refX2', attrs.refX2);
+    cell.setAttrByPath('icon/refY2', attrs.refY2);
+  }
+
+  private _setAbsoluteLabelAttrs(
+    cell: any,
+    attrs: {
+      refX: number;
+      refY: number;
+      refX2: number;
+      refY2: number;
+      textAnchor: 'middle';
+      textVerticalAnchor: 'top' | 'middle' | 'bottom';
+    },
+  ): void {
+    cell.setAttrByPath('text/refX', attrs.refX);
+    cell.setAttrByPath('text/refY', attrs.refY);
+    cell.setAttrByPath('text/refX2', attrs.refX2);
+    cell.setAttrByPath('text/refY2', attrs.refY2);
+    cell.setAttrByPath('text/textAnchor', attrs.textAnchor);
+    cell.setAttrByPath('text/textVerticalAnchor', attrs.textVerticalAnchor);
   }
 
   onStyleChange(event: StyleChangeEvent): void {
