@@ -1000,6 +1000,16 @@
       "toggleStylePanel": "Toggle style panel"
     }
   },
+  "documentSources": {
+    "callback": {
+      "linking": "Linking your account...",
+      "success": "Source connected. Source: {{ source }}",
+      "error": "Couldn't connect source. Source: {{ source }}. Reason: {{ reason }}"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    }
+  },
   "editor": {
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",

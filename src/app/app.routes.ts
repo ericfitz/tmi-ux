@@ -45,6 +45,13 @@ export const routes: Routes = [
       ).then(c => c.AuthCallbackComponent),
   },
   {
+    path: 'oauth2/content-callback',
+    loadComponent: () =>
+      import(
+        /* webpackChunkName: "content-callback" */ './core/components/content-callback/content-callback.component'
+      ).then(c => c.ContentCallbackComponent),
+  },
+  {
     path: 'unauthorized',
     loadComponent: () =>
       import(
