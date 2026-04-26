@@ -1940,6 +1940,16 @@
     "viewDetails": "ดูรายละเอียด"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
       "add": "{{common.add}}",
@@ -2015,6 +2025,7 @@
     "sections": {
       "developer": "นักพัฒนา",
       "diagramEditor": "ตัวแก้ไขไดอะแกรม",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",

@@ -1977,6 +1977,16 @@
     "viewDetails": "Ver Detalhes"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "Habilitar Modo para Daltonicos",
     "credentials": {
       "add": "{{common.add}}",
@@ -2052,6 +2062,7 @@
     "sections": {
       "developer": "Desenvolvedor",
       "diagramEditor": "Editor de Diagramas",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Mostrar Ferramentas do Desenvolvedor",

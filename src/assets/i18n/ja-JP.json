@@ -1960,6 +1960,16 @@
     "viewDetails": "詳細を表示"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
       "add": "{{common.add}}",
@@ -2035,6 +2045,7 @@
     "sections": {
       "developer": "開発者",
       "diagramEditor": "ダイアグラムエディター",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "開発者ツールを表示",

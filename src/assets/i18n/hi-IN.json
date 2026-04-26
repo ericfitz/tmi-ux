@@ -1976,6 +1976,16 @@
     "viewDetails": "विवरण देखें"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
     "credentials": {
       "add": "{{common.add}}",
@@ -2051,6 +2061,7 @@
     "sections": {
       "developer": "डेवलपर",
       "diagramEditor": "डायग्राम एडिटर",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",

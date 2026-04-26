@@ -7,6 +7,8 @@ import { BrandingConfigService } from './branding-config.service';
 import { LoggerService } from './logger.service';
 import type { ThemeMode, PaletteType } from './theme.service';
 
+export type AutoLayoutOrientation = 'automatic' | 'horizontal' | 'vertical';
+
 /**
  * User preferences synced to server (roamable across devices)
  */
@@ -18,6 +20,8 @@ export interface UserPreferencesData {
   dashboardListView: boolean;
   hoverShowMetadata: boolean;
   showShapeBordersWithIcons: boolean;
+  autoLayoutEnabled: boolean;
+  autoLayoutOrientation: AutoLayoutOrientation;
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
 }
@@ -40,6 +44,8 @@ const DEFAULT_PREFERENCES: UserPreferencesData = {
   dashboardListView: false,
   hoverShowMetadata: false,
   showShapeBordersWithIcons: true,
+  autoLayoutEnabled: true,
+  autoLayoutOrientation: 'automatic',
   pageSize: 'usLetter',
   marginSize: 'standard',
 };
@@ -203,7 +209,7 @@ export class UserPreferencesService {
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached) as Partial<UserPreferencesData>;
-        return { ...DEFAULT_PREFERENCES, ...parsed };
+        return this.mergeWithFieldMigrations(parsed);
       }
 
       // Try migrating from legacy keys
@@ -217,6 +223,22 @@ export class UserPreferencesService {
     }
 
     return this.applyServerDefaultTheme(DEFAULT_PREFERENCES);
+  }
+
+  /**
+   * Merge persisted preferences with defaults, applying per-field migration
+   * for fields added after a user already had a preferences blob.
+   *
+   * autoLayoutEnabled: existing users (blob present, field absent) default to
+   * `false` so saved diagrams aren't surprise-rearranged on first load. New
+   * users (no blob at all) get the regular default of `true`.
+   */
+  private mergeWithFieldMigrations(parsed: Partial<UserPreferencesData>): UserPreferencesData {
+    const merged = { ...DEFAULT_PREFERENCES, ...parsed };
+    if (parsed.autoLayoutEnabled === undefined) {
+      merged.autoLayoutEnabled = false;
+    }
+    return merged;
   }
 
   /**
@@ -256,7 +278,7 @@ export class UserPreferencesService {
             if (!serverPrefs || !serverPrefs['tmi-ux']) {
               return null;
             }
-            return { ...DEFAULT_PREFERENCES, ...serverPrefs['tmi-ux'] };
+            return this.mergeWithFieldMigrations(serverPrefs['tmi-ux']);
           }),
           catchError(error => {
             this.logger.warn('UserPreferencesService: Failed to load from server', error);

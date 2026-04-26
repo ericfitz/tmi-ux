@@ -1949,6 +1949,16 @@
     "viewDetails": "查看详情"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "启用色盲模式",
     "credentials": {
       "add": "{{common.add}}",
@@ -2024,6 +2034,7 @@
     "sections": {
       "developer": "开发者",
       "diagramEditor": "图表编辑器",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "显示开发者工具",

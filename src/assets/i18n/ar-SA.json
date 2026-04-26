@@ -1960,6 +1960,16 @@
     "viewDetails": "عرض التفاصيل"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "credentials": {
       "add": "{{common.add}}",
@@ -2035,6 +2045,7 @@
     "sections": {
       "developer": "المطوّر",
       "diagramEditor": "محرر المخططات",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "عرض أدوات المطور",

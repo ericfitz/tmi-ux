@@ -1949,6 +1949,16 @@
     "viewDetails": "বিবরণ দেখুন"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
       "add": "{{common.add}}",
@@ -2024,6 +2034,7 @@
     "sections": {
       "developer": "ডেভেলপার",
       "diagramEditor": "ডায়াগ্রাম এডিটর",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "ডেভেলপার টুলস দেখান",

@@ -43,6 +43,8 @@ describe('UserPreferencesService', () => {
     dashboardListView: false,
     hoverShowMetadata: false,
     showShapeBordersWithIcons: true,
+    autoLayoutEnabled: true,
+    autoLayoutOrientation: 'automatic',
     pageSize: 'usLetter',
     marginSize: 'standard',
   };
@@ -123,6 +125,36 @@ describe('UserPreferencesService', () => {
       expect(prefs.animations).toBe(false);
       expect(prefs.themeMode).toBe('automatic');
       expect(prefs.pageSize).toBe('usLetter');
+    });
+
+    it('migrates existing users to autoLayoutEnabled=false when the field is absent', async () => {
+      localStorage.setItem('tmi_preferences_v2', JSON.stringify({ animations: true }));
+
+      await service.initialize();
+
+      expect(service.getPreferences().autoLayoutEnabled).toBe(false);
+      expect(service.getPreferences().autoLayoutOrientation).toBe('automatic');
+    });
+
+    it('preserves an explicit autoLayoutEnabled=false from cache', async () => {
+      localStorage.setItem('tmi_preferences_v2', JSON.stringify({ autoLayoutEnabled: false }));
+
+      await service.initialize();
+
+      expect(service.getPreferences().autoLayoutEnabled).toBe(false);
+    });
+
+    it('preserves an explicit autoLayoutEnabled=true from cache', async () => {
+      localStorage.setItem('tmi_preferences_v2', JSON.stringify({ autoLayoutEnabled: true }));
+
+      await service.initialize();
+
+      expect(service.getPreferences().autoLayoutEnabled).toBe(true);
+    });
+
+    it('uses default autoLayoutEnabled=true for new users (no cache)', async () => {
+      await service.initialize();
+      expect(service.getPreferences().autoLayoutEnabled).toBe(true);
     });
 
     it('should use defaults when localStorage has invalid JSON', async () => {

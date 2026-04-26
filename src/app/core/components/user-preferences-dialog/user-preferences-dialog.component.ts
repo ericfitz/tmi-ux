@@ -9,7 +9,10 @@ import {
 } from '@app/shared/imports';
 import { LoggerService } from '../../services/logger.service';
 import { ThemeService, ThemeMode } from '../../services/theme.service';
-import { UserPreferencesService } from '../../services/user-preferences.service';
+import {
+  AutoLayoutOrientation,
+  UserPreferencesService,
+} from '../../services/user-preferences.service';
 import { AUTH_SERVICE, IAuthService } from '../../interfaces';
 import {
   DeleteUserDataDialogComponent,
@@ -44,6 +47,8 @@ export interface UserPreferences {
   dashboardListView: boolean;
   hoverShowMetadata: boolean;
   showShapeBordersWithIcons: boolean;
+  autoLayoutEnabled: boolean;
+  autoLayoutOrientation: AutoLayoutOrientation;
 }
 
 interface CheckboxChangeEvent {
@@ -249,6 +254,56 @@ interface CheckboxChangeEvent {
                   Show shape fill and border when icon is displayed
                 </span>
               </mat-checkbox>
+            </div>
+
+            <label class="preference-label" [transloco]="'userPreferences.sections.diagramLayout'">
+              Diagram Layout
+            </label>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.autoLayoutEnabled"
+                (change)="onAutoLayoutEnabledChange($event)"
+                data-testid="pref-auto-layout-enabled"
+              >
+                <span [transloco]="'userPreferences.autoLayout.label'"> Auto-layout shapes </span>
+              </mat-checkbox>
+              <p class="preference-hint" [transloco]="'userPreferences.autoLayout.description'">
+                Automatically resize and position shapes when icons are added, children are
+                embedded, or shapes are moved.
+              </p>
+            </div>
+
+            <div class="preference-item" [class.disabled]="!preferences.autoLayoutEnabled">
+              <label
+                class="preference-label"
+                [transloco]="'userPreferences.autoLayout.orientation.label'"
+              >
+                Layout orientation
+              </label>
+              <mat-radio-group
+                [(ngModel)]="preferences.autoLayoutOrientation"
+                [disabled]="!preferences.autoLayoutEnabled"
+                (change)="onAutoLayoutOrientationChange()"
+                class="radio-group"
+                data-testid="pref-auto-layout-orientation-group"
+              >
+                <mat-radio-button value="automatic" data-testid="pref-auto-layout-automatic">
+                  <span [transloco]="'userPreferences.autoLayout.orientation.automatic'">
+                    Automatic (infer from current diagram)
+                  </span>
+                </mat-radio-button>
+                <mat-radio-button value="horizontal" data-testid="pref-auto-layout-horizontal">
+                  <span [transloco]="'userPreferences.autoLayout.orientation.horizontal'">
+                    Horizontal
+                  </span>
+                </mat-radio-button>
+                <mat-radio-button value="vertical" data-testid="pref-auto-layout-vertical">
+                  <span [transloco]="'userPreferences.autoLayout.orientation.vertical'">
+                    Vertical
+                  </span>
+                </mat-radio-button>
+              </mat-radio-group>
             </div>
 
             <label
@@ -560,6 +615,17 @@ interface CheckboxChangeEvent {
         margin-bottom: 4px;
         font-weight: 500;
         color: var(--theme-text-primary);
+      }
+
+      .preference-hint {
+        margin: 4px 0 0 32px;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+        line-height: 1.4;
+      }
+
+      .preference-item.disabled .preference-label {
+        color: var(--theme-text-disabled, var(--theme-text-secondary));
       }
 
       .radio-group {
@@ -939,6 +1005,17 @@ export class UserPreferencesDialogComponent implements OnInit {
     this.preferences.showShapeBordersWithIcons = event.checked;
     this.userPreferencesService.updatePreferences({
       showShapeBordersWithIcons: event.checked,
+    });
+  }
+
+  onAutoLayoutEnabledChange(event: CheckboxChangeEvent): void {
+    this.preferences.autoLayoutEnabled = event.checked;
+    this.userPreferencesService.updatePreferences({ autoLayoutEnabled: event.checked });
+  }
+
+  onAutoLayoutOrientationChange(): void {
+    this.userPreferencesService.updatePreferences({
+      autoLayoutOrientation: this.preferences.autoLayoutOrientation,
     });
   }
 

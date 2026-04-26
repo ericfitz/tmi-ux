@@ -1949,6 +1949,16 @@
     "viewDetails": "세부 정보 보기"
   },
   "userPreferences": {
+    "autoLayout": {
+      "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "label": "Auto-layout shapes",
+      "orientation": {
+        "automatic": "Automatic (infer from current diagram)",
+        "horizontal": "Horizontal",
+        "label": "Layout orientation",
+        "vertical": "Vertical"
+      }
+    },
     "colorBlindMode": "색맹 모드 활성화",
     "credentials": {
       "add": "{{common.add}}",
@@ -2024,6 +2034,7 @@
     "sections": {
       "developer": "개발자",
       "diagramEditor": "다이어그램 편집기",
+      "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "개발자 도구 표시",
