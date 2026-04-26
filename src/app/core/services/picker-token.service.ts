@@ -24,7 +24,7 @@ export class PickerTokenService {
   mint(providerId: ContentProviderId): Observable<PickerTokenResponse> {
     return this.apiService.post<PickerTokenResponse>(`me/picker_tokens/${providerId}`, {}).pipe(
       tap(() => this.logger.debug('Picker token minted', { providerId })),
-      catchError(err => {
+      catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 404) {
           return throwError(() => new ContentTokenNotLinkedError(providerId));
         }

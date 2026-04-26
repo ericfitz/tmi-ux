@@ -61,7 +61,7 @@ export class ContentCallbackComponent implements OnInit {
         );
       }
 
-      this.router.navigateByUrl(returnTo);
+      void this.router.navigateByUrl(returnTo);
     });
   }
 }
