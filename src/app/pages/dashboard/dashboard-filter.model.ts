@@ -132,12 +132,26 @@ export function hasActiveFilters(filters: DashboardFilters): boolean {
   );
 }
 
-/** Check whether any advanced (non-primary) filters are active */
-export function hasAdvancedFilters(filters: DashboardFilters): boolean {
+/**
+ * Check whether any advanced (non-primary) filters are active.
+ *
+ * Primary fields depend on user role:
+ * - Non-reviewer: status + owner are primary; securityReviewer is advanced
+ * - Security reviewer: status + securityReviewer are primary; owner is advanced
+ *
+ * `name` is always advanced (moved from primary in #640 — less frequently used).
+ */
+export function hasAdvancedFilters(
+  filters: DashboardFilters,
+  isSecurityReviewer: boolean,
+): boolean {
+  const offRoleIdentitySet = isSecurityReviewer
+    ? filters.owner.trim() !== ''
+    : filters.securityReviewer.trim() !== '';
   return (
+    filters.name.trim() !== '' ||
     filters.description.trim() !== '' ||
-    filters.owner.trim() !== '' ||
-    filters.securityReviewer.trim() !== '' ||
+    offRoleIdentitySet ||
     filters.issueUri.trim() !== '' ||
     filters.createdAfter !== null ||
     filters.createdBefore !== null ||

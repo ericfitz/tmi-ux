@@ -65,17 +65,30 @@
       }
     </mat-form-field>
 
-    <!-- Name server-side filter -->
-    <mat-form-field appearance="outline" class="name-filter">
-      <mat-label>{{ 'dashboard.nameFilter' | transloco }}</mat-label>
-      <input
-        matInput
-        data-testid="dashboard-name-filter"
-        [value]="filters.name"
-        (input)="onNameFilterChange($any($event.target).value)"
-        [placeholder]="'dashboard.namePlaceholder' | transloco"
-      />
-    </mat-form-field>
+    <!-- Role-specific identity filter (primary): owner for non-reviewers, security reviewer for reviewers -->
+    @if (isSecurityReviewer) {
+      <mat-form-field appearance="outline" class="identity-filter">
+        <mat-label>{{ 'dashboard.securityReviewerFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          data-testid="dashboard-security-reviewer-filter"
+          [value]="filters.securityReviewer"
+          (input)="onSecurityReviewerFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.securityReviewerPlaceholder' | transloco"
+        />
+      </mat-form-field>
+    } @else {
+      <mat-form-field appearance="outline" class="identity-filter">
+        <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          data-testid="dashboard-owner-filter"
+          [value]="filters.owner"
+          (input)="onOwnerFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.ownerPlaceholder' | transloco"
+        />
+      </mat-form-field>
+    }
 
     <!-- Status multi-select -->
     <mat-form-field appearance="outline" class="status-filter">
@@ -126,6 +139,18 @@
   <!-- Advanced filters row (expandable) -->
   @if (showAdvancedFilters) {
     <div class="advanced-filters-row" [@detailExpand]>
+      <!-- Name filter -->
+      <mat-form-field appearance="outline" class="text-filter">
+        <mat-label>{{ 'dashboard.nameFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          data-testid="dashboard-name-filter"
+          [value]="filters.name"
+          (input)="onNameFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.namePlaceholder' | transloco"
+        />
+      </mat-form-field>
+
       <!-- Description filter -->
       <mat-form-field appearance="outline" class="text-filter">
         <mat-label>{{ 'dashboard.descriptionFilter' | transloco }}</mat-label>
@@ -138,29 +163,30 @@
         />
       </mat-form-field>
 
-      <!-- Owner filter -->
-      <mat-form-field appearance="outline" class="text-filter">
-        <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
-        <input
-          matInput
-          data-testid="dashboard-owner-filter"
-          [value]="filters.owner"
-          (input)="onOwnerFilterChange($any($event.target).value)"
-          [placeholder]="'dashboard.ownerPlaceholder' | transloco"
-        />
-      </mat-form-field>
-
-      <!-- Security reviewer filter -->
-      <mat-form-field appearance="outline" class="text-filter">
-        <mat-label>{{ 'dashboard.securityReviewerFilter' | transloco }}</mat-label>
-        <input
-          matInput
-          data-testid="dashboard-security-reviewer-filter"
-          [value]="filters.securityReviewer"
-          (input)="onSecurityReviewerFilterChange($any($event.target).value)"
-          [placeholder]="'dashboard.securityReviewerPlaceholder' | transloco"
-        />
-      </mat-form-field>
+      <!-- Off-role identity filter: security reviewer for non-reviewers, owner for reviewers -->
+      @if (isSecurityReviewer) {
+        <mat-form-field appearance="outline" class="text-filter">
+          <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
+          <input
+            matInput
+            data-testid="dashboard-owner-filter"
+            [value]="filters.owner"
+            (input)="onOwnerFilterChange($any($event.target).value)"
+            [placeholder]="'dashboard.ownerPlaceholder' | transloco"
+          />
+        </mat-form-field>
+      } @else {
+        <mat-form-field appearance="outline" class="text-filter">
+          <mat-label>{{ 'dashboard.securityReviewerFilter' | transloco }}</mat-label>
+          <input
+            matInput
+            data-testid="dashboard-security-reviewer-filter"
+            [value]="filters.securityReviewer"
+            (input)="onSecurityReviewerFilterChange($any($event.target).value)"
+            [placeholder]="'dashboard.securityReviewerPlaceholder' | transloco"
+          />
+        </mat-form-field>
+      }
 
       <!-- Issue URI filter -->
       <mat-form-field appearance="outline" class="text-filter">

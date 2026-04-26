@@ -55,7 +55,9 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
     await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');
 
-    // Use the name filter to find the seeded TM (it may be paginated away)
+    // Use the name filter to find the seeded TM (it may be paginated away).
+    // The name filter lives in the advanced row since #640, so expand it first.
+    await dashboardPage.moreFiltersButton().click();
     await dashboardPage.nameFilter().fill('Seed TM');
     await page.waitForTimeout(1000); // Wait for debounced filter
 

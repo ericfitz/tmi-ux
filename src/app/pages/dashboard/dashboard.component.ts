@@ -268,7 +268,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       // Auto-expand advanced filters if any are present in URL
-      if (hasAdvancedServerFilters(this.filters)) {
+      if (hasAdvancedServerFilters(this.filters, this.isSecurityReviewer)) {
         this.showAdvancedFilters = true;
       }
 
@@ -419,7 +419,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Whether any advanced (non-primary) filters are active */
   get hasAdvancedFilters(): boolean {
-    return hasAdvancedServerFilters(this.filters);
+    return hasAdvancedServerFilters(this.filters, this.isSecurityReviewer);
+  }
+
+  /** True if the current user is a security reviewer (drives primary-row layout). */
+  get isSecurityReviewer(): boolean {
+    return this.authService.isSecurityReviewer;
   }
 
   /** Whether any filter or search is active (for empty state) */

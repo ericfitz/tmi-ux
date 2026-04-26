@@ -14,6 +14,16 @@ export class DashboardFilterFlow {
     await this.page.waitForTimeout(500);
   }
 
+  /**
+   * Server-side name filter (lives in advanced row since #640).
+   * Toggles advanced filters open before filling.
+   */
+  async filterByName(name: string) {
+    await this.toggleAdvancedFilters();
+    await angularFill(this.dashboardPage.nameFilter(), name);
+    await this.page.waitForTimeout(500);
+  }
+
   async filterByStatus(statuses: string[]) {
     await this.dashboardPage.statusFilter().click();
     for (const status of statuses) {
