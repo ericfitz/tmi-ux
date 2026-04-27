@@ -23,15 +23,15 @@
 $tmi-primary-palette: (
   50: #e3f2fd,
   100: #bbdefb,
-  // Light primary color
+  /* Light primary color*/
   200: #90caf9,
   300: #64b5f6,
   400: #42a5f5,
   500: #1976d2,
-  // Primary color
+  /* Primary color*/
   600: #1e88e5,
   700: #1565c0,
-  // Dark primary color
+  /* Dark primary color*/
   800: #0d47a1,
   900: #0d3c7a,
   A100: #82b1ff,
@@ -66,7 +66,7 @@ $tmi-accent-palette: (
   300: #90a4ae,
   400: #78909c,
   500: #607d8b,
-  // Accent color
+  /* Accent color*/
   600: #546e7a,
   700: #455a64,
   800: #37474f,
@@ -145,10 +145,10 @@ $colorblind-primary-palette: (
   300: #4db2d4,
   400: #26a1cb,
   500: #0072b2,
-  // Main: Okabe-Ito Blue
+  /* Main: Okabe-Ito Blue*/
   600: #006aab,
   700: #005fa2,
-  800: #005599,
+  800: #059,
   900: #004289,
   A100: #b3d9ff,
   A200: #80c0ff,
@@ -184,7 +184,7 @@ $colorblind-accent-palette: (
   300: #f8c64d,
   400: #f7b926,
   500: #e69f00,
-  // Main: Okabe-Ito Orange
+  /* Main: Okabe-Ito Orange*/
   600: #d99700,
   700: #cc8c00,
   800: #bf8200,
@@ -223,7 +223,7 @@ $colorblind-warn-palette: (
   300: #e77e4d,
   400: #e26226,
   500: #d55e00,
-  // Main: Okabe-Ito Vermilion
+  /* Main: Okabe-Ito Vermilion*/
   600: #c95600,
   700: #bc4c00,
   800: #af4300,
