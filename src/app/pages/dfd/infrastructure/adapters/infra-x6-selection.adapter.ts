@@ -31,6 +31,14 @@ export class InfraX6SelectionAdapter {
   private portStateManager: any = null;
   private infraNodeService: any = null; // Set via setNodeService to avoid circular dependency
 
+  /**
+   * Per-cell pre-selection visual state captured at applySelectionEffect time
+   * and restored at removeSelectionEffect time, so selecting/deselecting a cell
+   * doesn't overwrite a user-customized body stroke (e.g., transparent body in
+   * icon-only mode — issue #654).
+   */
+  private _preSelectionState = new Map<string, { stroke: any; strokeWidth: any }>();
+
   constructor(
     private logger: LoggerService,
     private selectionService: SelectionService,
@@ -529,6 +537,13 @@ export class InfraX6SelectionAdapter {
         // For text-box shapes, apply glow to text element since body is transparent
         cell.attr('text/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
       } else {
+        // Capture pre-selection body stroke state so removeSelectionEffect can
+        // restore the user-current value (e.g., transparent body in icon-only
+        // mode) instead of falling back to the shape default. Issue #654.
+        this._preSelectionState.set(cell.id, {
+          stroke: cell.attr('body/stroke'),
+          strokeWidth: cell.attr('body/strokeWidth'),
+        });
         // For all other node types, apply glow to body element
         cell.attr('body/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
         cell.attr('body/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
@@ -555,11 +570,22 @@ export class InfraX6SelectionAdapter {
       } else {
         // For all other node types, remove glow from body element
         cell.attr('body/filter', 'none');
-        // Restore shape-specific default stroke width and color
-        const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(nodeType as NodeType);
-        const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
-        cell.attr('body/strokeWidth', defaultStrokeWidth);
-        cell.attr('body/stroke', defaultStroke);
+        // Restore the pre-selection body stroke captured by applySelectionEffect.
+        // Falls back to the shape default if no capture exists (defensive — should
+        // never happen in normal selection flow). Issue #654.
+        const captured = this._preSelectionState.get(cell.id);
+        if (captured) {
+          cell.attr('body/stroke', captured.stroke);
+          cell.attr('body/strokeWidth', captured.strokeWidth);
+          this._preSelectionState.delete(cell.id);
+        } else {
+          const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(
+            nodeType as NodeType,
+          );
+          const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
+          cell.attr('body/strokeWidth', defaultStrokeWidth);
+          cell.attr('body/stroke', defaultStroke);
+        }
       }
     } else if (cell.isEdge()) {
       cell.attr('line/filter', 'none');
