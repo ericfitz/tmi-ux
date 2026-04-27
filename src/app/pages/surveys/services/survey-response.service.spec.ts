@@ -115,7 +115,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.listMine().subscribe(response => {
-        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', { limit: 100 });
         expect(response).toEqual(mockListResponse);
       });
     });
@@ -125,6 +125,7 @@ describe('SurveyResponseService', () => {
 
       service.listMine({ survey_id: 'template-456', status: 'draft' }).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', {
+          limit: 100,
           survey_id: 'template-456',
           status: 'draft',
         });
@@ -173,7 +174,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.listAll().subscribe(response => {
-        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', { limit: 100 });
         expect(response).toEqual(mockListResponse);
       });
     });
@@ -308,7 +309,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.createDraft(createRequest).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', { limit: 100 });
       });
     });
 
@@ -412,7 +413,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.submit('response-123').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', { limit: 100 });
       });
     });
 
@@ -455,7 +456,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.deleteDraft('response-123').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', { limit: 100 });
       });
     });
 
@@ -489,6 +490,7 @@ describe('SurveyResponseService', () => {
 
       service.getDraftsForSurvey('template-456').subscribe(drafts => {
         expect(mockApiService.get).toHaveBeenCalledWith('intake/survey_responses', {
+          limit: 100,
           survey_id: 'template-456',
           status: 'draft',
         });
@@ -516,7 +518,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.updateStatus('response-123', 'submitted').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', { limit: 100 });
       });
     });
 
@@ -556,7 +558,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.returnForRevision('response-123', 'Needs work').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', { limit: 100 });
       });
     });
 
@@ -600,7 +602,7 @@ describe('SurveyResponseService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.createThreatModel('response-123').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', { limit: 100 });
       });
     });
 

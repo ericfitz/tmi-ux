@@ -114,7 +114,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.listAdmin().subscribe(response => {
-        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', { limit: 100 });
         expect(response).toEqual(mockListResponse);
       });
     });
@@ -169,7 +169,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.listActive().subscribe(response => {
-        expect(mockApiService.get).toHaveBeenCalledWith('intake/surveys');
+        expect(mockApiService.get).toHaveBeenCalledWith('intake/surveys?limit=100');
         expect(response).toEqual(mockListResponse);
       });
     });
@@ -294,7 +294,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.create(createRequest).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', { limit: 100 });
       });
     });
 
@@ -345,7 +345,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.update('survey-123', updateRequest).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', { limit: 100 });
       });
     });
 
@@ -380,7 +380,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.setStatus('survey-123', 'active').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', { limit: 100 });
       });
     });
 
@@ -439,7 +439,7 @@ describe('SurveyService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.deleteSurvey('survey-123').subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/surveys', { limit: 100 });
       });
     });
 
