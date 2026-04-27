@@ -38,6 +38,10 @@ export function registerCustomShapes(): void {
           tagName: 'text',
           selector: 'text',
         },
+        {
+          tagName: 'image',
+          selector: 'lockBadge',
+        },
       ],
       attrs: {
         body: {
@@ -63,6 +67,16 @@ export function registerCustomShapes(): void {
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+        },
+        lockBadge: {
+          width: 12,
+          height: 12,
+          refX: '100%',
+          refY: '100%',
+          refX2: -20,
+          refY2: -20,
+          display: 'none',
+          pointerEvents: 'none',
         },
       },
       attrHooks: {
@@ -160,6 +174,10 @@ export function registerCustomShapes(): void {
           tagName: 'text',
           selector: 'text',
         },
+        {
+          tagName: 'image',
+          selector: 'lockBadge',
+        },
       ],
       attrs: {
         body: {
@@ -177,6 +195,16 @@ export function registerCustomShapes(): void {
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+        },
+        lockBadge: {
+          width: 12,
+          height: 12,
+          refX: '100%',
+          refY: '100%',
+          refX2: -20,
+          refY2: -20,
+          display: 'none',
+          pointerEvents: 'none',
         },
       },
     });
@@ -200,6 +228,10 @@ export function registerCustomShapes(): void {
           tagName: 'text',
           selector: 'text',
         },
+        {
+          tagName: 'image',
+          selector: 'lockBadge',
+        },
       ],
       attrs: {
         body: {
@@ -217,6 +249,16 @@ export function registerCustomShapes(): void {
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+        },
+        lockBadge: {
+          width: 12,
+          height: 12,
+          refX: '100%',
+          refY: '100%',
+          refX2: -20,
+          refY2: -20,
+          display: 'none',
+          pointerEvents: 'none',
         },
       },
     });
@@ -240,6 +282,10 @@ export function registerCustomShapes(): void {
           tagName: 'text',
           selector: 'text',
         },
+        {
+          tagName: 'image',
+          selector: 'lockBadge',
+        },
       ],
       attrs: {
         body: {
@@ -258,6 +304,16 @@ export function registerCustomShapes(): void {
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+        },
+        lockBadge: {
+          width: 12,
+          height: 12,
+          refX: '100%',
+          refY: '100%',
+          refX2: -20,
+          refY2: -20,
+          display: 'none',
+          pointerEvents: 'none',
         },
       },
     });
