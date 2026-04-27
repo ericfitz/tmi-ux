@@ -774,12 +774,14 @@
     "addInverseConnection": "Добавить обратное соединение",
     "dataAssets": "Активы данных...",
     "editText": "Редактировать текст",
+    "lockLayout": "Lock Layout",
     "moveBackward": "Переместить назад",
     "moveForward": "Переместить вперёд",
     "moveToBack": "На задний план",
     "moveToFront": "На передний план",
     "noDataAssetsAvailable": "Нет доступных активов данных",
-    "showObject": "Показать объект"
+    "showObject": "Показать объект",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "Конфиденциальные модели угроз не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания.",

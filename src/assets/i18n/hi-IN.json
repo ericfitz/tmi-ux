@@ -776,12 +776,14 @@
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",
     "dataAssets": "डेटा एसेट्स...",
     "editText": "टेक्स्ट संपादित करें",
+    "lockLayout": "Lock Layout",
     "moveBackward": "पीछे ले जाएं",
     "moveForward": "आगे ले जाएं",
     "moveToBack": "सबसे पीछे ले जाएं",
     "moveToFront": "सबसे आगे ले जाएं",
     "noDataAssetsAvailable": "कोई डेटा एसेट उपलब्ध नहीं है",
-    "showObject": "ऑब्जेक्ट दिखाएं"
+    "showObject": "ऑब्जेक्ट दिखाएं",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "गोपनीय खतरा मॉडल स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किए जाते हैं। इस सेटिंग को निर्माण के बाद नहीं बदला जा सकता।",

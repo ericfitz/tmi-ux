@@ -774,12 +774,14 @@
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
     "dataAssets": "Datenbestände...",
     "editText": "Text bearbeiten",
+    "lockLayout": "Lock Layout",
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
     "moveToFront": "In den Vordergrund",
     "noDataAssetsAvailable": "Keine Datenbestände verfügbar",
-    "showObject": "Objekt anzeigen"
+    "showObject": "Objekt anzeigen",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "Vertrauliche Bedrohungsmodelle werden nicht automatisch mit der Gruppe \"Security Reviewers\" geteilt. Diese Einstellung kann nach der Erstellung nicht mehr geändert werden.",

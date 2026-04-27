@@ -769,12 +769,14 @@
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
     "dataAssets": "สินทรัพย์ข้อมูล...",
     "editText": "แก้ไขข้อความ",
+    "lockLayout": "Lock Layout",
     "moveBackward": "เลื่อนไปข้างหลัง",
     "moveForward": "เลื่อนไปข้างหน้า",
     "moveToBack": "เลื่อนไปด้านหลัง",
     "moveToFront": "เลื่อนไปด้านหน้า",
     "noDataAssetsAvailable": "ไม่มีสินทรัพย์ข้อมูลที่พร้อมใช้งาน",
-    "showObject": "แสดงอ็อบเจกต์"
+    "showObject": "แสดงอ็อบเจกต์",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "โมเดลภัยคุกคามที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้าง",

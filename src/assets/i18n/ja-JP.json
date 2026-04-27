@@ -774,12 +774,14 @@
     "addInverseConnection": "逆接続を追加",
     "dataAssets": "データ資産...",
     "editText": "テキストを編集",
+    "lockLayout": "Lock Layout",
     "moveBackward": "背面へ移動",
     "moveForward": "前面へ移動",
     "moveToBack": "最背面へ移動",
     "moveToFront": "最前面へ移動",
     "noDataAssetsAvailable": "データ資産がありません",
-    "showObject": "オブジェクトを表示"
+    "showObject": "オブジェクトを表示",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的には共有されません。この設定は作成後に変更することはできません。",

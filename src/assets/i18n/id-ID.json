@@ -774,12 +774,14 @@
     "addInverseConnection": "Tambah Koneksi Terbalik",
     "dataAssets": "Aset Data...",
     "editText": "Edit Teks",
+    "lockLayout": "Lock Layout",
     "moveBackward": "Pindah ke Belakang",
     "moveForward": "Pindah ke Depan",
     "moveToBack": "Pindah ke Paling Belakang",
     "moveToFront": "Pindah ke Paling Depan",
     "noDataAssetsAvailable": "Tidak ada aset data yang tersedia",
-    "showObject": "Tampilkan Objek"
+    "showObject": "Tampilkan Objek",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",

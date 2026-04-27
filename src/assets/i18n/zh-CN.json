@@ -774,12 +774,14 @@
     "addInverseConnection": "添加反向连接",
     "dataAssets": "数据资产...",
     "editText": "编辑文本",
+    "lockLayout": "Lock Layout",
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
     "moveToFront": "移到最前",
     "noDataAssetsAvailable": "没有可用的数据资产",
-    "showObject": "显示对象"
+    "showObject": "显示对象",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "机密威胁模型不会自动与安全审查员组共享。此设置在创建后无法更改。",

@@ -774,12 +774,14 @@
     "addInverseConnection": "إضافة اتصال عكسي",
     "dataAssets": "أصول البيانات...",
     "editText": "تحرير النص",
+    "lockLayout": "Lock Layout",
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
     "moveToFront": "نقل إلى المقدمة",
     "noDataAssetsAvailable": "لا توجد أصول بيانات متاحة",
-    "showObject": "عرض الكائن"
+    "showObject": "عرض الكائن",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "نماذج التهديدات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد الإنشاء.",

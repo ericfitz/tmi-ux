@@ -774,12 +774,14 @@
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",
     "dataAssets": "ডেটা অ্যাসেট...",
     "editText": "টেক্সট সম্পাদনা করুন",
+    "lockLayout": "Lock Layout",
     "moveBackward": "পেছনে সরান",
     "moveForward": "সামনে সরান",
     "moveToBack": "সবার পেছনে সরান",
     "moveToFront": "সবার সামনে সরান",
     "noDataAssetsAvailable": "কোন ডেটা অ্যাসেট উপলব্ধ নেই",
-    "showObject": "অবজেক্ট দেখান"
+    "showObject": "অবজেক্ট দেখান",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "গোপনীয় হুমকি মডেলগুলি স্বয়ংক্রিয়ভাবে নিরাপত্তা পর্যালোচক দলের সাথে ভাগ করা হয় না। এই সেটিং সৃষ্টির পরে পরিবর্তন করা যায় না।",

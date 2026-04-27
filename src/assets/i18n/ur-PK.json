@@ -774,12 +774,14 @@
     "addInverseConnection": "الٹا کنکشن شامل کریں",
     "dataAssets": "ڈیٹا اثاثے...",
     "editText": "متن میں ترمیم کریں",
+    "lockLayout": "Lock Layout",
     "moveBackward": "پیچھے منتقل کریں",
     "moveForward": "آگے منتقل کریں",
     "moveToBack": "سب سے پیچھے منتقل کریں",
     "moveToFront": "سب سے آگے منتقل کریں",
     "noDataAssetsAvailable": "کوئی ڈیٹا اثاثے دستیاب نہیں ہیں",
-    "showObject": "آبجیکٹ دکھائیں"
+    "showObject": "آبجیکٹ دکھائیں",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "رازداری والے خطرے کے ماڈلز خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کیے جاتے۔ یہ ترتیب تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",

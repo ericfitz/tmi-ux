@@ -774,12 +774,14 @@
     "addInverseConnection": "역방향 연결 추가",
     "dataAssets": "데이터 자산...",
     "editText": "텍스트 편집",
+    "lockLayout": "Lock Layout",
     "moveBackward": "뒤로 이동",
     "moveForward": "앞으로 이동",
     "moveToBack": "맨 뒤로 이동",
     "moveToFront": "맨 앞으로 이동",
     "noDataAssetsAvailable": "사용 가능한 데이터 자산이 없습니다",
-    "showObject": "객체 표시"
+    "showObject": "객체 표시",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "기밀 위협 모델은 보안 검토자 그룹과 자동으로 공유되지 않습니다. 이 설정은 생성 후 변경할 수 없습니다.",

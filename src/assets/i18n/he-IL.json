@@ -774,12 +774,14 @@
     "addInverseConnection": "הוסף חיבור הפוך",
     "dataAssets": "נכסי נתונים...",
     "editText": "ערוך טקסט",
+    "lockLayout": "Lock Layout",
     "moveBackward": "הזז אחורה",
     "moveForward": "הזז קדימה",
     "moveToBack": "הזז לאחור",
     "moveToFront": "הזז לקדמה",
     "noDataAssetsAvailable": "אין נכסי נתונים זמינים",
-    "showObject": "הצג אובייקט"
+    "showObject": "הצג אובייקט",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "מודלי איום סודיים אינם משותפים באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר היצירה.",

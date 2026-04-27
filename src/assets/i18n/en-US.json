@@ -799,12 +799,14 @@
     "addInverseConnection": "Add Inverse Connection",
     "dataAssets": "Data Assets...",
     "editText": "Edit Text",
+    "lockLayout": "Lock Layout",
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
     "moveToFront": "Move to Front",
     "noDataAssetsAvailable": "No data assets available",
-    "showObject": "Show Object"
+    "showObject": "Show Object",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "Confidential threat models are not automatically shared with the Security Reviewers group. This setting cannot be changed after creation.",

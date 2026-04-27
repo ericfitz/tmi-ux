@@ -774,12 +774,14 @@
     "addInverseConnection": "Adicionar Conexao Inversa",
     "dataAssets": "Ativos de Dados...",
     "editText": "Editar Texto",
+    "lockLayout": "Lock Layout",
     "moveBackward": "Mover para Tras",
     "moveForward": "Mover para Frente",
     "moveToBack": "Mover para o Fundo",
     "moveToFront": "Mover para a Frente",
     "noDataAssetsAvailable": "Nenhum ativo de dados disponível",
-    "showObject": "Mostrar Objeto"
+    "showObject": "Mostrar Objeto",
+    "unlockLayout": "Unlock Layout"
   },
   "createThreatModel": {
     "confidentialHint": "Modelos de ameaça confidenciais não são compartilhados automaticamente com o grupo Revisores de Segurança. Esta configuração não pode ser alterada após a criação.",
