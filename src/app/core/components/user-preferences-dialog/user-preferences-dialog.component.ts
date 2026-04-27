@@ -1,4 +1,13 @@
-import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MatTabGroup } from '@angular/material/tabs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -19,6 +28,7 @@ import {
   DeleteUserDataDialogData,
 } from '../delete-user-data-dialog/delete-user-data-dialog.component';
 import { UserProfile } from '@app/auth/models/auth.models';
+import { ConnectedAccountsTabComponent } from './connected-accounts-tab/connected-accounts-tab.component';
 import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
 import { ClientCredentialInfo, ClientCredentialResponse } from '@app/types/client-credential.types';
 import { ClientCredentialService } from '../../services/client-credential.service';
@@ -64,6 +74,7 @@ interface CheckboxChangeEvent {
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
     UserDisplayComponent,
+    ConnectedAccountsTabComponent,
   ],
   template: `
     <h2
@@ -387,6 +398,11 @@ interface CheckboxChangeEvent {
               </mat-radio-group>
             </div>
           </div>
+        </mat-tab>
+
+        <!-- Document Sources Tab -->
+        <mat-tab [label]="'documentSources.tabTitle' | transloco">
+          <app-connected-accounts-tab></app-connected-accounts-tab>
         </mat-tab>
 
         <!-- Credentials Tab (admins and security reviewers only) -->
@@ -904,8 +920,13 @@ interface CheckboxChangeEvent {
     `,
   ],
 })
-export class UserPreferencesDialogComponent implements OnInit {
+export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
+
+  @ViewChild(MatTabGroup) tabGroup?: MatTabGroup;
+  // Tab order: Profile (0), Display (1), Reports (2), Document sources (3),
+  // Credentials (4, conditional), Danger (5).
+  private static readonly DOCUMENT_SOURCES_TAB_INDEX = 3;
 
   preferences: UserPreferences;
   userProfile: UserProfile | null = null;
@@ -962,6 +983,19 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe(role => {
         this.currentThreatModelRole = role;
       });
+  }
+
+  ngAfterViewInit(): void {
+    const initialTab = (this.data as { initialTab?: string } | null)?.initialTab;
+    if (initialTab === 'document-sources' && this.tabGroup) {
+      // setTimeout(0) defers the assignment past Angular's initial change-detection
+      // pass, avoiding ExpressionChangedAfterItHasBeenCheckedError on the tab index.
+      setTimeout(() => {
+        if (this.tabGroup) {
+          this.tabGroup.selectedIndex = UserPreferencesDialogComponent.DOCUMENT_SOURCES_TAB_INDEX;
+        }
+      }, 0);
+    }
   }
 
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
