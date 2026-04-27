@@ -670,6 +670,15 @@ mat-card-header {
   }
 }
 
+// Document access-status icon variants (#626)
+.doc-status-error {
+  color: var(--mat-error-color, #f44336);
+}
+
+.doc-status-warn {
+  color: var(--mat-warn-color, #f57c00);
+}
+
 // Column sizing
 .column-icon {
   width: 56px;
