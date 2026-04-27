@@ -1,4 +1,8 @@
 import type { Metadata } from '@app/types/metadata.types';
+import type {
+  DocumentAccessDiagnostics,
+  PickerRegistration,
+} from '@app/core/models/content-provider.types';
 // Re-export Metadata from shared types for backward compatibility
 export type { Metadata } from '@app/types/metadata.types';
 
@@ -42,6 +46,11 @@ export interface Document {
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
+  // Picker integration (#626)
+  picker_registration?: PickerRegistration | null;
+  access_status?: 'accessible' | 'pending_access' | 'auth_required' | 'unknown';
+  access_diagnostics?: DocumentAccessDiagnostics | null;
+  access_status_updated_at?: string | null;
 }
 
 export interface Repository {
