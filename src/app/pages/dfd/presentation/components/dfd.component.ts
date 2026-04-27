@@ -131,6 +131,7 @@ import {
 import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
 import {
   ArchIconData,
+  ICON_ELIGIBLE_SHAPES,
   ICON_HIDEABLE_BORDER_SHAPES,
   ICON_HIDEABLE_BORDER_SELECTORS,
 } from '../../types/arch-icon.types';
@@ -141,7 +142,19 @@ import {
   getIconPlacementKey,
   getLabelAttrsForIconPlacement,
 } from '../../types/icon-placement.types';
-import { iconOnlyFitGeometry, labelLineHeightForFontSize } from '../../utils/auto-layout.util';
+import {
+  AUTO_LAYOUT_DEFAULTS,
+  ChildBox,
+  IconColumn,
+  Orientation,
+  iconOnlyFitGeometry,
+  inferOrientation,
+  labelLineHeightForFontSize,
+  layoutContainer,
+  sortChildrenByPorts,
+  sortChildrenByPosition,
+} from '../../utils/auto-layout.util';
+import { measureLabelWidth } from '../../utils/text-measurement.util';
 import {
   PortLabelPopoverComponent,
   PortLabelData,
@@ -238,6 +251,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly _destroy$ = new Subject<void>();
   private _subscriptions = new Subscription();
+  // Suppress auto-layout trigger handlers while a cycle is in progress
+  // (cell.resize / child.position calls during layout would otherwise re-fire
+  // the same handler and recurse).
+  private _inLayoutCycle = false;
 
   // Collaborative editing state
   isReadOnlyMode = false;
@@ -2267,12 +2284,97 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }),
       );
 
+      this.subscribeToAutoLayoutTriggers();
+
       this.logger.debugComponent(
         'DfdComponent',
         'Edge and history observable subscriptions set up successfully',
       );
     } else {
       this.logger.warn('Graph adapter not available for edge and history subscriptions');
+    }
+  }
+
+  /**
+   * Bind to raw graph events for auto-layout triggers (#642).
+   *
+   * `node:moved` and `node:resized` are drag-end events (one fire per
+   * interaction), avoiding the relayout-during-drag jitter that
+   * `node:change:position` / `node:change:size` would cause if subscribed
+   * directly.
+   *
+   * The `_inLayoutCycle` flag short-circuits these handlers when the layout
+   * itself calls `cell.resize()` / `child.position()`.
+   */
+  private subscribeToAutoLayoutTriggers(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    const onParent = ({ node, previous }: { node: any; previous: any }): void => {
+      if (this._inLayoutCycle) return;
+      const newParent = node.getParent?.();
+      if (newParent) {
+        this._runLayoutCycle(newParent, 'ports');
+      }
+      // Also re-evaluate the previous parent in case it became empty (revert
+      // from container fit) or now has fewer children (re-pack). x6 hands us
+      // the previous parent as a Node reference, not an ID.
+      const oldParent = previous ?? null;
+      if (oldParent && oldParent !== newParent) {
+        const oldData = oldParent.getData?.() ?? {};
+        const remainingLayoutChildren = ((oldParent.getChildren?.() ?? []) as any[]).filter(
+          c => c.shape !== 'text-box',
+        );
+        if (remainingLayoutChildren.length > 0) {
+          this._runLayoutCycle(oldParent, 'ports');
+        } else if (oldData._archAutoFit) {
+          this.revertAutoFit(oldParent);
+        }
+      }
+    };
+
+    const onMoved = ({ node }: { node: any }): void => {
+      if (this._inLayoutCycle) return;
+      const parent = node.getParent?.();
+      if (!parent) return;
+      const parentData = parent.getData?.() ?? {};
+      const autoFit = parentData._archAutoFit as
+        | { kind: 'icon-only' | 'container'; width: number; height: number }
+        | undefined;
+      if (!autoFit || autoFit.kind !== 'container') return;
+      this._clearVerticesOfConnectedEdges(graph, node);
+      this._runLayoutCycle(parent, 'position');
+    };
+
+    const onResized = ({ node }: { node: any }): void => {
+      if (this._inLayoutCycle) return;
+      const parent = node.getParent?.();
+      if (!parent) return;
+      const parentData = parent.getData?.() ?? {};
+      const autoFit = parentData._archAutoFit as
+        | { kind: 'icon-only' | 'container'; width: number; height: number }
+        | undefined;
+      if (!autoFit || autoFit.kind !== 'container') return;
+      this._runLayoutCycle(parent, 'ports');
+    };
+
+    graph.on('node:change:parent', onParent);
+    graph.on('node:moved', onMoved);
+    graph.on('node:resized', onResized);
+
+    this._destroy$.subscribe(() => {
+      graph.off('node:change:parent', onParent);
+      graph.off('node:moved', onMoved);
+      graph.off('node:resized', onResized);
+    });
+  }
+
+  private _clearVerticesOfConnectedEdges(graph: any, node: any): void {
+    const edges = graph.getConnectedEdges?.(node) ?? [];
+    for (const edge of edges) {
+      if (typeof edge.setVertices === 'function') {
+        edge.setVertices([]);
+      }
     }
   }
 
@@ -2987,29 +3089,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (arch) {
         this.applyIconToCell(node, arch);
         this.applyBorderPreference(node);
-        this.applyAutoLayout(node);
       }
+      // Auto-layout pass for both iconned cells and security boundaries with
+      // embedded children. applyAutoLayout no-ops anything that isn't eligible.
+      this.applyAutoLayout(node);
     }
   }
 
-  // -------- Auto-layout (#638) --------
+  // -------- Auto-layout (#638, #642) --------
 
   /**
    * Top-level auto-layout entry point. Returns true if any change was applied.
    *
-   * Phase 3a: implements icon-only fit (leaf iconned shapes). Container fit
-   * (shapes with embedded children) lands in 3b.
+   * Dispatches to icon-only fit for leaf iconned shapes, or container fit for
+   * any auto-layout-eligible shape with embedded non-text-box children.
+   *
+   * `sortBy` controls how container-fit children are ordered:
+   *   - `ports` (default) — by connection-port usage (initial layout)
+   *   - `position` — by current (x, y) (after a child drag)
    */
-  private applyAutoLayout(cell: any): boolean {
+  private applyAutoLayout(cell: any, sortBy: 'ports' | 'position' = 'ports'): boolean {
     if (!this.userPreferencesService.getPreferences().autoLayoutEnabled) return false;
     const data = cell.getData() ?? {};
-    if (!data._arch) return false;
-    const childCount = (cell.getChildren?.() ?? []).length;
-    if (childCount > 0) {
-      // Container fit lands in 3b. For now we leave children-bearing cells
-      // alone; revertAutoFit will still fire on toggles to clear stale flags.
-      return false;
+    const allChildren = (cell.getChildren?.() ?? []) as any[];
+    const layoutChildren = allChildren.filter(c => c.shape !== 'text-box');
+    if (layoutChildren.length > 0) {
+      return this.applyContainerFit(cell, layoutChildren, sortBy);
     }
+    if (!data._arch) return false;
     return this.applyIconOnlyFit(cell);
   }
 
@@ -3064,6 +3171,264 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Apply container fit. Resizes the cell to fit a grid of layout children
+   * plus an optional icon column/row, repositions each child within the grid,
+   * and updates icon/label attrs for iconned cells. Returns true if any
+   * change was applied.
+   *
+   * Eligibility: shape ∈ {actor, process, store, security-boundary} AND
+   * current size is shape default OR matches the previously-recorded auto-fit
+   * size (i.e., the user has not manually resized this cell).
+   */
+  private applyContainerFit(
+    cell: any,
+    layoutChildren: any[],
+    sortBy: 'ports' | 'position',
+  ): boolean {
+    if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return false;
+
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return false;
+
+    const shapeKey = cell.shape.toUpperCase().replace(/-/g, '_');
+    const shapeConfig = (DFD_STYLING.NODES as Record<string, any>)[shapeKey];
+    if (!shapeConfig) return false;
+    const defaultWidth = shapeConfig.DEFAULT_WIDTH as number;
+    const defaultHeight = shapeConfig.DEFAULT_HEIGHT as number;
+
+    const data = cell.getData() ?? {};
+    const previousAutoFit = data._archAutoFit as
+      | { kind: 'icon-only' | 'container'; width: number; height: number }
+      | undefined;
+    const { width: currentWidth, height: currentHeight } = cell.getSize();
+    const atDefaultSize = currentWidth === defaultWidth && currentHeight === defaultHeight;
+    const stillAtPreviousAutoFit =
+      !!previousAutoFit &&
+      currentWidth === previousAutoFit.width &&
+      currentHeight === previousAutoFit.height;
+    if (!atDefaultSize && !stillAtPreviousAutoFit) return false;
+
+    const fontSize = DFD_STYLING.DEFAULT_FONT_SIZE;
+    const fontFamily = DFD_STYLING.TEXT_FONT_FAMILY;
+    const lineHeight = labelLineHeightForFontSize(fontSize);
+
+    const arch = data._arch as ArchIconData | undefined;
+    const iconCol: IconColumn = this._buildIconColumn(cell, arch, fontSize, fontFamily, lineHeight);
+
+    const childBoxes: ChildBox[] = layoutChildren.map(child => this._buildChildBox(graph, child));
+
+    const orientation = this._resolveLayoutOrientation(graph);
+    const sorted =
+      sortBy === 'position'
+        ? sortChildrenByPosition(childBoxes, orientation)
+        : sortChildrenByPorts(childBoxes, orientation);
+
+    const padding = {
+      outer: AUTO_LAYOUT_DEFAULTS.outerPad,
+      iconGap: AUTO_LAYOUT_DEFAULTS.iconGap,
+      gap: AUTO_LAYOUT_DEFAULTS.gap,
+    };
+    const layout = layoutContainer(iconCol, sorted, orientation, padding, lineHeight);
+
+    if (currentWidth !== layout.containerWidth || currentHeight !== layout.containerHeight) {
+      cell.resize(layout.containerWidth, layout.containerHeight);
+    }
+
+    if (layout.iconAttrs) {
+      this._setAbsoluteIconAttrs(cell, layout.iconAttrs);
+    }
+    if (layout.labelAttrs) {
+      this._setAbsoluteLabelAttrs(cell, layout.labelAttrs);
+    }
+
+    // layoutContainer returns child positions in container-local coords; x6
+    // children use absolute graph coords, so translate by the container's
+    // current absolute position.
+    const cellPos = cell.getPosition();
+    for (const pos of layout.childPositions) {
+      const child = graph.getCellById(pos.id);
+      if (!child) continue;
+      const absX = cellPos.x + pos.x;
+      const absY = cellPos.y + pos.y;
+      const cur = child.getPosition();
+      if (cur.x !== absX || cur.y !== absY) {
+        child.setPosition(absX, absY);
+      }
+    }
+
+    cell.setData(
+      {
+        ...cell.getData(),
+        _archAutoFit: {
+          kind: 'container',
+          width: layout.containerWidth,
+          height: layout.containerHeight,
+        },
+      },
+      { silent: true },
+    );
+
+    return true;
+  }
+
+  private _buildIconColumn(
+    cell: any,
+    arch: ArchIconData | undefined,
+    fontSize: number,
+    fontFamily: string,
+    lineHeight: number,
+  ): IconColumn {
+    if (!arch) {
+      return { hasIcon: false, width: 0, height: 0 };
+    }
+    const labelText = (cell.getAttrs?.()?.text?.text as string | undefined) ?? '';
+    const labelWidth = measureLabelWidth(labelText, fontSize, fontFamily);
+    return {
+      hasIcon: true,
+      width: Math.max(ICON_SIZE, Math.ceil(labelWidth)),
+      height: ICON_SIZE + AUTO_LAYOUT_DEFAULTS.labelGap + lineHeight,
+    };
+  }
+
+  private _buildChildBox(graph: any, child: any): ChildBox {
+    const { width, height } = child.getSize();
+    const ports: { top: boolean; right: boolean; bottom: boolean; left: boolean } = {
+      top: false,
+      right: false,
+      bottom: false,
+      left: false,
+    };
+    const markPort = (portId: unknown): void => {
+      if (portId === 'top' || portId === 'right' || portId === 'bottom' || portId === 'left') {
+        ports[portId] = true;
+      }
+    };
+    const edges = graph.getConnectedEdges?.(child) ?? [];
+    for (const edge of edges) {
+      if (edge.getSourceCellId?.() === child.id) {
+        markPort(edge.getSourcePortId?.());
+      }
+      if (edge.getTargetCellId?.() === child.id) {
+        markPort(edge.getTargetPortId?.());
+      }
+    }
+    const pos = child.getPosition();
+    return { id: child.id, width, height, ports, x: pos.x, y: pos.y };
+  }
+
+  private _resolveLayoutOrientation(graph: any): Orientation {
+    const prefs = this.userPreferencesService.getPreferences();
+    if (prefs.autoLayoutOrientation === 'horizontal') return 'horizontal';
+    if (prefs.autoLayoutOrientation === 'vertical') return 'vertical';
+    const topLevel = (graph.getNodes() as any[]).filter(n => !n.getParent?.());
+    return inferOrientation(
+      topLevel.map(n => {
+        const p = n.getPosition();
+        const s = n.getSize();
+        return { x: p.x, y: p.y, width: s.width, height: s.height };
+      }),
+    );
+  }
+
+  /**
+   * Walk up the parent chain from `startCell`. For each ancestor that is in
+   * container-fit state, re-apply container fit. Stops at the first ancestor
+   * without an `_archAutoFit.kind === 'container'` flag.
+   */
+  private cascadeContainerLayout(startCell: any): void {
+    let parent = startCell.getParent?.();
+    while (parent) {
+      const data = parent.getData?.() ?? {};
+      const autoFit = data._archAutoFit as
+        | { kind: 'icon-only' | 'container'; width: number; height: number }
+        | undefined;
+      if (!autoFit || autoFit.kind !== 'container') break;
+      const allChildren = (parent.getChildren?.() ?? []) as any[];
+      const layoutChildren = allChildren.filter(c => c.shape !== 'text-box');
+      if (layoutChildren.length === 0) break;
+      this.applyContainerFit(parent, layoutChildren, 'ports');
+      parent = parent.getParent?.();
+    }
+  }
+
+  /**
+   * Run a layout cycle triggered by `cell`. Captures pre-state for the cell,
+   * its layout children, and any cascade ancestors, applies the layout, then
+   * issues a single batched history entry covering every touched cell. The
+   * `_inLayoutCycle` guard prevents the handler-fired resize/position events
+   * from re-entering this method recursively.
+   */
+  private _runLayoutCycle(triggerCell: any, sortBy: 'ports' | 'position' = 'ports'): boolean {
+    if (this._inLayoutCycle) return false;
+    this._inLayoutCycle = true;
+    try {
+      const previousStates = new Map<string, unknown>();
+      const captureCell = (c: any): void => {
+        if (!c?.id || previousStates.has(c.id)) return;
+        previousStates.set(c.id, this._captureCellStateForHistory(c));
+      };
+
+      captureCell(triggerCell);
+      for (const child of (triggerCell.getChildren?.() ?? []) as any[]) {
+        captureCell(child);
+      }
+      let ancestor = triggerCell.getParent?.();
+      while (ancestor) {
+        const ancData = ancestor.getData?.() ?? {};
+        const autoFit = ancData._archAutoFit as
+          | { kind: 'icon-only' | 'container'; width: number; height: number }
+          | undefined;
+        if (!autoFit || autoFit.kind !== 'container') break;
+        captureCell(ancestor);
+        for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
+          captureCell(child);
+        }
+        ancestor = ancestor.getParent?.();
+      }
+
+      const changed = this.applyAutoLayout(triggerCell, sortBy);
+      if (changed) {
+        this.cascadeContainerLayout(triggerCell);
+      }
+
+      if (!changed || previousStates.size === 0) return changed;
+
+      const ts = Date.now();
+      const ops = Array.from(previousStates.entries()).map(([id, prev], i) => ({
+        id: `auto-layout-${ts}-${i}-${id}`,
+        type: 'update-node' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: ts,
+        nodeId: id,
+        updates: {},
+        includeInHistory: true,
+        metadata: { previousCellState: prev },
+      }));
+
+      if (ops.length === 1) {
+        this.appDfdOrchestrator.executeOperation(ops[0]).subscribe();
+      } else {
+        const batch = {
+          id: `auto-layout-batch-${ts}`,
+          type: 'batch-operation' as const,
+          source: 'user-interaction' as const,
+          priority: 'normal' as const,
+          timestamp: ts,
+          operations: ops,
+          description: 'Auto-layout',
+          includeInHistory: true,
+        };
+        this.appDfdOrchestrator.executeOperation(batch).subscribe();
+      }
+
+      return changed;
+    } finally {
+      this._inLayoutCycle = false;
+    }
+  }
+
+  /**
    * Reverse a prior auto-fit (icon-only or container). Only acts on cells
    * whose current size still matches the dimensions we recorded — if the
    * user has resized the cell since, leave size alone and just clear the
@@ -3099,16 +3464,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Apply auto-layout to every eligible iconned cell. Used when a global
-   * preference (showShapeBordersWithIcons, autoLayoutEnabled, autoLayoutOrientation)
+   * Apply auto-layout to every eligible cell. Used when a global preference
+   * (showShapeBordersWithIcons, autoLayoutEnabled, autoLayoutOrientation)
    * changes — newly-placed icons handle themselves through onIconSelected.
+   *
+   * Eligible cells include any iconned shape (icon-only or container fit) plus
+   * security boundaries with embedded layout children (container fit, no icon).
    */
   private applyAutoLayoutToAllEligibleCells(): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
     for (const node of graph.getNodes()) {
       const data = node.getData();
-      if (data?._arch) this.applyAutoLayout(node);
+      const allChildren = (node.getChildren?.() ?? []) as any[];
+      const hasLayoutChildren = allChildren.some(c => c.shape !== 'text-box');
+      if (data?._arch || hasLayoutChildren) this.applyAutoLayout(node);
     }
   }
 
