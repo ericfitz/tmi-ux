@@ -46,21 +46,21 @@ const REMEDIATION_KEYS: Record<string, string> = {
   imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, TranslocoModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (document?.access_diagnostics) {
+    @if (document.access_diagnostics) {
       <div
         class="diagnostics-banner"
-        [class.error]="document?.access_status === 'auth_required'"
-        [class.warn]="document?.access_status === 'pending_access'"
+        [class.error]="document.access_status === 'auth_required'"
+        [class.warn]="document.access_status === 'pending_access'"
         data-testid="diagnostics-banner"
       >
         <mat-icon class="diagnostics-icon">
-          {{ document?.access_status === 'auth_required' ? 'error' : 'warning' }}
+          {{ document.access_status === 'auth_required' ? 'error' : 'warning' }}
         </mat-icon>
         <div class="diagnostics-body">
           <p class="diagnostics-message">{{ message }}</p>
-          @if ((document?.access_diagnostics?.remediations?.length ?? 0) > 0) {
+          @if (document.access_diagnostics.remediations.length > 0) {
             <div class="diagnostics-remediations">
-              @for (rem of document?.access_diagnostics?.remediations; track rem.action) {
+              @for (rem of document.access_diagnostics.remediations; track rem.action) {
                 <button
                   mat-stroked-button
                   [attr.data-testid]="'remediation-' + rem.action"
