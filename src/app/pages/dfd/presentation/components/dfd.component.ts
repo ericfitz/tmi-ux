@@ -154,6 +154,7 @@ import {
   sortChildrenByPorts,
   sortChildrenByPosition,
 } from '../../utils/auto-layout.util';
+import { isCellLayoutLocked } from '../../utils/layout-lock.util';
 import { measureLabelWidth } from '../../utils/text-measurement.util';
 import {
   PortLabelPopoverComponent,
@@ -3110,6 +3111,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private applyAutoLayout(cell: any, sortBy: 'ports' | 'position' = 'ports'): boolean {
     if (!this.userPreferencesService.getPreferences().autoLayoutEnabled) return false;
+    if (isCellLayoutLocked(cell)) return false;
     const data = cell.getData() ?? {};
     const allChildren = (cell.getChildren?.() ?? []) as any[];
     const layoutChildren = allChildren.filter(c => c.shape !== 'text-box');
@@ -3338,6 +3340,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private cascadeContainerLayout(startCell: any): void {
     let parent = startCell.getParent?.();
     while (parent) {
+      if (isCellLayoutLocked(parent)) break;
       const data = parent.getData?.() ?? {};
       const autoFit = data._archAutoFit as
         | { kind: 'icon-only' | 'container'; width: number; height: number }
@@ -3374,6 +3377,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       let ancestor = triggerCell.getParent?.();
       while (ancestor) {
+        if (isCellLayoutLocked(ancestor)) break;
         const ancData = ancestor.getData?.() ?? {};
         const autoFit = ancData._archAutoFit as
           | { kind: 'icon-only' | 'container'; width: number; height: number }
@@ -3475,6 +3479,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
     for (const node of graph.getNodes()) {
+      if (isCellLayoutLocked(node)) continue;
       const data = node.getData();
       const allChildren = (node.getChildren?.() ?? []) as any[];
       const hasLayoutChildren = allChildren.some(c => c.shape !== 'text-box');
@@ -3490,6 +3495,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
     for (const node of graph.getNodes()) {
+      if (isCellLayoutLocked(node)) continue;
       const data = node.getData();
       if (data?._archAutoFit) this.revertAutoFit(node);
     }
