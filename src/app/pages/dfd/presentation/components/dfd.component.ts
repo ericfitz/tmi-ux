@@ -279,6 +279,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   hasExactlyOneSelectedCell = false;
   selectedCellIsTextBox = false;
   selectedCellIsSecurityBoundary = false;
+  selectedCellIsLockEligible = false;
+  rightClickedCellIsLocked = false;
   isSystemInitialized = false;
 
   // Undo/redo state properties
@@ -1900,6 +1902,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debugComponent('DfdComponent', 'Moved cell to back', { cellId: targetCell.id });
   }
 
+  toggleLayoutLock(): void {
+    // Implementation in Task 6.
+  }
+
   // Edge methods
   addInverseConnection(): void {
     const edge = this._rightClickedCell || this.getFirstSelectedCell();
@@ -2401,6 +2407,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private openCellContextMenu(cell: any, x: number, y: number): void {
     // Store the right-clicked cell for context menu actions
     this._rightClickedCell = cell;
+    this.rightClickedCellIsLocked = isCellLayoutLocked(cell);
 
     // Update context menu position
     this.contextMenuPosition = {
@@ -2742,6 +2749,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const oldHasExactlyOneSelectedCell = this.hasExactlyOneSelectedCell;
     const oldSelectedCellIsTextBox = this.selectedCellIsTextBox;
     const oldSelectedCellIsSecurityBoundary = this.selectedCellIsSecurityBoundary;
+    const oldSelectedCellIsLockEligible = this.selectedCellIsLockEligible;
 
     this.hasSelectedCells = selectedCells.length > 0;
     this.hasExactlyOneSelectedCell = selectedCells.length === 1;
@@ -2756,14 +2764,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             cellData?.nodeType === 'text-box' || cell.shape === 'text-box';
           this.selectedCellIsSecurityBoundary =
             cellData?.nodeType === 'security-boundary' || cell.shape === 'security-boundary';
+          this.selectedCellIsLockEligible = (ICON_ELIGIBLE_SHAPES as readonly string[]).includes(
+            cell.shape,
+          );
         } else {
           this.selectedCellIsTextBox = false;
           this.selectedCellIsSecurityBoundary = false;
+          this.selectedCellIsLockEligible = false;
         }
       }
     } else {
       this.selectedCellIsTextBox = false;
       this.selectedCellIsSecurityBoundary = false;
+      this.selectedCellIsLockEligible = false;
     }
 
     // Update style panel cell info if panel is open
@@ -2777,7 +2790,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       oldHasSelectedCells !== this.hasSelectedCells ||
       oldHasExactlyOneSelectedCell !== this.hasExactlyOneSelectedCell ||
       oldSelectedCellIsTextBox !== this.selectedCellIsTextBox ||
-      oldSelectedCellIsSecurityBoundary !== this.selectedCellIsSecurityBoundary
+      oldSelectedCellIsSecurityBoundary !== this.selectedCellIsSecurityBoundary ||
+      oldSelectedCellIsLockEligible !== this.selectedCellIsLockEligible
     ) {
       this.cdr.detectChanges();
     }

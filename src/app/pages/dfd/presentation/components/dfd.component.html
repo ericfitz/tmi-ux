@@ -492,6 +492,16 @@
         <mat-icon>vertical_align_bottom</mat-icon>
         <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
       </button>
+      @if (selectedCellIsLockEligible) {
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="toggleLayoutLock()" [disabled]="isReadOnlyMode">
+          <mat-icon>{{ rightClickedCellIsLocked ? 'lock_open' : 'lock' }}</mat-icon>
+          <span>{{
+            (rightClickedCellIsLocked ? 'contextMenu.unlockLayout' : 'contextMenu.lockLayout')
+              | transloco
+          }}</span>
+        </button>
+      }
       @if (isRightClickedCellEdge()) {
         <button
           mat-menu-item
