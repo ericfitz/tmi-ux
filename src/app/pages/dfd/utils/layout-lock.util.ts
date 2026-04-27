@@ -14,7 +14,7 @@ const LOCK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" wi
  * The href used for the lock-badge image element on cells. Inlined SVG data URL
  * so the badge has zero asset-loading dependencies and renders immediately.
  */
-export const LOCK_BADGE_ICON_HREF = `data:image/svg+xml;utf8,${encodeURIComponent(LOCK_SVG)}`;
+export const LOCK_BADGE_ICON_HREF = `data:image/svg+xml,${encodeURIComponent(LOCK_SVG)}`;
 
 /**
  * Returns true if the cell's data contains `_layoutLocked: true`.
