@@ -3516,7 +3516,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Sync the lock-badge markup on a cell to its `_layoutLocked` data flag.
    *
-   * - When locked: sets the badge's `href` and shows it (display: '').
+   * - When locked: sets the badge's `href` and shows it (display: 'block').
    * - When unlocked: hides the badge (display: 'none').
    *
    * Only eligible shapes (actor / process / store / security-boundary) have
@@ -3527,7 +3527,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const locked = isCellLayoutLocked(cell);
     if (locked) {
       cell.setAttrByPath('lockBadge/href', LOCK_BADGE_ICON_HREF);
-      cell.setAttrByPath('lockBadge/display', '');
+      cell.setAttrByPath('lockBadge/display', 'block');
     } else {
       cell.setAttrByPath('lockBadge/display', 'none');
     }
