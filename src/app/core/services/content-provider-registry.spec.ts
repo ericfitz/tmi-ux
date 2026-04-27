@@ -1,3 +1,5 @@
+import '@angular/compiler';
+
 import { describe, it, expect } from 'vitest';
 import { CONTENT_PROVIDERS } from './content-provider-registry';
 

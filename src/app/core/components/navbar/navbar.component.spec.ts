@@ -137,6 +137,7 @@ describe('NavbarComponent', () => {
     runInInjectionContext(envInjector, () => {
       component = new NavbarComponent(
         mockRouter as any,
+        { queryParams: new BehaviorSubject({}) } as any, // ActivatedRoute (#626)
         mockAuthService as any,
         mockLanguageService as any,
         mockDialog as any,
@@ -145,6 +146,7 @@ describe('NavbarComponent', () => {
         mockWebSocketAdapter as any,
         mockCollaborationService as any,
         mockTranslocoService as any,
+        { open: vi.fn() } as any, // MatSnackBar (was missing)
         mockCdr as any,
       );
     });
