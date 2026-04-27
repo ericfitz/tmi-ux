@@ -1954,6 +1954,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const previousStates = new Map<string, unknown>();
     const captureCell = (c: any): void => {
       if (!c?.id || previousStates.has(c.id)) return;
+      if (!c.isNode?.()) return;
       previousStates.set(c.id, this._captureCellStateForHistory(c));
     };
 
@@ -3506,6 +3507,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const previousStates = new Map<string, unknown>();
       const captureCell = (c: any): void => {
         if (!c?.id || previousStates.has(c.id)) return;
+        if (!c.isNode?.()) return;
         previousStates.set(c.id, this._captureCellStateForHistory(c));
       };
 
@@ -3655,11 +3657,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * - When locked: sets the badge's `href` and shows it (display: 'block').
    * - When unlocked: hides the badge (display: 'none').
    *
-   * Only eligible shapes (actor / process / store / security-boundary) have
-   * the `lockBadge` markup element; calling this on other shapes is harmless —
-   * `setAttrByPath` no-ops on a missing selector.
+   * Early-returns on non-lock-eligible shapes so we don't write `lockBadge`
+   * attrs to cells whose markup doesn't have that selector — those writes
+   * would still land in the cell's attrs data and bloat patch payloads.
    */
   private applyLockBadge(cell: any): void {
+    if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return;
     const locked = isCellLayoutLocked(cell);
     if (locked) {
       cell.setAttrByPath('lockBadge/href', LOCK_BADGE_ICON_HREF);
