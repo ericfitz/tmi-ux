@@ -47,6 +47,47 @@ mat-dialog-actions {
   font-style: italic;
 }
 
+// Source selector (#626)
+.source-selector {
+  margin-bottom: 16px;
+}
+
+.source-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.source-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.picker-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--theme-divider);
+  border-radius: 4px;
+  background-color: var(--theme-surface-variant, rgb(0 0 0 / 2%));
+}
+
+.picked-file-hint {
+  margin: 0;
+  font-style: italic;
+  color: var(--theme-text-secondary);
+}
+
+.link-prompt {
+  margin: 0;
+  font-size: 13px;
+  color: var(--theme-text-secondary);
+}
+
 // Responsive adjustments
 @media (width <= 768px) {
   .dialog-form {

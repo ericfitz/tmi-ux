@@ -17,6 +17,28 @@
   }
 </h2>
 <mat-dialog-content appScrollIndicator>
+  @if (data.document?.access_diagnostics) {
+    <app-access-diagnostics-panel [document]="data.document!"></app-access-diagnostics-panel>
+  }
+
+  @if (mode === 'create' && pickerSourceOptions.length > 0 && !isReadOnly) {
+    <div class="source-selector">
+      <label class="source-label" [transloco]="'documentEditor.source.label'">
+        How would you like to attach this document?
+      </label>
+      <mat-radio-group [(ngModel)]="selectedSource" name="source" class="source-radio-group">
+        <mat-radio-button value="url">
+          <span [transloco]="'documentEditor.source.url'">Paste a URL</span>
+        </mat-radio-button>
+        @for (p of pickerSourceOptions; track p.id) {
+          <mat-radio-button [value]="p.id">
+            {{ p.displayNameKey | transloco }}
+          </mat-radio-button>
+        }
+      </mat-radio-group>
+    </div>
+  }
+
   <form [formGroup]="documentForm" class="dialog-form">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
@@ -27,7 +49,6 @@
             {{ 'common.validation.required' | transloco }}
           </mat-error>
         }
-
         @if (documentForm.get('name')?.hasError('maxlength')) {
           <mat-error>
             {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
@@ -35,33 +56,71 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
-        <input
-          matInput
-          formControlName="uri"
-          data-testid="document-uri-input"
-          type="url"
-          tabindex="2"
-        />
-        @if (getUriSuggestion()) {
-          <mat-hint class="uri-suggestion-hint">
-            {{ getUriSuggestion() }}
-          </mat-hint>
-        }
-
-        @if (documentForm.get('uri')?.hasError('required')) {
-          <mat-error>
-            {{ 'common.validation.required' | transloco }}
-          </mat-error>
-        }
-
-        @if (documentForm.get('uri')?.hasError('maxlength')) {
-          <mat-error>
-            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-          </mat-error>
-        }
-      </mat-form-field>
+      @if (selectedSource === 'url' || mode === 'edit') {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
+          <input
+            matInput
+            formControlName="uri"
+            data-testid="document-uri-input"
+            type="url"
+            tabindex="2"
+          />
+          @if (getUriSuggestion()) {
+            <mat-hint class="uri-suggestion-hint">
+              {{ getUriSuggestion() }}
+            </mat-hint>
+          }
+          @if (documentForm.get('uri')?.hasError('required')) {
+            <mat-error>
+              {{ 'common.validation.required' | transloco }}
+            </mat-error>
+          }
+          @if (documentForm.get('uri')?.hasError('maxlength')) {
+            <mat-error>
+              {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+            </mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <div class="picker-area">
+          @if (hasLinkedToken(selectedSource)) {
+            @if (!pickedFile) {
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="onPickFile()"
+                data-testid="document-pick-button"
+              >
+                <mat-icon>folder_open</mat-icon>
+                <span [transloco]="'documentEditor.source.pickAction'">Pick a file</span>
+              </button>
+            } @else {
+              <p class="picked-file-hint">
+                {{ 'documentEditor.source.pickedFile' | transloco: { fileName: pickedFile.name } }}
+              </p>
+              <button mat-stroked-button type="button" (click)="onPickFile()">
+                {{ 'documentEditor.source.repickAction' | transloco }}
+              </button>
+            }
+          } @else {
+            <p class="link-prompt" [transloco]="'documentEditor.source.linkPrompt'">
+              Link your account to pick files from this source.
+            </p>
+            <button
+              mat-raised-button
+              color="primary"
+              type="button"
+              (click)="onLinkSource()"
+              data-testid="document-link-source-button"
+            >
+              <mat-icon>link</mat-icon>
+              <span [transloco]="'documentEditor.source.linkAction'">Link source</span>
+            </button>
+          }
+        </div>
+      }
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'common.description' | transloco }}</mat-label>
