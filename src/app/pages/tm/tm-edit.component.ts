@@ -329,8 +329,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   set diagrams(value: Diagram[]) {
-    this._diagrams = value;
-    this.diagramsDataSource.data = value;
+    const safe = value ?? [];
+    this._diagrams = safe;
+    this.diagramsDataSource.data = safe;
     this.computeDiagramSvgData();
   }
 
@@ -3116,17 +3117,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModelService
         .getDiagramsForThreatModel(threatModelId, this.diagramsPageSize, offset)
         .subscribe(response => {
-          this.diagrams = response.diagrams;
-          this.totalDiagrams = response.total;
+          const diagrams = response.diagrams ?? [];
+          this.diagrams = diagrams;
+          this.totalDiagrams = response.total ?? 0;
 
           // Update DIAGRAMS_BY_ID map with real diagram data
-          this.diagrams.forEach(diagram => {
+          diagrams.forEach(diagram => {
             DIAGRAMS_BY_ID.set(diagram.id, diagram);
           });
 
           // Update threat model diagrams property for consistency
           if (this.threatModel) {
-            this.threatModel.diagrams = response.diagrams;
+            this.threatModel.diagrams = diagrams;
           }
         }),
     );
@@ -3154,9 +3156,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .getDocumentsForThreatModel(threatModelId, this.documentsPageSize, offset)
         .subscribe(response => {
           if (this.threatModel) {
-            this.threatModel.documents = response.documents;
-            this.documentsDataSource.data = response.documents;
-            this.totalDocuments = response.total;
+            const documents = response.documents ?? [];
+            this.threatModel.documents = documents;
+            this.documentsDataSource.data = documents;
+            this.totalDocuments = response.total ?? 0;
           }
         }),
     );
@@ -3184,9 +3187,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .getRepositoriesForThreatModel(threatModelId, this.repositoriesPageSize, offset)
         .subscribe(response => {
           if (this.threatModel) {
-            this.threatModel.repositories = response.repositories;
-            this.repositoriesDataSource.data = response.repositories;
-            this.totalRepositories = response.total;
+            const repositories = response.repositories ?? [];
+            this.threatModel.repositories = repositories;
+            this.repositoriesDataSource.data = repositories;
+            this.totalRepositories = response.total ?? 0;
           }
         }),
     );
@@ -3242,9 +3246,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe({
           next: response => {
             if (this.threatModel) {
-              this.threatModel.assets = response.assets;
-              this.assetsDataSource.data = response.assets;
-              this.totalAssets = response.total;
+              const assets = response.assets ?? [];
+              this.threatModel.assets = assets;
+              this.assetsDataSource.data = assets;
+              this.totalAssets = response.total ?? 0;
             }
           },
           error: error => {
@@ -3299,9 +3304,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModelService.getThreatsForThreatModel(threatModelId, params).subscribe({
         next: response => {
           if (this.threatModel) {
-            this.threatModel.threats = response.threats.map(t => this.migrateThreatFieldValues(t));
-            this.threatsDataSource.data = this.threatModel.threats;
-            this.totalThreats = response.total;
+            const threats = (response.threats ?? []).map(t => this.migrateThreatFieldValues(t));
+            this.threatModel.threats = threats;
+            this.threatsDataSource.data = threats;
+            this.totalThreats = response.total ?? 0;
           }
         },
         error: error => {
@@ -3652,9 +3658,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe({
           next: response => {
             if (this.threatModel) {
-              this.threatModel.notes = response.notes;
-              this.notesDataSource.data = response.notes;
-              this.totalNotes = response.total;
+              const notes = response.notes ?? [];
+              this.threatModel.notes = notes;
+              this.notesDataSource.data = notes;
+              this.totalNotes = response.total ?? 0;
             }
           },
           error: error => {
@@ -3719,7 +3726,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return '';
     }
 
-    const diagram = this.diagrams.find(d => d.id === this.hoveredDiagramId);
+    const diagram = this.diagrams?.find(d => d.id === this.hoveredDiagramId);
     return diagram ? this.getSvgDataUrl(diagram) : '';
   }
 

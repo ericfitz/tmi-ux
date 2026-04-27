@@ -98,9 +98,11 @@ test.describe.serial('DFD Editor Auto-Save', () => {
       await page.waitForTimeout(3000);
     }
 
-    // Reload the page and wait for the DFD editor to re-initialize
+    // Reload the page and wait for the DFD editor to re-initialize.
+    // Don't use waitForLoadState('networkidle') — TMI's session/activity/token
+    // pollers keep network connections alive, so networkidle never settles
+    // (see issue #625 for the e2e pattern guidance).
     await page.goto(diagramUrl);
-    await page.waitForLoadState('networkidle');
     await expect(dfdEditorPage.graphContainer()).toBeVisible({ timeout: 15000 });
 
     // Wait for the graph to finish loading nodes
