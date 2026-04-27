@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Nota",
       "notes": "Notas",
+      "project": "Proyecto",
+      "projects": "Proyectos",
       "report": "Informe",
       "reports": "Informes",
       "repositories": "Repositorios",
@@ -700,6 +702,8 @@
       "surveyResponse": "Respuesta de Encuesta",
       "surveyResponses": "Respuestas de Encuesta",
       "surveys": "Encuestas",
+      "team": "Equipo",
+      "teams": "Equipos",
       "threat": "Amenaza",
       "threatModel": "Modelo de Amenazas",
       "threatModels": "Modelos de Amenazas",
@@ -960,6 +964,82 @@
       "title": "Estilo",
       "toggleStylePanel": "Alternar panel de estilos"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "Correo electrónico copiado",
+    "copyEmail": "Copiar correo electrónico",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "Se ha producido un error al leer este documento.",
+      "noAccessibleSource": "TMI no puede leer este documento con el acceso actual.",
+      "other": "No se puede acceder a este documento.",
+      "pickerRegistrationInvalid": "La autorización del selector para este documento ya no es válida.",
+      "sourceNotFound": "TMI no sabe cómo leer la URL de este documento.",
+      "tokenNotLinked": "No has vinculado la cuenta propietaria de este documento. Origen: {{ source }}",
+      "tokenRefreshFailed": "El enlace al origen ya no es válido. Origen: {{ source }}",
+      "tokenTransientFailure": "No se ha podido conectar con el origen. Suele ser un problema temporal. Origen: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Contactar al propietario del documento",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Volver a vincular el origen",
+      "repickAfterShare": "Volver a seleccionar tras compartir",
+      "repickFile": "Volver a seleccionar este archivo",
+      "retry": "Reintentar",
+      "shareWithServiceAccount": "Compartir con la cuenta de servicio de TMI"
+    },
+    "serviceAccountEmail": "Comparte con esta dirección de correo electrónico:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Seleccionar desde Google Drive",
+      "label": "¿Cómo deseas adjuntar este documento?",
+      "linkAction": "Vincular origen",
+      "linkPrompt": "Vincula tu cuenta para seleccionar archivos de este origen.",
+      "pickAction": "Seleccionar un archivo",
+      "pickedFile": "Archivo seleccionado: {{ fileName }}",
+      "repickAction": "Elegir otro archivo",
+      "url": "Pegar una URL"
+    }
+  },
+  "documentSources": {
+    "add": "Conectar un origen",
+    "callback": {
+      "error": "No se ha podido conectar el origen. Origen: {{ source }}. Motivo: {{ reason }}",
+      "linking": "Vinculando tu cuenta...",
+      "success": "Origen conectado. Origen: {{ source }}"
+    },
+    "columns": {
+      "account": "Cuenta",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Vincula una cuenta de almacenamiento en la nube para adjuntar documentos desde Google Drive y otros servicios a medida que estén disponibles.",
+      "title": "No hay orígenes de documentos conectados"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Vinculado {{ relativeTime }}",
+    "relink": "Volver a vincular",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Error al actualizar"
+    },
+    "tabConfirmUnlink": {
+      "body": "Al desvincular se eliminará el acceso a los documentos adjuntados desde este origen. Es posible que tengas que volver a seleccionar esos archivos tras volver a vincularlo.",
+      "title": "Desvincular origen. Origen: {{ source }}"
+    },
+    "tabTitle": "Orígenes de documentos",
+    "unlink": "Desvincular"
+  },
+  "documentStatus": {
+    "accessible": "Documento accesible",
+    "authRequired": "Autorización requerida",
+    "pendingAccess": "Acceso pendiente",
+    "unknown": "Estado desconocido"
   },
   "editor": {
     "deleteMetadataWarning": {

@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "ملاحظة",
       "notes": "ملاحظات",
+      "project": "مشروع",
+      "projects": "المشاريع",
       "report": "تقرير",
       "reports": "التقارير",
       "repositories": "مستودعات",
@@ -700,6 +702,8 @@
       "surveyResponse": "رد على الاستبيان",
       "surveyResponses": "ردود الاستبيانات",
       "surveys": "الاستبيانات",
+      "team": "فريق",
+      "teams": "الفِرق",
       "threat": "تهديد",
       "threatModel": "نموذج التهديد",
       "threatModels": "نماذج التهديدات",
@@ -971,6 +975,82 @@
       "title": "النمط",
       "toggleStylePanel": "تبديل لوحة الأنماط"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "تم نسخ البريد الإلكتروني",
+    "copyEmail": "نسخ البريد الإلكتروني",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "حدث خطأ أثناء قراءة هذه الوثيقة.",
+      "noAccessibleSource": "تعذّر على TMI قراءة هذه الوثيقة بصلاحيات الوصول الحالية.",
+      "other": "تعذّر الوصول إلى هذه الوثيقة.",
+      "pickerRegistrationInvalid": "لم يعد تفويض المُنتقِي لهذه الوثيقة صالحًا.",
+      "sourceNotFound": "لا يعرف TMI كيفية قراءة عنوان URL لهذه الوثيقة.",
+      "tokenNotLinked": "لم تربط الحساب الذي يملك هذه الوثيقة. المصدر: {{ source }}",
+      "tokenRefreshFailed": "لم يعد ارتباط المصدر صالحًا. المصدر: {{ source }}",
+      "tokenTransientFailure": "تعذّر الوصول إلى المصدر. عادةً ما يكون ذلك مؤقتًا. المصدر: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "تواصل مع مالك الوثيقة",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "إعادة ربط المصدر",
+      "repickAfterShare": "اختر مرة أخرى بعد المشاركة",
+      "repickFile": "اختر هذا الملف مرة أخرى",
+      "retry": "حاول مرة أخرى",
+      "shareWithServiceAccount": "مشاركة مع حساب خدمة TMI"
+    },
+    "serviceAccountEmail": "شارك مع هذا البريد الإلكتروني:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "اختر من Google Drive",
+      "label": "كيف تودّ إرفاق هذه الوثيقة؟",
+      "linkAction": "ربط المصدر",
+      "linkPrompt": "اربط حسابك لاختيار الملفات من هذا المصدر.",
+      "pickAction": "اختر ملفًا",
+      "pickedFile": "الملف المحدد: {{ fileName }}",
+      "repickAction": "اختر ملفًا آخر",
+      "url": "ألصق عنوان URL"
+    }
+  },
+  "documentSources": {
+    "add": "ربط مصدر",
+    "callback": {
+      "error": "تعذّر ربط المصدر. المصدر: {{ source }}. السبب: {{ reason }}",
+      "linking": "جارٍ ربط حسابك...",
+      "success": "تم ربط المصدر. المصدر: {{ source }}"
+    },
+    "columns": {
+      "account": "الحساب",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "اربط حساب تخزين سحابي لإرفاق الوثائق من Google Drive، ومن خدمات أخرى عند توفّرها.",
+      "title": "لا توجد مصادر وثائق مرتبطة"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "تم الربط {{ relativeTime }}",
+    "relink": "إعادة الربط",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "فشل التحديث"
+    },
+    "tabConfirmUnlink": {
+      "body": "سيؤدي إلغاء الربط إلى إزالة الوصول إلى الوثائق المرفقة من هذا المصدر. قد تحتاج إلى إعادة اختيار تلك الملفات بعد إعادة الربط.",
+      "title": "إلغاء ربط المصدر. المصدر: {{ source }}"
+    },
+    "tabTitle": "مصادر الوثائق",
+    "unlink": "إلغاء الربط"
+  },
+  "documentStatus": {
+    "accessible": "الوثيقة قابلة للوصول",
+    "authRequired": "التفويض مطلوب",
+    "pendingAccess": "في انتظار الوصول",
+    "unknown": "الحالة غير معروفة"
   },
   "editor": {
     "deleteMetadataWarning": {

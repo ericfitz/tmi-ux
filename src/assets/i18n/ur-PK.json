@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "نوٹ",
       "notes": "نوٹس",
+      "project": "پروجیکٹ",
+      "projects": "پروجیکٹس",
       "report": "رپورٹ",
       "reports": "رپورٹس",
       "repositories": "ریپوزٹریز",
@@ -700,6 +702,8 @@
       "surveyResponse": "سروے کا جواب",
       "surveyResponses": "سروے کے جوابات",
       "surveys": "سروے",
+      "team": "ٹیم",
+      "teams": "ٹیمیں",
       "threat": "خطرہ",
       "threatModel": "خطرے کا ماڈل",
       "threatModels": "خطرے کے ماڈلز",
@@ -960,6 +964,82 @@
       "title": "اسٹائل",
       "toggleStylePanel": "اسٹائل پینل ٹوگل کریں"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "ای میل کاپی ہو گئی",
+    "copyEmail": "ای میل کاپی کریں",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "اس دستاویز کو پڑھنے کے دوران ایک خرابی پیش آئی۔",
+      "noAccessibleSource": "TMI موجودہ رسائی کے ساتھ یہ دستاویز نہیں پڑھ سکتا۔",
+      "other": "اس دستاویز تک رسائی حاصل کرنے سے قاصر۔",
+      "pickerRegistrationInvalid": "اس دستاویز کی پکر اجازت اب درست نہیں رہی۔",
+      "sourceNotFound": "TMI کو معلوم نہیں کہ اس دستاویز کا یو آر ایل کیسے پڑھا جائے۔",
+      "tokenNotLinked": "آپ نے وہ اکاؤنٹ منسلک نہیں کیا جو اس دستاویز کا مالک ہے۔ ذریعہ: {{ source }}",
+      "tokenRefreshFailed": "ذرائع کا ربط اب درست نہیں رہا۔ ذریعہ: {{ source }}",
+      "tokenTransientFailure": "ذریعہ تک رسائی حاصل نہیں ہو سکی۔ یہ عام طور پر عارضی ہوتا ہے۔ ذریعہ: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "دستاویز کے مالک سے رابطہ کریں",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "ذریعہ دوبارہ منسلک کریں",
+      "repickAfterShare": "اشتراک کرنے کے بعد دوبارہ منتخب کریں",
+      "repickFile": "یہ فائل دوبارہ منتخب کریں",
+      "retry": "دوبارہ کوشش کریں",
+      "shareWithServiceAccount": "TMI سروس اکاؤنٹ کے ساتھ اشتراک کریں"
+    },
+    "serviceAccountEmail": "اس ای میل کے ساتھ اشتراک کریں:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Google Drive سے منتخب کریں",
+      "label": "آپ یہ دستاویز کیسے منسلک کرنا چاہیں گے؟",
+      "linkAction": "ذریعہ منسلک کریں",
+      "linkPrompt": "اس ذریعے سے فائلیں منتخب کرنے کے لیے اپنا اکاؤنٹ منسلک کریں۔",
+      "pickAction": "ایک فائل منتخب کریں",
+      "pickedFile": "فائل منتخب کی گئی: {{ fileName }}",
+      "repickAction": "ایک مختلف فائل منتخب کریں",
+      "url": "ایک یو آر ایل پیسٹ کریں"
+    }
+  },
+  "documentSources": {
+    "add": "ایک ذریعہ منسلک کریں",
+    "callback": {
+      "error": "ذریعہ منسلک نہیں کیا جا سکا۔ ذریعہ: {{ source }}۔ وجہ: {{ reason }}",
+      "linking": "آپ کا اکاؤنٹ منسلک کیا جا رہا ہے...",
+      "success": "ذریعہ منسلک ہو گیا۔ ذریعہ: {{ source }}"
+    },
+    "columns": {
+      "account": "اکاؤنٹ",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Google Drive اور دیگر خدمات سے دستاویزات منسلک کرنے کے لیے ایک کلاؤڈ اسٹوریج اکاؤنٹ منسلک کریں، جیسے جیسے وہ دستیاب ہوں۔",
+      "title": "کوئی دستاویز ذرائع منسلک نہیں ہیں"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "{{ relativeTime }} منسلک کیا گیا",
+    "relink": "دوبارہ منسلک کریں",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "تجدید ناکام ہو گئی"
+    },
+    "tabConfirmUnlink": {
+      "body": "منقطع کرنے سے اس ذریعے سے منسلک دستاویزات تک رسائی ختم ہو جائے گی۔ دوبارہ منسلک کرنے کے بعد آپ کو ان فائلوں کو دوبارہ منتخب کرنا پڑ سکتا ہے۔",
+      "title": "ذریعہ منقطع کریں۔ ذریعہ: {{ source }}"
+    },
+    "tabTitle": "دستاویز کے ذرائع",
+    "unlink": "منقطع کریں"
+  },
+  "documentStatus": {
+    "accessible": "دستاویز قابل رسائی ہے",
+    "authRequired": "اجازت درکار ہے",
+    "pendingAccess": "رسائی زیر التوا",
+    "unknown": "صورتحال نامعلوم"
   },
   "editor": {
     "deleteMetadataWarning": {

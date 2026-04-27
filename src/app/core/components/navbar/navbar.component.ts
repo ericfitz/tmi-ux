@@ -7,7 +7,7 @@ import {
   ChangeDetectorRef,
   inject,
 } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -115,6 +115,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private languageService: LanguageService,
     private dialog: MatDialog,
@@ -177,6 +178,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.updateWebSocketStatusVisibility();
       },
     );
+
+    // Auto-open the prefs dialog when redirected back with ?openPrefs=...
+    this.route.queryParams.subscribe(params => {
+      const openPrefs = params['openPrefs'] as string | undefined;
+      if (openPrefs) {
+        void this.openUserPreferences(openPrefs);
+        // Strip the param so re-navigation doesn't re-trigger.
+        void this.router.navigate([], {
+          queryParams: { openPrefs: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -230,12 +245,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openUserPreferences(): Promise<void> {
+  async openUserPreferences(initialTab?: string): Promise<void> {
     const { UserPreferencesDialogComponent } =
       await import('../user-preferences-dialog/user-preferences-dialog.component');
     this.dialog.open(UserPreferencesDialogComponent, {
       width: '800px',
       disableClose: false,
+      data: initialTab ? { initialTab } : null,
     });
   }
 

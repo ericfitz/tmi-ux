@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "নোট",
       "notes": "নোট",
+      "project": "প্রকল্প",
+      "projects": "প্রকল্পসমূহ",
       "report": "রিপোর্ট",
       "reports": "প্রতিবেদন",
       "repositories": "রিপোজিটরি",
@@ -700,6 +702,8 @@
       "surveyResponse": "জরিপ প্রতিক্রিয়া",
       "surveyResponses": "জরিপ প্রতিক্রিয়া",
       "surveys": "জরিপ",
+      "team": "দল",
+      "teams": "দলসমূহ",
       "threat": "হুমকি",
       "threatModel": "থ্রেট মডেল",
       "threatModels": "হুমকি মডেল",
@@ -960,6 +964,82 @@
       "title": "স্টাইল",
       "toggleStylePanel": "স্টাইল প্যানেল টগল করুন"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "ইমেইল কপি করা হয়েছে",
+    "copyEmail": "ইমেইল কপি করুন",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "এই ডকুমেন্টটি পড়ার সময় একটি ত্রুটি ঘটেছে।",
+      "noAccessibleSource": "TMI বর্তমান প্রবেশাধিকার দিয়ে এই ডকুমেন্টটি পড়তে পারছে না।",
+      "other": "এই ডকুমেন্টে প্রবেশ করা যাচ্ছে না।",
+      "pickerRegistrationInvalid": "এই ডকুমেন্টের পিকার অনুমোদন আর বৈধ নেই।",
+      "sourceNotFound": "TMI জানে না কীভাবে এই ডকুমেন্টের URL পড়তে হয়।",
+      "tokenNotLinked": "আপনি এই ডকুমেন্টের মালিকানাধীন অ্যাকাউন্টটি লিঙ্ক করেননি। উৎস: {{ source }}",
+      "tokenRefreshFailed": "উৎস লিঙ্ক আর বৈধ নেই। উৎস: {{ source }}",
+      "tokenTransientFailure": "উৎসে পৌঁছানো যায়নি। এটি সাধারণত সাময়িক। উৎস: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "ডকুমেন্টের মালিকের সাথে যোগাযোগ করুন",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "উৎস পুনরায় লিঙ্ক করুন",
+      "repickAfterShare": "শেয়ার করার পর আবার নির্বাচন করুন",
+      "repickFile": "এই ফাইলটি আবার নির্বাচন করুন",
+      "retry": "আবার চেষ্টা করুন",
+      "shareWithServiceAccount": "TMI পরিষেবা অ্যাকাউন্টের সাথে শেয়ার করুন"
+    },
+    "serviceAccountEmail": "এই ইমেইলের সাথে শেয়ার করুন:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Google Drive থেকে নির্বাচন করুন",
+      "label": "আপনি কীভাবে এই ডকুমেন্টটি সংযুক্ত করতে চান?",
+      "linkAction": "উৎস লিঙ্ক করুন",
+      "linkPrompt": "এই উৎস থেকে ফাইল নির্বাচন করতে আপনার অ্যাকাউন্ট লিঙ্ক করুন।",
+      "pickAction": "একটি ফাইল নির্বাচন করুন",
+      "pickedFile": "ফাইল নির্বাচিত: {{ fileName }}",
+      "repickAction": "একটি ভিন্ন ফাইল নির্বাচন করুন",
+      "url": "একটি URL পেস্ট করুন"
+    }
+  },
+  "documentSources": {
+    "add": "একটি উৎস সংযুক্ত করুন",
+    "callback": {
+      "error": "উৎস সংযুক্ত করা যায়নি। উৎস: {{ source }}। কারণ: {{ reason }}",
+      "linking": "আপনার অ্যাকাউন্ট লিঙ্ক করা হচ্ছে...",
+      "success": "উৎস সংযুক্ত হয়েছে। উৎস: {{ source }}"
+    },
+    "columns": {
+      "account": "অ্যাকাউন্ট",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Google Drive এবং উপলব্ধ অন্যান্য পরিষেবা থেকে ডকুমেন্ট সংযুক্ত করতে একটি ক্লাউড স্টোরেজ অ্যাকাউন্ট লিঙ্ক করুন।",
+      "title": "কোনো ডকুমেন্ট উৎস সংযুক্ত নেই"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "{{ relativeTime }} লিঙ্ক করা হয়েছে",
+    "relink": "পুনরায় লিঙ্ক করুন",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "রিফ্রেশ ব্যর্থ হয়েছে"
+    },
+    "tabConfirmUnlink": {
+      "body": "আনলিঙ্ক করলে এই উৎস থেকে সংযুক্ত ডকুমেন্টে প্রবেশাধিকার সরিয়ে নেওয়া হবে। পুনরায় লিঙ্ক করার পর সেই ফাইলগুলি আবার নির্বাচন করতে হতে পারে।",
+      "title": "উৎস আনলিঙ্ক করুন। উৎস: {{ source }}"
+    },
+    "tabTitle": "ডকুমেন্ট উৎসসমূহ",
+    "unlink": "আনলিঙ্ক করুন"
+  },
+  "documentStatus": {
+    "accessible": "ডকুমেন্ট প্রবেশযোগ্য",
+    "authRequired": "অনুমোদন প্রয়োজন",
+    "pendingAccess": "প্রবেশাধিকার অপেক্ষমাণ",
+    "unknown": "অবস্থা অজানা"
   },
   "editor": {
     "deleteMetadataWarning": {

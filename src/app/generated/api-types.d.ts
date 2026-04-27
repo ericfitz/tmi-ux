@@ -1708,8 +1708,8 @@ export interface paths {
     get: operations['listAdminGroups'];
     put?: never;
     /**
-     * Create provider-independent group
-     * @description Creates a new provider-independent group (provider="*"). These groups can be used across all providers for authorization and administration.
+     * Create TMI built-in group
+     * @description Creates a new TMI built-in group (provider="tmi"). These groups can be used across all providers for authorization and administration.
      */
     post: operations['createAdminGroup'];
     delete?: never;
@@ -2026,26 +2026,6 @@ export interface paths {
     get: operations['listSystemSettings'];
     put?: never;
     post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/settings/migrate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Migrate settings from configuration
-     * @description Migrates settings from the server configuration (config file or environment variables) to the database. When overwrite is false (default), only settings that don't already exist in the database are added. When overwrite is true, all settings are imported, overwriting existing values. Requires administrator privileges.
-     */
-    post: operations['migrateSystemSettings'];
     delete?: never;
     options?: never;
     head?: never;
@@ -3740,6 +3720,250 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/threat_models/{threat_model_id}/chat/sessions/{session_id}/refresh_sources': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Refresh session sources
+     * @description Re-scans sources for an active Timmy session, picking up any documents whose access status has changed.
+     */
+    post: operations['refreshTimmySources'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/documents/{document_id}/request_access': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Request document access
+     * @description Re-sends the access request for a document with pending_access status.
+     */
+    post: operations['requestDocumentAccess'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/automation/embeddings/{threat_model_id}/config': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get embedding provider configuration
+     * @description Returns embedding model configuration including API keys for automation tools. Requires embedding-automation group membership.
+     */
+    get: operations['getEmbeddingConfig'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/automation/embeddings/{threat_model_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Ingest pre-computed embeddings
+     * @description Accepts a batch of pre-computed embedding vectors and stores them in the specified index. Requires embedding-automation group membership.
+     */
+    post: operations['ingestEmbeddings'];
+    /**
+     * Delete embeddings
+     * @description Bulk delete embeddings with query parameter filters. At least one filter is required. Requires embedding-automation group membership.
+     */
+    delete: operations['deleteEmbeddings'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/content_tokens': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List linked content provider tokens
+     * @description Returns all delegated content provider tokens linked for the current user. Secrets are never returned.
+     */
+    get: operations['listMyContentTokens'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/content_tokens/{provider_id}/authorize': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start content provider authorization
+     * @description Starts the OAuth authorization flow for a delegated content provider. Returns an authorization URL to which the client must navigate the user; the provider will redirect back to /oauth2/content_callback to complete the link.
+     */
+    post: operations['authorizeContentToken'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/content_tokens/{provider_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke linked content provider token
+     * @description Best-effort revokes the token at the provider (where supported) and deletes the local record. Returns 204 whether or not the row existed (idempotent).
+     */
+    delete: operations['deleteMyContentToken'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/oauth2/content_callback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Delegated content provider OAuth callback
+     * @description Public callback endpoint that completes the delegated content provider OAuth authorization. Exchanges the authorization code, stores the encrypted token, and redirects to the caller-provided client_callback URL with status=success or status=error. Called by the provider's authorization server, not by clients directly.
+     */
+    get: operations['contentOAuthCallback'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{internal_uuid}/content_tokens': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List a user's linked content provider tokens (admin)
+     * @description Administrator-only listing of a target user's delegated content provider tokens. Secrets are never returned.
+     */
+    get: operations['adminListUserContentTokens'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{internal_uuid}/content_tokens/{provider_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke a user's linked content provider token (admin)
+     * @description Administrator-only best-effort revocation of a target user's delegated content provider token. Returns 204 whether or not the row existed (idempotent).
+     */
+    delete: operations['adminDeleteUserContentToken'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/picker_tokens/{provider_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Content OAuth provider id (currently only 'google_workspace') */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Mint a short-lived access token for the Google Picker browser client */
+    post: operations['mintPickerToken'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/microsoft/picker_grants': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Grant the TMI Entra app per-file read access to a picked OneDrive/SharePoint file.
+     * @description Called by tmi-ux after a user picks a file via the Microsoft File Picker. The server uses the user's stored delegated token (with Files.ReadWrite scope) to call Microsoft Graph's POST /drives/{driveId}/items/{itemId}/permissions, granting the configured TMI Entra app's identity the `read` role on this specific file. Returns the created Graph permission id for audit. After this call succeeds, subsequent fetches via DelegatedMicrosoftSource will read the file under Files.SelectedOperations.Selected.
+     */
+    post: operations['grantMicrosoftFilePermission'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3936,7 +4160,9 @@ export interface components {
      *       "modified_at": "2024-01-17T14:00:00Z",
      *       "uri": "https://example.com/docs/security-policy.pdf",
      *       "include_in_report": true,
-     *       "timmy_enabled": true
+     *       "timmy_enabled": true,
+     *       "access_status": "accessible",
+     *       "content_source": "http"
      *     }
      */
     Document: components['schemas']['DocumentBase'] & {
@@ -3962,6 +4188,24 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * @description Access validation status for external content providers
+       * @default unknown
+       * @enum {string}
+       */
+      readonly access_status: 'accessible' | 'pending_access' | 'auth_required' | 'unknown';
+      /**
+       * @description Content provider that handles this documents URI (e.g., google_drive, http)
+       * @example google_drive
+       */
+      readonly content_source?: string | null;
+      /** @description Per-viewer access diagnostics; present when access_status is not 'accessible' */
+      readonly access_diagnostics?: components['schemas']['DocumentAccessDiagnostics'] | null;
+      /**
+       * Format: date-time
+       * @description Timestamp of the last access_status transition (RFC3339)
+       */
+      readonly access_status_updated_at?: string | null;
     };
     /**
      * @description Base diagram object with common properties - used for API responses
@@ -4402,7 +4646,7 @@ export interface components {
        * Format: date-time
        * @description Timestamp when the status field was last modified (RFC3339). Automatically updated by the server when status changes.
        */
-      readonly status_updated?: string | null;
+      readonly status_updated?: string;
       /** @description Whether this threat model is confidential (set at creation, read-only after) */
       readonly is_confidential?: boolean;
       /**
@@ -4433,7 +4677,12 @@ export interface components {
      *         "spoofing"
      *       ],
      *       "include_in_report": true,
-     *       "timmy_enabled": true
+     *       "timmy_enabled": true,
+     *       "ssvc": {
+     *         "vector": "SSVCv2/E:A/U:S/T:T/P:S/2026-04-08/",
+     *         "decision": "Immediate",
+     *         "methodology": "Supplier"
+     *       }
      *     }
      */
     Threat: components['schemas']['ThreatBase'] & {
@@ -4766,13 +5015,16 @@ export interface components {
       asset_count: number;
       /** @description Number of notes associated with this threat model */
       note_count: number;
-      /** @description Status of the threat model in the organization's threat modeling or SDLC process. Examples: "Not started", "In progress", "Review", "Approved", "Closed" */
-      status?: string | null;
+      /**
+       * @description Status of the threat model in the organization's threat modeling or SDLC process. Examples: "not_started", "in_progress", "pending_review", "approved", "closed". Defaults to "not_started" on create.
+       * @default not_started
+       */
+      status: string;
       /**
        * Format: date-time
        * @description Timestamp when the status field was last modified (RFC3339). Automatically updated by the server when status changes.
        */
-      readonly status_updated?: string | null;
+      readonly status_updated?: string;
       /** @description Security reviewer assigned to this threat model. The assigned security reviewer automatically has the owner role on this threat model. */
       security_reviewer?: components['schemas']['User'] | null;
       /**
@@ -5147,8 +5399,11 @@ export interface components {
        * @description URL to an issue in an issue tracking system for this threat model
        */
       issue_uri?: string | null;
-      /** @description Status of the threat model in the organization's threat modeling or SDLC process. Examples: "Not started", "In progress", "Review", "Approved", "Closed" */
-      status?: string | null;
+      /**
+       * @description Status of the threat model in the organization's threat modeling or SDLC process. Examples: "not_started", "in_progress", "pending_review", "approved", "closed". Defaults to "not_started" on create.
+       * @default not_started
+       */
+      status: string;
       /** @description Alternative names or identifiers for the threat model */
       alias?: string[];
       /** @description Security reviewer assigned to this threat model. When set, the security reviewer is automatically added to the authorization list with the owner role. The security reviewer's owner role cannot be removed via authorization changes while they remain assigned as security reviewer. To change the security reviewer's authorization, first unassign them as security reviewer. */
@@ -5219,7 +5474,12 @@ export interface components {
      *         }
      *       ],
      *       "include_in_report": true,
-     *       "timmy_enabled": true
+     *       "timmy_enabled": true,
+     *       "ssvc": {
+     *         "vector": "SSVCv2/E:A/U:S/T:T/P:S/2026-04-08/",
+     *         "decision": "Immediate",
+     *         "methodology": "Supplier"
+     *       }
      *     }
      */
     ThreatBase: {
@@ -5280,6 +5540,8 @@ export interface components {
        * @default true
        */
       timmy_enabled: boolean;
+      /** @description SSVC (Stakeholder-Specific Vulnerability Categorization) assessment result. Optional structured decision from CISA/CERT-CC SSVC framework. */
+      ssvc?: components['schemas']['SSVCScore'] | null;
     };
     /**
      * @description Input schema for creating/updating Threat
@@ -5607,7 +5869,10 @@ export interface components {
      *       "timmy_enabled": true
      *     }
      */
-    DocumentInput: components['schemas']['DocumentBase'];
+    DocumentInput: components['schemas']['DocumentBase'] & {
+      /** @description Optional; when present, client has performed a Picker-based attachment */
+      picker_registration?: components['schemas']['PickerRegistration'] | null;
+    };
     /**
      * @description Base fields for Note (user-writable only)
      * @example {
@@ -6215,7 +6480,7 @@ export interface components {
        * @enum {string}
        */
       principal_type: 'user' | 'group';
-      /** @description Identity provider name (e.g., "google", "github", "microsoft", "tmi"). Use "*" for provider-independent groups. */
+      /** @description Identity provider name (e.g., "google", "github", "microsoft", "tmi"). Use "tmi" for TMI built-in groups. */
       provider: string;
       /** @description Provider-assigned identifier. For users: provider_user_id (e.g., email or OAuth sub). For groups: group_name. */
       provider_id: string;
@@ -6507,7 +6772,7 @@ export interface components {
        * @description Internal system UUID for the group
        */
       internal_uuid: string;
-      /** @description OAuth/SAML provider identifier, or "*" for provider-independent groups */
+      /** @description OAuth/SAML provider identifier, or "tmi" for TMI built-in groups */
       provider: string;
       /** @description Provider-assigned group name */
       group_name: string;
@@ -6569,7 +6834,7 @@ export interface components {
       offset: number;
     };
     /**
-     * @description Request body for creating a provider-independent group
+     * @description Request body for creating a TMI built-in group
      * @example {
      *       "group_name": "devops-team",
      *       "name": "DevOps Team",
@@ -9412,22 +9677,39 @@ export interface components {
     UpdateWebhookDeliveryStatusRequest: {
       /**
        * @description New delivery status
+       * @example in_progress
        * @enum {string}
        */
       status: 'in_progress' | 'completed' | 'failed';
-      /** @description Progress percentage (0-100) */
+      /**
+       * @description Progress percentage (0-100)
+       * @example 50
+       */
       status_percent?: number;
-      /** @description Human-readable status description */
+      /**
+       * @description Human-readable status description
+       * @example Processing document chunks
+       */
       status_message?: string;
     };
     /** @description Response confirming webhook delivery status update */
     UpdateWebhookDeliveryStatusResponse: {
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
       id: string;
-      /** @enum {string} */
+      /**
+       * @example in_progress
+       * @enum {string}
+       */
       status: 'pending' | 'in_progress' | 'delivered' | 'failed';
+      /** @example 50 */
       status_percent: number;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @example 2026-04-19T12:34:56Z
+       */
       status_updated_at: string;
     };
     /** @description A Timmy AI assistant chat session within a threat model */
@@ -9435,21 +9717,30 @@ export interface components {
       /**
        * Format: uuid
        * @description Unique identifier for the chat session
+       * @example 123e4567-e89b-12d3-a456-426614174000
        */
       readonly id: string;
       /**
        * Format: uuid
        * @description Identifier of the parent threat model
+       * @example 223e4567-e89b-12d3-a456-426614174001
        */
       readonly threat_model_id: string;
       /**
        * Format: uuid
        * @description Identifier of the user who created the session
+       * @example 323e4567-e89b-12d3-a456-426614174002
        */
       readonly user_id: string;
-      /** @description Optional session title */
+      /**
+       * @description Optional session title
+       * @example Payment flow threat analysis
+       */
       title?: string;
-      /** @description Snapshot of source entities used for context */
+      /**
+       * @description Snapshot of source entities used for context
+       * @example []
+       */
       source_snapshot?: {
         /** @description Type of the source entity */
         entity_type?: string;
@@ -9459,21 +9750,27 @@ export interface components {
          */
         entity_id?: string;
       }[];
-      /** @description Hash of the system prompt used for this session */
+      /**
+       * @description Hash of the system prompt used for this session
+       * @example sha256:abc123def456789
+       */
       readonly system_prompt_hash?: string;
       /**
        * @description Current status of the chat session
+       * @example active
        * @enum {string}
        */
       status: 'active' | 'archived';
       /**
        * Format: date-time
        * @description Creation timestamp (RFC3339)
+       * @example 2026-04-19T12:00:00Z
        */
       readonly created_at: string;
       /**
        * Format: date-time
        * @description Last modification timestamp (RFC3339)
+       * @example 2026-04-19T12:34:56Z
        */
       readonly modified_at: string;
     };
@@ -9508,16 +9805,23 @@ export interface components {
     };
     /** @description Optional request body for creating a Timmy chat session */
     CreateTimmySessionRequest: {
-      /** @description Optional session title */
+      /**
+       * @description Optional session title
+       * @example Payment flow threat analysis
+       */
       title?: string;
     };
     /** @description Request body for creating a message in a Timmy chat session */
     CreateTimmyMessageRequest: {
-      /** @description Message content to send to Timmy */
+      /**
+       * @description Message content to send to Timmy
+       * @example What are the main threats in the login flow?
+       */
       content: string;
     };
     /** @description Paginated list of Timmy chat sessions */
     ListTimmySessionsResponse: {
+      /** @example [] */
       sessions: components['schemas']['TimmyChatSession'][];
       /**
        * @description Total number of sessions matching criteria
@@ -9537,6 +9841,7 @@ export interface components {
     };
     /** @description Paginated list of Timmy chat messages */
     ListTimmyMessagesResponse: {
+      /** @example [] */
       messages: components['schemas']['TimmyChatMessage'][];
       /**
        * @description Total number of messages matching criteria
@@ -9592,6 +9897,7 @@ export interface components {
     };
     /** @description Response containing Timmy usage records */
     TimmyUsageResponse: {
+      /** @example [] */
       usage: components['schemas']['TimmyUsageRecord'][];
       /**
        * @description Total number of usage records
@@ -9601,22 +9907,324 @@ export interface components {
     };
     /** @description Timmy AI assistant system status */
     TimmyStatusResponse: {
-      /** @description Current memory usage in bytes */
+      /**
+       * @description Current memory usage in bytes
+       * @example 104857600
+       */
       memory_used_bytes: number;
-      /** @description Total memory budget in bytes */
+      /**
+       * @description Total memory budget in bytes
+       * @example 1073741824
+       */
       memory_budget_bytes: number;
-      /** @description Memory utilization percentage */
+      /**
+       * @description Memory utilization percentage
+       * @example 9.77
+       */
       memory_utilization_pct: number;
-      /** @description Number of currently loaded indexes */
+      /**
+       * @description Number of currently loaded indexes
+       * @example 3
+       */
       loaded_indexes: number;
-      /** @description Number of active chat sessions */
+      /**
+       * @description Number of active chat sessions
+       * @example 2
+       */
       active_sessions: number;
-      /** @description Total number of index evictions */
+      /**
+       * @description Total number of index evictions
+       * @example 0
+       */
       evictions_total: number;
-      /** @description Number of evictions due to memory pressure */
+      /**
+       * @description Number of evictions due to memory pressure
+       * @example 0
+       */
       evictions_pressure: number;
-      /** @description Total number of sessions rejected due to resource constraints */
+      /**
+       * @description Total number of sessions rejected due to resource constraints
+       * @example 0
+       */
       sessions_rejected_total: number;
+    };
+    /**
+     * @description SSVC (Stakeholder-Specific Vulnerability Categorization) assessment result
+     * @example {
+     *       "vector": "SSVCv2/E:A/U:S/T:T/P:S/2026-04-08/",
+     *       "decision": "Immediate",
+     *       "methodology": "Supplier"
+     *     }
+     */
+    SSVCScore: {
+      /** @description SSVC vector string following CERT/CC convention (e.g., SSVCv2/E:A/U:S/T:T/P:S/2026-04-08/) */
+      vector: string;
+      /**
+       * @description SSVC decision outcome
+       * @enum {string}
+       */
+      decision: 'Defer' | 'Scheduled' | 'Out-of-Cycle' | 'Immediate';
+      /** @description The SSVC stakeholder perspective used for assessment */
+      methodology: string;
+    };
+    /** @description Describes an entity that was skipped during a source-refresh pipeline operation, including the reason it was excluded. */
+    SkippedSource: {
+      /**
+       * Format: uuid
+       * @description ID of the skipped entity
+       */
+      entity_id: string;
+      /** @description Name of the skipped entity */
+      name: string;
+      /** @description Why this entity was skipped */
+      reason: string;
+    };
+    /** @description Configuration for an embedding provider, specifying the provider name, model, and optional API key or custom base URL. */
+    EmbeddingProviderConfig: {
+      /**
+       * @description Embedding provider name
+       * @example openai
+       */
+      provider: string;
+      /**
+       * @description Embedding model name
+       * @example text-embedding-3-small
+       */
+      model: string;
+      /** @description Embedding provider API key */
+      api_key?: string;
+      /**
+       * @description Custom base URL for self-hosted endpoints
+       * @example
+       */
+      base_url?: string;
+    };
+    /** @description Aggregate embedding configuration for a threat model, holding separate provider configs for text and optionally code embeddings. */
+    EmbeddingConfig: {
+      text_embedding: components['schemas']['EmbeddingProviderConfig'];
+      /**
+       * @description Code embedding config. Null if not configured.
+       * @example null
+       */
+      code_embedding?: components['schemas']['EmbeddingProviderConfig'] | null;
+    };
+    /** @description A single pre-computed embedding chunk submitted for ingestion, including the source entity, chunk text, content hash, and embedding vector. */
+    EmbeddingIngestionItem: {
+      /** @description Entity type (e.g., repository, asset) */
+      entity_type: string;
+      /**
+       * Format: uuid
+       * @description Entity UUID
+       */
+      entity_id: string;
+      /** @description Sequential chunk number */
+      chunk_index: number;
+      /** @description Original text of the chunk */
+      chunk_text: string;
+      /** @description SHA256 hash of the original content */
+      content_hash: string;
+      /** @description Model used to generate the embedding */
+      embedding_model: string;
+      /** @description Embedding vector dimension */
+      embedding_dim: number;
+      /** @description Embedding vector */
+      vector: number[];
+    };
+    /** @description Request body for submitting a batch of pre-computed embeddings into a threat model index. */
+    EmbeddingIngestionRequest: {
+      /**
+       * @description Target index type
+       * @example text
+       * @enum {string}
+       */
+      index_type: 'text' | 'code';
+      /**
+       * @description Batch of pre-computed embeddings
+       * @example [
+       *       {
+       *         "entity_type": "repository",
+       *         "entity_id": "123e4567-e89b-12d3-a456-426614174000",
+       *         "chunk_index": 0,
+       *         "chunk_text": "This is an example chunk of source text.",
+       *         "content_hash": "sha256:abc123def456",
+       *         "embedding_model": "text-embedding-3-small",
+       *         "embedding_dim": 3,
+       *         "vector": [
+       *           0.1,
+       *           0.2,
+       *           0.3
+       *         ]
+       *       }
+       *     ]
+       */
+      embeddings: components['schemas']['EmbeddingIngestionItem'][];
+    };
+    /** @description Response returned after a successful embedding ingestion operation, reporting the number of embeddings stored. */
+    EmbeddingIngestionResponse: {
+      /**
+       * @description Number of embeddings ingested
+       * @example 42
+       */
+      ingested: number;
+    };
+    /** @description Response returned after deleting all embeddings for a threat model, reporting the number of records removed. */
+    EmbeddingDeleteResponse: {
+      /**
+       * @description Number of embeddings deleted
+       * @example 42
+       */
+      deleted: number;
+    };
+    /** @description Information about a linked delegated content provider token. Does not expose secret token material. */
+    ContentTokenInfo: {
+      /**
+       * @description Content OAuth provider id (e.g., 'confluence').
+       * @example confluence
+       */
+      provider_id: string;
+      /**
+       * @description External account identifier reported by the provider. May be empty if the provider has no stable id.
+       * @example 557058:1234-abcd
+       */
+      provider_account_id?: string;
+      /**
+       * @description Human-readable account label (email or username) for display.
+       * @example alice@example.com
+       */
+      provider_account_label?: string;
+      /** @description OAuth scopes granted to the stored token. */
+      scopes: string[];
+      /**
+       * @description Current health of the stored token. 'failed_refresh' indicates the most recent refresh attempt failed and the user must re-link.
+       * @enum {string}
+       */
+      status: 'active' | 'failed_refresh';
+      /**
+       * Format: date-time
+       * @description Access-token expiry reported by the provider (ISO 8601).
+       */
+      expires_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp of the most recent successful refresh (ISO 8601).
+       */
+      last_refresh_at?: string;
+      /**
+       * Format: date-time
+       * @description Creation timestamp for this linked token (ISO 8601).
+       */
+      created_at: string;
+    };
+    /** @description OAuth authorization URL plus expiry of the associated server-side state. */
+    ContentAuthorizationURL: {
+      /**
+       * Format: uri
+       * @description Provider authorization URL to which the client must navigate the user.
+       * @example https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=...&state=...
+       */
+      authorization_url: string;
+      /**
+       * Format: date-time
+       * @description Timestamp after which the associated server-side state nonce is no longer valid (ISO 8601).
+       * @example 2026-04-19T12:34:56Z
+       */
+      expires_at: string;
+    };
+    /** @description List response wrapper for delegated content provider tokens. */
+    ContentTokenList: {
+      /**
+       * @description Array of linked content tokens for the user.
+       * @example []
+       */
+      content_tokens: components['schemas']['ContentTokenInfo'][];
+    };
+    /** @description A suggested client- or user-facing action to resolve a document access problem. Ordered list: the first remediation in `DocumentAccessDiagnostics.remediations` is the recommended next step. */
+    AccessRemediation: {
+      /** @enum {string} */
+      action:
+        | 'link_account'
+        | 'relink_account'
+        | 'repick_file'
+        | 'share_with_service_account'
+        | 'repick_after_share'
+        | 'retry'
+        | 'contact_owner';
+      /** @description Action-specific parameters (e.g. service_account_email, provider_id, user_email) */
+      params: {
+        [key: string]: unknown;
+      };
+    };
+    /** @description Per-viewer diagnostics explaining why a document is currently not accessible and what the viewer (or the document owner) can do to restore access. Emitted on Document responses whenever `access_status` is not `accessible`. */
+    DocumentAccessDiagnostics: {
+      /** @enum {string} */
+      reason_code:
+        | 'token_not_linked'
+        | 'token_refresh_failed'
+        | 'token_transient_failure'
+        | 'picker_registration_invalid'
+        | 'no_accessible_source'
+        | 'source_not_found'
+        | 'fetch_error'
+        | 'other';
+      /** @description Raw error text; populated only when reason_code is 'other' */
+      reason_detail?: string | null;
+      remediations: components['schemas']['AccessRemediation'][];
+    };
+    /** @description Client-provided registration for a Google Workspace Picker attachment. Supplied when a user attaches a file to a threat model via the Google Picker flow; the server stores these fields on the document and uses them to dispatch fetch and access-validation operations through the delegated Google Workspace source. */
+    PickerRegistration: {
+      /**
+       * @description Content OAuth provider that issued the picker grant
+       * @enum {string}
+       */
+      provider_id: 'google_workspace';
+      /** @description Provider-native file identifier from the picker (e.g. Google Drive file ID) */
+      file_id: string;
+      /** @description MIME type returned by the picker */
+      mime_type: string;
+    };
+    /** @description Response body for `POST /me/picker_tokens/{provider_id}`. Carries a short-lived access token and the public picker configuration values that the browser client needs to initialize the provider's picker widget. */
+    PickerTokenResponse: {
+      /**
+       * @description Short-lived OAuth access token, scoped to the picker session.
+       * @example ya29.a0AfH6SMBxExample-token-string
+       */
+      access_token: string;
+      /**
+       * Format: date-time
+       * @description Token expiration timestamp (RFC3339).
+       * @example 2026-04-19T12:34:56Z
+       */
+      expires_at: string;
+      /**
+       * @description Google Picker developer key. Deprecated — prefer provider_config.developer_key. Populated only for provider_id=google_workspace.
+       * @example AIzaSyB-1234example
+       */
+      developer_key?: string;
+      /**
+       * @description Google Cloud app id. Deprecated — prefer provider_config.app_id. Populated only for provider_id=google_workspace.
+       * @example 123456789012
+       */
+      app_id?: string;
+      /** @description Provider-specific public configuration values for picker initialization. Keys vary by provider — see provider documentation. For google_workspace: developer_key, app_id. For microsoft: client_id, tenant_id, picker_origin. */
+      provider_config?: {
+        [key: string]: string;
+      };
+    };
+    /** @description Request body for the Microsoft picker-grant endpoint. Carries the drive id and item id of the picked file. */
+    MicrosoftPickerGrantRequest: {
+      /** @description OneDrive or SharePoint drive identifier returned by the Microsoft File Picker. */
+      drive_id: string;
+      /** @description Drive item identifier returned by the Microsoft File Picker. */
+      item_id: string;
+    };
+    /** @description Response body for the Microsoft picker-grant endpoint. Returns the Graph permission id created by the grant call (informational; not needed for subsequent fetches). */
+    MicrosoftPickerGrantResponse: {
+      /** @description Microsoft Graph permission id created by the grant call. */
+      permission_id: string;
+      /** @description OneDrive or SharePoint drive identifier of the granted file. */
+      drive_id: string;
+      /** @description Drive item identifier of the granted file. */
+      item_id: string;
     };
   };
   responses: {
@@ -9818,7 +10426,7 @@ export interface components {
     ClientCallbackQueryParam: string;
     /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
     StateQueryParam: string;
-    /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Must be 3-20 characters, alphanumeric and hyphens only. */
+    /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Valid characters: letters, digits, periods, underscores, percent signs, plus signs, and hyphens. */
     LoginHintQueryParam: string;
     /** @description OAuth 2.0 scope parameter. For OpenID Connect, must include "openid". Supports "profile" and "email" scopes. Other scopes are silently ignored. Space-separated values. */
     ScopeQueryParam: string;
@@ -9938,7 +10546,7 @@ export interface components {
     DiagramIdPathParam: string;
     /** @description Output format for the diagram model (case-insensitive). Defaults to json if not specified. */
     FormatQueryParam: 'json' | 'yaml' | 'graphml';
-    /** @description Filter by response status */
+    /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
     SurveyResponseStatusQueryParam: string;
     /** @description Filter by secret_project flag */
     IsConfidentialQueryParam: boolean;
@@ -10579,7 +11187,7 @@ export interface operations {
         client_callback?: components['parameters']['ClientCallbackQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
-        /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Must be 3-20 characters, alphanumeric and hyphens only. */
+        /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Valid characters: letters, digits, periods, underscores, percent signs, plus signs, and hyphens. */
         login_hint?: components['parameters']['LoginHintQueryParam'];
         /** @description OAuth 2.0 scope parameter. For OpenID Connect, must include "openid". Supports "profile" and "email" scopes. Other scopes are silently ignored. Space-separated values. */
         scope: components['parameters']['ScopeQueryParam'];
@@ -23062,127 +23670,6 @@ export interface operations {
       500: components['responses']['Error'];
     };
   };
-  migrateSystemSettings: {
-    parameters: {
-      query?: {
-        /** @description If true, overwrite existing settings in the database with values from configuration. If false or omitted, only add settings that don't already exist. */
-        overwrite?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Settings migration completed successfully */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "migrated": 5,
-           *       "skipped": 2,
-           *       "settings": [
-           *         {
-           *           "key": "rate_limit.requests_per_minute",
-           *           "value": "60",
-           *           "type": "int",
-           *           "description": "Maximum API requests per minute",
-           *           "modified_at": "2024-01-15T10:00:00Z"
-           *         }
-           *       ]
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Number of settings migrated (created or updated)
-             * @example 5
-             */
-            migrated: number;
-            /**
-             * @description Number of settings skipped (already exist and overwrite=false)
-             * @example 2
-             */
-            skipped: number;
-            /**
-             * @description List of settings that were migrated
-             * @example [
-             *       {
-             *         "key": "rate_limit.requests_per_minute",
-             *         "value": "60",
-             *         "type": "int",
-             *         "description": "Maximum API requests per minute",
-             *         "modified_at": "2024-01-15T10:00:00Z"
-             *       }
-             *     ]
-             */
-            settings: components['schemas']['SystemSetting'][];
-          };
-        };
-      };
-      /** @description Invalid request body or parameters */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "invalid_request",
-           *       "error_description": "Invalid request body"
-           *     }
-           */
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-    };
-  };
   getSystemSetting: {
     parameters: {
       query?: never;
@@ -24131,7 +24618,7 @@ export interface operations {
   listIntakeSurveyResponses: {
     parameters: {
       query?: {
-        /** @description Filter by response status */
+        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
         status?: components['parameters']['SurveyResponseStatusQueryParam'];
         /** @description Filter by survey ID */
         survey_id?: components['parameters']['SurveyIdQueryParam'];
@@ -24716,7 +25203,7 @@ export interface operations {
   listTriageSurveyResponses: {
     parameters: {
       query?: {
-        /** @description Filter by response status */
+        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
         status?: components['parameters']['SurveyResponseStatusQueryParam'];
         /** @description Filter by survey ID */
         survey_id?: components['parameters']['SurveyIdQueryParam'];
@@ -32360,6 +32847,7 @@ export interface operations {
           'application/json': components['schemas']['WebhookDelivery'];
         };
       };
+      400: components['responses']['Error'];
       /** @description Unauthorized */
       401: {
         headers: {
@@ -32405,6 +32893,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   updateWebhookDeliveryStatus: {
@@ -32423,6 +32913,13 @@ export interface operations {
     /** @description Webhook delivery status update */
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "status": "in_progress",
+         *       "status_percent": 50,
+         *       "status_message": "Processing document chunks"
+         *     }
+         */
         'application/json': components['schemas']['UpdateWebhookDeliveryStatusRequest'];
       };
     };
@@ -32439,6 +32936,14 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "id": "123e4567-e89b-12d3-a456-426614174000",
+           *       "status": "in_progress",
+           *       "status_percent": 50,
+           *       "status_updated_at": "2026-04-19T12:34:56Z"
+           *     }
+           */
           'application/json': components['schemas']['UpdateWebhookDeliveryStatusResponse'];
         };
       };
@@ -32502,6 +33007,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   listTimmyChatSessions: {
@@ -32533,6 +33040,14 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "sessions": [],
+           *       "total": 0,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
           'application/json': components['schemas']['ListTimmySessionsResponse'];
         };
       };
@@ -32571,6 +33086,11 @@ export interface operations {
     /** @description Optional session configuration */
     requestBody?: {
       content: {
+        /**
+         * @example {
+         *       "title": "Payment flow threat analysis"
+         *     }
+         */
         'application/json': components['schemas']['CreateTimmySessionRequest'];
       };
     };
@@ -32639,6 +33159,16 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "id": "123e4567-e89b-12d3-a456-426614174000",
+           *       "threat_model_id": "223e4567-e89b-12d3-a456-426614174001",
+           *       "user_id": "323e4567-e89b-12d3-a456-426614174002",
+           *       "status": "active",
+           *       "created_at": "2026-04-19T12:00:00Z",
+           *       "modified_at": "2026-04-19T12:34:56Z"
+           *     }
+           */
           'application/json': components['schemas']['TimmyChatSession'];
         };
       };
@@ -32744,6 +33274,14 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "messages": [],
+           *       "total": 0,
+           *       "limit": 20,
+           *       "offset": 0
+           *     }
+           */
           'application/json': components['schemas']['ListTimmyMessagesResponse'];
         };
       };
@@ -32784,6 +33322,11 @@ export interface operations {
     /** @description Message content to send to Timmy */
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "content": "What are the main threats in the login flow?"
+         *     }
+         */
         'application/json': components['schemas']['CreateTimmyMessageRequest'];
       };
     };
@@ -32855,6 +33398,12 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "usage": [],
+           *       "total": 0
+           *     }
+           */
           'application/json': components['schemas']['TimmyUsageResponse'];
         };
       };
@@ -32900,6 +33449,18 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
+          /**
+           * @example {
+           *       "memory_used_bytes": 104857600,
+           *       "memory_budget_bytes": 1073741824,
+           *       "memory_utilization_pct": 9.77,
+           *       "loaded_indexes": 3,
+           *       "active_sessions": 2,
+           *       "evictions_total": 0,
+           *       "evictions_pressure": 0,
+           *       "sessions_rejected_total": 0
+           *     }
+           */
           'application/json': components['schemas']['TimmyStatusResponse'];
         };
       };
@@ -32922,6 +33483,685 @@ export interface operations {
       403: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+    };
+  };
+  refreshTimmySources: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Chat session identifier */
+        session_id: components['parameters']['SessionId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Sources refreshed */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "source_count": 5,
+           *       "skipped_sources": []
+           *     }
+           */
+          'application/json': {
+            /** @example 5 */
+            source_count?: number;
+            /** @example [] */
+            skipped_sources?: components['schemas']['SkippedSource'][];
+          };
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  requestDocumentAccess: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        /** @description Document identifier */
+        document_id: components['parameters']['DocumentId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Access request sent */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "status": "sent",
+           *       "message": "Access request sent to document owner"
+           *     }
+           */
+          'application/json': {
+            /** @example sent */
+            status?: string;
+            /** @example Access request sent to document owner */
+            message?: string;
+          };
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      /** @description Document is not in pending_access status */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Content source not configured or does not support access requests */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  getEmbeddingConfig: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Embedding provider configuration */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "text_embedding": {
+           *         "provider": "openai",
+           *         "model": "text-embedding-3-small"
+           *       },
+           *       "code_embedding": null
+           *     }
+           */
+          'application/json': components['schemas']['EmbeddingConfig'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  ingestEmbeddings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    /** @description Batch of pre-computed embeddings to ingest */
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *       "index_type": "text",
+         *       "embeddings": [
+         *         {
+         *           "entity_type": "asset",
+         *           "entity_id": "123e4567-e89b-12d3-a456-426614174000",
+         *           "chunk_index": 0,
+         *           "chunk_text": "Payment gateway processes credit card transactions",
+         *           "content_hash": "abc123def456",
+         *           "embedding_model": "text-embedding-3-small",
+         *           "embedding_dim": 1536,
+         *           "vector": [
+         *             0.1,
+         *             0.2,
+         *             0.3
+         *           ]
+         *         }
+         *       ]
+         *     }
+         */
+        'application/json': components['schemas']['EmbeddingIngestionRequest'];
+      };
+    };
+    responses: {
+      /** @description Embeddings ingested successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "ingested": 42
+           *     }
+           */
+          'application/json': components['schemas']['EmbeddingIngestionResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      422: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  deleteEmbeddings: {
+    parameters: {
+      query?: {
+        /** @description Filter by entity type */
+        entity_type?: string;
+        /** @description Filter by entity UUID */
+        entity_id?: string;
+        /** @description Filter by index type */
+        index_type?: 'text' | 'code';
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Embeddings deleted successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "deleted": 42
+           *     }
+           */
+          'application/json': components['schemas']['EmbeddingDeleteResponse'];
+        };
+      };
+      /** @description Bad Request - At least one filter parameter is required */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+    };
+  };
+  listMyContentTokens: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of linked content provider tokens (no secrets). */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "content_tokens": []
+           *     }
+           */
+          'application/json': components['schemas']['ContentTokenList'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  authorizeContentToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Content OAuth provider id (e.g., 'confluence'). */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    /** @description Authorization parameters including the post-callback client URL. */
+    requestBody: {
+      content: {
+        'application/json': {
+          /**
+           * Format: uri
+           * @description Client URL to redirect back to after the content-OAuth callback completes. Must match the server-side allow list.
+           * @example http://localhost:4200/oauth2/content-callback
+           */
+          client_callback: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Authorization URL generated successfully. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "authorization_url": "https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=example&state=xyz",
+           *       "expires_at": "2026-04-19T12:34:56Z"
+           *     }
+           */
+          'application/json': components['schemas']['ContentAuthorizationURL'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      422: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  deleteMyContentToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Content OAuth provider id to revoke. */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Token deleted (or was already absent). */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  contentOAuthCallback: {
+    parameters: {
+      query?: {
+        /** @description Opaque nonce that binds this callback to a server-side authorize request. */
+        state?: string;
+        /** @description Authorization code returned by the provider when authorization succeeds. */
+        code?: string;
+        /** @description Error code reported by the provider when authorization fails. */
+        error?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Redirect to the client_callback URL with status=success or status=error. */
+      302: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Client callback URL with status and provider_id query parameters appended. */
+          Location?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing or invalid state; rendered as a minimal HTML error page. */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'text/html': string;
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminListUserContentTokens: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the target user. */
+        internal_uuid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of the target user's linked content provider tokens. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "content_tokens": []
+           *     }
+           */
+          'application/json': components['schemas']['ContentTokenList'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminDeleteUserContentToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the target user. */
+        internal_uuid: string;
+        /** @description Content OAuth provider id to revoke. */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Token deleted (or was already absent). */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  mintPickerToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Content OAuth provider id (currently only 'google_workspace') */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Token minted */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "access_token": "ya29.a0AfH6SMBxExample-token-string",
+           *       "expires_at": "2026-04-19T12:34:56Z",
+           *       "developer_key": "AIzaSyB-1234example",
+           *       "app_id": "123456789012"
+           *     }
+           */
+          'application/json': components['schemas']['PickerTokenResponse'];
+        };
+      };
+      401: components['responses']['Error'];
+      404: components['responses']['NotFound'];
+      /** @description Provider not supported or token not linked */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  grantMicrosoftFilePermission: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MicrosoftPickerGrantRequest'];
+      };
+    };
+    responses: {
+      /** @description Permission granted. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MicrosoftPickerGrantResponse'];
+        };
+      };
+      401: components['responses']['Error'];
+      /** @description User has no linked Microsoft token. */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Graph permission grant rejected (e.g., insufficient scope). */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
 }

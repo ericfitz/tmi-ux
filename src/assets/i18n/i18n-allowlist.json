@@ -8,6 +8,7 @@
     "common.id",
     "common.version",
     "debugDialogs.historyDialog.id",
+    "documentSources.googleDrive.name",
     "threatModels.idLabel"
   ],
   "_comment": "Keys listed here are intentionally the same as English and should not be flagged as 'potentially untranslated'. Use '*' for keys that apply to all languages, or use language codes (e.g., 'de-DE') for language-specific allowances.",

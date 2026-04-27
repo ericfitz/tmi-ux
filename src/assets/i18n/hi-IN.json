@@ -694,6 +694,8 @@
       "metadata": "{{common.metadata}}",
       "note": "नोट",
       "notes": "नोट्स",
+      "project": "परियोजना",
+      "projects": "परियोजनाएँ",
       "report": "रिपोर्ट",
       "reports": "रिपोर्ट",
       "repositories": "रिपॉजिटरीज",
@@ -702,6 +704,8 @@
       "surveyResponse": "सर्वेक्षण प्रतिक्रिया",
       "surveyResponses": "सर्वेक्षण प्रतिक्रियाएं",
       "surveys": "सर्वेक्षण",
+      "team": "टीम",
+      "teams": "टीमें",
       "threat": "खतरा",
       "threatModel": "थ्रेट मॉडल",
       "threatModels": "खतरा मॉडल",
@@ -987,6 +991,82 @@
       "title": "शैली",
       "toggleStylePanel": "शैली पैनल टॉगल करें"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "ईमेल प्रतिलिपित किया गया",
+    "copyEmail": "ईमेल प्रतिलिपित करें",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "इस दस्तावेज़ को पढ़ते समय एक त्रुटि उत्पन्न हुई।",
+      "noAccessibleSource": "TMI वर्तमान पहुँच के साथ इस दस्तावेज़ को नहीं पढ़ सकता।",
+      "other": "इस दस्तावेज़ तक पहुँच प्राप्त करने में असमर्थ।",
+      "pickerRegistrationInvalid": "इस दस्तावेज़ का चयनकर्ता प्राधिकरण अब मान्य नहीं है।",
+      "sourceNotFound": "TMI को इस दस्तावेज़ का URL पढ़ना ज्ञात नहीं है।",
+      "tokenNotLinked": "आपने उस खाते को लिंक नहीं किया है जो इस दस्तावेज़ का स्वामी है। स्रोत: {{ source }}",
+      "tokenRefreshFailed": "स्रोत लिंक अब मान्य नहीं है। स्रोत: {{ source }}",
+      "tokenTransientFailure": "स्रोत तक पहुँच नहीं हो सकी। यह सामान्यतः अस्थायी है। स्रोत: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "दस्तावेज़ के स्वामी से संपर्क करें",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "स्रोत को पुनः लिंक करें",
+      "repickAfterShare": "साझा करने के बाद पुनः चयन करें",
+      "repickFile": "इस फ़ाइल को पुनः चयन करें",
+      "retry": "पुनः प्रयास करें",
+      "shareWithServiceAccount": "TMI सेवा खाते के साथ साझा करें"
+    },
+    "serviceAccountEmail": "इस ईमेल के साथ साझा करें:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Google Drive से चयन करें",
+      "label": "आप इस दस्तावेज़ को कैसे संलग्न करना चाहेंगे?",
+      "linkAction": "स्रोत लिंक करें",
+      "linkPrompt": "इस स्रोत से फ़ाइलें चयन करने के लिए अपना खाता लिंक करें।",
+      "pickAction": "एक फ़ाइल चयन करें",
+      "pickedFile": "फ़ाइल चयनित: {{ fileName }}",
+      "repickAction": "एक भिन्न फ़ाइल चयन करें",
+      "url": "एक URL चिपकाएँ"
+    }
+  },
+  "documentSources": {
+    "add": "एक स्रोत जोड़ें",
+    "callback": {
+      "error": "स्रोत से कनेक्ट नहीं हो सका। स्रोत: {{ source }}. कारण: {{ reason }}",
+      "linking": "आपका खाता लिंक किया जा रहा है...",
+      "success": "स्रोत कनेक्ट हो गया। स्रोत: {{ source }}"
+    },
+    "columns": {
+      "account": "खाता",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Google Drive और अन्य उपलब्ध सेवाओं से दस्तावेज़ संलग्न करने के लिए एक क्लाउड स्टोरेज खाता लिंक करें।",
+      "title": "कोई दस्तावेज़ स्रोत कनेक्ट नहीं है"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "{{ relativeTime }} लिंक किया गया",
+    "relink": "पुनः लिंक करें",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "रिफ्रेश विफल"
+    },
+    "tabConfirmUnlink": {
+      "body": "अनलिंक करने से इस स्रोत से संलग्न दस्तावेज़ों तक पहुँच हट जाएगी। पुनः लिंक करने के बाद आपको उन फ़ाइलों को पुनः चयन करना पड़ सकता है।",
+      "title": "स्रोत अनलिंक करें। स्रोत: {{ source }}"
+    },
+    "tabTitle": "दस्तावेज़ स्रोत",
+    "unlink": "अनलिंक करें"
+  },
+  "documentStatus": {
+    "accessible": "दस्तावेज़ सुलभ है",
+    "authRequired": "प्राधिकरण आवश्यक है",
+    "pendingAccess": "पहुँच लंबित है",
+    "unknown": "स्थिति अज्ञात"
   },
   "editor": {
     "deleteMetadataWarning": {

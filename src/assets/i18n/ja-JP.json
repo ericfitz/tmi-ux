@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "ノート",
       "notes": "ノート",
+      "project": "プロジェクト",
+      "projects": "プロジェクト",
       "report": "レポート",
       "reports": "レポート",
       "repositories": "リポジトリ",
@@ -700,6 +702,8 @@
       "surveyResponse": "調査回答",
       "surveyResponses": "調査回答",
       "surveys": "調査",
+      "team": "チーム",
+      "teams": "チーム",
       "threat": "脅威",
       "threatModel": "脅威モデル",
       "threatModels": "脅威モデル",
@@ -971,6 +975,82 @@
       "title": "スタイル",
       "toggleStylePanel": "スタイルパネルの切り替え"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "メールをコピーしました",
+    "copyEmail": "メールをコピー",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "このドキュメントの読み取り中にエラーが発生しました。",
+      "noAccessibleSource": "TMIは現在のアクセス権ではこのドキュメントを読み取れません。",
+      "other": "このドキュメントにアクセスできません。",
+      "pickerRegistrationInvalid": "このドキュメントのピッカー認証は無効になりました。",
+      "sourceNotFound": "TMIはこのドキュメントのURLの読み取り方法を認識していません。",
+      "tokenNotLinked": "このドキュメントを所有するアカウントがリンクされていません。ソース: {{ source }}",
+      "tokenRefreshFailed": "ソースのリンクは無効になりました。ソース: {{ source }}",
+      "tokenTransientFailure": "ソースに接続できませんでした。これは通常一時的な問題です。ソース: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "ドキュメントの所有者に連絡してください",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "ソースを再リンク",
+      "repickAfterShare": "共有後にもう一度選択",
+      "repickFile": "このファイルをもう一度選択",
+      "retry": "再試行",
+      "shareWithServiceAccount": "TMIサービスアカウントと共有"
+    },
+    "serviceAccountEmail": "このメールアドレスと共有してください："
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Google Driveから選択",
+      "label": "このドキュメントをどのように添付しますか？",
+      "linkAction": "ソースをリンク",
+      "linkPrompt": "このソースからファイルを選択するには、アカウントをリンクしてください。",
+      "pickAction": "ファイルを選択",
+      "pickedFile": "選択されたファイル: {{ fileName }}",
+      "repickAction": "別のファイルを選択",
+      "url": "URLを貼り付け"
+    }
+  },
+  "documentSources": {
+    "add": "ソースを接続",
+    "callback": {
+      "error": "ソースを接続できませんでした。ソース: {{ source }}。理由: {{ reason }}",
+      "linking": "アカウントをリンクしています...",
+      "success": "ソースが接続されました。ソース: {{ source }}"
+    },
+    "columns": {
+      "account": "アカウント",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "クラウドストレージアカウントをリンクして、Google Driveや今後利用可能になる他のサービスからドキュメントを添付できるようにします。",
+      "title": "ドキュメントソースが接続されていません"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "{{ relativeTime }}にリンク",
+    "relink": "再リンク",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "更新に失敗しました"
+    },
+    "tabConfirmUnlink": {
+      "body": "リンクを解除すると、このソースから添付されたドキュメントへのアクセスが失われます。再リンク後にそれらのファイルを再度選択する必要がある場合があります。",
+      "title": "ソースのリンクを解除します。ソース: {{ source }}"
+    },
+    "tabTitle": "ドキュメントソース",
+    "unlink": "リンクを解除"
+  },
+  "documentStatus": {
+    "accessible": "ドキュメントにアクセス可能",
+    "authRequired": "認証が必要です",
+    "pendingAccess": "アクセス保留中",
+    "unknown": "ステータス不明"
   },
   "editor": {
     "deleteMetadataWarning": {

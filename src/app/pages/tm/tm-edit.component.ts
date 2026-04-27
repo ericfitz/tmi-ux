@@ -143,6 +143,7 @@ interface DocumentFormResult {
   uri: string;
   description?: string;
   include_in_report?: boolean;
+  picker_registration?: import('@app/core/models/content-provider.types').PickerRegistration;
 }
 
 // Define repository form result interface
@@ -1446,6 +1447,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             uri: result.uri,
             description: result.description || undefined,
             include_in_report: result.include_in_report,
+            ...(result.picker_registration
+              ? { picker_registration: result.picker_registration }
+              : {}),
           };
 
           this._subscriptions.add(

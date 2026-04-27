@@ -1,0 +1,23 @@
+.callback-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.callback-card {
+  max-width: 360px;
+}
+
+.callback-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.callback-message {
+  margin: 0;
+  text-align: center;
+}

@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Заметка",
       "notes": "Заметки",
+      "project": "Проект",
+      "projects": "Проекты",
       "report": "Отчёт",
       "reports": "Отчеты",
       "repositories": "Репозитории",
@@ -700,6 +702,8 @@
       "surveyResponse": "Ответ на опрос",
       "surveyResponses": "Ответы на опросы",
       "surveys": "Опросы",
+      "team": "Команда",
+      "teams": "Команды",
       "threat": "Угроза",
       "threatModel": "Модель Угроз",
       "threatModels": "Модели угроз",
@@ -960,6 +964,82 @@
       "title": "Стиль",
       "toggleStylePanel": "Переключить панель стилей"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "Адрес электронной почты скопирован",
+    "copyEmail": "Скопировать адрес электронной почты",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "При чтении этого документа произошла ошибка.",
+      "noAccessibleSource": "TMI не может прочитать этот документ с текущим уровнем доступа.",
+      "other": "Невозможно получить доступ к этому документу.",
+      "pickerRegistrationInvalid": "Авторизация средства выбора для этого документа более недействительна.",
+      "sourceNotFound": "TMI не знает, как прочитать URL-адрес этого документа.",
+      "tokenNotLinked": "Вы не привязали учётную запись, которая владеет этим документом. Источник: {{ source }}",
+      "tokenRefreshFailed": "Ссылка на источник более недействительна. Источник: {{ source }}",
+      "tokenTransientFailure": "Не удалось связаться с источником. Обычно это временная проблема. Источник: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Свяжитесь с владельцем документа",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Повторно привязать источник",
+      "repickAfterShare": "Выбрать снова после предоставления общего доступа",
+      "repickFile": "Выбрать этот файл снова",
+      "retry": "Повторить попытку",
+      "shareWithServiceAccount": "Предоставить общий доступ сервисной учётной записи TMI"
+    },
+    "serviceAccountEmail": "Предоставьте общий доступ по этому адресу:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Выбрать из Google Drive",
+      "label": "Каким образом вы хотите прикрепить этот документ?",
+      "linkAction": "Привязать источник",
+      "linkPrompt": "Привяжите свою учётную запись, чтобы выбирать файлы из этого источника.",
+      "pickAction": "Выбрать файл",
+      "pickedFile": "Файл выбран: {{ fileName }}",
+      "repickAction": "Выбрать другой файл",
+      "url": "Вставьте URL-адрес"
+    }
+  },
+  "documentSources": {
+    "add": "Подключить источник",
+    "callback": {
+      "error": "Не удалось подключить источник. Источник: {{ source }}. Причина: {{ reason }}",
+      "linking": "Привязка вашей учётной записи...",
+      "success": "Источник подключён. Источник: {{ source }}"
+    },
+    "columns": {
+      "account": "Учётная запись",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Привяжите учётную запись облачного хранилища, чтобы прикреплять документы из Google Drive и других сервисов по мере их появления.",
+      "title": "Источники документов не подключены"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Привязано {{ relativeTime }}",
+    "relink": "Повторно привязать",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Сбой обновления"
+    },
+    "tabConfirmUnlink": {
+      "body": "Отвязка приведёт к потере доступа к документам, прикреплённым из этого источника. После повторной привязки может потребоваться выбрать эти файлы заново.",
+      "title": "Отвязать источник. Источник: {{ source }}"
+    },
+    "tabTitle": "Источники документов",
+    "unlink": "Отвязать"
+  },
+  "documentStatus": {
+    "accessible": "Документ доступен",
+    "authRequired": "Требуется авторизация",
+    "pendingAccess": "Ожидание доступа",
+    "unknown": "Статус неизвестен"
   },
   "editor": {
     "deleteMetadataWarning": {

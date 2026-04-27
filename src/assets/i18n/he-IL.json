@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "הערה",
       "notes": "הערות",
+      "project": "פרויקט",
+      "projects": "פרויקטים",
       "report": "דוח",
       "reports": "דוחות",
       "repositories": "מאגרים",
@@ -700,6 +702,8 @@
       "surveyResponse": "תגובת סקר",
       "surveyResponses": "תגובות סקר",
       "surveys": "סקרים",
+      "team": "צוות",
+      "teams": "צוותים",
       "threat": "איום",
       "threatModel": "מודל איומים",
       "threatModels": "מודלי איום",
@@ -960,6 +964,82 @@
       "title": "סגנון",
       "toggleStylePanel": "החלף לוח סגנון"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "כתובת הדוא\"ל הועתקה",
+    "copyEmail": "העתק כתובת דוא\"ל",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "אירעה שגיאה בעת קריאת מסמך זה.",
+      "noAccessibleSource": "TMI אינו יכול לקרוא מסמך זה עם ההרשאות הנוכחיות.",
+      "other": "לא ניתן לגשת למסמך זה.",
+      "pickerRegistrationInvalid": "הרשאת בורר הקבצים של מסמך זה אינה תקפה עוד.",
+      "sourceNotFound": "TMI אינו יודע כיצד לקרוא את כתובת ה-URL של מסמך זה.",
+      "tokenNotLinked": "לא קישרת את החשבון שבבעלותו נמצא מסמך זה. מקור: {{ source }}",
+      "tokenRefreshFailed": "קישור המקור אינו תקף עוד. מקור: {{ source }}",
+      "tokenTransientFailure": "לא ניתן היה להגיע למקור. בדרך כלל מדובר בתקלה זמנית. מקור: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "פנה לבעלי המסמך",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "קשר מחדש את המקור",
+      "repickAfterShare": "בחר שוב לאחר השיתוף",
+      "repickFile": "בחר קובץ זה שוב",
+      "retry": "נסה שוב",
+      "shareWithServiceAccount": "שתף עם חשבון השירות של TMI"
+    },
+    "serviceAccountEmail": "שתף עם כתובת דוא\"ל זו:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "בחר מ-Google Drive",
+      "label": "כיצד ברצונך לצרף מסמך זה?",
+      "linkAction": "קשר מקור",
+      "linkPrompt": "קשר את חשבונך כדי לבחור קבצים ממקור זה.",
+      "pickAction": "בחר קובץ",
+      "pickedFile": "הקובץ נבחר: {{ fileName }}",
+      "repickAction": "בחר קובץ אחר",
+      "url": "הדבק כתובת URL"
+    }
+  },
+  "documentSources": {
+    "add": "חבר מקור",
+    "callback": {
+      "error": "לא ניתן היה לחבר את המקור. מקור: {{ source }}. סיבה: {{ reason }}",
+      "linking": "מקשר את חשבונך...",
+      "success": "המקור חובר. מקור: {{ source }}"
+    },
+    "columns": {
+      "account": "חשבון",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "קשר חשבון אחסון בענן כדי לצרף מסמכים מ-Google Drive ומשירותים נוספים ככל שיהיו זמינים.",
+      "title": "לא חוברו מקורות מסמכים"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "קושר {{ relativeTime }}",
+    "relink": "קשר מחדש",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "הרענון נכשל"
+    },
+    "tabConfirmUnlink": {
+      "body": "ביטול הקישור יסיר את הגישה למסמכים שצורפו ממקור זה. ייתכן שיהיה עליך לבחור קבצים אלה מחדש לאחר קישור מחדש.",
+      "title": "בטל קישור מקור. מקור: {{ source }}"
+    },
+    "tabTitle": "מקורות מסמכים",
+    "unlink": "בטל קישור"
+  },
+  "documentStatus": {
+    "accessible": "המסמך נגיש",
+    "authRequired": "נדרשת הרשאה",
+    "pendingAccess": "ממתין לגישה",
+    "unknown": "סטטוס לא ידוע"
   },
   "editor": {
     "deleteMetadataWarning": {

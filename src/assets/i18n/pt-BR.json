@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Nota",
       "notes": "Notas",
+      "project": "Projeto",
+      "projects": "Projetos",
       "report": "Relatorio",
       "reports": "Relatórios",
       "repositories": "Repositorios",
@@ -700,6 +702,8 @@
       "surveyResponse": "Resposta de Pesquisa",
       "surveyResponses": "Respostas de Pesquisa",
       "surveys": "Pesquisas",
+      "team": "Equipe",
+      "teams": "Equipes",
       "threat": "Ameaca",
       "threatModel": "Modelo de Ameacas",
       "threatModels": "Modelos de Ameaça",
@@ -971,6 +975,82 @@
       "title": "Estilo",
       "toggleStylePanel": "Alternar painel de estilo"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "E-mail copiado",
+    "copyEmail": "Copiar e-mail",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "Ocorreu um erro ao ler este documento.",
+      "noAccessibleSource": "O TMI não consegue ler este documento com o acesso atual.",
+      "other": "Não é possível acessar este documento.",
+      "pickerRegistrationInvalid": "A autorização do seletor deste documento não é mais válida.",
+      "sourceNotFound": "O TMI não sabe como ler a URL deste documento.",
+      "tokenNotLinked": "Você não vinculou a conta proprietária deste documento. Origem: {{ source }}",
+      "tokenRefreshFailed": "O vínculo com a origem não é mais válido. Origem: {{ source }}",
+      "tokenTransientFailure": "Não foi possível acessar a origem. Geralmente isso é temporário. Origem: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Entre em contato com o proprietário do documento",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Revincular origem",
+      "repickAfterShare": "Selecionar novamente após compartilhar",
+      "repickFile": "Selecionar este arquivo novamente",
+      "retry": "Tentar novamente",
+      "shareWithServiceAccount": "Compartilhar com a conta de serviço do TMI"
+    },
+    "serviceAccountEmail": "Compartilhe com este e-mail:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Selecionar do Google Drive",
+      "label": "Como você gostaria de anexar este documento?",
+      "linkAction": "Vincular origem",
+      "linkPrompt": "Vincule sua conta para selecionar arquivos desta origem.",
+      "pickAction": "Selecionar um arquivo",
+      "pickedFile": "Arquivo selecionado: {{ fileName }}",
+      "repickAction": "Escolher um arquivo diferente",
+      "url": "Colar uma URL"
+    }
+  },
+  "documentSources": {
+    "add": "Conectar uma origem",
+    "callback": {
+      "error": "Não foi possível conectar a origem. Origem: {{ source }}. Motivo: {{ reason }}",
+      "linking": "Vinculando sua conta...",
+      "success": "Origem conectada. Origem: {{ source }}"
+    },
+    "columns": {
+      "account": "Conta",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Vincule uma conta de armazenamento em nuvem para anexar documentos do Google Drive e de outros serviços conforme estiverem disponíveis.",
+      "title": "Nenhuma origem de documento conectada"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Vinculado {{ relativeTime }}",
+    "relink": "Revincular",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Falha na atualização"
+    },
+    "tabConfirmUnlink": {
+      "body": "Desvincular removerá o acesso a documentos anexados a partir desta origem. Pode ser necessário selecionar novamente esses arquivos após revincular.",
+      "title": "Desvincular origem. Origem: {{ source }}"
+    },
+    "tabTitle": "Origens de documentos",
+    "unlink": "Desvincular"
+  },
+  "documentStatus": {
+    "accessible": "Documento acessível",
+    "authRequired": "Autorização necessária",
+    "pendingAccess": "Acesso pendente",
+    "unknown": "Status desconhecido"
   },
   "editor": {
     "deleteMetadataWarning": {
