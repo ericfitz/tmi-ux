@@ -2011,7 +2011,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (ops.length === 1) {
       this.appDfdOrchestrator.executeOperation(ops[0]).subscribe();
-    } else {
+    } else if (ops.length > 1) {
       const batch = {
         id: `layout-unlock-batch-${ts}`,
         type: 'batch-operation' as const,
