@@ -1902,8 +1902,130 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debugComponent('DfdComponent', 'Moved cell to back', { cellId: targetCell.id });
   }
 
+  /**
+   * Toggle the per-cell layout lock on the right-clicked cell (#641).
+   *
+   * - Lock applied: capture pre-state, set `_layoutLocked: true`, show badge,
+   *   emit a single update-node history op. No layout pass.
+   * - Lock removed: capture pre-state for the cell, its children, and any
+   *   container-fit ancestors; clear `_layoutLocked`; hide badge; run a layout
+   *   cycle (applyAutoLayout + cascade); emit one batched history op covering
+   *   every touched cell. Single undo step per toggle.
+   *
+   * No-op if the right-clicked cell is missing, not lock-eligible, or in
+   * read-only mode (the menu item is also disabled in that case).
+   */
   toggleLayoutLock(): void {
-    // Implementation in Task 6.
+    if (this.isReadOnlyMode) return;
+    const cell = this._rightClickedCell;
+    if (!cell) return;
+    if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return;
+
+    const wasLocked = isCellLayoutLocked(cell);
+
+    if (!wasLocked) {
+      // Lock applied: data change only, single history op.
+      const previousState = this._captureCellStateForHistory(cell);
+      const next = { ...cell.getData() };
+      next._layoutLocked = true;
+      cell.setData(next, { silent: true, overwrite: true });
+      this.applyLockBadge(cell);
+
+      const ts = Date.now();
+      const op = {
+        id: `layout-lock-${ts}-${cell.id}`,
+        type: 'update-node' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: ts,
+        nodeId: cell.id,
+        updates: {},
+        includeInHistory: true,
+        metadata: { previousCellState: previousState },
+      };
+      this.appDfdOrchestrator.executeOperation(op).subscribe();
+
+      this.rightClickedCellIsLocked = true;
+      return;
+    }
+
+    // Lock removed: capture pre-state for cell + children + cascade ancestors,
+    // clear the flag, run a layout cycle inside one batched history entry.
+    const previousStates = new Map<string, unknown>();
+    const captureCell = (c: any): void => {
+      if (!c?.id || previousStates.has(c.id)) return;
+      previousStates.set(c.id, this._captureCellStateForHistory(c));
+    };
+
+    captureCell(cell);
+    for (const child of (cell.getChildren?.() ?? []) as any[]) {
+      captureCell(child);
+    }
+    let ancestor = cell.getParent?.();
+    while (ancestor) {
+      if (isCellLayoutLocked(ancestor)) break;
+      const ancData = ancestor.getData?.() ?? {};
+      const autoFit = ancData._archAutoFit as
+        | { kind: 'icon-only' | 'container'; width: number; height: number }
+        | undefined;
+      if (!autoFit || autoFit.kind !== 'container') break;
+      captureCell(ancestor);
+      for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
+        captureCell(child);
+      }
+      ancestor = ancestor.getParent?.();
+    }
+
+    // Clear the flag and update the badge before running the layout cycle —
+    // applyAutoLayout checks isCellLayoutLocked at entry.
+    const next = { ...cell.getData() };
+    delete next._layoutLocked;
+    cell.setData(next, { silent: true, overwrite: true });
+    this.applyLockBadge(cell);
+
+    // Run a layout cycle on the now-unlocked cell. Re-uses the existing
+    // applyAutoLayout + cascadeContainerLayout path. The `_inLayoutCycle` guard
+    // prevents the resize/position events from re-entering _runLayoutCycle.
+    this._inLayoutCycle = true;
+    try {
+      const changed = this.applyAutoLayout(cell);
+      if (changed) {
+        this.cascadeContainerLayout(cell);
+      }
+    } finally {
+      this._inLayoutCycle = false;
+    }
+
+    const ts = Date.now();
+    const ops = Array.from(previousStates.entries()).map(([id, prev], i) => ({
+      id: `layout-unlock-${ts}-${i}-${id}`,
+      type: 'update-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: ts,
+      nodeId: id,
+      updates: {},
+      includeInHistory: true,
+      metadata: { previousCellState: prev },
+    }));
+
+    if (ops.length === 1) {
+      this.appDfdOrchestrator.executeOperation(ops[0]).subscribe();
+    } else {
+      const batch = {
+        id: `layout-unlock-batch-${ts}`,
+        type: 'batch-operation' as const,
+        source: 'user-interaction' as const,
+        priority: 'normal' as const,
+        timestamp: ts,
+        operations: ops,
+        description: 'Unlock layout',
+        includeInHistory: true,
+      };
+      this.appDfdOrchestrator.executeOperation(batch).subscribe();
+    }
+
+    this.rightClickedCellIsLocked = false;
   }
 
   // Edge methods
