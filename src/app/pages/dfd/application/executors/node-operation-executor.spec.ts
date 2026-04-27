@@ -292,7 +292,10 @@ describe('NodeOperationExecutor', () => {
               expect(mockNode.setSize).toHaveBeenCalledWith(150, 80);
               expect(mockNode.setAttrByPath).toHaveBeenCalledWith('text/text', 'Updated Label');
               expect(mockNode.setAttrByPath).toHaveBeenCalledWith('body/fill', '#ffff00');
-              expect(mockNode.setData).toHaveBeenCalledWith({ existing: 'data', updated: true });
+              expect(mockNode.setData).toHaveBeenCalledWith(
+                { existing: 'data', updated: true },
+                { overwrite: true },
+              );
 
               resolve();
             } catch (error) {

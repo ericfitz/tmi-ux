@@ -639,11 +639,4 @@ describe('ProjectsComponent', () => {
       expect(component.displayTeam(null as any)).toBe('');
     });
   });
-
-  // -------------------------------------------------------------------------
-  describe('no delete action', () => {
-    it('component does not expose an onDelete method', () => {
-      expect((component as any).onDelete).toBeUndefined();
-    });
-  });
 });

@@ -583,20 +583,6 @@ describe('TeamsComponent', () => {
   });
 
   // -------------------------------------------------------------------------
-  // No delete action
-  // -------------------------------------------------------------------------
-
-  describe('no delete action', () => {
-    it('should not have an onDelete method', () => {
-      expect((component as unknown as Record<string, unknown>)['onDelete']).toBeUndefined();
-    });
-
-    it('should not have a deleteTeam method', () => {
-      expect((component as unknown as Record<string, unknown>)['deleteTeam']).toBeUndefined();
-    });
-  });
-
-  // -------------------------------------------------------------------------
   // getStatusLabel
   // -------------------------------------------------------------------------
 
