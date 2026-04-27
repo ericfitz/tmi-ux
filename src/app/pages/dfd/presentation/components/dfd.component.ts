@@ -154,7 +154,7 @@ import {
   sortChildrenByPorts,
   sortChildrenByPosition,
 } from '../../utils/auto-layout.util';
-import { isCellLayoutLocked } from '../../utils/layout-lock.util';
+import { isCellLayoutLocked, LOCK_BADGE_ICON_HREF } from '../../utils/layout-lock.util';
 import { measureLabelWidth } from '../../utils/text-measurement.util';
 import {
   PortLabelPopoverComponent,
@@ -3094,6 +3094,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // Auto-layout pass for both iconned cells and security boundaries with
       // embedded children. applyAutoLayout no-ops anything that isn't eligible.
       this.applyAutoLayout(node);
+      // Sync lock badge visibility from persisted _layoutLocked.
+      this.applyLockBadge(node);
     }
   }
 
@@ -3509,6 +3511,26 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     cell.setAttrByPath('icon/refY', attrs.refY);
     cell.setAttrByPath('icon/refX2', attrs.refX2);
     cell.setAttrByPath('icon/refY2', attrs.refY2);
+  }
+
+  /**
+   * Sync the lock-badge markup on a cell to its `_layoutLocked` data flag.
+   *
+   * - When locked: sets the badge's `href` and shows it (display: '').
+   * - When unlocked: hides the badge (display: 'none').
+   *
+   * Only eligible shapes (actor / process / store / security-boundary) have
+   * the `lockBadge` markup element; calling this on other shapes is harmless —
+   * `setAttrByPath` no-ops on a missing selector.
+   */
+  private applyLockBadge(cell: any): void {
+    const locked = isCellLayoutLocked(cell);
+    if (locked) {
+      cell.setAttrByPath('lockBadge/href', LOCK_BADGE_ICON_HREF);
+      cell.setAttrByPath('lockBadge/display', '');
+    } else {
+      cell.setAttrByPath('lockBadge/display', 'none');
+    }
   }
 
   private _setAbsoluteLabelAttrs(
