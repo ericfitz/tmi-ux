@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "노트",
       "notes": "노트",
+      "project": "프로젝트",
+      "projects": "프로젝트",
       "report": "보고서",
       "reports": "보고서",
       "repositories": "저장소",
@@ -700,6 +702,8 @@
       "surveyResponse": "설문 응답",
       "surveyResponses": "설문 응답",
       "surveys": "설문",
+      "team": "팀",
+      "teams": "팀",
       "threat": "위협",
       "threatModel": "위협 모델",
       "threatModels": "위협 모델",
@@ -960,6 +964,82 @@
       "title": "스타일",
       "toggleStylePanel": "스타일 패널 전환"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "이메일이 복사되었습니다",
+    "copyEmail": "이메일 복사",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "이 문서를 읽는 중 오류가 발생했습니다.",
+      "noAccessibleSource": "TMI는 현재 액세스 권한으로 이 문서를 읽을 수 없습니다.",
+      "other": "이 문서에 액세스할 수 없습니다.",
+      "pickerRegistrationInvalid": "이 문서의 선택기 권한이 더 이상 유효하지 않습니다.",
+      "sourceNotFound": "TMI는 이 문서의 URL을 읽는 방법을 알지 못합니다.",
+      "tokenNotLinked": "이 문서를 소유한 계정을 연결하지 않았습니다. 출처: {{ source }}",
+      "tokenRefreshFailed": "출처 연결이 더 이상 유효하지 않습니다. 출처: {{ source }}",
+      "tokenTransientFailure": "출처에 연결할 수 없습니다. 일반적으로 일시적인 문제입니다. 출처: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "문서 소유자에게 문의",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "출처 다시 연결",
+      "repickAfterShare": "공유 후 다시 선택",
+      "repickFile": "이 파일을 다시 선택",
+      "retry": "다시 시도",
+      "shareWithServiceAccount": "TMI 서비스 계정과 공유"
+    },
+    "serviceAccountEmail": "다음 이메일과 공유하세요:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Google Drive에서 선택",
+      "label": "이 문서를 어떻게 첨부하시겠습니까?",
+      "linkAction": "출처 연결",
+      "linkPrompt": "이 출처에서 파일을 선택하려면 계정을 연결하세요.",
+      "pickAction": "파일 선택",
+      "pickedFile": "선택된 파일: {{ fileName }}",
+      "repickAction": "다른 파일 선택",
+      "url": "URL 붙여넣기"
+    }
+  },
+  "documentSources": {
+    "add": "출처 연결",
+    "callback": {
+      "error": "출처를 연결할 수 없습니다. 출처: {{ source }}. 사유: {{ reason }}",
+      "linking": "계정을 연결하는 중...",
+      "success": "출처가 연결되었습니다. 출처: {{ source }}"
+    },
+    "columns": {
+      "account": "계정",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "클라우드 스토리지 계정을 연결하여 Google Drive 및 추후 제공되는 다른 서비스의 문서를 첨부하세요.",
+      "title": "연결된 문서 출처가 없습니다"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "연결됨 {{ relativeTime }}",
+    "relink": "다시 연결",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "새로 고침 실패"
+    },
+    "tabConfirmUnlink": {
+      "body": "연결을 해제하면 이 출처에서 첨부된 문서에 대한 액세스가 제거됩니다. 다시 연결한 후 해당 파일을 다시 선택해야 할 수도 있습니다.",
+      "title": "출처 연결 해제. 출처: {{ source }}"
+    },
+    "tabTitle": "문서 출처",
+    "unlink": "연결 해제"
+  },
+  "documentStatus": {
+    "accessible": "문서 액세스 가능",
+    "authRequired": "권한 부여 필요",
+    "pendingAccess": "액세스 대기 중",
+    "unknown": "상태 알 수 없음"
   },
   "editor": {
     "deleteMetadataWarning": {

@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Catatan",
       "notes": "Catatan",
+      "project": "Proyek",
+      "projects": "Proyek",
       "report": "Laporan",
       "reports": "Laporan",
       "repositories": "Repositori",
@@ -700,6 +702,8 @@
       "surveyResponse": "Respons Survei",
       "surveyResponses": "Respons Survei",
       "surveys": "Survei",
+      "team": "Tim",
+      "teams": "Tim",
       "threat": "Ancaman",
       "threatModel": "Model Ancaman",
       "threatModels": "Model Ancaman",
@@ -960,6 +964,82 @@
       "title": "Gaya",
       "toggleStylePanel": "Alihkan panel gaya"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "Email disalin",
+    "copyEmail": "Salin email",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "Terjadi kesalahan saat membaca dokumen ini.",
+      "noAccessibleSource": "TMI tidak dapat membaca dokumen ini dengan akses saat ini.",
+      "other": "Tidak dapat mengakses dokumen ini.",
+      "pickerRegistrationInvalid": "Otorisasi pemilih untuk dokumen ini tidak lagi valid.",
+      "sourceNotFound": "TMI tidak mengetahui cara membaca URL dokumen ini.",
+      "tokenNotLinked": "Anda belum menautkan akun yang memiliki dokumen ini. Sumber: {{ source }}",
+      "tokenRefreshFailed": "Tautan sumber tidak lagi valid. Sumber: {{ source }}",
+      "tokenTransientFailure": "Tidak dapat menjangkau sumber. Hal ini biasanya bersifat sementara. Sumber: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Hubungi pemilik dokumen",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Tautkan ulang sumber",
+      "repickAfterShare": "Pilih kembali setelah membagikan",
+      "repickFile": "Pilih kembali berkas ini",
+      "retry": "Coba lagi",
+      "shareWithServiceAccount": "Bagikan dengan akun layanan TMI"
+    },
+    "serviceAccountEmail": "Bagikan dengan email ini:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Pilih dari Google Drive",
+      "label": "Bagaimana Anda ingin melampirkan dokumen ini?",
+      "linkAction": "Tautkan sumber",
+      "linkPrompt": "Tautkan akun Anda untuk memilih berkas dari sumber ini.",
+      "pickAction": "Pilih sebuah berkas",
+      "pickedFile": "Berkas dipilih: {{ fileName }}",
+      "repickAction": "Pilih berkas yang berbeda",
+      "url": "Tempel URL"
+    }
+  },
+  "documentSources": {
+    "add": "Hubungkan sumber",
+    "callback": {
+      "error": "Tidak dapat menghubungkan sumber. Sumber: {{ source }}. Alasan: {{ reason }}",
+      "linking": "Menautkan akun Anda...",
+      "success": "Sumber terhubung. Sumber: {{ source }}"
+    },
+    "columns": {
+      "account": "Akun",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Tautkan akun penyimpanan awan untuk melampirkan dokumen dari Google Drive, dan layanan lainnya seiring ketersediaannya.",
+      "title": "Tidak ada sumber dokumen yang terhubung"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Ditautkan {{ relativeTime }}",
+    "relink": "Tautkan ulang",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Penyegaran gagal"
+    },
+    "tabConfirmUnlink": {
+      "body": "Melepas tautan akan menghapus akses ke dokumen yang dilampirkan dari sumber ini. Anda mungkin perlu memilih kembali berkas-berkas tersebut setelah menautkan ulang.",
+      "title": "Lepas tautan sumber. Sumber: {{ source }}"
+    },
+    "tabTitle": "Sumber dokumen",
+    "unlink": "Lepas tautan"
+  },
+  "documentStatus": {
+    "accessible": "Dokumen dapat diakses",
+    "authRequired": "Otorisasi diperlukan",
+    "pendingAccess": "Akses tertunda",
+    "unknown": "Status tidak diketahui"
   },
   "editor": {
     "deleteMetadataWarning": {

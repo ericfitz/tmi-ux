@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Notiz",
       "notes": "Notizen",
+      "project": "Projekt",
+      "projects": "Projekte",
       "report": "Bericht",
       "reports": "Berichte",
       "repositories": "Repositorys",
@@ -700,6 +702,8 @@
       "surveyResponse": "Umfrageantwort",
       "surveyResponses": "Umfrageantworten",
       "surveys": "Umfragen",
+      "team": "Team",
+      "teams": "Teams",
       "threat": "Bedrohung",
       "threatModel": "Bedrohungsmodell",
       "threatModels": "Bedrohungsmodelle",
@@ -960,6 +964,82 @@
       "title": "Stil",
       "toggleStylePanel": "Stilbereich umschalten"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "E-Mail kopiert",
+    "copyEmail": "E-Mail kopieren",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "Beim Lesen dieses Dokuments ist ein Fehler aufgetreten.",
+      "noAccessibleSource": "TMI kann dieses Dokument mit den aktuellen Zugriffsrechten nicht lesen.",
+      "other": "Auf dieses Dokument kann nicht zugegriffen werden.",
+      "pickerRegistrationInvalid": "Die Auswahlautorisierung dieses Dokuments ist nicht mehr gültig.",
+      "sourceNotFound": "TMI weiß nicht, wie die URL dieses Dokuments zu lesen ist.",
+      "tokenNotLinked": "Sie haben das Konto, dem dieses Dokument gehört, nicht verknüpft. Quelle: {{ source }}",
+      "tokenRefreshFailed": "Die Quellverknüpfung ist nicht mehr gültig. Quelle: {{ source }}",
+      "tokenTransientFailure": "Die Quelle konnte nicht erreicht werden. Dies ist normalerweise vorübergehend. Quelle: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Eigentümer des Dokuments kontaktieren",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Quelle erneut verknüpfen",
+      "repickAfterShare": "Nach der Freigabe erneut auswählen",
+      "repickFile": "Diese Datei erneut auswählen",
+      "retry": "Erneut versuchen",
+      "shareWithServiceAccount": "Mit TMI-Dienstkonto teilen"
+    },
+    "serviceAccountEmail": "Mit dieser E-Mail-Adresse teilen:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Aus Google Drive auswählen",
+      "label": "Wie möchten Sie dieses Dokument anhängen?",
+      "linkAction": "Quelle verknüpfen",
+      "linkPrompt": "Verknüpfen Sie Ihr Konto, um Dateien aus dieser Quelle auszuwählen.",
+      "pickAction": "Datei auswählen",
+      "pickedFile": "Ausgewählte Datei: {{ fileName }}",
+      "repickAction": "Andere Datei auswählen",
+      "url": "URL einfügen"
+    }
+  },
+  "documentSources": {
+    "add": "Quelle verbinden",
+    "callback": {
+      "error": "Quelle konnte nicht verbunden werden. Quelle: {{ source }}. Grund: {{ reason }}",
+      "linking": "Konto wird verknüpft...",
+      "success": "Quelle verbunden. Quelle: {{ source }}"
+    },
+    "columns": {
+      "account": "Konto",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Verknüpfen Sie ein Cloud-Speicher-Konto, um Dokumente aus Google Drive und weiteren Diensten anzuhängen, sobald diese verfügbar werden.",
+      "title": "Keine Dokumentquellen verbunden"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Verknüpft {{ relativeTime }}",
+    "relink": "Erneut verknüpfen",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Aktualisierung fehlgeschlagen"
+    },
+    "tabConfirmUnlink": {
+      "body": "Durch das Entfernen der Verknüpfung wird der Zugriff auf Dokumente entfernt, die aus dieser Quelle angehängt wurden. Möglicherweise müssen Sie diese Dateien nach erneuter Verknüpfung erneut auswählen.",
+      "title": "Quelle trennen. Quelle: {{ source }}"
+    },
+    "tabTitle": "Dokumentquellen",
+    "unlink": "Verknüpfung trennen"
+  },
+  "documentStatus": {
+    "accessible": "Dokument zugänglich",
+    "authRequired": "Autorisierung erforderlich",
+    "pendingAccess": "Zugriff ausstehend",
+    "unknown": "Status unbekannt"
   },
   "editor": {
     "deleteMetadataWarning": {

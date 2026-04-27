@@ -687,6 +687,8 @@
       "metadata": "{{common.metadata}}",
       "note": "หมายเหตุ",
       "notes": "หมายเหตุ",
+      "project": "โปรเจกต์",
+      "projects": "โปรเจกต์",
       "report": "รายงาน",
       "reports": "รายงาน",
       "repositories": "ที่เก็บ",
@@ -695,6 +697,8 @@
       "surveyResponse": "คำตอบแบบสำรวจ",
       "surveyResponses": "คำตอบแบบสำรวจ",
       "surveys": "แบบสำรวจ",
+      "team": "ทีม",
+      "teams": "ทีม",
       "threat": "ภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคาม",
       "threatModels": "โมเดลภัยคุกคาม",
@@ -955,6 +959,82 @@
       "title": "สไตล์",
       "toggleStylePanel": "สลับแผงสไตล์"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "คัดลอกอีเมลแล้ว",
+    "copyEmail": "คัดลอกอีเมล",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "เกิดข้อผิดพลาดขณะอ่านเอกสารนี้",
+      "noAccessibleSource": "TMI ไม่สามารถอ่านเอกสารนี้ด้วยสิทธิ์การเข้าถึงในปัจจุบัน",
+      "other": "ไม่สามารถเข้าถึงเอกสารนี้ได้",
+      "pickerRegistrationInvalid": "การอนุญาตของตัวเลือกสำหรับเอกสารนี้ไม่ถูกต้องอีกต่อไป",
+      "sourceNotFound": "TMI ไม่ทราบวิธีการอ่าน URL ของเอกสารนี้",
+      "tokenNotLinked": "คุณยังไม่ได้เชื่อมโยงบัญชีที่เป็นเจ้าของเอกสารนี้ แหล่งที่มา: {{ source }}",
+      "tokenRefreshFailed": "ลิงก์แหล่งที่มาไม่ถูกต้องอีกต่อไป แหล่งที่มา: {{ source }}",
+      "tokenTransientFailure": "ไม่สามารถเข้าถึงแหล่งที่มาได้ ปัญหานี้มักเป็นเพียงชั่วคราว แหล่งที่มา: {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "ติดต่อเจ้าของเอกสาร",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "เชื่อมโยงแหล่งที่มาใหม่",
+      "repickAfterShare": "เลือกอีกครั้งหลังจากแชร์",
+      "repickFile": "เลือกไฟล์นี้อีกครั้ง",
+      "retry": "ลองอีกครั้ง",
+      "shareWithServiceAccount": "แชร์กับบัญชีบริการของ TMI"
+    },
+    "serviceAccountEmail": "แชร์กับอีเมลนี้:"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "เลือกจาก Google Drive",
+      "label": "คุณต้องการแนบเอกสารนี้ด้วยวิธีใด?",
+      "linkAction": "เชื่อมโยงแหล่งที่มา",
+      "linkPrompt": "เชื่อมโยงบัญชีของคุณเพื่อเลือกไฟล์จากแหล่งที่มานี้",
+      "pickAction": "เลือกไฟล์",
+      "pickedFile": "เลือกไฟล์แล้ว: {{ fileName }}",
+      "repickAction": "เลือกไฟล์อื่น",
+      "url": "วาง URL"
+    }
+  },
+  "documentSources": {
+    "add": "เชื่อมต่อแหล่งที่มา",
+    "callback": {
+      "error": "ไม่สามารถเชื่อมต่อแหล่งที่มาได้ แหล่งที่มา: {{ source }} เหตุผล: {{ reason }}",
+      "linking": "กำลังเชื่อมโยงบัญชีของคุณ...",
+      "success": "เชื่อมต่อแหล่งที่มาแล้ว แหล่งที่มา: {{ source }}"
+    },
+    "columns": {
+      "account": "บัญชี",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "เชื่อมโยงบัญชีพื้นที่จัดเก็บข้อมูลบนคลาวด์เพื่อแนบเอกสารจาก Google Drive และบริการอื่น ๆ เมื่อพร้อมให้บริการ",
+      "title": "ไม่มีแหล่งที่มาของเอกสารที่เชื่อมต่อ"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "เชื่อมโยงเมื่อ {{ relativeTime }}",
+    "relink": "เชื่อมโยงใหม่",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "การรีเฟรชล้มเหลว"
+    },
+    "tabConfirmUnlink": {
+      "body": "การยกเลิกการเชื่อมโยงจะลบสิทธิ์การเข้าถึงเอกสารที่แนบมาจากแหล่งที่มานี้ คุณอาจต้องเลือกไฟล์เหล่านั้นใหม่หลังจากเชื่อมโยงอีกครั้ง",
+      "title": "ยกเลิกการเชื่อมโยงแหล่งที่มา แหล่งที่มา: {{ source }}"
+    },
+    "tabTitle": "แหล่งที่มาของเอกสาร",
+    "unlink": "ยกเลิกการเชื่อมโยง"
+  },
+  "documentStatus": {
+    "accessible": "เข้าถึงเอกสารได้",
+    "authRequired": "ต้องมีการอนุญาต",
+    "pendingAccess": "รอการเข้าถึง",
+    "unknown": "สถานะไม่ทราบ"
   },
   "editor": {
     "deleteMetadataWarning": {

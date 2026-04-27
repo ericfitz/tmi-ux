@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "笔记",
       "notes": "笔记",
+      "project": "项目",
+      "projects": "项目",
       "report": "报告",
       "reports": "报告",
       "repositories": "代码仓库",
@@ -700,6 +702,8 @@
       "surveyResponse": "调查回复",
       "surveyResponses": "调查回复",
       "surveys": "调查",
+      "team": "团队",
+      "teams": "团队",
       "threat": "威胁",
       "threatModel": "威胁模型",
       "threatModels": "威胁模型",
@@ -960,6 +964,82 @@
       "title": "样式",
       "toggleStylePanel": "切换样式面板"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "邮箱已复制",
+    "copyEmail": "复制邮箱",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "读取此文档时发生错误。",
+      "noAccessibleSource": "TMI 无法使用当前权限读取此文档。",
+      "other": "无法访问此文档。",
+      "pickerRegistrationInvalid": "此文档的选择器授权不再有效。",
+      "sourceNotFound": "TMI 不知道如何读取此文档的 URL。",
+      "tokenNotLinked": "您尚未关联拥有此文档的账户。来源：{{ source }}",
+      "tokenRefreshFailed": "来源链接不再有效。来源：{{ source }}",
+      "tokenTransientFailure": "无法连接到来源。这通常是暂时性问题。来源：{{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "联系文档所有者",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "重新关联来源",
+      "repickAfterShare": "共享后重新选择",
+      "repickFile": "重新选择此文件",
+      "retry": "重试",
+      "shareWithServiceAccount": "与 TMI 服务账户共享"
+    },
+    "serviceAccountEmail": "与此邮箱共享："
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "从 Google Drive 选择",
+      "label": "您希望如何附加此文档？",
+      "linkAction": "关联来源",
+      "linkPrompt": "关联您的账户以从此来源选择文件。",
+      "pickAction": "选择文件",
+      "pickedFile": "已选择文件：{{ fileName }}",
+      "repickAction": "选择其他文件",
+      "url": "粘贴 URL"
+    }
+  },
+  "documentSources": {
+    "add": "连接来源",
+    "callback": {
+      "error": "无法连接来源。来源：{{ source }}。原因：{{ reason }}",
+      "linking": "正在关联您的账户...",
+      "success": "来源已连接。来源：{{ source }}"
+    },
+    "columns": {
+      "account": "账户",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "关联云存储账户即可从 Google Drive 以及其他后续可用的服务附加文档。",
+      "title": "尚未连接文档来源"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "已于 {{ relativeTime }} 关联",
+    "relink": "重新关联",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "刷新失败"
+    },
+    "tabConfirmUnlink": {
+      "body": "取消关联将移除对从此来源附加的文档的访问权限。重新关联后，您可能需要重新选择这些文件。",
+      "title": "取消关联来源。来源：{{ source }}"
+    },
+    "tabTitle": "文档来源",
+    "unlink": "取消关联"
+  },
+  "documentStatus": {
+    "accessible": "文档可访问",
+    "authRequired": "需要授权",
+    "pendingAccess": "等待访问",
+    "unknown": "状态未知"
   },
   "editor": {
     "deleteMetadataWarning": {

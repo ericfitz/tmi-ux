@@ -692,6 +692,8 @@
       "metadata": "{{common.metadata}}",
       "note": "Note",
       "notes": "Notes",
+      "project": "Projet",
+      "projects": "Projets",
       "report": "Rapport",
       "reports": "Rapports",
       "repositories": "Depots",
@@ -700,6 +702,8 @@
       "surveyResponse": "Réponse d'enquête",
       "surveyResponses": "Réponses d'enquête",
       "surveys": "Enquêtes",
+      "team": "Équipe",
+      "teams": "Équipes",
       "threat": "Menace",
       "threatModel": "Modele de Menaces",
       "threatModels": "Modèles de menace",
@@ -960,6 +964,82 @@
       "title": "Style",
       "toggleStylePanel": "Basculer le panneau de styles"
     }
+  },
+  "documentAccess": {
+    "copiedEmail": "E-mail copié",
+    "copyEmail": "Copier l'e-mail",
+    "reason": {
+      "fallback": "{{documentAccess.reason.other}}",
+      "fetchError": "Une erreur s'est produite lors de la lecture de ce document.",
+      "noAccessibleSource": "TMI ne peut pas lire ce document avec l'accès actuel.",
+      "other": "Impossible d'accéder à ce document.",
+      "pickerRegistrationInvalid": "L'autorisation du sélecteur de ce document n'est plus valide.",
+      "sourceNotFound": "TMI ne sait pas comment lire l'URL de ce document.",
+      "tokenNotLinked": "Vous n'avez pas lié le compte propriétaire de ce document. Source : {{ source }}",
+      "tokenRefreshFailed": "Le lien de la source n'est plus valide. Source : {{ source }}",
+      "tokenTransientFailure": "Impossible de joindre la source. Cela est généralement temporaire. Source : {{ source }}"
+    },
+    "remediation": {
+      "contactOwner": "Contacter le propriétaire du document",
+      "linkAccount": "{{documentEditor.source.linkAction}}",
+      "relinkAccount": "Relier la source",
+      "repickAfterShare": "Sélectionner à nouveau après le partage",
+      "repickFile": "Sélectionner à nouveau ce fichier",
+      "retry": "Réessayer",
+      "shareWithServiceAccount": "Partager avec le compte de service TMI"
+    },
+    "serviceAccountEmail": "Partager avec cet e-mail :"
+  },
+  "documentEditor": {
+    "source": {
+      "googleDrive": "Sélectionner depuis Google Drive",
+      "label": "Comment souhaitez-vous joindre ce document ?",
+      "linkAction": "Relier la source",
+      "linkPrompt": "Reliez votre compte pour sélectionner des fichiers depuis cette source.",
+      "pickAction": "Sélectionner un fichier",
+      "pickedFile": "Fichier sélectionné : {{ fileName }}",
+      "repickAction": "Choisir un autre fichier",
+      "url": "Coller une URL"
+    }
+  },
+  "documentSources": {
+    "add": "Connecter une source",
+    "callback": {
+      "error": "Impossible de connecter la source. Source : {{ source }}. Raison : {{ reason }}",
+      "linking": "Liaison de votre compte en cours...",
+      "success": "Source connectée. Source : {{ source }}"
+    },
+    "columns": {
+      "account": "Compte",
+      "actions": "{{common.actions}}",
+      "source": "{{admin.settings.columns.source}}",
+      "status": "{{common.status}}"
+    },
+    "empty": {
+      "description": "Reliez un compte de stockage en nuage pour joindre des documents depuis Google Drive et d'autres services à mesure qu'ils deviennent disponibles.",
+      "title": "Aucune source de documents connectée"
+    },
+    "googleDrive": {
+      "name": "Google Drive"
+    },
+    "linkedAt": "Liée {{ relativeTime }}",
+    "relink": "Relier",
+    "status": {
+      "active": "{{common.active}}",
+      "refreshFailed": "Échec de l'actualisation"
+    },
+    "tabConfirmUnlink": {
+      "body": "Délier la source supprimera l'accès aux documents joints depuis cette source. Vous devrez peut-être sélectionner à nouveau ces fichiers après les avoir reliés.",
+      "title": "Délier la source. Source : {{ source }}"
+    },
+    "tabTitle": "Sources de documents",
+    "unlink": "Délier"
+  },
+  "documentStatus": {
+    "accessible": "Document accessible",
+    "authRequired": "Autorisation requise",
+    "pendingAccess": "Accès en attente",
+    "unknown": "Statut inconnu"
   },
   "editor": {
     "deleteMetadataWarning": {
