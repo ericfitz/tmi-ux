@@ -1000,7 +1000,67 @@
       "toggleStylePanel": "Toggle style panel"
     }
   },
+  "documentAccess": {
+    "reason": {
+      "tokenNotLinked": "You haven't linked the account that owns this document. Source: {{ source }}",
+      "tokenRefreshFailed": "Source link is no longer valid. Source: {{ source }}",
+      "tokenTransientFailure": "Couldn't reach source. This is usually temporary. Source: {{ source }}",
+      "pickerRegistrationInvalid": "This document's picker authorization is no longer valid.",
+      "noAccessibleSource": "TMI cannot read this document with current access.",
+      "sourceNotFound": "TMI doesn't know how to read this document's URL.",
+      "fetchError": "An error occurred while reading this document.",
+      "other": "Unable to access this document.",
+      "fallback": "Unable to access this document."
+    },
+    "remediation": {
+      "linkAccount": "Link source",
+      "relinkAccount": "Relink source",
+      "repickFile": "Pick this file again",
+      "shareWithServiceAccount": "Share with TMI service account",
+      "repickAfterShare": "Pick again after sharing",
+      "retry": "Try again",
+      "contactOwner": "Contact the document owner"
+    },
+    "serviceAccountEmail": "Share with this email:",
+    "copyEmail": "Copy email",
+    "copiedEmail": "Email copied"
+  },
+  "documentEditor": {
+    "source": {
+      "label": "How would you like to attach this document?",
+      "url": "Paste a URL",
+      "googleDrive": "Pick from Google Drive",
+      "linkPrompt": "Link your account to pick files from this source.",
+      "linkAction": "Link source",
+      "pickAction": "Pick a file",
+      "repickAction": "Choose a different file",
+      "pickedFile": "File selected: {{ fileName }}"
+    }
+  },
   "documentSources": {
+    "tabTitle": "Document sources",
+    "tabConfirmUnlink": {
+      "title": "Unlink source. Source: {{ source }}",
+      "body": "Unlinking will remove access to documents attached from this source. You may need to re-pick those files after re-linking."
+    },
+    "empty": {
+      "title": "No document sources connected",
+      "description": "Link a cloud storage account to attach documents from Google Drive, and other services as they become available."
+    },
+    "add": "Connect a source",
+    "unlink": "Unlink",
+    "relink": "Relink",
+    "linkedAt": "Linked {{ relativeTime }}",
+    "columns": {
+      "source": "Source",
+      "account": "Account",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "refreshFailed": "Refresh failed"
+    },
     "callback": {
       "linking": "Linking your account...",
       "success": "Source connected. Source: {{ source }}",
@@ -1009,6 +1069,12 @@
     "googleDrive": {
       "name": "Google Drive"
     }
+  },
+  "documentStatus": {
+    "accessible": "Document accessible",
+    "pendingAccess": "Pending access",
+    "authRequired": "Authorization required",
+    "unknown": "Status unknown"
   },
   "editor": {
     "deleteMetadataWarning": {
