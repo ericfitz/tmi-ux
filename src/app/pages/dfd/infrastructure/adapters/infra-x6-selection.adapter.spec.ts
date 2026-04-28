@@ -15,7 +15,6 @@ import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { SelectionService } from '../services/infra-selection.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
-import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -305,13 +304,14 @@ describe('InfraX6SelectionAdapter', () => {
       // Simulate selection change event
       graph.trigger('selection:changed', { added: [node], removed: [] });
 
-      // Verify selection effect applied
+      // Verify selection filter applied — stroke is NOT overwritten (issue #654)
       const bodyFilter = node.attr('body/filter');
       const strokeWidth = node.attr('body/strokeWidth');
       const strokeColor = node.attr('body/stroke');
       expect(bodyFilter).toBe('drop-shadow(0 0 8px rgba(255, 0, 0, 0.8))');
-      expect(strokeWidth).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
-      expect(strokeColor).toBe(DFD_STYLING.SELECTION.STROKE_COLOR);
+      // Stroke and strokeWidth remain at their pre-selection values
+      expect(strokeWidth).toBe(2);
+      expect(strokeColor).toBe('#000000');
     });
 
     it('should remove selection effect when cell is deselected', () => {
@@ -321,7 +321,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Then deselect
       graph.trigger('selection:changed', { added: [], removed: [node] });
 
-      // Verify selection effect removed
+      // Verify filter cleared; stroke was never touched so it remains at default
       const bodyFilter = node.attr('body/filter');
       const strokeWidth = node.attr('body/strokeWidth');
       expect(bodyFilter).toBe('none');

@@ -92,9 +92,13 @@ export class StylingVerifier {
       // Text-box nodes apply selection effects to text element
       expect(node.attr('text/filter')).toBe(expectedFilter);
     } else {
-      // Regular nodes apply selection effects to body element
-      expect(node.attr('body/filter')).toBe(expectedFilter);
-      expect(node.attr('body/strokeWidth')).toBe(DFD_STYLING.SELECTION.STROKE_WIDTH);
+      // Regular nodes apply selection effects to body or icon element; stroke is
+      // NOT overwritten — selection feedback is provided by the filter halo plus
+      // the X6 boundary tool (issue #654).
+      const bodyFilter = node.attr('body/filter');
+      const iconFilter = node.attr('icon/filter');
+      const filterApplied = bodyFilter === expectedFilter || iconFilter === expectedFilter;
+      expect(filterApplied).toBe(true);
     }
   }
 

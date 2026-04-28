@@ -5,7 +5,7 @@ import { Transform } from '@antv/x6-plugin-transform';
 import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';
-import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
+import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
@@ -30,14 +30,6 @@ export class InfraX6SelectionAdapter {
   private historyController: { disable: () => void; enable: () => void } | null = null;
   private portStateManager: any = null;
   private infraNodeService: any = null; // Set via setNodeService to avoid circular dependency
-
-  /**
-   * Per-cell pre-selection visual state captured at applySelectionEffect time
-   * and restored at removeSelectionEffect time, so selecting/deselecting a cell
-   * doesn't overwrite a user-customized body stroke (e.g., transparent body in
-   * icon-only mode — issue #654).
-   */
-  private _preSelectionState = new Map<string, { stroke: any; strokeWidth: any }>();
 
   constructor(
     private logger: LoggerService,
@@ -537,17 +529,19 @@ export class InfraX6SelectionAdapter {
         // For text-box shapes, apply glow to text element since body is transparent
         cell.attr('text/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
       } else {
-        // Capture pre-selection body stroke state so removeSelectionEffect can
-        // restore the user-current value (e.g., transparent body in icon-only
-        // mode) instead of falling back to the shape default. Issue #654.
-        this._preSelectionState.set(cell.id, {
-          stroke: cell.attr('body/stroke'),
-          strokeWidth: cell.attr('body/strokeWidth'),
-        });
-        // For all other node types, apply glow to body element
-        cell.attr('body/filter', DFD_STYLING_HELPERS.getSelectionFilter(nodeType));
-        cell.attr('body/strokeWidth', DFD_STYLING.SELECTION.STROKE_WIDTH);
-        cell.attr('body/stroke', DFD_STYLING.SELECTION.STROKE_COLOR);
+        // Apply the selection glow to the visible element. For cells with a
+        // transparent body (icon-only mode iconned shapes, see #638), the body
+        // has nothing to draw a drop-shadow around, so apply the filter to the
+        // icon element instead. Otherwise apply to body. The body's stroke and
+        // strokeWidth are NOT overwritten — selection feedback is provided by
+        // the filter halo plus the existing X6 'boundary' tool. Issue #654.
+        const bodyStroke = cell.attr('body/stroke');
+        const filter = DFD_STYLING_HELPERS.getSelectionFilter(nodeType);
+        if (bodyStroke === 'transparent') {
+          cell.attr('icon/filter', filter);
+        } else {
+          cell.attr('body/filter', filter);
+        }
       }
     } else if (cell.isEdge()) {
       cell.attr('line/filter', DFD_STYLING_HELPERS.getSelectionFilter('edge'));
@@ -568,24 +562,11 @@ export class InfraX6SelectionAdapter {
         // For text-box shapes, remove glow from text element
         cell.attr('text/filter', 'none');
       } else {
-        // For all other node types, remove glow from body element
+        // Clear the filter from whichever element we set it on (the other
+        // element's filter is a no-op clear). No stroke restoration needed —
+        // we never overwrote it. Issue #654.
         cell.attr('body/filter', 'none');
-        // Restore the pre-selection body stroke captured by applySelectionEffect.
-        // Falls back to the shape default if no capture exists (defensive — should
-        // never happen in normal selection flow). Issue #654.
-        const captured = this._preSelectionState.get(cell.id);
-        if (captured) {
-          cell.attr('body/stroke', captured.stroke);
-          cell.attr('body/strokeWidth', captured.strokeWidth);
-          this._preSelectionState.delete(cell.id);
-        } else {
-          const defaultStrokeWidth = DFD_STYLING_HELPERS.getDefaultStrokeWidth(
-            nodeType as NodeType,
-          );
-          const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
-          cell.attr('body/strokeWidth', defaultStrokeWidth);
-          cell.attr('body/stroke', defaultStroke);
-        }
+        cell.attr('icon/filter', 'none');
       }
     } else if (cell.isEdge()) {
       cell.attr('line/filter', 'none');
