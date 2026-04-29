@@ -239,6 +239,31 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       });
     });
 
+    it('onRecheckAccess treats 409 as already-accessible, re-GETs, no failure snackbar', () => {
+      mockTms.getDocument.mockReturnValue(of(baseDoc));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+
+      const accessibleDoc: Document = { ...baseDoc, access_status: 'accessible' };
+      mockTms.requestDocumentAccess.mockReturnValue(throwError(() => ({ status: 409 })));
+      mockTms.getDocument.mockReturnValue(of(accessibleDoc));
+
+      c.onRecheckAccess();
+      expect(c.currentDocument?.access_status).toBe('accessible');
+      expect(mockSnack.open).toHaveBeenCalledWith('documentAccess.checkNow.success', undefined, {
+        duration: 3000,
+      });
+      expect(mockSnack.open).not.toHaveBeenCalledWith(
+        'documentAccess.checkNow.failed',
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+
     it('onRecheckAccess is a no-op when threatModelId is missing', () => {
       const c = createComponent({ mode: 'edit', document: baseDoc });
       c.ngOnInit();

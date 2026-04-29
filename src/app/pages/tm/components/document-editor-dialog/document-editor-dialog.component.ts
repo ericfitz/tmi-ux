@@ -174,6 +174,12 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this._fetchAfterRecheck(tmId, docId),
         error: err => {
+          // 409 means the document is no longer pending_access (likely already
+          // accessible). Treat as success and let the GET resolve the new state.
+          if (this._isStatus(err, 409)) {
+            this._fetchAfterRecheck(tmId, docId);
+            return;
+          }
           this.logger.warn('request_access failed', err);
           this.snackBar.open(
             this.transloco.translate('documentAccess.checkNow.failed'),
@@ -182,6 +188,15 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
           );
         },
       });
+  }
+
+  private _isStatus(err: unknown, status: number): boolean {
+    return (
+      typeof err === 'object' &&
+      err !== null &&
+      'status' in err &&
+      (err).status === status
+    );
   }
 
   private _fetchAfterRecheck(threatModelId: string, documentId: string): void {

@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { ContentTokenService } from '../../../core/services/content-token.service';
@@ -279,7 +279,4 @@ export class AccessDiagnosticsPanelComponent {
     }
     return '';
   }
-
-  // Suppress unused imports warning for `of`.
-  protected readonly _of = of;
 }

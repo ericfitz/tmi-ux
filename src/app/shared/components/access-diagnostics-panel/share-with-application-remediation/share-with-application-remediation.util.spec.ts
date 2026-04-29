@@ -88,6 +88,13 @@ describe('buildPowerShellSnippet', () => {
     expect(out).toContain('-Method POST `');
     expect(out).toContain('-Uri "https://example.com/foo" `');
   });
+
+  it('passes through non-POST methods (GET, PATCH)', () => {
+    const get = buildPowerShellSnippet({ ...VALID_PARAMS, graph_call: 'GET https://x/y' });
+    expect(get).toContain('-Method GET `');
+    const patch = buildCurlSnippet({ ...VALID_PARAMS, graph_call: 'PATCH https://x/y' });
+    expect(patch).toContain('curl -X PATCH "https://x/y"');
+  });
 });
 
 describe('buildCurlSnippet', () => {
