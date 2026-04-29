@@ -704,6 +704,8 @@ describe('Cell Property Filter Utility', () => {
               refY: 1,
               refDx: 0,
               refDy: 10,
+              refX2: 5,
+              refY2: '50%',
               textAnchor: 'middle',
               textVerticalAnchor: 'top',
             },
@@ -717,8 +719,46 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.attrs?.text?.refY).toBe(1);
         expect(sanitized.attrs?.text?.refDx).toBe(0);
         expect(sanitized.attrs?.text?.refDy).toBe(10);
+        expect((sanitized.attrs?.text as any)?.refX2).toBe(5);
+        expect((sanitized.attrs?.text as any)?.refY2).toBe('50%');
         expect(sanitized.attrs?.text?.textAnchor).toBe('middle');
         expect(sanitized.attrs?.text?.textVerticalAnchor).toBe('top');
+      });
+
+      it('should preserve body shape and ref-sizing properties in node attrs', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          attrs: {
+            body: {
+              fill: '#ffffff',
+              stroke: '#333333',
+              strokeWidth: 2,
+              rx: 10,
+              ry: 10,
+              lateral: 0.2,
+              refWidth: '100%',
+              refHeight: '100%',
+              fillOpacity: 0.5,
+            },
+          },
+        };
+
+        const warnings: Array<{ message: string; context?: Record<string, unknown> }> = [];
+        const logger = {
+          warn: (msg: string, ctx?: Record<string, unknown>) =>
+            warnings.push({ message: msg, context: ctx }),
+        };
+
+        const sanitized = sanitizeCellForApi(node, logger);
+
+        expect((sanitized.attrs?.body as any)?.rx).toBe(10);
+        expect((sanitized.attrs?.body as any)?.ry).toBe(10);
+        expect((sanitized.attrs?.body as any)?.lateral).toBe(0.2);
+        expect((sanitized.attrs?.body as any)?.refWidth).toBe('100%');
+        expect((sanitized.attrs?.body as any)?.refHeight).toBe('100%');
+        expect((sanitized.attrs?.body as any)?.fillOpacity).toBe(0.5);
+        expect(warnings).toHaveLength(0);
       });
     });
 

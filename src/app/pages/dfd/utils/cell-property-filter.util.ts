@@ -509,13 +509,32 @@ export function isEdgeShape(shape: string | undefined): boolean {
 
 /**
  * Allowed properties within NodeAttrs per OpenAPI schema.
- * NodeAttrs has additionalProperties: false
+ * NodeAttrs has additionalProperties: false. Mirrors the server-side
+ * NodeAttrs schema in tmi-openapi.json.
  *
- * Text positioning properties (refX, refY, refDx, refDy, textAnchor, textVerticalAnchor)
- * are included to preserve label positioning during import/export.
+ * body: rx/ry are corner-radius defaults set by X6 shape registrations;
+ * lateral drives the cylinder path computation for the 'store' shape;
+ * refWidth/refHeight let the body fill the cell bounding box; fillOpacity
+ * is used as transient drag-to-embed visual feedback.
+ *
+ * text: refX2/refY2 are origin-based offsets used for icon and label
+ * positioning. refDx/refDy are corner-based offsets, retained for
+ * backward compatibility with diagrams saved before the schema was
+ * corrected.
  */
 const NODE_ATTRS_SCHEMA: Record<string, readonly string[]> = {
-  body: ['fill', 'stroke', 'strokeWidth', 'strokeDasharray'],
+  body: [
+    'fill',
+    'stroke',
+    'strokeWidth',
+    'strokeDasharray',
+    'rx',
+    'ry',
+    'lateral',
+    'refWidth',
+    'refHeight',
+    'fillOpacity',
+  ],
   text: [
     'text',
     'fontSize',
@@ -525,6 +544,8 @@ const NODE_ATTRS_SCHEMA: Record<string, readonly string[]> = {
     'refY',
     'refDx',
     'refDy',
+    'refX2',
+    'refY2',
     'textAnchor',
     'textVerticalAnchor',
   ],
