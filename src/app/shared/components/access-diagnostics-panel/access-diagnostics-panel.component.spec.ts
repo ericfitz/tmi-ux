@@ -132,6 +132,59 @@ describe('AccessDiagnosticsPanelComponent', () => {
     expect(mockSnack.open).toHaveBeenCalled();
   });
 
+  it('showCheckNow is true only when document is pending_access', () => {
+    const pending = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'pending_access',
+      access_diagnostics: {
+        reason_code: 'microsoft_not_shared',
+        remediations: [
+          {
+            action: 'share_with_application',
+            params: {
+              drive_id: 'b!abc',
+              item_id: '01XYZ',
+              app_object_id: 'app-guid',
+              graph_call: 'POST https://graph.microsoft.com/v1.0/foo',
+              graph_body: '{}',
+            },
+          },
+        ],
+      },
+    });
+    expect(pending.showCheckNow).toBe(true);
+
+    const accessible = createComponent({
+      id: '2',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'accessible',
+    });
+    expect(accessible.showCheckNow).toBe(false);
+  });
+
+  it('onCheckNow emits the recheck Output', () => {
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'pending_access',
+      access_diagnostics: { reason_code: 'microsoft_not_shared', remediations: [] },
+    });
+    const emitted = vi.fn();
+    c.recheck.subscribe(emitted);
+    c.onCheckNow();
+    expect(emitted).toHaveBeenCalledTimes(1);
+  });
+
   it('link_account remediation calls authorize with current url as return_to', () => {
     const c = createComponent({
       id: '1',

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, Injector, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Injector,
+  Input,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +25,7 @@ import type {
   IContentPickerService,
 } from '../../../core/models/content-provider.types';
 import type { Document } from '../../../pages/tm/models/threat-model.model';
+import { ShareWithApplicationRemediationComponent } from './share-with-application-remediation/share-with-application-remediation.component';
 
 const REASON_KEYS: Record<string, string> = {
   token_not_linked: 'documentAccess.reason.tokenNotLinked',
@@ -27,6 +35,7 @@ const REASON_KEYS: Record<string, string> = {
   no_accessible_source: 'documentAccess.reason.noAccessibleSource',
   source_not_found: 'documentAccess.reason.sourceNotFound',
   fetch_error: 'documentAccess.reason.fetchError',
+  microsoft_not_shared: 'documentAccess.reason.microsoftNotShared',
   other: 'documentAccess.reason.other',
 };
 
@@ -43,7 +52,14 @@ const REMEDIATION_KEYS: Record<string, string> = {
 @Component({
   selector: 'app-access-diagnostics-panel',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    TranslocoModule,
+    ShareWithApplicationRemediationComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (document.access_diagnostics) {
@@ -61,32 +77,46 @@ const REMEDIATION_KEYS: Record<string, string> = {
           @if (document.access_diagnostics.remediations.length > 0) {
             <div class="diagnostics-remediations">
               @for (rem of document.access_diagnostics.remediations; track rem.action) {
-                <button
-                  mat-stroked-button
-                  [attr.data-testid]="'remediation-' + rem.action"
-                  (click)="handleRemediation(rem)"
-                >
-                  {{ remediationLabel(rem) | async }}
-                </button>
-                @if (
-                  rem.action === 'share_with_service_account' && getServiceAccountEmail(rem);
-                  as email
-                ) {
-                  <span class="service-email">
-                    {{ 'documentAccess.serviceAccountEmail' | transloco }}
-                    <code>{{ email }}</code>
-                  </span>
+                @if (rem.action === 'share_with_application') {
+                  <app-share-with-application-remediation
+                    [remediation]="rem"
+                  ></app-share-with-application-remediation>
+                } @else {
                   <button
-                    mat-icon-button
-                    data-testid="copy-email-btn"
-                    [matTooltip]="'documentAccess.copyEmail' | transloco"
-                    (click)="copyServiceEmail(email)"
+                    mat-stroked-button
+                    [attr.data-testid]="'remediation-' + rem.action"
+                    (click)="handleRemediation(rem)"
                   >
-                    <mat-icon>content_copy</mat-icon>
+                    {{ remediationLabel(rem) | async }}
                   </button>
+                  @if (
+                    rem.action === 'share_with_service_account' && getServiceAccountEmail(rem);
+                    as email
+                  ) {
+                    <span class="service-email">
+                      {{ 'documentAccess.serviceAccountEmail' | transloco }}
+                      <code>{{ email }}</code>
+                    </span>
+                    <button
+                      mat-icon-button
+                      data-testid="copy-email-btn"
+                      [matTooltip]="'documentAccess.copyEmail' | transloco"
+                      (click)="copyServiceEmail(email)"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  }
                 }
               }
             </div>
+            @if (showCheckNow) {
+              <div class="diagnostics-check-now">
+                <button mat-stroked-button data-testid="check-now-btn" (click)="onCheckNow()">
+                  <mat-icon>refresh</mat-icon>
+                  {{ 'documentAccess.checkNow.button' | transloco }}
+                </button>
+              </div>
+            }
           }
         </div>
       </div>
@@ -137,11 +167,24 @@ const REMEDIATION_KEYS: Record<string, string> = {
         padding: 2px 4px;
         border-radius: 2px;
       }
+
+      .diagnostics-check-now {
+        margin-top: 12px;
+      }
     `,
   ],
 })
 export class AccessDiagnosticsPanelComponent {
   @Input({ required: true }) document!: Document;
+  @Output() recheck = new EventEmitter<void>();
+
+  get showCheckNow(): boolean {
+    return this.document?.access_status === 'pending_access';
+  }
+
+  onCheckNow(): void {
+    this.recheck.emit();
+  }
 
   constructor(
     private injector: Injector,

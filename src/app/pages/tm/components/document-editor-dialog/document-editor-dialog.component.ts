@@ -16,8 +16,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subject, takeUntil } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Document } from '../../models/threat-model.model';
 import { FormValidationService } from '../../../../shared/services/form-validation.service';
@@ -25,6 +26,8 @@ import { getUriSuggestionFromControl } from '@app/shared/utils/form-validation.u
 import { ContentTokenService } from '@app/core/services/content-token.service';
 import { CONTENT_PROVIDERS } from '@app/core/services/content-provider-registry';
 import { AccessDiagnosticsPanelComponent } from '@app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component';
+import { ThreatModelService } from '../../services/threat-model.service';
+import { LoggerService } from '@app/core/services/logger.service';
 import type {
   ContentProviderId,
   ContentProviderMetadata,
@@ -53,6 +56,7 @@ export interface DocumentEditorDialogData {
   document?: Document;
   mode: 'create' | 'edit';
   isReadOnly?: boolean;
+  threatModelId?: string;
 }
 
 @Component({
@@ -88,6 +92,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   );
   linkedTokens: ContentTokenInfo[] = [];
   pickedFile: PickedFile | null = null;
+  currentDocument: Document | undefined;
   private _pickerRegistration: PickerRegistration | null = null;
 
   private readonly destroy$ = new Subject<void>();
@@ -98,9 +103,14 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: DocumentEditorDialogData,
     private contentTokens: ContentTokenService,
     private injector: Injector,
+    private threatModelService: ThreatModelService,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
+    private logger: LoggerService,
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
+    this.currentDocument = data.document;
 
     this.documentForm = this.fb.group({
       name: [data.document?.name || '', [Validators.required, Validators.maxLength(256)]],
@@ -126,6 +136,76 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.contentTokens.contentTokens$.pipe(takeUntil(this.destroy$)).subscribe(tokens => {
       this.linkedTokens = tokens ?? [];
     });
+    this._refreshDocumentIfPending();
+  }
+
+  /**
+   * If the editing document is pending_access and we have a threatModelId,
+   * silently fetch the latest document state. Don't block dialog rendering.
+   */
+  private _refreshDocumentIfPending(): void {
+    if (this.mode !== 'edit') return;
+    if (!this.data.threatModelId || !this.data.document?.id) return;
+    if (this.data.document.access_status !== 'pending_access') return;
+    this.threatModelService
+      .getDocument(this.data.threatModelId, this.data.document.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: doc => {
+          this.currentDocument = doc;
+        },
+        error: err => {
+          this.logger.warn('Failed to refresh document on dialog open', err);
+        },
+      });
+  }
+
+  /**
+   * Triggered by AccessDiagnosticsPanel's `recheck` Output. POSTs the
+   * request_access endpoint, then re-fetches the document.
+   */
+  onRecheckAccess(): void {
+    if (!this.data.threatModelId || !this.currentDocument?.id) return;
+    const tmId = this.data.threatModelId;
+    const docId = this.currentDocument.id;
+    this.threatModelService
+      .requestDocumentAccess(tmId, docId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this._fetchAfterRecheck(tmId, docId),
+        error: err => {
+          this.logger.warn('request_access failed', err);
+          this.snackBar.open(
+            this.transloco.translate('documentAccess.checkNow.failed'),
+            undefined,
+            { duration: 3000 },
+          );
+        },
+      });
+  }
+
+  private _fetchAfterRecheck(threatModelId: string, documentId: string): void {
+    this.threatModelService
+      .getDocument(threatModelId, documentId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: doc => {
+          this.currentDocument = doc;
+          const key =
+            doc.access_status === 'accessible'
+              ? 'documentAccess.checkNow.success'
+              : 'documentAccess.checkNow.stillPending';
+          this.snackBar.open(this.transloco.translate(key), undefined, { duration: 3000 });
+        },
+        error: err => {
+          this.logger.warn('document GET after recheck failed', err);
+          this.snackBar.open(
+            this.transloco.translate('documentAccess.checkNow.failed'),
+            undefined,
+            { duration: 3000 },
+          );
+        },
+      });
   }
 
   ngOnDestroy(): void {

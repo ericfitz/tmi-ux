@@ -17,8 +17,11 @@
   }
 </h2>
 <mat-dialog-content appScrollIndicator>
-  @if (data.document?.access_diagnostics) {
-    <app-access-diagnostics-panel [document]="data.document!"></app-access-diagnostics-panel>
+  @if (currentDocument?.access_diagnostics) {
+    <app-access-diagnostics-panel
+      [document]="currentDocument!"
+      (recheck)="onRecheckAccess()"
+    ></app-access-diagnostics-panel>
   }
 
   @if (mode === 'create' && pickerSourceOptions.length > 0 && !isReadOnly) {

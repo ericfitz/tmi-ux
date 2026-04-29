@@ -1431,6 +1431,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogData: DocumentEditorDialogData = {
       mode: 'create',
       isReadOnly: !this.canEdit,
+      threatModelId: this.threatModel?.id,
       ...(uri ? { document: { uri } as Document } : {}),
     };
 
@@ -1499,6 +1500,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       document,
       mode: 'edit',
       isReadOnly: !this.canEdit,
+      threatModelId: this.threatModel.id,
     };
 
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {

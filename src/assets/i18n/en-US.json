@@ -1003,11 +1003,18 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "Check now",
+      "failed": "Couldn't check status. Try again in a moment.",
+      "stillPending": "Status checked — still pending.",
+      "success": "Access granted. The document is now accessible."
+    },
     "copiedEmail": "Email copied",
     "copyEmail": "Copy email",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "An error occurred while reading this document.",
+      "microsoftNotShared": "TMI doesn't yet have access to this OneDrive or SharePoint file. The file owner must grant TMI read access using the snippet below.",
       "noAccessibleSource": "TMI cannot read this document with current access.",
       "other": "Unable to access this document.",
       "pickerRegistrationInvalid": "This document's picker authorization is no longer valid.",
@@ -1023,6 +1030,17 @@
       "repickAfterShare": "Pick again after sharing",
       "repickFile": "Pick this file again",
       "retry": "Try again",
+      "shareWithApplication": {
+        "copied": "Copied to clipboard.",
+        "copyButton": "Copy",
+        "copyFailed": "Couldn't copy to clipboard.",
+        "curlLabel": "curl",
+        "explanation": "TMI doesn't yet have access to this OneDrive or SharePoint file. Ask the file owner to run the following Microsoft Graph call to grant TMI read access. After the call succeeds, click \"Check now\" — status updates within a few minutes once the grant is in place.",
+        "powershellLabel": "PowerShell (Microsoft.Graph module)",
+        "rawLabel": "Microsoft Graph call",
+        "title": "Grant TMI access to this file",
+        "unavailable": "Microsoft remediation details are unavailable. Contact support."
+      },
       "shareWithServiceAccount": "Share with TMI service account"
     },
     "serviceAccountEmail": "Share with this email:"

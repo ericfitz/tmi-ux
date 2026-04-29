@@ -1,10 +1,12 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { Injector } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
 
 import {
   DocumentEditorDialogComponent,
@@ -12,7 +14,10 @@ import {
 } from './document-editor-dialog.component';
 import { ContentTokenService } from '@app/core/services/content-token.service';
 import { GoogleDrivePickerService } from '@app/core/services/google-drive-picker.service';
+import { LoggerService } from '@app/core/services/logger.service';
+import { ThreatModelService } from '../../services/threat-model.service';
 import type { ContentTokenInfo } from '@app/core/models/content-provider.types';
+import type { Document } from '../../models/threat-model.model';
 
 describe('DocumentEditorDialogComponent — picker integration', () => {
   let tokens$: BehaviorSubject<ContentTokenInfo[]>;
@@ -23,6 +28,13 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
   let mockPicker: { pick: ReturnType<typeof vi.fn> };
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockInjector: { get: ReturnType<typeof vi.fn> };
+  let mockTms: {
+    getDocument: ReturnType<typeof vi.fn>;
+    requestDocumentAccess: ReturnType<typeof vi.fn>;
+  };
+  let mockSnack: { open: ReturnType<typeof vi.fn> };
+  let mockTransloco: { translate: ReturnType<typeof vi.fn> };
+  let mockLogger: { warn: ReturnType<typeof vi.fn> };
 
   function createComponent(data: DocumentEditorDialogData): DocumentEditorDialogComponent {
     return new DocumentEditorDialogComponent(
@@ -31,6 +43,10 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       data,
       mockTokenSvc as unknown as ContentTokenService,
       mockInjector as unknown as Injector,
+      mockTms as unknown as ThreatModelService,
+      mockSnack as unknown as MatSnackBar,
+      mockTransloco as unknown as TranslocoService,
+      mockLogger as unknown as LoggerService,
     );
   }
 
@@ -49,6 +65,13 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
         return null;
       }),
     };
+    mockTms = {
+      getDocument: vi.fn(),
+      requestDocumentAccess: vi.fn(),
+    };
+    mockSnack = { open: vi.fn() };
+    mockTransloco = { translate: vi.fn((key: string) => key) };
+    mockLogger = { warn: vi.fn() };
   });
 
   it('defaults selectedSource to "url" in create mode', () => {
@@ -99,6 +122,129 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     expect(c.documentForm.get('name')?.value).toBe('My doc.pdf');
     expect(c.documentForm.get('uri')?.value).toBe('https://drive.google.com/file/d/abc');
     expect(c.pickedFile?.fileId).toBe('abc');
+  });
+
+  describe('access refresh', () => {
+    const baseDoc: Document = {
+      id: 'doc-1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'pending_access',
+      access_diagnostics: { reason_code: 'microsoft_not_shared', remediations: [] },
+    };
+
+    it('ngOnInit re-fetches document when pending_access and threatModelId provided', () => {
+      const refreshed: Document = { ...baseDoc, access_status: 'accessible' };
+      mockTms.getDocument.mockReturnValue(of(refreshed));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+      expect(mockTms.getDocument).toHaveBeenCalledWith('tm-1', 'doc-1');
+      expect(c.currentDocument?.access_status).toBe('accessible');
+    });
+
+    it('ngOnInit does NOT re-fetch when document is accessible', () => {
+      const c = createComponent({
+        mode: 'edit',
+        document: { ...baseDoc, access_status: 'accessible' },
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+      expect(mockTms.getDocument).not.toHaveBeenCalled();
+    });
+
+    it('ngOnInit does NOT re-fetch when threatModelId is missing', () => {
+      const c = createComponent({ mode: 'edit', document: baseDoc });
+      c.ngOnInit();
+      expect(mockTms.getDocument).not.toHaveBeenCalled();
+    });
+
+    it('ngOnInit does NOT re-fetch in create mode', () => {
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      expect(mockTms.getDocument).not.toHaveBeenCalled();
+    });
+
+    it('ngOnInit silently logs and continues when refresh fails', () => {
+      mockTms.getDocument.mockReturnValue(throwError(() => new Error('boom')));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+      expect(mockLogger.warn).toHaveBeenCalled();
+      expect(c.currentDocument).toEqual(baseDoc);
+    });
+
+    it('onRecheckAccess POSTs request_access then re-GETs and shows success snackbar', () => {
+      mockTms.getDocument.mockReturnValue(of(baseDoc));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+
+      mockTms.requestDocumentAccess.mockReturnValue(of({ status: 'sent' }));
+      const accessibleDoc: Document = { ...baseDoc, access_status: 'accessible' };
+      mockTms.getDocument.mockReturnValue(of(accessibleDoc));
+
+      c.onRecheckAccess();
+      expect(mockTms.requestDocumentAccess).toHaveBeenCalledWith('tm-1', 'doc-1');
+      expect(c.currentDocument?.access_status).toBe('accessible');
+      expect(mockSnack.open).toHaveBeenCalledWith('documentAccess.checkNow.success', undefined, {
+        duration: 3000,
+      });
+    });
+
+    it('onRecheckAccess shows stillPending snackbar when status remains pending', () => {
+      mockTms.getDocument.mockReturnValue(of(baseDoc));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+
+      mockTms.requestDocumentAccess.mockReturnValue(of({ status: 'sent' }));
+      mockTms.getDocument.mockReturnValue(of(baseDoc));
+
+      c.onRecheckAccess();
+      expect(mockSnack.open).toHaveBeenCalledWith(
+        'documentAccess.checkNow.stillPending',
+        undefined,
+        { duration: 3000 },
+      );
+    });
+
+    it('onRecheckAccess shows failed snackbar when request_access errors', () => {
+      mockTms.getDocument.mockReturnValue(of(baseDoc));
+      const c = createComponent({
+        mode: 'edit',
+        document: baseDoc,
+        threatModelId: 'tm-1',
+      });
+      c.ngOnInit();
+
+      mockTms.requestDocumentAccess.mockReturnValue(throwError(() => new Error('boom')));
+      c.onRecheckAccess();
+      expect(mockSnack.open).toHaveBeenCalledWith('documentAccess.checkNow.failed', undefined, {
+        duration: 3000,
+      });
+    });
+
+    it('onRecheckAccess is a no-op when threatModelId is missing', () => {
+      const c = createComponent({ mode: 'edit', document: baseDoc });
+      c.ngOnInit();
+      c.onRecheckAccess();
+      expect(mockTms.requestDocumentAccess).not.toHaveBeenCalled();
+    });
   });
 
   it('onSubmit includes picker_registration after successful pick', () => {

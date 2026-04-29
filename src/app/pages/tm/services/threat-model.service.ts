@@ -1308,6 +1308,43 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Get a single document by ID. Useful for refreshing access diagnostics
+   * without reloading the whole threat model.
+   */
+  getDocument(threatModelId: string, documentId: string): Observable<TMDocument> {
+    return this.apiService
+      .get<TMDocument>(`threat_models/${threatModelId}/documents/${documentId}`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error fetching document ID: ${documentId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Re-send the access request for a document with pending_access status.
+   * Server returns {status, message}; callers should follow up with getDocument
+   * to read the new access state.
+   */
+  requestDocumentAccess(
+    threatModelId: string,
+    documentId: string,
+  ): Observable<{ status?: string; message?: string }> {
+    return this.apiService
+      .post<{
+        status?: string;
+        message?: string;
+      }>(`threat_models/${threatModelId}/documents/${documentId}/request_access`, {})
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error requesting access for document ID: ${documentId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Delete a document from a threat model
    */
   deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
