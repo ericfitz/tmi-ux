@@ -993,12 +993,24 @@
     "serviceAccountEmail": "এই ইমেইলের সাথে শেয়ার করুন:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "আপনার ফাইলে অ্যাক্সেস দেওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "linkAccountCta": "অ্যাকাউন্ট লিঙ্ক করুন",
+      "notLinked": "আপনার Microsoft অ্যাকাউন্ট লিঙ্ক করা নেই।",
+      "permissionDenied": "Microsoft অ্যাক্সেস দেওয়ার অনুরোধ প্রত্যাখ্যান করেছে। ফাইলটি শেয়ারযোগ্য নাও হতে পারে। অন্য একটি ফাইল চেষ্টা করুন বা আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।",
+      "pickerLoadFailed": "ফাইল পিকার খোলা যায়নি। আপনার নেটওয়ার্ক পরীক্ষা করুন এবং আবার চেষ্টা করুন।",
+      "timeout": "অনুরোধে অনেক সময় লেগেছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "unavailable": "Microsoft সাময়িকভাবে অনুপলব্ধ। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।"
+    },
     "source": {
+      "finalizing": "অ্যাক্সেস দেওয়া হচ্ছে…",
       "googleDrive": "Google Drive থেকে নির্বাচন করুন",
       "label": "আপনি কীভাবে এই ডকুমেন্টটি সংযুক্ত করতে চান?",
       "linkAction": "উৎস লিঙ্ক করুন",
       "linkPrompt": "এই উৎস থেকে ফাইল নির্বাচন করতে আপনার অ্যাকাউন্ট লিঙ্ক করুন।",
+      "linkPromptMicrosoft": "OneDrive/SharePoint ফাইল ব্রাউজ করতে একটি Microsoft অ্যাকাউন্ট লিঙ্ক করুন",
       "pickAction": "একটি ফাইল নির্বাচন করুন",
+      "pickActionMicrosoft": "OneDrive/SharePoint ব্রাউজ করুন",
       "pickedFile": "ফাইল নির্বাচিত: {{ fileName }}",
       "repickAction": "একটি ভিন্ন ফাইল নির্বাচন করুন",
       "url": "একটি URL পেস্ট করুন"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "{{ relativeTime }} লিঙ্ক করা হয়েছে",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "পুনরায় লিঙ্ক করুন",
     "status": {
       "active": "{{common.active}}",

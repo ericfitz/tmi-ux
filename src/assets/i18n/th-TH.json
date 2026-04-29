@@ -988,12 +988,24 @@
     "serviceAccountEmail": "แชร์กับอีเมลนี้:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "ไม่สามารถให้สิทธิ์การเข้าถึงไฟล์ของคุณได้ โปรดลองอีกครั้ง",
+      "linkAccountCta": "เชื่อมโยงบัญชี",
+      "notLinked": "บัญชี Microsoft ของคุณยังไม่ได้เชื่อมโยง",
+      "permissionDenied": "Microsoft ปฏิเสธคำขอให้สิทธิ์การเข้าถึง ไฟล์อาจไม่สามารถแชร์ได้ ลองไฟล์อื่นหรือติดต่อผู้ดูแลระบบของคุณ",
+      "pickerLoadFailed": "ไม่สามารถเปิดตัวเลือกไฟล์ได้ ตรวจสอบเครือข่ายของคุณและลองอีกครั้ง",
+      "timeout": "คำขอใช้เวลานานเกินไป โปรดลองอีกครั้ง",
+      "unavailable": "Microsoft ไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งในอีกสักครู่"
+    },
     "source": {
+      "finalizing": "กำลังให้สิทธิ์การเข้าถึง…",
       "googleDrive": "เลือกจาก Google Drive",
       "label": "คุณต้องการแนบเอกสารนี้ด้วยวิธีใด?",
       "linkAction": "เชื่อมโยงแหล่งที่มา",
       "linkPrompt": "เชื่อมโยงบัญชีของคุณเพื่อเลือกไฟล์จากแหล่งที่มานี้",
+      "linkPromptMicrosoft": "เชื่อมโยงบัญชี Microsoft เพื่อเรียกดูไฟล์ OneDrive/SharePoint",
       "pickAction": "เลือกไฟล์",
+      "pickActionMicrosoft": "เรียกดู OneDrive/SharePoint",
       "pickedFile": "เลือกไฟล์แล้ว: {{ fileName }}",
       "repickAction": "เลือกไฟล์อื่น",
       "url": "วาง URL"
@@ -1020,6 +1032,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "เชื่อมโยงเมื่อ {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "เชื่อมโยงใหม่",
     "status": {
       "active": "{{common.active}}",

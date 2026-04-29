@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
+import { CONTENT_PROVIDERS } from './content-provider-registry';
+import type { ContentProviderId } from '../models/content-provider.types';
 
 export interface SecurityHeaders {
   'Content-Security-Policy'?: string;
@@ -220,6 +222,19 @@ ${Object.entries(headers)
     }
   }
 
+  private collectProviderCspDirectives(): { frameSrc: string[]; formAction: string[] } {
+    const enabled = (environment.enabledContentProviders ?? []) as ContentProviderId[];
+    const frameSrc = new Set<string>();
+    const formAction = new Set<string>();
+    for (const id of enabled) {
+      const meta = CONTENT_PROVIDERS[id];
+      if (!meta?.cspDirectives) continue;
+      meta.cspDirectives.frameSrc?.forEach(s => frameSrc.add(s));
+      meta.cspDirectives.formAction?.forEach(s => formAction.add(s));
+    }
+    return { frameSrc: Array.from(frameSrc), formAction: Array.from(formAction) };
+  }
+
   private injectDynamicCSP(): void {
     // Extract API URL components
     const apiUrl = new URL(environment.apiUrl);
@@ -248,6 +263,16 @@ ${Object.entries(headers)
       imgSources.push('http:');
     }
 
+    // Per-provider CSP additions (frame-src, form-action), merged from
+    // CONTENT_PROVIDERS for the providers explicitly enabled at runtime.
+    const { frameSrc: providerFrameSrc, formAction: providerFormAction } =
+      this.collectProviderCspDirectives();
+    const frameSrcDirective =
+      providerFrameSrc.length > 0 ? `frame-src 'self' ${providerFrameSrc.join(' ')}` : null;
+    const formActionDirective = `form-action 'self'${
+      providerFormAction.length > 0 ? ' ' + providerFormAction.join(' ') : ''
+    }`;
+
     // Build complete CSP policy
     // Note: frame-ancestors, report-uri, and sandbox directives are ignored in meta tags
     // and must be set via HTTP headers at the server level
@@ -260,12 +285,16 @@ ${Object.entries(headers)
       `connect-src ${connectSources.join(' ')}`,
       // frame-ancestors removed - only works in HTTP headers
       `base-uri 'self'`,
-      `form-action 'self'`,
+      formActionDirective,
       `object-src 'none'`,
       `media-src 'self'`,
       `worker-src 'self' blob:`,
       `manifest-src 'self'`,
     ];
+
+    if (frameSrcDirective) {
+      cspDirectives.push(frameSrcDirective);
+    }
 
     // Add upgrade-insecure-requests only in production or when using HTTPS
     if (environment.production || window.location.protocol === 'https:') {

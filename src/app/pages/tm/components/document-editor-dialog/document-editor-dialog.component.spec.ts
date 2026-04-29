@@ -14,9 +14,18 @@ import {
 } from './document-editor-dialog.component';
 import { ContentTokenService } from '@app/core/services/content-token.service';
 import { GoogleDrivePickerService } from '@app/core/services/google-drive-picker.service';
+import { MicrosoftFilePickerService } from '@app/core/services/microsoft-file-picker.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { ThreatModelService } from '../../services/threat-model.service';
-import type { ContentTokenInfo } from '@app/core/models/content-provider.types';
+import {
+  MicrosoftAccountNotLinkedError,
+  MicrosoftGraphPermissionRejectedError,
+  MicrosoftGraphUnavailableError,
+  MicrosoftGrantTimeoutError,
+  PickerLoadFailedError,
+  type ContentTokenInfo,
+  type PickerEvent,
+} from '@app/core/models/content-provider.types';
 import type { Document } from '../../models/threat-model.model';
 
 describe('DocumentEditorDialogComponent — picker integration', () => {
@@ -26,6 +35,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     authorize: ReturnType<typeof vi.fn>;
   };
   let mockPicker: { pick: ReturnType<typeof vi.fn> };
+  let mockMsPicker: { pick: ReturnType<typeof vi.fn> };
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockInjector: { get: ReturnType<typeof vi.fn> };
   let mockTms: {
@@ -57,11 +67,12 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       authorize: vi.fn().mockReturnValue(of({ authorization_url: 'https://x', expires_at: '' })),
     };
     mockPicker = { pick: vi.fn() };
+    mockMsPicker = { pick: vi.fn() };
     mockDialogRef = { close: vi.fn() };
     mockInjector = {
       get: vi.fn().mockImplementation((token: unknown) => {
-        // The registry's pickerService for google_workspace is the GoogleDrivePickerService class.
         if (token === GoogleDrivePickerService) return mockPicker;
+        if (token === MicrosoftFilePickerService) return mockMsPicker;
         return null;
       }),
     };
@@ -79,9 +90,10 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     expect(c.selectedSource).toBe('url');
   });
 
-  it('exposes pickerSourceOptions including google_workspace', () => {
+  it('exposes pickerSourceOptions including google_workspace and microsoft', () => {
     const c = createComponent({ mode: 'create' });
     expect(c.pickerSourceOptions.some(p => p.id === 'google_workspace')).toBe(true);
+    expect(c.pickerSourceOptions.some(p => p.id === 'microsoft')).toBe(true);
   });
 
   it('hasLinkedToken returns true when an active token matches', () => {
@@ -107,14 +119,16 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
         created_at: '2026-04-26T00:00:00Z',
       },
     ]);
-    mockPicker.pick.mockReturnValue(
-      of({
+    const event: PickerEvent = {
+      kind: 'picked',
+      file: {
         fileId: 'abc',
         name: 'My doc.pdf',
         mimeType: 'application/pdf',
         url: 'https://drive.google.com/file/d/abc',
-      }),
-    );
+      },
+    };
+    mockPicker.pick.mockReturnValue(of(event));
     const c = createComponent({ mode: 'create' });
     c.ngOnInit();
     c.selectedSource = 'google_workspace';
@@ -281,14 +295,16 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
         created_at: '2026-04-26T00:00:00Z',
       },
     ]);
-    mockPicker.pick.mockReturnValue(
-      of({
+    const event: PickerEvent = {
+      kind: 'picked',
+      file: {
         fileId: 'abc',
         name: 'My doc.pdf',
         mimeType: 'application/pdf',
         url: 'https://drive.google.com/file/d/abc',
-      }),
-    );
+      },
+    };
+    mockPicker.pick.mockReturnValue(of(event));
     const c = createComponent({ mode: 'create' });
     c.ngOnInit();
     c.selectedSource = 'google_workspace';
@@ -305,5 +321,100 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
         },
       }),
     );
+  });
+
+  describe('Microsoft picker integration', () => {
+    function makeLinked(): ContentTokenInfo {
+      return {
+        provider_id: 'microsoft',
+        status: 'active',
+        scopes: [],
+        created_at: '2026-04-28T00:00:00Z',
+      };
+    }
+
+    it('renders Microsoft option in pickerSourceOptions and supports a microsoft pick', () => {
+      tokens$.next([makeLinked()]);
+      const event: PickerEvent = {
+        kind: 'picked',
+        file: {
+          fileId: 'drive-1:item-1',
+          name: 'spec.docx',
+          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          url: 'https://contoso.sharepoint.com/spec.docx',
+        },
+      };
+      mockMsPicker.pick.mockReturnValue(of(event));
+
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'microsoft';
+      c.onPickFile();
+      expect(c.documentForm.get('name')?.value).toBe('spec.docx');
+      expect(c.pickedFile?.fileId).toBe('drive-1:item-1');
+      c.onSubmit();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(
+        expect.objectContaining({
+          picker_registration: {
+            provider_id: 'microsoft',
+            file_id: 'drive-1:item-1',
+            mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          },
+        }),
+      );
+    });
+
+    it('renders inline finalizing state and disables cancel/submit while finalizing', () => {
+      tokens$.next([makeLinked()]);
+      mockMsPicker.pick.mockReturnValue(of<PickerEvent>({ kind: 'finalizing' }));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'microsoft';
+      c.onPickFile();
+      expect(c.finalizing).toBe(true);
+      expect(c.isCancelDisabled()).toBe(true);
+      expect(c.isSubmitDisabled()).toBe(true);
+    });
+
+    it('uses provider-specific button label and link prompt for Microsoft', () => {
+      const c = createComponent({ mode: 'create' });
+      c.selectedSource = 'microsoft';
+      expect(c.pickActionKey()).toBe('documentEditor.source.pickActionMicrosoft');
+      expect(c.linkPromptKey()).toBe('documentEditor.source.linkPromptMicrosoft');
+    });
+
+    it.each([
+      [new MicrosoftAccountNotLinkedError(), 'documentEditor.grantError.notLinked', true],
+      [
+        new MicrosoftGraphPermissionRejectedError(),
+        'documentEditor.grantError.permissionDenied',
+        false,
+      ],
+      [new MicrosoftGraphUnavailableError(), 'documentEditor.grantError.unavailable', false],
+      [new MicrosoftGrantTimeoutError(), 'documentEditor.grantError.timeout', false],
+      [new PickerLoadFailedError(), 'documentEditor.grantError.pickerLoadFailed', false],
+      [new Error('boom'), 'documentEditor.grantError.generic', false],
+    ])('maps %s to inline error state', (err, expectedKey, expectedCta) => {
+      tokens$.next([makeLinked()]);
+      mockMsPicker.pick.mockReturnValue(throwError(() => err));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'microsoft';
+      c.onPickFile();
+      expect(c.pickerError?.messageKey).toBe(expectedKey);
+      expect(c.pickerError?.showLinkAccountCta).toBe(expectedCta);
+      expect(c.finalizing).toBe(false);
+    });
+
+    it('onCancel is a no-op while finalizing (orphan-grant prevention)', () => {
+      tokens$.next([makeLinked()]);
+      mockMsPicker.pick.mockReturnValue(of<PickerEvent>({ kind: 'finalizing' }));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'microsoft';
+      c.onPickFile();
+      c.onCancel();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
   });
 });

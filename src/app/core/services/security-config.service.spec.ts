@@ -5,15 +5,21 @@ import { expect, describe, it, beforeEach, vi } from 'vitest';
 import { SecurityConfigService } from './security-config.service';
 import { LoggerService } from './logger.service';
 
-// Mock the environment module
+// Mock the environment module — held mutable so individual tests can opt
+// providers in/out without re-mocking.
+const envMock: Record<string, unknown> = {
+  production: false,
+  apiUrl: 'http://localhost:8080',
+  logLevel: 'DEBUG',
+  authTokenExpiryMinutes: 60,
+  operatorName: 'TMI Operator (Test)',
+  operatorContact: 'test@example.com',
+  enabledContentProviders: [] as string[],
+};
+
 vi.mock('../../../environments/environment', () => ({
-  environment: {
-    production: false,
-    apiUrl: 'http://localhost:8080',
-    logLevel: 'DEBUG',
-    authTokenExpiryMinutes: 60,
-    operatorName: 'TMI Operator (Test)',
-    operatorContact: 'test@example.com',
+  get environment() {
+    return envMock;
   },
 }));
 
@@ -23,6 +29,8 @@ describe('SecurityConfigService', () => {
   let documentMock: Document;
 
   beforeEach(() => {
+    envMock['enabledContentProviders'] = [];
+
     // Mock window properties
     Object.defineProperty(window, 'isSecureContext', {
       value: true,
@@ -157,5 +165,43 @@ describe('SecurityConfigService', () => {
     expect(metaElement.content).toContain('http://localhost:8080'); // Default API URL from environment
     expect(metaElement.content).toContain('wss:');
     expect(metaElement.content).toContain('ws:');
+  });
+
+  describe('per-provider CSP merging', () => {
+    function instantiateAndGetCsp(): string {
+      const meta = { httpEquiv: '', content: '' };
+      const doc = {
+        createElement: vi.fn().mockReturnValue(meta),
+        head: { appendChild: vi.fn() },
+        querySelector: vi.fn().mockReturnValue({
+          parentNode: { insertBefore: vi.fn() },
+          nextSibling: null,
+        }),
+      } as any;
+      new SecurityConfigService(loggerSpy, doc);
+      return meta.content;
+    }
+
+    it('omits sharepoint and login.microsoftonline directives when no providers enabled', () => {
+      envMock['enabledContentProviders'] = [];
+      const csp = instantiateAndGetCsp();
+      expect(csp).not.toContain('sharepoint.com');
+      expect(csp).not.toContain('login.microsoftonline.com');
+    });
+
+    it('adds Microsoft directives to frame-src and form-action when microsoft is enabled', () => {
+      envMock['enabledContentProviders'] = ['microsoft'];
+      const csp = instantiateAndGetCsp();
+      expect(csp).toContain('frame-src');
+      expect(csp).toContain('https://*.sharepoint.com');
+      expect(csp).toContain('https://login.microsoftonline.com');
+      expect(csp).toMatch(/form-action[^;]*https:\/\/\*\.sharepoint\.com/);
+    });
+
+    it('does not pollute CSP when an unknown provider id is enabled', () => {
+      envMock['enabledContentProviders'] = ['unknown_provider'];
+      const csp = instantiateAndGetCsp();
+      expect(csp).not.toContain('sharepoint.com');
+    });
   });
 });

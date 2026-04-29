@@ -993,12 +993,24 @@
     "serviceAccountEmail": "Предоставьте общий доступ по этому адресу:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Не удалось предоставить доступ к вашему файлу. Повторите попытку.",
+      "linkAccountCta": "Привязать учётную запись",
+      "notLinked": "Ваша учётная запись Microsoft не привязана.",
+      "permissionDenied": "Microsoft отклонила запрос на предоставление доступа. Возможно, файл недоступен для общего доступа. Попробуйте другой файл или обратитесь к администратору.",
+      "pickerLoadFailed": "Не удалось открыть выбор файлов. Проверьте подключение к сети и повторите попытку.",
+      "timeout": "Запрос выполнялся слишком долго. Повторите попытку.",
+      "unavailable": "Microsoft временно недоступна. Повторите попытку через несколько мгновений."
+    },
     "source": {
+      "finalizing": "Предоставление доступа…",
       "googleDrive": "Выбрать из Google Drive",
       "label": "Каким образом вы хотите прикрепить этот документ?",
       "linkAction": "Привязать источник",
       "linkPrompt": "Привяжите свою учётную запись, чтобы выбирать файлы из этого источника.",
+      "linkPromptMicrosoft": "Привяжите учётную запись Microsoft, чтобы просматривать файлы OneDrive/SharePoint",
       "pickAction": "Выбрать файл",
+      "pickActionMicrosoft": "Просмотр OneDrive/SharePoint",
       "pickedFile": "Файл выбран: {{ fileName }}",
       "repickAction": "Выбрать другой файл",
       "url": "Вставьте URL-адрес"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Привязано {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Повторно привязать",
     "status": {
       "active": "{{common.active}}",

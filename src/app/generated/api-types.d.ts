@@ -10188,14 +10188,14 @@ export interface components {
       reason_detail?: string | null;
       remediations: components['schemas']['AccessRemediation'][];
     };
-    /** @description Client-provided registration for a Google Workspace Picker attachment. Supplied when a user attaches a file to a threat model via the Google Picker flow; the server stores these fields on the document and uses them to dispatch fetch and access-validation operations through the delegated Google Workspace source. */
+    /** @description Client-provided registration for a picker-mediated provider attachment. Supplied when a user attaches a file to a threat model via a picker flow (Google Picker, Microsoft File Picker); the server stores these fields on the document and uses them to dispatch fetch and access-validation operations through the matching delegated source. */
     PickerRegistration: {
       /**
        * @description Content OAuth provider that issued the picker grant
        * @enum {string}
        */
-      provider_id: 'google_workspace';
-      /** @description Provider-native file identifier from the picker (e.g. Google Drive file ID) */
+      provider_id: 'google_workspace' | 'microsoft';
+      /** @description Provider-native file identifier from the picker (e.g. Google Drive file ID, or Microsoft "{driveId}:{itemId}") */
       file_id: string;
       /** @description MIME type returned by the picker */
       mime_type: string;

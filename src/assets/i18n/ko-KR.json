@@ -993,12 +993,24 @@
     "serviceAccountEmail": "다음 이메일과 공유하세요:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "파일에 대한 액세스 권한을 부여할 수 없습니다. 다시 시도해 주세요.",
+      "linkAccountCta": "계정 연결",
+      "notLinked": "Microsoft 계정이 연결되어 있지 않습니다.",
+      "permissionDenied": "Microsoft에서 액세스 권한 부여 요청을 거부했습니다. 파일을 공유할 수 없을 수 있습니다. 다른 파일을 시도하거나 관리자에게 문의하세요.",
+      "pickerLoadFailed": "파일 선택기를 열 수 없습니다. 네트워크를 확인하고 다시 시도해 주세요.",
+      "timeout": "요청에 시간이 너무 오래 걸렸습니다. 다시 시도해 주세요.",
+      "unavailable": "Microsoft를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
+    },
     "source": {
+      "finalizing": "액세스 권한을 부여하는 중…",
       "googleDrive": "Google Drive에서 선택",
       "label": "이 문서를 어떻게 첨부하시겠습니까?",
       "linkAction": "출처 연결",
       "linkPrompt": "이 출처에서 파일을 선택하려면 계정을 연결하세요.",
+      "linkPromptMicrosoft": "OneDrive/SharePoint 파일을 탐색하려면 Microsoft 계정을 연결하세요",
       "pickAction": "파일 선택",
+      "pickActionMicrosoft": "OneDrive/SharePoint 탐색",
       "pickedFile": "선택된 파일: {{ fileName }}",
       "repickAction": "다른 파일 선택",
       "url": "URL 붙여넣기"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "연결됨 {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "다시 연결",
     "status": {
       "active": "{{common.active}}",

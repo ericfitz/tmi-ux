@@ -993,12 +993,24 @@
     "serviceAccountEmail": "שתף עם כתובת דוא\"ל זו:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "לא ניתן היה להעניק גישה לקובץ שלך. אנא נסה שוב.",
+      "linkAccountCta": "קשר חשבון",
+      "notLinked": "חשבון Microsoft שלך אינו מקושר.",
+      "permissionDenied": "Microsoft דחתה את הבקשה להענקת גישה. ייתכן שלא ניתן לשתף את הקובץ. נסה קובץ אחר או פנה למנהל המערכת.",
+      "pickerLoadFailed": "לא ניתן היה לפתוח את בורר הקבצים. בדוק את הרשת שלך ונסה שוב.",
+      "timeout": "הבקשה נמשכה זמן רב מדי. אנא נסה שוב.",
+      "unavailable": "Microsoft אינה זמינה באופן זמני. אנא נסה שוב בעוד כמה רגעים."
+    },
     "source": {
+      "finalizing": "מעניק גישה…",
       "googleDrive": "בחר מ-Google Drive",
       "label": "כיצד ברצונך לצרף מסמך זה?",
       "linkAction": "קשר מקור",
       "linkPrompt": "קשר את חשבונך כדי לבחור קבצים ממקור זה.",
+      "linkPromptMicrosoft": "קשר חשבון Microsoft כדי לעיין בקבצי OneDrive/SharePoint",
       "pickAction": "בחר קובץ",
+      "pickActionMicrosoft": "עיין ב-OneDrive/SharePoint",
       "pickedFile": "הקובץ נבחר: {{ fileName }}",
       "repickAction": "בחר קובץ אחר",
       "url": "הדבק כתובת URL"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "קושר {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "קשר מחדש",
     "status": {
       "active": "{{common.active}}",

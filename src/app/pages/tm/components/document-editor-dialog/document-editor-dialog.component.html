@@ -87,7 +87,12 @@
         </mat-form-field>
       } @else {
         <div class="picker-area">
-          @if (hasLinkedToken(selectedSource)) {
+          @if (finalizing) {
+            <div class="picker-finalizing" data-testid="document-picker-finalizing">
+              <mat-spinner diameter="24"></mat-spinner>
+              <span>{{ finalizingMessageKey! | transloco }}</span>
+            </div>
+          } @else if (hasLinkedToken(selectedSource)) {
             @if (!pickedFile) {
               <button
                 mat-raised-button
@@ -97,7 +102,7 @@
                 data-testid="document-pick-button"
               >
                 <mat-icon>folder_open</mat-icon>
-                <span [transloco]="'documentEditor.source.pickAction'">Pick a file</span>
+                <span [transloco]="pickActionKey()">Pick a file</span>
               </button>
             } @else {
               <p class="picked-file-hint">
@@ -108,7 +113,7 @@
               </button>
             }
           } @else {
-            <p class="link-prompt" [transloco]="'documentEditor.source.linkPrompt'">
+            <p class="link-prompt" [transloco]="linkPromptKey()">
               Link your account to pick files from this source.
             </p>
             <button
@@ -121,6 +126,25 @@
               <mat-icon>link</mat-icon>
               <span [transloco]="'documentEditor.source.linkAction'">Link source</span>
             </button>
+          }
+
+          @if (pickerError) {
+            <div class="picker-error" role="alert" data-testid="document-picker-error">
+              <mat-icon class="picker-error-icon">error_outline</mat-icon>
+              <span class="picker-error-message">
+                {{ pickerError.messageKey | transloco }}
+              </span>
+              @if (pickerError.showLinkAccountCta) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="onLinkSource()"
+                  data-testid="document-picker-error-link-cta"
+                >
+                  {{ 'documentEditor.grantError.linkAccountCta' | transloco }}
+                </button>
+              }
+            </div>
           }
         </div>
       }
@@ -169,6 +193,7 @@
     mat-button
     data-testid="document-cancel-button"
     (click)="onCancel()"
+    [disabled]="isCancelDisabled()"
     tabindex="6"
     [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
   >
@@ -179,7 +204,7 @@
       mat-raised-button
       color="primary"
       data-testid="document-save-button"
-      [disabled]="documentForm.invalid"
+      [disabled]="isSubmitDisabled()"
       (click)="onSubmit()"
       tabindex="7"
       [attr.aria-label]="

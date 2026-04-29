@@ -85,6 +85,11 @@ app.get('/config.json', (req, res) => {
   if (process.env.TMI_SUPPRESS_PRIVACY_TOS_LINKS !== undefined) {
     config.suppressPrivacyTosLinks = process.env.TMI_SUPPRESS_PRIVACY_TOS_LINKS === 'true';
   }
+  if (process.env.TMI_ENABLED_CONTENT_PROVIDERS) {
+    config.enabledContentProviders = process.env.TMI_ENABLED_CONTENT_PROVIDERS.split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
 
   const securityConfig = {};
   let hasSecurityConfig = false;

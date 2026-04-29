@@ -1020,12 +1020,24 @@
     "serviceAccountEmail": "इस ईमेल के साथ साझा करें:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "आपकी फ़ाइल तक पहुँच प्रदान नहीं की जा सकी। कृपया पुनः प्रयास करें।",
+      "linkAccountCta": "खाता लिंक करें",
+      "notLinked": "आपका Microsoft खाता लिंक नहीं है।",
+      "permissionDenied": "Microsoft ने पहुँच प्रदान करने के अनुरोध को अस्वीकार कर दिया। फ़ाइल साझा करने योग्य नहीं हो सकती है। कोई दूसरी फ़ाइल आज़माएँ या अपने व्यवस्थापक से संपर्क करें।",
+      "pickerLoadFailed": "फ़ाइल पिकर खोला नहीं जा सका। अपना नेटवर्क जाँचें और पुनः प्रयास करें।",
+      "timeout": "अनुरोध में बहुत अधिक समय लगा। कृपया पुनः प्रयास करें।",
+      "unavailable": "Microsoft अस्थायी रूप से अनुपलब्ध है। कृपया कुछ क्षणों में पुनः प्रयास करें।"
+    },
     "source": {
+      "finalizing": "पहुँच प्रदान की जा रही है…",
       "googleDrive": "Google Drive से चयन करें",
       "label": "आप इस दस्तावेज़ को कैसे संलग्न करना चाहेंगे?",
       "linkAction": "स्रोत लिंक करें",
       "linkPrompt": "इस स्रोत से फ़ाइलें चयन करने के लिए अपना खाता लिंक करें।",
+      "linkPromptMicrosoft": "OneDrive/SharePoint फ़ाइलें ब्राउज़ करने के लिए एक Microsoft खाता लिंक करें",
       "pickAction": "एक फ़ाइल चयन करें",
+      "pickActionMicrosoft": "OneDrive/SharePoint ब्राउज़ करें",
       "pickedFile": "फ़ाइल चयनित: {{ fileName }}",
       "repickAction": "एक भिन्न फ़ाइल चयन करें",
       "url": "एक URL चिपकाएँ"
@@ -1052,6 +1064,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "{{ relativeTime }} लिंक किया गया",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "पुनः लिंक करें",
     "status": {
       "active": "{{common.active}}",

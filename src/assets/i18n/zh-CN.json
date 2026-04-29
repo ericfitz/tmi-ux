@@ -993,12 +993,24 @@
     "serviceAccountEmail": "与此邮箱共享："
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "无法授予对您文件的访问权限。请重试。",
+      "linkAccountCta": "关联账户",
+      "notLinked": "您的 Microsoft 账户未关联。",
+      "permissionDenied": "Microsoft 拒绝了授予访问权限的请求。该文件可能无法共享。请尝试其他文件或联系您的管理员。",
+      "pickerLoadFailed": "无法打开文件选择器。请检查您的网络后重试。",
+      "timeout": "请求耗时过长。请重试。",
+      "unavailable": "Microsoft 暂时不可用。请稍后再试。"
+    },
     "source": {
+      "finalizing": "正在授予访问权限…",
       "googleDrive": "从 Google Drive 选择",
       "label": "您希望如何附加此文档？",
       "linkAction": "关联来源",
       "linkPrompt": "关联您的账户以从此来源选择文件。",
+      "linkPromptMicrosoft": "关联 Microsoft 账户以浏览 OneDrive/SharePoint 文件",
       "pickAction": "选择文件",
+      "pickActionMicrosoft": "浏览 OneDrive/SharePoint",
       "pickedFile": "已选择文件：{{ fileName }}",
       "repickAction": "选择其他文件",
       "url": "粘贴 URL"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "已于 {{ relativeTime }} 关联",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "重新关联",
     "status": {
       "active": "{{common.active}}",

@@ -1004,12 +1004,24 @@
     "serviceAccountEmail": "شارك مع هذا البريد الإلكتروني:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "تعذّر منح حق الوصول إلى ملفك. يرجى المحاولة مرة أخرى.",
+      "linkAccountCta": "ربط الحساب",
+      "notLinked": "حساب Microsoft الخاص بك غير مرتبط.",
+      "permissionDenied": "رفضت Microsoft طلب منح الوصول. قد لا يكون الملف قابلاً للمشاركة. جرّب ملفًا آخر أو اتصل بالمسؤول.",
+      "pickerLoadFailed": "تعذّر فتح أداة اختيار الملفات. تحقّق من اتصالك بالشبكة وحاول مرة أخرى.",
+      "timeout": "استغرق الطلب وقتًا طويلاً جدًا. يرجى المحاولة مرة أخرى.",
+      "unavailable": "Microsoft غير متاحة مؤقتًا. يرجى المحاولة مرة أخرى بعد قليل."
+    },
     "source": {
+      "finalizing": "جارٍ منح الوصول…",
       "googleDrive": "اختر من Google Drive",
       "label": "كيف تودّ إرفاق هذه الوثيقة؟",
       "linkAction": "ربط المصدر",
       "linkPrompt": "اربط حسابك لاختيار الملفات من هذا المصدر.",
+      "linkPromptMicrosoft": "اربط حساب Microsoft لتصفّح ملفات OneDrive/SharePoint",
       "pickAction": "اختر ملفًا",
+      "pickActionMicrosoft": "تصفّح OneDrive/SharePoint",
       "pickedFile": "الملف المحدد: {{ fileName }}",
       "repickAction": "اختر ملفًا آخر",
       "url": "ألصق عنوان URL"
@@ -1036,6 +1048,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "تم الربط {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "إعادة الربط",
     "status": {
       "active": "{{common.active}}",

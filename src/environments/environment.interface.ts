@@ -212,4 +212,13 @@ export interface Environment {
    * Default: false
    */
   enableE2eTools?: boolean;
+
+  /**
+   * List of content provider ids the deployment has opted into. Picker
+   * services and per-provider CSP directives are activated only for ids
+   * in this list. Strict-by-default — empty list means no third-party
+   * picker iframe origins are added to CSP.
+   * Default: [] (no providers enabled)
+   */
+  enabledContentProviders?: string[];
 }

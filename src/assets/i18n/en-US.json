@@ -1047,12 +1047,24 @@
     "serviceAccountEmail": "Share with this email:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Couldn't grant access to your file. Please try again.",
+      "linkAccountCta": "Link account",
+      "notLinked": "Your Microsoft account isn't linked.",
+      "permissionDenied": "Microsoft rejected the request to grant access. The file may not be shareable. Try a different file or contact your administrator.",
+      "pickerLoadFailed": "Couldn't open the file picker. Check your network and try again.",
+      "timeout": "The request took too long. Please try again.",
+      "unavailable": "Microsoft is temporarily unavailable. Please try again in a few moments."
+    },
     "source": {
+      "finalizing": "Granting access…",
       "googleDrive": "Pick from Google Drive",
       "label": "How would you like to attach this document?",
       "linkAction": "Link source",
       "linkPrompt": "Link your account to pick files from this source.",
+      "linkPromptMicrosoft": "Link a Microsoft account to browse OneDrive/SharePoint files",
       "pickAction": "Pick a file",
+      "pickActionMicrosoft": "Browse OneDrive/SharePoint",
       "pickedFile": "File selected: {{ fileName }}",
       "repickAction": "Choose a different file",
       "url": "Paste a URL"
@@ -1079,6 +1091,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Linked {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Relink",
     "status": {
       "active": "{{common.active}}",

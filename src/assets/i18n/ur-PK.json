@@ -993,12 +993,24 @@
     "serviceAccountEmail": "اس ای میل کے ساتھ اشتراک کریں:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "آپ کی فائل تک رسائی نہیں دی جا سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "linkAccountCta": "اکاؤنٹ منسلک کریں",
+      "notLinked": "آپ کا Microsoft اکاؤنٹ منسلک نہیں ہے۔",
+      "permissionDenied": "Microsoft نے رسائی دینے کی درخواست مسترد کر دی۔ ممکن ہے فائل کا اشتراک نہ کیا جا سکے۔ کوئی اور فائل آزمائیں یا اپنے منتظم سے رابطہ کریں۔",
+      "pickerLoadFailed": "فائل پکر نہیں کھولا جا سکا۔ اپنا نیٹ ورک چیک کریں اور دوبارہ کوشش کریں۔",
+      "timeout": "درخواست میں بہت زیادہ وقت لگا۔ براہ کرم دوبارہ کوشش کریں۔",
+      "unavailable": "Microsoft عارضی طور پر دستیاب نہیں ہے۔ براہ کرم چند لمحوں میں دوبارہ کوشش کریں۔"
+    },
     "source": {
+      "finalizing": "رسائی دی جا رہی ہے…",
       "googleDrive": "Google Drive سے منتخب کریں",
       "label": "آپ یہ دستاویز کیسے منسلک کرنا چاہیں گے؟",
       "linkAction": "ذریعہ منسلک کریں",
       "linkPrompt": "اس ذریعے سے فائلیں منتخب کرنے کے لیے اپنا اکاؤنٹ منسلک کریں۔",
+      "linkPromptMicrosoft": "OneDrive/SharePoint فائلیں براؤز کرنے کے لیے Microsoft اکاؤنٹ منسلک کریں",
       "pickAction": "ایک فائل منتخب کریں",
+      "pickActionMicrosoft": "OneDrive/SharePoint براؤز کریں",
       "pickedFile": "فائل منتخب کی گئی: {{ fileName }}",
       "repickAction": "ایک مختلف فائل منتخب کریں",
       "url": "ایک یو آر ایل پیسٹ کریں"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "{{ relativeTime }} منسلک کیا گیا",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "دوبارہ منسلک کریں",
     "status": {
       "active": "{{common.active}}",

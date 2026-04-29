@@ -20,4 +20,13 @@ describe('CONTENT_PROVIDERS', () => {
   it('google_workspace supportsPicker is true', () => {
     expect(CONTENT_PROVIDERS['google_workspace'].supportsPicker).toBe(true);
   });
+
+  it('includes the microsoft provider with cspDirectives', () => {
+    const microsoft = CONTENT_PROVIDERS['microsoft'];
+    expect(microsoft).toBeDefined();
+    expect(microsoft.supportsPicker).toBe(true);
+    expect(microsoft.cspDirectives?.frameSrc).toContain('https://*.sharepoint.com');
+    expect(microsoft.cspDirectives?.frameSrc).toContain('https://login.microsoftonline.com');
+    expect(microsoft.cspDirectives?.formAction).toContain('https://*.sharepoint.com');
+  });
 });

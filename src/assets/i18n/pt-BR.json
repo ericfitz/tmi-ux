@@ -1004,12 +1004,24 @@
     "serviceAccountEmail": "Compartilhe com este e-mail:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Não foi possível conceder acesso ao seu arquivo. Tente novamente.",
+      "linkAccountCta": "Vincular conta",
+      "notLinked": "Sua conta Microsoft não está vinculada.",
+      "permissionDenied": "A Microsoft rejeitou a solicitação de concessão de acesso. O arquivo pode não ser compartilhável. Tente outro arquivo ou entre em contato com seu administrador.",
+      "pickerLoadFailed": "Não foi possível abrir o seletor de arquivos. Verifique sua rede e tente novamente.",
+      "timeout": "A solicitação demorou demais. Tente novamente.",
+      "unavailable": "A Microsoft está temporariamente indisponível. Tente novamente em alguns instantes."
+    },
     "source": {
+      "finalizing": "Concedendo acesso…",
       "googleDrive": "Selecionar do Google Drive",
       "label": "Como você gostaria de anexar este documento?",
       "linkAction": "Vincular origem",
       "linkPrompt": "Vincule sua conta para selecionar arquivos desta origem.",
+      "linkPromptMicrosoft": "Vincule uma conta Microsoft para navegar pelos arquivos do OneDrive/SharePoint",
       "pickAction": "Selecionar um arquivo",
+      "pickActionMicrosoft": "Navegar no OneDrive/SharePoint",
       "pickedFile": "Arquivo selecionado: {{ fileName }}",
       "repickAction": "Escolher um arquivo diferente",
       "url": "Colar uma URL"
@@ -1036,6 +1048,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Vinculado {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Revincular",
     "status": {
       "active": "{{common.active}}",

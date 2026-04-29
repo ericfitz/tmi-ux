@@ -1,5 +1,6 @@
 import type { ContentProviderId, ContentProviderMetadata } from '../models/content-provider.types';
 import { GoogleDrivePickerService } from './google-drive-picker.service';
+import { MicrosoftFilePickerService } from './microsoft-file-picker.service';
 
 /**
  * Typed lookup of all content providers known to tmi-ux. Consumers iterate
@@ -13,5 +14,16 @@ export const CONTENT_PROVIDERS: Record<ContentProviderId, ContentProviderMetadat
     icon: '/static/provider-logos/google-drive.svg',
     supportsPicker: true,
     pickerService: GoogleDrivePickerService,
+  },
+  microsoft: {
+    id: 'microsoft',
+    displayNameKey: 'documentSources.microsoft.name',
+    icon: '/static/provider-logos/onedrive.svg',
+    supportsPicker: true,
+    pickerService: MicrosoftFilePickerService,
+    cspDirectives: {
+      frameSrc: ['https://*.sharepoint.com', 'https://login.microsoftonline.com'],
+      formAction: ['https://*.sharepoint.com'],
+    },
   },
 };

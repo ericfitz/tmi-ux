@@ -993,12 +993,24 @@
     "serviceAccountEmail": "Partager avec cet e-mail :"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Impossible d'accorder l'accès à votre fichier. Veuillez réessayer.",
+      "linkAccountCta": "Lier un compte",
+      "notLinked": "Votre compte Microsoft n'est pas lié.",
+      "permissionDenied": "Microsoft a refusé la demande d'accès. Le fichier n'est peut-être pas partageable. Essayez un autre fichier ou contactez votre administrateur.",
+      "pickerLoadFailed": "Impossible d'ouvrir le sélecteur de fichiers. Vérifiez votre réseau et réessayez.",
+      "timeout": "La requête a pris trop de temps. Veuillez réessayer.",
+      "unavailable": "Microsoft est temporairement indisponible. Veuillez réessayer dans quelques instants."
+    },
     "source": {
+      "finalizing": "Octroi de l'accès…",
       "googleDrive": "Sélectionner depuis Google Drive",
       "label": "Comment souhaitez-vous joindre ce document ?",
       "linkAction": "Relier la source",
       "linkPrompt": "Reliez votre compte pour sélectionner des fichiers depuis cette source.",
+      "linkPromptMicrosoft": "Reliez un compte Microsoft pour parcourir les fichiers OneDrive/SharePoint",
       "pickAction": "Sélectionner un fichier",
+      "pickActionMicrosoft": "Parcourir OneDrive/SharePoint",
       "pickedFile": "Fichier sélectionné : {{ fileName }}",
       "repickAction": "Choisir un autre fichier",
       "url": "Coller une URL"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Liée {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Relier",
     "status": {
       "active": "{{common.active}}",

@@ -88,6 +88,36 @@ mat-dialog-actions {
   color: var(--theme-text-secondary);
 }
 
+.picker-finalizing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--theme-text-secondary);
+}
+
+.picker-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--mat-sys-error, #b3261e);
+  border-radius: 4px;
+  background-color: rgb(179 38 30 / 6%);
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.picker-error-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.picker-error-message {
+  flex: 1;
+  font-size: 13px;
+}
+
 // Responsive adjustments
 @media (width <= 768px) {
   .dialog-form {

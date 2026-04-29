@@ -993,12 +993,24 @@
     "serviceAccountEmail": "Mit dieser E-Mail-Adresse teilen:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Zugriff auf Ihre Datei konnte nicht gewährt werden. Bitte versuchen Sie es erneut.",
+      "linkAccountCta": "Konto verknüpfen",
+      "notLinked": "Ihr Microsoft-Konto ist nicht verknüpft.",
+      "permissionDenied": "Microsoft hat die Anforderung zur Zugriffsgewährung abgelehnt. Die Datei ist möglicherweise nicht freigebbar. Versuchen Sie eine andere Datei oder wenden Sie sich an Ihren Administrator.",
+      "pickerLoadFailed": "Die Dateiauswahl konnte nicht geöffnet werden. Überprüfen Sie Ihr Netzwerk und versuchen Sie es erneut.",
+      "timeout": "Die Anfrage hat zu lange gedauert. Bitte versuchen Sie es erneut.",
+      "unavailable": "Microsoft ist vorübergehend nicht verfügbar. Bitte versuchen Sie es in wenigen Augenblicken erneut."
+    },
     "source": {
+      "finalizing": "Zugriff wird gewährt…",
       "googleDrive": "Aus Google Drive auswählen",
       "label": "Wie möchten Sie dieses Dokument anhängen?",
       "linkAction": "Quelle verknüpfen",
       "linkPrompt": "Verknüpfen Sie Ihr Konto, um Dateien aus dieser Quelle auszuwählen.",
+      "linkPromptMicrosoft": "Verknüpfen Sie ein Microsoft-Konto, um OneDrive/SharePoint-Dateien zu durchsuchen",
       "pickAction": "Datei auswählen",
+      "pickActionMicrosoft": "OneDrive/SharePoint durchsuchen",
       "pickedFile": "Ausgewählte Datei: {{ fileName }}",
       "repickAction": "Andere Datei auswählen",
       "url": "URL einfügen"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Verknüpft {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Erneut verknüpfen",
     "status": {
       "active": "{{common.active}}",

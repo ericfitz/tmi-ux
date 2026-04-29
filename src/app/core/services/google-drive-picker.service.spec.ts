@@ -84,7 +84,7 @@ describe('GoogleDrivePickerService', () => {
     pickerCallback(data);
   }
 
-  it('pick() resolves with PickedFile on Picker selection', async () => {
+  it('pick() emits {kind: "picked"} on Picker selection', async () => {
     mockTokenSvc.mint.mockReturnValue(
       of({
         access_token: 'ya29.x',
@@ -95,7 +95,6 @@ describe('GoogleDrivePickerService', () => {
     );
 
     const promise = firstValueFrom(svc.pick());
-    // Wait for the picker pipeline to set up the callback.
     await new Promise(r => setTimeout(r));
     fireCallback({
       action: 'picked',
@@ -110,14 +109,17 @@ describe('GoogleDrivePickerService', () => {
     });
 
     await expect(promise).resolves.toEqual({
-      fileId: '1abc',
-      name: 'My doc.pdf',
-      mimeType: 'application/pdf',
-      url: 'https://drive.google.com/file/d/1abc',
+      kind: 'picked',
+      file: {
+        fileId: '1abc',
+        name: 'My doc.pdf',
+        mimeType: 'application/pdf',
+        url: 'https://drive.google.com/file/d/1abc',
+      },
     });
   });
 
-  it('pick() resolves null on cancel', async () => {
+  it('pick() emits {kind: "cancelled"} on cancel', async () => {
     mockTokenSvc.mint.mockReturnValue(
       of({ access_token: 't', expires_at: '...', developer_key: 'k', app_id: 'a' }),
     );
@@ -126,7 +128,7 @@ describe('GoogleDrivePickerService', () => {
     await new Promise(r => setTimeout(r));
     fireCallback({ action: 'cancel' });
 
-    await expect(promise).resolves.toBeNull();
+    await expect(promise).resolves.toEqual({ kind: 'cancelled' });
   });
 
   it('pick() while another is open rejects with PickerAlreadyOpenError', async () => {

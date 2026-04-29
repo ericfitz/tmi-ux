@@ -993,12 +993,24 @@
     "serviceAccountEmail": "Bagikan dengan email ini:"
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "Tidak dapat memberikan akses ke berkas Anda. Silakan coba lagi.",
+      "linkAccountCta": "Tautkan akun",
+      "notLinked": "Akun Microsoft Anda belum ditautkan.",
+      "permissionDenied": "Microsoft menolak permintaan untuk memberikan akses. Berkas mungkin tidak dapat dibagikan. Coba berkas lain atau hubungi administrator Anda.",
+      "pickerLoadFailed": "Tidak dapat membuka pemilih berkas. Periksa jaringan Anda dan coba lagi.",
+      "timeout": "Permintaan memakan waktu terlalu lama. Silakan coba lagi.",
+      "unavailable": "Microsoft sementara tidak tersedia. Silakan coba lagi dalam beberapa saat."
+    },
     "source": {
+      "finalizing": "Memberikan akses…",
       "googleDrive": "Pilih dari Google Drive",
       "label": "Bagaimana Anda ingin melampirkan dokumen ini?",
       "linkAction": "Tautkan sumber",
       "linkPrompt": "Tautkan akun Anda untuk memilih berkas dari sumber ini.",
+      "linkPromptMicrosoft": "Tautkan akun Microsoft untuk menjelajahi berkas OneDrive/SharePoint",
       "pickAction": "Pilih sebuah berkas",
+      "pickActionMicrosoft": "Jelajahi OneDrive/SharePoint",
       "pickedFile": "Berkas dipilih: {{ fileName }}",
       "repickAction": "Pilih berkas yang berbeda",
       "url": "Tempel URL"
@@ -1025,6 +1037,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "Ditautkan {{ relativeTime }}",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "Tautkan ulang",
     "status": {
       "active": "{{common.active}}",

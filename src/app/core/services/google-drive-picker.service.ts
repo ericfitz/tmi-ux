@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { PickerTokenService } from './picker-token.service';
 import {
   PickerAlreadyOpenError,
   type IContentPickerService,
-  type PickedFile,
+  type PickerEvent,
   type PickerTokenResponse,
 } from '../models/content-provider.types';
 import { loadScriptOnce } from '../../shared/utils/lazy-script-loader';
@@ -61,23 +61,42 @@ export class GoogleDrivePickerService implements IContentPickerService {
     private logger: LoggerService,
   ) {}
 
-  pick(): Observable<PickedFile | null> {
-    return from(this._pickAsync());
-  }
+  pick(): Observable<PickerEvent> {
+    return new Observable<PickerEvent>(subscriber => {
+      if (this._open) {
+        subscriber.error(new PickerAlreadyOpenError());
+        return;
+      }
+      this._open = true;
+      let cancelled = false;
 
-  private async _pickAsync(): Promise<PickedFile | null> {
-    if (this._open) {
-      throw new PickerAlreadyOpenError();
-    }
-    this._open = true;
-    try {
-      await loadScriptOnce(GAPI_URL);
-      await this._loadPickerModule();
-      const token = await this._mintToken();
-      return await this._showPicker(token);
-    } finally {
-      this._open = false;
-    }
+      const run = async (): Promise<void> => {
+        try {
+          await loadScriptOnce(GAPI_URL);
+          if (cancelled) return;
+          await this._loadPickerModule();
+          if (cancelled) return;
+          const token = await this._mintToken();
+          if (cancelled) return;
+          this._showPicker(token, event => {
+            if (cancelled) return;
+            subscriber.next(event);
+            subscriber.complete();
+          });
+        } catch (err) {
+          if (!cancelled) subscriber.error(err);
+        }
+      };
+
+      void run().finally(() => {
+        // _open cleared in teardown to allow concurrent guard to release
+      });
+
+      return () => {
+        cancelled = true;
+        this._open = false;
+      };
+    });
   }
 
   private _mintToken(): Promise<PickerTokenResponse> {
@@ -99,34 +118,40 @@ export class GoogleDrivePickerService implements IContentPickerService {
     });
   }
 
-  private _showPicker(token: PickerTokenResponse): Promise<PickedFile | null> {
-    return new Promise(resolve => {
-      const google = (window as unknown as { google: GoogleGlobal }).google;
-      const view = new google.picker.DocsView();
-      view.setIncludeFolders(false).setMimeTypes(SUPPORTED_MIME_TYPES);
+  private _showPicker(token: PickerTokenResponse, emit: (e: PickerEvent) => void): void {
+    const google = (window as unknown as { google: GoogleGlobal }).google;
+    const view = new google.picker.DocsView();
+    view.setIncludeFolders(false).setMimeTypes(SUPPORTED_MIME_TYPES);
 
-      const picker = new google.picker.PickerBuilder()
-        .setOAuthToken(token.access_token)
-        .setDeveloperKey(token.developer_key ?? '')
-        .setAppId(token.app_id ?? '')
-        .addView(view)
-        .setCallback((data: PickerCallbackData) => {
-          if (data.action === google.picker.Action.PICKED && data.docs && data.docs.length > 0) {
-            const doc = data.docs[0];
-            resolve({
+    const developerKey = token.developer_key ?? token.provider_config?.['developer_key'] ?? '';
+    const appId = token.app_id ?? token.provider_config?.['app_id'] ?? '';
+
+    const picker = new google.picker.PickerBuilder()
+      .setOAuthToken(token.access_token)
+      .setDeveloperKey(developerKey)
+      .setAppId(appId)
+      .addView(view)
+      .setCallback((data: PickerCallbackData) => {
+        if (data.action === google.picker.Action.PICKED && data.docs && data.docs.length > 0) {
+          const doc = data.docs[0];
+          this._open = false;
+          emit({
+            kind: 'picked',
+            file: {
               fileId: doc.id,
               name: doc.name,
               mimeType: doc.mimeType,
               url: doc.url,
-            });
-          } else if (data.action === google.picker.Action.CANCEL) {
-            resolve(null);
-          }
-        })
-        .build();
+            },
+          });
+        } else if (data.action === google.picker.Action.CANCEL) {
+          this._open = false;
+          emit({ kind: 'cancelled' });
+        }
+      })
+      .build();
 
-      this.logger.debug('Opening Google Picker');
-      picker.setVisible(true);
-    });
+    this.logger.debug('Opening Google Picker');
+    picker.setVisible(true);
   }
 }

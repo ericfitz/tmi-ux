@@ -1004,12 +1004,24 @@
     "serviceAccountEmail": "このメールアドレスと共有してください："
   },
   "documentEditor": {
+    "grantError": {
+      "generic": "ファイルへのアクセスを許可できませんでした。もう一度お試しください。",
+      "linkAccountCta": "アカウントをリンク",
+      "notLinked": "Microsoftアカウントがリンクされていません。",
+      "permissionDenied": "Microsoftがアクセス許可のリクエストを拒否しました。このファイルは共有できない可能性があります。別のファイルを試すか、管理者に連絡してください。",
+      "pickerLoadFailed": "ファイルピッカーを開けませんでした。ネットワークを確認してもう一度お試しください。",
+      "timeout": "リクエストに時間がかかりすぎました。もう一度お試しください。",
+      "unavailable": "Microsoftは一時的に利用できません。しばらくしてからもう一度お試しください。"
+    },
     "source": {
+      "finalizing": "アクセスを許可しています…",
       "googleDrive": "Google Driveから選択",
       "label": "このドキュメントをどのように添付しますか？",
       "linkAction": "ソースをリンク",
       "linkPrompt": "このソースからファイルを選択するには、アカウントをリンクしてください。",
+      "linkPromptMicrosoft": "OneDrive/SharePointのファイルを参照するには、Microsoftアカウントをリンクしてください",
       "pickAction": "ファイルを選択",
+      "pickActionMicrosoft": "OneDrive/SharePointを参照",
       "pickedFile": "選択されたファイル: {{ fileName }}",
       "repickAction": "別のファイルを選択",
       "url": "URLを貼り付け"
@@ -1036,6 +1048,9 @@
       "name": "Google Drive"
     },
     "linkedAt": "{{ relativeTime }}にリンク",
+    "microsoft": {
+      "name": "OneDrive/SharePoint"
+    },
     "relink": "再リンク",
     "status": {
       "active": "{{common.active}}",

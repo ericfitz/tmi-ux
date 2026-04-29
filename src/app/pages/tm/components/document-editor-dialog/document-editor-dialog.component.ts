@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import {
   FormBuilder,
@@ -28,13 +29,20 @@ import { CONTENT_PROVIDERS } from '@app/core/services/content-provider-registry'
 import { AccessDiagnosticsPanelComponent } from '@app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { LoggerService } from '@app/core/services/logger.service';
-import type {
-  ContentProviderId,
-  ContentProviderMetadata,
-  ContentTokenInfo,
-  IContentPickerService,
-  PickedFile,
-  PickerRegistration,
+import {
+  ContentTokenNotLinkedError,
+  MicrosoftAccountNotLinkedError,
+  MicrosoftGraphPermissionRejectedError,
+  MicrosoftGraphUnavailableError,
+  MicrosoftGrantTimeoutError,
+  PickerLoadFailedError,
+  type ContentProviderId,
+  type ContentProviderMetadata,
+  type ContentTokenInfo,
+  type IContentPickerService,
+  type PickedFile,
+  type PickerEvent,
+  type PickerRegistration,
 } from '@app/core/models/content-provider.types';
 
 /**
@@ -59,6 +67,11 @@ export interface DocumentEditorDialogData {
   threatModelId?: string;
 }
 
+interface PickerErrorState {
+  messageKey: string;
+  showLinkAccountCta: boolean;
+}
+
 @Component({
   selector: 'app-document-editor-dialog',
   standalone: true,
@@ -72,6 +85,7 @@ export interface DocumentEditorDialogData {
     MatCheckboxModule,
     MatTooltipModule,
     MatRadioModule,
+    MatProgressSpinnerModule,
     TooltipAriaLabelDirective,
     FormsModule,
     ReactiveFormsModule,
@@ -93,6 +107,9 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   linkedTokens: ContentTokenInfo[] = [];
   pickedFile: PickedFile | null = null;
   currentDocument: Document | undefined;
+  finalizing = false;
+  finalizingMessageKey: string | null = null;
+  pickerError: PickerErrorState | null = null;
   private _pickerRegistration: PickerRegistration | null = null;
 
   private readonly destroy$ = new Subject<void>();
@@ -231,6 +248,33 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     return this.selectedSource !== 'url';
   }
 
+  /** Disabled while a finalizing-grant call is in flight to prevent orphan grants. */
+  isCancelDisabled(): boolean {
+    return this.finalizing;
+  }
+
+  /** Disabled while finalizing — submit would race the picker registration. */
+  isSubmitDisabled(): boolean {
+    return this.documentForm.invalid || this.finalizing;
+  }
+
+  /**
+   * Localization key for the picker action button. Microsoft uses a
+   * provider-specific label; fall back to the generic key for others.
+   */
+  pickActionKey(): string {
+    return this.selectedSource === 'microsoft'
+      ? 'documentEditor.source.pickActionMicrosoft'
+      : 'documentEditor.source.pickAction';
+  }
+
+  /** Localization key for the unlinked-account prompt, with Microsoft override. */
+  linkPromptKey(): string {
+    return this.selectedSource === 'microsoft'
+      ? 'documentEditor.source.linkPromptMicrosoft'
+      : 'documentEditor.source.linkPrompt';
+  }
+
   /**
    * Get URI validation suggestion message (if any)
    */
@@ -242,22 +286,76 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     if (this.selectedSource === 'url') return;
     const meta = CONTENT_PROVIDERS[this.selectedSource];
     if (!meta) return;
+    this.pickerError = null;
     const svc = this.injector.get<IContentPickerService>(meta.pickerService);
     svc
       .pick()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: file => {
-          if (!file) return;
-          this.pickedFile = file;
-          this._pickerRegistration = {
-            provider_id: this.selectedSource as ContentProviderId,
-            file_id: file.fileId,
-            mime_type: file.mimeType,
-          };
-          this.documentForm.patchValue({ name: file.name, uri: file.url });
-        },
+        next: (event: PickerEvent) => this._handlePickerEvent(event),
+        error: err => this._handlePickerError(err),
       });
+  }
+
+  private _handlePickerEvent(event: PickerEvent): void {
+    switch (event.kind) {
+      case 'finalizing':
+        this.finalizing = true;
+        this.finalizingMessageKey = event.messageKey ?? 'documentEditor.source.finalizing';
+        return;
+      case 'cancelled':
+        this.finalizing = false;
+        this.finalizingMessageKey = null;
+        return;
+      case 'picked': {
+        this.finalizing = false;
+        this.finalizingMessageKey = null;
+        this.pickedFile = event.file;
+        this._pickerRegistration = {
+          provider_id: this.selectedSource as ContentProviderId,
+          file_id: event.file.fileId,
+          mime_type: event.file.mimeType,
+        };
+        this.documentForm.patchValue({ name: event.file.name, uri: event.file.url });
+      }
+    }
+  }
+
+  private _handlePickerError(err: unknown): void {
+    this.finalizing = false;
+    this.finalizingMessageKey = null;
+    this.pickedFile = null;
+    this._pickerRegistration = null;
+    this.pickerError = this._mapErrorToState(err);
+    this.logger.warn('Picker failed', err);
+  }
+
+  private _mapErrorToState(err: unknown): PickerErrorState {
+    if (
+      err instanceof MicrosoftAccountNotLinkedError ||
+      err instanceof ContentTokenNotLinkedError
+    ) {
+      return { messageKey: 'documentEditor.grantError.notLinked', showLinkAccountCta: true };
+    }
+    if (err instanceof MicrosoftGraphPermissionRejectedError) {
+      return {
+        messageKey: 'documentEditor.grantError.permissionDenied',
+        showLinkAccountCta: false,
+      };
+    }
+    if (err instanceof MicrosoftGraphUnavailableError) {
+      return { messageKey: 'documentEditor.grantError.unavailable', showLinkAccountCta: false };
+    }
+    if (err instanceof MicrosoftGrantTimeoutError) {
+      return { messageKey: 'documentEditor.grantError.timeout', showLinkAccountCta: false };
+    }
+    if (err instanceof PickerLoadFailedError) {
+      return {
+        messageKey: 'documentEditor.grantError.pickerLoadFailed',
+        showLinkAccountCta: false,
+      };
+    }
+    return { messageKey: 'documentEditor.grantError.generic', showLinkAccountCta: false };
   }
 
   onLinkSource(): void {
@@ -301,6 +399,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   onCancel(): void {
+    if (this.finalizing) return;
     this.dialogRef.close();
   }
 }
