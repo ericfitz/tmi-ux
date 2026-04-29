@@ -600,5 +600,52 @@ describe('LoggerService', () => {
     it('should return empty string when buffer is empty', () => {
       expect(service.exportAsJsonl()).toBe('');
     });
+
+    it('should truncate to maxChars while keeping the most recent entries', () => {
+      service.setLogLevel(LogLevel.DEBUG);
+      service.info('one');
+      service.info('two');
+      service.info('three');
+
+      const fullLines = service.exportAsJsonl().split('\n');
+      expect(fullLines).toHaveLength(3);
+
+      // Budget that fits only the last two entries plus the joining newline
+      const lastTwoLength = fullLines[1].length + fullLines[2].length + 1;
+      const jsonl = service.exportAsJsonl(lastTwoLength);
+      const lines = jsonl.split('\n');
+
+      expect(lines).toHaveLength(2);
+      expect((JSON.parse(lines[0]) as LogEntry).message).toBe('two');
+      expect((JSON.parse(lines[1]) as LogEntry).message).toBe('three');
+      expect(jsonl.length).toBeLessThanOrEqual(lastTwoLength);
+    });
+
+    it('should never partially serialize a record when truncating', () => {
+      service.setLogLevel(LogLevel.DEBUG);
+      service.info('alpha');
+      service.info('bravo');
+
+      const lines = service.exportAsJsonl().split('\n');
+      // Budget too small to fit even the most recent record's full JSON
+      const tooSmall = lines[1].length - 1;
+      const jsonl = service.exportAsJsonl(tooSmall);
+      expect(jsonl).toBe('');
+    });
+
+    it('should return empty string when maxChars is 0', () => {
+      service.setLogLevel(LogLevel.DEBUG);
+      service.info('something');
+      expect(service.exportAsJsonl(0)).toBe('');
+    });
+
+    it('should return full output when maxChars exceeds total length', () => {
+      service.setLogLevel(LogLevel.DEBUG);
+      service.info('a');
+      service.info('b');
+
+      const full = service.exportAsJsonl();
+      expect(service.exportAsJsonl(full.length + 1000)).toBe(full);
+    });
   });
 });

@@ -180,12 +180,32 @@ export class LoggerService {
   }
 
   /**
-   * Exports all buffered log entries as a JSONL string (one JSON object per line)
+   * Exports all buffered log entries as a JSONL string (one JSON object per line).
+   *
+   * When `maxChars` is provided, the output is truncated to fit within that
+   * character budget while preserving log-record boundaries (no record is
+   * partially serialized). The most recent records are kept; older records are
+   * dropped from the front. If no records fit, an empty string is returned.
    */
-  exportAsJsonl(): string {
-    return this.getLogEntries()
-      .map(entry => JSON.stringify(entry))
-      .join('\n');
+  exportAsJsonl(maxChars?: number): string {
+    const lines = this.getLogEntries().map(entry => JSON.stringify(entry));
+
+    if (maxChars === undefined || maxChars < 0) {
+      return lines.join('\n');
+    }
+
+    let total = 0;
+    const kept: string[] = [];
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      const addition = kept.length === 0 ? line.length : line.length + 1;
+      if (total + addition > maxChars) {
+        break;
+      }
+      kept.unshift(line);
+      total += addition;
+    }
+    return kept.join('\n');
   }
 
   /**

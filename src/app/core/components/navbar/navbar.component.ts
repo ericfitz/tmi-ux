@@ -38,6 +38,13 @@ import { BrandingConfigService } from '../../services/branding-config.service';
 import { version } from '../../../../../package.json';
 import { gitCommit } from '../../../../build-info.json';
 
+/**
+ * Max characters of log JSONL to copy to the clipboard for a bug report.
+ * GitHub caps issue bodies at 65536 chars; this leaves room for the issue
+ * template and any user-added notes.
+ */
+const BUG_REPORT_LOG_MAX_CHARS = 60000;
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -436,7 +443,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Copy application log to clipboard and open a pre-filled bug report issue
    */
   reportBug(): void {
-    const jsonl = this.logger.exportAsJsonl();
+    const jsonl = this.logger.exportAsJsonl(BUG_REPORT_LOG_MAX_CHARS);
 
     navigator.clipboard.writeText(jsonl).then(
       () => {
