@@ -14,7 +14,8 @@
       "categoryNoteEditing": "Note Editing",
       "categoryPdfProcessing": "PDF Processing",
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
-      "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
+      "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to ",
+      "paragraph3": "And finally thank you to the Windows Core Security/Secure Windows Initiative/Trustworthy Computing teams at Microsoft in the first half of the 2000s, especially Praerit Garg, Mike Howard, John Lambert, and Adam Shostack, for giving me the opportunity to learn and for demonstrating industry-leading thinking in application security and threat modeling."
     },
     "opensourcetitle": "Open Source",
     "server": "Server",
