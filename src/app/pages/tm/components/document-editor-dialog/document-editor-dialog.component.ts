@@ -191,12 +191,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   private _isStatus(err: unknown, status: number): boolean {
-    return (
-      typeof err === 'object' &&
-      err !== null &&
-      'status' in err &&
-      (err).status === status
-    );
+    return typeof err === 'object' && err !== null && 'status' in err && err.status === status;
   }
 
   private _fetchAfterRecheck(threatModelId: string, documentId: string): void {
