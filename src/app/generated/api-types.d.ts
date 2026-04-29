@@ -3936,7 +3936,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Mint a short-lived access token for the Google Picker browser client */
+    /**
+     * Mint a short-lived access token for the Google Picker browser client
+     * @description Mint a short-lived access token for the Google Picker browser client. The returned token can be used by the Google Picker SDK to display a file-selection dialog scoped to the requesting user.
+     */
     post: operations['mintPickerToken'];
     delete?: never;
     options?: never;
@@ -5084,6 +5087,18 @@ export interface components {
         strokeWidth?: number;
         /** @description Dash pattern for strokes */
         strokeDasharray?: string | null;
+        /** @description Corner radius along the x-axis (set as default by X6 shape registrations, e.g., actor/process/security-boundary) */
+        rx?: number;
+        /** @description Corner radius along the y-axis (set as default by X6 shape registrations) */
+        ry?: number;
+        /** @description Cylinder lateral parameter for the X6 'store' shape (drives the body 'd' path computation) */
+        lateral?: number;
+        /** @description X6 reference width (number or percentage string, e.g. '100%') used to size the body relative to the cell bounding box */
+        refWidth?: number | string;
+        /** @description X6 reference height (number or percentage string, e.g. '100%') used to size the body relative to the cell bounding box */
+        refHeight?: number | string;
+        /** @description Body fill opacity (0-1); typically transient drag-to-embed visual feedback */
+        fillOpacity?: number;
       };
       /** @description Text/label styling attributes */
       text?: {
@@ -5099,10 +5114,14 @@ export interface components {
         refX?: number | string;
         /** @description Vertical position (0-1 relative, pixels, or percentage string e.g. '50%') */
         refY?: number | string;
-        /** @description Horizontal offset from refX */
+        /** @description Horizontal offset from refX (corner-based, retained for back-compat; client uses refX2) */
         refDx?: number;
-        /** @description Vertical offset from refY */
+        /** @description Vertical offset from refY (corner-based, retained for back-compat; client uses refY2) */
         refDy?: number;
+        /** @description Origin-based horizontal offset (alias of refX in X6); used by the client for icon and label positioning */
+        refX2?: number | string;
+        /** @description Origin-based vertical offset (alias of refY in X6); used by the client for icon and label positioning */
+        refY2?: number | string;
         /**
          * @description Horizontal text alignment anchor point
          * @enum {string}
@@ -10002,10 +10021,7 @@ export interface components {
     /** @description Aggregate embedding configuration for a threat model, holding separate provider configs for text and optionally code embeddings. */
     EmbeddingConfig: {
       text_embedding: components['schemas']['EmbeddingProviderConfig'];
-      /**
-       * @description Code embedding config. Null if not configured.
-       * @example null
-       */
+      /** @description Code embedding config. Null if not configured. */
       code_embedding?: components['schemas']['EmbeddingProviderConfig'] | null;
     };
     /** @description A single pre-computed embedding chunk submitted for ingestion, including the source entity, chunk text, content hash, and embedding vector. */
@@ -10146,10 +10162,11 @@ export interface components {
         | 'relink_account'
         | 'repick_file'
         | 'share_with_service_account'
+        | 'share_with_application'
         | 'repick_after_share'
         | 'retry'
         | 'contact_owner';
-      /** @description Action-specific parameters (e.g. service_account_email, provider_id, user_email) */
+      /** @description Action-specific parameters. Examples: `service_account_email`, `provider_id`, `user_email` (for `share_with_service_account`); `drive_id`, `item_id`, `app_object_id`, `graph_call`, `graph_body` (for `share_with_application`). */
       params: {
         [key: string]: unknown;
       };
@@ -10165,6 +10182,7 @@ export interface components {
         | 'no_accessible_source'
         | 'source_not_found'
         | 'fetch_error'
+        | 'microsoft_not_shared'
         | 'other';
       /** @description Raw error text; populated only when reason_code is 'other' */
       reason_detail?: string | null;
@@ -10728,6 +10746,32 @@ export interface operations {
              * @example http://localhost:8080/oauth2/introspect
              */
             introspection_endpoint?: string;
+            /**
+             * @example [
+             *       "S256"
+             *     ]
+             */
+            code_challenge_methods_supported?: string[];
+            /**
+             * @example [
+             *       "authorization_code",
+             *       "refresh_token",
+             *       "client_credentials"
+             *     ]
+             */
+            grant_types_supported?: string[];
+            /**
+             * Format: uri
+             * @example http://localhost:8080/oauth2/revoke
+             */
+            revocation_endpoint?: string;
+            /**
+             * @example [
+             *       "client_secret_post",
+             *       "none"
+             *     ]
+             */
+            token_endpoint_auth_methods_supported?: string[];
           };
         };
       };
@@ -10802,6 +10846,30 @@ export interface operations {
              *     ]
              */
             token_endpoint_auth_methods_supported?: string[];
+            /**
+             * @example [
+             *       "S256"
+             *     ]
+             */
+            code_challenge_methods_supported?: string[];
+            /**
+             * Format: uri
+             * @example http://localhost:8080/.well-known/jwks.json
+             */
+            jwks_uri?: string;
+            /**
+             * Format: uri
+             * @example http://localhost:8080/oauth2/revoke
+             */
+            revocation_endpoint?: string;
+            /**
+             * @example [
+             *       "openid",
+             *       "email",
+             *       "profile"
+             *     ]
+             */
+            scopes_supported?: string[];
           };
         };
       };
@@ -11224,6 +11292,21 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authorization endpoint encountered an unrecognized path/parameter; an HTML error page is rendered. */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'text/html': string;
         };
       };
       429: components['responses']['TooManyRequests'];
@@ -18885,6 +18968,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -18946,6 +19030,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -33573,6 +33658,7 @@ export interface operations {
           };
         };
       };
+      400: components['responses']['Error'];
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
@@ -33639,8 +33725,7 @@ export interface operations {
            *       "text_embedding": {
            *         "provider": "openai",
            *         "model": "text-embedding-3-small"
-           *       },
-           *       "code_embedding": null
+           *       }
            *     }
            */
           'application/json': components['schemas']['EmbeddingConfig'];
@@ -33827,6 +33912,7 @@ export interface operations {
       };
       400: components['responses']['Error'];
       401: components['responses']['Error'];
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -33879,6 +33965,7 @@ export interface operations {
       };
       400: components['responses']['Error'];
       401: components['responses']['Error'];
+      404: components['responses']['Error'];
       422: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
@@ -33912,6 +33999,7 @@ export interface operations {
       };
       400: components['responses']['Error'];
       401: components['responses']['Error'];
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -33963,6 +34051,7 @@ export interface operations {
           'text/html': string;
         };
       };
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -34039,6 +34128,7 @@ export interface operations {
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      404: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -34079,6 +34169,7 @@ export interface operations {
           'application/json': components['schemas']['PickerTokenResponse'];
         };
       };
+      400: components['responses']['Error'];
       401: components['responses']['Error'];
       404: components['responses']['NotFound'];
       /** @description Provider not supported or token not linked */
@@ -34129,6 +34220,7 @@ export interface operations {
           'application/json': components['schemas']['MicrosoftPickerGrantResponse'];
         };
       };
+      400: components['responses']['Error'];
       401: components['responses']['Error'];
       /** @description User has no linked Microsoft token. */
       404: {
