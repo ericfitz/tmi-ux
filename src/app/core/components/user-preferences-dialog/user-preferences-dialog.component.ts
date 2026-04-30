@@ -196,158 +196,180 @@ interface CheckboxChangeEvent {
               Display Preferences
             </h3>
 
-            <div class="preference-item">
-              <label class="preference-label" [transloco]="'userPreferences.theme'">Theme</label>
-              <mat-radio-group
-                [(ngModel)]="preferences.themeMode"
-                (change)="onThemeModeChange()"
-                class="radio-group"
-                data-testid="pref-theme-group"
-              >
-                <mat-radio-button value="automatic" data-testid="pref-theme-automatic">
-                  <span [transloco]="'userPreferences.themeMode.automatic'">
-                    Automatic (System)
-                  </span>
-                </mat-radio-button>
-                <mat-radio-button value="light" data-testid="pref-theme-light">
-                  <span [transloco]="'userPreferences.themeMode.light'">Light</span>
-                </mat-radio-button>
-                <mat-radio-button value="dark" data-testid="pref-theme-dark">
-                  <span [transloco]="'userPreferences.themeMode.dark'">Dark</span>
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
+            <div class="display-columns">
+              <div class="display-section">
+                <div class="preference-item">
+                  <label class="preference-label" [transloco]="'userPreferences.theme'">
+                    Theme
+                  </label>
+                  <mat-radio-group
+                    [(ngModel)]="preferences.themeMode"
+                    (change)="onThemeModeChange()"
+                    class="radio-group"
+                    data-testid="pref-theme-group"
+                  >
+                    <mat-radio-button value="automatic" data-testid="pref-theme-automatic">
+                      <span [transloco]="'userPreferences.themeMode.automatic'">
+                        Automatic (System)
+                      </span>
+                    </mat-radio-button>
+                    <mat-radio-button value="light" data-testid="pref-theme-light">
+                      <span [transloco]="'userPreferences.themeMode.light'">Light</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="dark" data-testid="pref-theme-dark">
+                      <span [transloco]="'userPreferences.themeMode.dark'">Dark</span>
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.colorBlindMode"
-                (change)="onColorBlindModeChange($event)"
-                data-testid="pref-colorblind-toggle"
-              >
-                <span [transloco]="'userPreferences.colorBlindMode'">
-                  Color Blind Safe Palette
-                </span>
-              </mat-checkbox>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.colorBlindMode"
+                    (change)="onColorBlindModeChange($event)"
+                    data-testid="pref-colorblind-toggle"
+                  >
+                    <span [transloco]="'userPreferences.colorBlindMode'">
+                      Color Blind Safe Palette
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </div>
 
-            <label class="preference-label" [transloco]="'userPreferences.sections.diagramEditor'">
-              Diagram Editor
-            </label>
+              <div class="display-section">
+                <label
+                  class="preference-label"
+                  [transloco]="'userPreferences.sections.diagramEditor'"
+                >
+                  Diagram Editor
+                </label>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.animations"
-                (change)="onAnimationPreferenceChange($event)"
-              >
-                <span [transloco]="'userPreferences.diagramAnimationEffects'">
-                  Diagram animation effects
-                </span>
-              </mat-checkbox>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.animations"
+                    (change)="onAnimationPreferenceChange($event)"
+                  >
+                    <span [transloco]="'userPreferences.diagramAnimationEffects'">
+                      Diagram animation effects
+                    </span>
+                  </mat-checkbox>
+                </div>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.hoverShowMetadata"
-                (change)="onHoverShowMetadataChange($event)"
-              >
-                <span [transloco]="'userPreferences.hoverShowMetadata'">
-                  Show cell metadata on hover
-                </span>
-              </mat-checkbox>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.hoverShowMetadata"
+                    (change)="onHoverShowMetadataChange($event)"
+                  >
+                    <span [transloco]="'userPreferences.hoverShowMetadata'">
+                      Show cell metadata on hover
+                    </span>
+                  </mat-checkbox>
+                </div>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.showShapeBordersWithIcons"
-                (change)="onShowShapeBordersWithIconsChange($event)"
-              >
-                <span [transloco]="'userPreferences.showShapeBordersWithIcons'">
-                  Show shape fill and border when icon is displayed
-                </span>
-              </mat-checkbox>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.showShapeBordersWithIcons"
+                    (change)="onShowShapeBordersWithIconsChange($event)"
+                  >
+                    <span [transloco]="'userPreferences.showShapeBordersWithIcons'">
+                      Show shape fill and border when icon is displayed
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </div>
 
-            <label class="preference-label" [transloco]="'userPreferences.sections.diagramLayout'">
-              Diagram Layout
-            </label>
+              <div class="display-section">
+                <label
+                  class="preference-label"
+                  [transloco]="'userPreferences.sections.diagramLayout'"
+                >
+                  Diagram Layout
+                </label>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.autoLayoutEnabled"
-                (change)="onAutoLayoutEnabledChange($event)"
-                data-testid="pref-auto-layout-enabled"
-              >
-                <span [transloco]="'userPreferences.autoLayout.label'"> Auto-layout shapes </span>
-              </mat-checkbox>
-              <p class="preference-hint" [transloco]="'userPreferences.autoLayout.description'">
-                Automatically resize and position shapes when icons are added, children are
-                embedded, or shapes are moved.
-              </p>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.autoLayoutEnabled"
+                    (change)="onAutoLayoutEnabledChange($event)"
+                    data-testid="pref-auto-layout-enabled"
+                  >
+                    <span [transloco]="'userPreferences.autoLayout.label'">
+                      Auto-layout shapes
+                    </span>
+                  </mat-checkbox>
+                  <p class="preference-hint" [transloco]="'userPreferences.autoLayout.description'">
+                    Automatically resize and position shapes when icons are added, children are
+                    embedded, or shapes are moved.
+                  </p>
+                </div>
 
-            <div class="preference-item" [class.disabled]="!preferences.autoLayoutEnabled">
-              <label
-                class="preference-label"
-                [transloco]="'userPreferences.autoLayout.orientation.label'"
-              >
-                Layout orientation
-              </label>
-              <mat-radio-group
-                [(ngModel)]="preferences.autoLayoutOrientation"
-                [disabled]="!preferences.autoLayoutEnabled"
-                (change)="onAutoLayoutOrientationChange()"
-                class="radio-group"
-                data-testid="pref-auto-layout-orientation-group"
-              >
-                <mat-radio-button value="automatic" data-testid="pref-auto-layout-automatic">
-                  <span [transloco]="'userPreferences.autoLayout.orientation.automatic'">
-                    Automatic (infer from current diagram)
-                  </span>
-                </mat-radio-button>
-                <mat-radio-button value="horizontal" data-testid="pref-auto-layout-horizontal">
-                  <span [transloco]="'userPreferences.autoLayout.orientation.horizontal'">
-                    Horizontal
-                  </span>
-                </mat-radio-button>
-                <mat-radio-button value="vertical" data-testid="pref-auto-layout-vertical">
-                  <span [transloco]="'userPreferences.autoLayout.orientation.vertical'">
-                    Vertical
-                  </span>
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
+                <div class="preference-item" [class.disabled]="!preferences.autoLayoutEnabled">
+                  <label
+                    class="preference-label"
+                    [transloco]="'userPreferences.autoLayout.orientation.label'"
+                  >
+                    Layout orientation
+                  </label>
+                  <mat-radio-group
+                    [(ngModel)]="preferences.autoLayoutOrientation"
+                    [disabled]="!preferences.autoLayoutEnabled"
+                    (change)="onAutoLayoutOrientationChange()"
+                    class="radio-group"
+                    data-testid="pref-auto-layout-orientation-group"
+                  >
+                    <mat-radio-button value="automatic" data-testid="pref-auto-layout-automatic">
+                      <span [transloco]="'userPreferences.autoLayout.orientation.automatic'">
+                        Automatic (infer from current diagram)
+                      </span>
+                    </mat-radio-button>
+                    <mat-radio-button value="horizontal" data-testid="pref-auto-layout-horizontal">
+                      <span [transloco]="'userPreferences.autoLayout.orientation.horizontal'">
+                        Horizontal
+                      </span>
+                    </mat-radio-button>
+                    <mat-radio-button value="vertical" data-testid="pref-auto-layout-vertical">
+                      <span [transloco]="'userPreferences.autoLayout.orientation.vertical'">
+                        Vertical
+                      </span>
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+              </div>
 
-            <label
-              class="preference-label"
-              [transloco]="'userPreferences.sections.securityReviewer'"
-            >
-              Security Reviewer
-            </label>
+              <div class="display-section">
+                <label
+                  class="preference-label"
+                  [transloco]="'userPreferences.sections.securityReviewer'"
+                >
+                  Security Reviewer
+                </label>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.dashboardListView"
-                (change)="onDashboardListViewChange($event)"
-              >
-                <span [transloco]="'userPreferences.dashboardListView'">
-                  Show Dashboard as List View
-                </span>
-              </mat-checkbox>
-            </div>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.dashboardListView"
+                    (change)="onDashboardListViewChange($event)"
+                  >
+                    <span [transloco]="'userPreferences.dashboardListView'">
+                      Show Dashboard as List View
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </div>
 
-            <label class="preference-label" [transloco]="'userPreferences.sections.developer'">
-              Developer
-            </label>
+              <div class="display-section">
+                <label class="preference-label" [transloco]="'userPreferences.sections.developer'">
+                  Developer
+                </label>
 
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.showDeveloperTools"
-                (change)="onShowDeveloperToolsChange($event)"
-              >
-                <span [transloco]="'userPreferences.showDeveloperTools'">
-                  Show Developer Tools
-                </span>
-              </mat-checkbox>
+                <div class="preference-item">
+                  <mat-checkbox
+                    [(ngModel)]="preferences.showDeveloperTools"
+                    (change)="onShowDeveloperToolsChange($event)"
+                  >
+                    <span [transloco]="'userPreferences.showDeveloperTools'">
+                      Show Developer Tools
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </div>
             </div>
           </div>
         </mat-tab>
@@ -623,6 +645,22 @@ interface CheckboxChangeEvent {
         margin: 8px 0;
       }
 
+      .display-columns {
+        column-count: 2;
+        column-gap: 32px;
+      }
+
+      .display-section {
+        break-inside: avoid;
+        margin-bottom: 16px;
+      }
+
+      @media (max-width: 700px) {
+        .display-columns {
+          column-count: 1;
+        }
+      }
+
       .preference-label {
         display: block;
         margin-bottom: 4px;
@@ -669,9 +707,19 @@ interface CheckboxChangeEvent {
 
       .profile-info {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+        column-count: 2;
+        column-gap: 32px;
+      }
+
+      .profile-info .profile-item {
+        break-inside: avoid;
+        margin-bottom: 12px;
+      }
+
+      @media (max-width: 700px) {
+        .profile-info {
+          column-count: 1;
+        }
       }
 
       .profile-actions {
