@@ -599,12 +599,9 @@ interface CheckboxChangeEvent {
         --mdc-secondary-navigation-tab-container-height: 40px;
       }
 
-      ::ng-deep .mat-mdc-tab-header-pagination {
-        display: none !important;
-      }
-
       ::ng-deep .mat-mdc-tab-body-wrapper {
-        height: 320px;
+        min-height: 320px;
+        max-height: calc(90vh - 180px);
       }
 
       ::ng-deep .mat-mdc-tab-body-content {

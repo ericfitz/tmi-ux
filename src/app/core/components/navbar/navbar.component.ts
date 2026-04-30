@@ -256,7 +256,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const { UserPreferencesDialogComponent } =
       await import('../user-preferences-dialog/user-preferences-dialog.component');
     this.dialog.open(UserPreferencesDialogComponent, {
-      width: '800px',
+      width: '90vw',
+      maxWidth: '1000px',
+      maxHeight: '90vh',
       disableClose: false,
       data: initialTab ? { initialTab } : null,
     });
