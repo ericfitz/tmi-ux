@@ -87,7 +87,12 @@ import {
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let token">
               @if (token.status !== 'active') {
-                <button mat-stroked-button color="primary" (click)="onConnect(token.provider_id)">
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="onConnect(token.provider_id)"
+                  [attr.data-testid]="'document-sources-relink-' + token.provider_id"
+                >
                   {{ 'documentSources.relink' | transloco }}
                 </button>
               }
@@ -96,6 +101,7 @@ import {
                 color="warn"
                 (click)="onUnlink(token.provider_id)"
                 [matTooltip]="'documentSources.unlink' | transloco"
+                [attr.data-testid]="'document-sources-unlink-' + token.provider_id"
               >
                 <mat-icon>link_off</mat-icon>
               </button>
@@ -108,7 +114,12 @@ import {
 
       <div class="document-sources-actions">
         @if (connectableProviders.length === 1) {
-          <button mat-raised-button color="primary" (click)="onConnect(connectableProviders[0].id)">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onConnect(connectableProviders[0].id)"
+            [attr.data-testid]="'document-sources-connect-' + connectableProviders[0].id"
+          >
             <mat-icon>add_link</mat-icon>
             <span [transloco]="'documentSources.add'">Connect a source</span>
           </button>
@@ -118,13 +129,18 @@ import {
             color="primary"
             [matMenuTriggerFor]="availableProvidersMenu"
             [disabled]="connectableProviders.length === 0"
+            data-testid="document-sources-connect-menu"
           >
             <mat-icon>add_link</mat-icon>
             <span [transloco]="'documentSources.add'">Connect a source</span>
           </button>
           <mat-menu #availableProvidersMenu="matMenu">
             @for (p of connectableProviders; track p.id) {
-              <button mat-menu-item (click)="onConnect(p.id)">
+              <button
+                mat-menu-item
+                (click)="onConnect(p.id)"
+                [attr.data-testid]="'document-sources-connect-' + p.id"
+              >
                 {{ p.displayNameKey | transloco }}
               </button>
             }

@@ -42,5 +42,17 @@ export default defineConfig({
       testDir: './e2e/tests/admin',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Live Google Drive integration tests. Excluded from default `playwright test`
+    // execution; invoke explicitly via `pnpm test:e2e:google-drive`. Requires
+    // gitignored `e2e/config/google-drive.local.json`; tests skip when absent.
+    {
+      name: 'google-drive-live',
+      testDir: './e2e/tests/google-drive-live',
+      timeout: 5 * 60 * 1000,
+      use: {
+        ...devices['Desktop Chrome'],
+        headless: false,
+      },
+    },
   ],
 });

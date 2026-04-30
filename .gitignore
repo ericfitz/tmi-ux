@@ -46,6 +46,9 @@ src/environments/environment.local.ts
 src/environments/environment.dev.ts
 unused/**
 
+# Local E2E config (live Google Drive integration tests)
+e2e/config/google-drive.local.json
+
 # Generated build info
 src/build-info.json
 

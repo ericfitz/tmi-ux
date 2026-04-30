@@ -30,11 +30,11 @@
         How would you like to attach this document?
       </label>
       <mat-radio-group [(ngModel)]="selectedSource" name="source" class="source-radio-group">
-        <mat-radio-button value="url">
+        <mat-radio-button value="url" data-testid="document-source-radio-url">
           <span [transloco]="'documentEditor.source.url'">Paste a URL</span>
         </mat-radio-button>
         @for (p of pickerSourceOptions; track p.id) {
-          <mat-radio-button [value]="p.id">
+          <mat-radio-button [value]="p.id" [attr.data-testid]="'document-source-radio-' + p.id">
             {{ p.displayNameKey | transloco }}
           </mat-radio-button>
         }
@@ -105,10 +105,15 @@
                 <span [transloco]="pickActionKey()">Pick a file</span>
               </button>
             } @else {
-              <p class="picked-file-hint">
+              <p class="picked-file-hint" data-testid="document-picked-file-hint">
                 {{ 'documentEditor.source.pickedFile' | transloco: { fileName: pickedFile.name } }}
               </p>
-              <button mat-stroked-button type="button" (click)="onPickFile()">
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="onPickFile()"
+                data-testid="document-repick-button"
+              >
                 {{ 'documentEditor.source.repickAction' | transloco }}
               </button>
             }

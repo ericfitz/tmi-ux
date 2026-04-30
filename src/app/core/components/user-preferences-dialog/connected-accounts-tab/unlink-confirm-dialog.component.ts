@@ -20,12 +20,20 @@ export interface UnlinkConfirmDialogData {
       <p [transloco]="'documentSources.tabConfirmUnlink.body'">Unlinking will remove access...</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button (click)="ref.close(false)" [transloco]="'common.cancel'">Cancel</button>
+      <button
+        mat-button
+        (click)="ref.close(false)"
+        [transloco]="'common.cancel'"
+        data-testid="unlink-cancel-button"
+      >
+        Cancel
+      </button>
       <button
         mat-raised-button
         color="warn"
         (click)="ref.close(true)"
         [transloco]="'documentSources.unlink'"
+        data-testid="unlink-confirm-button"
       >
         Unlink
       </button>
