@@ -220,7 +220,9 @@ export class WebSocketAdapter {
   }
 
   /**
-   * Connect to WebSocket server (URL should already include auth token if needed)
+   * Connect to WebSocket server. Authentication is carried by a single-use
+   * `?ticket=<...>` query parameter fetched from `GET /ws/ticket`; the JWT
+   * itself must never appear in the WebSocket URL.
    */
   connect(url: string): Observable<void> {
     return new Observable(observer => {
@@ -231,22 +233,26 @@ export class WebSocketAdapter {
           return;
         }
 
-        this._url = url;
+        // Defense-in-depth: strip any `token` query parameter that may have
+        // been placed on the URL upstream (server-side regression, stale
+        // caller, etc.). The server does not consume `?token=` and leaving
+        // the JWT in the URL would leak it to proxy / browser-extension /
+        // NEL logs. See tmi-ux#661.
+        const sanitizedUrl = this._stripTokenParam(url);
+
+        this._url = sanitizedUrl;
         this._connectionState$.next(WebSocketState.CONNECTING);
 
         this.logger.info('Connecting WebSocket', {
-          url: url.replace(/\?.*$/, ''), // Don't log query params (including token)
-          hasToken: url.includes('?token='),
+          url: sanitizedUrl.replace(/\?.*$/, ''), // Don't log query params
         });
 
-        // Log WebSocket connection request with component debug logging
         this.logger.debugComponent('websocket-api', 'WebSocket connection request:', {
-          url: url.replace(/\?.*$/, ''), // Redact query params for security
+          url: sanitizedUrl.replace(/\?.*$/, ''),
           protocol: 'WebSocket',
-          hasAuthToken: url.includes('?token='),
         });
 
-        this._socket = new WebSocket(url);
+        this._socket = new WebSocket(sanitizedUrl);
         this._setupEventListeners();
 
         // Wait for connection to open
@@ -256,7 +262,7 @@ export class WebSocketAdapter {
 
           // Log successful WebSocket connection with component debug logging
           this.logger.debugComponent('websocket-api', 'WebSocket connection established:', {
-            url: url.replace(/\?.*$/, ''),
+            url: sanitizedUrl.replace(/\?.*$/, ''),
             readyState: this._socket?.readyState,
             protocol: this._socket?.protocol || 'none',
           });
@@ -292,7 +298,7 @@ export class WebSocketAdapter {
           // this._updateConnectionHealth(-30); // Decrease health on connection error - COMMENTED OUT
 
           this.logger.error('WebSocket connection error', {
-            url: url,
+            url: sanitizedUrl.replace(/\?.*$/, ''),
             error: errorMessage,
             errorType: wsError.type,
             isRecoverable: wsError.isRecoverable,
@@ -906,6 +912,35 @@ export class WebSocketAdapter {
    */
   private _generateMessageId(): string {
     return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  /**
+   * Remove any `token` query parameter from a WebSocket URL. The TMI server
+   * authenticates WebSocket upgrades from the request context (cookie / single-
+   * use ticket), so a `?token=<JWT>` pair has no auth value and would only
+   * leak the bearer to URL-capturing observers (proxy logs, browser
+   * extensions, NEL reports). See tmi-ux#661.
+   */
+  private _stripTokenParam(url: string): string {
+    if (!/[?&]token=/i.test(url)) {
+      return url;
+    }
+
+    this.logger.warn(
+      'Stripped `token` query parameter from WebSocket URL — JWTs must not appear in WS URLs',
+      { url: url.replace(/\?.*$/, '') },
+    );
+
+    const queryIndex = url.indexOf('?');
+    if (queryIndex === -1) {
+      return url;
+    }
+
+    const base = url.substring(0, queryIndex);
+    const params = new URLSearchParams(url.substring(queryIndex + 1));
+    params.delete('token');
+    const remaining = params.toString();
+    return remaining ? `${base}?${remaining}` : base;
   }
 
   /**

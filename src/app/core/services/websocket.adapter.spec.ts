@@ -234,14 +234,51 @@ describe('WebSocketAdapter', () => {
     it('should not log token in connection URL', () => {
       adapter.connect('ws://localhost:8080/ws?token=secret123').subscribe();
 
-      // Check that the logger was called with a redacted URL
+      // The logger sees only the path (no query string).
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Connecting WebSocket',
         expect.objectContaining({
           url: 'ws://localhost:8080/ws',
-          hasToken: true,
         }),
       );
+      // And it must NOT carry the hasToken flag that previously hinted the
+      // token was being passed in the URL.
+      expect(mockLogger.info).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ hasToken: expect.anything() }),
+      );
+    });
+
+    it('should strip ?token= before opening the WebSocket (tmi-ux#661)', () => {
+      adapter
+        .connect('wss://api.example.com/ws/diagrams/abc?token=eyJhbGciOiJIUzI1NiJ9')
+        .subscribe();
+
+      // The URL passed to `new WebSocket(...)` must not contain the token.
+      expect(mockWebSocketInstance.url).toBe('wss://api.example.com/ws/diagrams/abc');
+      // And the regression must be surfaced via a warning so it stays visible.
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Stripped `token` query parameter'),
+        expect.objectContaining({ url: 'wss://api.example.com/ws/diagrams/abc' }),
+      );
+    });
+
+    it('should strip token while preserving other query params (tmi-ux#661)', () => {
+      adapter
+        .connect('wss://api.example.com/ws/diagrams/abc?ticket=xyz&token=secret&foo=bar')
+        .subscribe();
+
+      const opened = mockWebSocketInstance.url;
+      expect(opened).not.toContain('token=');
+      expect(opened).toContain('ticket=xyz');
+      expect(opened).toContain('foo=bar');
+    });
+
+    it('should pass through URLs that do not contain a token param (tmi-ux#661)', () => {
+      adapter.connect('wss://api.example.com/ws/diagrams/abc?ticket=xyz').subscribe();
+
+      expect(mockWebSocketInstance.url).toBe('wss://api.example.com/ws/diagrams/abc?ticket=xyz');
+      expect(mockLogger.warn).not.toHaveBeenCalled();
     });
   });
 
