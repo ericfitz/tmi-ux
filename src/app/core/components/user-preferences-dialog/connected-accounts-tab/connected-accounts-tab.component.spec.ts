@@ -1,7 +1,7 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,7 +9,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConnectedAccountsTabComponent } from './connected-accounts-tab.component';
 import { ContentTokenService } from '../../../services/content-token.service';
 import { LoggerService } from '../../../services/logger.service';
-import type { ContentTokenInfo } from '../../../models/content-provider.types';
+import {
+  ContentTokenProviderNotConfiguredError,
+  type ContentTokenInfo,
+} from '../../../models/content-provider.types';
 
 describe('ConnectedAccountsTabComponent', () => {
   let tokens$: BehaviorSubject<ContentTokenInfo[]>;
@@ -92,6 +95,44 @@ describe('ConnectedAccountsTabComponent', () => {
         value: originalLocation,
       });
     }
+  });
+
+  it('onConnect surfaces notConfigured snackbar when provider is not configured server-side', () => {
+    mockTokenSvc.authorize.mockReturnValue(
+      throwError(() => new ContentTokenProviderNotConfiguredError('google_workspace')),
+    );
+    mockTransloco.translate.mockImplementation((key: string) =>
+      key === 'documentSources.googleDrive.name' ? 'Google Drive' : key,
+    );
+    const component = createComponent();
+    component.onConnect('google_workspace');
+    expect(mockSnack.open).toHaveBeenCalledWith(
+      'documentSources.callback.notConfigured',
+      undefined,
+      { duration: 6000 },
+    );
+    expect(mockTransloco.translate).toHaveBeenCalledWith(
+      'documentSources.callback.notConfigured',
+      expect.objectContaining({ source: 'Google Drive' }),
+    );
+    expect(mockLogger.error).toHaveBeenCalled();
+  });
+
+  it('onConnect surfaces generic snackbar for other authorize errors', () => {
+    mockTokenSvc.authorize.mockReturnValue(throwError(() => new Error('boom')));
+    mockTransloco.translate.mockImplementation((key: string) =>
+      key === 'documentSources.googleDrive.name' ? 'Google Drive' : key,
+    );
+    const component = createComponent();
+    component.onConnect('google_workspace');
+    expect(mockSnack.open).toHaveBeenCalledWith('documentSources.callback.error', undefined, {
+      duration: 6000,
+    });
+    expect(mockTransloco.translate).toHaveBeenCalledWith(
+      'documentSources.callback.error',
+      expect.objectContaining({ source: 'Google Drive', reason: '' }),
+    );
+    expect(mockLogger.error).toHaveBeenCalled();
   });
 
   it('onUnlink opens the confirm dialog and calls unlink when confirmed', () => {

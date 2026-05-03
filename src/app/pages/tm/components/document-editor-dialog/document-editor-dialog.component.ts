@@ -24,7 +24,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Document } from '../../models/threat-model.model';
 import { FormValidationService } from '../../../../shared/services/form-validation.service';
 import { getUriSuggestionFromControl } from '@app/shared/utils/form-validation.util';
-import { ContentTokenService } from '@app/core/services/content-token.service';
+import {
+  ContentTokenService,
+  buildContentAuthorizeErrorMessage,
+} from '@app/core/services/content-token.service';
 import { CONTENT_PROVIDERS } from '@app/core/services/content-provider-registry';
 import { AccessDiagnosticsPanelComponent } from '@app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component';
 import { ThreatModelService } from '../../services/threat-model.service';
@@ -368,6 +371,14 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: res => {
           window.location.href = res.authorization_url;
+        },
+        error: (err: unknown) => {
+          this.logger.error('Failed to initiate content token authorize', err);
+          this.snackBar.open(
+            buildContentAuthorizeErrorMessage(err, providerId, this.transloco),
+            undefined,
+            { duration: 6000 },
+          );
         },
       });
   }

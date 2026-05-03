@@ -3,13 +3,18 @@
 
 import '@angular/compiler';
 
-import { of, firstValueFrom } from 'rxjs';
+import { of, firstValueFrom, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { ContentTokenService } from './content-token.service';
+import { ContentTokenService, buildContentAuthorizeErrorMessage } from './content-token.service';
 import type { ApiService } from './api.service';
 import type { LoggerService } from './logger.service';
-import type { ContentTokenInfo } from '../models/content-provider.types';
+import type { TranslocoService } from '@jsverse/transloco';
+import {
+  ContentTokenProviderNotConfiguredError,
+  type ContentProviderId,
+  type ContentTokenInfo,
+} from '../models/content-provider.types';
 
 describe('ContentTokenService', () => {
   let svc: ContentTokenService;
@@ -75,6 +80,28 @@ describe('ContentTokenService', () => {
     expect(callArg.client_callback).toContain(encodeURIComponent('/dashboard'));
   });
 
+  it('authorize() translates 422 content_token_provider_not_configured into typed error', async () => {
+    mockApi.post.mockReturnValue(
+      throwError(() => ({
+        status: 422,
+        error: { error: 'content_token_provider_not_configured', provider_id: 'google_workspace' },
+      })),
+    );
+
+    await expect(
+      firstValueFrom(svc.authorize('google_workspace', '/dashboard')),
+    ).rejects.toBeInstanceOf(ContentTokenProviderNotConfiguredError);
+  });
+
+  it('authorize() rethrows unrelated errors unchanged', async () => {
+    const httpErr = { status: 500, error: { error: 'internal' } };
+    mockApi.post.mockReturnValue(throwError(() => httpErr));
+
+    await expect(firstValueFrom(svc.authorize('google_workspace', '/dashboard'))).rejects.toBe(
+      httpErr,
+    );
+  });
+
   it('unlink() DELETEs /me/content_tokens/{id}', async () => {
     mockApi.delete.mockReturnValue(of(undefined));
     await firstValueFrom(svc.unlink('google_workspace'));
@@ -102,5 +129,53 @@ describe('ContentTokenService', () => {
     await firstValueFrom(svc.contentTokens$);
 
     expect(mockApi.get).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('buildContentAuthorizeErrorMessage', () => {
+  let mockTransloco: { translate: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockTransloco = {
+      translate: vi.fn((key: string) =>
+        key === 'documentSources.googleDrive.name' ? 'Google Drive' : key,
+      ),
+    };
+  });
+
+  it('returns the notConfigured key when err is ContentTokenProviderNotConfiguredError', () => {
+    const msg = buildContentAuthorizeErrorMessage(
+      new ContentTokenProviderNotConfiguredError('google_workspace'),
+      'google_workspace',
+      mockTransloco as unknown as TranslocoService,
+    );
+    expect(msg).toBe('documentSources.callback.notConfigured');
+    expect(mockTransloco.translate).toHaveBeenCalledWith('documentSources.callback.notConfigured', {
+      source: 'Google Drive',
+    });
+  });
+
+  it('returns the generic error key for other errors', () => {
+    const msg = buildContentAuthorizeErrorMessage(
+      new Error('boom'),
+      'google_workspace',
+      mockTransloco as unknown as TranslocoService,
+    );
+    expect(msg).toBe('documentSources.callback.error');
+    expect(mockTransloco.translate).toHaveBeenCalledWith('documentSources.callback.error', {
+      source: 'Google Drive',
+      reason: '',
+    });
+  });
+
+  it('falls back to raw provider id when registry has no entry', () => {
+    buildContentAuthorizeErrorMessage(
+      new ContentTokenProviderNotConfiguredError('confluence' as unknown as ContentProviderId),
+      'confluence' as unknown as ContentProviderId,
+      mockTransloco as unknown as TranslocoService,
+    );
+    expect(mockTransloco.translate).toHaveBeenCalledWith('documentSources.callback.notConfigured', {
+      source: 'confluence',
+    });
   });
 });

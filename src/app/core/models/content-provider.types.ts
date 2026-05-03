@@ -87,6 +87,20 @@ export class ContentTokenNotLinkedError extends Error {
   }
 }
 
+/**
+ * Thrown when the server returns 422 `content_token_provider_not_configured`
+ * from `/me/content_tokens/{provider_id}/authorize` — the client offered a
+ * provider that the server's `ContentOAuthProviderRegistry` does not have
+ * credentials for. Until the server exposes configured providers via
+ * `/config`, the client may advertise providers the server cannot honor.
+ */
+export class ContentTokenProviderNotConfiguredError extends Error {
+  override name = 'ContentTokenProviderNotConfiguredError';
+  constructor(public readonly providerId: ContentProviderId) {
+    super(`Content provider not configured on server: ${providerId}`);
+  }
+}
+
 /** Thrown when a second pick() call fires while a Picker is already open. */
 export class PickerAlreadyOpenError extends Error {
   override name = 'PickerAlreadyOpenError';

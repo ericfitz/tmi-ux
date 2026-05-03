@@ -18,6 +18,7 @@ import { MicrosoftFilePickerService } from '@app/core/services/microsoft-file-pi
 import { LoggerService } from '@app/core/services/logger.service';
 import { ThreatModelService } from '../../services/threat-model.service';
 import {
+  ContentTokenProviderNotConfiguredError,
   MicrosoftAccountNotLinkedError,
   MicrosoftGraphPermissionRejectedError,
   MicrosoftGraphUnavailableError,
@@ -44,7 +45,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
   };
   let mockSnack: { open: ReturnType<typeof vi.fn> };
   let mockTransloco: { translate: ReturnType<typeof vi.fn> };
-  let mockLogger: { warn: ReturnType<typeof vi.fn> };
+  let mockLogger: { warn: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   function createComponent(data: DocumentEditorDialogData): DocumentEditorDialogComponent {
     return new DocumentEditorDialogComponent(
@@ -82,7 +83,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     };
     mockSnack = { open: vi.fn() };
     mockTransloco = { translate: vi.fn((key: string) => key) };
-    mockLogger = { warn: vi.fn() };
+    mockLogger = { warn: vi.fn(), error: vi.fn() };
   });
 
   it('defaults selectedSource to "url" in create mode', () => {
@@ -415,6 +416,40 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       c.onPickFile();
       c.onCancel();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onLinkSource error handling', () => {
+    it('shows notConfigured snackbar when provider is not configured server-side', () => {
+      mockTokenSvc.authorize.mockReturnValue(
+        throwError(() => new ContentTokenProviderNotConfiguredError('google_workspace')),
+      );
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_workspace';
+      c.onLinkSource();
+      expect(mockSnack.open).toHaveBeenCalledWith(
+        'documentSources.callback.notConfigured',
+        undefined,
+        { duration: 6000 },
+      );
+      expect(mockTransloco.translate).toHaveBeenCalledWith(
+        'documentSources.callback.notConfigured',
+        expect.objectContaining({ source: expect.any(String) }),
+      );
+      expect(mockLogger.error).toHaveBeenCalled();
+    });
+
+    it('shows generic snackbar for other authorize errors', () => {
+      mockTokenSvc.authorize.mockReturnValue(throwError(() => new Error('boom')));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_workspace';
+      c.onLinkSource();
+      expect(mockSnack.open).toHaveBeenCalledWith('documentSources.callback.error', undefined, {
+        duration: 6000,
+      });
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 });

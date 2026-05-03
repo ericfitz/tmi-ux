@@ -16,7 +16,11 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Observable } from 'rxjs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { ContentTokenService } from '../../../core/services/content-token.service';
+import {
+  ContentTokenService,
+  buildContentAuthorizeErrorMessage,
+} from '../../../core/services/content-token.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { CONTENT_PROVIDERS } from '../../../core/services/content-provider-registry';
 import type {
   AccessRemediation,
@@ -193,6 +197,7 @@ export class AccessDiagnosticsPanelComponent {
     private snackBar: MatSnackBar,
     private contentTokens: ContentTokenService,
     private router: Router,
+    private logger: LoggerService,
   ) {}
 
   get message(): string {
@@ -225,6 +230,14 @@ export class AccessDiagnosticsPanelComponent {
           this.contentTokens.authorize(providerId, this.router.url).subscribe({
             next: res => {
               window.location.href = res.authorization_url;
+            },
+            error: (err: unknown) => {
+              this.logger.error('Failed to initiate content token authorize', err);
+              this.snackBar.open(
+                buildContentAuthorizeErrorMessage(err, providerId, this.transloco),
+                undefined,
+                { duration: 6000 },
+              );
             },
           });
         }

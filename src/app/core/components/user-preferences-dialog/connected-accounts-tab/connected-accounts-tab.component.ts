@@ -11,7 +11,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subject, switchMap, of, takeUntil } from 'rxjs';
 
-import { ContentTokenService } from '../../../services/content-token.service';
+import {
+  ContentTokenService,
+  buildContentAuthorizeErrorMessage,
+} from '../../../services/content-token.service';
 import { LoggerService } from '../../../services/logger.service';
 import { CONTENT_PROVIDERS } from '../../../services/content-provider-registry';
 import type {
@@ -246,10 +249,7 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
         error: (err: unknown) => {
           this.logger.error('Failed to initiate content authorize', err);
           this.snackBar.open(
-            this.transloco.translate('documentSources.callback.error', {
-              source: '',
-              reason: '',
-            }),
+            buildContentAuthorizeErrorMessage(err, providerId, this.transloco),
             undefined,
             { duration: 6000 },
           );

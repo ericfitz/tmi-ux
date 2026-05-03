@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import type {
-  ContentAuthorizationURL,
-  ContentProviderId,
-  ContentTokenInfo,
+import { CONTENT_PROVIDERS } from './content-provider-registry';
+import {
+  ContentTokenProviderNotConfiguredError,
+  type ContentAuthorizationURL,
+  type ContentProviderId,
+  type ContentTokenInfo,
 } from '../models/content-provider.types';
 
 interface ContentTokenListResponse {
@@ -65,8 +68,11 @@ export class ContentTokenService {
       })
       .pipe(
         tap(() => this.logger.info('Content token authorize initiated', { providerId })),
-        catchError(err => {
+        catchError((err: unknown) => {
           this.logger.error('Failed to initiate content token authorize', err);
+          if (isProviderNotConfigured(err)) {
+            throw new ContentTokenProviderNotConfiguredError(providerId);
+          }
           throw err;
         }),
       );
@@ -85,4 +91,40 @@ export class ContentTokenService {
       }),
     );
   }
+}
+
+/**
+ * Detects the server's 422 `content_token_provider_not_configured` body. The
+ * server returns this when the requested provider id is absent from its
+ * `ContentOAuthProviderRegistry` (no OAuth client credentials configured).
+ */
+function isProviderNotConfigured(err: unknown): boolean {
+  if (typeof err !== 'object' || err === null) return false;
+  if ((err as { status?: unknown }).status !== 422) return false;
+  const body = (err as { error?: unknown }).error;
+  if (typeof body !== 'object' || body === null) return false;
+  return (body as { error?: unknown }).error === 'content_token_provider_not_configured';
+}
+
+/**
+ * Builds the user-facing snackbar message for an authorize() failure. Centralizes
+ * mapping of `ContentTokenProviderNotConfiguredError` to a specific localized
+ * message and falls back to a generic message for everything else. Defends
+ * against unknown provider ids (e.g., a future server adding a provider before
+ * the client registry knows about it) by falling back to the raw id as the
+ * source name.
+ */
+export function buildContentAuthorizeErrorMessage(
+  err: unknown,
+  providerId: ContentProviderId,
+  transloco: TranslocoService,
+): string {
+  const meta = CONTENT_PROVIDERS[providerId];
+  const sourceName = meta ? transloco.translate(meta.displayNameKey) : providerId;
+  return err instanceof ContentTokenProviderNotConfiguredError
+    ? transloco.translate('documentSources.callback.notConfigured', { source: sourceName })
+    : transloco.translate('documentSources.callback.error', {
+        source: sourceName,
+        reason: '',
+      });
 }

@@ -1075,6 +1075,7 @@
     "callback": {
       "error": "Couldn't connect source. Source: {{ source }}. Reason: {{ reason }}",
       "linking": "Linking your account...",
+      "notConfigured": "{{ source }} is not configured on this server. Contact your administrator.",
       "success": "Source connected. Source: {{ source }}"
     },
     "columns": {

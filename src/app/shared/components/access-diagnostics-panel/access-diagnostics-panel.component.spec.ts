@@ -1,7 +1,7 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import type { Injector } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,6 +10,8 @@ import { TranslocoService } from '@jsverse/transloco';
 
 import { AccessDiagnosticsPanelComponent } from './access-diagnostics-panel.component';
 import { ContentTokenService } from '../../../core/services/content-token.service';
+import { LoggerService } from '../../../core/services/logger.service';
+import { ContentTokenProviderNotConfiguredError } from '../../../core/models/content-provider.types';
 import type { Document } from '../../../pages/tm/models/threat-model.model';
 
 describe('AccessDiagnosticsPanelComponent', () => {
@@ -22,6 +24,10 @@ describe('AccessDiagnosticsPanelComponent', () => {
     selectTranslate: ReturnType<typeof vi.fn>;
   };
   let mockInjector: { get: ReturnType<typeof vi.fn> };
+  let mockLogger: {
+    error: ReturnType<typeof vi.fn>;
+    warn: ReturnType<typeof vi.fn>;
+  };
 
   function createComponent(doc: Document): AccessDiagnosticsPanelComponent {
     const component = new AccessDiagnosticsPanelComponent(
@@ -31,6 +37,7 @@ describe('AccessDiagnosticsPanelComponent', () => {
       mockSnack as unknown as MatSnackBar,
       mockTokens as unknown as ContentTokenService,
       mockRouter as unknown as Router,
+      mockLogger as unknown as LoggerService,
     );
     component.document = doc;
     return component;
@@ -46,6 +53,7 @@ describe('AccessDiagnosticsPanelComponent', () => {
       selectTranslate: vi.fn((key: string) => of(key)),
     };
     mockInjector = { get: vi.fn() };
+    mockLogger = { error: vi.fn(), warn: vi.fn() };
   });
 
   it('returns empty message when access_diagnostics is missing', () => {
@@ -217,5 +225,57 @@ describe('AccessDiagnosticsPanelComponent', () => {
         value: originalLocation,
       });
     }
+  });
+
+  it('link_account remediation surfaces notConfigured snackbar when server has no provider configured', () => {
+    mockTokens.authorize.mockReturnValue(
+      throwError(() => new ContentTokenProviderNotConfiguredError('google_workspace')),
+    );
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'auth_required',
+      access_diagnostics: {
+        reason_code: 'token_not_linked',
+        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
+      },
+    });
+    c.handleRemediation({
+      action: 'link_account',
+      params: { provider_id: 'google_workspace' },
+    });
+    expect(mockSnack.open).toHaveBeenCalledWith(
+      'documentSources.callback.notConfigured',
+      undefined,
+      { duration: 6000 },
+    );
+    expect(mockLogger.error).toHaveBeenCalled();
+  });
+
+  it('link_account remediation surfaces generic snackbar for other authorize errors', () => {
+    mockTokens.authorize.mockReturnValue(throwError(() => new Error('boom')));
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'auth_required',
+      access_diagnostics: {
+        reason_code: 'token_not_linked',
+        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
+      },
+    });
+    c.handleRemediation({
+      action: 'link_account',
+      params: { provider_id: 'google_workspace' },
+    });
+    expect(mockSnack.open).toHaveBeenCalledWith('documentSources.callback.error', undefined, {
+      duration: 6000,
+    });
+    expect(mockLogger.error).toHaveBeenCalled();
   });
 });
