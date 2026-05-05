@@ -34,6 +34,24 @@ import {
 /** Union of the CVSS vector instances we support */
 type CvssInstance = Cvss3P1 | Cvss4P0;
 
+/**
+ * Maps the underlying CVSS library's raw category names to translation keys
+ * for capitalized, CVSS-spec-aligned group names. CVSS 4.0 splits the
+ * environmental group into two sub-groups; we surface both with explicit
+ * "Environmental (...)" labels so users see the spec-standard "Environmental"
+ * grouping at a glance.
+ */
+const CATEGORY_NAME_KEYS: Readonly<Record<string, string>> = {
+  base: 'cvssCalculator.metricGroups.base',
+  temporal: 'cvssCalculator.metricGroups.temporal',
+  threat: 'cvssCalculator.metricGroups.threat',
+  environmental: 'cvssCalculator.metricGroups.environmental',
+  'environmental-base': 'cvssCalculator.metricGroups.environmentalBase',
+  'environmental-security-requirement':
+    'cvssCalculator.metricGroups.environmentalSecurityRequirement',
+  supplemental: 'cvssCalculator.metricGroups.supplemental',
+};
+
 @Component({
   selector: 'app-cvss-calculator-dialog',
   standalone: true,
@@ -73,6 +91,13 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this._languageService.direction$.pipe(this._untilDestroyed()).subscribe(direction => {
       this.currentDirection = direction;
       this._cdr.markForCheck();
+    });
+
+    this._translocoService.langChanges$.pipe(this._untilDestroyed()).subscribe(() => {
+      if (this._cvssInstance) {
+        this._buildMetricGroups();
+        this._cdr.markForCheck();
+      }
     });
 
     if (this.data.existingEntry) {
@@ -187,9 +212,9 @@ export class CvssCalculatorDialogComponent implements OnInit {
   }
 
   getGroupSummary(group: MetricGroup): string {
-    const set = group.metrics.filter(m => m.selectedValue && m.selectedValue !== 'X').length;
-    return this._translocoService.translate('cvssCalculator.metricsSet', {
-      count: set,
+    const configured = group.metrics.filter(m => m.selectedValue && m.selectedValue !== 'X').length;
+    return this._translocoService.translate('cvssCalculator.metricsConfigured', {
+      count: configured,
       total: group.metrics.length,
     });
   }
@@ -234,7 +259,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
           (comp: VectorComponent<VectorComponentValue>) => ({
             shortName: comp.shortName,
             name: comp.name,
-            description: comp.description,
+            description: this._getMetricDescription(comp),
             subCategory: comp.subCategory,
             values: comp.values
               .filter((v: VectorComponentValue) => !v.hide)
@@ -248,13 +273,46 @@ export class CvssCalculatorDialogComponent implements OnInit {
         );
 
         this.metricGroups.push({
-          categoryName: category.name,
+          categoryName: this._getCategoryDisplayName(category.name),
           categoryDescription: category.description,
           metrics,
           isBase,
         });
       },
     );
+  }
+
+  /**
+   * Translate the library's raw category name (e.g. "base", "environmental-base")
+   * into a CVSS-spec-aligned, capitalized display name (e.g. "Base", "Environmental
+   * (Modified Base)"). Falls back to a capitalized version of the raw name.
+   */
+  private _getCategoryDisplayName(rawName: string): string {
+    const key = CATEGORY_NAME_KEYS[rawName];
+    if (key) {
+      return this._translocoService.translate(key);
+    }
+    return rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  }
+
+  /**
+   * Resolve a metric's description, preferring the library-supplied description
+   * but falling back to a translated description for CVSS 4.0 metrics where the
+   * library returns an empty string. Returns empty string when no description
+   * is available so the template can hide the help icon.
+   */
+  private _getMetricDescription(comp: VectorComponent<VectorComponentValue>): string {
+    if (comp.description && comp.description.trim().length > 0) {
+      return comp.description;
+    }
+    if (this.selectedVersion === '4.0') {
+      const key = 'cvssCalculator.metricDescriptions.' + comp.shortName;
+      const translated = this._translocoService.translate(key);
+      if (translated && translated !== key) {
+        return translated;
+      }
+    }
+    return '';
   }
 
   private _getCurrentValue(metricShortName: string): string | null {

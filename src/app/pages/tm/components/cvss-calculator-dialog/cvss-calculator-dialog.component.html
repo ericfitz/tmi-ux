@@ -1,11 +1,6 @@
 <div class="cvss-calculator-dialog" [dir]="currentDirection">
   <h2 mat-dialog-title class="dialog-title">
-    <span>{{ 'cvssCalculator.title' | transloco }}</span>
-    @if (currentScore !== null) {
-      <span class="score-badge" [ngClass]="severityClass">
-        {{ currentScore }}
-      </span>
-    }
+    {{ 'cvssCalculator.title' | transloco }}
   </h2>
 
   <mat-dialog-content class="dialog-content" appScrollIndicator>
@@ -41,12 +36,14 @@
             <div class="metric-row">
               <div class="metric-info">
                 <span class="metric-name"> {{ metric.name }} ({{ metric.shortName }}) </span>
-                <mat-icon
-                  class="metric-help-icon"
-                  [matTooltip]="metric.description"
-                  matTooltipClass="metric-tooltip"
-                  >help_outline</mat-icon
-                >
+                @if (metric.description) {
+                  <mat-icon
+                    class="metric-help-icon"
+                    [matTooltip]="metric.description"
+                    matTooltipClass="metric-tooltip"
+                    >help_outline</mat-icon
+                  >
+                }
               </div>
               <mat-button-toggle-group
                 [value]="metric.selectedValue"

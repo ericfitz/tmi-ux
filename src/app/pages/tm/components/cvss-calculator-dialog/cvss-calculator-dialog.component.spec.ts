@@ -3,7 +3,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 import { CvssCalculatorDialogComponent } from './cvss-calculator-dialog.component';
 import {
@@ -32,6 +32,7 @@ interface MockLanguageService {
 
 interface MockTranslocoService {
   translate: ReturnType<typeof vi.fn>;
+  langChanges$: ReturnType<typeof of<string>>;
 }
 
 describe('CvssCalculatorDialogComponent', () => {
@@ -58,6 +59,7 @@ describe('CvssCalculatorDialogComponent', () => {
     };
     translocoService = {
       translate: vi.fn((key: string) => key),
+      langChanges$: of('en-US'),
     };
 
     component = new CvssCalculatorDialogComponent(
@@ -438,7 +440,7 @@ describe('CvssCalculatorDialogComponent', () => {
       if (baseGroup) {
         component.getGroupSummary(baseGroup);
         expect(translocoService.translate).toHaveBeenCalledWith(
-          'cvssCalculator.metricsSet',
+          'cvssCalculator.metricsConfigured',
           expect.objectContaining({
             total: baseGroup.metrics.length,
           }),
@@ -446,7 +448,7 @@ describe('CvssCalculatorDialogComponent', () => {
       }
     });
 
-    it('should not count X as set', () => {
+    it('should not count X as configured', () => {
       const baseGroup = component.metricGroups.find(g => g.isBase);
       if (baseGroup) {
         // Set one metric to X (Not Defined)
@@ -454,7 +456,7 @@ describe('CvssCalculatorDialogComponent', () => {
         component.getGroupSummary(baseGroup);
 
         expect(translocoService.translate).toHaveBeenCalledWith(
-          'cvssCalculator.metricsSet',
+          'cvssCalculator.metricsConfigured',
           expect.objectContaining({
             count: 0,
           }),

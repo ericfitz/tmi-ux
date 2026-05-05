@@ -7,19 +7,7 @@
 }
 
 .dialog-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   flex-shrink: 0;
-}
-
-.score-badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  background-color: var(--theme-hover, #f0f0f0);
 }
 
 .dialog-content {
