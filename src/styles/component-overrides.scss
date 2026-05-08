@@ -488,22 +488,30 @@ body {
 // =============================================================================
 // GOOGLE PICKER — third-party widget z-index + positioning
 // =============================================================================
-// Google Picker injects .picker-dialog-bg + .picker-dialog into <body> with
-// hard-coded z-index ~200 and viewport-top-left positioning. When invoked
-// from inside a Material Dialog (CDK overlay z-index ~1000), the picker
-// renders behind the dialog and its modal backdrop captures clicks. Lift
-// the picker above the CDK overlay and re-center on the viewport.
+// Google Picker injects elements into <body> at its own z-index (varies by
+// SDK version, often around 1500 for the dialog itself). When invoked from
+// inside a Material Dialog (CDK overlay z-index ~1000), the picker can end
+// up rendering behind a higher-stacking-context Material panel. Force the
+// picker above any plausible CDK overlay layer and re-center on viewport.
 
 .picker-dialog-bg {
-  z-index: 1100 !important;
+  z-index: 99998 !important;
 }
 
-.picker-dialog {
-  z-index: 1101 !important;
+.picker-dialog,
+.picker.modal-dialog {
+  z-index: 99999 !important;
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   max-height: 90vh !important;
   max-width: 90vw !important;
+}
+
+// Some Picker versions inject the iframe at a separate stacking layer. Make
+// sure it inherits the dialog's z-index space.
+.picker.modal-dialog-bg,
+.picker-dialog .picker-frame {
+  z-index: 99999 !important;
 }

@@ -1430,6 +1430,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
       width: '600px',
       data: dialogData,
+      // Backdrop clicks must not dismiss the dialog — when the user invokes
+      // the Google Picker, focus shifts to the picker iframe and stray clicks
+      // outside the dialog (which becomes the picker overlay region) would
+      // otherwise destroy the form state mid-pick.
+      disableClose: true,
     });
 
     this._subscriptions.add(
@@ -1504,6 +1509,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
       width: '600px',
       data: dialogData,
+      disableClose: true,
     });
 
     this._subscriptions.add(
