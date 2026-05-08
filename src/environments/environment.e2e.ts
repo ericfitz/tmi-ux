@@ -17,5 +17,4 @@ export const environment: Environment = {
   operatorJurisdiction: '',
   enableE2eTools: true,
   enableConfidentialThreatModels: true,
-  enabledContentProviders: ['google_workspace', 'microsoft'],
 };

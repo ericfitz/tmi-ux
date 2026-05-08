@@ -61,8 +61,8 @@ export interface IContentPickerService {
 
 /**
  * Per-provider CSP directive contributions. Merged into the global CSP by
- * `SecurityConfigService.injectDynamicCSP` only when the provider is in
- * `environment.enabledContentProviders`.
+ * `SecurityConfigService.injectDynamicCSP` for every known provider so picker
+ * iframes can render when the server advertises that provider at runtime.
  */
 export interface ContentProviderCspDirectives {
   frameSrc?: string[];

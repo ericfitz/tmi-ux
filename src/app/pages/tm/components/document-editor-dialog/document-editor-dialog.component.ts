@@ -29,6 +29,10 @@ import {
   buildContentAuthorizeErrorMessage,
 } from '@app/core/services/content-token.service';
 import { CONTENT_PROVIDERS } from '@app/core/services/content-provider-registry';
+import {
+  ContentProvidersService,
+  type SelectableSource,
+} from '@app/core/services/content-providers.service';
 import { AccessDiagnosticsPanelComponent } from '@app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -40,7 +44,6 @@ import {
   MicrosoftGrantTimeoutError,
   PickerLoadFailedError,
   type ContentProviderId,
-  type ContentProviderMetadata,
   type ContentTokenInfo,
   type IContentPickerService,
   type PickedFile,
@@ -49,8 +52,27 @@ import {
 } from '@app/core/models/content-provider.types';
 
 /**
- * Interface for document form values
+ * Patterns that detect provider URLs pasted into the URL field. When a paste
+ * matches a provider that the server advertises, the dialog auto-switches to
+ * that provider's tile so the user gets the right post-create UX (e.g. the
+ * share-with-service-account prompt for Google Drive).
  */
+const URL_PROVIDER_PATTERNS: Array<{ id: string; pattern: RegExp }> = [
+  {
+    id: 'google_drive',
+    pattern: /^https?:\/\/(?:docs|drive)\.google\.com\//i,
+  },
+  {
+    id: 'google_workspace',
+    pattern: /^https?:\/\/(?:docs|drive)\.google\.com\//i,
+  },
+  {
+    id: 'microsoft',
+    pattern: /^https?:\/\/[^/]*\.(?:sharepoint\.com|onedrive\.live\.com|1drv\.ms)\//i,
+  },
+];
+
+/** Form values returned by the dialog to its caller. */
 interface DocumentFormValues {
   name: string;
   uri: string;
@@ -60,9 +82,19 @@ interface DocumentFormValues {
   picker_registration?: PickerRegistration;
 }
 
-/**
- * Interface for dialog data
- */
+/** Result the dialog returns. The caller decides how to react. */
+export interface DocumentEditorDialogResult {
+  /** Form values gathered from the user. Always present on save. */
+  values: DocumentFormValues;
+  /** Source kind that produced these values, for caller dispatch. */
+  sourceKind: 'url' | 'delegated' | 'service';
+  /** Provider id when sourceKind !== 'url'. */
+  providerId?: string;
+  /** When the dialog already created the document in-place (service-mode flow). */
+  createdDocument?: Document;
+}
+
+/** Dialog data input. */
 export interface DocumentEditorDialogData {
   document?: Document;
   mode: 'create' | 'edit';
@@ -74,6 +106,13 @@ interface PickerErrorState {
   messageKey: string;
   showLinkAccountCta: boolean;
 }
+
+/**
+ * Internal phase for the create flow. Service-mode submissions transition to
+ * 'post-create' so the user can copy the share-with-SA email and recheck access
+ * without the dialog closing and reopening (Option X — in-place transition).
+ */
+type DialogPhase = 'form' | 'creating' | 'post-create';
 
 @Component({
   selector: 'app-document-editor-dialog',
@@ -103,17 +142,27 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   mode: 'create' | 'edit';
   isReadOnly: boolean;
 
-  selectedSource: 'url' | ContentProviderId = 'url';
-  pickerSourceOptions: ContentProviderMetadata[] = Object.values(CONTENT_PROVIDERS).filter(
-    p => p.supportsPicker,
-  );
+  /** 'url' or a server-advertised provider id. */
+  selectedSource: string = 'url';
+
+  /** Sources from the server, joined with the client capability registry. */
+  sourceOptions: SelectableSource[] = [];
+
   linkedTokens: ContentTokenInfo[] = [];
   pickedFile: PickedFile | null = null;
   currentDocument: Document | undefined;
   finalizing = false;
   finalizingMessageKey: string | null = null;
   pickerError: PickerErrorState | null = null;
+
+  /** Drives template branching for service-mode in-place transitions. */
+  phase: DialogPhase = 'form';
+
+  /** Inline error shown when the in-place create call fails. */
+  createErrorKey: string | null = null;
+
   private _pickerRegistration: PickerRegistration | null = null;
+  private _suppressPasteDetection = false;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -127,6 +176,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private transloco: TranslocoService,
     private logger: LoggerService,
+    private contentProviders: ContentProvidersService,
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
@@ -156,7 +206,61 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.contentTokens.contentTokens$.pipe(takeUntil(this.destroy$)).subscribe(tokens => {
       this.linkedTokens = tokens ?? [];
     });
+
+    this.contentProviders.selectableSources$.pipe(takeUntil(this.destroy$)).subscribe(sources => {
+      this.sourceOptions = sources;
+    });
+
+    this.documentForm
+      .get('uri')!
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(value => this._onUriChanged(typeof value === 'string' ? value : ''));
+
     this._refreshDocumentIfPending();
+  }
+
+  /**
+   * URL-paste auto-detection: if the user pastes a URL that matches a known
+   * provider AND that provider is currently advertised by the server, switch
+   * the radio so the post-create UX (e.g. share-prompt for Google Drive) kicks
+   * in. Only applies in create mode and only when the user is on the URL tile.
+   */
+  private _onUriChanged(value: string): void {
+    if (this._suppressPasteDetection) return;
+    if (this.mode !== 'create' || this.selectedSource !== 'url') return;
+    if (!value || value.length < 8) return;
+
+    const advertisedIds = new Set(this.sourceOptions.map(s => s.id));
+    for (const { id, pattern } of URL_PROVIDER_PATTERNS) {
+      if (advertisedIds.has(id) && pattern.test(value)) {
+        this.selectedSource = id;
+        return;
+      }
+    }
+  }
+
+  /** Called by the radio change handler when the user switches manually. */
+  onSourceChange(value: string): void {
+    this.selectedSource = value;
+    this.pickerError = null;
+    this.pickedFile = null;
+    this._pickerRegistration = null;
+  }
+
+  /** Look up the currently selected source's metadata, if any. */
+  get selectedSourceMeta(): SelectableSource | null {
+    if (this.selectedSource === 'url') return null;
+    return this.sourceOptions.find(s => s.id === this.selectedSource) ?? null;
+  }
+
+  /** True when the selected source uses the delegated link/picker flow. */
+  get isDelegatedSourceSelected(): boolean {
+    return this.selectedSourceMeta?.kind === 'delegated';
+  }
+
+  /** True when the selected source is service-mode (URL-only with share-prompt). */
+  get isServiceSourceSelected(): boolean {
+    return this.selectedSourceMeta?.kind === 'service';
   }
 
   /**
@@ -194,8 +298,6 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this._fetchAfterRecheck(tmId, docId),
         error: err => {
-          // 409 means the document is no longer pending_access (likely already
-          // accessible). Treat as success and let the GET resolve the new state.
           if (this._isStatus(err, 409)) {
             this._fetchAfterRecheck(tmId, docId);
             return;
@@ -226,6 +328,10 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
               ? 'documentAccess.checkNow.success'
               : 'documentAccess.checkNow.stillPending';
           this.snackBar.open(this.transloco.translate(key), undefined, { duration: 3000 });
+
+          if (this.phase === 'post-create' && doc.access_status === 'accessible') {
+            this._closeWithCreated(doc);
+          }
         },
         error: err => {
           this.logger.warn('document GET after recheck failed', err);
@@ -243,7 +349,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  hasLinkedToken(providerId: ContentProviderId): boolean {
+  hasLinkedToken(providerId: string): boolean {
     return this.linkedTokens.some(t => t.provider_id === providerId && t.status === 'active');
   }
 
@@ -253,12 +359,12 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
   /** Disabled while a finalizing-grant call is in flight to prevent orphan grants. */
   isCancelDisabled(): boolean {
-    return this.finalizing;
+    return this.finalizing || this.phase === 'creating';
   }
 
-  /** Disabled while finalizing — submit would race the picker registration. */
+  /** Disabled while finalizing or creating — submit would race in-flight calls. */
   isSubmitDisabled(): boolean {
-    return this.documentForm.invalid || this.finalizing;
+    return this.documentForm.invalid || this.finalizing || this.phase === 'creating';
   }
 
   /**
@@ -278,6 +384,16 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       : 'documentEditor.source.linkPrompt';
   }
 
+  /** Translation key (or raw display name) for the selected source's display. */
+  displayNameForSource(s: SelectableSource): string {
+    return s.displayNameKey ?? s.displayName;
+  }
+
+  /** Hint copy for service-mode URL field (provider-specific). */
+  serviceUrlHintKey(): string {
+    return 'documentEditor.source.serviceUrlHint';
+  }
+
   /**
    * Get URI validation suggestion message (if any)
    */
@@ -287,7 +403,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
   onPickFile(): void {
     if (this.selectedSource === 'url') return;
-    const meta = CONTENT_PROVIDERS[this.selectedSource];
+    const meta = CONTENT_PROVIDERS[this.selectedSource as ContentProviderId];
     if (!meta) return;
     this.pickerError = null;
     const svc = this.injector.get<IContentPickerService>(meta.pickerService);
@@ -319,7 +435,9 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
           file_id: event.file.fileId,
           mime_type: event.file.mimeType,
         };
+        this._suppressPasteDetection = true;
         this.documentForm.patchValue({ name: event.file.name, uri: event.file.url });
+        this._suppressPasteDetection = false;
       }
     }
   }
@@ -363,7 +481,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
   onLinkSource(): void {
     if (this.selectedSource === 'url') return;
-    const providerId = this.selectedSource;
+    const providerId = this.selectedSource as ContentProviderId;
     const returnTo = window.location.pathname + window.location.search;
     this.contentTokens
       .authorize(providerId, returnTo)
@@ -384,9 +502,31 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Close the dialog with the document data
+   * On submit:
+   * - Service-mode create: dialog owns the create call so it can transition
+   *   in-place to the post-create share-prompt view (Option X).
+   * - All other cases (delegated create, edit, plain URL create): close the
+   *   dialog and let the caller perform the API call as before.
    */
   onSubmit(): void {
+    if (!this._validateForm()) return;
+
+    const formValues = this._collectFormValues();
+
+    if (this.mode === 'create' && this.isServiceSourceSelected && this.data.threatModelId) {
+      this._createServiceModeInPlace(formValues);
+      return;
+    }
+
+    const result: DocumentEditorDialogResult = {
+      values: formValues,
+      sourceKind: this._currentSourceKind(),
+      providerId: this.selectedSource === 'url' ? undefined : this.selectedSource,
+    };
+    this.dialogRef.close(result);
+  }
+
+  private _validateForm(): boolean {
     const nameControl = this.documentForm.get('name');
     const uriControl = this.documentForm.get('uri');
     const descControl = this.documentForm.get('description');
@@ -398,19 +538,82 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       uriControl?.hasError('maxlength') ||
       descControl?.hasError('maxlength');
 
-    if (hasBlockingErrors) {
-      return;
-    }
+    return !hasBlockingErrors;
+  }
 
+  private _collectFormValues(): DocumentFormValues {
     const formValues = this.documentForm.getRawValue() as DocumentFormValues;
-    if (this._pickerRegistration) {
+    if (this._pickerRegistration && this.isDelegatedSourceSelected) {
       formValues.picker_registration = this._pickerRegistration;
     }
-    this.dialogRef.close(formValues);
+    return formValues;
+  }
+
+  private _currentSourceKind(): 'url' | 'delegated' | 'service' {
+    const meta = this.selectedSourceMeta;
+    if (!meta) return 'url';
+    return meta.kind;
+  }
+
+  /**
+   * Create the document via the API while the dialog stays open, then
+   * transition the view to the share-with-service-account panel driven by
+   * the existing AccessDiagnosticsPanelComponent.
+   */
+  private _createServiceModeInPlace(values: DocumentFormValues): void {
+    if (!this.data.threatModelId) return;
+    this.phase = 'creating';
+    this.createErrorKey = null;
+
+    const payload: Partial<Document> = {
+      name: values.name,
+      uri: values.uri,
+      description: values.description || undefined,
+      include_in_report: values.include_in_report,
+      timmy_enabled: values.timmy_enabled,
+    };
+
+    this.threatModelService
+      .createDocument(this.data.threatModelId, payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: created => {
+          this.currentDocument = created;
+          if (created.access_status === 'pending_access') {
+            this.phase = 'post-create';
+          } else {
+            this._closeWithCreated(created);
+          }
+        },
+        error: err => {
+          this.logger.error('In-place service-mode document create failed', err);
+          this.phase = 'form';
+          this.createErrorKey = 'documentEditor.create.failed';
+        },
+      });
+  }
+
+  private _closeWithCreated(created: Document): void {
+    const result: DocumentEditorDialogResult = {
+      values: this._collectFormValues(),
+      sourceKind: 'service',
+      providerId: this.selectedSource === 'url' ? undefined : this.selectedSource,
+      createdDocument: created,
+    };
+    this.dialogRef.close(result);
+  }
+
+  /** "Done" button in post-create phase — user accepts pending state and exits. */
+  onPostCreateDone(): void {
+    if (this.currentDocument) {
+      this._closeWithCreated(this.currentDocument);
+    } else {
+      this.dialogRef.close();
+    }
   }
 
   onCancel(): void {
-    if (this.finalizing) return;
+    if (this.finalizing || this.phase === 'creating') return;
     this.dialogRef.close();
   }
 }

@@ -16,6 +16,10 @@ import { ContentTokenService } from '@app/core/services/content-token.service';
 import { GoogleDrivePickerService } from '@app/core/services/google-drive-picker.service';
 import { MicrosoftFilePickerService } from '@app/core/services/microsoft-file-picker.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import {
+  ContentProvidersService,
+  type SelectableSource,
+} from '@app/core/services/content-providers.service';
 import { ThreatModelService } from '../../services/threat-model.service';
 import {
   ContentTokenProviderNotConfiguredError,
@@ -42,10 +46,33 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
   let mockTms: {
     getDocument: ReturnType<typeof vi.fn>;
     requestDocumentAccess: ReturnType<typeof vi.fn>;
+    createDocument: ReturnType<typeof vi.fn>;
   };
   let mockSnack: { open: ReturnType<typeof vi.fn> };
   let mockTransloco: { translate: ReturnType<typeof vi.fn> };
   let mockLogger: { warn: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
+  let sources$: BehaviorSubject<SelectableSource[]>;
+  let mockContentProviders: { selectableSources$: BehaviorSubject<SelectableSource[]> };
+
+  /** Default sources matching the legacy behavior: both delegated providers visible. */
+  const DEFAULT_SOURCES: SelectableSource[] = [
+    {
+      id: 'google_workspace',
+      displayName: 'Google Workspace',
+      displayNameKey: 'documentSources.googleDrive.name',
+      icon: 'fa-brands fa-google',
+      kind: 'delegated',
+      hasPicker: true,
+    },
+    {
+      id: 'microsoft',
+      displayName: 'OneDrive/SharePoint',
+      displayNameKey: 'documentSources.microsoft.name',
+      icon: 'fa-brands fa-microsoft',
+      kind: 'delegated',
+      hasPicker: true,
+    },
+  ];
 
   function createComponent(data: DocumentEditorDialogData): DocumentEditorDialogComponent {
     return new DocumentEditorDialogComponent(
@@ -58,6 +85,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       mockSnack as unknown as MatSnackBar,
       mockTransloco as unknown as TranslocoService,
       mockLogger as unknown as LoggerService,
+      mockContentProviders as unknown as ContentProvidersService,
     );
   }
 
@@ -80,10 +108,13 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     mockTms = {
       getDocument: vi.fn(),
       requestDocumentAccess: vi.fn(),
+      createDocument: vi.fn(),
     };
     mockSnack = { open: vi.fn() };
     mockTransloco = { translate: vi.fn((key: string) => key) };
     mockLogger = { warn: vi.fn(), error: vi.fn() };
+    sources$ = new BehaviorSubject<SelectableSource[]>(DEFAULT_SOURCES);
+    mockContentProviders = { selectableSources$: sources$ };
   });
 
   it('defaults selectedSource to "url" in create mode', () => {
@@ -91,10 +122,11 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     expect(c.selectedSource).toBe('url');
   });
 
-  it('exposes pickerSourceOptions including google_workspace and microsoft', () => {
+  it('exposes server-driven sourceOptions including google_workspace and microsoft', () => {
     const c = createComponent({ mode: 'create' });
-    expect(c.pickerSourceOptions.some(p => p.id === 'google_workspace')).toBe(true);
-    expect(c.pickerSourceOptions.some(p => p.id === 'microsoft')).toBe(true);
+    c.ngOnInit();
+    expect(c.sourceOptions.some(p => p.id === 'google_workspace')).toBe(true);
+    expect(c.sourceOptions.some(p => p.id === 'microsoft')).toBe(true);
   });
 
   it('hasLinkedToken returns true when an active token matches', () => {
@@ -313,13 +345,17 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     c.onSubmit();
     expect(mockDialogRef.close).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'My doc.pdf',
-        uri: 'https://drive.google.com/file/d/abc',
-        picker_registration: {
-          provider_id: 'google_workspace',
-          file_id: 'abc',
-          mime_type: 'application/pdf',
-        },
+        sourceKind: 'delegated',
+        providerId: 'google_workspace',
+        values: expect.objectContaining({
+          name: 'My doc.pdf',
+          uri: 'https://drive.google.com/file/d/abc',
+          picker_registration: {
+            provider_id: 'google_workspace',
+            file_id: 'abc',
+            mime_type: 'application/pdf',
+          },
+        }),
       }),
     );
   });
@@ -356,11 +392,15 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       c.onSubmit();
       expect(mockDialogRef.close).toHaveBeenCalledWith(
         expect.objectContaining({
-          picker_registration: {
-            provider_id: 'microsoft',
-            file_id: 'drive-1:item-1',
-            mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          },
+          sourceKind: 'delegated',
+          providerId: 'microsoft',
+          values: expect.objectContaining({
+            picker_registration: {
+              provider_id: 'microsoft',
+              file_id: 'drive-1:item-1',
+              mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
+          }),
         }),
       );
     });
@@ -416,6 +456,175 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       c.onPickFile();
       c.onCancel();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('URL paste auto-detection', () => {
+    it('switches selectedSource to google_drive when URL matches and provider is advertised', () => {
+      sources$.next([
+        ...DEFAULT_SOURCES,
+        {
+          id: 'google_drive',
+          displayName: 'Google Drive',
+          icon: 'fa-brands fa-google-drive',
+          kind: 'service',
+          hasPicker: false,
+        },
+      ]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.documentForm.get('uri')!.setValue('https://drive.google.com/file/d/abc');
+      expect(c.selectedSource).toBe('google_drive');
+    });
+
+    it('does not switch when matching provider is not advertised by server', () => {
+      sources$.next([]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.documentForm.get('uri')!.setValue('https://drive.google.com/file/d/abc');
+      expect(c.selectedSource).toBe('url');
+    });
+
+    it('does not switch when user has already manually selected a non-url source', () => {
+      sources$.next([
+        ...DEFAULT_SOURCES,
+        {
+          id: 'google_drive',
+          displayName: 'Google Drive',
+          icon: 'fa-brands fa-google-drive',
+          kind: 'service',
+          hasPicker: false,
+        },
+      ]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'microsoft';
+      c.documentForm.get('uri')!.setValue('https://drive.google.com/file/d/abc');
+      expect(c.selectedSource).toBe('microsoft');
+    });
+  });
+
+  describe('service-mode in-place create (Option X)', () => {
+    const SERVICE_SOURCE: SelectableSource = {
+      id: 'google_drive',
+      displayName: 'Google Drive',
+      icon: 'fa-brands fa-google-drive',
+      kind: 'service',
+      hasPicker: false,
+    };
+
+    it('transitions to post-create phase when server returns pending_access', () => {
+      sources$.next([SERVICE_SOURCE]);
+      const created: Document = {
+        id: 'doc-new',
+        name: 'd',
+        uri: 'u',
+        created_at: '',
+        modified_at: '',
+        access_status: 'pending_access',
+        access_diagnostics: { reason_code: 'no_accessible_source', remediations: [] },
+      };
+      mockTms.createDocument.mockReturnValue(of(created));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.documentForm.patchValue({ name: 'My File', uri: 'https://drive.google.com/file/d/abc' });
+      c.onSubmit();
+      expect(mockTms.createDocument).toHaveBeenCalledWith(
+        'tm-1',
+        expect.objectContaining({ name: 'My File' }),
+      );
+      expect(c.phase).toBe('post-create');
+      expect(c.currentDocument?.id).toBe('doc-new');
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('closes immediately with createdDocument when access_status is accessible', () => {
+      sources$.next([SERVICE_SOURCE]);
+      const created: Document = {
+        id: 'doc-new',
+        name: 'd',
+        uri: 'u',
+        created_at: '',
+        modified_at: '',
+        access_status: 'accessible',
+      };
+      mockTms.createDocument.mockReturnValue(of(created));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.documentForm.patchValue({ name: 'My File', uri: 'https://drive.google.com/file/d/abc' });
+      c.onSubmit();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sourceKind: 'service',
+          providerId: 'google_drive',
+          createdDocument: created,
+        }),
+      );
+    });
+
+    it('reverts to form phase and shows inline error when create fails', () => {
+      sources$.next([SERVICE_SOURCE]);
+      mockTms.createDocument.mockReturnValue(throwError(() => new Error('boom')));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.documentForm.patchValue({ name: 'My File', uri: 'https://drive.google.com/file/d/abc' });
+      c.onSubmit();
+      expect(c.phase).toBe('form');
+      expect(c.createErrorKey).toBe('documentEditor.create.failed');
+    });
+
+    it('post-create recheck closes the dialog when access becomes accessible', () => {
+      sources$.next([SERVICE_SOURCE]);
+      const pending: Document = {
+        id: 'doc-new',
+        name: 'd',
+        uri: 'u',
+        created_at: '',
+        modified_at: '',
+        access_status: 'pending_access',
+        access_diagnostics: { reason_code: 'no_accessible_source', remediations: [] },
+      };
+      mockTms.createDocument.mockReturnValue(of(pending));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.documentForm.patchValue({ name: 'My File', uri: 'https://drive.google.com/file/d/abc' });
+      c.onSubmit();
+      expect(c.phase).toBe('post-create');
+
+      const accessibleDoc: Document = { ...pending, access_status: 'accessible' };
+      mockTms.requestDocumentAccess.mockReturnValue(of({ status: 'sent' }));
+      mockTms.getDocument.mockReturnValue(of(accessibleDoc));
+      c.onRecheckAccess();
+
+      expect(mockDialogRef.close).toHaveBeenCalledWith(
+        expect.objectContaining({ createdDocument: accessibleDoc }),
+      );
+    });
+
+    it('does NOT include picker_registration on a service-mode submission', () => {
+      sources$.next([SERVICE_SOURCE]);
+      const created: Document = {
+        id: 'doc-new',
+        name: 'd',
+        uri: 'u',
+        created_at: '',
+        modified_at: '',
+        access_status: 'accessible',
+      };
+      mockTms.createDocument.mockReturnValue(of(created));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.documentForm.patchValue({ name: 'My File', uri: 'https://drive.google.com/file/d/abc' });
+      c.onSubmit();
+      expect(mockTms.createDocument).toHaveBeenCalledWith(
+        'tm-1',
+        expect.not.objectContaining({ picker_registration: expect.anything() }),
+      );
     });
   });
 

@@ -47,6 +47,7 @@ import { CreateDiagramDialogComponent } from './components/create-diagram-dialog
 import {
   DocumentEditorDialogComponent,
   DocumentEditorDialogData,
+  DocumentEditorDialogResult,
 } from './components/document-editor-dialog/document-editor-dialog.component';
 import {
   RepositoryEditorDialogComponent,
@@ -135,15 +136,6 @@ interface ThreatModelFormValues {
   threat_model_framework: string;
   issue_uri?: string;
   status?: string | null;
-}
-
-// Define document form result interface
-interface DocumentFormResult {
-  name: string;
-  uri: string;
-  description?: string;
-  include_in_report?: boolean;
-  picker_registration?: import('@app/core/models/content-provider.types').PickerRegistration;
 }
 
 // Define repository form result interface
@@ -1441,32 +1433,38 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
-        if (result && this.threatModel) {
-          // Create a new document via API
-          const newDocumentData: Partial<Document> = {
-            name: result.name,
-            uri: result.uri,
-            description: result.description || undefined,
-            include_in_report: result.include_in_report,
-            ...(result.picker_registration
-              ? { picker_registration: result.picker_registration }
-              : {}),
-          };
+      dialogRef.afterClosed().subscribe((result: DocumentEditorDialogResult | undefined) => {
+        if (!result || !this.threatModel) return;
 
-          this._subscriptions.add(
-            this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe({
-              next: () => {
-                if (this.threatModel) {
-                  this.loadDocuments(this.threatModel.id);
-                }
-              },
-              error: error => {
-                this.logger.error('Failed to create document', error);
-              },
-            }),
-          );
+        // Service-mode: dialog already created the document in-place; just reload the list.
+        if (result.createdDocument && this.threatModel) {
+          this.loadDocuments(this.threatModel.id);
+          return;
         }
+
+        const values = result.values;
+        const newDocumentData: Partial<Document> = {
+          name: values.name,
+          uri: values.uri,
+          description: values.description || undefined,
+          include_in_report: values.include_in_report,
+          ...(values.picker_registration
+            ? { picker_registration: values.picker_registration }
+            : {}),
+        };
+
+        this._subscriptions.add(
+          this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe({
+            next: () => {
+              if (this.threatModel) {
+                this.loadDocuments(this.threatModel.id);
+              }
+            },
+            error: error => {
+              this.logger.error('Failed to create document', error);
+            },
+          }),
+        );
       }),
     );
   }
@@ -1509,31 +1507,30 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: DocumentFormResult | undefined) => {
-        if (result && this.threatModel) {
-          // Update the document via API
-          const updatedDocumentData: Partial<Document> = {
-            name: result.name,
-            uri: result.uri,
-            description: result.description || undefined,
-            include_in_report: result.include_in_report,
-          };
+      dialogRef.afterClosed().subscribe((result: DocumentEditorDialogResult | undefined) => {
+        if (!result || !this.threatModel) return;
 
-          this._subscriptions.add(
-            this.threatModelService
-              .updateDocument(this.threatModel.id, document.id, updatedDocumentData)
-              .subscribe(updatedDocument => {
-                // Update the document in local state
-                if (this.threatModel && this.threatModel.documents) {
-                  const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-                  if (index !== -1) {
-                    this.threatModel.documents[index] = updatedDocument;
-                  }
-                  this.documentsDataSource.data = this.threatModel.documents;
+        const values = result.values;
+        const updatedDocumentData: Partial<Document> = {
+          name: values.name,
+          uri: values.uri,
+          description: values.description || undefined,
+          include_in_report: values.include_in_report,
+        };
+
+        this._subscriptions.add(
+          this.threatModelService
+            .updateDocument(this.threatModel.id, document.id, updatedDocumentData)
+            .subscribe(updatedDocument => {
+              if (this.threatModel && this.threatModel.documents) {
+                const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+                if (index !== -1) {
+                  this.threatModel.documents[index] = updatedDocument;
                 }
-              }),
-          );
-        }
+                this.documentsDataSource.data = this.threatModel.documents;
+              }
+            }),
+        );
       }),
     );
   }

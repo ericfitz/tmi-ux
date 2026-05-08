@@ -1,3 +1,8 @@
+import type { components } from '@app/generated/api-types';
+
+/** A content provider entry as advertised by the server's /config response. */
+export type ServerContentProvider = components['schemas']['ContentProvider'];
+
 /**
  * Server configuration response from GET /config endpoint.
  *
@@ -13,6 +18,7 @@ export interface ServerConfig {
     jurisdiction?: string;
   };
   limits?: Record<string, number>;
+  content_providers?: ServerContentProvider[];
   ui?: {
     /** Theme to apply for users with no saved preference: 'auto' follows system */
     default_theme?: 'auto' | 'light' | 'dark';

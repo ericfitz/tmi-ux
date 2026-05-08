@@ -2,9 +2,11 @@
   {{
     isReadOnly
       ? ('threatModels.documentEditor.title.view' | transloco)
-      : mode === 'create'
-        ? ('threatModels.documentEditor.title.create' | transloco)
-        : ('threatModels.documentEditor.title.edit' | transloco)
+      : phase === 'post-create'
+        ? ('threatModels.documentEditor.title.shareRequired' | transloco)
+        : mode === 'create'
+          ? ('threatModels.documentEditor.title.create' | transloco)
+          : ('threatModels.documentEditor.title.edit' | transloco)
   }}
   @if (isReadOnly) {
     <mat-icon
@@ -17,206 +19,254 @@
   }
 </h2>
 <mat-dialog-content appScrollIndicator>
-  @if (currentDocument?.access_diagnostics) {
+  @if (phase === 'post-create' && currentDocument) {
     <app-access-diagnostics-panel
-      [document]="currentDocument!"
+      [document]="currentDocument"
       (recheck)="onRecheckAccess()"
     ></app-access-diagnostics-panel>
-  }
+    <p class="post-create-hint" [transloco]="'documentEditor.postCreate.hint'">
+      Once you've shared the file, click "Recheck access" above. You can also close this dialog and
+      recheck later from the document's edit view.
+    </p>
+  } @else {
+    @if (currentDocument?.access_diagnostics) {
+      <app-access-diagnostics-panel
+        [document]="currentDocument!"
+        (recheck)="onRecheckAccess()"
+      ></app-access-diagnostics-panel>
+    }
 
-  @if (mode === 'create' && pickerSourceOptions.length > 0 && !isReadOnly) {
-    <div class="source-selector">
-      <label class="source-label" [transloco]="'documentEditor.source.label'">
-        How would you like to attach this document?
-      </label>
-      <mat-radio-group [(ngModel)]="selectedSource" name="source" class="source-radio-group">
-        <mat-radio-button value="url" data-testid="document-source-radio-url">
-          <span [transloco]="'documentEditor.source.url'">Paste a URL</span>
-        </mat-radio-button>
-        @for (p of pickerSourceOptions; track p.id) {
-          <mat-radio-button [value]="p.id" [attr.data-testid]="'document-source-radio-' + p.id">
-            {{ p.displayNameKey | transloco }}
+    @if (mode === 'create' && sourceOptions.length > 0 && !isReadOnly) {
+      <div class="source-selector">
+        <label class="source-label" [transloco]="'documentEditor.source.label'">
+          How would you like to attach this document?
+        </label>
+        <mat-radio-group
+          [ngModel]="selectedSource"
+          (ngModelChange)="onSourceChange($event)"
+          name="source"
+          class="source-radio-group"
+        >
+          <mat-radio-button value="url" data-testid="document-source-radio-url">
+            <span [transloco]="'documentEditor.source.url'">Paste a URL</span>
           </mat-radio-button>
-        }
-      </mat-radio-group>
-    </div>
-  }
-
-  <form [formGroup]="documentForm" class="dialog-form">
-    <div class="form-field-container">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
-        <input matInput formControlName="name" data-testid="document-name-input" tabindex="1" />
-        @if (documentForm.get('name')?.hasError('required')) {
-          <mat-error>
-            {{ 'common.validation.required' | transloco }}
-          </mat-error>
-        }
-        @if (documentForm.get('name')?.hasError('maxlength')) {
-          <mat-error>
-            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-          </mat-error>
-        }
-      </mat-form-field>
-
-      @if (selectedSource === 'url' || mode === 'edit') {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
-          <input
-            matInput
-            formControlName="uri"
-            data-testid="document-uri-input"
-            type="url"
-            tabindex="2"
-          />
-          @if (getUriSuggestion()) {
-            <mat-hint class="uri-suggestion-hint">
-              {{ getUriSuggestion() }}
-            </mat-hint>
+          @for (p of sourceOptions; track p.id) {
+            <mat-radio-button [value]="p.id" [attr.data-testid]="'document-source-radio-' + p.id">
+              {{ displayNameForSource(p) | transloco }}
+            </mat-radio-button>
           }
-          @if (documentForm.get('uri')?.hasError('required')) {
+        </mat-radio-group>
+      </div>
+    }
+
+    <form [formGroup]="documentForm" class="dialog-form">
+      <div class="form-field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
+          <input matInput formControlName="name" data-testid="document-name-input" tabindex="1" />
+          @if (documentForm.get('name')?.hasError('required')) {
             <mat-error>
               {{ 'common.validation.required' | transloco }}
             </mat-error>
           }
-          @if (documentForm.get('uri')?.hasError('maxlength')) {
+          @if (documentForm.get('name')?.hasError('maxlength')) {
             <mat-error>
-              {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+              {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
             </mat-error>
           }
         </mat-form-field>
-      } @else {
-        <div class="picker-area">
-          @if (finalizing) {
-            <div class="picker-finalizing" data-testid="document-picker-finalizing">
-              <mat-spinner diameter="24"></mat-spinner>
-              <span>{{ finalizingMessageKey! | transloco }}</span>
-            </div>
-          } @else if (hasLinkedToken(selectedSource)) {
-            @if (!pickedFile) {
+
+        @if (selectedSource === 'url' || isServiceSourceSelected || mode === 'edit') {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
+            <input
+              matInput
+              formControlName="uri"
+              data-testid="document-uri-input"
+              type="url"
+              tabindex="2"
+            />
+            @if (isServiceSourceSelected) {
+              <mat-hint class="service-url-hint">
+                {{ serviceUrlHintKey() | transloco }}
+              </mat-hint>
+            } @else if (getUriSuggestion()) {
+              <mat-hint class="uri-suggestion-hint">
+                {{ getUriSuggestion() }}
+              </mat-hint>
+            }
+            @if (documentForm.get('uri')?.hasError('required')) {
+              <mat-error>
+                {{ 'common.validation.required' | transloco }}
+              </mat-error>
+            }
+            @if (documentForm.get('uri')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        } @else if (isDelegatedSourceSelected) {
+          <div class="picker-area">
+            @if (finalizing) {
+              <div class="picker-finalizing" data-testid="document-picker-finalizing">
+                <mat-spinner diameter="24"></mat-spinner>
+                <span>{{ finalizingMessageKey! | transloco }}</span>
+              </div>
+            } @else if (hasLinkedToken(selectedSource)) {
+              @if (!pickedFile) {
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="button"
+                  (click)="onPickFile()"
+                  data-testid="document-pick-button"
+                >
+                  <mat-icon>folder_open</mat-icon>
+                  <span [transloco]="pickActionKey()">Pick a file</span>
+                </button>
+              } @else {
+                <p class="picked-file-hint" data-testid="document-picked-file-hint">
+                  {{
+                    'documentEditor.source.pickedFile' | transloco: { fileName: pickedFile.name }
+                  }}
+                </p>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="onPickFile()"
+                  data-testid="document-repick-button"
+                >
+                  {{ 'documentEditor.source.repickAction' | transloco }}
+                </button>
+              }
+            } @else {
+              <p class="link-prompt" [transloco]="linkPromptKey()">
+                Link your account to pick files from this source.
+              </p>
               <button
                 mat-raised-button
                 color="primary"
                 type="button"
-                (click)="onPickFile()"
-                data-testid="document-pick-button"
+                (click)="onLinkSource()"
+                data-testid="document-link-source-button"
               >
-                <mat-icon>folder_open</mat-icon>
-                <span [transloco]="pickActionKey()">Pick a file</span>
-              </button>
-            } @else {
-              <p class="picked-file-hint" data-testid="document-picked-file-hint">
-                {{ 'documentEditor.source.pickedFile' | transloco: { fileName: pickedFile.name } }}
-              </p>
-              <button
-                mat-stroked-button
-                type="button"
-                (click)="onPickFile()"
-                data-testid="document-repick-button"
-              >
-                {{ 'documentEditor.source.repickAction' | transloco }}
+                <mat-icon>link</mat-icon>
+                <span [transloco]="'documentEditor.source.linkAction'">Link source</span>
               </button>
             }
-          } @else {
-            <p class="link-prompt" [transloco]="linkPromptKey()">
-              Link your account to pick files from this source.
-            </p>
-            <button
-              mat-raised-button
-              color="primary"
-              type="button"
-              (click)="onLinkSource()"
-              data-testid="document-link-source-button"
-            >
-              <mat-icon>link</mat-icon>
-              <span [transloco]="'documentEditor.source.linkAction'">Link source</span>
-            </button>
-          }
 
-          @if (pickerError) {
-            <div class="picker-error" role="alert" data-testid="document-picker-error">
-              <mat-icon class="picker-error-icon">error_outline</mat-icon>
-              <span class="picker-error-message">
-                {{ pickerError.messageKey | transloco }}
-              </span>
-              @if (pickerError.showLinkAccountCta) {
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="onLinkSource()"
-                  data-testid="document-picker-error-link-cta"
-                >
-                  {{ 'documentEditor.grantError.linkAccountCta' | transloco }}
-                </button>
-              }
-            </div>
-          }
-        </div>
-      }
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'common.description' | transloco }}</mat-label>
-        <textarea
-          matInput
-          formControlName="description"
-          data-testid="document-description-input"
-          rows="3"
-          placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
-          tabindex="3"
-        ></textarea>
-        @if (documentForm.get('description')?.hasError('maxlength')) {
-          <mat-error>
-            {{ 'common.validation.maxLength' | transloco: { max: 2048 } }}
-          </mat-error>
+            @if (pickerError) {
+              <div class="picker-error" role="alert" data-testid="document-picker-error">
+                <mat-icon class="picker-error-icon">error_outline</mat-icon>
+                <span class="picker-error-message">
+                  {{ pickerError.messageKey | transloco }}
+                </span>
+                @if (pickerError.showLinkAccountCta) {
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="onLinkSource()"
+                    data-testid="document-picker-error-link-cta"
+                  >
+                    {{ 'documentEditor.grantError.linkAccountCta' | transloco }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
         }
-      </mat-form-field>
 
-      <div class="checkbox-field">
-        <mat-checkbox
-          formControlName="include_in_report"
-          data-testid="document-include-report-checkbox"
-          tabindex="4"
-        >
-          {{ 'common.includeInReport' | transloco }}
-        </mat-checkbox>
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'common.description' | transloco }}</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            data-testid="document-description-input"
+            rows="3"
+            placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
+            tabindex="3"
+          ></textarea>
+          @if (documentForm.get('description')?.hasError('maxlength')) {
+            <mat-error>
+              {{ 'common.validation.maxLength' | transloco: { max: 2048 } }}
+            </mat-error>
+          }
+        </mat-form-field>
 
-      <div class="checkbox-field">
-        <mat-checkbox
-          formControlName="timmy_enabled"
-          data-testid="document-timmy-checkbox"
-          tabindex="5"
-        >
-          {{ 'common.includeInTimmyChat' | transloco }}
-        </mat-checkbox>
+        <div class="checkbox-field">
+          <mat-checkbox
+            formControlName="include_in_report"
+            data-testid="document-include-report-checkbox"
+            tabindex="4"
+          >
+            {{ 'common.includeInReport' | transloco }}
+          </mat-checkbox>
+        </div>
+
+        <div class="checkbox-field">
+          <mat-checkbox
+            formControlName="timmy_enabled"
+            data-testid="document-timmy-checkbox"
+            tabindex="5"
+          >
+            {{ 'common.includeInTimmyChat' | transloco }}
+          </mat-checkbox>
+        </div>
+
+        @if (createErrorKey) {
+          <div class="picker-error" role="alert" data-testid="document-create-error">
+            <mat-icon class="picker-error-icon">error_outline</mat-icon>
+            <span class="picker-error-message">{{ createErrorKey | transloco }}</span>
+          </div>
+        }
+
+        @if (phase === 'creating') {
+          <div class="picker-finalizing" data-testid="document-creating">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span [transloco]="'documentEditor.create.inFlight'">Creating document…</span>
+          </div>
+        }
       </div>
-    </div>
-  </form>
+    </form>
+  }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button
-    mat-button
-    data-testid="document-cancel-button"
-    (click)="onCancel()"
-    [disabled]="isCancelDisabled()"
-    tabindex="6"
-    [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
-  >
-    {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
-  </button>
-  @if (!isReadOnly) {
+  @if (phase === 'post-create') {
     <button
       mat-raised-button
       color="primary"
-      data-testid="document-save-button"
-      [disabled]="isSubmitDisabled()"
-      (click)="onSubmit()"
-      tabindex="7"
-      [attr.aria-label]="
-        mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
-      "
+      data-testid="document-post-create-done-button"
+      (click)="onPostCreateDone()"
+      [transloco]="'common.done'"
     >
-      {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+      Done
     </button>
+  } @else {
+    <button
+      mat-button
+      data-testid="document-cancel-button"
+      (click)="onCancel()"
+      [disabled]="isCancelDisabled()"
+      tabindex="6"
+      [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
+    >
+      {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
+    </button>
+    @if (!isReadOnly) {
+      <button
+        mat-raised-button
+        color="primary"
+        data-testid="document-save-button"
+        [disabled]="isSubmitDisabled()"
+        (click)="onSubmit()"
+        tabindex="7"
+        [attr.aria-label]="
+          mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
+        "
+      >
+        {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+      </button>
+    }
   }
 </mat-dialog-actions>

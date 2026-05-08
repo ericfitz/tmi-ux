@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { CONTENT_PROVIDERS } from './content-provider-registry';
-import type { ContentProviderId } from '../models/content-provider.types';
 
 export interface SecurityHeaders {
   'Content-Security-Policy'?: string;
@@ -223,12 +222,13 @@ ${Object.entries(headers)
   }
 
   private collectProviderCspDirectives(): { frameSrc: string[]; formAction: string[] } {
-    const enabled = (environment.enabledContentProviders ?? []) as ContentProviderId[];
+    // CSP whitelist is the union of all known providers' iframe/form-action origins.
+    // Server config gates which sources the user can pick; CSP just makes sure picker
+    // iframes can render when invoked. Adding a new provider = update CONTENT_PROVIDERS.
     const frameSrc = new Set<string>();
     const formAction = new Set<string>();
-    for (const id of enabled) {
-      const meta = CONTENT_PROVIDERS[id];
-      if (!meta?.cspDirectives) continue;
+    for (const meta of Object.values(CONTENT_PROVIDERS)) {
+      if (!meta.cspDirectives) continue;
       meta.cspDirectives.frameSrc?.forEach(s => frameSrc.add(s));
       meta.cspDirectives.formAction?.forEach(s => formAction.add(s));
     }

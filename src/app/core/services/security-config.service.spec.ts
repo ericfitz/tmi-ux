@@ -5,8 +5,6 @@ import { expect, describe, it, beforeEach, vi } from 'vitest';
 import { SecurityConfigService } from './security-config.service';
 import { LoggerService } from './logger.service';
 
-// Mock the environment module — held mutable so individual tests can opt
-// providers in/out without re-mocking.
 const envMock: Record<string, unknown> = {
   production: false,
   apiUrl: 'http://localhost:8080',
@@ -14,7 +12,6 @@ const envMock: Record<string, unknown> = {
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (Test)',
   operatorContact: 'test@example.com',
-  enabledContentProviders: [] as string[],
 };
 
 vi.mock('../../../environments/environment', () => ({
@@ -29,8 +26,6 @@ describe('SecurityConfigService', () => {
   let documentMock: Document;
 
   beforeEach(() => {
-    envMock['enabledContentProviders'] = [];
-
     // Mock window properties
     Object.defineProperty(window, 'isSecureContext', {
       value: true,
@@ -167,7 +162,7 @@ describe('SecurityConfigService', () => {
     expect(metaElement.content).toContain('ws:');
   });
 
-  describe('per-provider CSP merging', () => {
+  describe('fixed-list CSP', () => {
     function instantiateAndGetCsp(): string {
       const meta = { httpEquiv: '', content: '' };
       const doc = {
@@ -182,26 +177,12 @@ describe('SecurityConfigService', () => {
       return meta.content;
     }
 
-    it('omits sharepoint and login.microsoftonline directives when no providers enabled', () => {
-      envMock['enabledContentProviders'] = [];
-      const csp = instantiateAndGetCsp();
-      expect(csp).not.toContain('sharepoint.com');
-      expect(csp).not.toContain('login.microsoftonline.com');
-    });
-
-    it('adds Microsoft directives to frame-src and form-action when microsoft is enabled', () => {
-      envMock['enabledContentProviders'] = ['microsoft'];
+    it('always includes Microsoft picker iframe origins (whitelist superset)', () => {
       const csp = instantiateAndGetCsp();
       expect(csp).toContain('frame-src');
       expect(csp).toContain('https://*.sharepoint.com');
       expect(csp).toContain('https://login.microsoftonline.com');
       expect(csp).toMatch(/form-action[^;]*https:\/\/\*\.sharepoint\.com/);
-    });
-
-    it('does not pollute CSP when an unknown provider id is enabled', () => {
-      envMock['enabledContentProviders'] = ['unknown_provider'];
-      const csp = instantiateAndGetCsp();
-      expect(csp).not.toContain('sharepoint.com');
     });
   });
 });

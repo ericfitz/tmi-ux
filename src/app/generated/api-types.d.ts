@@ -3967,6 +3967,88 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/usability_feedback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List usability feedback (admin)
+     * @description Admin-only listing with filters and pagination.
+     */
+    get: operations['listUsabilityFeedback'];
+    put?: never;
+    /**
+     * Submit usability feedback
+     * @description Records a thumbs-up/down with surface tag and client metadata. Any authenticated user.
+     */
+    post: operations['createUsabilityFeedback'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/usability_feedback/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a single usability feedback entry (admin) */
+    get: operations['getUsabilityFeedback'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/feedback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List content feedback for a threat model
+     * @description Reader+ on the parent threat model. Returns all feedback rows for the TM with filters and pagination.
+     */
+    get: operations['listContentFeedback'];
+    put?: never;
+    /**
+     * Submit content feedback on an AI-generated artifact
+     * @description Records sentiment + optional false-positive taxonomy on a note/diagram/threat or a threat-classification field within the threat model. Reader+ on the parent threat model.
+     */
+    post: operations['createContentFeedback'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/threat_models/{threat_model_id}/feedback/{feedback_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a single content feedback entry */
+    get: operations['getContentFeedback'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4196,7 +4278,12 @@ export interface components {
        * @default unknown
        * @enum {string}
        */
-      readonly access_status: 'accessible' | 'pending_access' | 'auth_required' | 'unknown';
+      readonly access_status:
+        | 'accessible'
+        | 'pending_access'
+        | 'auth_required'
+        | 'extraction_failed'
+        | 'unknown';
       /**
        * @description Content provider that handles this documents URI (e.g., google_drive, http)
        * @example google_drive
@@ -4209,6 +4296,11 @@ export interface components {
        * @description Timestamp of the last access_status transition (RFC3339)
        */
       readonly access_status_updated_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Base diagram object with common properties - used for API responses
@@ -4285,6 +4377,13 @@ export interface components {
       readonly deleted_at?: string | null;
       /** @description Custom color palette for diagram elements, ordered by position */
       color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
+      /** @description True when the diagram was created by an automation/service-account principal. Sticky from creation. */
+      readonly auto_generated?: boolean;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Base diagram input for PUT/PATCH requests - excludes readOnly server-managed fields
@@ -4714,6 +4813,13 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /** @description True when the threat was created by an automation/service-account principal. Sticky from creation. */
+      readonly auto_generated?: boolean;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Authorization record granting a user access to a resource with a specific role
@@ -4944,6 +5050,11 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Enhanced item for threat model list endpoints with key metadata and counts
@@ -5035,6 +5146,11 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, globally unique across all threat models. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description A 2D point with x and y coordinates
@@ -5394,10 +5510,7 @@ export interface components {
      *           "role": "owner"
      *         }
      *       ],
-     *       "alias": [
-     *         "payment-gateway-v2",
-     *         "PG-TM-2024"
-     *       ]
+     *       "alias": 42
      *     }
      */
     ThreatModelBase: {
@@ -5423,8 +5536,11 @@ export interface components {
        * @default not_started
        */
       status: string;
-      /** @description Alternative names or identifiers for the threat model */
-      alias?: string[];
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, globally unique across all threat models. Immutable after creation.
+       */
+      readonly alias?: number;
       /** @description Security reviewer assigned to this threat model. When set, the security reviewer is automatically added to the authorization list with the owner role. The security reviewer's owner role cannot be removed via authorization changes while they remain assigned as security reviewer. To change the security reviewer's authorization, first unassign them as security reviewer. */
       security_reviewer?: components['schemas']['User'] | null;
       /**
@@ -5696,6 +5812,11 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Complete Note schema with server-generated fields
@@ -5731,6 +5852,13 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /** @description True when the note was created by an automation/service-account principal. Sticky from creation. */
+      readonly auto_generated?: boolean;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Complete Asset schema with server-generated fields
@@ -5771,6 +5899,11 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /** @description Asset with extended metadata for detailed security analysis */
     ExtendedAsset: components['schemas']['Asset'] & {
@@ -5977,6 +6110,11 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
     };
     /**
      * @description Base fields for Repository (user-writable only)
@@ -7551,7 +7689,21 @@ export interface components {
      *       },
      *       "ui": {
      *         "default_theme": "auto"
-     *       }
+     *       },
+     *       "content_providers": [
+     *         {
+     *           "id": "http",
+     *           "name": "HTTP",
+     *           "kind": "direct",
+     *           "icon": "fa-solid fa-globe"
+     *         },
+     *         {
+     *           "id": "google_workspace",
+     *           "name": "Google Workspace",
+     *           "kind": "delegated",
+     *           "icon": "fa-brands fa-google"
+     *         }
+     *       ]
      *     }
      */
     ClientConfig: {
@@ -7586,6 +7738,8 @@ export interface components {
          */
         default_theme?: 'auto' | 'light' | 'dark';
       };
+      /** @description Content providers the server has configured. Order matches server-side registration order. */
+      content_providers?: components['schemas']['ContentProvider'][];
     };
     /**
      * @description A system-wide configuration setting
@@ -10244,6 +10398,128 @@ export interface components {
       /** @description Drive item identifier of the granted file. */
       item_id: string;
     };
+    ContentFeedbackInput: {
+      /** @enum {string} */
+      sentiment: 'up' | 'down';
+      /**
+       * @description Type of artifact the feedback targets
+       * @enum {string}
+       */
+      target_type: 'note' | 'diagram' | 'threat' | 'threat_classification';
+      /**
+       * Format: uuid
+       * @description ID of the targeted artifact (note/diagram/threat). For threat_classification, the threat ID.
+       */
+      target_id: string;
+      /** @description Required iff target_type is 'threat_classification'; identifies the field of the threat (e.g. 'cwe', 'severity') */
+      target_field?: string;
+      verbatim?: string;
+      /**
+       * @description Allowed only when sentiment='down' and target_type='threat'
+       * @enum {string}
+       */
+      false_positive_reason?:
+        | 'detection_misfired'
+        | 'real_but_mitigated'
+        | 'real_but_not_exploitable'
+        | 'out_of_scope'
+        | 'intended_behavior'
+        | 'duplicate'
+        | 'already_remediated'
+        | 'detection_rule_flawed';
+      /**
+       * @description Allowed only when false_positive_reason has subreasons; must be a valid subreason for the chosen reason
+       * @enum {string}
+       */
+      false_positive_subreason?:
+        | 'code_does_not_exist'
+        | 'trigger_conditions_not_met'
+        | 'component_outside_threat_model'
+        | 'sanctioned_by_design'
+        | 'not_a_real_risk'
+        | 'needs_tuning';
+      client_id: string;
+      client_version?: string;
+    };
+    ContentFeedback: components['schemas']['ContentFeedbackInput'] & {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      threat_model_id: string;
+      /** Format: uuid */
+      created_by: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    UsabilityFeedbackInput: {
+      /**
+       * @description User sentiment
+       * @enum {string}
+       */
+      sentiment: 'up' | 'down';
+      /** @description Optional free-text comment from the user */
+      verbatim?: string;
+      /** @description Logical UI-surface identifier (developer-supplied tag for analytics) */
+      surface: string;
+      /** @description Identifier of the client emitting the feedback (e.g., 'tmi-ux') */
+      client_id: string;
+      /** @description Semver version string of the client */
+      client_version?: string;
+      /** @description Short commit hash of the client build */
+      client_build?: string;
+      /** @description Browser User-Agent header value (when applicable) */
+      user_agent?: string;
+      /** @description Optional NavigatorUAData payload (≤ 4 KB serialized) */
+      user_agent_data?: {
+        [key: string]: unknown;
+      };
+      /** @description Viewport dimensions, e.g. '1280x1024' */
+      viewport?: string;
+    };
+    UsabilityFeedback: components['schemas']['UsabilityFeedbackInput'] & {
+      /**
+       * Format: uuid
+       * @description Server-assigned identifier
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description Internal UUID of the submitting user
+       */
+      created_by: string;
+      /**
+       * Format: date-time
+       * @description Server-assigned timestamp
+       */
+      created_at: string;
+    };
+    ContentProvider: {
+      /**
+       * @description Source identifier (matches ContentSource.Name())
+       * @example google_workspace
+       */
+      id: string;
+      /** @description Display label for the provider */
+      name: string;
+      /**
+       * @description delegated: per-user OAuth (client must call /me/content_tokens/{id}/authorize); service: operator-credentialed (no per-user link); direct: no auth (e.g., HTTP fetch)
+       * @enum {string}
+       */
+      kind: 'delegated' | 'service' | 'direct';
+      /** @description Font Awesome class string (matches OAuth IdP convention). Empty if no default and no override. */
+      icon: string;
+      /**
+       * @description Browser-safe OAuth/picker bootstrap values for in-browser file pickers. Present only when the operator has configured a public Web OAuth client for this provider. All values are intended for browser use; never include client_secret or service-account material here. Per-provider keys are documented in the provider's section.
+       * @example {
+       *       "client_id": "1234567890-abc.apps.googleusercontent.com",
+       *       "developer_key": "AIzaSyB-1234example",
+       *       "app_id": "1234567890"
+       *     }
+       */
+      picker_config?: {
+        [key: string]: string;
+      };
+    };
   };
   responses: {
     /** @description Error response */
@@ -10388,6 +10664,66 @@ export interface components {
       headers: {
         /** @description Number of seconds to wait before retrying the request */
         'Retry-After'?: number;
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Bad request - invalid or missing parameters */
+    BadRequest: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Unauthorized - missing or invalid authentication credentials */
+    Unauthorized: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Forbidden - authenticated but not authorized for this operation */
+    Forbidden: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Request body exceeds size limits */
+    PayloadTooLarge: {
+      headers: {
         /** @description Maximum number of requests allowed in the current time window */
         'X-RateLimit-Limit'?: number;
         /** @description Number of requests remaining in the current time window */
@@ -11967,10 +12303,7 @@ export interface operations {
            *         }
            *       ],
            *       "status": "In Progress",
-           *       "alias": [
-           *         "payment-gateway-v2",
-           *         "PG-TM-2024"
-           *       ],
+           *       "alias": 42,
            *       "created_at": "2024-01-15T10:30:00Z",
            *       "modified_at": "2024-01-15T10:30:00Z",
            *       "is_confidential": false,
@@ -12068,10 +12401,7 @@ export interface operations {
            *         }
            *       ],
            *       "status": "In Progress",
-           *       "alias": [
-           *         "payment-gateway-v2",
-           *         "PG-TM-2024"
-           *       ],
+           *       "alias": 42,
            *       "issue_uri": "https://github.com/example/project/issues/42",
            *       "created_at": "2024-01-15T10:30:00Z",
            *       "modified_at": "2024-01-20T14:45:00Z",
@@ -12188,10 +12518,7 @@ export interface operations {
            *         }
            *       ],
            *       "status": "Review",
-           *       "alias": [
-           *         "payment-gateway-v2",
-           *         "PG-TM-2024"
-           *       ],
+           *       "alias": 42,
            *       "created_at": "2024-01-15T10:30:00Z",
            *       "modified_at": "2024-01-25T09:00:00Z",
            *       "is_confidential": false,
@@ -12364,10 +12691,7 @@ export interface operations {
            *         }
            *       ],
            *       "status": "Approved",
-           *       "alias": [
-           *         "payment-gateway-v2",
-           *         "PG-TM-2024"
-           *       ],
+           *       "alias": 42,
            *       "created_at": "2024-01-15T10:30:00Z",
            *       "modified_at": "2024-01-26T16:20:00Z",
            *       "is_confidential": false,
@@ -34254,6 +34578,235 @@ export interface operations {
       };
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listUsabilityFeedback: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+        /** @description Filter by sentiment */
+        sentiment?: 'up' | 'down';
+        client_id?: string;
+        surface?: string;
+        created_after?: string;
+        created_before?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Feedback list */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            items: components['schemas']['UsabilityFeedback'][];
+            total: number;
+          };
+        };
+      };
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+    };
+  };
+  createUsabilityFeedback: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UsabilityFeedbackInput'];
+      };
+    };
+    responses: {
+      /** @description Feedback recorded */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UsabilityFeedback'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthorized'];
+      413: components['responses']['PayloadTooLarge'];
+    };
+  };
+  getUsabilityFeedback: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Feedback entry */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UsabilityFeedback'];
+        };
+      };
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+    };
+  };
+  listContentFeedback: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+        target_type?: 'note' | 'diagram' | 'threat' | 'threat_classification';
+        target_id?: string;
+        sentiment?: 'up' | 'down';
+        false_positive_reason?:
+          | 'detection_misfired'
+          | 'real_but_mitigated'
+          | 'real_but_not_exploitable'
+          | 'out_of_scope'
+          | 'intended_behavior'
+          | 'duplicate'
+          | 'already_remediated'
+          | 'detection_rule_flawed';
+      };
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Feedback list */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            items: components['schemas']['ContentFeedback'][];
+            total: number;
+          };
+        };
+      };
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+    };
+  };
+  createContentFeedback: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ContentFeedbackInput'];
+      };
+    };
+    responses: {
+      /** @description Feedback recorded */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ContentFeedback'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      413: components['responses']['PayloadTooLarge'];
+    };
+  };
+  getContentFeedback: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Threat model identifier */
+        threat_model_id: components['parameters']['ThreatModelId'];
+        feedback_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Feedback entry */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ContentFeedback'];
+        };
+      };
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
     };
   };
 }

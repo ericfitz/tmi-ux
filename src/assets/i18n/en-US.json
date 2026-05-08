@@ -1127,6 +1127,10 @@
     "serviceAccountEmail": "Share with this email:"
   },
   "documentEditor": {
+    "create": {
+      "failed": "Couldn't create the document. Please try again.",
+      "inFlight": "Creating document…"
+    },
     "grantError": {
       "generic": "Couldn't grant access to your file. Please try again.",
       "linkAccountCta": "Link account",
@@ -1135,6 +1139,9 @@
       "pickerLoadFailed": "Couldn't open the file picker. Check your network and try again.",
       "timeout": "The request took too long. Please try again.",
       "unavailable": "Microsoft is temporarily unavailable. Please try again in a few moments."
+    },
+    "postCreate": {
+      "hint": "Once you've shared the file, click \"Recheck access\" above. You can also close this dialog and recheck later from the document's edit view."
     },
     "source": {
       "finalizing": "Granting access…",
@@ -1147,6 +1154,7 @@
       "pickActionMicrosoft": "Browse OneDrive/SharePoint",
       "pickedFile": "File selected: {{ fileName }}",
       "repickAction": "Choose a different file",
+      "serviceUrlHint": "Paste the share URL of the file. After saving, you'll be prompted to share it with our service account.",
       "url": "Paste a URL"
     }
   },
@@ -1970,6 +1978,7 @@
       "title": {
         "create": "Create Document Reference",
         "edit": "Edit Document Reference",
+        "shareRequired": "Share this file with our service account",
         "view": "View Document Reference"
       }
     },

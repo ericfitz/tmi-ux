@@ -39,6 +39,9 @@ export class BrandingConfigService {
   private readonly logoImageUrl = new BehaviorSubject<string>(DEFAULT_LOGO_PATH);
   private logoPngBytes: Uint8Array | null = null;
 
+  /** Full server config payload from /config. Null until initialize() resolves. */
+  readonly serverConfig$: Observable<ServerConfig | null> = this.config$.asObservable();
+
   // Derived observables for template binding
   readonly logoImageUrl$: Observable<string> = this.logoImageUrl.asObservable();
 
