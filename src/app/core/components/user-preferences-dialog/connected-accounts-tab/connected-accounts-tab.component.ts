@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,7 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Observable, Subject, switchMap, of, takeUntil } from 'rxjs';
+import { Observable, Subject, switchMap, of, takeUntil, map } from 'rxjs';
 
 import {
   ContentTokenService,
@@ -17,6 +23,7 @@ import {
 } from '../../../services/content-token.service';
 import { LoggerService } from '../../../services/logger.service';
 import { CONTENT_PROVIDERS } from '../../../services/content-provider-registry';
+import { ContentProvidersService } from '../../../services/content-providers.service';
 import type {
   ContentProviderId,
   ContentProviderMetadata,
@@ -209,7 +216,13 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   readonly displayedColumns = ['source', 'account', 'status', 'actions'];
-  readonly connectableProviders: ContentProviderMetadata[] = Object.values(CONTENT_PROVIDERS);
+  /**
+   * Providers eligible for "Connect a source": only those the server advertises
+   * with kind=delegated and that the client knows how to authorize. Service-mode
+   * providers (e.g. google_drive) have no per-user account to link — the server
+   * handles content access via its own credential — so they're excluded here.
+   */
+  connectableProviders: ContentProviderMetadata[] = [];
   readonly tokens$: Observable<ContentTokenInfo[]>;
 
   constructor(
@@ -218,12 +231,28 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private logger: LoggerService,
+    private contentProviders: ContentProvidersService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.tokens$ = this.tokenService.contentTokens$;
   }
 
   ngOnInit(): void {
     this.tokenService.refresh();
+    this.contentProviders.selectableSources$
+      .pipe(
+        takeUntil(this.destroy$),
+        map(sources =>
+          sources
+            .filter(s => s.kind === 'delegated')
+            .map(s => CONTENT_PROVIDERS[s.id as ContentProviderId])
+            .filter((m): m is ContentProviderMetadata => !!m),
+        ),
+      )
+      .subscribe(list => {
+        this.connectableProviders = list;
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnDestroy(): void {

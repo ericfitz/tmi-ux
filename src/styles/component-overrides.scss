@@ -484,3 +484,26 @@ body {
     color: var(--theme-text-secondary) !important;
   }
 }
+
+// =============================================================================
+// GOOGLE PICKER — third-party widget z-index + positioning
+// =============================================================================
+// Google Picker injects .picker-dialog-bg + .picker-dialog into <body> with
+// hard-coded z-index ~200 and viewport-top-left positioning. When invoked
+// from inside a Material Dialog (CDK overlay z-index ~1000), the picker
+// renders behind the dialog and its modal backdrop captures clicks. Lift
+// the picker above the CDK overlay and re-center on the viewport.
+
+.picker-dialog-bg {
+  z-index: 1100 !important;
+}
+
+.picker-dialog {
+  z-index: 1101 !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: 90vh !important;
+  max-width: 90vw !important;
+}

@@ -2,6 +2,7 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,6 +10,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConnectedAccountsTabComponent } from './connected-accounts-tab.component';
 import { ContentTokenService } from '../../../services/content-token.service';
 import { LoggerService } from '../../../services/logger.service';
+import {
+  ContentProvidersService,
+  type SelectableSource,
+} from '../../../services/content-providers.service';
 import {
   ContentTokenProviderNotConfiguredError,
   type ContentTokenInfo,
@@ -29,6 +34,21 @@ describe('ConnectedAccountsTabComponent', () => {
     selectTranslate: ReturnType<typeof vi.fn>;
   };
   let mockLogger: { info: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
+  let sources$: BehaviorSubject<SelectableSource[]>;
+  let mockContentProviders: { selectableSources$: BehaviorSubject<SelectableSource[]> };
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
+
+  /** Default sources: server advertises only delegated google_workspace. */
+  const DEFAULT_SOURCES: SelectableSource[] = [
+    {
+      id: 'google_workspace',
+      displayName: 'Google Workspace',
+      displayNameKey: 'documentSources.googleDrive.name',
+      icon: 'fa-brands fa-google',
+      kind: 'delegated',
+      hasPicker: true,
+    },
+  ];
 
   function createComponent(): ConnectedAccountsTabComponent {
     return new ConnectedAccountsTabComponent(
@@ -37,6 +57,8 @@ describe('ConnectedAccountsTabComponent', () => {
       mockDialog as unknown as MatDialog,
       mockSnack as unknown as MatSnackBar,
       mockLogger as unknown as LoggerService,
+      mockContentProviders as unknown as ContentProvidersService,
+      mockCdr as unknown as ChangeDetectorRef,
     );
   }
 
@@ -55,6 +77,9 @@ describe('ConnectedAccountsTabComponent', () => {
       selectTranslate: vi.fn().mockReturnValue(of('Google Drive')),
     };
     mockLogger = { info: vi.fn(), error: vi.fn() };
+    sources$ = new BehaviorSubject<SelectableSource[]>(DEFAULT_SOURCES);
+    mockContentProviders = { selectableSources$: sources$ };
+    mockCdr = { markForCheck: vi.fn() };
   });
 
   it('initializes by calling refresh on the token service', () => {
@@ -63,9 +88,44 @@ describe('ConnectedAccountsTabComponent', () => {
     expect(mockTokenSvc.refresh).toHaveBeenCalled();
   });
 
-  it('connectableProviders includes google_workspace', () => {
+  it('connectableProviders includes server-advertised delegated providers after ngOnInit', () => {
     const component = createComponent();
+    component.ngOnInit();
     expect(component.connectableProviders.some(p => p.id === 'google_workspace')).toBe(true);
+  });
+
+  it('connectableProviders excludes service-mode providers (e.g. google_drive)', () => {
+    sources$.next([
+      ...DEFAULT_SOURCES,
+      {
+        id: 'google_drive',
+        displayName: 'Google Drive',
+        displayNameKey: 'documentSources.googleDrive.name',
+        icon: 'fa-brands fa-google-drive',
+        kind: 'service',
+        hasPicker: true,
+      },
+    ]);
+    const component = createComponent();
+    component.ngOnInit();
+    expect(component.connectableProviders.some(p => p.id === 'google_drive')).toBe(false);
+    expect(component.connectableProviders.some(p => p.id === 'google_workspace')).toBe(true);
+  });
+
+  it('connectableProviders is empty when server advertises no delegated providers', () => {
+    sources$.next([
+      {
+        id: 'google_drive',
+        displayName: 'Google Drive',
+        displayNameKey: 'documentSources.googleDrive.name',
+        icon: 'fa-brands fa-google-drive',
+        kind: 'service',
+        hasPicker: true,
+      },
+    ]);
+    const component = createComponent();
+    component.ngOnInit();
+    expect(component.connectableProviders).toEqual([]);
   });
 
   it('onConnect calls authorize with returnTo pointing at the prefs deep-link', () => {
