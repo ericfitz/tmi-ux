@@ -93,4 +93,33 @@ describe('ContentProvidersService', () => {
       capability: undefined,
     });
   });
+
+  it('propagates picker_config from server to SelectableSource.pickerConfig', async () => {
+    const { branding } = makeBranding({
+      content_providers: [
+        {
+          ...GOOGLE_DRIVE,
+          picker_config: {
+            client_id: 'web-client-id',
+            developer_key: 'dev-key',
+            app_id: '1234567',
+          },
+        },
+      ],
+    });
+    const svc = new ContentProvidersService(branding);
+    const sources = await firstValueFrom(svc.selectableSources$);
+    expect(sources[0].pickerConfig).toEqual({
+      client_id: 'web-client-id',
+      developer_key: 'dev-key',
+      app_id: '1234567',
+    });
+  });
+
+  it('leaves pickerConfig undefined when server omits it', async () => {
+    const { branding } = makeBranding({ content_providers: [GOOGLE_DRIVE] });
+    const svc = new ContentProvidersService(branding);
+    const sources = await firstValueFrom(svc.selectableSources$);
+    expect(sources[0].pickerConfig).toBeUndefined();
+  });
 });

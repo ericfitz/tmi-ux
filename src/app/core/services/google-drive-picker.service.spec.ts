@@ -149,4 +149,97 @@ describe('GoogleDrivePickerService', () => {
     );
     await expect(firstValueFrom(svc.pick())).rejects.toThrow(ContentTokenNotLinkedError);
   });
+
+  describe('service mode (GIS browser-side token)', () => {
+    let gisRequestAccessToken: ReturnType<typeof vi.fn>;
+    let gisCallback: ((r: { access_token?: string; error?: string }) => void) | null;
+    let gisErrorCallback: ((e: { type?: string; message?: string }) => void) | null;
+
+    beforeEach(() => {
+      gisCallback = null;
+      gisErrorCallback = null;
+      gisRequestAccessToken = vi.fn();
+
+      const googleGlobal = (globalThis as unknown as { google: Record<string, unknown> }).google;
+      googleGlobal['accounts'] = {
+        oauth2: {
+          initTokenClient: vi.fn(
+            (opts: {
+              client_id: string;
+              scope: string;
+              callback: (r: { access_token?: string; error?: string }) => void;
+              error_callback?: (e: { type?: string; message?: string }) => void;
+            }) => {
+              gisCallback = opts.callback;
+              gisErrorCallback = opts.error_callback ?? null;
+              return { requestAccessToken: gisRequestAccessToken };
+            },
+          ),
+        },
+      };
+    });
+
+    it('mints token via GIS using pickerConfig.client_id and renders the picker', async () => {
+      const promise = firstValueFrom(
+        svc.pick({
+          mode: 'service',
+          pickerConfig: {
+            client_id: 'gis-client-id',
+            developer_key: 'dk',
+            app_id: 'ai',
+          },
+        }),
+      );
+      // Two microtask flushes: one for gapi load + picker module, one for GIS load
+      await new Promise(r => setTimeout(r));
+      expect(gisRequestAccessToken).toHaveBeenCalled();
+      // Simulate GIS callback returning a token
+      gisCallback!({ access_token: 'browser-minted-token' });
+      await new Promise(r => setTimeout(r));
+      fireCallback({
+        action: 'picked',
+        docs: [
+          {
+            id: 'abc',
+            name: 'sheet.xlsx',
+            mimeType: 'application/vnd.google-apps.spreadsheet',
+            url: 'https://drive.google.com/file/d/abc',
+          },
+        ],
+      });
+      await expect(promise).resolves.toMatchObject({ kind: 'picked' });
+      // Server-side picker_token endpoint must NOT be called in service mode.
+      expect(mockTokenSvc.mint).not.toHaveBeenCalled();
+    });
+
+    it('rejects when pickerConfig is missing client_id', async () => {
+      await expect(
+        firstValueFrom(svc.pick({ mode: 'service', pickerConfig: { developer_key: 'dk' } })),
+      ).rejects.toThrow(/client_id/);
+    });
+
+    it('rejects when GIS callback returns an error response', async () => {
+      const promise = firstValueFrom(
+        svc.pick({
+          mode: 'service',
+          pickerConfig: { client_id: 'cid', developer_key: 'dk', app_id: 'ai' },
+        }),
+      );
+      await new Promise(r => setTimeout(r));
+      gisCallback!({ error: 'access_denied' });
+      await expect(promise).rejects.toThrow();
+    });
+
+    it('rejects when user dismisses GIS popup (error_callback fires)', async () => {
+      const promise = firstValueFrom(
+        svc.pick({
+          mode: 'service',
+          pickerConfig: { client_id: 'cid', developer_key: 'dk', app_id: 'ai' },
+        }),
+      );
+      await new Promise(r => setTimeout(r));
+      gisErrorCallback!({ type: 'popup_closed', message: 'closed' });
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });

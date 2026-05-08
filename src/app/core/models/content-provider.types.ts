@@ -6,7 +6,7 @@ import type { components } from '@app/generated/api-types';
  * Stable union of content provider ids known to tmi-ux. Add new ids here
  * when a new provider's TMI sub-project ships (Confluence, etc.).
  */
-export type ContentProviderId = 'google_workspace' | 'microsoft';
+export type ContentProviderId = 'google_workspace' | 'google_drive' | 'microsoft';
 
 /** OpenAPI-generated info shape for a single linked content token. */
 export type ContentTokenInfo = components['schemas']['ContentTokenInfo'];
@@ -51,12 +51,26 @@ export type PickerEvent =
   | { kind: 'cancelled' };
 
 /**
+ * Optional context passed to a picker service to select between operating
+ * modes. Currently used only by GoogleDrivePickerService to switch between
+ * delegated (server-minted token) and service (browser-side GIS token).
+ */
+export interface PickerContext {
+  mode: 'delegated' | 'service';
+  /**
+   * Browser-safe picker bootstrap values from /config.content_providers[].picker_config.
+   * Required when mode === 'service'; ignored otherwise.
+   */
+  pickerConfig?: { [key: string]: string };
+}
+
+/**
  * Provider-specific picker service contract. Each picker service implements
  * `pick()`; the registry maps provider id to the Angular `Type` so consumers
  * can resolve the right service via `Injector.get(...)`.
  */
 export interface IContentPickerService {
-  pick(): Observable<PickerEvent>;
+  pick(context?: PickerContext): Observable<PickerEvent>;
 }
 
 /**
@@ -67,6 +81,7 @@ export interface IContentPickerService {
 export interface ContentProviderCspDirectives {
   frameSrc?: string[];
   formAction?: string[];
+  scriptSrc?: string[];
 }
 
 /** Lookup record describing a content provider for UI rendering and dispatch. */

@@ -221,18 +221,28 @@ ${Object.entries(headers)
     }
   }
 
-  private collectProviderCspDirectives(): { frameSrc: string[]; formAction: string[] } {
-    // CSP whitelist is the union of all known providers' iframe/form-action origins.
+  private collectProviderCspDirectives(): {
+    frameSrc: string[];
+    formAction: string[];
+    scriptSrc: string[];
+  } {
+    // CSP whitelist is the union of all known providers' iframe/form-action/script origins.
     // Server config gates which sources the user can pick; CSP just makes sure picker
-    // iframes can render when invoked. Adding a new provider = update CONTENT_PROVIDERS.
+    // iframes and SDK scripts can load when invoked. Adding a new provider = update CONTENT_PROVIDERS.
     const frameSrc = new Set<string>();
     const formAction = new Set<string>();
+    const scriptSrc = new Set<string>();
     for (const meta of Object.values(CONTENT_PROVIDERS)) {
       if (!meta.cspDirectives) continue;
       meta.cspDirectives.frameSrc?.forEach(s => frameSrc.add(s));
       meta.cspDirectives.formAction?.forEach(s => formAction.add(s));
+      meta.cspDirectives.scriptSrc?.forEach(s => scriptSrc.add(s));
     }
-    return { frameSrc: Array.from(frameSrc), formAction: Array.from(formAction) };
+    return {
+      frameSrc: Array.from(frameSrc),
+      formAction: Array.from(formAction),
+      scriptSrc: Array.from(scriptSrc),
+    };
   }
 
   private injectDynamicCSP(): void {
@@ -263,14 +273,21 @@ ${Object.entries(headers)
       imgSources.push('http:');
     }
 
-    // Per-provider CSP additions (frame-src, form-action), merged from
-    // CONTENT_PROVIDERS for the providers explicitly enabled at runtime.
-    const { frameSrc: providerFrameSrc, formAction: providerFormAction } =
-      this.collectProviderCspDirectives();
+    // Per-provider CSP additions (frame-src, form-action, script-src), merged from
+    // CONTENT_PROVIDERS — the union of all known providers, since the server config
+    // dictates which is shown but the CSP whitelist must cover any that may render.
+    const {
+      frameSrc: providerFrameSrc,
+      formAction: providerFormAction,
+      scriptSrc: providerScriptSrc,
+    } = this.collectProviderCspDirectives();
     const frameSrcDirective =
       providerFrameSrc.length > 0 ? `frame-src 'self' ${providerFrameSrc.join(' ')}` : null;
     const formActionDirective = `form-action 'self'${
       providerFormAction.length > 0 ? ' ' + providerFormAction.join(' ') : ''
+    }`;
+    const scriptSrcDirective = `script-src 'self'${
+      providerScriptSrc.length > 0 ? ' ' + providerScriptSrc.join(' ') : ''
     }`;
 
     // Build complete CSP policy
@@ -278,7 +295,7 @@ ${Object.entries(headers)
     // and must be set via HTTP headers at the server level
     const cspDirectives = [
       `default-src 'self'`,
-      `script-src 'self'`,
+      scriptSrcDirective,
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com`,
       `font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:`,
       `img-src ${imgSources.join(' ')}`,

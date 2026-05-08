@@ -106,6 +106,44 @@
               </mat-error>
             }
           </mat-form-field>
+
+          @if (isServiceSourceSelected && canPickServiceModeFile) {
+            <div class="picker-area">
+              @if (!pickedFile) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="onPickFile()"
+                  data-testid="document-service-pick-button"
+                >
+                  <mat-icon>folder_open</mat-icon>
+                  <span [transloco]="'documentEditor.source.pickAction'">Pick a file</span>
+                </button>
+              } @else {
+                <p class="picked-file-hint" data-testid="document-picked-file-hint">
+                  {{
+                    'documentEditor.source.pickedFile' | transloco: { fileName: pickedFile.name }
+                  }}
+                </p>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="onPickFile()"
+                  data-testid="document-service-repick-button"
+                >
+                  {{ 'documentEditor.source.repickAction' | transloco }}
+                </button>
+              }
+              @if (pickerError) {
+                <div class="picker-error" role="alert" data-testid="document-picker-error">
+                  <mat-icon class="picker-error-icon">error_outline</mat-icon>
+                  <span class="picker-error-message">
+                    {{ pickerError.messageKey | transloco }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
         } @else if (isDelegatedSourceSelected) {
           <div class="picker-area">
             @if (finalizing) {

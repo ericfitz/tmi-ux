@@ -47,6 +47,7 @@ import {
   type ContentTokenInfo,
   type IContentPickerService,
   type PickedFile,
+  type PickerContext,
   type PickerEvent,
   type PickerRegistration,
 } from '@app/core/models/content-provider.types';
@@ -264,6 +265,19 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * True when the selected service-mode source advertises picker_config from
+   * the server, has a picker service registered client-side, and we can offer
+   * an in-browser file picker. Otherwise falls back to URL-paste only.
+   */
+  get canPickServiceModeFile(): boolean {
+    const meta = this.selectedSourceMeta;
+    if (!meta || meta.kind !== 'service') return false;
+    if (!meta.hasPicker) return false;
+    if (!meta.pickerConfig?.['client_id']) return false;
+    return true;
+  }
+
+  /**
    * If the editing document is pending_access and we have a threatModelId,
    * silently fetch the latest document state. Don't block dialog rendering.
    */
@@ -405,10 +419,25 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     if (this.selectedSource === 'url') return;
     const meta = CONTENT_PROVIDERS[this.selectedSource as ContentProviderId];
     if (!meta) return;
+
+    const sourceMeta = this.selectedSourceMeta;
+    let context: PickerContext | undefined;
+    if (sourceMeta?.kind === 'service') {
+      if (!sourceMeta.pickerConfig?.['client_id']) {
+        this.logger.warn(
+          'GoogleDrivePickerService invoked for service-mode without picker_config; ' +
+            'falling back to URL-paste UX.',
+          { providerId: sourceMeta.id },
+        );
+        return;
+      }
+      context = { mode: 'service', pickerConfig: sourceMeta.pickerConfig };
+    }
+
     this.pickerError = null;
     const svc = this.injector.get<IContentPickerService>(meta.pickerService);
     svc
-      .pick()
+      .pick(context)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (event: PickerEvent) => this._handlePickerEvent(event),
@@ -430,11 +459,15 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
         this.finalizing = false;
         this.finalizingMessageKey = null;
         this.pickedFile = event.file;
-        this._pickerRegistration = {
-          provider_id: this.selectedSource as ContentProviderId,
-          file_id: event.file.fileId,
-          mime_type: event.file.mimeType,
-        };
+        // picker_registration is a delegated-mode artifact; service-mode dispatches
+        // via content_source on the server and doesn't carry a per-document grant.
+        if (this.isDelegatedSourceSelected) {
+          this._pickerRegistration = {
+            provider_id: this.selectedSource as PickerRegistration['provider_id'],
+            file_id: event.file.fileId,
+            mime_type: event.file.mimeType,
+          };
+        }
         this._suppressPasteDetection = true;
         this.documentForm.patchValue({ name: event.file.name, uri: event.file.url });
         this._suppressPasteDetection = false;

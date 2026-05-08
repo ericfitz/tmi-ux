@@ -21,6 +21,13 @@ export interface SelectableSource {
   kind: 'delegated' | 'service';
   /** True when the client has a picker service registered for this provider. */
   hasPicker: boolean;
+  /**
+   * Browser-safe OAuth/picker bootstrap values from the server. Present only
+   * when the operator has configured a public Web OAuth client for this
+   * provider. Used by service-mode pickers (Google Identity Services flow).
+   * Never contains client_secret or service-account material.
+   */
+  pickerConfig?: { [key: string]: string };
   /** Client-side metadata if the id matches a known ContentProviderId; absent otherwise. */
   capability?: ContentProviderMetadata;
 }
@@ -50,6 +57,7 @@ export class ContentProvidersService {
           icon: p.icon,
           kind: p.kind as 'delegated' | 'service',
           hasPicker: !!capability?.supportsPicker,
+          pickerConfig: p.picker_config,
           capability,
         };
       });

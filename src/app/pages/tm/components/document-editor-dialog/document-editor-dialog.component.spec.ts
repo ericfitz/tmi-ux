@@ -504,6 +504,107 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     });
   });
 
+  describe('service-mode picker dispatch (#671)', () => {
+    const SERVICE_SOURCE_WITH_PICKER: SelectableSource = {
+      id: 'google_drive',
+      displayName: 'Google Drive',
+      icon: 'fa-brands fa-google-drive',
+      kind: 'service',
+      hasPicker: true,
+      pickerConfig: { client_id: 'cid', developer_key: 'dk', app_id: 'ai' },
+    };
+
+    it('canPickServiceModeFile is true when source is service+hasPicker+pickerConfig', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      expect(c.canPickServiceModeFile).toBe(true);
+    });
+
+    it('canPickServiceModeFile is false when pickerConfig is missing', () => {
+      sources$.next([{ ...SERVICE_SOURCE_WITH_PICKER, pickerConfig: undefined }]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      expect(c.canPickServiceModeFile).toBe(false);
+    });
+
+    it('onPickFile passes service-mode context to picker service', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      mockPicker.pick.mockReturnValue(of<PickerEvent>({ kind: 'cancelled' }));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      expect(mockPicker.pick).toHaveBeenCalledWith({
+        mode: 'service',
+        pickerConfig: { client_id: 'cid', developer_key: 'dk', app_id: 'ai' },
+      });
+    });
+
+    it('onPickFile in service mode without pickerConfig logs warning and is a no-op', () => {
+      sources$.next([{ ...SERVICE_SOURCE_WITH_PICKER, pickerConfig: undefined }]);
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      expect(mockPicker.pick).not.toHaveBeenCalled();
+      expect(mockLogger.warn).toHaveBeenCalled();
+    });
+
+    it('onPickFile in delegated mode passes no context (default behavior)', () => {
+      tokens$.next([
+        {
+          provider_id: 'google_workspace',
+          status: 'active',
+          scopes: [],
+          created_at: '2026-04-26T00:00:00Z',
+        },
+      ]);
+      mockPicker.pick.mockReturnValue(of<PickerEvent>({ kind: 'cancelled' }));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_workspace';
+      c.onPickFile();
+      expect(mockPicker.pick).toHaveBeenCalledWith(undefined);
+    });
+
+    it('service-mode pick does NOT set picker_registration', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      const event: PickerEvent = {
+        kind: 'picked',
+        file: {
+          fileId: 'abc',
+          name: 'sheet.xlsx',
+          mimeType: 'application/vnd.google-apps.spreadsheet',
+          url: 'https://drive.google.com/file/d/abc',
+        },
+      };
+      mockPicker.pick.mockReturnValue(of(event));
+      const created: Document = {
+        id: 'doc-new',
+        name: 'sheet.xlsx',
+        uri: 'https://drive.google.com/file/d/abc',
+        created_at: '',
+        modified_at: '',
+        access_status: 'accessible',
+      };
+      mockTms.createDocument.mockReturnValue(of(created));
+      const c = createComponent({ mode: 'create', threatModelId: 'tm-1' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      // Picked file populated form; no picker_registration on the in-place create.
+      expect(c.documentForm.get('name')?.value).toBe('sheet.xlsx');
+      c.onSubmit();
+      expect(mockTms.createDocument).toHaveBeenCalledWith(
+        'tm-1',
+        expect.not.objectContaining({ picker_registration: expect.anything() }),
+      );
+    });
+  });
+
   describe('service-mode in-place create (Option X)', () => {
     const SERVICE_SOURCE: SelectableSource = {
       id: 'google_drive',
