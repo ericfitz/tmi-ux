@@ -32,16 +32,16 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(모두)",
-      "errorInvoking": "애드온 호출에 실패했습니다. 다시 시도해 주세요.",
-      "invalidCharacters": "영숫자, 공백, 하이픈, 마침표, 쉼표 및 슬래시만 허용됩니다",
-      "invocationQueued": "애드온 호출이 대기열에 추가되었습니다",
-      "metadataKeyMissing": "필수 메타데이터 키 \"{{key}}\"가 이 객체에 존재하지 않습니다",
-      "numberMax": "값은 최대 {{max}}이어야 합니다",
-      "numberMin": "값은 최소 {{min}}이어야 합니다",
+      "errorInvoking": "애드온 호출에 실패했습니다.",
+      "invalidCharacters": "영숫자, 공백, 하이픈, 마침표, 쉼표 및 슬래시만 허용됩니다.",
+      "invocationQueued": "애드온 호출이 대기열에 추가되었습니다.",
+      "metadataKeyMissing": "필수 메타데이터 키 \"{{key}}\"가 이 객체에 존재하지 않습니다.",
+      "numberMax": "값은 최대 {{max}}이어야 합니다.",
+      "numberMin": "값은 최소 {{min}}이어야 합니다.",
       "parameters": "매개변수",
       "threatModelId": "위협 모델 ID",
       "title": "애드온 호출",
-      "valueTooLong": "값이 최대 길이를 초과합니다"
+      "valueTooLong": "값이 최대 길이를 초과합니다."
     }
   },
   "admin": {
@@ -52,7 +52,7 @@
         "descriptionHint": "이 애드온은 무엇을 하나요?",
         "descriptionPlaceholder": "애드온 기능을 설명하세요",
         "icon": "아이콘",
-        "iconHint": "UI 아이콘 (예: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconHint": "UI 아이콘 (예: \"material-symbols:security\", \"fa-regular fa-user-shield\").",
         "iconInvalid": "잘못된 아이콘 형식입니다",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
@@ -65,19 +65,19 @@
         "title": "애드온 추가",
         "webhook": "웹훅",
         "webhookHint": "연결된 웹훅 구독",
-        "webhookRequired": "웹훅은 필수입니다"
+        "webhookRequired": "웹훅은 필수입니다."
       },
       "confirmDelete": "\"{{name}}\" 애드온을 삭제하시겠습니까?",
       "created": "{{common.created}}",
       "deleteTooltip": "애드온 삭제",
-      "errorCreatingAddon": "애드온 생성에 실패했습니다. 다시 시도해 주세요.",
-      "errorLoadingWebhooks": "사용 가능한 웹훅을 불러오는 데 실패했습니다",
+      "errorCreatingAddon": "애드온 생성에 실패했습니다.",
+      "errorLoadingWebhooks": "사용 가능한 웹훅을 불러오는 데 실패했습니다.",
       "filterLabel": "애드온 필터",
       "filterPlaceholder": "이름 또는 설명으로 검색",
       "listTitle": "시스템 애드온",
-      "noAddons": "애드온을 찾을 수 없습니다",
-      "objectTypesTooltip": "다음 개체 유형에 적용됨",
-      "subtitle": "TMI 기능 확장을 위한 애드온 구성",
+      "noAddons": "애드온을 찾을 수 없습니다.",
+      "objectTypesTooltip": "다음 객체 유형에 적용됩니다",
+      "subtitle": "TMI 기능 확장을 위한 애드온을 구성합니다.",
       "title": "애드온 관리"
     },
     "createAutomationUserDialog": {
@@ -86,9 +86,9 @@
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "2-64자, 문자로 시작",
-      "nameMaxLength": "이름은 최대 64자여야 합니다",
-      "nameMinLength": "최소 2자 이상이어야 합니다",
-      "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다",
+      "nameMaxLength": "이름은 최대 64자여야 합니다.",
+      "nameMinLength": "최소 2자 이상이어야 합니다.",
+      "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다.",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "자동화 사용자 생성",
@@ -97,18 +97,18 @@
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
-        "description": "설명 (선택사항)",
+        "description": "설명 (선택 사항)",
         "descriptionHint": "그룹 목적에 대한 선택적 설명",
         "descriptionPlaceholder": "이 그룹에 대한 설명",
         "displayName": "표시 이름",
         "displayNameHint": "사람이 읽을 수 있는 그룹 이름",
         "displayNamePlaceholder": "내 사용자 정의 그룹",
-        "displayNameRequired": "표시 이름은 필수입니다",
+        "displayNameRequired": "표시 이름은 필수입니다.",
         "groupName": "그룹 식별자",
         "groupNameHint": "영숫자, 하이픈 및 밑줄만 허용",
-        "groupNamePattern": "영숫자, 하이픈 및 밑줄만 허용됩니다",
+        "groupNamePattern": "영숫자, 하이픈 및 밑줄만 허용됩니다.",
         "groupNamePlaceholder": "my-custom-group",
-        "groupNameRequired": "그룹 식별자는 필수입니다",
+        "groupNameRequired": "그룹 식별자는 필수입니다.",
         "save": "그룹 생성",
         "title": "그룹 추가"
       },
@@ -125,7 +125,7 @@
         "addMember": "{{teams.membersDialog.addMember}}",
         "automationAdminBlocked": "자동화 계정은 관리자 그룹의 멤버가 될 수 없습니다. 자동화 계정은 애플리케이션의 관리 기능에 절대 접근할 수 없어야 합니다.",
         "currentMembers": "현재 멤버",
-        "noMembers": "이 그룹에 멤버가 없습니다",
+        "noMembers": "이 그룹에 멤버가 없습니다.",
         "removeTooltip": "그룹에서 제거",
         "searchHint": "검색하려면 최소 2자 이상 입력하세요",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,13 +133,13 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "그룹을 찾을 수 없습니다",
-      "subtitle": "시스템 그룹 보기 및 관리",
+      "noGroups": "그룹을 찾을 수 없습니다.",
+      "subtitle": "시스템 그룹을 보고 관리합니다.",
       "title": "그룹 관리",
-      "viewMembersTooltip": "그룹 멤버 보기 및 관리"
+      "viewMembersTooltip": "그룹 멤버 보기 및 관리..."
     },
     "quotas": {
-      "addButton": "할당량 추가",
+      "addButton": "할당량 추가...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "할당량 구성",
@@ -160,32 +160,32 @@
       "filterLabel": "할당량 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 사용자 ID로 검색",
       "maxSubscriptions": "최대 구독 수",
-      "noUserAPIQuotas": "사용자 정의 API 할당량을 찾을 수 없습니다",
-      "noWebhookQuotas": "사용자 정의 웹훅 할당량을 찾을 수 없습니다",
+      "noUserAPIQuotas": "사용자 정의 API 할당량을 찾을 수 없습니다.",
+      "noWebhookQuotas": "사용자 정의 웹훅 할당량을 찾을 수 없습니다.",
       "requestsPerHour": "시간당 요청 수",
       "requestsPerMinute": "분당 요청 수",
       "subReqPerDay": "일일 구독 요청 수",
       "subReqPerMinute": "분당 구독 요청 수",
-      "subtitle": "사용자의 요청 제한 및 할당량 구성",
+      "subtitle": "사용자의 요청 제한 및 할당량을 구성합니다.",
       "title": "할당량 관리",
       "userAPITitle": "API 제한",
       "webhookTitle": "Webhook 제한"
     },
     "sections": {
       "addons": {
-        "description": "애플리케이션 애드온 설치 및 구성",
+        "description": "애플리케이션 애드온을 설치하고 구성합니다.",
         "title": "애드온"
       },
       "groups": {
-        "description": "사용자 그룹 및 멤버십 구성",
+        "description": "사용자 그룹 및 멤버십을 구성합니다.",
         "title": "그룹"
       },
       "projects": {
-        "description": "프로젝트, 관계 및 메타데이터 관리",
+        "description": "프로젝트, 관계 및 메타데이터를 관리합니다.",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "리소스 할당량 및 제한 구성",
+        "description": "리소스 할당량 및 제한을 구성합니다.",
         "title": "할당량"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "설정"
       },
       "surveys": {
-        "description": "설문조사 생성 및 관리",
+        "description": "설문조사를 생성하고 관리합니다.",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "팀 및 팀 멤버십 관리",
+        "description": "팀 및 팀 멤버십을 관리합니다.",
         "title": "팀"
       },
       "users": {
-        "description": "사용자 계정 보기 및 관리",
+        "description": "사용자 계정을 보고 관리합니다.",
         "title": "사용자"
       },
       "webhooks": {
-        "description": "웹훅 통합 설치 및 구성",
+        "description": "웹훅 통합을 설치하고 구성합니다.",
         "title": "웹훅"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "이 설정에 대한 선택적 설명",
         "key": "{{common.metadataKey}}",
         "keyHint": "소문자, 점, 밑줄 사용 (예: rate_limit.max_rpm)",
-        "keyInvalid": "소문자로 시작하고 소문자, 숫자, 점, 밑줄만 사용해야 합니다",
-        "keyRequired": "키는 필수입니다",
+        "keyInvalid": "소문자로 시작하고 소문자, 숫자, 점, 밑줄만 사용해야 합니다.",
+        "keyRequired": "키는 필수입니다.",
         "save": "설정 생성",
         "title": "설정 추가",
         "type": "{{common.type}}",
-        "typeRequired": "유형은 필수입니다",
+        "typeRequired": "유형은 필수입니다.",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "값은 필수입니다"
+        "valueRequired": "값은 필수입니다."
       },
       "cancelTooltip": "편집 취소",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "필터",
       "filterPlaceholder": "키, 값, 설명 또는 출처로 필터링",
       "listTitle": "시스템 설정",
-      "noSettings": "설정을 찾을 수 없습니다",
+      "noSettings": "설정을 찾을 수 없습니다.",
       "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
       "saveTooltip": "변경 사항 저장",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "환경",
         "vault": "볼트"
       },
-      "subtitle": "시스템 구성 설정 보기 및 관리",
+      "subtitle": "시스템 구성 설정을 보고 관리합니다.",
       "title": "설정 관리",
       "types": {
         "bool": "부울",
@@ -255,7 +255,7 @@
         "string": "문자열"
       }
     },
-    "subtitle": "시스템 설정 및 구성 관리",
+    "subtitle": "시스템 설정 및 구성을 관리합니다.",
     "title": "관리",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "사용자 계정 삭제",
       "filter": {
-        "automationOnly": "자동화 계정만 표시"
+        "automationOnly": "자동화 계정만 표시합니다."
       },
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
@@ -280,29 +280,29 @@
       "manageCredentials": {
         "addCredential": "자격 증명 추가",
         "deleteConfirm": "자격 증명 \"{{name}}\"을(를) 삭제하시겠습니까?",
-        "noCredentials": "자격 증명을 찾을 수 없습니다",
-        "title": "{{userName}}의 자격 증명 관리"
+        "noCredentials": "자격 증명을 찾을 수 없습니다.",
+        "title": "{{username}}의 자격 증명 관리."
       },
       "never": "없음",
-      "noUsers": "사용자를 찾을 수 없습니다",
-      "subtitle": "시스템 사용자 보기 및 관리",
+      "noUsers": "사용자를 찾을 수 없습니다.",
+      "subtitle": "시스템 사용자를 보고 관리합니다.",
       "title": "사용자 관리",
       "transferOwnership": {
         "confirm": "{{source}}에서 {{target}}로 모든 데이터를 이전하시겠습니까?",
         "dialogTitle": "사용자 데이터 이전",
-        "error": "소유권 이전에 실패했습니다. 다시 시도해 주세요.",
+        "error": "소유권 이전에 실패했습니다.",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "소유권 이전"
+        "tooltip": "소유권 이전..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "이 웹훅을 위한 자동화 사용자 생성",
+        "createAutomationUser": "이 웹훅을 위한 자동화 사용자 생성.",
         "events": "구독할 이벤트 유형",
         "eventsHint": "구독할 이벤트 유형 (예: threat_model.created)",
         "eventsPlaceholder": "이벤트 유형 선택",
-        "eventsRequired": "최소 하나의 이벤트가 필요합니다",
+        "eventsRequired": "최소 하나의 이벤트가 필요합니다.",
         "name": "{{common.name}}",
         "nameHint": "이 웹훅의 설명적 이름",
         "namePlaceholder": "웹훅 이름",
@@ -315,10 +315,10 @@
         "url": "웹훅 URL",
         "urlHint": "HTTPS 권장",
         "urlHttpWarning": "경고: 웹훅 엔드포인트 URL은 HTTPS를 사용해야 합니다. 서버는 TLS가 아닌 엔드포인트를 지정하는 웹훅 등록을 거부할 수 있습니다.",
-        "urlHttpWarningTitle": "비HTTPS 웹훅 URL",
-        "urlInvalid": "유효한 URL이어야 합니다",
+        "urlHttpWarningTitle": "비HTTPS 웹훅 URL.",
+        "urlInvalid": "유효한 URL이어야 합니다.",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "URL은 필수입니다"
+        "urlRequired": "URL은 필수입니다."
       },
       "created": "{{common.created}}",
       "deleteTooltip": "웹훅 삭제",
@@ -330,7 +330,7 @@
         "warning": "이 시크릿은 지금만 볼 수 있습니다. 복사해 두세요. 분실하거나 잊어버리면 웹훅을 삭제하고 다시 생성해야 합니다."
       },
       "listTitle": "Webhook 구독",
-      "noWebhooks": "웹훅을 찾을 수 없습니다",
+      "noWebhooks": "웹훅을 찾을 수 없습니다.",
       "secret": "HMAC 시크릿",
       "status": {
         "active": "{{common.active}}",
@@ -338,7 +338,7 @@
         "pending_verification": "확인 대기 중"
       },
       "subscriptionId": "구독 ID",
-      "subtitle": "이벤트 알림을 위한 웹훅 구독 구성",
+      "subtitle": "이벤트 알림을 위한 웹훅 구독을 구성합니다.",
       "title": "Webhooks 관리",
       "triggerEvents": "트리거 이벤트",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
@@ -353,12 +353,12 @@
       "title": "설문 생성",
       "versionHint": "자유 형식 버전 식별자",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "예: 1, v2-pilot, 2024-Q1",
-      "versionRequired": "버전은 필수입니다"
+      "versionPlaceholder": "예: 1, v2-pilot, 2024-q1",
+      "versionRequired": "버전은 필수입니다."
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "기존 응답이 있어 이 설문조사를 삭제할 수 없습니다. 먼저 응답을 삭제한 후 다시 시도하세요.",
-    "deleteError": "설문조사 삭제 실패: {{error}}",
+    "deleteError": "설문조사 삭제 실패: {{error}}.",
     "deleteTooltip": "설문조사 삭제",
     "editTemplate": "설문조사 편집",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -379,11 +379,11 @@
       "deletePage": "페이지 삭제",
       "deleteQuestion": "질문 삭제",
       "enableIf": "활성화 조건",
-      "enableIfHint": "예: {questionName} = 'value'",
+      "enableIfHint": "예: {questionname} = 'value'",
       "enterSurveyDescription": "설문 설명 입력",
       "enterSurveyTitle": "설문 제목 입력",
-      "failedToLoadTemplate": "설문조사를 불러오지 못했습니다",
-      "failedToSaveTemplate": "설문조사를 저장하지 못했습니다",
+      "failedToLoadTemplate": "설문조사를 불러오지 못했습니다.",
+      "failedToSaveTemplate": "설문조사를 저장하지 못했습니다.",
       "loadingTemplate": "설문조사 불러오는 중...",
       "mapsToTmField": "TM 필드에 매핑",
       "metadataKey": "메타데이터 키",
@@ -392,7 +392,7 @@
       "nameIdHint": "이 질문의 고유 식별자",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "팔레트에서 질문 유형을 클릭하여 추가하세요",
-      "noQuestionsYet": "아직 질문이 없습니다",
+      "noQuestionsYet": "아직 질문이 없습니다.",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "질문 속성",
@@ -400,9 +400,9 @@
         "boolean": "부울 토글",
         "checkbox": "다중 선택",
         "dropdown": "드롭다운 선택",
-        "panel": "패널에 질문 그룹화",
+        "panel": "패널에 질문 그룹화.",
         "paneldynamic": "반복 가능한 패널 그룹",
-        "radiogroup": "옵션 중 단일 선택",
+        "radiogroup": "옵션 중 단일 선택.",
         "text": "한 줄 텍스트 입력"
       },
       "questionTypeLabels": {
@@ -419,7 +419,7 @@
       "required": "필수",
       "requiredIf": "필수 조건",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "질문을 선택하여 속성을 편집하세요",
+      "selectQuestionHint": "질문을 선택하여 속성을 편집하세요.",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
@@ -429,7 +429,7 @@
         "description": "위협 모델 설명",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "이슈 추적 URL",
+        "issueUri": "이슈 추적 URL.",
         "metadataKey": "사용자 정의 메타데이터",
         "name": "위협 모델 이름",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -441,8 +441,8 @@
       "visibleIf": "표시 조건",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "설문조사 {{count}}개",
-    "templateCountPlural": "설문조사 {{count}}개"
+    "templateCount": "설문조사 {{Count}}개",
+    "templateCountPlural": "설문조사 {{Count}}개"
   },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
@@ -492,13 +492,13 @@
     "noEntries": "감사 추적 항목이 없습니다.",
     "rollback": {
       "action": "롤백",
-      "confirmMessage": "{{objectType}} \"{{name}}\"을(를) 버전 {{version}}으로 롤백하시겠습니까?",
+      "confirmMessage": "{{objecttype}} \"{{name}}\"을(를) 버전 {{version}}으로 롤백하시겠습니까?",
       "confirmTitle": "롤백 확인",
       "confirmationField": "확인을 위해 입력하세요",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "롤백에 실패했습니다. 다시 시도해 주세요.",
+      "error": "롤백에 실패했습니다",
       "success": "롤백이 성공적으로 완료되었습니다.",
-      "typeConfirmation": "확인을 위해 아래에 \"{{confirmValue}}\"을(를) 입력하세요.",
+      "typeConfirmation": "확인을 위해 아래에 \"{{confirmvalue}}\"을(를) 입력하세요",
       "versionPruned": "버전 스냅샷이 정리되었습니다. 롤백을 더 이상 사용할 수 없습니다.",
       "warning": "이 작업은 이 엔티티의 현재 상태를 이 감사 항목에 캡처된 버전으로 덮어씁니다. 이 작업은 새 감사 항목을 생성하지만 현재 상태는 손실됩니다."
     },
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "Timmy에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.",
-      "generic": "문제가 발생했습니다. 다시 시도해주세요.",
+      "generic": "문제가 발생했습니다.",
       "interrupted": "응답이 중단되었습니다. 메시지를 다시 보내세요.",
       "notAcceptable": "서버 구성 문제로 인해 Timmy를 일시적으로 사용할 수 없습니다.",
       "notEnabled": "이 위협 모델에서는 Timmy가 활성화되어 있지 않습니다.",
@@ -532,16 +532,16 @@
     "hideSidePanel": "사이드 패널 숨기기",
     "inputPlaceholder": "이 위협 모델에 대해 Timmy에게 물어보세요...",
     "newSession": "새 세션",
-    "noSessions": "아직 채팅 세션이 없습니다. 대화를 시작하세요!",
+    "noSessions": "아직 채팅 세션이 없습니다. 대화를 시작하세요.",
     "preparation": {
-      "error": "준비 실패: {{message}}",
-      "processing": "소스 {{current}}/{{total}} 처리 중 — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "준비 완료! {{sourcesLoaded}}개 소스 로드됨, {{chunksEmbedded}}개 청크 인덱싱됨."
+      "error": "준비 실패: {{message}}.",
+      "processing": "소스 {{current}}/{{total}} 처리 중 — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%.",
+      "ready": "준비 완료! {{Sourcesloaded}}개 소스 로드됨, {{chunksembedded}}개 청크 인덱싱됨."
     },
-    "saveAsNoteError": "메모로 저장할 수 없습니다. 다시 시도해 주세요.",
+    "saveAsNoteError": "메모로 저장할 수 없습니다.",
     "saveMessageAsNote": "메시지를 메모로 저장",
     "saveSessionAsNote": "세션을 메모로 저장",
-    "savedAsNote": "메모로 저장됨",
+    "savedAsNote": "메모로 저장됨.",
     "savedAsNoteView": "{{common.view}}",
     "send": "메시지 전송",
     "sessions": "세션",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}}개 소스 포함"
+      "title": "{{Count}}개 소스 포함"
     },
     "suggestedPrompts": {
       "assets": "범위에 어떤 자산이 있나요?",
@@ -563,21 +563,21 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}}명의 활성 사용자",
+    "activeUsers": "{{Count}}명의 활성 사용자.",
     "approvePresenterRequest": "발표자 요청 승인",
-    "availableCollaborationSessions": "사용 가능한 협업 세션",
+    "availableCollaborationSessions": "사용 가능한 협업 세션.",
     "collaboratorsHeader": "참가자",
     "copyLink": "링크 복사",
     "denyPresenterRequest": "발표자 요청 거부",
     "endCollaboration": "협업 종료",
     "hostedBy": "호스트",
-    "isRequestingPresenterPrivileges": "발표자 권한을 요청 중입니다",
+    "isRequestingPresenterPrivileges": "발표자 권한을 요청 중입니다.",
     "joinSession": "세션 참가",
     "justNow": "방금 전",
     "leaveSession": "세션 나가기",
     "loadingDiagramContext": "다이어그램 컨텍스트 로드 중...",
     "manageParticipants": "참가자 관리",
-    "noActiveSessions": "활성 협업 세션 없음",
+    "noActiveSessions": "활성 협업 세션 없음.",
     "participantRequestsPresenterRole": "참가자가 발표자 역할 요청",
     "presenterModeRequested": "발표자 모드 요청됨",
     "removeFromSession": "세션에서 제거",
@@ -586,12 +586,12 @@
     "startCollaboration": "협업 시작",
     "takeBackPresenter": "발표자 권한 회수",
     "title": "협업 세션 참가자",
-    "userJoined": "{{user}}님이 협업에 참가했습니다",
-    "userLeft": "{{user}}님이 협업에서 나갔습니다",
+    "userJoined": "{{User}}님이 협업에 참가했습니다.",
+    "userLeft": "{{User}}님이 협업에서 나갔습니다",
     "websocketStatus": {
       "connected": "Websocket 연결됨",
       "noSession": "활성 협업 세션 없음",
-      "notConnected": "Websocket 연결 안 됨"
+      "notConnected": "Websocket 연결 안 됨."
     }
   },
   "common": {
@@ -615,8 +615,8 @@
     "close": "닫기",
     "confirm": "확인",
     "confirmDelete": "{{item}} \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
-    "confirmDeleteMessage": "\"{{name}}\" {{objectType}}을(를) 삭제하시겠습니까?",
-    "copiedToClipboard": "클립보드에 복사됨",
+    "confirmDeleteMessage": "\"{{name}}\" {{objecttype}}을(를) 삭제하시겠습니까?",
+    "copiedToClipboard": "클립보드에 복사됨.",
     "copy": "복사",
     "copyToClipboard": "클립보드에 복사",
     "create": "생성",
@@ -626,15 +626,15 @@
     "cut": "잘라내기",
     "deactivate": "비활성화",
     "delete": "삭제",
-    "deleteConfirm": "위협 모델 삭제",
+    "deleteConfirm": "삭제 확인",
     "deleteWarningConfirmationField": "삭제 확인",
     "deleteWarningConfirmationMatch": "확인 텍스트가 일치합니다",
     "deleteWarningConfirmationMismatch": "확인 텍스트가 일치하지 않습니다",
     "deleteWarningConfirmationValue": "영구 삭제",
-    "deleteWarningPermanent": "이 작업은 취소할 수 없으며 {{objectType}} 및 관련된 모든 메타데이터가 영구적으로 삭제됩니다.",
+    "deleteWarningPermanent": "이 작업은 취소할 수 없으며 {{objecttype}} 및 관련된 모든 메타데이터가 영구적으로 삭제됩니다.",
     "deleteWarningReferenceOnly": "문서 및 저장소와 같이 TMI 외부에 저장된 객체의 경우, 해당 객체에 대한 TMI 참조만 삭제됩니다.",
     "deleteWarningSubEntities": "다이어그램, 위협 및 노트와 같은 모든 관련 TMI 항목도 영구적으로 삭제됩니다.",
-    "deleteWarningTypeConfirmation": "확인하려면 아래 필드에 \"{{confirmValue}}\"을(를) 입력하세요.",
+    "deleteWarningTypeConfirmation": "확인하려면 아래 필드에 \"{{confirmvalue}}\"을(를) 입력하세요",
     "description": "설명",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "닫기",
@@ -675,7 +675,7 @@
     "noDataAvailable": "사용 가능한 데이터 없음",
     "noMatchingResults": "필터와 일치하는 결과가 없습니다.",
     "noMetadata": "사용 가능한 메타데이터 없음",
-    "noThreats": "사용 가능한 위협 없음",
+    "noThreats": "사용 가능한 위협 없음.",
     "none": "없음",
     "objectTypes": {
       "asset": "자산",
@@ -715,7 +715,7 @@
     "project": "프로젝트",
     "provider": "공급자",
     "readOnly": "읽기 전용",
-    "readOnlyTooltip": "이 위협 모델에 대한 읽기 전용 액세스 권한이 있습니다. 편집 권한을 요청하려면 소유자에게 문의하세요.",
+    "readOnlyTooltip": "이 위협 모델에 대한 읽기 전용 액세스 권한이 있습니다. 편집 권한을 요청하려면 소유자에게 문의하세요",
     "retry": "재시도",
     "roles": {
       "owner": "소유자",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "저장되었습니다",
     "score": "점수",
     "search": "검색",
-    "selected": "{{count}}개 선택됨",
+    "selected": "{{Count}}개 선택됨",
     "sensitivity": "민감도",
     "sessionRoles": {
       "host": "호스트",
@@ -755,11 +755,11 @@
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
     "uri": "URI",
     "validation": {
-      "email": "유효한 이메일 주소를 입력해 주세요",
+      "email": "유효한 이메일 주소를 입력해 주세요.",
       "invalidUrl": "유효한 URL을 입력하세요",
-      "maxLength": "최대 길이는 {{max}}자입니다",
-      "nameRequired": "이름은 필수입니다",
-      "required": "이 필드는 필수입니다"
+      "maxLength": "최대 길이는 {{max}}자입니다.",
+      "nameRequired": "이름은 필수입니다.",
+      "required": "이 필드는 필수입니다."
     },
     "version": "버전",
     "view": "보기",
@@ -771,14 +771,14 @@
     "addInverseConnection": "역방향 연결 추가",
     "dataAssets": "데이터 자산...",
     "editText": "텍스트 편집",
-    "lockLayout": "Lock Layout",
+    "lockLayout": "레이아웃 잠금",
     "moveBackward": "뒤로 이동",
     "moveForward": "앞으로 이동",
     "moveToBack": "맨 뒤로 이동",
     "moveToFront": "맨 앞으로 이동",
     "noDataAssetsAvailable": "사용 가능한 데이터 자산이 없습니다",
-    "showObject": "객체 표시",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "객체 표시...",
+    "unlockLayout": "레이아웃 잠금 해제"
   },
   "createThreatModel": {
     "confidentialHint": "기밀 위협 모델은 보안 검토자 그룹과 자동으로 공유되지 않습니다. 이 설정은 생성 후 변경할 수 없습니다.",
@@ -792,15 +792,38 @@
   "cvssCalculator": {
     "apply": "적용",
     "openCalculator": "CVSS 추가",
-    "parseError": "기존 CVSS 벡터 문자열을 구문 분석할 수 없습니다",
+    "parseError": "기존 CVSS 벡터 문자열을 구문 분석할 수 없습니다.",
     "pasteVectorPlaceholder": "CVSS 벡터 문자열을 붙여넣고 Enter를 누르세요",
     "title": "CVSS 계산기",
-    "vectorDuplicateVersion": "이 버전의 CVSS 항목이 이미 존재합니다",
-    "vectorInvalid": "잘못된 CVSS 벡터 문자열",
-    "vectorPlaceholder": "CVSS 벡터 문자열을 붙여넣거나 입력하고 Enter를 누르세요",
+    "vectorDuplicateVersion": "이 버전의 CVSS 항목이 이미 존재합니다.",
+    "vectorInvalid": "잘못된 CVSS 벡터 문자열.",
+    "vectorPlaceholder": "CVSS 벡터 문자열을 붙여넣거나 입력하고 Enter를 누르세요.",
     "vectorString": "벡터 문자열",
-    "vectorUnsupportedVersion": "CVSS 3.1 및 4.0 벡터만 지원됩니다",
-    "version": "CVSS 버전"
+    "vectorUnsupportedVersion": "CVSS 3.1 및 4.0 벡터만 지원됩니다.",
+    "version": "CVSS 버전",
+    "metricDescriptions.AR": "이 지표를 통해 소비자는 가용성 측면에서 영향받은 IT 자산이 분석가의 조직에 미치는 중요도에 따라 평가를 사용자 정의할 수 있습니다.",
+    "metricDescriptions.AU": "자동화 가능 지표는 '공격자가 여러 대상에 걸쳐 취약점 악용을 자동화할 수 있습니까?'라는 질문에 대한 답변을 캡처합니다.",
+    "metricDescriptions.CR": "이 지표를 통해 소비자는 기밀성 측면에서 영향받은 IT 자산이 분석가의 조직에 미치는 중요도에 따라 평가를 사용자 정의할 수 있습니다.",
+    "metricDescriptions.IR": "이 지표를 통해 소비자는 무결성 측면에서 영향받은 IT 자산이 분석가의 조직에 미치는 중요도에 따라 평가를 사용자 정의할 수 있습니다.",
+    "metricDescriptions.MAC": "공격 복잡성 재정의. 이 지표는 분석가의 환경에서 취약점을 악용하기 위해 존재해야 하는 공격자 통제 밖의 조건을 반영합니다.",
+    "metricDescriptions.MAT": "공격 요구 사항 재정의. 분석가의 환경에서 공격을 가능하게 하는 시스템의 사전 배포 및 실행 조건을 캡처합니다.",
+    "metricDescriptions.MAV": "공격 벡터 재정의. 이 지표는 분석가의 환경에서 취약점 악용이 가능한 맥락을 반영합니다.",
+    "metricDescriptions.MPR": "필요 권한 재정의. 이 지표는 분석가의 환경에서 취약점을 악용하기 위해 공격자가 보유해야 하는 권한 수준을 설명합니다.",
+    "metricDescriptions.MSA": "후속 시스템 가용성 영향 재정의. 분석가의 환경에서 취약한 시스템을 넘어선 시스템 가용성에 대한 결과를 측정합니다.",
+    "metricDescriptions.MSC": "후속 시스템 기밀성 영향 재정의. 분석가의 환경에서 취약한 시스템을 넘어선 기밀성에 대한 결과를 측정합니다.",
+    "metricDescriptions.MSI": "후속 시스템 무결성 영향 재정의. 분석가의 환경에서 취약한 시스템을 넘어선 무결성에 대한 결과를 측정합니다.",
+    "metricDescriptions.MUI": "사용자 상호작용 재정의. 분석가의 환경에서 성공적인 침해에 공격자 외의 인간 사용자가 참여해야 하는 요구 사항을 캡처합니다.",
+    "metricDescriptions.MVA": "취약한 시스템 가용성 영향 재정의. 분석가의 환경에서 취약점을 포함하는 시스템의 가용성에 대한 결과를 측정합니다.",
+    "metricDescriptions.MVC": "취약한 시스템 기밀성 영향 재정의. 분석가의 환경에서 취약점을 포함하는 시스템의 기밀성에 대한 결과를 측정합니다.",
+    "metricDescriptions.MVI": "취약한 시스템 무결성 영향 재정의. 분석가의 환경에서 취약점을 포함하는 시스템의 무결성에 대한 결과를 측정합니다.",
+    "metricDescriptions.R": "복구 지표는 공격이 수행된 후 성능 및 가용성 측면에서 서비스를 복구하는 시스템의 복원력을 설명합니다.",
+    "metricDescriptions.RE": "취약점 대응 노력 지표는 취약점이 알려진 후 소비자가 대응하는 데 필요한 노력 수준을 캡처합니다.",
+    "metricDescriptions.S": "안전 지표는 취약점이 IEC 61508 카테고리에 정의된 인간 안전에 영향을 미치는 조건을 초래할 수 있는지 여부를 반영합니다.",
+    "metricDescriptions.U": "공급자 긴급도 지표는 취약점에 대한 공급자 제공 긴급도 등급(빨간색, 주황색, 녹색, 투명)을 반영합니다.",
+    "metricDescriptions.V": "가치 밀도 지표는 공격자가 단일 악용 이벤트를 통해 통제하게 될 리소스를 설명합니다.",
+    "metricGroups.environmentalBase": "환경적 (수정된 기본값).",
+    "metricGroups.environmentalSecurityRequirement": "환경적 (보안 요구 사항)",
+    "metricsConfigured": "{{Count}}/{{total}} 구성됨"
   },
   "cwePicker": {
     "addCwe": "CWE 추가",
@@ -845,7 +868,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "상태 마지막 변경일"
+      "statusLastChanged": "상태 마지막 변경일."
     },
     "viewAsCards": "카드로 보기",
     "viewAsList": "목록으로 보기"
@@ -880,8 +903,8 @@
       "currentIndex": "현재 인덱스",
       "id": "{{common.id}}",
       "maxStackSize": "최대 스택 크기",
-      "noRedoEntries": "다시 실행할 항목 없음",
-      "noUndoEntries": "실행 취소할 항목 없음",
+      "noRedoEntries": "다시 실행할 항목 없음.",
+      "noUndoEntries": "실행 취소할 항목 없음.",
       "operationId": "작업 ID",
       "previousCells": "이전 셀",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +919,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "모든 공급자에서 검색하려면 입력하세요",
-      "emptyStateTryExamples": "예시: aws ec2, azure sql, gcp compute",
-      "notAvailable": "이 도형에는 아이콘을 사용할 수 없습니다",
+      "emptyStatePrompt": "모든 공급자에서 검색하려면 입력하세요.",
+      "emptyStateTryExamples": "예시: AWS ec2, azure sql, gcp compute",
+      "notAvailable": "이 도형에는 아이콘을 사용할 수 없습니다.",
       "placement": "배치",
       "remove": "제거",
       "searchPlaceholder": "공급자, 서비스 또는 카테고리로 검색...",
       "searchToChange": "아이콘을 변경하려면 검색하세요...",
       "selectShape": "먼저 도형을 선택하세요",
-      "statusAvailable": "{count}개의 아이콘 사용 가능",
-      "statusMatches": "{count}개의 검색 결과",
-      "statusShapesSelected": "{count}개의 도형이 선택됨",
+      "statusAvailable": "{Count}개의 아이콘 사용 가능.",
+      "statusMatches": "{Count}개의 검색 결과",
+      "statusShapesSelected": "{Count}개의 도형이 선택됨.",
       "title": "아키텍처 아이콘",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -942,7 +965,7 @@
       "labelPosition.top-right": "상단 오른쪽",
       "labelPositionLabel": "레이블 위치",
       "labelTab": "레이블",
-      "noSelection": "스타일을 편집할 객체를 선택하세요",
+      "noSelection": "스타일을 편집할 객체를 선택하세요.",
       "opacity": "불투명도",
       "osColorPicker": "시스템에서 색상 선택",
       "removeDiagramColor": "다이어그램 색상 제거",
@@ -962,30 +985,36 @@
       "other": "이 문서에 액세스할 수 없습니다.",
       "pickerRegistrationInvalid": "이 문서의 선택기 권한이 더 이상 유효하지 않습니다.",
       "sourceNotFound": "TMI는 이 문서의 URL을 읽는 방법을 알지 못합니다.",
-      "tokenNotLinked": "이 문서를 소유한 계정을 연결하지 않았습니다. 출처: {{ source }}",
-      "tokenRefreshFailed": "출처 연결이 더 이상 유효하지 않습니다. 출처: {{ source }}",
-      "tokenTransientFailure": "출처에 연결할 수 없습니다. 일반적으로 일시적인 문제입니다. 출처: {{ source }}"
+      "tokenNotLinked": "이 문서를 소유한 계정을 연결하지 않았습니다. 출처: {{ source }}.",
+      "tokenRefreshFailed": "출처 연결이 더 이상 유효하지 않습니다. 출처: {{ source }}.",
+      "tokenTransientFailure": "출처에 연결할 수 없습니다. 일반적으로 일시적인 문제입니다. 출처: {{ source }}.",
+      "microsoftNotShared": "TMI는 아직 이 OneDrive 또는 SharePoint 파일에 액세스할 수 없습니다. 파일 소유자가 아래 코드를 사용하여 TMI에 읽기 액세스를 부여해야 합니다."
     },
     "remediation": {
       "contactOwner": "문서 소유자에게 문의",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "출처 다시 연결",
-      "repickAfterShare": "공유 후 다시 선택",
-      "repickFile": "이 파일을 다시 선택",
+      "repickAfterShare": "공유 후 다시 선택하세요.",
+      "repickFile": "이 파일을 다시 선택하세요.",
       "retry": "다시 시도",
-      "shareWithServiceAccount": "TMI 서비스 계정과 공유"
+      "shareWithServiceAccount": "TMI 서비스 계정과 공유",
+      "shareWithApplication.copyFailed": "클립보드에 복사할 수 없습니다",
+      "shareWithApplication.explanation": "TMI는 아직 이 OneDrive 또는 SharePoint 파일에 액세스할 수 없습니다. 파일 소유자에게 다음 Microsoft Graph 호출을 실행하여 TMI에 읽기 액세스를 부여하도록 요청하세요. 호출이 성공하면 \"지금 확인\"을 클릭하세요 — 권한이 설정된 후 몇 분 내에 상태가 업데이트됩니다.",
+      "shareWithApplication.powershellLabel": "PowerShell (Microsoft.Graph 모듈)",
+      "shareWithApplication.rawLabel": "Microsoft Graph 호출",
+      "shareWithApplication.title": "TMI에 이 파일 액세스 권한 부여."
     },
     "serviceAccountEmail": "다음 이메일과 공유하세요:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "파일에 대한 액세스 권한을 부여할 수 없습니다. 다시 시도해 주세요.",
+      "generic": "파일에 대한 액세스 권한을 부여할 수 없습니다.",
       "linkAccountCta": "계정 연결",
       "notLinked": "Microsoft 계정이 연결되어 있지 않습니다.",
       "permissionDenied": "Microsoft에서 액세스 권한 부여 요청을 거부했습니다. 파일을 공유할 수 없을 수 있습니다. 다른 파일을 시도하거나 관리자에게 문의하세요.",
-      "pickerLoadFailed": "파일 선택기를 열 수 없습니다. 네트워크를 확인하고 다시 시도해 주세요.",
-      "timeout": "요청에 시간이 너무 오래 걸렸습니다. 다시 시도해 주세요.",
-      "unavailable": "Microsoft를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
+      "pickerLoadFailed": "파일 선택기를 열 수 없습니다. 네트워크를 확인하고 다시 시도해 주세요",
+      "timeout": "요청 시간이 초과되었습니다.",
+      "unavailable": "Microsoft를 일시적으로 사용할 수 없습니다."
     },
     "source": {
       "finalizing": "액세스 권한을 부여하는 중…",
@@ -993,20 +1022,23 @@
       "label": "이 문서를 어떻게 첨부하시겠습니까?",
       "linkAction": "출처 연결",
       "linkPrompt": "이 출처에서 파일을 선택하려면 계정을 연결하세요.",
-      "linkPromptMicrosoft": "OneDrive/SharePoint 파일을 탐색하려면 Microsoft 계정을 연결하세요",
+      "linkPromptMicrosoft": "OneDrive/SharePoint 파일을 탐색하려면 Microsoft 계정을 연결하세요.",
       "pickAction": "파일 선택",
       "pickActionMicrosoft": "OneDrive/SharePoint 탐색",
-      "pickedFile": "선택된 파일: {{ fileName }}",
+      "pickedFile": "선택된 파일: {{ filename }}.",
       "repickAction": "다른 파일 선택",
       "url": "URL 붙여넣기"
-    }
+    },
+    "create.failed": "문서를 생성할 수 없습니다",
+    "postCreate.hint": "파일을 공유한 후 위의 \"액세스 재확인\"을 클릭하세요. 또한 이 대화 상자를 닫고 나중에 문서 편집 보기에서 재확인할 수 있습니다."
   },
   "documentSources": {
     "add": "출처 연결",
     "callback": {
       "error": "출처를 연결할 수 없습니다. 출처: {{ source }}. 사유: {{ reason }}",
       "linking": "계정을 연결하는 중...",
-      "success": "출처가 연결되었습니다. 출처: {{ source }}"
+      "success": "출처가 연결되었습니다. 출처: {{ source }}.",
+      "notConfigured": "{{ Source }}이(가) 이 서버에 구성되어 있지 않습니다. 관리자에게 문의하세요."
     },
     "columns": {
       "account": "계정",
@@ -1016,12 +1048,12 @@
     },
     "empty": {
       "description": "클라우드 스토리지 계정을 연결하여 Google Drive 및 추후 제공되는 다른 서비스의 문서를 첨부하세요.",
-      "title": "연결된 문서 출처가 없습니다"
+      "title": "연결된 문서 출처가 없습니다."
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "연결됨 {{ relativeTime }}",
+    "linkedAt": "연결됨 {{ relativetime }}.",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1047,7 +1079,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "선택한 요소 중 하나 이상에 메타데이터 항목이 있습니다. 이 요소들을 삭제하면 메타데이터가 영구적으로 제거됩니다. 계속하시겠습니까?",
-      "title": "메타데이터가 손실됩니다"
+      "title": "메타데이터가 손실됩니다."
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "다이어그램 설명 입력",
@@ -1056,9 +1088,9 @@
     "editDiagramName": "다이어그램 이름을 편집하려면 클릭하세요",
     "editDisabledDuringCollaboration": "공동 작업 중에는 편집이 비활성화됩니다",
     "embedding": {
-      "cannotEmbedIntoTextBox": "텍스트 상자에 도형을 포함할 수 없습니다",
-      "circularEmbeddingPrevented": "순환 포함은 허용되지 않습니다",
-      "securityBoundaryRestriction": "보안 경계는 다른 보안 경계에만 포함될 수 있습니다"
+      "cannotEmbedIntoTextBox": "텍스트 상자에 도형을 포함할 수 없습니다.",
+      "circularEmbeddingPrevented": "순환 포함은 허용되지 않습니다.",
+      "securityBoundaryRestriction": "보안 경계는 다른 보안 경계에만 포함될 수 있습니다."
     },
     "flowLabel": "흐름",
     "helpDialog": {
@@ -1087,11 +1119,11 @@
         "addTextbox": "텍스트 상자 추가",
         "deleteSelected": "선택 항목 삭제",
         "export": "내보내기...",
-        "help": "도움말",
+        "help": "도움말...",
         "redo": "다시 실행",
-        "showClipboard": "클립보드 표시",
-        "showGraphData": "그래프 데이터 표시",
-        "showHistory": "기록 표시",
+        "showClipboard": "클립보드 표시...",
+        "showGraphData": "그래프 데이터 표시...",
+        "showHistory": "기록 표시...",
         "undo": "실행 취소",
         "zoomToFit": "화면에 맞게 확대/축소"
       }
@@ -1125,7 +1157,7 @@
     "loggingInWith": "{{provider}}(으)로 로그인 중...",
     "loginWith": "로그인",
     "noProvidersConfigured": "구성된 인증 공급자가 없습니다.",
-    "oauthFailed": "OAuth 인증에 실패했습니다. 다시 시도해 주세요.",
+    "oauthFailed": "OAuth 인증에 실패했습니다.",
     "oauthProvidersTitle": "OAuth 로그인 제공자",
     "samlProvidersTitle": "SAML 로그인 제공자",
     "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
@@ -1133,9 +1165,9 @@
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI 로그인",
     "tmiDialog": {
-      "errorMaxLength": "사용자 이름은 최대 20자여야 합니다",
-      "errorMinLength": "사용자 이름은 최소 3자여야 합니다",
-      "errorPattern": "사용자 이름은 문자, 숫자, 마침표, 밑줄, 퍼센트 기호, 더하기 기호, 하이픈만 포함해야 합니다",
+      "errorMaxLength": "사용자 이름은 최대 20자여야 합니다.",
+      "errorMinLength": "사용자 이름은 최소 3자여야 합니다.",
+      "errorPattern": "사용자 이름은 문자, 숫자, 마침표, 밑줄, 퍼센트 기호, 더하기 기호, 하이픈만 포함해야 합니다.",
       "signIn": "로그인",
       "title": "TMI Provider로 로그인",
       "usernameLabel": "사용자 이름",
@@ -1144,7 +1176,7 @@
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
   },
   "mermaidViewer": {
-    "exportFailed": "다이어그램 내보내기에 실패했습니다",
+    "exportFailed": "다이어그램 내보내기에 실패했습니다.",
     "fitToScreen": "화면에 맞추기",
     "openInViewer": "뷰어에서 열기",
     "resetZoom": "확대/축소 초기화",
@@ -1153,7 +1185,7 @@
   },
   "navbar": {
     "admin": "관리",
-    "appTitle": "TMI: 향상된 위협 모델링",
+    "appTitle": "TMI: 향상된 위협 모델링.",
     "copyUserEmail": "사용자 이메일을 클립보드에 복사",
     "dashboard": "대시보드",
     "feedback": "버그 신고, 기능 요청 또는 피드백 제공",
@@ -1171,7 +1203,7 @@
       "logout": "로그아웃"
     },
     "serverStatus": {
-      "noServerConfigured": "서버 구성 안 됨",
+      "noServerConfigured": "서버 구성 안 됨.",
       "serverConnected": "서버 연결됨",
       "serverDegraded": "서버 성능 저하",
       "serverError": "서버 오류",
@@ -1179,14 +1211,14 @@
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} 자",
+    "characterCount": "{{Current}} / {{max}} 자",
     "content": "내용",
-    "contentPlaceholder": "마크다운 형식으로 노트 내용을 입력하세요. GitHub Flavored Markdown과 Mermaid 다이어그램을 지원합니다.",
+    "contentPlaceholder": "마크다운 형식으로 노트 내용을 입력하세요. GitHub Flavored Markdown과 Mermaid 다이어그램을 지원합니다",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "설명 (선택사항)",
     "editMode": "편집 모드",
     "errors": {
-      "clipboardAccessDenied": "클립보드 접근이 거부되었습니다"
+      "clipboardAccessDenied": "클립보드 접근이 거부되었습니다."
     },
     "namePlaceholder": "노트 이름을 입력하세요",
     "previewMode": "미리보기 모드",
@@ -1206,9 +1238,9 @@
     },
     "deleteConfirmMessage": "노트 \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 실행 취소할 수 없습니다.",
     "deleteConfirmTitle": "노트 삭제",
-    "noNotes": "아직 노트가 없습니다",
-    "sharable": "모든 멤버에게 표시",
-    "sharableTooltip": "활성화하면 이 노트는 모든 팀/프로젝트 멤버에게 표시됩니다. 비활성화하면 관리자와 보안 검토자만 볼 수 있습니다.",
+    "noNotes": "아직 노트가 없습니다.",
+    "sharable": "모든 멤버에게 표시.",
+    "sharableTooltip": "활성화하면 이 노트는 모든 팀/프로젝트 멤버에게 표시됩니다. 비활성화하면 관리자와 보안 검토자만 볼 수 있습니다",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "노트 ({{count}})"
   },
@@ -1216,35 +1248,35 @@
     "actions": {
       "login": "로그인"
     },
-    "operationError": "{{operation}} 실패: {{errorMessage}}",
+    "operationError": "{{operation}} 실패: {{errormessage}}.",
     "operationFailed": "작업 실패",
     "operations": {
       "collaboration": "협업",
       "denyPresenterRequest": "발표자 요청 거부",
-      "sendPresenterRequest": "발표자 요청 전송",
+      "sendPresenterRequest": "발표자 요청 전송.",
       "startCollaboration": "협업 시작",
       "updatePresenter": "발표자 업데이트"
     },
     "presenter": {
-      "assigned": "{{user}}님이 발표자가 되었습니다",
-      "assignedYou": "이제 발표자입니다",
-      "cleared": "발표자 모드가 해제되었습니다",
-      "cursorMoved": "발표자 커서가 이동했습니다",
-      "modeChanged": "발표자 모드가 변경되었습니다",
-      "privilegesRequested": "발표자 권한이 요청되었습니다",
-      "removed": "{{user}}님이 더 이상 발표자가 아닙니다",
-      "removedYou": "더 이상 발표자가 아닙니다",
-      "requestDenied": "발표자 요청이 거부되었습니다",
-      "requestSent": "세션 소유자에게 발표자 요청을 보냈습니다",
-      "requesting": "{{user}}님이 발표자 권한을 요청하고 있습니다",
-      "selectionChanged": "발표자 선택이 변경되었습니다"
+      "assigned": "{{User}}님이 발표자가 되었습니다.",
+      "assignedYou": "이제 발표자입니다.",
+      "cleared": "발표자 모드가 해제되었습니다.",
+      "cursorMoved": "발표자 커서가 이동했습니다.",
+      "modeChanged": "발표자 모드가 변경되었습니다.",
+      "privilegesRequested": "발표자 권한이 요청되었습니다.",
+      "removed": "{{User}}님이 더 이상 발표자가 아닙니다.",
+      "removedYou": "더 이상 발표자가 아닙니다.",
+      "requestDenied": "발표자 요청이 거부되었습니다.",
+      "requestSent": "세션 소유자에게 발표자 요청을 보냈습니다.",
+      "requesting": "{{User}}님이 발표자 권한을 요청하고 있습니다.",
+      "selectionChanged": "발표자 선택이 변경되었습니다."
     },
     "session": {
-      "disconnected": "협업 세션에서 연결이 끊겼습니다",
-      "reconnected": "협업 세션에 다시 연결되었습니다",
+      "disconnected": "협업 세션에서 연결이 끊겼습니다.",
+      "reconnected": "협업 세션에 다시 연결되었습니다.",
       "reconnecting": "협업 세션에 다시 연결 중...",
-      "userRemoved": "{{user}}님이 세션에서 제거되었습니다",
-      "youWereRemoved": "협업 세션에서 제거되었습니다"
+      "userRemoved": "{{User}}님이 세션에서 제거되었습니다.",
+      "youWereRemoved": "협업 세션에서 제거되었습니다."
     },
     "unknownError": "알 수 없는 오류",
     "websocket": {
@@ -1256,18 +1288,18 @@
       "disconnected": "협업 서버에서 연결이 끊겼습니다. 변경 사항은 로컬에 저장됩니다.",
       "messageSendFailed": "메시지 전송에 실패했습니다. 변경 사항이 동기화되지 않을 수 있습니다.",
       "multipleFailed": "여러 번 시도 후 연결에 실패했습니다. 오프라인 모드로 작동합니다.",
-      "unknownError": "알 수 없는 WebSocket 오류가 발생했습니다"
+      "unknownError": "알 수 없는 WebSocket 오류가 발생했습니다."
     }
   },
   "pagination": {
-    "ariaLabel": "항목 페이지 선택",
+    "ariaLabel": "항목 페이지 선택.",
     "firstPage": "첫 페이지",
-    "itemsPerPage": "페이지당 항목 수",
+    "itemsPerPage": "페이지당 항목 수.",
     "lastPage": "마지막 페이지",
     "nextPage": "다음 페이지",
     "previousPage": "이전 페이지",
     "rangeEmpty": "{{length}}개 중 0개",
-    "rangeLabel": "{{length}}개 중 {{startIndex}} - {{endIndex}}"
+    "rangeLabel": "{{length}}개 중 {{Startindex}} - {{endindex}}"
   },
   "presenter": {
     "startPresenting": "발표 시작",
@@ -1280,7 +1312,7 @@
     "complianceTitle": "법률 준수",
     "contactContent": {
       "part1": "본 개인정보 처리방침에 대해 질문이 있으시면 ",
-      "part2": " 페이지의 연락처 정보를 통해 본 웹사이트 운영자에게 문의하세요."
+      "part2": " 페이지"
     },
     "contactTitle": "문의하기",
     "dataSecurityContent1": "운영자는 전송 중 및 저장 시 암호화, 보안 인증 프로토콜, 정기적인 보안 업데이트를 포함한 업계 표준 보안 조치를 구현하여 개인 데이터를 보호합니다. 정보에 대한 액세스는 알 필요가 있는 경우에만 권한이 부여된 담당자로 제한됩니다.",
@@ -1312,7 +1344,7 @@
     "userRightsTitle": "사용자 권리"
   },
   "projects": {
-    "addButton": "프로젝트 추가",
+    "addButton": "프로젝트 추가...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1323,9 +1355,9 @@
     "createDialog": {
       "descriptionPlaceholder": "프로젝트 설명을 입력하세요",
       "namePlaceholder": "프로젝트 이름을 입력하세요",
-      "nameRequired": "프로젝트 이름은 필수입니다",
+      "nameRequired": "프로젝트 이름은 필수입니다.",
       "statusPlaceholder": "예: active, planning, archived",
-      "teamRequired": "팀은 필수입니다",
+      "teamRequired": "팀은 필수입니다.",
       "title": "프로젝트 생성",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1349,15 +1381,15 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "프로젝트를 찾을 수 없음",
+    "noProjects": "프로젝트를 찾을 수 없음.",
     "picker": {
       "label": "{{common.project}}",
       "none": "프로젝트 없음"
     },
     "relatedProjectsDialog": {
-      "addRelated": "관련 프로젝트 추가",
+      "addRelated": "관련 프로젝트 추가.",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "관련 프로젝트 없음",
+      "noRelated": "관련 프로젝트 없음.",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "프로젝트 선택",
       "title": "관련 프로젝트"
@@ -1377,8 +1409,8 @@
       "planning": "계획 중"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "상태로 필터링",
-    "subtitle": "프로젝트, 관계 및 메타데이터 생성, 편집 및 관리",
+    "statusFilterLabel": "상태로 필터링.",
+    "subtitle": "프로젝트, 관계 및 메타데이터를 생성, 편집 및 관리합니다.",
     "teamFilterLabel": "팀으로 필터링",
     "title": "프로젝트 관리"
   },
@@ -1386,18 +1418,18 @@
     "cvss": "CVSS",
     "cweIds": "CWE IDs",
     "diagramImageUnavailable": "다이어그램 이미지를 사용할 수 없습니다",
-    "diagramRenderFailed": "다이어그램을 렌더링할 수 없습니다",
-    "generatedAt": "보고서 생성됨",
+    "diagramRenderFailed": "다이어그램을 렌더링할 수 없습니다.",
+    "generatedAt": "보고서 생성됨.",
     "linkedAsset": "연결된 자산",
     "linkedDiagram": "연결된 다이어그램",
     "pageOf": "페이지 {{current}} / {{total}}",
     "refLabel": "참조",
-    "summaryCreatedAt": "위협 모델 생성 일시",
-    "summaryCreatedBy": "위협 모델 생성자",
+    "summaryCreatedAt": "위협 모델 생성 일시.",
+    "summaryCreatedBy": "위협 모델 생성자.",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "위협 모델 최종 수정",
+    "summaryLastModified": "위협 모델 최종 수정.",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "위협 모델 상태"
+    "summaryStatus": "위협 모델 상태."
   },
   "sessionExpiry": {
     "extendButton": "세션 연장",
@@ -1405,8 +1437,8 @@
     "logoutButton": "지금 로그아웃",
     "message": "세션이 곧 만료됩니다. 세션을 연장하시겠습니까, 아니면 지금 로그아웃하시겠습니까?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}}초"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}}초"
     },
     "title": "세션이 곧 만료됩니다"
   },
@@ -1431,13 +1463,13 @@
       "description": "이 취약점의 현재 악용 상태는 어떻게 됩니까?",
       "name": "악용",
       "none": "{{common.none}}",
-      "noneDesc": "활발한 악용 증거가 없고 공개 PoC가 없습니다.",
+      "noneDesc": "활발한 악용 증거가 없고 공개 개념증명(PoC)이 없습니다",
       "poc": "공개 PoC",
       "pocDesc": "일반적인 공개 PoC가 존재하거나(예: Metasploit 또는 ExploitDB), 잘 알려진 악용 방법이 문서화되어 있습니다."
     },
     "methodology": "공급자",
     "next": "다음",
-    "openCalculator": "SSVC 추가",
+    "openCalculator": "SSVC 추가...",
     "publicSafetyImpact": {
       "description": "이 취약점의 악용이 공공 안전에 위험을 초래합니까?",
       "minimal": "최소",
@@ -1483,10 +1515,10 @@
       "yes": "예, 기밀로 표시"
     },
     "confirmation": {
-      "backToSurveys": "설문 목록으로",
+      "backToSurveys": "설문 목록으로.",
       "message": "설문이 성공적으로 제출되었습니다.",
       "title": "설문 제출 완료",
-      "viewResponses": "내 응답 보기"
+      "viewResponses": "내 응답 보기."
     },
     "continueDraft": "임시 저장본 계속하기",
     "fill": {
@@ -1495,9 +1527,9 @@
     },
     "list": {
       "deleteDraft": "초안 삭제",
-      "draftStarted": "초안 시작 {{time}}",
-      "errorLoadingSurveys": "설문을 불러오지 못했습니다",
-      "lastModified": "마지막 수정 {{time}}",
+      "draftStarted": "초안 시작 {{time}}.",
+      "errorLoadingSurveys": "설문을 불러오지 못했습니다.",
+      "lastModified": "마지막 수정 {{time}}.",
       "loadingSurveys": "설문 로딩 중...",
       "noSurveysMessage": "현재 활성화된 설문이 없습니다. 나중에 다시 확인해 주세요.",
       "noSurveysTitle": "이용 가능한 설문 없음",
@@ -1509,8 +1541,8 @@
     "myResponses": "내 응답",
     "noMatchingResponses": "일치하는 응답 없음",
     "noMatchingResponsesMessage": "선택한 필터와 일치하는 응답이 없습니다.",
-    "noResponses": "아직 제출한 설문 응답이 없습니다",
-    "noSurveys": "사용 가능한 설문이 없습니다",
+    "noResponses": "아직 제출한 설문 응답이 없습니다.",
+    "noSurveys": "사용 가능한 설문이 없습니다.",
     "responses": {
       "continueEditing": "편집 계속하기",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1519,11 +1551,11 @@
       "noResponsesMessage": "완료한 설문조사가 없습니다. 설문조사 페이지에서 시작하세요.",
       "noResponsesTitle": "응답 없음",
       "pageTitle": "내 설문조사 응답",
-      "responseCount": "{{count}}개 응답",
-      "responseCountPlural": "{{count}}개 응답"
+      "responseCount": "{{Count}}개 응답",
+      "responseCountPlural": "{{Count}}개 응답"
     },
     "saveDraft": "임시 저장",
-    "startNew": "설문 시작",
+    "startNew": "설문 시작...",
     "status": {
       "draft": "임시 저장",
       "needsRevision": "수정 필요",
@@ -1541,7 +1573,7 @@
     "viewResponse": "응답 보기"
   },
   "teams": {
-    "addButton": "팀 추가",
+    "addButton": "팀 추가...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "수정됨",
@@ -1554,8 +1586,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "팀 이름을 입력하세요",
-      "nameRequired": "팀 이름은 필수입니다",
-      "statusPlaceholder": "예: active, archived",
+      "nameRequired": "팀 이름은 필수입니다.",
+      "statusPlaceholder": "예: active, archived.",
       "title": "팀 생성",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1574,7 +1606,7 @@
     "filterLabel": "팀 필터",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "멤버",
+      "members": "멤버...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1588,13 +1620,13 @@
       "role": "역할",
       "title": "팀 멤버"
     },
-    "noTeams": "팀을 찾을 수 없습니다",
+    "noTeams": "팀을 찾을 수 없습니다.",
     "relatedTeamsDialog": {
-      "addRelated": "관련 팀 추가",
+      "addRelated": "관련 팀 추가.",
       "customRelationship": "사용자 정의 관계",
-      "noRelated": "관련 팀 없음",
+      "noRelated": "관련 팀 없음.",
       "relationship": "관계",
-      "removeRelated": "관련 팀 제거",
+      "removeRelated": "관련 팀 제거.",
       "selectTeam": "팀 선택",
       "title": "관련 팀"
     },
@@ -1610,7 +1642,7 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "책임자 추가",
-      "noParties": "책임자 없음",
+      "noParties": "책임자 없음.",
       "removeParty": "책임자 제거",
       "title": "책임자"
     },
@@ -1631,25 +1663,25 @@
       "splitting": "분할 중",
       "winding_down": "종료 중"
     },
-    "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리",
+    "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리합니다.",
     "title": "팀 관리"
   },
   "threatEditor": {
-    "addMapping": "매핑 추가",
+    "addMapping": "매핑 추가...",
     "createNewThreat": "새 위협 생성",
-    "cvssVectorPlaceholder": "예: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "CWE ID 입력 (예: CWE-79)",
+    "cvssVectorPlaceholder": "예: cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
+    "cweIdPlaceholder": "CWE ID 입력 (예: cwe-79)",
     "cweMappings": "CWE 매핑",
     "frameworkMappingPicker": {
       "notApplicable": "현재 셀 유형에 적용되지 않음",
       "title": "프레임워크 매핑 선택"
     },
-    "frameworkMappings": "위협 모델 프레임워크 매핑",
+    "frameworkMappings": "위협 모델 프레임워크 매핑.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "자산과 연결되지 않음",
-    "notAssociatedWithCell": "셀과 연결되지 않음",
-    "notAssociatedWithDiagram": "다이어그램과 연결되지 않음",
+    "notAssociatedWithAsset": "자산과 연결되지 않음.",
+    "notAssociatedWithCell": "셀과 연결되지 않음.",
+    "notAssociatedWithDiagram": "다이어그램과 연결되지 않음.",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1667,7 +1699,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "연기됨 (P4)",
+      "high": "높음 (P1)",
+      "immediate": "즉시 (P0)",
+      "low": "낮음 (P3)",
+      "medium": "중간 (P2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1682,7 +1719,7 @@
       "high": "높음",
       "high.description": "상당한 영향 또는 높은 가능성; 주요 무단 액세스, 권한 상승 또는 서비스 중단 가능.",
       "informational": "정보성",
-      "informational.description": "직접적인 악용 불가; 권장 사항, 모범 사례 이탈 또는 구성 개선.",
+      "informational.description": "직접적인 악용 불가; 권장 사항, 모범 사례 이탈 또는 구성 개선",
       "low": "낮음",
       "low.description": "최소한의 영향 또는 낮은 가능성; 비즈니스 영향이 미미하며 특정 조건이나 사용자 상호작용 필요.",
       "medium": "중간",
@@ -1710,25 +1747,31 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "거짓 양성",
+      "mitigation_in_progress": "완화 진행 중.",
+      "mitigation_planned": "완화 계획됨",
+      "verification_pending": "검증 대기 중"
+    },
+    "addCvssEntry": "CVSS 항목 추가.",
+    "cvssVector": "CVSS 벡터"
   },
   "threatModels": {
     "addPermission": "권한 추가",
     "branch": "브랜치",
-    "changeSecurityReviewer": "보안 검토자 변경",
+    "changeSecurityReviewer": "보안 검토자 변경...",
     "clearSecurityReviewer": "보안 검토자 해제",
     "commit": "커밋",
     "confidentialProject": "기밀 프로젝트",
-    "createFirstButton": "첫 번째 위협 모델 만들기",
+    "createFirstButton": "첫 번째 위협 모델 만들기...",
     "createNewDiagram": "새 다이어그램 생성",
-    "createNewRepository": "저장소 참조 추가",
+    "createNewRepository": "저장소 참조 추가...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "데이터 흐름 다이어그램",
-    "deleteError": "위협 모델 삭제 실패: {{error}}",
-    "deleteSuccess": "위협 모델이 삭제되었습니다: {{name}}",
+    "deleteError": "위협 모델 삭제 실패: {{error}}.",
+    "deleteSuccess": "위협 모델이 삭제되었습니다: {{name}}.",
     "deleteWarningPermanent": "이 작업은 취소할 수 없으며 관련된 모든 다이어그램, 위협 및 메타데이터가 영구적으로 삭제됩니다.",
     "descriptionPlaceholder": "이 위협 모델의 목적 및 범위를 설명하세요",
     "details": "위협 모델 세부정보",
@@ -1748,31 +1791,31 @@
     "documentUrl": "문서 URL",
     "export": "내보내기",
     "exportDialog": {
-      "error": "내보내기 데이터 준비에 실패했습니다. 다시 시도하세요.",
+      "error": "내보내기 데이터 준비에 실패했습니다.",
       "preparing": "내보내기 데이터 준비 중...",
       "ready": "내보내기 준비 완료. 다운로드하려면 저장을 클릭하세요.",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "위협 모델 내보내기"
     },
-    "fileSizeExceeded": "파일이 최대 가져오기 크기를 초과합니다: {{maxSize}} MB",
+    "fileSizeExceeded": "파일이 최대 가져오기 크기를 초과합니다: {{maxsize}} MB.",
     "frameworkDisabledHint": "위협이 있을 때는 프레임워크를 변경할 수 없습니다",
     "idLabel": "{{common.id}}",
-    "importError": "위협 모델 가져오기 실패: {{error}}",
-    "importFormatError": "잘못된 위협 모델 형식: 필수 필드 누락 (id, name)",
-    "importSuccess": "위협 모델을 성공적으로 가져왔습니다: {{name}}",
-    "importValidationError": "위협 모델 유효성 검사 실패: {{errors}}",
+    "importError": "위협 모델 가져오기 실패: {{error}}.",
+    "importFormatError": "잘못된 위협 모델 형식: 필수 필드 누락 (ID, name).",
+    "importSuccess": "위협 모델을 성공적으로 가져왔습니다: {{name}}.",
+    "importValidationError": "위협 모델 유효성 검사 실패: {{errors}}.",
     "importing": "위협 모델 가져오는 중...",
     "issueUriHint": "외부 시스템에서 이 위협 모델을 추적하기 위한 URL을 입력하세요",
     "newThreatModel": "새 위협 모델",
-    "noAssets": "추가된 자산 없음",
-    "noDiagrams": "추가된 다이어그램 없음",
-    "noDocuments": "추가된 문서 없음",
+    "noAssets": "추가된 자산 없음.",
+    "noDiagrams": "추가된 다이어그램 없음.",
+    "noDocuments": "추가된 문서 없음.",
     "noItemsMessage": "아직 위협 모델이 없습니다.",
-    "noNotes": "추가된 노트 없음",
-    "noPermissions": "정의된 권한 없음",
-    "noRepositories": "추가된 저장소 없음",
-    "noThreats": "추가된 위협 없음",
+    "noNotes": "추가된 노트 없음.",
+    "noPermissions": "정의된 권한 없음.",
+    "noRepositories": "추가된 저장소 없음.",
+    "noThreats": "추가된 위협 없음.",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
@@ -1800,9 +1843,9 @@
     "sections": {
       "audit": "감사",
       "inputs": "입력",
-      "inputsDescription": "분석 대상 시스템을 설명하는 자산, 문서 및 소스 코드 저장소",
+      "inputsDescription": "분석 대상 시스템을 설명하는 자산, 문서 및 소스 코드 저장소.",
       "outputs": "출력",
-      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협",
+      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협.",
       "reviewProcess": "검토 프로세스"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1828,28 +1871,34 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "진행 중",
+      "not_started": "시작 안 됨",
+      "pending_review": "검토 대기 중",
+      "remediation_in_progress": "수정 진행 중.",
+      "remediation_required": "수정 필요",
+      "verification_pending": "검증 대기 중"
     },
-    "statusLastUpdated": "상태 마지막 업데이트",
+    "statusLastUpdated": "상태 마지막 업데이트.",
     "tag": "태그",
     "threatModelFramework": "위협 모델 프레임워크",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "자산 추가",
-      "addDiagram": "다이어그램 추가",
-      "addDocument": "문서 추가",
+      "addAsset": "자산 추가...",
+      "addDiagram": "다이어그램 추가...",
+      "addDocument": "문서 추가...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "자산은 데이터, 하드웨어, 소프트웨어, 인프라, 서비스 또는 인력과 같이 보호가 필요한 시스템 내의 가치 있는 리소스입니다.",
-      "diagramsCardTitle": "TMI의 다이어그램은 시스템 내 데이터 이동 및 프로세스를 기계가 읽을 수 있는 형태로 표현하여 수동 및 자동 보안 분석을 모두 가능하게 합니다.",
-      "documentsCardTitle": "문서 참조는 TMI 외부에 저장된 문서에 대한 링크입니다. 관련 문서는 분석할 시스템을 설명하며 보안 분석가와 자동화된 분석 프로세스 모두에서 사용할 수 있습니다.",
+      "assetsCardTitle": "자산은 데이터, 하드웨어, 소프트웨어, 인프라, 서비스 또는 인력과 같이 보호가 필요한 시스템 내의 가치 있는 리소스입니다",
+      "diagramsCardTitle": "TMI의 다이어그램은 시스템 내 데이터 이동 및 프로세스를 기계가 읽을 수 있는 형태로 표현하여 수동 및 자동 보안 분석을 모두 가능하게 합니다",
+      "documentsCardTitle": "문서 참조는 TMI 외부에 저장된 문서에 대한 링크입니다. 관련 문서는 분석할 시스템을 설명하며 보안 분석가와 자동화된 분석 프로세스 모두에서 사용할 수 있습니다",
       "downloadModel": "모델 다운로드",
       "dropToCreateDocument": "드롭하여 생성",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "이슈 URI를 설정하려면 놓기",
       "import": "가져오기",
-      "notesCardTitle": "노트는 위협 모델 내에 완전히 포함된 마크다운 형식의 텍스트로, 보안 분석가 및 자동화된 분석 프로세스의 메모와 주석을 캡처하는 데 사용됩니다.",
-      "repositoriesCardTitle": "저장소는 시스템의 소스 코드가 관리되는 소스 코드 저장소에 대한 링크입니다.",
-      "threatsCardTitle": "위협은 시스템의 취약점이나 약점을 악용하여 기밀성, 무결성, 가용성 또는 기타 보안 목표를 손상시키는 잠재적인 부정적 사건 또는 행동입니다. TMI에서 위협 개체에는 위협과 관련된 위험의 유형 및 수준에 대한 정보와 위협을 완화하는 데 필요한 작업을 추적하는 정보도 포함됩니다."
+      "notesCardTitle": "노트는 위협 모델 내에 완전히 포함된 마크다운 형식의 텍스트로, 보안 분석가 및 자동화된 분석 프로세스의 메모와 주석을 캡처하는 데 사용됩니다",
+      "repositoriesCardTitle": "저장소는 시스템의 소스 코드가 관리되는 소스 코드 저장소에 대한 링크입니다",
+      "threatsCardTitle": "위협은 시스템의 취약점이나 약점을 악용하여 기밀성, 무결성, 가용성 또는 기타 보안 목표를 손상시키는 잠재적인 부정적 사건 또는 행동입니다. TMI에서 위협 객체에는 위협과 관련된 위험의 유형 및 수준에 대한 정보와 위협을 완화하는 데 필요한 작업을 추적하는 정보도 포함됩니다"
     },
     "viewDiagramName": "다이어그램 속성 보기",
     "yourThreatModels": "내 위협 모델"
@@ -1871,7 +1920,7 @@
   "tos": {
     "contactInfo": {
       "part1": "본 약관에 대해 질문이 있으시면 ",
-      "part2": " 페이지의 연락처 정보를 통해 본 웹사이트 운영자에게 문의하세요."
+      "part2": " 페이지"
     },
     "intro": {
       "part1": "TMI 인스턴스에 오신 것을 환영합니다. 본 이용약관(\"약관\")은 본 웹사이트의 ",
@@ -1939,9 +1988,9 @@
         "question": "질문"
       },
       "markdownSupported": "Markdown 지원",
-      "noNotes": "아직 트리아지 노트가 없습니다",
-      "noResponses": "기록된 응답 없음",
-      "noRevisionNotes": "수정 노트 없음",
+      "noNotes": "아직 트리아지 노트가 없습니다.",
+      "noResponses": "기록된 응답 없음.",
+      "noRevisionNotes": "수정 노트 없음.",
       "note": "노트",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "노트 내용 입력...",
@@ -1969,11 +2018,11 @@
       "approve": "승인",
       "approveSelected": "선택 항목 승인",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "응답을 불러오지 못했습니다",
+      "errorLoadingResponses": "응답을 불러오지 못했습니다.",
       "loadingResponses": "응답 로딩 중...",
-      "noResponsesFiltered": "필터와 일치하는 응답이 없습니다",
+      "noResponsesFiltered": "필터와 일치하는 응답이 없습니다.",
       "noResponsesTitle": "응답 없음",
-      "noResponsesToTriage": "분류할 설문 응답이 없습니다",
+      "noResponsesToTriage": "분류할 설문 응답이 없습니다.",
       "notSubmitted": "미제출",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "제출자 또는 설문조사로 검색...",
@@ -1981,16 +2030,16 @@
       "submitter": "제출자"
     },
     "markInReview": "검토 중으로 표시",
-    "markPendingTriage": "트리아지 대기로 표시",
+    "markPendingTriage": "트리아지 대기로 표시.",
     "messages": {
-      "approveError": "응답 승인에 실패했습니다",
+      "approveError": "응답 승인에 실패했습니다.",
       "approveSuccess": "응답이 승인되었습니다",
-      "createThreatModelError": "위협 모델 생성에 실패했습니다",
-      "createThreatModelSuccess": "위협 모델이 성공적으로 생성되었습니다",
-      "returnForRevisionError": "수정 요청 반환에 실패했습니다",
-      "returnForRevisionSuccess": "응답이 수정을 위해 반환되었습니다"
+      "createThreatModelError": "위협 모델 생성에 실패했습니다.",
+      "createThreatModelSuccess": "위협 모델이 성공적으로 생성되었습니다.",
+      "returnForRevisionError": "수정 요청 반환에 실패했습니다.",
+      "returnForRevisionSuccess": "응답이 수정을 위해 반환되었습니다."
     },
-    "noResponses": "트리아지할 응답이 없습니다",
+    "noResponses": "트리아지할 응답이 없습니다.",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "노트 내용 입력 (Markdown 지원)...",
@@ -2002,14 +2051,14 @@
       }
     },
     "queue": "트리아지 대기열",
-    "returnToSubmitted": "제출됨으로 되돌리기",
+    "returnToSubmitted": "제출됨으로 되돌리기.",
     "reviewerAssignment": {
       "assign": "할당",
       "assignToMe": "자신에게 할당",
-      "errorLoading": "할당되지 않은 위협 모델을 불러오지 못했습니다",
+      "errorLoading": "할당되지 않은 위협 모델을 불러오지 못했습니다.",
       "loading": "할당되지 않은 검토 로딩 중...",
       "noUnassigned": "할당되지 않은 검토 없음",
-      "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다",
+      "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다.",
       "noUnassignedFiltered": "필터와 일치하는 위협 모델이 없습니다",
       "reviewer": "보안 검토자",
       "reviewerPlaceholder": "검토자로 필터링...",
@@ -2019,7 +2068,7 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "수정이 필요한 사항을 설명하는 노트를 제공하십시오. 제출자는 응답을 검토할 때 이 노트를 보게 됩니다.",
+      "description": "수정이 필요한 사항을 설명하는 노트를 제공하십시오. 제출자는 응답을 검토할 때 이 노트를 보게 됩니다",
       "hint": "필수 — 필요한 변경 사항 설명",
       "label": "수정 노트",
       "placeholder": "필요한 수정 사항 설명...",
@@ -2052,15 +2101,15 @@
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "선택 사항: 이 자격 증명의 용도를 설명하세요",
-        "descriptionPlaceholder": "CI/CD 파이프라인 통합에 사용",
-        "descriptionTooLong": "설명은 500자 이하여야 합니다",
+        "descriptionPlaceholder": "CI/CD 파이프라인 통합에 사용됩니다.",
+        "descriptionTooLong": "설명은 500자 이하여야 합니다.",
         "expiresAt": "만료 날짜",
         "expiresAtHint": "선택 사항: 만료 없음으로 하려면 비워두세요",
         "name": "{{common.name}}",
         "nameHint": "이 자격 증명의 설명적인 이름",
         "namePlaceholder": "내 API 자격 증명",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "이름은 100자 이하여야 합니다",
+        "nameTooLong": "이름은 100자 이하여야 합니다.",
         "title": "클라이언트 자격 증명 생성"
       },
       "createdOn": "{{common.created}}",
@@ -2070,7 +2119,7 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "마지막 사용",
       "neverExpires": "만료되지 않음",
-      "noCredentials": "클라이언트 자격 증명이 없습니다",
+      "noCredentials": "클라이언트 자격 증명이 없습니다.",
       "noCredentialsDescription": "TMI API에 프로그래밍 방식으로 접근하려면 자격 증명을 생성하세요.",
       "secretDialog": {
         "title": "클라이언트 자격 증명 생성됨",
@@ -2096,7 +2145,7 @@
       "title": "모든 데이터 삭제",
       "validation": "삭제 요청을 확인하려면 여기에 표시된 대로 이메일 주소를 정확히 입력하세요:"
     },
-    "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화",
+    "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화.",
     "displayPreferences": "디스플레이 설정",
     "downloadLog": {
       "hint": "문제 해결을 위해 최근 애플리케이션 로그 항목을 JSONL 파일로 다운로드합니다.",
@@ -2106,23 +2155,23 @@
     "marginSize": {
       "narrow": "좁게",
       "standard": "표준",
-      "title": "보고서 여백 크기 설정",
+      "title": "보고서 여백 크기 설정.",
       "wide": "넓게"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "보고서 페이지 크기 설정",
+      "title": "보고서 페이지 크기 설정.",
       "usLetter": "US Letter"
     },
     "reportPreferences": "보고서 설정",
     "sections": {
       "developer": "개발자",
       "diagramEditor": "다이어그램 편집기",
-      "diagramLayout": "Diagram Layout",
+      "diagramLayout": "다이어그램 레이아웃",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "개발자 도구 표시",
-    "showShapeBordersWithIcons": "아이콘이 표시될 때 도형 채우기 및 테두리 표시",
+    "showDeveloperTools": "개발자 도구 표시.",
+    "showShapeBordersWithIcons": "아이콘이 표시될 때 도형 채우기 및 테두리 표시.",
     "tabs": {
       "credentials": "자격증명",
       "danger": "위험",
@@ -2140,9 +2189,9 @@
     "transferData": {
       "confirmMessage": "정말로 모든 위협 모델과 설문 응답을 {{email}}로 이전하시겠습니까? 이전된 항목에 대해 작성자 역할로 강등됩니다.",
       "dialogTitle": "내 데이터 이전",
-      "error": "데이터 이전에 실패했습니다. 다시 시도해 주세요.",
+      "error": "데이터 이전에 실패했습니다.",
       "hint": "모든 위협 모델과 설문 응답의 소유권을 다른 사용자에게 이전합니다. 이전된 항목에 대해 작성자 역할로 강등됩니다.",
-      "success": "{{tmCount}}개의 위협 모델과 {{responseCount}}개의 설문 응답을 이전했습니다.",
+      "success": "{{tmcount}}개의 위협 모델과 {{responsecount}}개의 설문 응답을 이전했습니다.",
       "title": "내 데이터를 다른 사용자에게 이전"
     },
     "userProfile": {
@@ -2156,13 +2205,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "프로젝트, 팀 및 관계를 보고 편집합니다",
+    "subtitle": "프로젝트, 팀 및 관계를 보고 편집합니다.",
     "title": "내 프로젝트"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "팀, 구성원 및 관계를 보고 편집합니다",
+    "subtitle": "팀, 구성원 및 관계를 보고 편집합니다.",
     "title": "내 팀"
   }
 }
