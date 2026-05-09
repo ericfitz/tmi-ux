@@ -11,6 +11,7 @@ A key may have multiple surfaces (used in more than one place).
 """
 
 import re
+from pathlib import Path
 from typing import Iterable, Set
 
 from scripts.i18n_style.usage_scanner import KeyUsage
@@ -22,6 +23,8 @@ _DIALOG_TITLE_PATTERNS = [
 ]
 _PAGE_TITLE_PATTERNS = [
     re.compile(r"<h[1-6]\b"),
+    re.compile(r"<mat-card-title\b"),
+    re.compile(r"<mat-card-subtitle\b"),
 ]
 _BUTTON_PATTERNS = [
     re.compile(r"<button\b"),
@@ -54,6 +57,23 @@ _SNACKBAR_PATTERNS = [
     re.compile(r"\bnotify\b"),
     re.compile(r"\bMatSnackBar\b"),
 ]
+
+
+def _read_backward_window(file_path: Path, line_no: int, lines: int = 8) -> str:
+    """Return the text of up to `lines` lines before `line_no` in the file.
+
+    Line numbers are 1-based (matching KeyUsage.line). Returns an empty string
+    if the file cannot be read or if the line is at the start of the file.
+    """
+    try:
+        all_lines = file_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except (OSError, IOError):
+        return ""
+    # line_no is 1-based; convert to 0-based index for the *target* line
+    target_idx = line_no - 1
+    start_idx = max(0, target_idx - lines)
+    window = all_lines[start_idx:target_idx]
+    return " ".join(window)
 
 
 def _surfaces_for_usage(usage: KeyUsage) -> Set[str]:
@@ -113,10 +133,31 @@ def infer_surfaces(usages: Iterable[KeyUsage]) -> Set[str]:
 
     Returns {"general"} as a fallback when no specific surface signal is
     present in any usage.
+
+    For HTML files, when the single-line context yields no surface signal,
+    a backward window of up to 8 lines is read from the file and the patterns
+    are tried again on the combined window+context text. This handles the common
+    Angular pattern where the i18n key is on a child <span> while the surface
+    signal (<button>, <mat-menu-item>, <h1>, etc.) is on the parent element.
     """
     surfaces: Set[str] = set()
     for usage in usages:
-        surfaces |= _surfaces_for_usage(usage)
+        single = _surfaces_for_usage(usage)
+        if single:
+            surfaces |= single
+            continue
+        # Fallback: backward window for HTML files
+        if usage.file.suffix == ".html":
+            window_text = _read_backward_window(usage.file, usage.line, lines=8)
+            if window_text:
+                synthetic = KeyUsage(
+                    file=usage.file,
+                    line=usage.line,
+                    context=window_text + " " + usage.context,
+                    classes=usage.classes,
+                )
+                window_surfaces = _surfaces_for_usage(synthetic)
+                surfaces |= window_surfaces
     if not surfaces:
         return {"general"}
     return surfaces

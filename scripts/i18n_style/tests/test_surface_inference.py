@@ -72,5 +72,60 @@ class TestInferSurfaces(unittest.TestCase):
         self.assertEqual(infer_surfaces(usages), {"general"})
 
 
+import tempfile
+
+
+class TestMultiLineSurfaceInference(unittest.TestCase):
+    """Tests for surface inference when the surface signal is on a parent element."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmpdir.name)
+
+    def tearDown(self):
+        self.tmpdir.cleanup()
+
+    def _write(self, relpath: str, content: str) -> Path:
+        full = self.root / relpath
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content)
+        return full
+
+    def test_button_signal_on_parent_line(self):
+        path = self._write(
+            "src/foo.html",
+            '<button mat-menu-item (click)="x()">\n  <mat-icon>foo</mat-icon>\n  <span>{{ \'foo.menu\' | transloco }}</span>\n</button>\n',
+        )
+        # The key is on line 3; the parent button signal is on line 1.
+        usage = KeyUsage(file=path, line=3, context='<span>{{ \'foo.menu\' | transloco }}</span>', classes=[])
+        self.assertIn("menu-item", infer_surfaces([usage]))
+
+    def test_button_with_span_child(self):
+        path = self._write(
+            "src/foo.html",
+            '<button mat-flat-button (click)="x()">\n  <span>{{ \'foo.button\' | transloco }}</span>\n</button>\n',
+        )
+        usage = KeyUsage(file=path, line=2, context='<span>{{ \'foo.button\' | transloco }}</span>', classes=[])
+        self.assertIn("button", infer_surfaces([usage]))
+
+    def test_dialog_title_with_span_child(self):
+        path = self._write(
+            "src/foo.html",
+            '<h2 mat-dialog-title>\n  {{ \'foo.title\' | transloco }}\n</h2>\n',
+        )
+        usage = KeyUsage(file=path, line=2, context='{{ \'foo.title\' | transloco }}', classes=[])
+        self.assertIn("dialog-title", infer_surfaces([usage]))
+
+
+class TestMatCardTitleSurfaceInference(unittest.TestCase):
+    def test_mat_card_title_is_page_title(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-card-title [transloco]="\'foo\'">title</mat-card-title>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"page-title"})
+
+    def test_mat_card_subtitle_is_page_title(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-card-subtitle>{{ \'foo\' | transloco }}</mat-card-subtitle>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"page-title"})
+
+
 if __name__ == "__main__":
     unittest.main()
