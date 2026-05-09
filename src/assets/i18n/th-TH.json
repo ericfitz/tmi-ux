@@ -32,7 +32,7 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(ทั้งหมด)",
-      "errorInvoking": "ไม่สามารถเรียกใช้ส่วนเสริมได้ โปรดลองอีกครั้ง",
+      "errorInvoking": "ไม่สามารถเรียกใช้ส่วนเสริมได้",
       "invalidCharacters": "อนุญาตเฉพาะตัวอักษรและตัวเลข ช่องว่าง ขีดกลาง จุด จุลภาค และเครื่องหมายทับเท่านั้น",
       "invocationQueued": "การเรียกใช้ส่วนเสริมอยู่ในคิว",
       "metadataKeyMissing": "คีย์เมตาดาต้าที่จำเป็น \"{{key}}\" ไม่มีอยู่ในออบเจกต์นี้",
@@ -55,7 +55,7 @@
         "iconInvalid": "รูปแบบไอคอนไม่ถูกต้อง",
         "name": "{{common.name}}",
         "nameHint": "ชื่อที่แสดงสำหรับส่วนเสริมนี้",
-        "namePlaceholder": "ส่วนเสริมที่กำหนดเอง",
+        "namePlaceholder": "ส่วนเสริมแบบกำหนดเอง",
         "nameRequired": "{{common.validation.nameRequired}}",
         "objects": "ประเภทออบเจกต์",
         "objectsHint": "เลือกประเภทออบเจกต์ TMI ที่ส่วนเสริมนี้สามารถดำเนินการได้",
@@ -63,19 +63,20 @@
         "title": "เพิ่มส่วนเสริม",
         "webhook": "Webhook",
         "webhookHint": "การสมัครสมาชิก webhook ที่เกี่ยวข้อง",
-        "webhookRequired": "ต้องระบุ webhook"
+        "webhookRequired": "จำเป็นต้องระบุ Webhook",
+        "iconHint": "ไอคอน UI (ตัวอย่าง: \"material-symbols:security\", \"fa-regular fa-user-shield\")"
       },
       "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบส่วนเสริม \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "ลบส่วนเสริม",
-      "errorCreatingAddon": "ไม่สามารถสร้างส่วนเสริมได้ กรุณาลองอีกครั้ง",
-      "errorLoadingWebhooks": "ไม่สามารถโหลด webhook ที่มีอยู่ได้",
-      "filterLabel": "ค้นหาส่วนเสริม",
+      "errorCreatingAddon": "ไม่สามารถสร้างส่วนเสริมได้",
+      "errorLoadingWebhooks": "ไม่สามารถโหลด Webhook ที่พร้อมใช้งานได้",
+      "filterLabel": "กรองส่วนเสริม",
       "filterPlaceholder": "ค้นหาตามชื่อหรือคำอธิบาย",
       "listTitle": "ส่วนเสริมของระบบ",
       "noAddons": "ไม่พบส่วนเสริม",
       "objectTypesTooltip": "ใช้กับประเภทออบเจกต์เหล่านี้",
-      "subtitle": "กำหนดค่าส่วนเสริมสำหรับการขยายฟังก์ชันการทำงานของ TMI",
+      "subtitle": "กำหนดค่าส่วนเสริมสำหรับขยายฟังก์ชันของ TMI",
       "title": "จัดการส่วนเสริม"
     },
     "createAutomationUserDialog": {
@@ -100,13 +101,13 @@
         "descriptionPlaceholder": "คำอธิบายของกลุ่มนี้",
         "displayName": "ชื่อที่แสดง",
         "displayNameHint": "ชื่อกลุ่มที่อ่านได้",
-        "displayNamePlaceholder": "กลุ่มที่กำหนดเอง",
-        "displayNameRequired": "ต้องระบุชื่อที่แสดง",
+        "displayNamePlaceholder": "กลุ่มแบบกำหนดเอง",
+        "displayNameRequired": "จำเป็นต้องระบุชื่อที่แสดง",
         "groupName": "ตัวระบุกลุ่ม",
         "groupNameHint": "ตัวอักษรและตัวเลข เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น",
-        "groupNamePattern": "อนุญาตเฉพาะตัวอักษรและตัวเลข เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น",
+        "groupNamePattern": "อนุญาตเฉพาะตัวอักษรและตัวเลข ขีดกลาง และขีดล่างเท่านั้น",
         "groupNamePlaceholder": "กลุ่ม-ที่กำหนดเอง",
-        "groupNameRequired": "ต้องระบุตัวระบุกลุ่ม",
+        "groupNameRequired": "จำเป็นต้องระบุตัวระบุกลุ่ม",
         "save": "สร้างกลุ่ม",
         "title": "เพิ่มกลุ่ม"
       },
@@ -116,35 +117,35 @@
         "usage": "การใช้งาน"
       },
       "deleteTooltip": "ลบกลุ่ม",
-      "filterLabel": "ค้นหากลุ่ม",
+      "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "บัญชีอัตโนมัติไม่ได้รับอนุญาตให้เป็นสมาชิกของกลุ่มผู้ดูแลระบบ บัญชีอัตโนมัติจะต้องไม่มีสิทธิ์เข้าถึงฟังก์ชันการดูแลระบบของแอปพลิเคชัน",
+        "automationAdminBlocked": "บัญชีอัตโนมัติไม่ได้รับอนุญาตให้เป็นสมาชิกของกลุ่มผู้ดูแลระบบ บัญชีอัตโนมัติต้องไม่มีสิทธิ์เข้าถึงฟังก์ชันการดูแลระบบของแอปพลิเคชัน",
         "currentMembers": "สมาชิกปัจจุบัน",
         "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
         "removeTooltip": "ลบออกจากกลุ่ม",
         "searchHint": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
-        "searchUser": "ค้นหาผู้ใช้ตามอีเมล",
+        "searchUser": "ค้นหาผู้ใช้โดยอีเมล",
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "ไม่พบกลุ่ม",
-      "subtitle": "ดูและจัดการกลุ่มในระบบ",
+      "subtitle": "ดูและจัดการกลุ่มของระบบ",
       "title": "จัดการกลุ่ม",
-      "viewMembersTooltip": "ดูและจัดการสมาชิกกลุ่ม"
+      "viewMembersTooltip": "ดูและจัดการสมาชิกกลุ่ม..."
     },
     "quotas": {
-      "addButton": "เพิ่มโควต้า",
+      "addButton": "เพิ่มโควตา...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
-        "configureQuotas": "กำหนดค่าโควต้า",
+        "configureQuotas": "กำหนดค่าโควตา",
         "searchLabel": "ค้นหาผู้ใช้",
         "searchPlaceholder": "พิมพ์อีเมลผู้ใช้เพื่อค้นหา",
         "selectUser": "เลือกผู้ใช้",
-        "title": "เพิ่มโควต้าที่กำหนดเอง",
+        "title": "เพิ่มโควตาแบบกำหนดเอง",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "columns": {
@@ -155,17 +156,17 @@
       "default": "ค่าเริ่มต้น",
       "deleteTooltip": "ลบโควต้าที่กำหนดเอง (คืนค่าเริ่มต้น)",
       "eventsPerMinute": "เหตุการณ์ต่อนาที",
-      "filterLabel": "ค้นหาโควต้า",
+      "filterLabel": "กรองโควตา",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือรหัสผู้ใช้",
       "maxSubscriptions": "จำนวนการสมัครสมาชิกสูงสุด",
-      "noUserAPIQuotas": "ไม่พบโควต้า API ที่กำหนดเอง",
-      "noWebhookQuotas": "ไม่พบโควต้า webhook ที่กำหนดเอง",
+      "noUserAPIQuotas": "ไม่พบโควตา API แบบกำหนดเอง",
+      "noWebhookQuotas": "ไม่พบโควตา Webhook แบบกำหนดเอง",
       "requestsPerHour": "คำขอต่อชั่วโมง",
       "requestsPerMinute": "คำขอต่อนาที",
       "subReqPerDay": "คำขอสมัครสมาชิกต่อวัน",
       "subReqPerMinute": "คำขอสมัครสมาชิกต่อนาที",
-      "subtitle": "กำหนดค่าขีดจำกัดอัตราและโควต้าสำหรับผู้ใช้",
-      "title": "จัดการโควต้า",
+      "subtitle": "กำหนดค่าขีดจำกัดอัตราและโควตาสำหรับผู้ใช้",
+      "title": "จัดการโควตา",
       "userAPITitle": "ขีดจำกัดอัตรา API",
       "webhookTitle": "ขีดจำกัด Webhook"
     },
@@ -175,15 +176,15 @@
         "title": "{{common.addons}}"
       },
       "groups": {
-        "description": "กำหนดค่ากลุ่มผู้ใช้และการเป็นสมาชิก",
+        "description": "กำหนดค่ากลุ่มผู้ใช้และสมาชิกภาพ",
         "title": "{{common.groups}}"
       },
       "projects": {
-        "description": "จัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
+        "description": "จัดการโครงการ ความสัมพันธ์ และเมตาดาต้า",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "กำหนดค่าโควต้าทรัพยากรและขีดจำกัด",
+        "description": "กำหนดค่าโควตาและขีดจำกัดทรัพยากร",
         "title": "โควต้า"
       },
       "settings": {
@@ -195,7 +196,7 @@
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "จัดการทีมและการเป็นสมาชิกของทีม",
+        "description": "จัดการทีมและสมาชิกทีม",
         "title": "ทีม"
       },
       "users": {
@@ -203,7 +204,7 @@
         "title": "ผู้ใช้"
       },
       "webhooks": {
-        "description": "ติดตั้งและกำหนดค่าการรวม webhook",
+        "description": "ติดตั้งและกำหนดค่าการเชื่อมต่อ Webhook",
         "title": "Webhooks"
       }
     },
@@ -214,14 +215,14 @@
         "descriptionHint": "คำอธิบายเพิ่มเติมของการตั้งค่านี้",
         "key": "{{common.metadataKey}}",
         "keyHint": "ตัวพิมพ์เล็กพร้อมจุดและขีดล่าง (เช่น rate_limit.max_rpm)",
-        "keyInvalid": "ต้องเริ่มต้นด้วยตัวอักษรพิมพ์เล็ก ใช้เฉพาะตัวอักษรพิมพ์เล็ก ตัวเลข จุด และขีดล่าง",
-        "keyRequired": "ต้องระบุคีย์",
+        "keyInvalid": "ต้องขึ้นต้นด้วยตัวอักษรพิมพ์เล็ก ใช้เฉพาะตัวอักษรพิมพ์เล็ก ตัวเลข จุด และขีดล่าง",
+        "keyRequired": "จำเป็นต้องระบุคีย์",
         "save": "สร้างการตั้งค่า",
         "title": "เพิ่มการตั้งค่า",
         "type": "{{common.type}}",
-        "typeRequired": "ต้องระบุประเภท",
+        "typeRequired": "จำเป็นต้องระบุประเภท",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "ต้องระบุค่า"
+        "valueRequired": "จำเป็นต้องระบุค่า"
       },
       "cancelTooltip": "ยกเลิกการแก้ไข",
       "columns": {
@@ -234,7 +235,7 @@
       "editTooltip": "แก้ไขการตั้งค่า",
       "filterLabel": "ค้นหา",
       "filterPlaceholder": "ค้นหาตามคีย์ ค่า คำอธิบาย หรือแหล่งที่มา",
-      "listTitle": "การตั้งค่าระบบ",
+      "listTitle": "การตั้งค่าของระบบ",
       "noSettings": "ไม่พบการตั้งค่า",
       "readOnlyTooltip": "การตั้งค่านี้เป็นแบบอ่านอย่างเดียวและไม่สามารถแก้ไขได้ที่นี่",
       "saveTooltip": "บันทึกการเปลี่ยนแปลง",
@@ -244,7 +245,7 @@
         "environment": "สภาพแวดล้อม",
         "vault": "Vault"
       },
-      "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าระบบ",
+      "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าของระบบ",
       "title": "จัดการการตั้งค่า",
       "types": {
         "bool": "บูลีน",
@@ -253,7 +254,7 @@
         "string": "สตริง"
       }
     },
-    "subtitle": "จัดการการตั้งค่าและการกำหนดค่าระบบ",
+    "subtitle": "จัดการการตั้งค่าและการกำหนดค่าของระบบ",
     "title": "การดูแลระบบ",
     "users": {
       "actions": {
@@ -271,7 +272,7 @@
       "filter": {
         "automationOnly": "แสดงเฉพาะบัญชีอัตโนมัติ"
       },
-      "filterLabel": "ค้นหาผู้ใช้",
+      "filterLabel": "กรองผู้ใช้",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
       "lastLogin": "เข้าสู่ระบบล่าสุด",
       "listTitle": "{{admin.sections.users.title}}",
@@ -279,28 +280,28 @@
         "addCredential": "เพิ่มข้อมูลรับรอง",
         "deleteConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลรับรอง \"{{name}}\"?",
         "noCredentials": "ไม่พบข้อมูลรับรอง",
-        "title": "จัดการข้อมูลรับรองสำหรับ {{userName}}"
+        "title": "จัดการข้อมูลรับรองสำหรับ {{username}}"
       },
       "never": "ไม่เคย",
       "noUsers": "ไม่พบผู้ใช้",
-      "subtitle": "ดูและจัดการผู้ใช้ในระบบ",
+      "subtitle": "ดูและจัดการผู้ใช้ของระบบ",
       "title": "จัดการผู้ใช้",
       "transferOwnership": {
         "confirm": "คุณแน่ใจหรือไม่ว่าต้องการโอนข้อมูลทั้งหมดจาก {{source}} ไปยัง {{target}}?",
         "dialogTitle": "โอนข้อมูลผู้ใช้",
-        "error": "ไม่สามารถโอนความเป็นเจ้าของได้ กรุณาลองอีกครั้ง",
+        "error": "ไม่สามารถโอนความเป็นเจ้าของได้",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "โอนความเป็นเจ้าของ"
+        "tooltip": "โอนความเป็นเจ้าของ..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "สร้างผู้ใช้อัตโนมัติสำหรับ webhook นี้",
-        "events": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก",
+        "createAutomationUser": "สร้างผู้ใช้อัตโนมัติสำหรับ Webhook นี้",
+        "events": "ประเภทเหตุการณ์ที่ต้องการรับ",
         "eventsHint": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก (เช่น threat_model.created)",
         "eventsPlaceholder": "เลือกประเภทเหตุการณ์",
-        "eventsRequired": "ต้องระบุเหตุการณ์อย่างน้อยหนึ่งรายการ",
+        "eventsRequired": "จำเป็นต้องมีอย่างน้อยหนึ่งเหตุการณ์",
         "name": "{{common.name}}",
         "nameHint": "ชื่ออธิบายสำหรับ webhook นี้",
         "namePlaceholder": "ชื่อ webhook",
@@ -311,22 +312,22 @@
         "title": "เพิ่ม Webhook",
         "url": "URL ของ Webhook",
         "urlHint": "แนะนำให้ใช้ HTTPS",
-        "urlHttpWarning": "คำเตือน: URL ปลายทางของ webhook ควรใช้ HTTPS เซิร์ฟเวอร์อาจปฏิเสธการลงทะเบียน webhook ที่ระบุปลายทางที่ไม่ใช่ TLS",
-        "urlHttpWarningTitle": "URL ของ Webhook ที่ไม่ใช่ HTTPS",
+        "urlHttpWarning": "คำเตือน: URL ปลายทาง Webhook ควรใช้ HTTPS เซิร์ฟเวอร์อาจปฏิเสธการลงทะเบียน Webhook ที่ระบุ endpoint ที่ไม่ใช่ TLS",
+        "urlHttpWarningTitle": "URL Webhook ที่ไม่ใช่ HTTPS",
         "urlInvalid": "ต้องเป็น URL ที่ถูกต้อง",
-        "urlRequired": "ต้องระบุ URL"
+        "urlRequired": "จำเป็นต้องระบุ URL"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ลบ webhook",
       "events": "เหตุการณ์",
-      "filterLabel": "ค้นหา Webhooks",
+      "filterLabel": "กรอง Webhook",
       "filterPlaceholder": "ค้นหาตามชื่อหรือ URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "นี่เป็นครั้งเดียวที่คุณจะสามารถดูรหัสลับนี้ได้ กรุณาคัดลอกไว้ หากคุณทำหายหรือลืม คุณจะต้องลบและสร้าง webhook ใหม่"
       },
-      "listTitle": "การสมัครสมาชิก Webhook",
-      "noWebhooks": "ไม่พบ webhook",
+      "listTitle": "การสมัครรับ Webhook",
+      "noWebhooks": "ไม่พบ Webhook",
       "secret": "รหัสลับ HMAC",
       "status": {
         "active": "{{common.active}}",
@@ -334,8 +335,8 @@
         "pending_verification": "รอการยืนยัน"
       },
       "subscriptionId": "รหัสการสมัครสมาชิก",
-      "subtitle": "กำหนดค่าการสมัครสมาชิก webhook สำหรับการแจ้งเตือนเหตุการณ์",
-      "title": "จัดการ Webhooks",
+      "subtitle": "กำหนดค่าการสมัครรับ Webhook สำหรับการแจ้งเตือนเหตุการณ์",
+      "title": "จัดการ Webhook",
       "triggerEvents": "เหตุการณ์ทริกเกอร์",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -349,12 +350,12 @@
       "title": "สร้างแบบสำรวจ",
       "versionHint": "ตัวระบุเวอร์ชันแบบอิสระ",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "เช่น 1, v2-pilot, 2024-Q1",
-      "versionRequired": "ต้องระบุเวอร์ชัน"
+      "versionPlaceholder": "เช่น 1, v2-pilot, 2024-q1",
+      "versionRequired": "จำเป็นต้องระบุเวอร์ชัน"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "ไม่สามารถลบแบบสำรวจนี้ได้เนื่องจากมีคำตอบอยู่แล้ว กรุณาลบคำตอบก่อน แล้วลองอีกครั้ง",
-    "deleteError": "ไม่สามารถลบแบบสำรวจ: {{error}}",
+    "deleteError": "ไม่สามารถลบแบบสำรวจได้: {{error}}",
     "deleteTooltip": "ลบแบบสำรวจ",
     "editTemplate": "แก้ไขแบบสำรวจ",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -370,19 +371,19 @@
       "addPage": "เพิ่มหน้า",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
-      "conditionalLogic": "ลอจิกเงื่อนไข",
+      "conditionalLogic": "ตรรกะเงื่อนไข",
       "conditionalLogicHelp": "เอกสารลอจิกเงื่อนไขของ SurveyJS",
       "deletePage": "ลบหน้า",
       "deleteQuestion": "ลบคำถาม",
-      "enableIf": "เปิดใช้งานถ้า",
-      "enableIfHint": "เช่น {questionName} = 'value'",
+      "enableIf": "เปิดใช้งานหาก",
+      "enableIfHint": "เช่น {questionname} = 'value'",
       "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
       "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
-      "failedToLoadTemplate": "โหลดแบบสำรวจไม่สำเร็จ",
-      "failedToSaveTemplate": "บันทึกแบบสำรวจไม่สำเร็จ",
+      "failedToLoadTemplate": "ไม่สามารถโหลดแบบสำรวจได้",
+      "failedToSaveTemplate": "ไม่สามารถบันทึกแบบสำรวจได้",
       "loadingTemplate": "กำลังโหลดแบบสำรวจ...",
       "mapsToTmField": "แมปกับฟิลด์ TM",
-      "metadataKey": "คีย์เมทาดาทา",
+      "metadataKey": "คีย์เมตาดาต้า",
       "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
       "nameId": "ชื่อ (ID)",
       "nameIdHint": "ตัวระบุเฉพาะสำหรับคำถามนี้",
@@ -398,7 +399,7 @@
         "dropdown": "การเลือกแบบดรอปดาวน์",
         "panel": "จัดกลุ่มคำถามในแผง",
         "paneldynamic": "กลุ่มแผงที่สามารถทำซ้ำได้",
-        "radiogroup": "เลือกหนึ่งตัวเลือกจากรายการ",
+        "radiogroup": "เลือกตัวเลือกเดียวจากตัวเลือกที่มี",
         "text": "การป้อนข้อความบรรทัดเดียว"
       },
       "questionTypeLabels": {
@@ -406,52 +407,52 @@
         "checkbox": "ช็อกบ็อกซ์",
         "dropdown": "ดรอปดาวน์",
         "panel": "แผง",
-        "paneldynamic": "แผงไดนามิก",
-        "radiogroup": "กลุ่มปุ่มวิทยุ",
+        "paneldynamic": "แผงแบบไดนามิก",
+        "radiogroup": "กลุ่มปุ่มตัวเลือก",
         "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "ประเภทคำถาม",
       "questions": "คำถาม",
       "required": "จำเป็น",
-      "requiredIf": "จำเป็นถ้า",
+      "requiredIf": "จำเป็นหาก",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
-        "assetDescription": "คำอธิบายสินทรัพย์",
+        "assetDescription": "คำอธิบายทรัพย์สิน",
         "assetName": "{{assetEditor.name}}",
         "assetType": "{{assetEditor.type}}",
-        "description": "คำอธิบายโมเดลภัยคุกคาม",
+        "description": "คำอธิบาย Threat Model",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "URL ติดตามปัญหา",
-        "metadataKey": "เมทาดาทาที่กำหนดเอง",
-        "name": "ชื่อโมเดลภัยคุกคาม",
+        "issueUri": "URL การติดตามปัญหา",
+        "metadataKey": "เมตาดาต้าแบบกำหนดเอง",
+        "name": "ชื่อ Threat Model",
         "repositoryName": "{{threatModels.repositoryName}}",
         "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
-      "tmFieldMapping": "การแมปฟิลด์โมเดลภัยคุกคาม",
+      "tmFieldMapping": "การแมปฟิลด์ Threat Model",
       "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
-      "visibleIf": "แสดงถ้า",
+      "visibleIf": "มองเห็นหาก",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "แบบสำรวจ {{count}} รายการ",
-    "templateCountPlural": "แบบสำรวจ {{count}} รายการ"
+    "templateCount": "{{Count}} แบบสำรวจ",
+    "templateCountPlural": "{{Count}} แบบสำรวจ"
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
     "classification": "{{common.classification}}",
     "criticality": "{{common.criticality}}",
-    "name": "ชื่อสินทรัพย์",
+    "name": "ชื่อทรัพย์สิน",
     "sensitivity": "{{common.sensitivity}}",
     "title": {
-      "create": "สร้างสินทรัพย์",
-      "edit": "แก้ไขสินทรัพย์",
-      "view": "ดูสินทรัพย์"
+      "create": "สร้างทรัพย์สิน",
+      "edit": "แก้ไขทรัพย์สิน",
+      "view": "ดูทรัพย์สิน"
     },
-    "type": "ประเภทสินทรัพย์",
+    "type": "ประเภททรัพย์สิน",
     "types": {
       "data": "ข้อมูล",
       "hardware": "ฮาร์ดแวร์",
@@ -488,17 +489,17 @@
     "noEntries": "ไม่พบรายการบันทึกการตรวจสอบ",
     "rollback": {
       "action": "ย้อนกลับ",
-      "confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการย้อนกลับ {{objectType}} \"{{name}}\" เป็นเวอร์ชัน {{version}}?",
+      "confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการย้อนกลับ {{objecttype}} \"{{name}}\" เป็นเวอร์ชัน {{version}}?",
       "confirmTitle": "ยืนยันการย้อนกลับ",
       "confirmationField": "พิมพ์เพื่อยืนยัน",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "การย้อนกลับล้มเหลว กรุณาลองอีกครั้ง",
+      "error": "การย้อนกลับล้มเหลว",
       "success": "การย้อนกลับเสร็จสมบูรณ์",
-      "typeConfirmation": "เพื่อยืนยัน พิมพ์ \"{{confirmValue}}\" ด้านล่าง",
+      "typeConfirmation": "เพื่อยืนยัน ให้พิมพ์ \"{{confirmvalue}}\" ด้านล่าง",
       "versionPruned": "สแนปช็อตเวอร์ชันถูกลบแล้ว การย้อนกลับไม่สามารถใช้งานได้อีกต่อไป",
       "warning": "การดำเนินการนี้จะเขียนทับสถานะปัจจุบันของเอนทิตีนี้ด้วยเวอร์ชันที่บันทึกไว้ในรายการตรวจสอบนี้ การดำเนินการนี้จะสร้างรายการตรวจสอบใหม่ แต่สถานะปัจจุบันจะสูญหาย"
     },
-    "title": "บันทึกการตรวจสอบ"
+    "title": "ประวัติการตรวจสอบ"
   },
   "auth": {
     "unauthorized": {
@@ -518,7 +519,7 @@
     },
     "errors": {
       "connectionFailed": "ไม่สามารถเชื่อมต่อกับ Timmy ได้ ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง",
-      "generic": "มีบางอย่างผิดพลาด โปรดลองอีกครั้ง",
+      "generic": "เกิดข้อผิดพลาดบางอย่าง",
       "interrupted": "การตอบสนองถูกขัดจังหวะ ลองส่งข้อความของคุณอีกครั้ง",
       "notAcceptable": "Timmy ไม่พร้อมใช้งานชั่วคราวเนื่องจากปัญหาการกำหนดค่าเซิร์ฟเวอร์",
       "notEnabled": "Timmy ไม่ได้เปิดใช้งานสำหรับโมเดลภัยคุกคามนี้",
@@ -528,16 +529,16 @@
     "hideSidePanel": "ซ่อนแผงด้านข้าง",
     "inputPlaceholder": "ถามเรื่องโมเดลภัยคุกคามนี้กับ Timmy...",
     "newSession": "เซสชันใหม่",
-    "noSessions": "ยังไม่มีเซสชันแชทเลย เริ่มสนทนากันเถิด",
+    "noSessions": "ยังไม่มีเซสชันแชท เริ่มการสนทนาได้เลย",
     "preparation": {
       "error": "การเตรียมการล้มเหลว: {{message}}",
-      "processing": "กำลังประมวลผลแหล่งข้อมูล {{current}} จาก {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "พร้อมแล้ว! {{sourcesLoaded}} แหล่งข้อมูลโหลดแล้ว {{chunksEmbedded}} ชุดได้ทำการจัดทำดัชนีแล้ว"
+      "processing": "กำลังประมวลผลแหล่งที่มา {{current}} จาก {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%",
+      "ready": "พร้อมแล้ว! โหลด {{Sourcesloaded}} แหล่งที่มา จัดทำดัชนี {{chunksembedded}} ชิ้น"
     },
-    "saveAsNoteError": "ไม่สามารถบันทึกเป็นบันทึกย่อได้ โปรดลองอีกครั้ง",
+    "saveAsNoteError": "ไม่สามารถบันทึกเป็นบันทึกได้",
     "saveMessageAsNote": "บันทึกข้อความเป็นบันทึกย่อ",
     "saveSessionAsNote": "บันทึกเซสชันเป็นบันทึกย่อ",
-    "savedAsNote": "บันทึกเป็นบันทึกย่อแล้ว",
+    "savedAsNote": "บันทึกเป็นบันทึกแล้ว",
     "savedAsNoteView": "{{common.view}}",
     "send": "ส่งข้อความ",
     "sessions": "เซสชัน",
@@ -549,7 +550,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} แหล่งข้อมูลรวม"
+      "title": "รวม {{Count}} แหล่งที่มา"
     },
     "suggestedPrompts": {
       "assets": "สินทรัพย์ใดบ้างที่อยู่ในขอบเขต",
@@ -559,35 +560,35 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "ผู้ใช้ {{count}} คนที่ใช้งานอยู่",
-    "approvePresenterRequest": "อนุมัติคำขอเป็นผู้นำเสนอ",
+    "activeUsers": "{{Count}} ผู้ใช้ที่ใช้งานอยู่",
+    "approvePresenterRequest": "อนุมัติคำขอผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
     "collaboratorsHeader": "ผู้เข้าร่วม",
     "copyLink": "คัดลอกลิงก์",
-    "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
+    "denyPresenterRequest": "ปฏิเสธคำขอผู้นำเสนอ",
     "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
     "hostedBy": "โฮสต์โดย",
-    "isRequestingPresenterPrivileges": "กำลังขอสิทธิ์การนำเสนอ",
+    "isRequestingPresenterPrivileges": "กำลังขอสิทธิ์ผู้นำเสนอ",
     "joinSession": "เข้าร่วมเซสชัน",
-    "justNow": "เดี๋ยวนี้",
+    "justNow": "เมื่อสักครู่",
     "leaveSession": "ออกจากเซสชัน",
     "loadingDiagramContext": "กำลังโหลดบริบทไดอะแกรม...",
     "manageParticipants": "จัดการผู้เข้าร่วม",
     "noActiveSessions": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
     "participantRequestsPresenterRole": "ผู้เข้าร่วมขอบทบาทผู้นำเสนอ",
-    "presenterModeRequested": "ขอสิทธิ์การนำเสนอแล้ว",
+    "presenterModeRequested": "ขอโหมดผู้นำเสนอ",
     "removeFromSession": "ลบออกจากเซสชัน",
     "requestPresenter": "ขอเป็นผู้นำเสนอ",
     "sessionStarted": "เริ่มต้น",
     "startCollaboration": "เริ่มการทำงานร่วมกัน",
-    "takeBackPresenter": "เอาผู้นำเสนอกลับ",
-    "title": "ผู้เข้าร่วมเซสชันการทำงานร่วมกัน",
-    "userJoined": "{{user}} เข้าร่วมการทำงานร่วมกัน",
-    "userLeft": "{{user}} ออกจากการทำงานร่วมกัน",
+    "takeBackPresenter": "รับบทบาทผู้นำเสนอคืน",
+    "title": "ผู้เข้าร่วมในเซสชันการทำงานร่วมกัน",
+    "userJoined": "{{User}} เข้าร่วมการทำงานร่วมกัน",
+    "userLeft": "{{User}} ออกจากการทำงานร่วมกัน",
     "websocketStatus": {
-      "connected": "เว็บซ็อกเก็ตเชื่อมต่อแล้ว",
+      "connected": "Websocket เชื่อมต่อแล้ว",
       "noSession": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
-      "notConnected": "เว็บซ็อกเก็ตไม่ได้เชื่อมต่อ"
+      "notConnected": "Websocket ไม่ได้เชื่อมต่อ"
     }
   },
   "common": {
@@ -596,11 +597,11 @@
     "activate": "เปิดใช้งาน",
     "active": "ใช้งานอยู่",
     "add": "เพิ่ม",
-    "addMetadata": "เพิ่มข้อมูลเมตา",
+    "addMetadata": "เพิ่มเมตาดาต้า",
     "addThreat": "เพิ่มภัยคุกคาม",
     "addons": "ส่วนเสริม",
     "all": "ทั้งหมด",
-    "allStatuses": "ทุกสถานะ",
+    "allStatuses": "สถานะทั้งหมด",
     "archive": "เก็บถาวร",
     "back": "ย้อนกลับ",
     "cancel": "ยกเลิก",
@@ -611,7 +612,7 @@
     "close": "ปิด",
     "confirm": "ยืนยัน",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{item}} \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
-    "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ{{objectType}} \"{{name}}\"?",
+    "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{objecttype}} \"{{name}}\"?",
     "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
     "copy": "คัดลอก",
     "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
@@ -622,15 +623,15 @@
     "cut": "ตัด",
     "deactivate": "ปิดใช้งาน",
     "delete": "ลบ",
-    "deleteConfirm": "ลบโมเดลภัยคุกคาม",
-    "deleteWarningConfirmationField": "ยืนยันการลบ",
+    "deleteConfirm": "ยืนยันการลบ",
+    "deleteWarningConfirmationField": "การยืนยันการลบ",
     "deleteWarningConfirmationMatch": "ข้อความยืนยันตรงกัน",
     "deleteWarningConfirmationMismatch": "ข้อความยืนยันไม่ตรงกัน",
     "deleteWarningConfirmationValue": "ลบถาวร",
-    "deleteWarningPermanent": "การดำเนินการนี้ไม่สามารถย้อนกลับได้ และจะลบ{{objectType}}พร้อมข้อมูลเมตาที่เกี่ยวข้องทั้งหมดอย่างถาวร",
-    "deleteWarningReferenceOnly": "สำหรับออบเจกต์ที่จัดเก็บภายนอก TMI เช่น เอกสารและที่เก็บข้อมูล จะลบเฉพาะการอ้างอิงใน TMI เท่านั้น",
+    "deleteWarningPermanent": "การกระทำนี้ไม่สามารถย้อนกลับได้และจะลบ {{objecttype}} และเมตาดาต้าทั้งหมดที่เกี่ยวข้องอย่างถาวร",
+    "deleteWarningReferenceOnly": "สำหรับออบเจกต์ที่จัดเก็บภายนอก TMI เช่น เอกสารและที่เก็บโค้ด จะมีการลบเฉพาะการอ้างอิงใน TMI เท่านั้น",
     "deleteWarningSubEntities": "เอนทิตี TMI ที่เกี่ยวข้องทั้งหมด เช่น ไดอะแกรม ภัยคุกคาม และบันทึก จะถูกลบอย่างถาวรด้วย",
-    "deleteWarningTypeConfirmation": "เพื่อยืนยัน กรุณาพิมพ์ \"{{confirmValue}}\" ในช่องด้านล่าง",
+    "deleteWarningTypeConfirmation": "เพื่อยืนยัน โปรดพิมพ์ \"{{confirmvalue}}\" ในช่องด้านล่าง",
     "description": "คำอธิบาย",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "ปิด",
@@ -647,7 +648,7 @@
     "fonts": "แบบอักษร",
     "groups": "กลุ่ม",
     "id": "รหัส",
-    "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
+    "identityProvider": "ผู้ให้บริการ Identity",
     "includeInReport": "รวมในรายงาน",
     "includeInTimmyChat": "รวมในแชท Timmy",
     "issueUri": "URL ปัญหา",
@@ -657,7 +658,7 @@
     "lastUpdated": "อัปเดตล่าสุด",
     "loading": "กำลังโหลด...",
     "manage": "จัดการ",
-    "manageMetadata": "จัดการข้อมูลเมตา",
+    "manageMetadata": "จัดการเมตาดาต้า",
     "manageThreats": "จัดการภัยคุกคาม",
     "metadata": "ข้อมูลเมตา",
     "metadataKey": "คีย์",
@@ -668,10 +669,10 @@
     "moreActions": "การดำเนินการเพิ่มเติม",
     "name": "ชื่อ",
     "noAddonsAvailable": "ไม่มีส่วนเสริมที่พร้อมใช้งาน",
-    "noDataAvailable": "ไม่มีข้อมูล",
+    "noDataAvailable": "ไม่มีข้อมูลที่พร้อมใช้งาน",
     "noMatchingResults": "ไม่มีผลลัพธ์ที่ตรงกับตัวกรองของคุณ",
-    "noMetadata": "ไม่มีข้อมูลเมตา",
-    "noThreats": "ไม่มีภัยคุกคาม",
+    "noMetadata": "ไม่มีเมตาดาต้าที่พร้อมใช้งาน",
+    "noThreats": "ไม่มีภัยคุกคามที่พร้อมใช้งาน",
     "none": "ไม่มี",
     "objectTypes": {
       "asset": "สินทรัพย์",
@@ -698,8 +699,8 @@
       "team": "ทีม",
       "teams": "ทีม",
       "threat": "ภัยคุกคาม",
-      "threatModel": "โมเดลภัยคุกคาม",
-      "threatModels": "โมเดลภัยคุกคาม",
+      "threatModel": "Threat Model",
+      "threatModels": "Threat Models",
       "threats": "ภัยคุกคาม"
     },
     "ok": "ตกลง",
@@ -711,7 +712,7 @@
     "project": "โปรเจกต์",
     "provider": "ผู้ให้บริการ",
     "readOnly": "อ่านอย่างเดียว",
-    "readOnlyTooltip": "คุณมีสิทธิ์เข้าถึงแบบอ่านอย่างเดียวสำหรับแบบจำลองภัยคุกคามนี้ ติดต่อเจ้าของเพื่อขอสิทธิ์การแก้ไข",
+    "readOnlyTooltip": "คุณมีสิทธิ์อ่านอย่างเดียวสำหรับ Threat Model นี้ ติดต่อเจ้าของเพื่อขอสิทธิ์แก้ไข",
     "retry": "ลองอีกครั้ง",
     "roles": {
       "owner": "เจ้าของ",
@@ -724,7 +725,7 @@
     "savedSuccessfully": "บันทึกสำเร็จ",
     "score": "คะแนน",
     "search": "ค้นหา",
-    "selected": "เลือกแล้ว {{count}} รายการ",
+    "selected": "{{Count}} รายการที่เลือก",
     "sensitivity": "ความอ่อนไหว",
     "sessionRoles": {
       "host": "เจ้าภาพ",
@@ -740,7 +741,7 @@
     "team": "ทีม",
     "template": "เทมเพลต",
     "threatDescription": "คำอธิบายภัยคุกคาม",
-    "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
+    "threatDescriptionPlaceholder": "อธิบายภัยคุกคามอย่างละเอียด",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
     "title": "ชื่อ",
@@ -751,52 +752,79 @@
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "uri": "URI",
     "validation": {
-      "email": "กรุณากรอกที่อยู่อีเมลที่ถูกต้อง",
+      "email": "โปรดป้อนที่อยู่อีเมลที่ถูกต้อง",
       "invalidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "nameRequired": "จำเป็นต้องระบุชื่อ",
-      "required": "ฟิลด์นี้จำเป็น"
+      "required": "จำเป็นต้องกรอกข้อมูลในช่องนี้"
     },
     "version": "เวอร์ชัน",
     "view": "ดู",
-    "viewMetadata": "ดูข้อมูลเมตา",
-    "viewPermissions": "ดูสิทธิ์การเข้าถึง",
+    "viewMetadata": "ดูเมตาดาต้า",
+    "viewPermissions": "ดูสิทธิ์",
     "viewThreat": "ดูภัยคุกคาม"
   },
   "contextMenu": {
-    "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
-    "dataAssets": "สินทรัพย์ข้อมูล...",
+    "addInverseConnection": "เพิ่มการเชื่อมต่อย้อนกลับ",
+    "dataAssets": "ทรัพย์สินข้อมูล...",
     "editText": "แก้ไขข้อความ",
-    "lockLayout": "Lock Layout",
-    "moveBackward": "เลื่อนไปข้างหลัง",
-    "moveForward": "เลื่อนไปข้างหน้า",
-    "moveToBack": "เลื่อนไปด้านหลัง",
-    "moveToFront": "เลื่อนไปด้านหน้า",
+    "lockLayout": "ล็อกเลย์เอาต์",
+    "moveBackward": "เลื่อนไปด้านหลัง",
+    "moveForward": "เลื่อนไปด้านหน้า",
+    "moveToBack": "เลื่อนไปด้านหลังสุด",
+    "moveToFront": "เลื่อนไปด้านหน้าสุด",
     "noDataAssetsAvailable": "ไม่มีสินทรัพย์ข้อมูลที่พร้อมใช้งาน",
-    "showObject": "แสดงอ็อบเจกต์",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "แสดงออบเจกต์...",
+    "unlockLayout": "ปลดล็อกเลย์เอาต์"
   },
   "createThreatModel": {
-    "confidentialHint": "โมเดลภัยคุกคามที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้าง",
+    "confidentialHint": "Threat Model ที่เป็นความลับจะไม่ถูกแชร์โดยอัตโนมัติกับกลุ่มผู้ตรวจสอบความปลอดภัย การตั้งค่านี้ไม่สามารถเปลี่ยนแปลงได้หลังจากสร้าง",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
     "framework": "เฟรมเวิร์ก",
     "namePlaceholder": "ป้อนชื่อแบบจำลองภัยคุกคาม",
     "nameRequired": "{{common.validation.nameRequired}}",
-    "title": "สร้างแบบจำลองภัยคุกคาม"
+    "title": "สร้าง Threat Model"
   },
   "cvssCalculator": {
     "apply": "นำไปใช้",
     "openCalculator": "เพิ่ม CVSS",
     "parseError": "ไม่สามารถแยกวิเคราะห์สตริงเวกเตอร์ CVSS ที่มีอยู่ได้",
-    "pasteVectorPlaceholder": "วางสตริงเวกเตอร์ CVSS และกด Enter",
+    "pasteVectorPlaceholder": "วางสตริงเวกเตอร์ CVSS แล้วกด Enter",
     "title": "เครื่องคำนวณ CVSS",
     "vectorDuplicateVersion": "มีรายการ CVSS สำหรับเวอร์ชันนี้อยู่แล้ว",
     "vectorInvalid": "สตริงเวกเตอร์ CVSS ไม่ถูกต้อง",
     "vectorPlaceholder": "วางหรือพิมพ์สตริงเวกเตอร์ CVSS แล้วกด Enter",
     "vectorString": "สตริงเวกเตอร์",
     "vectorUnsupportedVersion": "รองรับเฉพาะเวกเตอร์ CVSS 3.1 และ 4.0 เท่านั้น",
-    "version": "เวอร์ชัน CVSS"
+    "version": "เวอร์ชัน CVSS",
+    "metricDescriptions": {
+      "AR": "เมตริกนี้ช่วยให้ผู้บริโภคปรับแต่งการประเมินตามความสำคัญของทรัพย์สิน IT ที่ได้รับผลกระทบต่อองค์กรของนักวิเคราะห์ วัดในแง่ของความพร้อมใช้งาน",
+      "AU": "เมตริกอัตโนมัติเก็บคำตอบของคำถามที่ว่า 'ผู้โจมตีสามารถทำให้การใช้ประโยชน์จากช่องโหว่เป็นอัตโนมัติในหลายเป้าหมายได้หรือไม่'",
+      "CR": "เมตริกนี้ช่วยให้ผู้บริโภคปรับแต่งการประเมินตามความสำคัญของทรัพย์สิน IT ที่ได้รับผลกระทบต่อองค์กรของนักวิเคราะห์ วัดในแง่ของความลับ",
+      "IR": "เมตริกนี้ช่วยให้ผู้บริโภคปรับแต่งการประเมินตามความสำคัญของทรัพย์สิน IT ที่ได้รับผลกระทบต่อองค์กรของนักวิเคราะห์ วัดในแง่ของความสมบูรณ์",
+      "MAC": "การแทนที่ความซับซ้อนของการโจมตี เมตริกนี้สะท้อนเงื่อนไขที่อยู่นอกเหนือการควบคุมของผู้โจมตีที่ต้องมีเพื่อใช้ประโยชน์จากช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MAT": "การแทนที่ข้อกำหนดการโจมตี เก็บข้อมูลเงื่อนไขการติดตั้งใช้งานและการดำเนินการล่วงหน้าของระบบที่ช่วยให้เกิดการโจมตีในสภาพแวดล้อมของนักวิเคราะห์",
+      "MAV": "การแทนที่เวกเตอร์การโจมตี เมตริกนี้สะท้อนบริบทที่การใช้ประโยชน์จากช่องโหว่เป็นไปได้ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MPR": "การแทนที่สิทธิ์ที่จำเป็น เมตริกนี้อธิบายระดับสิทธิ์ที่ผู้โจมตีต้องมีเพื่อใช้ประโยชน์จากช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MSA": "การแทนที่ผลกระทบด้านความพร้อมใช้งานของระบบถัดไป วัดผลกระทบต่อความพร้อมใช้งานของระบบนอกเหนือจากระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MSC": "การแทนที่ผลกระทบด้านความลับของระบบถัดไป วัดผลกระทบต่อความลับนอกเหนือจากระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MSI": "การแทนที่ผลกระทบด้านความสมบูรณ์ของระบบถัดไป วัดผลกระทบต่อความสมบูรณ์นอกเหนือจากระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MUI": "การแทนที่การโต้ตอบของผู้ใช้ เก็บข้อมูลข้อกำหนดสำหรับผู้ใช้มนุษย์นอกเหนือจากผู้โจมตีในการมีส่วนร่วมในการโจมตีที่ประสบความสำเร็จในสภาพแวดล้อมของนักวิเคราะห์",
+      "MVA": "การแทนที่ผลกระทบด้านความพร้อมใช้งานของระบบที่มีช่องโหว่ วัดผลกระทบต่อความพร้อมใช้งานของระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MVC": "การแทนที่ผลกระทบด้านความลับของระบบที่มีช่องโหว่ วัดผลกระทบต่อความลับของระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "MVI": "การแทนที่ผลกระทบด้านความสมบูรณ์ของระบบที่มีช่องโหว่ วัดผลกระทบต่อความสมบูรณ์ของระบบที่มีช่องโหว่ในสภาพแวดล้อมของนักวิเคราะห์",
+      "R": "เมตริกการกู้คืนอธิบายความยืดหยุ่นของระบบในการกู้คืนบริการในแง่ของประสิทธิภาพและความพร้อมใช้งานหลังจากการโจมตี",
+      "RE": "เมตริกความพยายามในการตอบสนองช่องโหว่เก็บระดับความพยายามที่ผู้บริโภคต้องการเพื่อตอบสนองต่อช่องโหว่หลังจากที่ทราบแล้ว",
+      "S": "เมตริกความปลอดภัยสะท้อนว่าช่องโหว่อาจส่งผลให้เกิดเงื่อนไขที่ส่งผลต่อความปลอดภัยของมนุษย์ตามที่กำหนดโดยหมวดหมู่ IEC 61508 หรือไม่",
+      "U": "เมตริกความเร่งด่วนของผู้ให้บริการสะท้อนการจัดระดับความเร่งด่วนที่ผู้จำหน่ายจัดให้ (แดง เหลือง เขียว ชัดเจน) สำหรับช่องโหว่",
+      "V": "เมตริกความหนาแน่นของมูลค่าอธิบายทรัพยากรที่ผู้โจมตีจะได้รับการควบคุมด้วยเหตุการณ์การใช้ประโยชน์เพียงครั้งเดียว"
+    },
+    "metricGroups": {
+      "environmentalBase": "สิ่งแวดล้อม (ฐานที่ปรับเปลี่ยน)",
+      "environmentalSecurityRequirement": "สิ่งแวดล้อม (ข้อกำหนดความปลอดภัย)"
+    },
+    "metricsConfigured": "กำหนดค่า {{Count}}/{{total}} แล้ว"
   },
   "cwePicker": {
     "addCwe": "เพิ่ม CWE",
@@ -843,8 +871,8 @@
       "status": "{{common.status}}",
       "statusLastChanged": "สถานะเปลี่ยนล่าสุด"
     },
-    "viewAsCards": "ดูแบบการ์ด",
-    "viewAsList": "ดูแบบรายการ"
+    "viewAsCards": "ดูเป็นการ์ด",
+    "viewAsList": "ดูเป็นรายการ"
   },
   "dataAssetDialog": {
     "selectAsset": "ทรัพย์สินข้อมูล",
@@ -861,9 +889,9 @@
     },
     "common": {
       "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
-      "cellIds": "ID ของเซลล์",
+      "cellIds": "ID เซลล์",
       "cells": "{{common.objectTypes.cells}}",
-      "copyFullJson": "คัดลอก JSON ทั้งหมด"
+      "copyFullJson": "คัดลอก JSON เต็ม"
     },
     "graphDataDialog": {
       "graphJson": "กราฟ JSON",
@@ -871,38 +899,38 @@
     },
     "historyDialog": {
       "canRedo": "สามารถทำซ้ำได้",
-      "canUndo": "สามารถเลิกทำได้",
+      "canUndo": "สามารถยกเลิกได้",
       "clearHistory": "ล้างประวัติ",
       "currentIndex": "ดัชนีปัจจุบัน",
       "id": "{{common.id}}",
-      "maxStackSize": "ขนาดสแต็กสูงสุด",
-      "noRedoEntries": "ไม่มีรายการทำซ้ำ",
-      "noUndoEntries": "ไม่มีรายการเลิกทำ",
+      "maxStackSize": "ขนาดสแตกสูงสุด",
+      "noRedoEntries": "ไม่มีรายการที่สามารถทำซ้ำได้",
+      "noUndoEntries": "ไม่มีรายการที่สามารถยกเลิกได้",
       "operationId": "ID การดำเนินการ",
       "previousCells": "เซลล์ก่อนหน้า",
       "providerId": "{{settings.userProfile.providerId}}",
-      "redoStack": "สแต็กทำซ้ำ",
-      "redoStackSize": "ขนาดสแต็กทำซ้ำ",
+      "redoStack": "สแตกทำซ้ำ",
+      "redoStackSize": "ขนาดสแตกทำซ้ำ",
       "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "ประทับเวลา",
       "title": "ประวัติ",
-      "undoStack": "สแต็กเลิกทำ",
-      "undoStackSize": "ขนาดสแต็กเลิกทำ"
+      "undoStack": "สแตกยกเลิก",
+      "undoStackSize": "ขนาดสแตกยกเลิก"
     }
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "พิมพ์เพื่อค้นหาจากทุกผู้ให้บริการ",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
+      "emptyStatePrompt": "พิมพ์เพื่อค้นหาในผู้ให้บริการทั้งหมด",
+      "emptyStateTryExamples": "ลองค้น: AWS ec2, azure sql, gcp compute",
       "notAvailable": "ไม่มีไอคอนสำหรับรูปร่างนี้",
       "placement": "ตำแหน่งวาง",
       "remove": "ลบ",
       "searchPlaceholder": "ค้นหาตามผู้ให้บริการ บริการ หรือหมวดหมู่...",
       "searchToChange": "ค้นหาเพื่อเปลี่ยนไอคอน...",
       "selectShape": "กรุณาเลือกรูปร่างก่อน",
-      "statusAvailable": "{count} ไอคอนที่พร้อมใช้งาน",
-      "statusMatches": "{count} รายการที่ตรงกัน",
-      "statusShapesSelected": "{count} รูปร่างที่เลือก",
+      "statusAvailable": "{Count} ไอคอนที่พร้อมใช้งาน",
+      "statusMatches": "{Count} รายการที่ตรงกัน",
+      "statusShapesSelected": "เลือก {Count} รูปร่างแล้ว",
       "title": "ไอคอนสถาปัตยกรรม",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -958,9 +986,10 @@
       "other": "ไม่สามารถเข้าถึงเอกสารนี้ได้",
       "pickerRegistrationInvalid": "การอนุญาตของตัวเลือกสำหรับเอกสารนี้ไม่ถูกต้องอีกต่อไป",
       "sourceNotFound": "TMI ไม่ทราบวิธีการอ่าน URL ของเอกสารนี้",
-      "tokenNotLinked": "คุณยังไม่ได้เชื่อมโยงบัญชีที่เป็นเจ้าของเอกสารนี้ แหล่งที่มา: {{ source }}",
+      "tokenNotLinked": "คุณยังไม่ได้เชื่อมต่อบัญชีที่เป็นเจ้าของเอกสารนี้ แหล่งที่มา: {{ source }}",
       "tokenRefreshFailed": "ลิงก์แหล่งที่มาไม่ถูกต้องอีกต่อไป แหล่งที่มา: {{ source }}",
-      "tokenTransientFailure": "ไม่สามารถเข้าถึงแหล่งที่มาได้ ปัญหานี้มักเป็นเพียงชั่วคราว แหล่งที่มา: {{ source }}"
+      "tokenTransientFailure": "ไม่สามารถเข้าถึงแหล่งที่มาได้ ปกติเป็นเรื่องชั่วคราว แหล่งที่มา: {{ source }}",
+      "microsoftNotShared": "TMI ยังไม่มีสิทธิ์เข้าถึงไฟล์ OneDrive หรือ SharePoint นี้ เจ้าของไฟล์ต้องให้สิทธิ์อ่านแก่ TMI โดยใช้คำสั่งด้านล่าง"
     },
     "remediation": {
       "contactOwner": "ติดต่อเจ้าของเอกสาร",
@@ -969,19 +998,26 @@
       "repickAfterShare": "เลือกอีกครั้งหลังจากแชร์",
       "repickFile": "เลือกไฟล์นี้อีกครั้ง",
       "retry": "ลองอีกครั้ง",
-      "shareWithServiceAccount": "แชร์กับบัญชีบริการของ TMI"
+      "shareWithServiceAccount": "แชร์กับบัญชีบริการของ TMI",
+      "shareWithApplication": {
+        "copyFailed": "ไม่สามารถคัดลอกไปยังคลิปบอร์ดได้",
+        "explanation": "TMI ยังไม่มีสิทธิ์เข้าถึงไฟล์ OneDrive หรือ SharePoint นี้ ขอให้เจ้าของไฟล์รันคำสั่ง Microsoft Graph ต่อไปนี้เพื่อให้สิทธิ์อ่านแก่ TMI หลังจากคำสั่งสำเร็จ คลิก \"ตรวจสอบตอนนี้\" — สถานะจะอัปเดตภายในไม่กี่นาทีหลังจากการให้สิทธิ์เสร็จสิ้น",
+        "powershellLabel": "PowerShell (โมดูล Microsoft.Graph)",
+        "rawLabel": "คำสั่ง Microsoft Graph",
+        "title": "ให้สิทธิ์ TMI เข้าถึงไฟล์นี้"
+      }
     },
     "serviceAccountEmail": "แชร์กับอีเมลนี้:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "ไม่สามารถให้สิทธิ์การเข้าถึงไฟล์ของคุณได้ โปรดลองอีกครั้ง",
+      "generic": "ไม่สามารถให้สิทธิ์เข้าถึงไฟล์ของคุณได้",
       "linkAccountCta": "เชื่อมโยงบัญชี",
       "notLinked": "บัญชี Microsoft ของคุณยังไม่ได้เชื่อมโยง",
       "permissionDenied": "Microsoft ปฏิเสธคำขอให้สิทธิ์การเข้าถึง ไฟล์อาจไม่สามารถแชร์ได้ ลองไฟล์อื่นหรือติดต่อผู้ดูแลระบบของคุณ",
-      "pickerLoadFailed": "ไม่สามารถเปิดตัวเลือกไฟล์ได้ ตรวจสอบเครือข่ายของคุณและลองอีกครั้ง",
-      "timeout": "คำขอใช้เวลานานเกินไป โปรดลองอีกครั้ง",
-      "unavailable": "Microsoft ไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งในอีกสักครู่"
+      "pickerLoadFailed": "ไม่สามารถเปิดตัวเลือกไฟล์ได้ กรุณาตรวจสอบเครือข่ายและลองอีกครั้ง",
+      "timeout": "คำขอใช้เวลานานเกินไป",
+      "unavailable": "Microsoft ไม่พร้อมใช้งานชั่วคราว"
     },
     "source": {
       "finalizing": "กำลังให้สิทธิ์การเข้าถึง…",
@@ -989,12 +1025,18 @@
       "label": "คุณต้องการแนบเอกสารนี้ด้วยวิธีใด?",
       "linkAction": "เชื่อมโยงแหล่งที่มา",
       "linkPrompt": "เชื่อมโยงบัญชีของคุณเพื่อเลือกไฟล์จากแหล่งที่มานี้",
-      "linkPromptMicrosoft": "เชื่อมโยงบัญชี Microsoft เพื่อเรียกดูไฟล์ OneDrive/SharePoint",
+      "linkPromptMicrosoft": "เชื่อมต่อบัญชี Microsoft เพื่อเรียกดูไฟล์ OneDrive/SharePoint",
       "pickAction": "เลือกไฟล์",
       "pickActionMicrosoft": "เรียกดู OneDrive/SharePoint",
-      "pickedFile": "เลือกไฟล์แล้ว: {{ fileName }}",
+      "pickedFile": "ไฟล์ที่เลือก: {{ filename }}",
       "repickAction": "เลือกไฟล์อื่น",
       "url": "วาง URL"
+    },
+    "create": {
+      "failed": "ไม่สามารถสร้างเอกสารได้"
+    },
+    "postCreate": {
+      "hint": "หลังจากที่คุณแชร์ไฟล์แล้ว คลิก \"ตรวจสอบการเข้าถึงอีกครั้ง\" ด้านบน คุณยังสามารถปิดกล่องโต้ตอบนี้และตรวจสอบในภายหลังจากมุมมองการแก้ไขของเอกสาร"
     }
   },
   "documentSources": {
@@ -1002,7 +1044,8 @@
     "callback": {
       "error": "ไม่สามารถเชื่อมต่อแหล่งที่มาได้ แหล่งที่มา: {{ source }} เหตุผล: {{ reason }}",
       "linking": "กำลังเชื่อมโยงบัญชีของคุณ...",
-      "success": "เชื่อมต่อแหล่งที่มาแล้ว แหล่งที่มา: {{ source }}"
+      "success": "เชื่อมต่อแหล่งที่มาแล้ว แหล่งที่มา: {{ source }}",
+      "notConfigured": "{{ Source }} ไม่ได้กำหนดค่าบนเซิร์ฟเวอร์นี้ ติดต่อผู้ดูแลระบบของคุณ"
     },
     "columns": {
       "account": "บัญชี",
@@ -1011,13 +1054,13 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "เชื่อมโยงบัญชีพื้นที่จัดเก็บข้อมูลบนคลาวด์เพื่อแนบเอกสารจาก Google Drive และบริการอื่น ๆ เมื่อพร้อมให้บริการ",
-      "title": "ไม่มีแหล่งที่มาของเอกสารที่เชื่อมต่อ"
+      "description": "เชื่อมต่อบัญชีที่เก็บข้อมูลบนคลาวด์เพื่อแนบเอกสารจาก Google Drive และบริการอื่นๆ ที่พร้อมใช้งาน",
+      "title": "ไม่มีแหล่งที่มาเอกสารที่เชื่อมต่อ"
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "เชื่อมโยงเมื่อ {{ relativeTime }}",
+    "linkedAt": "เชื่อมต่อเมื่อ {{ relativetime }}",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1043,7 +1086,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "องค์ประกอบที่เลือกหนึ่งรายการขึ้นไปมีรายการข้อมูลเมตาดาต้า การลบองค์ประกอบเหล่านี้จะลบข้อมูลเมตาดาต้าของพวกเขาอย่างถาวร คุณต้องการดำเนินการต่อหรือไม่",
-      "title": "ข้อมูลเมตาดาต้าจะหายไป"
+      "title": "เมตาดาต้าจะสูญหาย"
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "ป้อนคำอธิบายแผนภาพ",
@@ -1053,14 +1096,14 @@
     "editDisabledDuringCollaboration": "ปิดใช้งานการแก้ไขระหว่างการทำงานร่วมกัน",
     "embedding": {
       "cannotEmbedIntoTextBox": "ไม่สามารถฝังรูปร่างลงในกล่องข้อความได้",
-      "circularEmbeddingPrevented": "ไม่อนุญาตให้ฝังแบบวนรอบ",
+      "circularEmbeddingPrevented": "ไม่อนุญาตให้ฝังแบบวงกลม",
       "securityBoundaryRestriction": "ขอบเขตความปลอดภัยสามารถฝังได้เฉพาะในขอบเขตความปลอดภัยอื่นเท่านั้น"
     },
     "flowLabel": "การไหล",
     "helpDialog": {
-      "panLabel": "กดค้าง Shift และลากเพื่อเลื่อน",
-      "title": "ความช่วยเหลือโปรแกรมแก้ไขแผนภาพ",
-      "zoomLabel": "กดค้าง Shift และใช้ลูกกลิ้งเมาส์เพื่อซูม"
+      "panLabel": "กด Shift ค้างไว้และลากเพื่อเลื่อน",
+      "title": "ความช่วยเหลือตัวแก้ไขแผนภาพ",
+      "zoomLabel": "กด Shift ค้างไว้และใช้ล้อเมาส์เพื่อซูม"
     },
     "nodeLabels": {
       "actor": "ผู้กระทำ",
@@ -1070,7 +1113,7 @@
       "store": "ที่เก็บข้อมูล",
       "textbox": "ข้อความ"
     },
-    "pageTitle": "โปรแกรมแก้ไขแผนภาพการไหลของข้อมูล",
+    "pageTitle": "ตัวแก้ไขแผนภาพการไหลของข้อมูล",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "ส่งออกเป็น JPEG"
@@ -1083,13 +1126,13 @@
         "addTextbox": "เพิ่มกล่องข้อความ",
         "deleteSelected": "ลบที่เลือก",
         "export": "ส่งออก...",
-        "help": "ความช่วยเหลือ",
+        "help": "ความช่วยเหลือ...",
         "redo": "ทำซ้ำ",
-        "showClipboard": "แสดงคลิปบอร์ด",
-        "showGraphData": "แสดงข้อมูลกราฟ",
-        "showHistory": "แสดงประวัติ",
+        "showClipboard": "แสดงคลิปบอร์ด...",
+        "showGraphData": "แสดงข้อมูลกราฟ...",
+        "showHistory": "แสดงประวัติ...",
         "undo": "เลิกทำ",
-        "zoomToFit": "ซูมให้พอดีหน้าจอ"
+        "zoomToFit": "ซูมให้พอดี"
       }
     }
   },
@@ -1113,35 +1156,35 @@
   },
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
-    "explanation": "เข้าสู่ระบบด้วยบัญชีที่มีอยู่ของคุณจากผู้ให้บริการข้อมูลประจำตัวที่เชื่อถือได้ วิธีนี้ช่วยลดความจำเป็นในการใช้รหัสผ่านแยกต่างหาก ทำให้ประสบการณ์ของคุณคล่องตัวขึ้นในขณะที่ยังคงความปลอดภัย เราไม่เคยเก็บหรือจัดการรหัสผ่าน ข้อมูลรับรองของคุณอยู่กับผู้ให้บริการของคุณและไม่สามารถถูกบุกรุกผ่านเราได้",
+    "explanation": "ลงชื่อเข้าใช้ด้วยบัญชีที่มีอยู่จากผู้ให้บริการ Identity ที่เชื่อถือได้ ซึ่งช่วยขจัดความจำเป็นในการใช้รหัสผ่านแยกต่างหาก ทำให้ประสบการณ์ของคุณราบรื่นยิ่งขึ้นในขณะที่ยังคงความปลอดภัยไว้ เราไม่เก็บหรือจัดการรหัสผ่าน—ข้อมูลรับรองของคุณอยู่กับผู้ให้บริการและไม่สามารถถูกเจาะได้ผ่านเรา",
     "loadingProviders": "กำลังโหลดผู้ให้บริการการตรวจสอบสิทธิ์...",
     "local": {
-      "title": "การเข้าสู่ระบบสำหรับการพัฒนาในเครื่อง"
+      "title": "ลงชื่อเข้าใช้สำหรับการพัฒนาในเครื่อง"
     },
     "loggingInWith": "กำลังเข้าสู่ระบบด้วย {{provider}}...",
     "loginWith": "เข้าสู่ระบบด้วย",
     "noProvidersConfigured": "ไม่มีผู้ให้บริการการตรวจสอบสิทธิ์ที่กำหนดค่าไว้",
-    "oauthFailed": "การตรวจสอบสิทธิ์ OAuth ล้มเหลว กรุณาลองใหม่อีกครั้ง",
-    "oauthProvidersTitle": "ผู้ให้บริการการเข้าสู่ระบบ OAuth",
-    "samlProvidersTitle": "ผู้ให้บริการการเข้าสู่ระบบ SAML",
+    "oauthFailed": "การยืนยันตัวตน OAuth ล้มเหลว",
+    "oauthProvidersTitle": "ผู้ให้บริการลงชื่อเข้าใช้ด้วย OAuth",
+    "samlProvidersTitle": "ผู้ให้บริการลงชื่อเข้าใช้ด้วย SAML",
     "sessionExpired": "เซสชันของคุณหมดอายุแล้ว กรุณาลงชื่อเข้าใช้อีกครั้ง",
     "signingIn": "กำลังลงชื่อเข้าใช้...",
     "signingInWith": "{{login.loggingInWith}}",
-    "title": "เข้าสู่ระบบ TMI",
+    "title": "ลงชื่อเข้าใช้ TMI",
     "tmiDialog": {
       "errorMaxLength": "ชื่อผู้ใช้ต้องมีไม่เกิน 20 ตัวอักษร",
       "errorMinLength": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
-      "errorPattern": "ชื่อผู้ใช้ต้องประกอบด้วยตัวอักษร ตัวเลข จุด ขีดล่าง เครื่องหมายเปอร์เซ็นต์ เครื่องหมายบวก และยัติภังค์เท่านั้น",
-      "signIn": "เข้าสู่ระบบ",
-      "title": "เข้าสู่ระบบด้วย TMI Provider",
+      "errorPattern": "ชื่อผู้ใช้ต้องประกอบด้วยตัวอักษร ตัวเลข จุด ขีดล่าง เครื่องหมายเปอร์เซ็นต์ เครื่องหมายบวก และขีดกลางเท่านั้น",
+      "signIn": "ลงชื่อเข้าใช้",
+      "title": "ลงชื่อเข้าใช้ด้วยผู้ให้บริการ TMI",
       "usernameLabel": "ชื่อผู้ใช้",
       "usernamePlaceholder": "กรอกชื่อผู้ใช้ (ไม่บังคับ)"
     },
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth"
   },
   "mermaidViewer": {
-    "exportFailed": "ไม่สามารถส่งออกไดอะแกรมได้",
-    "fitToScreen": "พอดีหน้าจอ",
+    "exportFailed": "ไม่สามารถส่งออกแผนภาพได้",
+    "fitToScreen": "ปรับให้พอดีกับหน้าจอ",
     "openInViewer": "เปิดในตัวแสดง",
     "resetZoom": "รีเซ็ตการซูม",
     "zoomIn": "ซูมเข้า",
@@ -1149,15 +1192,15 @@
   },
   "navbar": {
     "admin": "ผู้ดูแล",
-    "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
+    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "คัดลอกอีเมลผู้ใช้ไปยังคลิปบอร์ด",
     "dashboard": "แดชบอร์ด",
     "feedback": "รายงานข้อบกพร่อง ขอคุณสมบัติ หรือให้ข้อเสนอแนะ",
     "feedbackMenu": {
       "provideFeedback": "ให้ข้อเสนอแนะ",
-      "reportBug": "รายงานข้อบกพร่อง",
+      "reportBug": "รายงานข้อผิดพลาด",
       "reportBugCopied": "คัดลอกบันทึกแอปพลิเคชันไปยังคลิปบอร์ดแล้ว วางลงใน GitHub issue ได้เลย",
-      "requestFeature": "ขอฟีเจอร์ใหม่"
+      "requestFeature": "ขอฟีเจอร์"
     },
     "home": "หน้าแรก",
     "intake": "รับเรื่อง",
@@ -1167,30 +1210,30 @@
       "logout": "ออกจากระบบ"
     },
     "serverStatus": {
-      "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
+      "noServerConfigured": "ไม่มีเซิร์ฟเวอร์ที่กำหนดค่าไว้",
       "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",
-      "serverDegraded": "เซิร์ฟเวอร์อ่อนลง",
+      "serverDegraded": "เซิร์ฟเวอร์ทำงานลดลง",
       "serverError": "ข้อผิดพลาดของเซิร์ฟเวอร์",
       "serverOffline": "เซิร์ฟเวอร์ออฟไลน์"
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} ตัวอักษร",
+    "characterCount": "{{Current}} / {{max}} ตัวอักษร",
     "content": "เนื้อหา",
-    "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุในรูปแบบ markdown รองรับ GitHub Flavored Markdown และแผนภาพ Mermaid",
+    "contentPlaceholder": "ป้อนเนื้อหาบันทึกในรูปแบบ Markdown รองรับ GitHub Flavored Markdown และแผนภาพ Mermaid",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "คำอธิบายเพิ่มเติม (ถ้ามี)",
     "editMode": "โหมดแก้ไข",
     "errors": {
-      "clipboardAccessDenied": "ปฏิเสธการเข้าถึงคลิปบอร์ด"
+      "clipboardAccessDenied": "การเข้าถึงคลิปบอร์ดถูกปฏิเสธ"
     },
     "namePlaceholder": "ป้อนชื่อหมายเหตุ",
-    "previewMode": "โหมดแสดงตัวอย่าง",
+    "previewMode": "โหมดดูตัวอย่าง",
     "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
-      "create": "สร้างหมายเหตุ",
-      "edit": "แก้ไขหมายเหตุ",
-      "view": "ดูหมายเหตุ"
+      "create": "สร้างบันทึก",
+      "edit": "แก้ไขบันทึก",
+      "view": "ดูบันทึก"
     }
   },
   "notes": {
@@ -1203,8 +1246,8 @@
     "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึก \"{{name}}\"? การดำเนินการนี้ไม่สามารถยกเลิกได้",
     "deleteConfirmTitle": "ลบบันทึก",
     "noNotes": "ยังไม่มีบันทึก",
-    "sharable": "มองเห็นได้โดยสมาชิกทุกคน",
-    "sharableTooltip": "เมื่อเปิดใช้งาน บันทึกนี้จะมองเห็นได้โดยสมาชิกทีม/โครงการทุกคน เมื่อปิดใช้งาน เฉพาะผู้ดูแลระบบและผู้ตรวจสอบความปลอดภัยเท่านั้นที่สามารถมองเห็นได้",
+    "sharable": "มองเห็นได้โดยสมาชิกทั้งหมด",
+    "sharableTooltip": "เมื่อเปิดใช้งาน บันทึกนี้จะมองเห็นได้โดยสมาชิกทีม/โครงการทั้งหมด เมื่อปิดใช้งาน เฉพาะผู้ดูแลระบบและผู้ตรวจสอบความปลอดภัยเท่านั้นที่สามารถมองเห็นได้",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "บันทึก ({{count}})"
   },
@@ -1212,34 +1255,34 @@
     "actions": {
       "login": "เข้าสู่ระบบ"
     },
-    "operationError": "ไม่สามารถ{{operation}}: {{errorMessage}}",
+    "operationError": "ไม่สามารถ {{operation}}: {{errormessage}}",
     "operationFailed": "การดำเนินการล้มเหลว",
     "operations": {
       "collaboration": "ทำงานร่วมกัน",
-      "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
-      "sendPresenterRequest": "ส่งคำขอเป็นผู้นำเสนอ",
+      "denyPresenterRequest": "ปฏิเสธคำขอผู้นำเสนอ",
+      "sendPresenterRequest": "ส่งคำขอผู้นำเสนอ",
       "startCollaboration": "เริ่มการทำงานร่วมกัน",
       "updatePresenter": "อัปเดตผู้นำเสนอ"
     },
     "presenter": {
-      "assigned": "{{user}} เป็นผู้นำเสนอแล้ว",
+      "assigned": "{{User}} เป็นผู้นำเสนอแล้ว",
       "assignedYou": "คุณเป็นผู้นำเสนอแล้ว",
-      "cleared": "โหมดผู้นำเสนอถูกยกเลิกแล้ว",
-      "cursorMoved": "เคอร์เซอร์ของผู้นำเสนอเลื่อนแล้ว",
+      "cleared": "โหมดผู้นำเสนอถูกล้างแล้ว",
+      "cursorMoved": "เคอร์เซอร์ผู้นำเสนอเลื่อน",
       "modeChanged": "โหมดผู้นำเสนอเปลี่ยนแล้ว",
-      "privilegesRequested": "มีการขอสิทธิ์ผู้นำเสนอ",
-      "removed": "{{user}} ไม่ใช่ผู้นำเสนอแล้ว",
-      "removedYou": "คุณไม่ใช่ผู้นำเสนอแล้ว",
-      "requestDenied": "คำขอเป็นผู้นำเสนอของคุณถูกปฏิเสธ",
-      "requestSent": "ส่งคำขอเป็นผู้นำเสนอไปยังเจ้าของเซสชันแล้ว",
-      "requesting": "{{user}} กำลังขอสิทธิ์ผู้นำเสนอ",
-      "selectionChanged": "การเลือกของผู้นำเสนอเปลี่ยนแล้ว"
+      "privilegesRequested": "ขอสิทธิ์ผู้นำเสนอแล้ว",
+      "removed": "{{User}} ไม่ใช่ผู้นำเสนออีกต่อไป",
+      "removedYou": "คุณไม่ใช่ผู้นำเสนออีกต่อไป",
+      "requestDenied": "คำขอผู้นำเสนอของคุณถูกปฏิเสธ",
+      "requestSent": "ส่งคำขอผู้นำเสนอไปยังเจ้าของเซสชันแล้ว",
+      "requesting": "{{User}} กำลังขอสิทธิ์ผู้นำเสนอ",
+      "selectionChanged": "การเลือกผู้นำเสนอเปลี่ยนแล้ว"
     },
     "session": {
       "disconnected": "ตัดการเชื่อมต่อจากเซสชันการทำงานร่วมกัน",
-      "reconnected": "เชื่อมต่อเซสชันการทำงานร่วมกันใหม่แล้ว",
+      "reconnected": "เชื่อมต่อกลับไปยังเซสชันการทำงานร่วมกันแล้ว",
       "reconnecting": "กำลังเชื่อมต่อเซสชันการทำงานร่วมกันใหม่...",
-      "userRemoved": "{{user}} ถูกลบออกจากเซสชัน",
+      "userRemoved": "{{User}} ถูกลบออกจากเซสชัน",
       "youWereRemoved": "คุณถูกลบออกจากเซสชันการทำงานร่วมกัน"
     },
     "unknownError": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ",
@@ -1252,7 +1295,7 @@
       "disconnected": "ตัดการเชื่อมต่อจากเซิร์ฟเวอร์การทำงานร่วมกัน การเปลี่ยนแปลงจะถูกบันทึกไว้ในเครื่อง",
       "messageSendFailed": "ไม่สามารถส่งข้อความ การเปลี่ยนแปลงของคุณอาจไม่ถูกซิงค์",
       "multipleFailed": "การเชื่อมต่อล้มเหลวหลังจากหลายครั้ง กำลังทำงานในโหมดออฟไลน์",
-      "unknownError": "เกิดข้อผิดพลาด WebSocket ที่ไม่ทราบสาเหตุ"
+      "unknownError": "เกิดข้อผิดพลาด Websocket ที่ไม่ทราบสาเหตุ"
     }
   },
   "pagination": {
@@ -1263,52 +1306,52 @@
     "nextPage": "หน้าถัดไป",
     "previousPage": "หน้าก่อนหน้า",
     "rangeEmpty": "0 จาก {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} จาก {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} จาก {{length}}"
   },
   "presenter": {
-    "startPresenting": "เริ่มการนำเสนอ",
-    "stopPresenting": "หยุดการนำเสนอ"
+    "startPresenting": "เริ่มนำเสนอ",
+    "stopPresenting": "หยุดนำเสนอ"
   },
   "privacy": {
-    "changesContent": "เราอาจอัปเดตนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราว การเปลี่ยนแปลงใด ๆ จะถูกโพสต์บนหน้านี้พร้อมกับวันที่ \"อัปเดตล่าสุด\" ที่อัปเดต",
+    "changesContent": "เราอาจอัปเดตนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราว การเปลี่ยนแปลงใดๆ จะถูกโพสต์ในหน้านี้พร้อมวันที่ \"อัปเดตล่าสุด\" ที่อัปเดต",
     "changesTitle": "การเปลี่ยนแปลงนโยบายนี้",
-    "complianceContent": "เราจะเปิดเผยข้อมูลเฉพาะเมื่อจำเป็นต้องปฏิบัติตามกฎหมายเท่านั้น เช่น การตอบสนองต่อคำสั่งหรือหมายเรียกของรัฐบาลที่ถูกต้อง ในกรณีดังกล่าว ผู้ดำเนินการจะปฏิบัติตามข้อผูกพันทางกฎหมายที่เกี่ยวข้อง",
+    "complianceContent": "เราจะเปิดเผยข้อมูลเฉพาะเมื่อกฎหมายกำหนด เช่น ในการตอบสนองต่อคำสั่งหรือหมายศาลของรัฐบาลที่ถูกต้อง ในกรณีดังกล่าว ผู้ดำเนินการจะปฏิบัติตามภาระผูกพันทางกฎหมายที่ใช้บังคับ",
     "complianceTitle": "การปฏิบัติตามกฎหมาย",
     "contactContent": {
-      "part1": "หากคุณมีคำถามใด ๆ เกี่ยวกับนโยบายความเป็นส่วนตัวนี้ โปรดติดต่อผู้ดำเนินการของเว็บไซต์นี้ผ่านข้อมูลติดต่อที่หน้า ",
-      "part2": ""
+      "part1": "หากคุณมีคำถามเกี่ยวกับนโยบายความเป็นส่วนตัวนี้ โปรดติดต่อผู้ดำเนินการเว็บไซต์นี้ผ่านข้อมูลติดต่อบน",
+      "part2": " หน้า"
     },
     "contactTitle": "ติดต่อเรา",
-    "dataSecurityContent1": "ผู้ดำเนินการใช้มาตรการรักษาความปลอดภัยมาตรฐานอุตสาหกรรมเพื่อปกป้องข้อมูลส่วนบุคคลของคุณ รวมถึงการเข้ารหัสระหว่างการส่งและขณะจัดเก็บ โปรโตคอลการตรวจสอบสิทธิ์ที่ปลอดภัย และการอัปเดตความปลอดภัยเป็นประจำ การเข้าถึงข้อมูลของคุณถูกจำกัดเฉพาะบุคลากรที่ได้รับอนุญาตตามหลักความจำเป็นในการรับทราบเท่านั้น",
-    "dataSecurityContent2": "แม้ว่าจะไม่มีระบบใดที่ปลอดภัยจากความเสี่ยงโดยสมบูรณ์ ผู้ดำเนินการตรวจสอบและอัปเดตมาตรการป้องกันอย่างต่อเนื่องเพื่อลดภัยคุกคามและรับประกันความลับ ความสมบูรณ์ และความพร้อมใช้งานของข้อมูลของคุณ",
-    "dataSecurityTitle": "ความปลอดภัยของข้อมูล",
-    "dataSharingContent1": "ผู้ดำเนินการไม่แบ่งปันข้อมูลส่วนบุคคลของคุณกับบุคคลที่สามใดๆ ยกเว้นในสถานการณ์จำกัดดังต่อไปนี้:",
-    "dataSharingContent2": "นอกเหนือจากข้อยกเว้นเหล่านี้ ผู้ดำเนินการไม่ขาย เช่า หรือแบ่งปันข้อมูลของคุณกับหน่วยงานอื่นใดเพื่อการตลาด การโฆษณา หรือวัตถุประสงค์อื่นใด",
-    "dataSharingList1": "ผู้ให้บริการ: ข้อมูลของคุณอาจถูกจัดเก็บและประมวลผลบนโครงสร้างพื้นฐานคลาวด์ของบุคคลที่สามที่ปลอดภัย (เช่น AWS, Google Cloud หรือผู้ให้บริการที่คล้ายกัน) เพื่อวัตถุประสงค์ในการดำเนินงานและบำรุงรักษาแอปพลิเคชันเท่านั้น ผู้ให้บริการเหล่านี้มีภาระผูกพันตามสัญญาในการปกป้องข้อมูลของคุณและใช้เฉพาะตามวัตถุประสงค์ที่ผู้ดำเนินการกำหนดเท่านั้น",
-    "dataSharingList2": "คุณสมบัติการขยายความสามารถ: แอปพลิเคชันรองรับคุณสมบัติการขยายความสามารถที่เลือกได้ (เช่น websockets และ addons) ที่อาจขยายฟังก์ชันการทำงานโดยการส่งข้อมูลที่เลือกไปยังบริการของบุคคลที่สามเพื่อการประมวลผล ข้อมูลจะถูกแบ่งปันกับบริการเหล่านี้เฉพาะเมื่อคุณใช้งานคุณสมบัติที่ต้องการการส่งข้อมูลดังกล่าวอย่างจริงจังเท่านั้น และจะส่งเฉพาะข้อมูลที่จำเป็นสำหรับฟังก์ชันการทำงานที่ร้องขอเท่านั้น",
-    "dataSharingList2a": "คุณสมบัติการประมวลผล AI: เมื่อคุณร้องขอคุณสมบัติที่ขับเคลื่อนโดย large language models (LLMs) หรือบริการ AI ที่คล้ายกันอย่างจริงจัง ข้อมูลที่เลือกอาจถูกส่งไปยังผู้ให้บริการ AI บุคคลที่สาม (เช่น OpenAI, Anthropic หรือบริการที่เทียบเท่า) เพื่อการประมวลผลและการสร้างคำตอบ เฉพาะข้อมูลที่จำเป็นสำหรับฟังก์ชันการทำงานที่ร้องขอเท่านั้นที่จะถูกแบ่งปัน และการแบ่งปันดังกล่าวเกิดขึ้นตามคำสั่งของคุณเท่านั้น ผู้ให้บริการเหล่านี้มีภาระผูกพันตามสัญญา — รวมถึงข้อตกลงการประมวลผลข้อมูลตามที่เกี่ยวข้อง — ในการใช้ข้อมูลเฉพาะเพื่อให้บริการที่ร้องขอเท่านั้น โดยมีข้อจำกัดในการเก็บรักษา การฝึกอบรม หรือการใช้งานอื่นๆ",
-    "dataSharingList3": "การปฏิบัติตามกฎหมาย: ผู้ดำเนินการอาจเปิดเผยข้อมูลหากจำเป็นตามกฎหมาย เช่น ในการตอบสนองต่อคำสั่งศาลที่ถูกต้อง หมายศาลชั้นต้น หรือคำขอของรัฐบาล",
-    "dataSharingTitle": "การแบ่งปันข้อมูล",
-    "informationCollectionContent1": "เมื่อผู้ใช้ตรวจสอบสิทธิ์ผ่านการเข้าสู่ระบบทางโซเชียล (โดยใช้ผู้ให้บริการ OAuth หรือ OpenID Connect เช่น Sign in with Google, Login with GitHub, Microsoft Entra External ID หรืออื่นๆ) แอปพลิเคชันจะรวบรวมข้อมูลต่อไปนี้จากผู้ให้บริการที่เลือก เพื่อวัตถุประสงค์ในการอำนวยความสะดวกในการตรวจสอบสิทธิ์และให้บริการที่ปรับแต่งเฉพาะบุคคลเท่านั้น:",
-    "informationCollectionContent2": "ไม่มีการรวบรวมข้อมูลส่วนบุคคลเพิ่มเติมโดยไม่ได้รับความยินยอมอย่างชัดแจ้งจากผู้ใช้ ผู้ดำเนินการไม่เข้าถึงหรือจัดเก็บข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน ผู้ติดต่อ หรือข้อมูลเฉพาะของผู้ให้บริการอื่นๆ นอกเหนือจากที่จำเป็นสำหรับการตรวจสอบสิทธิ์ ข้อมูลที่รวบรวมทั้งหมดจะได้รับการจัดการตามนโยบาย API ของผู้ให้บริการที่เกี่ยวข้องและความมุ่งมั่นของผู้ดำเนินการในการรักษาความเป็นส่วนตัวของผู้ใช้",
-    "informationCollectionContent3": "แอปพลิเคชันสร้างบันทึกการใช้งานเพื่อให้แน่ใจว่าระบบมีความเสถียร ความปลอดภัย และประสิทธิภาพ บันทึกเหล่านี้อาจมีบันทึกของกิจกรรมของผู้ใช้ในแอปพลิเคชัน เช่น เหตุการณ์การเข้าสู่ระบบ การใช้งานคุณสมบัติ และรายงานข้อผิดพลาด ผู้ดำเนินการเก็บรักษาบันทึกเพียงตราบเท่าที่จำเป็นเพื่อให้บรรลุวัตถุประสงค์ในการใช้งาน รวมถึงการแก้ไขปัญหา การตรวจสอบความปลอดภัย และการปรับปรุงบริการ บันทึกจะถูกจัดเก็บอย่างปลอดภัยและไม่ถูกใช้เพื่อวัตถุประสงค์นอกเหนือจากความต้องการในการใช้งาน",
-    "informationCollectionList1": "ข้อมูลโปรไฟล์พื้นฐาน: ชื่อเต็ม ที่อยู่อีเมล และรูปโปรไฟล์ (หากมีให้และพร้อมใช้งาน)",
-    "informationCollectionList2": "ตัวระบุเฉพาะ: รหัสผู้ใช้เฉพาะของผู้ให้บริการเพื่อจัดการเซสชันบัญชีอย่างปลอดภัย",
-    "informationCollectionTitle": "การรวบรวมและการใช้ข้อมูล",
+    "dataSecurityContent1": "ผู้ดำเนินการนำมาตรการรักษาความปลอดภัยตามมาตรฐานอุตสาหกรรมมาใช้เพื่อปกป้องข้อมูลส่วนบุคคลของคุณ รวมถึงการเข้ารหัสระหว่างการส่งและจัดเก็บ โปรโตคอลการยืนยันตัวตนที่ปลอดภัย และการอัปเดตความปลอดภัยอย่างสม่ำเสมอ การเข้าถึงข้อมูลของคุณถูกจำกัดเฉพาะบุคลากรที่ได้รับอนุญาตตามความจำเป็นที่ต้องรู้",
+    "dataSecurityContent2": "แม้ว่าไม่มีระบบใดที่แข็งแกร่งต่อความเสี่ยงอย่างสมบูรณ์ แต่ผู้ดำเนินการตรวจสอบและอัปเดตมาตรการป้องกันอย่างต่อเนื่องเพื่อลดภัยคุกคามและรับรองความลับ ความสมบูรณ์ และความพร้อมใช้งานของข้อมูลของคุณ",
+    "dataSecurityTitle": "การรักษาความปลอดภัยข้อมูล",
+    "dataSharingContent1": "ผู้ดำเนินการไม่แชร์ข้อมูลส่วนบุคคลของคุณกับบุคคลที่สาม ยกเว้นในกรณีจำกัดต่อไปนี้:",
+    "dataSharingContent2": "นอกจากข้อยกเว้นเหล่านี้ ผู้ดำเนินการไม่ขาย เช่า หรือแชร์ข้อมูลของคุณกับหน่วยงานอื่นเพื่อวัตถุประสงค์ทางการตลาด โฆษณา หรือวัตถุประสงค์อื่นใด",
+    "dataSharingList1": "ผู้ให้บริการ: ข้อมูลของคุณอาจถูกจัดเก็บและประมวลผลบนโครงสร้างพื้นฐานคลาวด์ของบุคคลที่สามที่ปลอดภัย (เช่น AWS, Google Cloud หรือผู้ให้บริการที่คล้ายกัน) เพื่อดำเนินการและบำรุงรักษาแอปพลิเคชันเท่านั้น ผู้ให้บริการเหล่านี้มีภาระผูกพันตามสัญญาในการปกป้องข้อมูลของคุณและใช้เฉพาะเพื่อวัตถุประสงค์ที่ผู้ดำเนินการระบุ",
+    "dataSharingList2": "คุณสมบัติการขยายฟังก์ชัน: แอปพลิเคชันรองรับคุณสมบัติการขยายฟังก์ชันแบบเลือกได้ (เช่น Websocket และส่วนเสริม) ที่อาจขยายฟังก์ชันโดยส่งข้อมูลที่เลือกไปยังบริการของบุคคลที่สามเพื่อประมวลผล ข้อมูลจะถูกแชร์กับบริการเหล่านี้เฉพาะเมื่อคุณใช้งานคุณสมบัติที่ต้องการการส่งผ่านดังกล่าว และเฉพาะข้อมูลที่จำเป็นสำหรับฟังก์ชันที่ร้องขอเท่านั้นที่จะถูกส่ง",
+    "dataSharingList2a": "คุณสมบัติการประมวลผล AI: เมื่อคุณร้องขอคุณสมบัติที่ขับเคลื่อนโดย LLM หรือบริการ AI ที่คล้ายกัน ข้อมูลที่เลือกอาจถูกส่งไปยังผู้ให้บริการ AI ของบุคคลที่สาม (เช่น OpenAI, Anthropic หรือบริการที่เทียบเท่า) เพื่อประมวลผลและสร้างการตอบสนอง เฉพาะข้อมูลที่จำเป็นสำหรับฟังก์ชันที่ร้องขอเท่านั้นที่จะถูกแชร์ และการแชร์ดังกล่าวเกิดขึ้นเฉพาะตามคำสั่งของคุณเท่านั้น ผู้ให้บริการเหล่านี้ถูกผูกมัดโดยภาระผูกพันตามสัญญา—รวมถึงข้อตกลงการประมวลผลข้อมูลเมื่อใช้บังคับ—เพื่อใช้ข้อมูลเฉพาะเพื่อให้บริการที่ร้องขอ โดยมีข้อจำกัดเกี่ยวกับการเก็บรักษา การฝึกอบรม หรือการใช้งานอื่นๆ",
+    "dataSharingList3": "การปฏิบัติตามกฎหมาย: ผู้ดำเนินการอาจเปิดเผยข้อมูลหากกฎหมายกำหนด เช่น ในการตอบสนองต่อคำสั่งศาล หมายศาล หรือคำขอของรัฐบาลที่ถูกต้อง",
+    "dataSharingTitle": "การแชร์ข้อมูล",
+    "informationCollectionContent1": "เมื่อผู้ใช้ยืนยันตัวตนผ่านการลงชื่อเข้าใช้แบบโซเชียล (โดยใช้ผู้ให้บริการ OAuth หรือ OpenID Connect เช่น ลงชื่อเข้าใช้ด้วย Google, ล็อกอินด้วย GitHub, Microsoft Entra External ID หรืออื่นๆ) แอปพลิเคชันจะรวบรวมข้อมูลต่อไปนี้จากผู้ให้บริการที่เลือกเพื่อเอื้อให้เกิดการยืนยันตัวตนและให้บริการเฉพาะบุคคลเท่านั้น:",
+    "informationCollectionContent2": "ไม่มีการรวบรวมข้อมูลส่วนบุคคลเพิ่มเติมโดยไม่ได้รับความยินยอมจากผู้ใช้อย่างชัดเจน ผู้ดำเนินการไม่เข้าถึงหรือจัดเก็บข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน รายชื่อผู้ติดต่อ หรือข้อมูลเฉพาะของผู้ให้บริการนอกเหนือจากที่จำเป็นสำหรับการยืนยันตัวตน ข้อมูลที่รวบรวมทั้งหมดได้รับการดูแลตามนโยบาย API ของผู้ให้บริการและความมุ่งมั่นของผู้ดำเนินการต่อความเป็นส่วนตัวของผู้ใช้",
+    "informationCollectionContent3": "แอปพลิเคชันสร้างบันทึกการดำเนินงานเพื่อรับรองความน่าเชื่อถือ ความปลอดภัย และประสิทธิภาพของระบบ บันทึกเหล่านี้อาจมีบันทึกกิจกรรมของผู้ใช้ภายในแอปพลิเคชัน เช่น เหตุการณ์การเข้าสู่ระบบ การใช้งานคุณสมบัติ และรายงานข้อผิดพลาด ผู้ดำเนินการเก็บรักษาบันทึกเฉพาะตราบเท่าที่จำเป็นเพื่อวัตถุประสงค์ในการดำเนินงาน รวมถึงการแก้ไขปัญหา การตรวจสอบความปลอดภัย และการปรับปรุงบริการ บันทึกถูกจัดเก็บอย่างปลอดภัยและไม่ถูกใช้เพื่อวัตถุประสงค์นอกเหนือจากความต้องการในการดำเนินงาน",
+    "informationCollectionList1": "ข้อมูลโปรไฟล์พื้นฐาน: ชื่อเต็ม ที่อยู่อีเมล และรูปโปรไฟล์ (หากให้ไว้และพร้อมใช้งาน)",
+    "informationCollectionList2": "ตัวระบุเฉพาะ: ID ผู้ใช้เฉพาะของผู้ให้บริการเพื่อจัดการเซสชันบัญชีอย่างปลอดภัย",
+    "informationCollectionTitle": "การรวบรวมและใช้ข้อมูล",
     "intro1": {
-      "part1": "เว็บไซต์นี้เป็นอินสแตนซ์ของเว็บแอปพลิเคชันโอเพนซอร์ส (\"TMI\") ที่จัดเตรียมโดยผู้ดำเนินการที่ระบุในหน้า ",
-      "part2": " ของเว็บไซต์นี้ (\"ผู้ดำเนินการ\")"
+      "part1": "เว็บไซต์นี้เป็นอินสแตนซ์ของเว็บแอปพลิเคชันโอเพนซอร์ส (\"TMI\") ที่จัดให้โดยผู้ดำเนินการที่แสดงไว้บน",
+      "part2": " หน้า ของเว็บไซต์นี้ (\"ผู้ดำเนินการ\")"
     },
     "intro2": "ผู้ดำเนินการมุ่งมั่นที่จะปกป้องความเป็นส่วนตัวของคุณ นโยบายความเป็นส่วนตัวนี้อธิบายวิธีการจัดการข้อมูลของคุณ",
     "introductionTitle": "บทนำ",
     "lastUpdatedDate": "2026-01-17",
     "title": "นโยบายความเป็นส่วนตัว",
-    "userRightsContent1": "คุณมีการควบคุมข้อมูลส่วนบุคคลของคุณอย่างเต็มที่ คุณสามารถเข้าถึงฟีเจอร์ \"ลบข้อมูลทั้งหมดของฉัน\" ในส่วนการตั้งค่าผู้ใช้ของแอปพลิเคชันได้ตลอดเวลา",
-    "userRightsContent2": "ตัวเลือกนี้ช่วยให้สามารถลบข้อมูลทั้งหมดที่ผู้ดำเนินการจัดเก็บในนามของคุณได้ทันที รวมถึงข้อมูลโปรไฟล์และบันทึกการตรวจสอบสิทธิ์ เมื่อเปิดใช้งาน ข้อมูลของคุณจะถูกลบออกจากระบบของผู้ดำเนินการและผู้ให้บริการบุคคลที่สามอย่างถาวร โดยขึ้นอยู่กับภาระผูกพันในการเก็บรักษาตามกฎหมาย",
-    "userRightsTitle": "สิทธิของผู้ใช้"
+    "userRightsContent1": "คุณมีสิทธิ์ควบคุมข้อมูลส่วนบุคคลของคุณอย่างสมบูรณ์ คุณสามารถเข้าถึงคุณสมบัติ \"ลบข้อมูลทั้งหมดของฉัน\" ในส่วนการตั้งค่าผู้ใช้ของแอปพลิเคชันได้ตลอดเวลา",
+    "userRightsContent2": "ตัวเลือกนี้ช่วยให้สามารถลบข้อมูลทั้งหมดที่ผู้ดำเนินการจัดเก็บในนามของคุณได้ทันที รวมถึงข้อมูลโปรไฟล์และบันทึกการยืนยันตัวตน เมื่อเปิดใช้งาน ข้อมูลของคุณจะถูกลบออกจากระบบของผู้ดำเนินการและผู้ให้บริการบุคคลที่สามอย่างถาวร ภายใต้ภาระผูกพันการเก็บรักษาตามกฎหมาย",
+    "userRightsTitle": "สิทธิ์ของผู้ใช้"
   },
   "projects": {
-    "addButton": "เพิ่มโครงการ",
+    "addButton": "เพิ่มโครงการ...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1319,13 +1362,13 @@
     "createDialog": {
       "descriptionPlaceholder": "กรอกคำอธิบายโปรเจกต์",
       "namePlaceholder": "กรอกชื่อโปรเจกต์",
-      "nameRequired": "ต้องระบุชื่อโปรเจกต์",
+      "nameRequired": "จำเป็นต้องระบุชื่อโครงการ",
       "statusPlaceholder": "เช่น active, planning, archived",
-      "teamRequired": "ต้องระบุทีม",
-      "title": "สร้างโปรเจกต์",
+      "teamRequired": "จำเป็นต้องระบุทีม",
+      "title": "สร้างโครงการ",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
-    "createNew": "สร้างโปรเจกต์ใหม่",
+    "createNew": "สร้างโครงการใหม่",
     "deleteDialog": {
       "message": "คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ \"{{name}}\"?"
     },
@@ -1334,7 +1377,7 @@
       "save": "{{common.save}}",
       "title": "แก้ไขโครงการ"
     },
-    "filterLabel": "ตัวกรองตามชื่อ",
+    "filterLabel": "กรองตามชื่อ",
     "filterNameLabel": "{{projects.filterLabel}}",
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
@@ -1348,7 +1391,7 @@
     "noProjects": "ไม่พบโครงการ",
     "picker": {
       "label": "{{common.project}}",
-      "none": "ไม่มีโปรเจกต์"
+      "none": "ไม่มีโครงการ"
     },
     "relatedProjectsDialog": {
       "addRelated": "เพิ่มโครงการที่เกี่ยวข้อง",
@@ -1373,36 +1416,36 @@
       "planning": "วางแผน"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "ตัวกรองตามสถานะ",
-    "subtitle": "สร้าง แก้ไข และจัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
-    "teamFilterLabel": "ตัวกรองตามทีม",
+    "statusFilterLabel": "กรองตามสถานะ",
+    "subtitle": "สร้าง แก้ไข และจัดการโครงการ ความสัมพันธ์ และเมตาดาต้า",
+    "teamFilterLabel": "กรองตามทีม",
     "title": "จัดการโครงการ"
   },
   "report": {
     "cvss": "CVSS",
-    "cweIds": "CWE IDs",
+    "cweIds": "รหัส CWE",
     "diagramImageUnavailable": "ไม่มีภาพแผนภาพ",
-    "diagramRenderFailed": "ไม่สามารถแสดงแผนภาพได้",
-    "generatedAt": "รายงานที่สร้างขึ้น",
-    "linkedAsset": "สินทรัพย์ที่เชื่อมโยง",
+    "diagramRenderFailed": "ไม่สามารถแสดงผลแผนภาพได้",
+    "generatedAt": "สร้างรายงานเมื่อ",
+    "linkedAsset": "ทรัพย์สินที่เชื่อมโยง",
     "linkedDiagram": "แผนภาพที่เชื่อมโยง",
     "pageOf": "หน้า {{current}} จาก {{total}}",
     "refLabel": "อ้างอิง",
-    "summaryCreatedAt": "แบบจำลองภัยคุกคามสร้างเมื่อ",
-    "summaryCreatedBy": "แบบจำลองภัยคุกคามสร้างโดย",
+    "summaryCreatedAt": "สร้าง Threat Model เมื่อ",
+    "summaryCreatedBy": "สร้าง Threat Model โดย",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "แบบจำลองภัยคุกคามแก้ไขล่าสุด",
+    "summaryLastModified": "แก้ไข Threat Model ล่าสุด",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "สถานะแบบจำลองภัยคุกคาม"
+    "summaryStatus": "สถานะ Threat Model"
   },
   "sessionExpiry": {
-    "extendButton": "ขยายเวลาเซสชัน",
+    "extendButton": "ขยายเซสชัน",
     "extending": "กำลังขยายเวลาเซสชันของคุณ กรุณารอสักครู่...",
-    "logoutButton": "ออกจากระบบตอนนี้",
+    "logoutButton": "ออกจากระบบทันที",
     "message": "เซสชันของคุณกำลังจะหมดอายุ คุณต้องการขยายเวลาเซสชันหรือออกจากระบบตอนนี้?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} วินาที"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} วินาที"
     },
     "title": "เซสชันกำลังจะหมดอายุ"
   },
@@ -1427,13 +1470,13 @@
       "description": "สถานะปัจจุบันของการใช้ประโยชน์จากช่องโหว่นี้คืออะไร",
       "name": "การใช้ประโยชน์",
       "none": "{{common.none}}",
-      "noneDesc": "ไม่มีหลักฐานการใช้ประโยชน์อย่างแข็งขันและไม่มี proof-of-concept สาธารณะ",
+      "noneDesc": "ไม่มีหลักฐานการใช้ประโยชน์ที่ใช้งานและไม่มีหลักฐานแนวคิดสาธารณะ",
       "poc": "PoC สาธารณะ",
       "pocDesc": "มี proof-of-concept สาธารณะทั่วไป (เช่น บน Metasploit หรือ ExploitDB) หรือมีการจัดเก็บวิธีการใช้ประโยชน์ที่เป็นที่รู้จัก"
     },
     "methodology": "ผู้จัดจำหน่าย",
     "next": "ถัดไป",
-    "openCalculator": "เพิ่ม SSVC",
+    "openCalculator": "เพิ่ม SSVC...",
     "publicSafetyImpact": {
       "description": "การใช้ประโยชน์จากช่องโหว่นี้ถือเป็นความเสี่ยงต่อความปลอดภัยสาธารณะหรือไม่",
       "minimal": "น้อยที่สุด",
@@ -1452,7 +1495,7 @@
       "total": "รวม",
       "totalDesc": "การควบคุมพฤติกรรมซอฟต์แวร์แบบเต็มรูปแบบ หรือการเปิดเผยข้อมูลทั้งหมดบนระบบ"
     },
-    "title": "เครื่องคิดเลข SSVC",
+    "title": "เครื่องคำนวณ SSVC",
     "utility": {
       "description": "การใช้ประโยชน์จากช่องโหว่นี้มีประโยชน์ต่อผู้โจมตีทั่วไปเพียงใด",
       "efficient": "มีประสิทธิภาพ",
@@ -1460,7 +1503,7 @@
       "laborious": "ลำบาก",
       "laboriousDesc": "ไม่สามารถทำให้การใช้ประโยชน์เป็นอัตโนมัติได้และเป้าหมายกระจายตัว — ความพยายามด้วยตนเองที่มีผลตอบแทนต่ำต่อการโจมตี",
       "name": "ยูทิลิตี้",
-      "superEffective": "มีประสิทธิภาพสูง",
+      "superEffective": "มีประสิทธิผลสูงมาก",
       "superEffectiveDesc": "การใช้ประโยชน์สามารถทำให้เป็นอัตโนมัติได้และเป้าหมายเข้มข้น — การใช้ประโยชน์อัตโนมัติของระบบมูลค่าสูง"
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
@@ -1473,7 +1516,7 @@
     },
     "browse": "เรียกดูแบบสำรวจ",
     "confidentialDialog": {
-      "description": "ควรทำเครื่องหมายการส่งนี้เป็นความลับหรือไม่? การส่งที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้างการตอบสนอง",
+      "description": "ต้องการทำเครื่องหมายการส่งนี้ว่าเป็นความลับหรือไม่? การส่งที่เป็นความลับจะไม่ถูกแชร์โดยอัตโนมัติกับกลุ่มผู้ตรวจสอบความปลอดภัย การตั้งค่านี้ไม่สามารถเปลี่ยนแปลงได้หลังจากสร้างการตอบสนอง",
       "no": "ไม่",
       "title": "การส่งที่เป็นความลับ",
       "yes": "ใช่ ทำเครื่องหมายเป็นความลับ"
@@ -1484,21 +1527,21 @@
       "title": "ส่งแบบสำรวจแล้ว",
       "viewResponses": "ดูคำตอบของฉัน"
     },
-    "continueDraft": "ทำร่างต่อ",
+    "continueDraft": "ดำเนินการต่อจากฉบับร่าง",
     "fill": {
       "submitConfirm": "คุณแน่ใจหรือไม่ว่าต้องการส่ง? คุณจะไม่สามารถแก้ไขคำตอบของคุณได้หลังจากส่งแล้ว",
       "title": "กรอกแบบสำรวจ"
     },
     "list": {
       "deleteDraft": "ลบฉบับร่าง",
-      "draftStarted": "ฉบับร่างเริ่มต้น {{time}}",
+      "draftStarted": "เริ่มฉบับร่างเมื่อ {{time}}",
       "errorLoadingSurveys": "ไม่สามารถโหลดแบบสำรวจได้",
-      "lastModified": "แก้ไขล่าสุด {{time}}",
+      "lastModified": "แก้ไขล่าสุดเมื่อ {{time}}",
       "loadingSurveys": "กำลังโหลดแบบสำรวจ...",
       "noSurveysMessage": "ขณะนี้ไม่มีแบบสำรวจที่ใช้งานอยู่ กรุณาตรวจสอบอีกครั้งในภายหลัง",
       "noSurveysTitle": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
       "pageDescription": "เลือกประเภทของการตรวจสอบที่เหมาะสมจากรายการต่อไปนี้ แล้วตอบคำถามที่แสดงเพื่อให้ข้อมูลที่ทีมตรวจสอบความปลอดภัยต้องการสำหรับการตรวจสอบ",
-      "pageTitle": "ขอการตรวจสอบความปลอดภัย",
+      "pageTitle": "ขอรับการตรวจสอบความปลอดภัย",
       "updated": "อัปเดตแล้ว",
       "yourDrafts": "ฉบับร่างของคุณ"
     },
@@ -1515,14 +1558,14 @@
       "noResponsesMessage": "คุณยังไม่ได้ทำแบบสำรวจใดๆ เสร็จสิ้น เริ่มทำแบบสำรวจได้จากหน้าแบบสำรวจ",
       "noResponsesTitle": "ยังไม่มีคำตอบ",
       "pageTitle": "คำตอบแบบสำรวจของฉัน",
-      "responseCount": "{{count}} คำตอบ",
-      "responseCountPlural": "{{count}} คำตอบ"
+      "responseCount": "{{Count}} คำตอบ",
+      "responseCountPlural": "{{Count}} คำตอบ"
     },
-    "saveDraft": "บันทึกร่าง",
-    "startNew": "เริ่มแบบสำรวจ",
+    "saveDraft": "บันทึกฉบับร่าง",
+    "startNew": "เริ่มแบบสำรวจ...",
     "status": {
       "draft": "ร่าง",
-      "needsRevision": "ต้องแก้ไข",
+      "needsRevision": "ต้องการการแก้ไข",
       "readyForReview": "พร้อมตรวจสอบ",
       "reviewCreated": "สร้างการตรวจสอบแล้ว",
       "submitted": "{{triage.list.submitted}}"
@@ -1537,7 +1580,7 @@
     "viewResponse": "ดูคำตอบ"
   },
   "teams": {
-    "addButton": "เพิ่มทีม",
+    "addButton": "เพิ่มทีม...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "แก้ไขล่าสุด",
@@ -1549,7 +1592,7 @@
       "descriptionPlaceholder": "ป้อนคำอธิบายทีม",
       "emailAddress": "{{common.emailLabel}}",
       "namePlaceholder": "ป้อนชื่อทีม",
-      "nameRequired": "ต้องระบุชื่อทีม",
+      "nameRequired": "จำเป็นต้องระบุชื่อทีม",
       "statusPlaceholder": "เช่น active, archived",
       "title": "สร้างทีม"
     },
@@ -1565,10 +1608,10 @@
       "save": "{{common.save}}",
       "title": "แก้ไขทีม"
     },
-    "filterLabel": "ค้นหาทีม",
+    "filterLabel": "กรองทีม",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "สมาชิก",
+      "members": "สมาชิก...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1576,7 +1619,7 @@
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
       "addMember": "เพิ่มสมาชิก",
-      "customRole": "บทบาทที่กำหนดเอง",
+      "customRole": "บทบาทแบบกำหนดเอง",
       "noMembers": "ไม่มีสมาชิก",
       "removeMember": "ลบสมาชิก",
       "role": "บทบาท",
@@ -1585,7 +1628,7 @@
     "noTeams": "ไม่พบทีม",
     "relatedTeamsDialog": {
       "addRelated": "เพิ่มทีมที่เกี่ยวข้อง",
-      "customRelationship": "ความสัมพันธ์ที่กำหนดเอง",
+      "customRelationship": "ความสัมพันธ์แบบกำหนดเอง",
       "noRelated": "ไม่มีทีมที่เกี่ยวข้อง",
       "relationship": "ความสัมพันธ์",
       "removeRelated": "ลบทีมที่เกี่ยวข้อง",
@@ -1603,10 +1646,10 @@
       "supersedes": "แทนที่"
     },
     "responsiblePartiesDialog": {
-      "addParty": "เพิ่มฝ่ายที่รับผิดชอบ",
-      "noParties": "ไม่มีฝ่ายที่รับผิดชอบ",
-      "removeParty": "ลบฝ่ายที่รับผิดชอบ",
-      "title": "ฝ่ายที่รับผิดชอบ"
+      "addParty": "เพิ่มผู้รับผิดชอบ",
+      "noParties": "ไม่มีผู้รับผิดชอบ",
+      "removeParty": "ลบผู้รับผิดชอบ",
+      "title": "ผู้รับผิดชอบ"
     },
     "roles": {
       "business_leader": "ผู้นำธุรกิจ",
@@ -1621,29 +1664,29 @@
       "archived": "เก็บถาวร",
       "forming": "กำลังก่อตั้ง",
       "merging": "กำลังรวม",
-      "on_hold": "ระงับ",
+      "on_hold": "พักไว้",
       "splitting": "กำลังแบ่ง",
-      "winding_down": "กำลังปิด"
+      "winding_down": "กำลังปิดตัว"
     },
     "subtitle": "สร้าง แก้ไข และจัดการทีม สมาชิก และความสัมพันธ์",
     "title": "จัดการทีม"
   },
   "threatEditor": {
-    "addMapping": "เพิ่มการแมป",
+    "addMapping": "เพิ่มการแมป...",
     "createNewThreat": "สร้างภัยคุกคามใหม่",
-    "cvssVectorPlaceholder": "เช่น CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "ป้อนรหัส CWE (เช่น CWE-79)",
+    "cvssVectorPlaceholder": "เช่น cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
+    "cweIdPlaceholder": "ป้อนรหัส CWE (เช่น cwe-79)",
     "cweMappings": "การแมป CWE",
     "frameworkMappingPicker": {
       "notApplicable": "ไม่ใช้บังคับกับประเภทเซลล์ปัจจุบัน",
-      "title": "เลือกการแมป Framework"
+      "title": "เลือกการแมปกรอบงาน"
     },
-    "frameworkMappings": "การแมปกรอบแบบจำลองภัยคุณกรรม",
+    "frameworkMappings": "การแมปกรอบงาน Threat Model",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
-    "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
-    "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
+    "notAssociatedWithAsset": "ไม่เกี่ยวข้องกับทรัพย์สิน",
+    "notAssociatedWithCell": "ไม่เกี่ยวข้องกับเซลล์",
+    "notAssociatedWithDiagram": "ไม่เกี่ยวข้องกับแผนภาพ",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1661,7 +1704,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "เลื่อนออกไป (p4)",
+      "high": "สูง (p1)",
+      "immediate": "ทันที (p0)",
+      "low": "ต่ำ (p3)",
+      "medium": "ปานกลาง (p2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1675,7 +1723,9 @@
       "critical.description": "ช่องโหว่ที่สามารถใช้ประโยชน์ได้ทำให้ระบบถูกบุกรุกโดยสมบูรณ์ ข้อมูลรั่วไหล หรือส่งผลกระทบต่อความปลอดภัย ต้องดำเนินการทันที",
       "high": "สูง",
       "high.description": "ผลกระทบมากหรือโอกาสเกิดสูง ทำให้เกิดการเข้าถึงโดยไม่ได้รับอนุญาตครั้งใหญ่ การยกระดับสิทธิ์ หรือการหยุดชะงักของบริการ",
-      "informational": "ข้อมูล",
+      "informational": {
+        "description": "ไม่มีความสามารถในการใช้ประโยชน์โดยตรง เป็นคำแนะนำ การเบี่ยงเบนจากแนวปฏิบัติที่ดี หรือการปรับปรุงการกำหนดค่า"
+      },
       "informational.description": "ไม่สามารถใช้ประโยชน์ได้โดยตรง คำแนะนำ ความเบี่ยงเบนจากแนวปฏิบัติที่ดีที่สุด หรือการปรับปรุงการกำหนดค่า",
       "low": "ต่ำ",
       "low.description": "ผลกระทบน้อยที่สุดหรือโอกาสเกิดต่ำ ผลกระทบทางธุรกิจน้อยมาก ต้องมีเงื่อนไขเฉพาะหรือการโต้ตอบจากผู้ใช้",
@@ -1704,28 +1754,34 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "ผลบวกลวง",
+      "mitigation_in_progress": "การบรรเทาอยู่ระหว่างดำเนินการ",
+      "mitigation_planned": "การบรรเทาได้รับการวางแผนแล้ว",
+      "verification_pending": "รอการยืนยัน"
+    },
+    "addCvssEntry": "เพิ่มรายการ CVSS",
+    "cvssVector": "เวกเตอร์ CVSS"
   },
   "threatModels": {
-    "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
+    "addPermission": "เพิ่มสิทธิ์",
     "branch": "สาขา",
-    "changeSecurityReviewer": "เปลี่ยนผู้ตรวจสอบความปลอดภัย",
+    "changeSecurityReviewer": "เปลี่ยนผู้ตรวจสอบความปลอดภัย...",
     "clearSecurityReviewer": "ล้างผู้ตรวจสอบความปลอดภัย",
     "commit": "คอมมิต",
-    "confidentialProject": "โครงการลับ",
-    "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
+    "confidentialProject": "โครงการที่เป็นความลับ",
+    "createFirstButton": "สร้าง Threat Model แรกของคุณ...",
     "createNewDiagram": "สร้างแผนภาพใหม่",
-    "createNewRepository": "เพิ่มการอ้างอิงที่เก็บ",
+    "createNewRepository": "เพิ่มการอ้างอิงที่เก็บโค้ด...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "แผนภาพการไหลของข้อมูล",
-    "deleteError": "ไม่สามารถลบแบบจำลองภัยคุกคาม: {{error}}",
-    "deleteSuccess": "แบบจำลองภัยคุกคามถูกลบแล้ว: {{name}}",
+    "deleteError": "ไม่สามารถลบ Threat Model ได้: {{error}}",
+    "deleteSuccess": "ลบ Threat Model แล้ว: {{name}}",
     "deleteWarningPermanent": "การดำเนินการนี้ไม่สามารถยกเลิกได้และจะลบแผนภาพ ภัยคุกคาม และข้อมูลเมตาที่เกี่ยวข้องทั้งหมดอย่างถาวร",
-    "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
-    "details": "รายละเอียดแบบจำลองภัยคุกคาม",
+    "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของ Threat Model นี้",
+    "details": "รายละเอียด Threat Model",
     "diagramName": "ชื่อแผนภาพ",
     "diagramPreview": "ตัวอย่างแผนภาพ",
     "diagramType": "ประเภทแผนภาพ",
@@ -1742,61 +1798,61 @@
     "documentUrl": "URL เอกสาร",
     "export": "ส่งออก",
     "exportDialog": {
-      "error": "ล้มเหลวในการเตรียมข้อมูลส่งออก โปรดลองอีกครั้ง",
+      "error": "ไม่สามารถเตรียมข้อมูลส่งออกได้",
       "preparing": "กำลังเตรียมข้อมูลส่งออก...",
-      "ready": "พร้อมส่งออก คลิก บันทึก เพื่อดาวน์โหลด",
+      "ready": "พร้อมส่งออก คลิกบันทึกเพื่อดาวน์โหลด",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
-      "title": "ส่งออกแบบจำลองภัยคุกคาม"
+      "title": "ส่งออก Threat Model"
     },
-    "fileSizeExceeded": "ไฟล์เกินขนาดสูงสุดที่นำเข้าได้: {{maxSize}} MB",
-    "frameworkDisabledHint": "ไม่สามารถเปลี่ยนเฟรมเวิร์กได้เมื่อมีภัยคุกคามอยู่",
+    "fileSizeExceeded": "ไฟล์เกินขนาดนำเข้าสูงสุด: {{maxsize}} MB",
+    "frameworkDisabledHint": "ไม่สามารถเปลี่ยนกรอบงานเมื่อมีภัยคุกคามอยู่แล้ว",
     "idLabel": "{{common.id}}",
-    "importError": "ไม่สามารถนำเข้าแบบจำลองภัยคุกคาม: {{error}}",
-    "importFormatError": "รูปแบบแบบจำลองภัยคุกคามไม่ถูกต้อง: ขาดฟิลด์ที่จำเป็น (id, name)",
-    "importSuccess": "นำเข้าแบบจำลองภัยคุกคามสำเร็จ: {{name}}",
-    "importValidationError": "การตรวจสอบแบบจำลองภัยคุกคามล้มเหลว: {{errors}}",
+    "importError": "ไม่สามารถนำเข้า Threat Model ได้: {{error}}",
+    "importFormatError": "รูปแบบ Threat Model ไม่ถูกต้อง: ขาดฟิลด์ที่จำเป็น (ID, ชื่อ)",
+    "importSuccess": "นำเข้า Threat Model สำเร็จ: {{name}}",
+    "importValidationError": "การตรวจสอบ Threat Model ล้มเหลว: {{errors}}",
     "importing": "กำลังนำเข้าแบบจำลองภัยคุกคาม...",
     "issueUriHint": "ป้อน URL เพื่อติดตามแบบจำลองภัยคุกคามนี้ในระบบภายนอก",
-    "newThreatModel": "แบบจำลองภัยคุกคามใหม่",
-    "noAssets": "ยังไม่ได้เพิ่มสินทรัพย์",
-    "noDiagrams": "ยังไม่มีการเพิ่มแผนภาพ",
-    "noDocuments": "ยังไม่มีการเพิ่มเอกสาร",
-    "noItemsMessage": "คุณยังไม่มีแบบจำลองภัยคุกคามใด ๆ",
-    "noNotes": "ยังไม่มีการเพิ่มหมายเหตุ",
-    "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
-    "noRepositories": "ยังไม่มีการเพิ่มที่เก็บ",
-    "noThreats": "ยังไม่มีการเพิ่มภัยคุกคาม",
+    "newThreatModel": "Threat Model ใหม่",
+    "noAssets": "ยังไม่มีทรัพย์สินที่เพิ่ม",
+    "noDiagrams": "ยังไม่มีแผนภาพที่เพิ่ม",
+    "noDocuments": "ยังไม่มีเอกสารที่เพิ่ม",
+    "noItemsMessage": "คุณยังไม่มี Threat Models",
+    "noNotes": "ยังไม่มีบันทึกที่เพิ่ม",
+    "noPermissions": "ไม่มีสิทธิ์ที่กำหนด",
+    "noRepositories": "ยังไม่มีที่เก็บโค้ดที่เพิ่ม",
+    "noThreats": "ยังไม่มีภัยคุกคามที่เพิ่ม",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
-    "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
+    "permissionsTooltip": "จัดการสิทธิ์",
     "rename": "เปลี่ยนชื่อ",
     "renameDiagram": "เปลี่ยนชื่อแผนภาพ",
     "repositoryDescriptionPlaceholder": "อธิบายที่เก็บหรือวัตถุประสงค์",
     "repositoryEditor": {
       "title": {
-        "create": "สร้างการอ้างอิงที่เก็บ",
-        "edit": "แก้ไขการอ้างอิงที่เก็บ",
-        "view": "ดูการอ้างอิงที่เก็บ"
+        "create": "สร้างการอ้างอิงที่เก็บโค้ด",
+        "edit": "แก้ไขการอ้างอิงที่เก็บโค้ด",
+        "view": "ดูการอ้างอิงที่เก็บโค้ด"
       }
     },
-    "repositoryName": "ชื่อที่เก็บ",
-    "repositoryParameters": "พารามิเตอร์ที่เก็บ",
-    "repositoryRefType": "ประเภทอ้างอิง",
-    "repositoryRefValue": "ค่าอ้างอิง",
+    "repositoryName": "ชื่อที่เก็บโค้ด",
+    "repositoryParameters": "พารามิเตอร์ที่เก็บโค้ด",
+    "repositoryRefType": "ประเภทการอ้างอิง",
+    "repositoryRefValue": "ค่าการอ้างอิง",
     "repositoryRefValueHint": "ชื่อ branch, tag หรือ commit ID",
     "repositorySubPath": "เส้นทางย่อย",
     "repositorySubPathHint": "เส้นทางเสริมภายในที่เก็บ",
-    "repositoryType": "ประเภทที่เก็บ",
+    "repositoryType": "ประเภทที่เก็บโค้ด",
     "repositoryUri": "URL ที่เก็บ",
     "sections": {
       "audit": "การตรวจสอบ",
       "inputs": "ข้อมูลเข้า",
-      "inputsDescription": "สินทรัพย์ เอกสาร และที่เก็บโค้ดต้นฉบับที่อธิบายระบบที่กำลังวิเคราะห์",
+      "inputsDescription": "ทรัพย์สิน เอกสาร และที่เก็บโค้ดที่อธิบายระบบที่อยู่ระหว่างการวิเคราะห์",
       "outputs": "ผลลัพธ์",
-      "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย",
+      "outputsDescription": "บันทึก แผนภาพ และภัยคุกคามที่ผลิตขึ้นระหว่างการวิเคราะห์ความปลอดภัย",
       "reviewProcess": "กระบวนการตรวจสอบ"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1822,38 +1878,44 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "กำลังดำเนินการ",
+      "not_started": "ยังไม่เริ่ม",
+      "pending_review": "รอการตรวจสอบ",
+      "remediation_in_progress": "การแก้ไขอยู่ระหว่างดำเนินการ",
+      "remediation_required": "ต้องการการแก้ไข",
+      "verification_pending": "รอการยืนยัน"
     },
     "statusLastUpdated": "อัปเดตสถานะล่าสุด",
     "tag": "แท็ก",
-    "threatModelFramework": "เฟรมเวิร์กแบบจำลองภัยคุกคาม",
+    "threatModelFramework": "กรอบงาน Threat Model",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "เพิ่มสินทรัพย์",
-      "addDiagram": "เพิ่มแผนภาพ",
-      "addDocument": "เพิ่มเอกสาร",
+      "addAsset": "เพิ่มทรัพย์สิน...",
+      "addDiagram": "เพิ่มแผนภาพ...",
+      "addDocument": "เพิ่มเอกสาร...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "สินทรัพย์คือทรัพยากรที่มีค่าภายในระบบที่ต้องการการปกป้อง เช่น ข้อมูล ฮาร์ดแวร์ ซอฟต์แวร์ โครงสร้างพื้นฐาน บริการ หรือบุคลากร",
-      "diagramsCardTitle": "แผนภาพใน TMI คือการแสดงข้อมูลที่เครื่องอ่านได้ของการเคลื่อนที่ของข้อมูลและกระบวนการภายในระบบ ช่วยให้สามารถวิเคราะห์ความปลอดภัยทั้งด้วยตนเองและด้วยระบบอัตโนมัติ",
-      "documentsCardTitle": "การอ้างอิงเอกสารคือลิงก์ไปยังเอกสารที่จัดเก็บนอก TMI เอกสารที่เกี่ยวข้องจะอธิบายระบบที่จะวิเคราะห์ และสามารถใช้โดยนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
+      "assetsCardTitle": "ทรัพย์สินคือทรัพยากรที่มีคุณค่าภายในระบบที่ต้องการการปกป้อง เช่น ข้อมูล ฮาร์ดแวร์ ซอฟต์แวร์ โครงสร้างพื้นฐาน บริการ หรือบุคลากร",
+      "diagramsCardTitle": "แผนภาพใน TMI คือการแสดงแทนที่เครื่องอ่านได้ของการเคลื่อนไหวของข้อมูลและกระบวนการภายในระบบ ช่วยให้สามารถวิเคราะห์ความปลอดภัยทั้งแบบ manual และอัตโนมัติ",
+      "documentsCardTitle": "การอ้างอิงเอกสารคือลิงก์ไปยังเอกสารที่จัดเก็บภายนอก TMI เอกสารที่เกี่ยวข้องอธิบายระบบที่จะวิเคราะห์ และสามารถใช้โดยนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
       "downloadModel": "ดาวน์โหลดโมเดล",
       "dropToCreateDocument": "วางเพื่อสร้าง",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "วางเพื่อกำหนด URI ของปัญหา",
       "import": "นำเข้า",
-      "notesCardTitle": "หมายเหตุคือข้อความรูปแบบ markdown ที่อยู่ภายในโมเดลภัยคุกคามโดยสมบูรณ์ ใช้สำหรับบันทึกหมายเหตุและคำอธิบายประกอบจากนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
-      "repositoriesCardTitle": "ที่เก็บคือลิงก์ไปยังที่เก็บโค้ดต้นฉบับที่จัดการโค้ดต้นฉบับสำหรับระบบ",
-      "threatsCardTitle": "ภัยคุกคามคือเหตุการณ์หรือการกระทำที่เป็นอันตรายที่อาจเกิดขึ้นซึ่งใช้ประโยชน์จากช่องโหว่หรือจุดอ่อนในระบบเพื่อทำลายความลับ ความสมบูรณ์ ความพร้อมใช้งาน หรือวัตถุประสงค์ด้านความปลอดภัยอื่นๆ ใน TMI วัตถุภัยคุกคามยังมีข้อมูลเกี่ยวกับประเภทและระดับความเสี่ยงที่เกี่ยวข้องกับภัยคุกคาม และข้อมูลเพื่อติดตามงานที่จำเป็นในการลดภัยคุกคาม"
+      "notesCardTitle": "บันทึกคือข้อความในรูปแบบ Markdown ที่อยู่ภายใน Threat Model อย่างสมบูรณ์ ใช้สำหรับบันทึกข้อสังเกตและคำอธิบายจากนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
+      "repositoriesCardTitle": "ที่เก็บโค้ดคือลิงก์ไปยังที่เก็บโค้ดที่จัดการโค้ดของระบบ",
+      "threatsCardTitle": "ภัยคุกคามคือเหตุการณ์หรือการกระทำที่อาจเป็นอันตรายที่ใช้ประโยชน์จากช่องโหว่หรือจุดอ่อนในระบบเพื่อเจาะความลับ ความสมบูรณ์ ความพร้อมใช้งาน หรือวัตถุประสงค์ด้านความปลอดภัยอื่นๆ ใน TMI ออบเจกต์ภัยคุกคามยังมีข้อมูลเกี่ยวกับประเภทและระดับความเสี่ยงที่เกี่ยวข้องและข้อมูลเพื่อติดตามงานที่จำเป็นในการบรรเทาภัยคุกคาม"
     },
-    "viewDiagramName": "ดูคุณสมบัติของแผนภาพ",
-    "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
+    "viewDiagramName": "ดูคุณสมบัติแผนภาพ",
+    "yourThreatModels": "Threat Models ของคุณ"
   },
   "threats": {
     "filters": {
       "clearAll": "ล้างตัวกรองทั้งหมด",
       "clearName": "ล้างตัวกรองชื่อ",
       "lessFilters": "{{dashboard.lessFilters}}",
-      "mitigatedTooltip": "สลับ: ทั้งหมด / บรรเทาแล้ว / ยังไม่บรรเทา",
+      "mitigatedTooltip": "วนเวียน: ทั้งหมด / บรรเทาแล้ว / ยังไม่บรรเทา",
       "moreFilters": "{{dashboard.moreFilters}}",
       "nameLabel": "{{common.search}}",
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
@@ -1864,17 +1926,17 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "หากคุณมีคำถามใด ๆ เกี่ยวกับเงื่อนไขเหล่านี้ โปรดติดต่อผู้ดำเนินการของเว็บไซต์นี้ผ่านข้อมูลติดต่อที่หน้า ",
-      "part2": ""
+      "part1": "หากคุณมีคำถามเกี่ยวกับข้อกำหนดเหล่านี้ โปรดติดต่อผู้ดำเนินการเว็บไซต์นี้ผ่านข้อมูลติดต่อบน",
+      "part2": " หน้า"
     },
     "intro": {
-      "part1": "ยินดีต้อนรับสู่อินสแตนซ์ TMI ของเรา เงื่อนไขการใช้งานเหล่านี้ (\"เงื่อนไข\") ควบคุมการเข้าถึงและการใช้งานเว็บไซต์นี้ ซึ่งได้รับการจัดการโดยผู้ดำเนินการที่ระบุในหน้า ",
-      "part2": " ของเว็บไซต์นี้ (\"ผู้ดำเนินการ\")"
+      "part1": "ยินดีต้อนรับสู่อินสแตนซ์ของ TMI นี้ ข้อกำหนดการใช้งานเหล่านี้ (\"ข้อกำหนด\") ควบคุมการเข้าถึงและการใช้งานเว็บไซต์นี้ของคุณ ซึ่งจัดให้โดยผู้ดำเนินการที่แสดงไว้บน",
+      "part2": " หน้า ของเว็บไซต์นี้ (\"ผู้ดำเนินการ\")"
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "ด้วยการเข้าถึงและใช้งานเว็บไซต์นี้ คุณยอมรับและตกลงที่จะผูกพันตามข้อกำหนดและบทบัญญัติของข้อตกลงนี้ หากคุณไม่เห็นด้วยกับเงื่อนไขเหล่านี้ โปรดอย่าใช้เว็บไซต์นี้",
-      "title": "1. การยอมรับเงื่อนไข"
+      "title": "1. การยอมรับข้อกำหนด"
     },
     "section2": {
       "content": "คุณสามารถใช้เว็บไซต์เพื่อวัตถุประสงค์ที่ถูกกฎหมายเท่านั้น คุณตกลงที่จะไม่ใช้งานในทางที่ผิด ขัดขวาง หรือพยายามเข้าถึงเว็บไซต์หรือระบบพื้นฐานโดยไม่ได้รับอนุญาต",
@@ -1885,32 +1947,32 @@
       "title": "3. ไม่มีการรับประกัน"
     },
     "section4": {
-      "content": "ภายใต้ขอบเขตสูงสุดที่กฎหมายอนุญาต ผู้ดำเนินการจะไม่รับผิดต่อความเสียหายทางตรง ทางอ้อม โดยบังเอิญ หรือที่เป็นผลสืบเนื่องที่เกิดจากการใช้งานหรือไม่สามารถใช้งานเว็บไซต์ของคุณ",
-      "title": "4. ข้อจำกัดความรับผิดชอบ"
+      "content": "ในขอบเขตสูงสุดที่กฎหมายอนุญาต ผู้ดำเนินการจะไม่รับผิดชอบต่อความเสียหายโดยตรง ทางอ้อม โดยไม่ได้ตั้งใจ หรือเป็นผลต่อเนื่องใดๆ ที่เกิดจากการใช้งานหรือการไม่สามารถใช้งานเว็บไซต์ของคุณ",
+      "title": "4. การจำกัดความรับผิด"
     },
     "section5": {
       "content": {
-        "part1": "เว็บไซต์นี้ใช้ซอฟต์แวร์โอเพนซอร์ส TMI รหัสต้นฉบับของซอฟต์แวร์สามารถเข้าถึงได้ที่ลิงก์ที่ให้ไว้ในหน้า ",
-        "part2": " ของเว็บไซต์นี้ การใช้งานซอฟต์แวร์ของคุณอยู่ภายใต้เงื่อนไขการอนุญาตโอเพนซอร์ส เราไม่รับผิดชอบต่อตัวซอฟต์แวร์เอง แต่รับผิดชอบเฉพาะการดำเนินการของอินสแตนซ์นี้ เว้นแต่จะระบุไว้เป็นอย่างอื่น ผู้ดำเนินการของเว็บไซต์นี้ไม่เกี่ยวข้องกับโครงการ TMI หรือผู้สร้าง"
+        "part1": "เว็บไซต์นี้รันซอฟต์แวร์โอเพนซอร์ส TMI รหัสต้นฉบับมีให้ที่ลิงก์ที่ให้ไว้บน",
+        "part2": " หน้า ของเว็บไซต์นี้ การใช้งานซอฟต์แวร์ของคุณอยู่ภายใต้เงื่อนไขใบอนุญาตโอเพนซอร์ส เราไม่รับผิดชอบต่อซอฟต์แวร์เอง เฉพาะการดำเนินการอินสแตนซ์นี้เท่านั้น เว้นแต่จะระบุไว้เป็นอย่างอื่น ผู้ดำเนินการเว็บไซต์นี้ไม่ได้เป็นพันธมิตรกับโครงการ TMI หรือผู้สร้าง"
       },
       "title": "5. ซอฟต์แวร์โอเพนซอร์ส"
     },
     "section6": {
-      "content": "ผู้ดำเนินการอาจอัปเดตเงื่อนไขเหล่านี้ได้ตลอดเวลา การใช้งานเว็บไซต์อย่างต่อเนื่องหลังจากการเปลี่ยนแปลงถือเป็นการยอมรับเงื่อนไขที่อัปเดต",
-      "title": "6. การเปลี่ยนแปลงเงื่อนไข"
+      "content": "ผู้ดำเนินการอาจอัปเดตข้อกำหนดเหล่านี้ได้ตลอดเวลา การใช้งานเว็บไซต์ต่อไปหลังจากการเปลี่ยนแปลงถือเป็นการยอมรับข้อกำหนดที่อัปเดต",
+      "title": "6. การเปลี่ยนแปลงข้อกำหนด"
     },
     "section7": {
-      "content": "ผู้ดำเนินการขอสงวนสิทธิ์ในการระงับหรือยกเลิกการเข้าถึงเว็บไซต์ตามดุลยพินิจของผู้ดำเนินการ โดยไม่มีการแจ้งให้ทราบล่วงหน้า ไม่ว่าด้วยเหตุผลใดก็ตาม",
+      "content": "ผู้ดำเนินการสงวนสิทธิ์ในการระงับหรือยุติการเข้าถึงเว็บไซต์ตามดุลยพินิจของผู้ดำเนินการโดยไม่ต้องแจ้งล่วงหน้าและด้วยเหตุผลใดก็ตาม",
       "title": "7. การยกเลิก"
     },
     "section8": {
       "content": {
-        "part1": "เงื่อนไขเหล่านี้อยู่ภายใต้กฎหมายของเขตอำนาจศาลที่ระบุโดยผู้ดำเนินการในหน้า",
-        "part2": " โดยไม่คำนึงถึงหลักการขัดแย้งของกฎหมาย"
+        "part1": "ข้อกำหนดเหล่านี้อยู่ภายใต้กฎหมายของเขตอำนาจที่ผู้ดำเนินการระบุบน",
+        "part2": " หน้า โดยไม่คำนึงถึงหลักการขัดแย้งของกฎหมาย"
       },
       "title": "8. กฎหมายที่ใช้บังคับ"
     },
-    "title": "เงื่อนไขการให้บริการ"
+    "title": "ข้อกำหนดการให้บริการ"
   },
   "transfer": {
     "userPicker": {
@@ -1919,36 +1981,36 @@
     }
   },
   "triage": {
-    "bulkActions": "การดำเนินการเป็นชุด",
+    "bulkActions": "การดำเนินการกลุ่ม",
     "changeStatus": "เปลี่ยนสถานะ",
     "columns": {
       "confidentialTooltip": "การส่งที่เป็นความลับ"
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
-      "addNote": "เพิ่มหมายเหตุ",
+      "addNote": "เพิ่มบันทึก",
       "columns": {
         "answer": "คำตอบ",
         "group": "{{common.subjectTypes.group}}",
         "question": "คำถาม"
       },
       "markdownSupported": "รองรับ Markdown",
-      "noNotes": "ยังไม่มีหมายเหตุการคัดกรอง",
-      "noResponses": "ไม่มีการบันทึกคำตอบ",
-      "noRevisionNotes": "ไม่มีหมายเหตุการแก้ไข",
+      "noNotes": "ยังไม่มีบันทึก Triage",
+      "noResponses": "ไม่มีการตอบสนองที่บันทึก",
+      "noRevisionNotes": "ไม่มีบันทึกการแก้ไข",
       "note": "หมายเหตุ",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "ป้อนเนื้อหาหมายเหตุ...",
       "noteNameLabel": "{{common.title}}",
       "noteNamePlaceholder": "ชื่อหมายเหตุโดยย่อ",
       "notes": "หมายเหตุ",
-      "responseDetails": "รายละเอียดคำตอบ",
+      "responseDetails": "รายละเอียดการตอบสนอง",
       "reviewedAt": "ตรวจสอบแล้ว",
       "reviewedBy": "ตรวจสอบโดย",
-      "revisionNotesTitle": "ขอแก้ไขแล้ว",
+      "revisionNotesTitle": "ขอการแก้ไข",
       "statusTimeline": "ไทม์ไลน์สถานะ",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "หมายเหตุการคัดกรอง"
+      "triageNotes": "บันทึก Triage"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1963,47 +2025,47 @@
       "approve": "อนุมัติ",
       "approveSelected": "อนุมัติที่เลือก",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "ไม่สามารถโหลดคำตอบได้",
+      "errorLoadingResponses": "ไม่สามารถโหลดการตอบสนองได้",
       "loadingResponses": "กำลังโหลดคำตอบ...",
-      "noResponsesFiltered": "ไม่มีคำตอบที่ตรงกับตัวกรองของคุณ",
-      "noResponsesTitle": "ไม่มีคำตอบ",
-      "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องคัดกรอง",
+      "noResponsesFiltered": "ไม่มีการตอบสนองที่ตรงกับตัวกรองของคุณ",
+      "noResponsesTitle": "ไม่มีการตอบสนอง",
+      "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องการ Triage",
       "notSubmitted": "ยังไม่ได้ส่ง",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "ค้นหาตามผู้ส่งหรือแบบสำรวจ...",
       "submitted": "ส่งแล้ว",
       "submitter": "ผู้ส่ง"
     },
-    "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
-    "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
+    "markInReview": "ทำเครื่องหมายกำลังตรวจสอบ",
+    "markPendingTriage": "ทำเครื่องหมายรอ Triage",
     "messages": {
-      "approveError": "ไม่สามารถอนุมัติคำตอบได้",
+      "approveError": "ไม่สามารถอนุมัติการตอบสนองได้",
       "approveSuccess": "อนุมัติคำตอบแล้ว",
-      "createThreatModelError": "ไม่สามารถสร้างแบบจำลองภัยคุกคามได้",
-      "createThreatModelSuccess": "สร้างแบบจำลองภัยคุกคามสำเร็จ",
-      "returnForRevisionError": "ไม่สามารถส่งคำตอบกลับเพื่อแก้ไขได้",
-      "returnForRevisionSuccess": "ส่งคำตอบกลับเพื่อแก้ไขแล้ว"
+      "createThreatModelError": "ไม่สามารถสร้าง Threat Model ได้",
+      "createThreatModelSuccess": "สร้าง Threat Model สำเร็จ",
+      "returnForRevisionError": "ไม่สามารถส่งคืนการตอบสนองเพื่อแก้ไขได้",
+      "returnForRevisionSuccess": "ส่งคืนการตอบสนองเพื่อแก้ไขแล้ว"
     },
-    "noResponses": "ไม่มีคำตอบที่ต้องคัดกรอง",
+    "noResponses": "ไม่มีการตอบสนองที่ต้องการ Triage",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
-      "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุ (รองรับ Markdown)...",
+      "contentPlaceholder": "ป้อนเนื้อหาบันทึก (รองรับ Markdown)...",
       "nameLabel": "{{common.title}}",
       "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
       "title": {
-        "create": "หมายเหตุการคัดกรองใหม่",
-        "view": "ดูหมายเหตุการคัดกรอง"
+        "create": "บันทึก Triage ใหม่",
+        "view": "ดูบันทึก Triage"
       }
     },
-    "queue": "คิวคัดกรอง",
-    "returnToSubmitted": "ส่งกลับไปยังสถานะที่ส่งแล้ว",
+    "queue": "คิว Triage",
+    "returnToSubmitted": "ส่งคืนไปยังที่ส่ง",
     "reviewerAssignment": {
       "assign": "มอบหมาย",
       "assignToMe": "มอบหมายให้ฉัน",
-      "errorLoading": "ไม่สามารถโหลดแบบจำลองการคุกคามที่ยังไม่ได้มอบหมายได้",
+      "errorLoading": "ไม่สามารถโหลด Threat Models ที่ไม่ได้มอบหมายได้",
       "loading": "กำลังโหลดการตรวจสอบที่ยังไม่ได้มอบหมาย...",
-      "noUnassigned": "ไม่มีการตรวจสอบที่ยังไม่ได้มอบหมาย",
-      "noUnassignedDescription": "แบบจำลองการคุกคามที่ใช้งานอยู่ทั้งหมดได้รับการมอบหมายผู้ตรวจสอบความปลอดภัยแล้ว",
+      "noUnassigned": "ไม่มีการตรวจสอบที่ไม่ได้มอบหมาย",
+      "noUnassignedDescription": "Threat Models ที่ใช้งานอยู่ทั้งหมดมีผู้ตรวจสอบความปลอดภัยที่มอบหมายแล้ว",
       "noUnassignedFiltered": "ไม่มีโมเดลภัยคุกคามที่ตรงกับตัวกรองของคุณ",
       "reviewer": "ผู้ตรวจสอบความปลอดภัย",
       "reviewerPlaceholder": "กรองตามผู้ตรวจสอบ...",
@@ -2013,15 +2075,15 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "ให้หมายเหตุอธิบายสิ่งที่ต้องแก้ไข ผู้ส่งจะเห็นหมายเหตุเหล่านี้เมื่อตรวจสอบคำตอบของตน",
+      "description": "ให้บันทึกอธิบายสิ่งที่ต้องแก้ไข ผู้ส่งจะเห็นบันทึกเหล่านี้เมื่อตรวจสอบการตอบสนองของตน",
       "hint": "จำเป็น — อธิบายการเปลี่ยนแปลงที่ต้องการ",
-      "label": "หมายเหตุการแก้ไข",
+      "label": "บันทึกการแก้ไข",
       "placeholder": "อธิบายการแก้ไขที่ต้องการ...",
-      "title": "ส่งกลับเพื่อแก้ไข"
+      "title": "ส่งคืนเพื่อแก้ไข"
     },
     "tabs": {
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "unassignedReviews": "การตรวจสอบที่ยังไม่ได้มอบหมาย"
+      "unassignedReviews": "การตรวจสอบที่ไม่ได้มอบหมาย"
     },
     "title": "คัดกรอง",
     "viewDetails": "ดูรายละเอียด"
@@ -2041,21 +2103,21 @@
     "credentials": {
       "add": "{{common.add}}",
       "clientId": "รหัสไคลเอนต์",
-      "clientSecret": "Client Secret",
+      "clientSecret": "รหัสลับ Client",
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "ไม่บังคับ: อธิบายว่าข้อมูลรับรองนี้ใช้สำหรับอะไร",
-        "descriptionPlaceholder": "ใช้สำหรับการรวม CI/CD pipeline",
-        "descriptionTooLong": "คำอธิบายต้องไม่เกิน 500 ตัวอักษร",
+        "descriptionPlaceholder": "ใช้สำหรับการรวม CI/CD Pipeline",
+        "descriptionTooLong": "คำอธิบายต้องมีไม่เกิน 500 ตัวอักษร",
         "expiresAt": "วันหมดอายุ",
-        "expiresAtHint": "ไม่บังคับ: เว้นว่างไว้หากไม่มีวันหมดอายุ",
+        "expiresAtHint": "ไม่บังคับ: ปล่อยว่างไว้หากไม่มีวันหมดอายุ",
         "name": "{{common.name}}",
         "nameHint": "ชื่อที่สื่อความหมายสำหรับข้อมูลรับรองนี้",
         "namePlaceholder": "ข้อมูลรับรอง API ของฉัน",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "ชื่อต้องไม่เกิน 100 ตัวอักษร",
-        "title": "สร้างข้อมูลรับรองไคลเอนต์"
+        "nameTooLong": "ชื่อต้องมีไม่เกิน 100 ตัวอักษร",
+        "title": "สร้างข้อมูลรับรอง Client"
       },
       "createdOn": "{{common.created}}",
       "credential": "ข้อมูลรับรอง",
@@ -2064,13 +2126,13 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "ใช้ล่าสุด",
       "neverExpires": "ไม่มีวันหมดอายุ",
-      "noCredentials": "ยังไม่มีข้อมูลรับรองไคลเอนต์",
+      "noCredentials": "ยังไม่มีข้อมูลรับรอง Client",
       "noCredentialsDescription": "สร้างข้อมูลรับรองเพื่อเข้าถึง TMI API ผ่านโปรแกรม",
       "secretDialog": {
-        "title": "สร้างข้อมูลรับรองไคลเอนต์แล้ว",
+        "title": "สร้างข้อมูลรับรอง Client แล้ว",
         "warning": "บันทึกข้อมูลรับรองเหล่านี้ตอนนี้ Client secret จะไม่แสดงอีก"
       },
-      "title": "ข้อมูลประจำตัว API"
+      "title": "ข้อมูลรับรอง Client"
     },
     "dashboardListView": "แสดงแดชบอร์ดเป็นมุมมองรายการ",
     "deleteMyData": {
@@ -2079,7 +2141,7 @@
       "emailDoesNotMatch": "ที่อยู่อีเมลไม่ตรงกัน",
       "emailMatches": "ที่อยู่อีเมลตรงกัน",
       "explanation": {
-        "bullet1": "ข้อมูลผู้ให้บริการข้อมูลประจำตัวของคุณ รวมถึงรหัสผู้ใช้ ชื่อ และอีเมล",
+        "bullet1": "ข้อมูลผู้ให้บริการ Identity ของคุณ รวมถึง ID ผู้ใช้ ชื่อ และอีเมล",
         "bullet2": "สิทธิ์ของคุณจากออบเจกต์โมเดลภัยคุกคามทั้งหมดที่คุณไม่ได้เป็นเจ้าของ",
         "bullet3": "สำหรับโมเดลภัยคุกคามที่คุณเป็นเจ้าของ:",
         "bullet3a": "หากมีเจ้าของคนอื่นอยู่ ความเป็นเจ้าของจะถูกโอนให้พวกเขา และสิทธิ์ของคุณจะถูกเพิกถอน",
@@ -2090,7 +2152,7 @@
       "title": "ลบข้อมูลทั้งหมดของฉัน",
       "validation": "เพื่อยืนยันคำขอการลบของคุณ ให้พิมพ์ที่อยู่อีเมลของคุณตรงตามที่ปรากฏที่นี่:"
     },
-    "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในโปรแกรมแก้ไขแผนภาพ",
+    "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในตัวแก้ไขแผนภาพ",
     "displayPreferences": "การตั้งค่าการแสดงผล",
     "downloadLog": {
       "hint": "ดาวน์โหลดรายการบันทึกแอปพลิเคชันล่าสุดเป็นไฟล์ JSONL สำหรับการแก้ไขปัญหา",
@@ -2106,17 +2168,17 @@
     "pageSize": {
       "A4": "A4",
       "title": "ขนาดหน้ากระดาษที่ต้องการสำหรับรายงาน",
-      "usLetter": "US Letter"
+      "usLetter": "กระดาษ US Letter"
     },
     "reportPreferences": "การตั้งค่ารายงาน",
     "sections": {
       "developer": "นักพัฒนา",
-      "diagramEditor": "ตัวแก้ไขไดอะแกรม",
-      "diagramLayout": "Diagram Layout",
+      "diagramEditor": "ตัวแก้ไขแผนภาพ",
+      "diagramLayout": "เลย์เอาต์แผนภาพ",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
-    "showShapeBordersWithIcons": "แสดงการเติมสีและขอบของรูปร่างเมื่อแสดงไอคอน",
+    "showShapeBordersWithIcons": "แสดงการเติมรูปร่างและขอบเมื่อแสดงไอคอน",
     "tabs": {
       "credentials": "ข้อมูลประจำตัว",
       "danger": "อันตราย",
@@ -2126,7 +2188,7 @@
     },
     "theme": "ธีม",
     "themeMode": {
-      "automatic": "อัตโนมัติ (ระบบ)",
+      "automatic": "อัตโนมัติ (ตามระบบ)",
       "dark": "มืด",
       "light": "สว่าง"
     },
@@ -2134,14 +2196,14 @@
     "transferData": {
       "confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการโอนแบบจำลองภัยคุกคามทั้งหมดและการตอบสนองจากการสำรวจของคุณไป {{email}}? คุณจะถูกลดระดับให้เป็นบทบาทผู้เขียนในรายการที่โอน",
       "dialogTitle": "โอนข้อมูลของฉัน",
-      "error": "ไม่สามารถโอนข้อมูลได้ โปรดลองอีกครั้ง",
+      "error": "ไม่สามารถโอนข้อมูลได้",
       "hint": "โอนความเป็นเจ้าของของแบบจำลองภัยคุกคามทั้งหมดและการตอบสนองจากการสำรวจของคุณให้ผู้ใช้คนอื่น คุณจะถูกลดระดับให้เป็นบทบาทผู้เขียนในรายการที่โอน",
-      "success": "โอนแล้ว {{tmCount}} แบบจำลองภัยคุกคาม และ {{responseCount}} การตอบสนองจากการสำรวจ",
-      "title": "โอนข้อมูลของฉันไปยังผู้ใช้คนอื่น"
+      "success": "โอน {{tmcount}} Threat Models และ {{responsecount}} คำตอบแบบสำรวจแล้ว",
+      "title": "โอนข้อมูลของฉันไปยังผู้ใช้อื่น"
     },
     "userProfile": {
-      "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
-      "groupMemberships": "การเป็นสมาชิกกลุ่ม",
+      "currentRole": "บทบาท Threat Model ปัจจุบัน",
+      "groupMemberships": "สมาชิกภาพกลุ่ม",
       "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้"
