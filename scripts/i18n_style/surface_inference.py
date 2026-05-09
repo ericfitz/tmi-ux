@@ -24,6 +24,10 @@ _DIALOG_TITLE_PATTERNS = [
 _PAGE_TITLE_PATTERNS = [
     re.compile(r"<h[1-6]\b"),
     re.compile(r"<mat-card-title\b"),
+]
+_DESCRIPTION_PATTERNS = [
+    re.compile(r"<p\b"),
+    re.compile(r"<mat-card-content\b"),
     re.compile(r"<mat-card-subtitle\b"),
 ]
 _BUTTON_PATTERNS = [
@@ -44,6 +48,9 @@ _TOOLTIP_PATTERNS = [
 ]
 _PLACEHOLDER_PATTERNS = [
     re.compile(r"\[?placeholder\]?\s*="),
+]
+_HINT_PATTERNS = [
+    re.compile(r"<mat-hint\b"),
 ]
 _LABEL_PATTERNS = [
     re.compile(r"<mat-label\b"),
@@ -108,6 +115,16 @@ def _surfaces_for_usage(usage: KeyUsage) -> Set[str]:
     for p in _PLACEHOLDER_PATTERNS:
         if p.search(ctx):
             surfaces.add("placeholder")
+            break
+
+    for p in _HINT_PATTERNS:
+        if p.search(ctx):
+            surfaces.add("placeholder")
+            break
+
+    for p in _DESCRIPTION_PATTERNS:
+        if p.search(ctx):
+            surfaces.add("description")
             break
 
     for p in _LABEL_PATTERNS:

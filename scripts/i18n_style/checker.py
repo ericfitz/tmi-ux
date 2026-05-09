@@ -52,13 +52,13 @@ def _primary_surface(surfaces: List[str]) -> str:
     """Pick a single surface for surface-aware validators (e.g., period rule).
 
     Priority order: error > snackbar > validation > placeholder > tooltip >
-    label > button > menu-item > dialog-title > page-title > description >
+    label > button > menu-item > dialog-title > description > page-title >
     general.
     """
     priority = [
         "error", "snackbar", "validation", "placeholder", "tooltip",
-        "label", "button", "menu-item", "dialog-title", "page-title",
-        "description", "general",
+        "label", "button", "menu-item", "dialog-title", "description",
+        "page-title", "general",
     ]
     for s in priority:
         if s in surfaces:

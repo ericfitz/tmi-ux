@@ -122,9 +122,34 @@ class TestMatCardTitleSurfaceInference(unittest.TestCase):
         usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-card-title [transloco]="\'foo\'">title</mat-card-title>', classes=[])]
         self.assertEqual(infer_surfaces(usages), {"page-title"})
 
-    def test_mat_card_subtitle_is_page_title(self):
+    def test_mat_card_subtitle_is_description(self):
         usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-card-subtitle>{{ \'foo\' | transloco }}</mat-card-subtitle>', classes=[])]
-        self.assertEqual(infer_surfaces(usages), {"page-title"})
+        self.assertEqual(infer_surfaces(usages), {"description"})
+
+
+class TestHintSurfaceInference(unittest.TestCase):
+    def test_mat_hint_is_placeholder(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-hint>{{ \'foo\' | transloco }}</mat-hint>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"placeholder"})
+
+    def test_mat_hint_with_attrs_is_placeholder(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-hint align="end">{{ \'foo\' | transloco }}</mat-hint>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"placeholder"})
+
+
+class TestDescriptionSurfaceInference(unittest.TestCase):
+    def test_p_tag_is_description(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<p>{{ \'foo\' | transloco }}</p>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"description"})
+
+    def test_mat_card_content_is_description(self):
+        usages = [KeyUsage(file=Path("foo.html"), line=1, context='<mat-card-content>{{ \'foo\' | transloco }}</mat-card-content>', classes=[])]
+        self.assertEqual(infer_surfaces(usages), {"description"})
+
+    def test_description_beats_page_title_in_primary_surface(self):
+        """description surface should win over page-title in _primary_surface priority."""
+        from scripts.i18n_style.checker import _primary_surface
+        self.assertEqual(_primary_surface(["page-title", "description"]), "description")
 
 
 if __name__ == "__main__":

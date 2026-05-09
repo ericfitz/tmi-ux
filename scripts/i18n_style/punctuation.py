@@ -16,8 +16,19 @@ _URL_RE = re.compile(r"^https?://", re.IGNORECASE)
 _PURE_DELEGATION_RE = re.compile(r"^\{\{[a-zA-Z][\w.]*\}\}$")
 
 # Surfaces where the string is universally a fragment (period rule says
-# "no period"): placeholders, helper hints, tooltips that are short labels.
-_FRAGMENT_SURFACES = {"placeholder", "label", "tooltip"}
+# "no period"): placeholders, helper hints, tooltips that are short labels,
+# titles (page-, dialog-, section-), buttons, and menu items. These elements
+# are labels by convention; a "complete sentence" rendered in any of them
+# would be a UX bug regardless of grammar.
+_FRAGMENT_SURFACES = {
+    "placeholder",
+    "label",
+    "tooltip",
+    "page-title",
+    "dialog-title",
+    "button",
+    "menu-item",
+}
 
 # Verb-detection: very rough. Token ends in -ed, -ing, -s, or is in this small
 # list of irregulars. False positives/negatives are expected — borderline cases
