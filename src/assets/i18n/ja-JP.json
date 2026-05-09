@@ -32,16 +32,16 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(すべて)",
-      "errorInvoking": "アドオンの呼び出しに失敗しました。もう一度お試しください。",
-      "invalidCharacters": "英数字、スペース、ハイフン、ピリオド、カンマ、スラッシュのみ使用できます",
-      "invocationQueued": "アドオン呼び出しがキューに追加されました",
-      "metadataKeyMissing": "必須メタデータキー「{{key}}」がこのオブジェクトに存在しません",
-      "numberMax": "値は最大{{max}}でなければなりません",
-      "numberMin": "値は最低{{min}}でなければなりません",
+      "errorInvoking": "アドオンの呼び出しに失敗しました。",
+      "invalidCharacters": "英数字、スペース、ハイフン、ピリオド、カンマ、スラッシュのみ使用できます。",
+      "invocationQueued": "アドオン呼び出しがキューに追加されました。",
+      "metadataKeyMissing": "必須メタデータキー「{{key}}」がこのオブジェクトに存在しません。",
+      "numberMax": "値は最大{{max}}でなければなりません。",
+      "numberMin": "値は最低{{min}}でなければなりません。",
       "parameters": "パラメータ",
       "threatModelId": "脅威モデルID",
       "title": "アドオンを呼び出す",
-      "valueTooLong": "値が最大長を超えています"
+      "valueTooLong": "値が最大長を超えています。"
     }
   },
   "admin": {
@@ -52,7 +52,7 @@
         "descriptionHint": "このアドオンは何をしますか？",
         "descriptionPlaceholder": "アドオンの機能を説明してください",
         "icon": "アイコン",
-        "iconHint": "UIアイコン（例: \"material-symbols:security\", \"fa-regular fa-user-shield\"）",
+        "iconHint": "UIアイコン（例: \"material-symbols:security\", \"fa-regular fa-user-shield\"）。",
         "iconInvalid": "無効なアイコン形式です",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
@@ -65,30 +65,30 @@
         "title": "アドオンを追加",
         "webhook": "Webhook",
         "webhookHint": "関連するWebhookサブスクリプション",
-        "webhookRequired": "Webhookは必須です"
+        "webhookRequired": "Webhookは必須です。"
       },
       "confirmDelete": "アドオン「{{name}}」を削除してもよろしいですか？",
       "created": "{{common.created}}",
       "deleteTooltip": "アドオンを削除",
-      "errorCreatingAddon": "アドオンの作成に失敗しました。もう一度お試しください。",
-      "errorLoadingWebhooks": "利用可能なWebhookの読み込みに失敗しました",
-      "filterLabel": "アドオンをフィルター",
+      "errorCreatingAddon": "アドオンの作成に失敗しました。",
+      "errorLoadingWebhooks": "利用可能なWebhookの読み込みに失敗しました。",
+      "filterLabel": "アドオンを絞り込む",
       "filterPlaceholder": "名前または説明で検索",
       "listTitle": "システムアドオン",
-      "noAddons": "アドオンが見つかりません",
-      "objectTypesTooltip": "これらのオブジェクト タイプに適用されます",
-      "subtitle": "TMI機能を拡張するアドオンを設定",
+      "noAddons": "アドオンが見つかりません。",
+      "objectTypesTooltip": "これらのオブジェクトタイプに適用",
+      "subtitle": "TMI機能を拡張するためのアドオンを設定します。",
       "title": "アドオンの管理"
     },
     "createAutomationUserDialog": {
-      "email": "メール (任意)",
+      "email": "メール（任意）",
       "emailHint": "任意 — デフォルトは自動生成された @tmi.local アドレス",
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "2〜64文字、文字で始まる",
-      "nameMaxLength": "名前は最大64文字である必要があります",
-      "nameMinLength": "最低2文字必要です",
-      "namePattern": "文字で始まり、文字または数字で終わる必要があります",
+      "nameMaxLength": "名前は最大64文字でなければなりません。",
+      "nameMinLength": "2文字以上でなければなりません。",
+      "namePattern": "文字で始まり、文字または数字で終わる必要があります。",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "自動化ユーザーを作成",
@@ -103,12 +103,12 @@
         "displayName": "表示名",
         "displayNameHint": "人間が読みやすいグループ名",
         "displayNamePlaceholder": "カスタムグループ",
-        "displayNameRequired": "表示名は必須です",
+        "displayNameRequired": "表示名は必須です。",
         "groupName": "グループ識別子",
         "groupNameHint": "英数字、ハイフン、アンダースコアのみ使用可能",
-        "groupNamePattern": "英数字、ハイフン、アンダースコアのみ使用可能です",
+        "groupNamePattern": "英数字、ハイフン、アンダースコアのみ使用できます。",
         "groupNamePlaceholder": "my-custom-group",
-        "groupNameRequired": "グループ識別子は必須です",
+        "groupNameRequired": "グループ識別子は必須です。",
         "save": "グループを作成",
         "title": "グループを追加"
       },
@@ -118,14 +118,14 @@
         "usage": "使用状況"
       },
       "deleteTooltip": "グループを削除",
-      "filterLabel": "グループをフィルター",
+      "filterLabel": "グループを絞り込む",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "自動化アカウントは管理者グループのメンバーになることが許可されていません。自動化アカウントはアプリケーションの管理機能にアクセスできてはなりません。",
+        "automationAdminBlocked": "自動化アカウントは管理者グループのメンバーになることはできません。自動化アカウントはアプリケーションの管理機能へのアクセス権を持てません。",
         "currentMembers": "現在のメンバー",
-        "noMembers": "このグループにメンバーはいません",
+        "noMembers": "このグループにメンバーはいません。",
         "removeTooltip": "グループから削除",
         "searchHint": "検索するには2文字以上入力してください",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,13 +133,13 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "グループが見つかりません",
-      "subtitle": "システムグループの表示と管理",
+      "noGroups": "グループが見つかりません。",
+      "subtitle": "システムグループを表示・管理します。",
       "title": "グループの管理",
-      "viewMembersTooltip": "グループメンバーを表示および管理"
+      "viewMembersTooltip": "グループメンバーを表示・管理する..."
     },
     "quotas": {
-      "addButton": "クォータを追加",
+      "addButton": "クォータを追加...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "クォータを設定",
@@ -157,35 +157,35 @@
       "default": "デフォルト",
       "deleteTooltip": "カスタムクォータを削除（デフォルトに戻す）",
       "eventsPerMinute": "1分あたりのイベント数",
-      "filterLabel": "クォータをフィルター",
+      "filterLabel": "クォータを絞り込む",
       "filterPlaceholder": "メール、名前、プロバイダー、またはユーザーIDで検索",
       "maxSubscriptions": "最大サブスクリプション数",
-      "noUserAPIQuotas": "カスタムAPIクォータが見つかりません",
-      "noWebhookQuotas": "カスタムWebhookクォータが見つかりません",
+      "noUserAPIQuotas": "カスタムAPIクォータが見つかりません。",
+      "noWebhookQuotas": "カスタムWebhookクォータが見つかりません。",
       "requestsPerHour": "1時間あたりのリクエスト数",
       "requestsPerMinute": "1分あたりのリクエスト数",
       "subReqPerDay": "1日あたりのサブスクリプションリクエスト数",
       "subReqPerMinute": "1分あたりのサブスクリプションリクエスト数",
-      "subtitle": "ユーザーのレート制限とクォータを設定",
+      "subtitle": "ユーザーのレート制限とクォータを設定します。",
       "title": "クォータの管理",
-      "userAPITitle": "API制限",
+      "userAPITitle": "APIレート制限",
       "webhookTitle": "Webhook制限"
     },
     "sections": {
       "addons": {
-        "description": "アプリケーションアドオンのインストールと設定",
+        "description": "アプリケーションアドオンをインストール・設定します。",
         "title": "アドオン"
       },
       "groups": {
-        "description": "ユーザーグループとメンバーシップの設定",
+        "description": "ユーザーグループとメンバーシップを設定します。",
         "title": "グループ"
       },
       "projects": {
-        "description": "プロジェクト、関連性、メタデータの管理",
+        "description": "プロジェクト、関係、メタデータを管理します。",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "リソースクォータと制限の設定",
+        "description": "リソースクォータと制限を設定します。",
         "title": "クォータ"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "設定"
       },
       "surveys": {
-        "description": "調査を作成および管理",
+        "description": "アンケートを作成・管理します。",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "チームとチームメンバーシップの管理",
+        "description": "チームとチームメンバーシップを管理します。",
         "title": "チーム"
       },
       "users": {
-        "description": "ユーザーアカウントの表示と管理",
+        "description": "ユーザーアカウントを表示・管理します。",
         "title": "ユーザー"
       },
       "webhooks": {
-        "description": "Webhook統合のインストールと設定",
+        "description": "Webhook連携をインストール・設定します。",
         "title": "Webhook"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "この設定の説明（任意）",
         "key": "{{common.metadataKey}}",
         "keyHint": "ドットとアンダースコアを含む小文字（例: rate_limit.max_rpm）",
-        "keyInvalid": "小文字で始まり、小文字、数字、ドット、アンダースコアのみを使用する必要があります",
-        "keyRequired": "キーは必須です",
+        "keyInvalid": "小文字で始まり、小文字、数字、ドット、アンダースコアのみ使用できます。",
+        "keyRequired": "キーは必須です。",
         "save": "設定を作成",
         "title": "設定を追加",
         "type": "{{common.type}}",
-        "typeRequired": "タイプは必須です",
+        "typeRequired": "タイプは必須です。",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "値は必須です"
+        "valueRequired": "値は必須です。"
       },
       "cancelTooltip": "編集をキャンセル",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "フィルター",
       "filterPlaceholder": "キー、値、説明、またはソースでフィルター",
       "listTitle": "システム設定",
-      "noSettings": "設定が見つかりません",
+      "noSettings": "設定が見つかりません。",
       "readOnlyTooltip": "この設定は読み取り専用で、ここでは変更できません",
       "saveTooltip": "変更を保存",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "環境変数",
         "vault": "Vault"
       },
-      "subtitle": "システム構成設定を表示および管理",
+      "subtitle": "システム設定を表示・管理します。",
       "title": "設定の管理",
       "types": {
         "bool": "ブール値",
@@ -255,7 +255,7 @@
         "string": "文字列"
       }
     },
-    "subtitle": "システム設定と構成の管理",
+    "subtitle": "システム設定と構成を管理します。",
     "title": "管理",
     "users": {
       "actions": {
@@ -271,38 +271,38 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "ユーザーアカウントを削除",
       "filter": {
-        "automationOnly": "自動化アカウントのみ表示"
+        "automationOnly": "自動化アカウントのみ表示する。"
       },
-      "filterLabel": "ユーザーをフィルター",
+      "filterLabel": "ユーザーを絞り込む",
       "filterPlaceholder": "メール、名前、プロバイダー、またはグループ名で検索",
       "lastLogin": "最終ログイン",
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "資格情報を追加",
         "deleteConfirm": "資格情報「{{name}}」を削除してもよろしいですか？",
-        "noCredentials": "資格情報が見つかりません",
-        "title": "{{userName}} の資格情報を管理"
+        "noCredentials": "資格情報が見つかりません。",
+        "title": "{{username}}の資格情報を管理する。"
       },
       "never": "なし",
-      "noUsers": "ユーザーが見つかりません",
-      "subtitle": "システムユーザーの表示と管理",
+      "noUsers": "ユーザーが見つかりません。",
+      "subtitle": "システムユーザーを表示・管理します。",
       "title": "ユーザーの管理",
       "transferOwnership": {
         "confirm": "{{source}}から{{target}}へすべてのデータを転送してもよろしいですか？",
         "dialogTitle": "ユーザーデータの転送",
-        "error": "所有権の転送に失敗しました。もう一度お試しください。",
+        "error": "所有権の転送に失敗しました。",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "所有権を転送"
+        "tooltip": "所有権を転送する..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "このWebhook用の自動化ユーザーを作成",
+        "createAutomationUser": "このWebhook用の自動化ユーザーを作成する。",
         "events": "サブスクライブするイベントタイプ",
         "eventsHint": "サブスクライブするイベントタイプ（例: threat_model.created）",
         "eventsPlaceholder": "イベントタイプを選択",
-        "eventsRequired": "少なくとも1つのイベントが必要です",
+        "eventsRequired": "少なくとも1つのイベントが必要です。",
         "name": "{{common.name}}",
         "nameHint": "このWebhookの説明的な名前",
         "namePlaceholder": "Webhook名",
@@ -314,32 +314,32 @@
         "title": "Webhookを追加",
         "url": "Webhook URL",
         "urlHint": "HTTPSを推奨",
-        "urlHttpWarning": "警告: WebhookエンドポイントURLはHTTPSを使用する必要があります。サーバーは非TLSエンドポイントを指定するWebhook登録を拒否する場合があります。",
-        "urlHttpWarningTitle": "非HTTPS Webhook URL",
-        "urlInvalid": "有効なURLである必要があります",
+        "urlHttpWarning": "警告: WebhookエンドポイントURLはHTTPSを使用する必要があります。サーバーはTLS以外のエンドポイントを指定するWebhook登録を拒否する場合があります。",
+        "urlHttpWarningTitle": "非HTTPSのWebhook URL。",
+        "urlInvalid": "有効なURLでなければなりません。",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "URLは必須です"
+        "urlRequired": "URLは必須です。"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhookを削除",
       "events": "イベント",
-      "filterLabel": "Webhookをフィルター",
+      "filterLabel": "Webhookを絞り込む",
       "filterPlaceholder": "名前またはURLで検索",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "このシークレットを表示できるのはこの1回のみです。必ずコピーしてください。紛失した場合は、Webhookを削除して再作成する必要があります。"
       },
       "listTitle": "Webhookサブスクリプション",
-      "noWebhooks": "Webhookが見つかりません",
+      "noWebhooks": "Webhookが見つかりません。",
       "secret": "HMACシークレット",
       "status": {
         "active": "{{common.active}}",
         "pending_delete": "削除保留中",
-        "pending_verification": "検証保留中"
+        "pending_verification": "確認保留中"
       },
       "subscriptionId": "サブスクリプションID",
-      "subtitle": "イベント通知用のWebhookサブスクリプションを設定",
-      "title": "Webhooksの管理",
+      "subtitle": "イベント通知のWebhookサブスクリプションを設定します。",
+      "title": "Webhookの管理",
       "triggerEvents": "トリガーイベント",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -347,52 +347,52 @@
   "adminSurveys": {
     "cloneSuffix": "（コピー）",
     "createDialog": {
-      "nameLabel": "調査名",
+      "nameLabel": "アンケート名",
       "namePlaceholder": "調査名を入力",
       "nameRequired": "{{common.validation.nameRequired}}",
-      "title": "調査を作成",
+      "title": "アンケートを作成",
       "versionHint": "自由形式のバージョン識別子",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "例: 1, v2-pilot, 2024-Q1",
-      "versionRequired": "バージョンは必須です"
+      "versionPlaceholder": "例: 1、v2-pilot、2024-q1",
+      "versionRequired": "バージョンは必須です。"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "既存の回答があるため、このアンケートを削除できません。先に回答を削除してから、もう一度お試しください。",
-    "deleteError": "アンケートの削除に失敗しました: {{error}}",
+    "deleteError": "アンケートの削除に失敗しました: {{error}}。",
     "deleteTooltip": "アンケートを削除",
-    "editTemplate": "調査を編集",
+    "editTemplate": "アンケートを編集",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
-    "noMatchingTitle": "一致する調査がありません",
+    "noMatchingTitle": "一致するアンケートはありません",
     "noTemplatesMessage": "最初の調査を作成して開始してください。",
-    "noTemplatesTitle": "調査がまだありません",
+    "noTemplatesTitle": "アンケートがまだありません",
     "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "名前で検索...",
     "searchTemplates": "調査を検索",
-    "surveyDetails": "調査詳細",
+    "surveyDetails": "アンケートの詳細",
     "templateBuilder": {
       "addPage": "ページを追加",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "選択肢（1行に1つ）",
-      "conditionalLogic": "条件付きロジック",
+      "conditionalLogic": "条件ロジック",
       "conditionalLogicHelp": "SurveyJS条件付きロジックのドキュメント",
       "deletePage": "ページを削除",
       "deleteQuestion": "質問を削除",
-      "enableIf": "有効にする条件",
-      "enableIfHint": "例: {questionName} = 'value'",
+      "enableIf": "有効条件",
+      "enableIfHint": "例: {questionname} = 'value'",
       "enterSurveyDescription": "調査の説明を入力",
       "enterSurveyTitle": "調査のタイトルを入力",
-      "failedToLoadTemplate": "調査の読み込みに失敗しました",
-      "failedToSaveTemplate": "調査の保存に失敗しました",
+      "failedToLoadTemplate": "アンケートの読み込みに失敗しました。",
+      "failedToSaveTemplate": "アンケートの保存に失敗しました。",
       "loadingTemplate": "調査を読み込み中...",
-      "mapsToTmField": "脅威モデルフィールドにマッピング",
+      "mapsToTmField": "TMフィールドへのマッピング",
       "metadataKey": "メタデータキー",
       "metadataKeyHint": "メタデータエントリのキー名",
       "nameId": "名前（ID）",
       "nameIdHint": "この質問の一意の識別子",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "パレットから質問タイプをクリックして追加してください",
-      "noQuestionsYet": "まだ質問がありません",
+      "noQuestionsYet": "質問がまだありません。",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "質問のプロパティ",
@@ -400,9 +400,9 @@
         "boolean": "真偽値トグル",
         "checkbox": "複数選択",
         "dropdown": "ドロップダウン選択",
-        "panel": "パネル内に質問をグループ化",
+        "panel": "パネル内に質問をグループ化します。",
         "paneldynamic": "繰り返し可能なパネルグループ",
-        "radiogroup": "選択肢から単一選択",
+        "radiogroup": "オプションから1つを選択します。",
         "text": "単一行テキスト入力"
       },
       "questionTypeLabels": {
@@ -419,17 +419,17 @@
       "required": "必須",
       "requiredIf": "必須条件",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "質問を選択してプロパティを編集してください",
+      "selectQuestionHint": "質問を選択してプロパティを編集してください。",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
-        "assetDescription": "アセットの説明",
+        "assetDescription": "アセット説明",
         "assetName": "{{assetEditor.name}}",
         "assetType": "{{assetEditor.type}}",
         "description": "脅威モデルの説明",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "課題追跡URL",
+        "issueUri": "課題トラッキングURL。",
         "metadataKey": "カスタムメタデータ",
         "name": "脅威モデル名",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -441,11 +441,11 @@
       "visibleIf": "表示条件",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}}件の調査",
-    "templateCountPlural": "{{count}}件の調査"
+    "templateCount": "{{Count}}件のアンケート",
+    "templateCountPlural": "{{Count}}件のアンケート"
   },
   "assetEditor": {
-    "chipPlaceholder": "値を入力してEnterを押してください",
+    "chipPlaceholder": "値を入力してEnterキーを押してください",
     "classification": "{{common.classification}}",
     "criticality": "{{common.criticality}}",
     "name": "アセット名",
@@ -492,13 +492,13 @@
     "noEntries": "監査証跡エントリが見つかりません。",
     "rollback": {
       "action": "ロールバック",
-      "confirmMessage": "{{objectType}}「{{name}}」をバージョン{{version}}にロールバックしてもよろしいですか？",
+      "confirmMessage": "{{objecttype}}「{{name}}」をバージョン{{version}}にロールバックしてもよろしいですか？",
       "confirmTitle": "ロールバックの確認",
       "confirmationField": "確認のため入力してください",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "ロールバックに失敗しました。もう一度お試しください。",
+      "error": "ロールバックに失敗しました",
       "success": "ロールバックが正常に完了しました。",
-      "typeConfirmation": "確認のため、下に「{{confirmValue}}」と入力してください。",
+      "typeConfirmation": "確認するには、以下に「{{confirmvalue}}」と入力してください",
       "versionPruned": "バージョンスナップショットは削除されました。ロールバックは利用できません。",
       "warning": "この操作により、このエンティティの現在の状態がこの監査エントリに記録されたバージョンで上書きされます。この操作は新しい監査エントリを作成しますが、現在の状態は失われます。"
     },
@@ -507,10 +507,10 @@
   "auth": {
     "unauthorized": {
       "401": "401 未認証",
-      "403": "403 アクセス禁止",
+      "403": "403 禁止",
       "noPermission": "このページにアクセスする権限がありません。",
       "requiredRole": "このコンテンツを表示するには{{role}}ロールが必要です。",
-      "title": "アクセス権限がありません"
+      "title": "アクセス権がありません"
     }
   },
   "chat": {
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "Timmyに接続できませんでした。接続を確認してもう一度お試しください。",
-      "generic": "問題が発生しました。もう一度お試しください。",
+      "generic": "問題が発生しました。",
       "interrupted": "応答が中断されました。メッセージを再度送信してください。",
       "notAcceptable": "サーバー設定の問題により、Timmyは一時的に利用できません。",
       "notEnabled": "この脅威モデルではTimmyが有効になっていません。",
@@ -532,16 +532,16 @@
     "hideSidePanel": "サイドパネルを非表示",
     "inputPlaceholder": "Timmyにこの脅威モデルについて質問してください...",
     "newSession": "新しいセッション",
-    "noSessions": "チャットセッションはまだありません。会話を始めましょう!",
+    "noSessions": "チャットセッションがありません。会話を開始してください。",
     "preparation": {
-      "error": "準備に失敗しました：{{message}}",
-      "processing": "ソース{{current}}を処理中（全{{total}}）— {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
-      "ready": "準備完了！{{sourcesLoaded}}個のソースを読み込み、{{chunksEmbedded}}個のチャンクをインデックス化しました。"
+      "error": "準備に失敗しました: {{message}}。",
+      "processing": "ソース{{current}}/{{total}}を処理中 — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%。",
+      "ready": "準備完了！{{Sourcesloaded}}件のソースが読み込まれ、{{chunksembedded}}件のチャンクがインデックス化されました。"
     },
-    "saveAsNoteError": "メモとして保存できませんでした。もう一度お試しください。",
+    "saveAsNoteError": "ノートとして保存できませんでした。",
     "saveMessageAsNote": "メッセージをメモとして保存",
     "saveSessionAsNote": "セッションをメモとして保存",
-    "savedAsNote": "メモとして保存しました",
+    "savedAsNote": "ノートとして保存されました。",
     "savedAsNoteView": "{{common.view}}",
     "send": "メッセージを送信",
     "sessions": "セッション",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}}個のソースが含まれています"
+      "title": "{{Count}}件のソースが含まれています"
     },
     "suggestedPrompts": {
       "assets": "スコープ内にはどのようなアセットがありますか?",
@@ -563,35 +563,35 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} 人のアクティブユーザー",
+    "activeUsers": "{{Count}}人のアクティブユーザー。",
     "approvePresenterRequest": "プレゼンターリクエストを承認",
-    "availableCollaborationSessions": "利用可能なコラボレーションセッション",
+    "availableCollaborationSessions": "利用可能なコラボレーションセッション。",
     "collaboratorsHeader": "参加者",
     "copyLink": "リンクをコピー",
     "denyPresenterRequest": "プレゼンターリクエストを拒否",
     "endCollaboration": "コラボレーションを終了",
     "hostedBy": "ホスト:",
-    "isRequestingPresenterPrivileges": "がプレゼンター権限をリクエストしています",
+    "isRequestingPresenterPrivileges": "プレゼンター権限をリクエストしています。",
     "joinSession": "セッションに参加",
-    "justNow": "たった今",
-    "leaveSession": "セッションから退出",
+    "justNow": "今すぐ",
+    "leaveSession": "セッションを退出",
     "loadingDiagramContext": "ダイアグラムコンテキストを読み込み中...",
     "manageParticipants": "参加者を管理",
-    "noActiveSessions": "アクティブなコラボレーションセッションはありません",
-    "participantRequestsPresenterRole": "参加者がプレゼンターロールをリクエスト",
-    "presenterModeRequested": "プレゼンターモードをリクエスト済み",
+    "noActiveSessions": "アクティブなコラボレーションセッションはありません。",
+    "participantRequestsPresenterRole": "参加者がプレゼンターロールをリクエストしています",
+    "presenterModeRequested": "プレゼンターモードがリクエストされました",
     "removeFromSession": "セッションから削除",
     "requestPresenter": "プレゼンターをリクエスト",
     "sessionStarted": "開始",
     "startCollaboration": "コラボレーションを開始",
     "takeBackPresenter": "プレゼンターを取り戻す",
     "title": "コラボレーションセッション参加者",
-    "userJoined": "{{user}} がコラボレーションに参加しました",
-    "userLeft": "{{user}} がコラボレーションを退出しました",
+    "userJoined": "{{User}}がコラボレーションに参加しました。",
+    "userLeft": "{{User}}がコラボレーションを退出しました",
     "websocketStatus": {
       "connected": "Websocket接続済み",
-      "noSession": "アクティブなコラボレーションセッションはありません",
-      "notConnected": "Websocket未接続"
+      "noSession": "アクティブなコラボレーションセッションなし",
+      "notConnected": "Websocket未接続。"
     }
   },
   "common": {
@@ -615,8 +615,8 @@
     "close": "閉じる",
     "confirm": "確認",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
-    "confirmDeleteMessage": "{{objectType}}「{{name}}」を削除してもよろしいですか？",
-    "copiedToClipboard": "クリップボードにコピーしました",
+    "confirmDeleteMessage": "{{objecttype}}「{{name}}」を削除してもよろしいですか？",
+    "copiedToClipboard": "クリップボードにコピーしました。",
     "copy": "コピー",
     "copyToClipboard": "クリップボードにコピー",
     "create": "作成",
@@ -626,15 +626,15 @@
     "cut": "切り取り",
     "deactivate": "無効化",
     "delete": "削除",
-    "deleteConfirm": "脅威モデルを削除",
+    "deleteConfirm": "削除の確認",
     "deleteWarningConfirmationField": "削除の確認",
     "deleteWarningConfirmationMatch": "確認テキストが一致しました",
     "deleteWarningConfirmationMismatch": "確認テキストが一致しません",
     "deleteWarningConfirmationValue": "完全に削除",
-    "deleteWarningPermanent": "この操作は取り消すことができず、{{objectType}}および関連するすべてのメタデータが完全に削除されます。",
-    "deleteWarningReferenceOnly": "ドキュメントやリポジトリなど、TMI外部に保存されているオブジェクトについては、TMI内の参照のみが削除されます。",
+    "deleteWarningPermanent": "この操作は元に戻せません。{{objecttype}}およびそれに関連するすべてのメタデータが完全に削除されます。",
+    "deleteWarningReferenceOnly": "ドキュメントやリポジトリなどTMI外に保存されたオブジェクトの場合、そのオブジェクトへのTMI参照のみが削除されます。",
     "deleteWarningSubEntities": "ダイアグラム、脅威、ノートなど、関連するすべてのTMIエンティティも完全に削除されます。",
-    "deleteWarningTypeConfirmation": "確認のため、以下のフィールドに「{{confirmValue}}」と入力してください。",
+    "deleteWarningTypeConfirmation": "確認するには、以下のフィールドに「{{confirmvalue}}」と入力してください",
     "description": "説明",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "閉じる",
@@ -657,7 +657,7 @@
     "issueUri": "課題URL",
     "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
-    "lastModified": "最終更新日",
+    "lastModified": "最終更新日時",
     "lastUpdated": "最終更新",
     "loading": "読み込み中...",
     "manage": "管理",
@@ -675,7 +675,7 @@
     "noDataAvailable": "データがありません",
     "noMatchingResults": "フィルターに一致する結果はありません。",
     "noMetadata": "メタデータがありません",
-    "noThreats": "脅威がありません",
+    "noThreats": "脅威がありません。",
     "none": "なし",
     "objectTypes": {
       "asset": "アセット",
@@ -696,8 +696,8 @@
       "repositories": "リポジトリ",
       "repository": "リポジトリ",
       "survey": "調査",
-      "surveyResponse": "調査回答",
-      "surveyResponses": "調査回答",
+      "surveyResponse": "アンケート回答",
+      "surveyResponses": "アンケート回答",
       "surveys": "調査",
       "team": "チーム",
       "teams": "チーム",
@@ -715,7 +715,7 @@
     "project": "プロジェクト",
     "provider": "プロバイダー",
     "readOnly": "読み取り専用",
-    "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
+    "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限を要求するにはオーナーに連絡してください",
     "retry": "再試行",
     "roles": {
       "owner": "オーナー",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "保存しました",
     "score": "スコア",
     "search": "検索",
-    "selected": "{{count}} 件選択",
+    "selected": "{{Count}}件選択済み",
     "sensitivity": "機密度",
     "sessionRoles": {
       "host": "ホスト",
@@ -744,7 +744,7 @@
     "team": "チーム",
     "template": "テンプレート",
     "threatDescription": "脅威の説明",
-    "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
+    "threatDescriptionPlaceholder": "脅威を詳しく説明してください",
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
     "title": "タイトル",
@@ -755,11 +755,11 @@
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
     "uri": "URI",
     "validation": {
-      "email": "有効なメールアドレスを入力してください",
+      "email": "有効なメールアドレスを入力してください。",
       "invalidUrl": "有効なURLを入力してください",
-      "maxLength": "最大文字数は{{max}}文字です",
-      "nameRequired": "名前は必須です",
-      "required": "このフィールドは必須です"
+      "maxLength": "最大長は{{max}}文字です。",
+      "nameRequired": "名前は必須です。",
+      "required": "このフィールドは必須です。"
     },
     "version": "バージョン",
     "view": "表示",
@@ -769,19 +769,19 @@
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",
-    "dataAssets": "データ資産...",
+    "dataAssets": "データアセット...",
     "editText": "テキストを編集",
-    "lockLayout": "Lock Layout",
-    "moveBackward": "背面へ移動",
-    "moveForward": "前面へ移動",
+    "lockLayout": "レイアウトをロック",
+    "moveBackward": "後ろへ移動",
+    "moveForward": "前へ移動",
     "moveToBack": "最背面へ移動",
     "moveToFront": "最前面へ移動",
     "noDataAssetsAvailable": "データ資産がありません",
-    "showObject": "オブジェクトを表示",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "オブジェクトを表示...",
+    "unlockLayout": "レイアウトのロックを解除"
   },
   "createThreatModel": {
-    "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的には共有されません。この設定は作成後に変更することはできません。",
+    "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的に共有されません。この設定は作成後に変更できません。",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "この脅威モデルの目的と範囲を説明してください",
     "framework": "フレームワーク",
@@ -792,19 +792,46 @@
   "cvssCalculator": {
     "apply": "適用",
     "openCalculator": "CVSSを追加",
-    "parseError": "既存のCVSSベクター文字列を解析できませんでした",
-    "pasteVectorPlaceholder": "CVSSベクトル文字列を貼り付けてEnterキーを押してください",
+    "parseError": "既存のCVSSベクター文字列を解析できませんでした。",
+    "pasteVectorPlaceholder": "CVSSベクター文字列を貼り付けてEnterキーを押してください",
     "title": "CVSS計算機",
-    "vectorDuplicateVersion": "このバージョンのCVSSエントリは既に存在します",
-    "vectorInvalid": "無効なCVSSベクター文字列",
-    "vectorPlaceholder": "CVSSベクター文字列を貼り付けまたは入力してEnterを押してください",
+    "vectorDuplicateVersion": "このバージョンのCVSSエントリはすでに存在します。",
+    "vectorInvalid": "無効なCVSSベクター文字列です。",
+    "vectorPlaceholder": "CVSSベクター文字列を貼り付けるか入力してEnterキーを押してください。",
     "vectorString": "ベクター文字列",
-    "vectorUnsupportedVersion": "CVSS 3.1および4.0ベクターのみサポートされています",
-    "version": "CVSSバージョン"
+    "vectorUnsupportedVersion": "CVSS 3.1と4.0のベクターのみサポートされています。",
+    "version": "CVSSバージョン",
+    "metricDescriptions": {
+      "AR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（可用性の観点）に応じて評価をカスタマイズできます。",
+      "AU": "自動化可能性メトリクスは、「攻撃者が複数のターゲットにわたって脆弱性の悪用を自動化できるか」という問いへの回答を記録します。",
+      "CR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（機密性の観点）に応じて評価をカスタマイズできます。",
+      "IR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（完全性の観点）に応じて評価をカスタマイズできます。",
+      "MAC": "攻撃複雑性のオーバーライド。このメトリクスは、アナリストの環境で脆弱性を悪用するために必要な、攻撃者のコントロール外の条件を反映します。",
+      "MAT": "攻撃要件のオーバーライド。アナリストの環境での攻撃を可能にするシステムの展開・実行の前提条件を記録します。",
+      "MAV": "攻撃ベクターのオーバーライド。このメトリクスは、アナリストの環境での脆弱性悪用が可能なコンテキストを反映します。",
+      "MPR": "必要な権限のオーバーライド。このメトリクスは、アナリストの環境で脆弱性を悪用するために攻撃者が必要とする権限レベルを記述します。",
+      "MSA": "後続システム可用性への影響のオーバーライド。アナリストの環境において、脆弱なシステム以外のシステム可用性への影響を測定します。",
+      "MSC": "後続システム機密性への影響のオーバーライド。アナリストの環境において、脆弱なシステム以外のシステム機密性への影響を測定します。",
+      "MSI": "後続システム完全性への影響のオーバーライド。アナリストの環境において、脆弱なシステム以外のシステム完全性への影響を測定します。",
+      "MUI": "ユーザー操作のオーバーライド。アナリストの環境での成功した侵害に攻撃者以外の人間ユーザーの関与が必要かどうかを記録します。",
+      "MVA": "脆弱なシステム可用性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの可用性への影響を測定します。",
+      "MVC": "脆弱なシステム機密性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの機密性への影響を測定します。",
+      "MVI": "脆弱なシステム完全性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの完全性への影響を測定します。",
+      "R": "回復性メトリクスは、攻撃が実行された後にシステムがサービスをパフォーマンスおよび可用性の観点から回復する際の耐性を記述します。",
+      "RE": "脆弱性対応工数メトリクスは、脆弱性が判明した後にコンシューマーが対応するために必要な工数レベルを記録します。",
+      "S": "安全性メトリクスは、IEC 61508のカテゴリで定義された人の安全に影響する状態を脆弱性が引き起こす可能性があるかどうかを反映します。",
+      "U": "プロバイダー緊急度メトリクスは、脆弱性に対してサプライヤーが提供する緊急度評価（赤、橙、緑、無色）を反映します。",
+      "V": "価値密度メトリクスは、単一の悪用イベントで攻撃者が制御を得るリソースを記述します。"
+    },
+    "metricGroups": {
+      "environmentalBase": "環境（修正ベース）。",
+      "environmentalSecurityRequirement": "環境（セキュリティ要件）"
+    },
+    "metricsConfigured": "{{Count}}/{{total}}件設定済み"
   },
   "cwePicker": {
     "addCwe": "CWEを追加",
-    "addCweReference": "CWEリファレンスを脅威に追加",
+    "addCweReference": "CWE参照を脅威に追加",
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "拡張説明",
     "loading": "脆弱性を読み込み中...",
@@ -825,7 +852,7 @@
     "lessFilters": "フィルターを減らす",
     "modifiedAfter": "更新日（以降）",
     "modifiedBefore": "更新日（以前）",
-    "moreFilters": "フィルターを増やす",
+    "moreFilters": "フィルターを追加",
     "nameFilter": "{{common.name}}",
     "namePlaceholder": "名前でフィルター",
     "noMatchingThreatModels": "検索またはフィルターに一致する脅威モデルはありません。",
@@ -845,7 +872,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "ステータス最終変更日"
+      "statusLastChanged": "ステータス最終変更日。"
     },
     "viewAsCards": "カード表示",
     "viewAsList": "リスト表示"
@@ -875,13 +902,13 @@
     },
     "historyDialog": {
       "canRedo": "やり直し可能",
-      "canUndo": "元に戻す可能",
+      "canUndo": "元に戻し可能",
       "clearHistory": "履歴をクリア",
       "currentIndex": "現在のインデックス",
       "id": "{{common.id}}",
       "maxStackSize": "最大スタックサイズ",
-      "noRedoEntries": "やり直し履歴なし",
-      "noUndoEntries": "元に戻す履歴なし",
+      "noRedoEntries": "やり直しエントリがありません。",
+      "noUndoEntries": "元に戻すエントリがありません。",
       "operationId": "操作ID",
       "previousCells": "前のセル",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +923,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "すべてのプロバイダーを検索するには入力してください",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "この図形で利用可能なアイコンはありません",
+      "emptyStatePrompt": "すべてのプロバイダーにわたって検索するには文字を入力してください。",
+      "emptyStateTryExamples": "試してみてください: AWS ec2、azure sql、gcp compute",
+      "notAvailable": "この図形にはアイコンが利用できません。",
       "placement": "配置",
       "remove": "削除",
       "searchPlaceholder": "プロバイダー、サービス、またはカテゴリで検索...",
       "searchToChange": "アイコンを変更するには検索...",
       "selectShape": "最初に図形を選択してください",
-      "statusAvailable": "{count}個のアイコンが利用可能",
-      "statusMatches": "{count}件一致",
-      "statusShapesSelected": "{count}個の図形が選択されています",
+      "statusAvailable": "{Count}個のアイコンが利用可能です。",
+      "statusMatches": "{Count}件一致",
+      "statusShapesSelected": "{Count}個の図形が選択されています。",
       "title": "アーキテクチャアイコン",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -953,7 +980,7 @@
       "labelPosition.top-right": "Top right",
       "labelPositionLabel": "ラベル位置",
       "labelTab": "ラベル",
-      "noSelection": "スタイルを編集するオブジェクトを選択してください",
+      "noSelection": "スタイルを編集するにはオブジェクトを選択してください。",
       "opacity": "不透明度",
       "osColorPicker": "システムからカラーを選択",
       "removeDiagramColor": "ダイアグラムカラーを削除",
@@ -973,30 +1000,38 @@
       "other": "このドキュメントにアクセスできません。",
       "pickerRegistrationInvalid": "このドキュメントのピッカー認証は無効になりました。",
       "sourceNotFound": "TMIはこのドキュメントのURLの読み取り方法を認識していません。",
-      "tokenNotLinked": "このドキュメントを所有するアカウントがリンクされていません。ソース: {{ source }}",
-      "tokenRefreshFailed": "ソースのリンクは無効になりました。ソース: {{ source }}",
-      "tokenTransientFailure": "ソースに接続できませんでした。これは通常一時的な問題です。ソース: {{ source }}"
+      "tokenNotLinked": "このドキュメントを所有するアカウントがリンクされていません。ソース: {{ source }}。",
+      "tokenRefreshFailed": "ソースリンクが無効になりました。ソース: {{ source }}。",
+      "tokenTransientFailure": "ソースに接続できませんでした。通常は一時的な問題です。ソース: {{ source }}。",
+      "microsoftNotShared": "TMIはまだこのOneDriveまたはSharePointファイルへのアクセス権を持っていません。ファイルオーナーは以下のスニペットを使用してTMIへの読み取りアクセスを許可する必要があります。"
     },
     "remediation": {
       "contactOwner": "ドキュメントの所有者に連絡してください",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "ソースを再リンク",
-      "repickAfterShare": "共有後にもう一度選択",
-      "repickFile": "このファイルをもう一度選択",
+      "repickAfterShare": "共有後に再度選択してください。",
+      "repickFile": "このファイルを再度選択してください。",
       "retry": "再試行",
-      "shareWithServiceAccount": "TMIサービスアカウントと共有"
+      "shareWithServiceAccount": "TMIサービスアカウントと共有",
+      "shareWithApplication": {
+        "copyFailed": "クリップボードにコピーできませんでした",
+        "explanation": "TMIはまだこのOneDriveまたはSharePointファイルへのアクセス権を持っていません。ファイルオーナーに以下のMicrosoft Graphコールを実行してTMIへの読み取りアクセスを許可するよう依頼してください。コールが成功したら「今すぐ確認」をクリックしてください — 許可が設定されると数分以内にステータスが更新されます。",
+        "powershellLabel": "PowerShell（microsoft.graphモジュール）",
+        "rawLabel": "Microsoft Graphコール",
+        "title": "TMIにこのファイルへのアクセスを許可する。"
+      }
     },
     "serviceAccountEmail": "このメールアドレスと共有してください："
   },
   "documentEditor": {
     "grantError": {
-      "generic": "ファイルへのアクセスを許可できませんでした。もう一度お試しください。",
+      "generic": "ファイルへのアクセスを許可できませんでした。",
       "linkAccountCta": "アカウントをリンク",
       "notLinked": "Microsoftアカウントがリンクされていません。",
       "permissionDenied": "Microsoftがアクセス許可のリクエストを拒否しました。このファイルは共有できない可能性があります。別のファイルを試すか、管理者に連絡してください。",
-      "pickerLoadFailed": "ファイルピッカーを開けませんでした。ネットワークを確認してもう一度お試しください。",
-      "timeout": "リクエストに時間がかかりすぎました。もう一度お試しください。",
-      "unavailable": "Microsoftは一時的に利用できません。しばらくしてからもう一度お試しください。"
+      "pickerLoadFailed": "ファイルピッカーを開けませんでした。ネットワークを確認してもう一度試してください",
+      "timeout": "リクエストに時間がかかりすぎました。",
+      "unavailable": "Microsoftは一時的に利用できません。"
     },
     "source": {
       "finalizing": "アクセスを許可しています…",
@@ -1004,12 +1039,18 @@
       "label": "このドキュメントをどのように添付しますか？",
       "linkAction": "ソースをリンク",
       "linkPrompt": "このソースからファイルを選択するには、アカウントをリンクしてください。",
-      "linkPromptMicrosoft": "OneDrive/SharePointのファイルを参照するには、Microsoftアカウントをリンクしてください",
+      "linkPromptMicrosoft": "OneDrive/SharePointファイルを参照するにはMicrosoftアカウントをリンクしてください。",
       "pickAction": "ファイルを選択",
       "pickActionMicrosoft": "OneDrive/SharePointを参照",
-      "pickedFile": "選択されたファイル: {{ fileName }}",
+      "pickedFile": "ファイルが選択されました: {{ filename }}。",
       "repickAction": "別のファイルを選択",
       "url": "URLを貼り付け"
+    },
+    "create": {
+      "failed": "ドキュメントを作成できませんでした"
+    },
+    "postCreate": {
+      "hint": "ファイルを共有したら、上の「アクセスを再確認」をクリックしてください。このダイアログを閉じて、後でドキュメントの編集ビューから再確認することもできます。"
     }
   },
   "documentSources": {
@@ -1017,7 +1058,8 @@
     "callback": {
       "error": "ソースを接続できませんでした。ソース: {{ source }}。理由: {{ reason }}",
       "linking": "アカウントをリンクしています...",
-      "success": "ソースが接続されました。ソース: {{ source }}"
+      "success": "ソースが接続されました。ソース: {{ source }}。",
+      "notConfigured": "{{ Source }}はこのサーバーで設定されていません。管理者に連絡してください。"
     },
     "columns": {
       "account": "アカウント",
@@ -1026,13 +1068,13 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "クラウドストレージアカウントをリンクして、Google Driveや今後利用可能になる他のサービスからドキュメントを添付できるようにします。",
-      "title": "ドキュメントソースが接続されていません"
+      "description": "クラウドストレージアカウントをリンクして、Google Driveなどのサービスからドキュメントを添付してください。",
+      "title": "ドキュメントソースが接続されていません。"
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "{{ relativeTime }}にリンク",
+    "linkedAt": "{{ relativetime }}にリンクされました。",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1058,7 +1100,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "選択された1つ以上の要素にメタデータエントリがあります。これらの要素を削除すると、メタデータが永久に削除されます。続行しますか?",
-      "title": "メタデータが失われます"
+      "title": "メタデータが失われます。"
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "図の説明を入力",
@@ -1067,14 +1109,14 @@
     "editDiagramName": "クリックして図の名前を編集",
     "editDisabledDuringCollaboration": "共同作業中は編集できません",
     "embedding": {
-      "cannotEmbedIntoTextBox": "テキストボックスに図形を埋め込むことはできません",
-      "circularEmbeddingPrevented": "循環的な埋め込みは許可されていません",
-      "securityBoundaryRestriction": "セキュリティ境界は他のセキュリティ境界にのみ埋め込むことができます"
+      "cannotEmbedIntoTextBox": "テキストボックスに図形を埋め込むことはできません。",
+      "circularEmbeddingPrevented": "循環埋め込みは許可されていません。",
+      "securityBoundaryRestriction": "セキュリティ境界は他のセキュリティ境界にのみ埋め込むことができます。"
     },
     "flowLabel": "フロー",
     "helpDialog": {
-      "panLabel": "Shiftキーを押しながらドラッグでパン",
-      "title": "ダイアグラムエディターヘルプ",
+      "panLabel": "Shiftキーを押しながらドラッグしてパン",
+      "title": "ダイアグラムエディターのヘルプ",
       "zoomLabel": "Shiftキーを押しながらマウスホイールでズーム"
     },
     "nodeLabels": {
@@ -1096,15 +1138,15 @@
         "addSecurityBoundary": "セキュリティ境界を追加",
         "addStore": "ストアを追加",
         "addTextbox": "テキストボックスを追加",
-        "deleteSelected": "選択項目を削除",
+        "deleteSelected": "選択を削除",
         "export": "エクスポート...",
-        "help": "ヘルプ",
+        "help": "ヘルプ...",
         "redo": "やり直し",
-        "showClipboard": "クリップボードを表示",
-        "showGraphData": "グラフデータを表示",
-        "showHistory": "履歴を表示",
+        "showClipboard": "クリップボードを表示...",
+        "showGraphData": "グラフデータを表示...",
+        "showHistory": "履歴を表示...",
         "undo": "元に戻す",
-        "zoomToFit": "全体を表示"
+        "zoomToFit": "フィットするようにズーム"
       }
     }
   },
@@ -1114,7 +1156,7 @@
   "footer": {
     "support": "サポート"
   },
-  "getStarted": "始める",
+  "getStarted": "はじめる",
   "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを効率化するツールです。レビューワークフローを推進し、重要な情報を整理し、チームが共同でデータフローダイアグラムを作成できるようにします。また、自動化と連携することで、手作業の負担を軽減し、セキュリティ上の脅威をより効率的に発見するのに役立ちます。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "intake": {
@@ -1128,7 +1170,7 @@
   },
   "login": {
     "chooseMethod": "サインイン方法を選択してください:",
-    "explanation": "信頼できるIDプロバイダーの既存アカウントでサインインします。これにより別途パスワードを設定する必要がなくなり、セキュリティを保ちながらスムーズにご利用いただけます。パスワードは保存・管理しません。認証情報はプロバイダーに保持され、当サービスを通じて漏洩することはありません。",
+    "explanation": "信頼できるIDプロバイダーの既存アカウントでサインインしてください。これにより別途パスワードが不要になり、安全を保ちながら操作を簡略化できます。パスワードの保存や管理は一切行いません — 資格情報はプロバイダーに留まり、こちら側で漏洩することはありません。",
     "loadingProviders": "認証プロバイダーを読み込み中...",
     "local": {
       "title": "ローカル開発サインイン"
@@ -1136,7 +1178,7 @@
     "loggingInWith": "{{provider}}でサインイン中...",
     "loginWith": "サインイン:",
     "noProvidersConfigured": "認証プロバイダーが設定されていません。",
-    "oauthFailed": "OAuth認証に失敗しました。もう一度お試しください。",
+    "oauthFailed": "OAuth認証に失敗しました。",
     "oauthProvidersTitle": "OAuthサインインプロバイダー",
     "samlProvidersTitle": "SAMLサインインプロバイダー",
     "sessionExpired": "セッションの有効期限が切れました。再度サインインしてください。",
@@ -1144,32 +1186,32 @@
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMIにサインイン",
     "tmiDialog": {
-      "errorMaxLength": "ユーザー名は最大20文字でなければなりません",
-      "errorMinLength": "ユーザー名は最低3文字でなければなりません",
-      "errorPattern": "ユーザー名には文字、数字、ピリオド、アンダースコア、パーセント記号、プラス記号、ハイフンのみ使用できます",
+      "errorMaxLength": "ユーザー名は最大20文字でなければなりません。",
+      "errorMinLength": "ユーザー名は最低3文字でなければなりません。",
+      "errorPattern": "ユーザー名は文字、数字、ピリオド、アンダースコア、パーセント記号、プラス記号、ハイフンのみ使用できます。",
       "signIn": "サインイン",
-      "title": "TMI Providerでサインイン",
+      "title": "TMIプロバイダーでサインイン",
       "usernameLabel": "ユーザー名",
       "usernamePlaceholder": "ユーザー名を入力（任意）"
     },
     "unexpectedError": "OAuth中に予期しないエラーが発生しました。"
   },
   "mermaidViewer": {
-    "exportFailed": "ダイアグラムのエクスポートに失敗しました",
+    "exportFailed": "ダイアグラムのエクスポートに失敗しました。",
     "fitToScreen": "画面に合わせる",
     "openInViewer": "ビューアーで開く",
     "resetZoom": "ズームをリセット",
-    "zoomIn": "拡大",
-    "zoomOut": "縮小"
+    "zoomIn": "ズームイン",
+    "zoomOut": "ズームアウト"
   },
   "navbar": {
     "admin": "管理",
-    "appTitle": "TMI: 脅威モデリング改善版",
-    "copyUserEmail": "ユーザーのメールアドレスをクリップボードにコピー",
+    "appTitle": "TMI: threat modeling improved。",
+    "copyUserEmail": "ユーザーメールをクリップボードにコピー",
     "dashboard": "ダッシュボード",
     "feedback": "バグ報告、機能リクエスト、フィードバックを送信",
     "feedbackMenu": {
-      "provideFeedback": "フィードバックを送信",
+      "provideFeedback": "フィードバックを提供",
       "reportBug": "バグを報告",
       "reportBugCopied": "アプリケーションログがクリップボードにコピーされました。GitHub issueに貼り付けてください。",
       "requestFeature": "機能をリクエスト"
@@ -1182,22 +1224,22 @@
       "logout": "サインアウト"
     },
     "serverStatus": {
-      "noServerConfigured": "サーバー未設定",
+      "noServerConfigured": "サーバーが設定されていません。",
       "serverConnected": "サーバー接続済み",
-      "serverDegraded": "サーバーが低下しています",
-      "serverError": "サーバー エラー",
-      "serverOffline": "サーバーがオフラインです"
+      "serverDegraded": "サーバー機能低下中",
+      "serverError": "サーバーエラー",
+      "serverOffline": "サーバーオフライン"
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} 文字",
+    "characterCount": "{{Current}} / {{max}}文字",
     "content": "内容",
-    "contentPlaceholder": "マークダウン形式でノートの内容を入力してください。GitHub Flavored MarkdownとMermaidダイアグラムに対応しています。",
+    "contentPlaceholder": "Markdown形式でノートを入力してください。GitHub Flavored MarkdownおよびMermaidダイアグラムをサポートしています",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "説明（任意）",
     "editMode": "編集モード",
     "errors": {
-      "clipboardAccessDenied": "クリップボードへのアクセスが拒否されました"
+      "clipboardAccessDenied": "クリップボードへのアクセスが拒否されました。"
     },
     "namePlaceholder": "ノート名を入力",
     "previewMode": "プレビューモード",
@@ -1217,9 +1259,9 @@
     },
     "deleteConfirmMessage": "ノート「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "deleteConfirmTitle": "ノートを削除",
-    "noNotes": "まだノートがありません",
-    "sharable": "すべてのメンバーに表示",
-    "sharableTooltip": "有効にすると、このノートはすべてのチーム/プロジェクトメンバーに表示されます。無効にすると、管理者とセキュリティレビュアーのみが表示できます。",
+    "noNotes": "ノートがまだありません。",
+    "sharable": "すべてのメンバーに公開されています。",
+    "sharableTooltip": "有効にすると、このノートはすべてのチーム/プロジェクトメンバーに公開されます。無効にすると、管理者とセキュリティレビュアーのみが閲覧できます",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "ノート ({{count}})"
   },
@@ -1227,35 +1269,35 @@
     "actions": {
       "login": "ログイン"
     },
-    "operationError": "{{operation}}に失敗しました: {{errorMessage}}",
+    "operationError": "{{operation}}に失敗しました: {{errormessage}}。",
     "operationFailed": "操作に失敗しました",
     "operations": {
       "collaboration": "コラボレーション",
-      "denyPresenterRequest": "プレゼンターリクエストの拒否",
-      "sendPresenterRequest": "プレゼンターリクエストの送信",
-      "startCollaboration": "コラボレーションの開始",
-      "updatePresenter": "プレゼンターの更新"
+      "denyPresenterRequest": "プレゼンターリクエストを拒否",
+      "sendPresenterRequest": "プレゼンターリクエストを送信。",
+      "startCollaboration": "コラボレーションを開始",
+      "updatePresenter": "プレゼンターを更新"
     },
     "presenter": {
-      "assigned": "{{user}}がプレゼンターになりました",
-      "assignedYou": "あなたがプレゼンターになりました",
-      "cleared": "プレゼンターモードが解除されました",
-      "cursorMoved": "プレゼンターのカーソルが移動しました",
-      "modeChanged": "プレゼンターモードが変更されました",
-      "privilegesRequested": "プレゼンター権限がリクエストされました",
-      "removed": "{{user}}はプレゼンターではなくなりました",
-      "removedYou": "あなたはプレゼンターではなくなりました",
-      "requestDenied": "プレゼンターリクエストが拒否されました",
-      "requestSent": "プレゼンターリクエストをセッションオーナーに送信しました",
-      "requesting": "{{user}}がプレゼンター権限をリクエストしています",
-      "selectionChanged": "プレゼンターの選択が変更されました"
+      "assigned": "{{User}}がプレゼンターになりました。",
+      "assignedYou": "あなたがプレゼンターになりました。",
+      "cleared": "プレゼンターモードがクリアされました。",
+      "cursorMoved": "プレゼンターのカーソルが移動しました。",
+      "modeChanged": "プレゼンターモードが変更されました。",
+      "privilegesRequested": "プレゼンター権限がリクエストされました。",
+      "removed": "{{User}}はプレゼンターではなくなりました。",
+      "removedYou": "あなたはプレゼンターではなくなりました。",
+      "requestDenied": "プレゼンターリクエストが拒否されました。",
+      "requestSent": "プレゼンターリクエストがセッションオーナーに送信されました。",
+      "requesting": "{{User}}がプレゼンター権限をリクエストしています。",
+      "selectionChanged": "プレゼンターの選択が変更されました。"
     },
     "session": {
-      "disconnected": "コラボレーションセッションから切断されました",
-      "reconnected": "コラボレーションセッションに再接続しました",
+      "disconnected": "コラボレーションセッションから切断されました。",
+      "reconnected": "コラボレーションセッションに再接続しました。",
       "reconnecting": "コラボレーションセッションに再接続中...",
-      "userRemoved": "{{user}}がセッションから削除されました",
-      "youWereRemoved": "コラボレーションセッションから削除されました"
+      "userRemoved": "{{User}}がセッションから削除されました。",
+      "youWereRemoved": "コラボレーションセッションから削除されました。"
     },
     "unknownError": "不明なエラー",
     "websocket": {
@@ -1267,63 +1309,63 @@
       "disconnected": "コラボレーションサーバーから切断されました。変更はローカルに保存されます。",
       "messageSendFailed": "メッセージの送信に失敗しました。変更が同期されない場合があります。",
       "multipleFailed": "複数回の試行後に接続に失敗しました。オフラインモードで動作しています。",
-      "unknownError": "不明なWebSocketエラーが発生しました"
+      "unknownError": "不明なWebsocketエラーが発生しました。"
     }
   },
   "pagination": {
-    "ariaLabel": "アイテムのページを選択",
+    "ariaLabel": "アイテムのページを選択してください。",
     "firstPage": "最初のページ",
-    "itemsPerPage": "ページあたりのアイテム数",
+    "itemsPerPage": "ページあたりのアイテム数。",
     "lastPage": "最後のページ",
     "nextPage": "次のページ",
     "previousPage": "前のページ",
     "rangeEmpty": "{{length}} 件中 0 件",
-    "rangeLabel": "{{length}} 件中 {{startIndex}} - {{endIndex}} 件"
+    "rangeLabel": "{{Startindex}} - {{endindex}} / {{length}}"
   },
   "presenter": {
     "startPresenting": "プレゼンテーションを開始",
-    "stopPresenting": "プレゼンテーションを終了"
+    "stopPresenting": "プレゼンテーションを停止"
   },
   "privacy": {
-    "changesContent": "このプライバシーポリシーは随時更新される場合があります。変更があった場合は、「最終更新日」を更新してこのページに掲載します。",
-    "changesTitle": "本ポリシーの変更",
-    "complianceContent": "法律により義務付けられた場合（有効な政府命令や召喚状への対応など）にのみ情報を開示します。そのような場合、運営者は適用される法的義務に従います。",
-    "complianceTitle": "法令遵守",
+    "changesContent": "本プライバシーポリシーは随時更新される場合があります。変更があった場合は、「最終更新日」を更新してこのページに掲載されます。",
+    "changesTitle": "ポリシーの変更",
+    "complianceContent": "法律で要求される場合（有効な政府命令や召喚状への対応など）にのみ情報を開示します。そのような場合、運営者は適用される法的義務を遵守します。",
+    "complianceTitle": "法的遵守",
     "contactContent": {
-      "part1": "このプライバシーポリシーについてご質問がある場合は、",
-      "part2": "ページの連絡先情報から運営者にお問い合わせください。"
+      "part1": "本プライバシーポリシーについてご質問がある場合は、",
+      "part2": "ページの連絡先情報からウェブサイトの運営者にお気軽にお問い合わせください。"
     },
     "contactTitle": "お問い合わせ",
-    "dataSecurityContent1": "運営者は、転送中および保存中の暗号化、安全な認証プロトコル、定期的なセキュリティ更新など、業界標準のセキュリティ対策を実施して個人データを保護しています。情報へのアクセスは、必要な権限を持つ担当者に限定されています。",
-    "dataSecurityContent2": "いかなるシステムも完全にリスクから免れることはできませんが、運営者は継続的にセーフガードを監視・更新し、脅威を軽減してデータの機密性、完全性、可用性を確保しています。",
+    "dataSecurityContent1": "運営者は、転送中および保管中の暗号化、安全な認証プロトコル、定期的なセキュリティアップデートなど、業界標準のセキュリティ対策を実施して個人データを保護しています。お客様の情報へのアクセスは、必要最小限の原則に基づいて権限のある担当者のみに制限されています。",
+    "dataSecurityContent2": "完全にリスクを排除できるシステムは存在しませんが、運営者は脅威を軽減し、データの機密性・完全性・可用性を確保するためのセーフガードを継続的に監視・更新しています。",
     "dataSecurityTitle": "データセキュリティ",
-    "dataSharingContent1": "運営者は、以下の限られた状況を除き、個人情報を第三者と共有しません:",
-    "dataSharingContent2": "これらの例外を除き、運営者はマーケティング、広告、その他の目的でデータを販売、貸与、または他の事業体と共有することはありません。",
-    "dataSharingList1": "サービスプロバイダー: アプリケーションの運用と保守のためにのみ、データは安全なサードパーティのクラウドインフラストラクチャ（AWS、Google Cloudなど）に保存・処理される場合があります。これらのプロバイダーはデータを保護し、運営者が指定した目的にのみ使用する契約義務を負っています。",
-    "dataSharingList2": "拡張機能: このアプリケーションは、選択された情報をサードパーティのサービスに渡して処理することで機能を拡張するオプションの拡張機能（websocketsやaddonsなど）をサポートしています。データは、このような送信を必要とする機能を積極的に使用した場合にのみこれらのサービスと共有され、要求された機能に必要な特定の情報のみが送信されます。",
-    "dataSharingList2a": "AI処理機能: 大規模言語モデル（LLMs）または同様のAIサービスを活用した機能を積極的にリクエストした場合、選択されたデータが処理と応答生成のためにサードパーティのAIプロバイダー（OpenAI、Anthropic、または同等のサービスなど）に送信されることがあります。要求された機能に必要な特定の情報のみが共有され、そのような共有はお客様の指示に基づいてのみ行われます。これらのプロバイダーは、該当する場合はデータ処理契約を含む契約上の義務により、リクエストされたサービスの提供のみにデータを使用し、保持、トレーニング、その他の使用に関する制限が課されています。",
-    "dataSharingList3": "法的遵守：オペレータは、有効な裁判所命令、召喚状、または政府の要求に応じるなど、法律で要求された場合、情報を開示することができます。",
-    "dataSharingTitle": "データ共有",
-    "informationCollectionContent1": "ユーザーがソーシャルログイン（Sign in with Google、Login with GitHub、Microsoft Entra External IDなどのOAuthまたはOpenID Connectプロバイダー）で認証する際、アプリケーションは認証を促進しパーソナライズされたサービスを提供するためにのみ、選択されたプロバイダーから以下の情報を収集します:",
-    "informationCollectionContent2": "明示的なユーザーの同意なしに追加の個人データを収集することはありません。運営者は、認証に必要な範囲を超えて、パスワード、連絡先、その他のプロバイダー固有のデータなどの機密情報にアクセスしたり保存したりしません。収集されたすべての情報は、各プロバイダーのAPIポリシーおよび運営者のユーザープライバシーへのコミットメントに従って取り扱われます。",
-    "informationCollectionContent3": "このアプリケーションは、システムの信頼性、セキュリティ、およびパフォーマンスを確保するための運用ログを生成します。これらのログには、ログインイベント、機能の使用状況、エラーレポートなど、アプリケーション内のユーザーアクティビティの記録が含まれることがあります。オペレータはログを、トラブルシューティング、セキュリティ監視、サービス改善を含む運用目的を達成するために必要な期間のみ保持します。ログは安全に保存され、運用上の必要性を超えた目的には使用されません。",
-    "informationCollectionList1": "基本プロフィール情報: 氏名、メールアドレス、プロフィール写真（提供されている場合）。",
+    "dataSharingContent1": "運営者は、以下の限定的な場合を除き、お客様の個人情報を第三者と共有しません。",
+    "dataSharingContent2": "これらの例外を除き、運営者はマーケティング、広告、その他の目的でお客様のデータを他のいかなる組織にも販売、賃貸、共有しません。",
+    "dataSharingList1": "サービスプロバイダー: お客様のデータは、アプリケーションの運用・維持を目的として、安全なサードパーティのクラウドインフラ（AWSやGoogle Cloudなど）に保存・処理される場合があります。これらのプロバイダーは、お客様のデータを保護し、運営者が指定した目的にのみ使用することを契約上義務付けられています。",
+    "dataSharingList2": "拡張機能: アプリケーションはオプションの拡張機能（WebsocketやアドオンなどのSSEを含む）をサポートしており、選択した情報を処理のためにサードパーティサービスに渡すことで機能を拡張する場合があります。データは、その送信を必要とする機能を積極的に使用する場合にのみ、リクエストされた機能に必要な特定の情報のみが共有されます。",
+    "dataSharingList2a": "AI処理機能: 大規模言語モデル（LLM）または類似のAIサービスを利用した機能を積極的にリクエストする場合、選択したデータが処理と回答生成のためにサードパーティのAIプロバイダー（OpenAI、Anthropicまたは同等のサービス）に送信される場合があります。共有されるのはリクエストされた機能に必要な特定の情報のみであり、共有はお客様の指示に基づいてのみ行われます。これらのプロバイダーは、保持・学習・その他の用途への制限を含むデータ処理契約などの契約上の義務により、リクエストされたサービスの提供にのみデータを使用することが義務付けられています。",
+    "dataSharingList3": "法的遵守: 運営者は、有効な裁判所命令、召喚状、または政府の要請への対応など、法律で要求される場合に情報を開示する場合があります。",
+    "dataSharingTitle": "データの共有",
+    "informationCollectionContent1": "ユーザーがソーシャルログイン（Googleサインイン、GitHubログイン、Microsoft Entra External IDなどのOAuthまたはOpenID Connectプロバイダーを使用）を通じて認証する場合、アプリケーションは認証を促進しパーソナライズされたサービスを提供する目的のみで、選択したプロバイダーから以下の情報を収集します。",
+    "informationCollectionContent2": "明示的なユーザーの同意なしに追加の個人データは収集されません。運営者は、認証に必要な範囲を超えてパスワード、連絡先、その他のプロバイダー固有のデータなどの機密情報にアクセスまたは保存しません。収集されたすべての情報は、各プロバイダーのAPIポリシーおよびユーザープライバシーに対する運営者の取り組みに従って取り扱われます。",
+    "informationCollectionContent3": "アプリケーションは、システムの信頼性、セキュリティ、パフォーマンスを確保するために運用ログを生成します。これらのログには、ログインイベント、機能の使用状況、エラーレポートなど、アプリケーション内のユーザーアクティビティの記録が含まれる場合があります。運営者は、トラブルシューティング、セキュリティ監視、サービス改善などの運用目的を果たすために必要な期間のみログを保持します。ログは安全に保存され、運用上の必要性を超えた目的には使用されません。",
+    "informationCollectionList1": "基本プロフィール情報: 氏名、メールアドレス、プロフィール画像（提供・利用可能な場合）。",
     "informationCollectionList2": "一意の識別子: アカウントセッションを安全に管理するためのプロバイダー固有のユーザーID。",
     "informationCollectionTitle": "情報の収集と利用",
     "intro1": {
       "part1": "このウェブサイトは、",
-      "part2": "ページに記載されている運営者（以下「運営者」）により提供されるオープンソースウェブアプリケーション（「TMI」）のインスタンスです。"
+      "part2": "このウェブサイトの「運営元」ページに記載された運営者が提供するオープンソースウェブアプリケーション「TMI」のインスタンスです（以下「運営者」）。"
     },
-    "intro2": "運営者はお客様のプライバシー保護に取り組んでいます。このプライバシーポリシーでは、お客様の情報がどのように取り扱われるかを説明します。",
+    "intro2": "運営者はお客様のプライバシー保護に取り組んでいます。本プライバシーポリシーでは、お客様の情報の取り扱い方法について説明します。",
     "introductionTitle": "はじめに",
     "lastUpdatedDate": "2026-01-17",
     "title": "プライバシーポリシー",
-    "userRightsContent1": "お客様は個人データを完全に管理できます。いつでもアプリケーションのユーザー設定セクションにある「すべてのデータを削除」機能にアクセスできます。",
-    "userRightsContent2": "このオプションを使用すると、運営者がお客様に代わって保存しているすべてのデータ（プロフィール情報や認証記録を含む）を即座に削除できます。有効化すると、法的保持義務に従い、お客様のデータは運営者のシステムおよびサードパーティプロバイダーから永久に削除されます。",
+    "userRightsContent1": "お客様は個人データを完全に管理できます。アプリケーションのユーザー設定セクションにある「全データを削除」機能はいつでも使用できます。",
+    "userRightsContent2": "このオプションにより、プロフィール情報や認証記録を含む運営者がお客様に代わって保存するすべてのデータを即座に削除できます。有効化すると、法的な保持義務の対象を除き、お客様のデータは運営者のシステムおよびサードパーティプロバイダーから永久に削除されます。",
     "userRightsTitle": "ユーザーの権利"
   },
   "projects": {
-    "addButton": "プロジェクトを追加",
+    "addButton": "プロジェクトを追加...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1334,13 +1376,13 @@
     "createDialog": {
       "descriptionPlaceholder": "プロジェクトの説明を入力",
       "namePlaceholder": "プロジェクト名を入力",
-      "nameRequired": "プロジェクト名は必須です",
-      "statusPlaceholder": "例: active, planning, archived",
-      "teamRequired": "チームは必須です",
+      "nameRequired": "プロジェクト名は必須です。",
+      "statusPlaceholder": "例: active、planning、archived",
+      "teamRequired": "チームは必須です。",
       "title": "プロジェクトを作成",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
-    "createNew": "新しいプロジェクトを作成",
+    "createNew": "新規プロジェクトを作成",
     "deleteDialog": {
       "message": "プロジェクト \"{{name}}\" を削除してもよろしいですか?"
     },
@@ -1349,7 +1391,7 @@
       "save": "{{common.save}}",
       "title": "プロジェクトを編集"
     },
-    "filterLabel": "名前でフィルタリング",
+    "filterLabel": "名前で絞り込む",
     "filterNameLabel": "{{projects.filterLabel}}",
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
@@ -1360,15 +1402,15 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "プロジェクトが見つかりません",
+    "noProjects": "プロジェクトが見つかりません。",
     "picker": {
       "label": "{{common.project}}",
       "none": "プロジェクトなし"
     },
     "relatedProjectsDialog": {
-      "addRelated": "関連プロジェクトを追加",
+      "addRelated": "関連プロジェクトを追加する。",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "関連プロジェクトがありません",
+      "noRelated": "関連プロジェクトはありません。",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "プロジェクトを選択",
       "title": "関連プロジェクト"
@@ -1388,27 +1430,27 @@
       "planning": "計画中"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "ステータスでフィルタリング",
-    "subtitle": "プロジェクト、関連性、メタデータを作成、編集、管理します",
-    "teamFilterLabel": "チームでフィルタリング",
-    "title": "プロジェクト管理"
+    "statusFilterLabel": "ステータスで絞り込む。",
+    "subtitle": "プロジェクト、関係、メタデータを作成・編集・管理します。",
+    "teamFilterLabel": "チームで絞り込む",
+    "title": "プロジェクトの管理"
   },
   "report": {
     "cvss": "CVSS",
-    "cweIds": "CWE IDs",
+    "cweIds": "CWE ID",
     "diagramImageUnavailable": "ダイアグラム画像が利用できません",
-    "diagramRenderFailed": "ダイアグラムをレンダリングできませんでした",
-    "generatedAt": "レポート生成日時",
-    "linkedAsset": "リンク済みアセット",
-    "linkedDiagram": "リンク済みダイアグラム",
+    "diagramRenderFailed": "ダイアグラムをレンダリングできませんでした。",
+    "generatedAt": "レポート生成日時。",
+    "linkedAsset": "リンクされたアセット",
+    "linkedDiagram": "リンクされたダイアグラム",
     "pageOf": "ページ {{current}} / {{total}}",
     "refLabel": "参照",
-    "summaryCreatedAt": "脅威モデル作成日時",
-    "summaryCreatedBy": "脅威モデル作成者",
+    "summaryCreatedAt": "脅威モデル作成日時。",
+    "summaryCreatedBy": "脅威モデル作成者。",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "脅威モデル最終更新",
+    "summaryLastModified": "脅威モデル最終更新日時。",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "脅威モデルのステータス"
+    "summaryStatus": "脅威モデルのステータス。"
   },
   "sessionExpiry": {
     "extendButton": "セッションを延長",
@@ -1416,10 +1458,10 @@
     "logoutButton": "今すぐサインアウト",
     "message": "セッションがまもなく期限切れになります。セッションを延長するか、今すぐサインアウトしますか？",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} 秒"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}}秒"
     },
-    "title": "セッションがまもなく期限切れになります"
+    "title": "セッションまもなく期限切れ"
   },
   "ssvcCalculator": {
     "apply": "{{cvssCalculator.apply}}",
@@ -1442,18 +1484,18 @@
       "description": "この脆弱性の悪用の現在の状態は何ですか？",
       "name": "悪用",
       "none": "{{common.none}}",
-      "noneDesc": "積極的な悪用の証拠がなく、公開されたPoC（概念実証）もありません。",
-      "poc": "公開 PoC",
+      "noneDesc": "アクティブな悪用の証拠なし、公開された概念実証なし",
+      "poc": "公開PoC",
       "pocDesc": "典型的な公開概念実証が存在します（例：MetasploitまたはExploitDB）、または周知の悪用方法が文書化されています。"
     },
     "methodology": "サプライヤー",
     "next": "次へ",
-    "openCalculator": "SSVCを追加",
+    "openCalculator": "SSVCを追加...",
     "publicSafetyImpact": {
       "description": "この脆弱性の悪用は公安に対するリスクをもたらしますか？",
       "minimal": "最小限",
       "minimalDesc": "安全への影響は無視できます。人員または重要なインフラストラクチャへの害は予想されません。",
-      "name": "公安への影響",
+      "name": "公共安全への影響",
       "significant": "重大",
       "significantDesc": "安全への影響は限定的、重大、または壊滅的です。人員への潜在的害または重要なサービスの中断。"
     },
@@ -1467,7 +1509,7 @@
       "total": "完全",
       "totalDesc": "ソフトウェアの動作を完全に制御するか、システム上のすべての情報を完全に開示します。"
     },
-    "title": "SSVCカルキュレーター",
+    "title": "SSVC計算機",
     "utility": {
       "description": "典型的な攻撃者にとってこの脆弱性の悪用はどの程度有用ですか？",
       "efficient": "効率的",
@@ -1475,7 +1517,7 @@
       "laborious": "労力がかかる",
       "laboriousDesc": "悪用を自動化できず、対象が拡散している - 攻撃あたりの低い収益率での手動の努力。",
       "name": "ユーティリティ",
-      "superEffective": "スーパー効果的",
+      "superEffective": "超効果的",
       "superEffectiveDesc": "悪用は自動化可能で、ターゲットが集中している — 高価値システムの自動化された悪用。"
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
@@ -1486,63 +1528,63 @@
       "saved": "保存済み",
       "saving": "保存中..."
     },
-    "browse": "調査を閲覧",
+    "browse": "アンケートを閲覧",
     "confidentialDialog": {
-      "description": "この送信を機密としてマークしますか？機密送信はセキュリティレビュアーグループと自動的には共有されません。この設定は回答作成後に変更することはできません。",
+      "description": "この提出を機密としてマークしますか？機密の提出はセキュリティレビュアーグループと自動的に共有されません。この設定は回答が作成された後に変更できません。",
       "no": "いいえ",
-      "title": "機密送信",
+      "title": "機密提出",
       "yes": "はい、機密としてマークする"
     },
     "confirmation": {
-      "backToSurveys": "調査に戻る",
+      "backToSurveys": "アンケートに戻る。",
       "message": "調査が正常に送信されました。",
-      "title": "調査を送信しました",
-      "viewResponses": "自分の回答を表示"
+      "title": "アンケートが送信されました",
+      "viewResponses": "回答を表示する。"
     },
     "continueDraft": "下書きを続ける",
     "fill": {
       "submitConfirm": "送信してもよろしいですか？送信後は回答を編集できなくなります。",
-      "title": "調査に回答"
+      "title": "アンケートに回答"
     },
     "list": {
       "deleteDraft": "下書きを削除",
-      "draftStarted": "下書き開始 {{time}}",
-      "errorLoadingSurveys": "アンケートの読み込みに失敗しました",
-      "lastModified": "最終更新 {{time}}",
+      "draftStarted": "下書き開始: {{time}}。",
+      "errorLoadingSurveys": "アンケートの読み込みに失敗しました。",
+      "lastModified": "最終更新: {{time}}。",
       "loadingSurveys": "アンケートを読み込み中...",
       "noSurveysMessage": "現在アクティブなアンケートはありません。後でもう一度確認してください。",
       "noSurveysTitle": "利用可能なアンケートはありません",
       "pageDescription": "以下のリストから適切なレビュータイプを選択し、提示された質問に回答してセキュリティレビューチームがレビューを実施するために必要な情報を提供してください。",
       "pageTitle": "セキュリティレビューをリクエスト",
       "updated": "更新済み",
-      "yourDrafts": "下書き"
+      "yourDrafts": "あなたの下書き"
     },
-    "myResponses": "自分の回答",
-    "noMatchingResponses": "一致する回答がありません",
+    "myResponses": "私の回答",
+    "noMatchingResponses": "一致する回答はありません",
     "noMatchingResponsesMessage": "選択されたフィルタに一致する回答がありません。",
-    "noResponses": "まだ調査回答を送信していません",
-    "noSurveys": "利用可能な調査がありません",
+    "noResponses": "まだアンケート回答を提出していません。",
+    "noSurveys": "利用可能なアンケートはありません。",
     "responses": {
       "continueEditing": "編集を続ける",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "まだアンケートに回答していません。アンケートページから開始してください。",
-      "noResponsesTitle": "回答がありません",
-      "pageTitle": "自分のアンケート回答",
-      "responseCount": "{{count}}件の回答",
-      "responseCountPlural": "{{count}}件の回答"
+      "noResponsesTitle": "回答がまだありません",
+      "pageTitle": "私のアンケート回答",
+      "responseCount": "{{Count}}件の回答",
+      "responseCountPlural": "{{Count}}件の回答"
     },
     "saveDraft": "下書きを保存",
-    "startNew": "調査を開始",
+    "startNew": "アンケートを開始...",
     "status": {
       "draft": "下書き",
-      "needsRevision": "要修正",
-      "readyForReview": "レビュー待ち",
+      "needsRevision": "修正が必要",
+      "readyForReview": "レビュー準備完了",
       "reviewCreated": "レビュー作成済み",
       "submitted": "{{triage.list.submitted}}"
     },
-    "submitSurvey": "調査を送信",
+    "submitSurvey": "アンケートを送信",
     "templateStatus": {
       "active": "{{common.active}}",
       "archived": "{{teams.status.archived}}",
@@ -1552,7 +1594,7 @@
     "viewResponse": "回答を表示"
   },
   "teams": {
-    "addButton": "チームを追加",
+    "addButton": "チームを追加...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "更新日時",
@@ -1565,12 +1607,12 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "チーム名を入力",
-      "nameRequired": "チーム名は必須です",
-      "statusPlaceholder": "例: active, archived",
+      "nameRequired": "チーム名は必須です。",
+      "statusPlaceholder": "例: active、archived。",
       "title": "チームを作成",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
-    "createNew": "新しいチームを作成",
+    "createNew": "新規チームを作成",
     "deleteDialog": {
       "confirm": "{{common.delete}}",
       "message": "チーム「{{name}}」を削除してもよろしいですか？",
@@ -1582,10 +1624,10 @@
       "save": "{{common.save}}",
       "title": "チームを編集"
     },
-    "filterLabel": "チームをフィルター",
+    "filterLabel": "チームを絞り込む",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "メンバー",
+      "members": "メンバー...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1599,13 +1641,13 @@
       "role": "ロール",
       "title": "チームメンバー"
     },
-    "noTeams": "チームが見つかりません",
+    "noTeams": "チームが見つかりません。",
     "relatedTeamsDialog": {
-      "addRelated": "関連チームを追加",
+      "addRelated": "関連チームを追加する。",
       "customRelationship": "カスタム関係",
-      "noRelated": "関連チームなし",
+      "noRelated": "関連チームはありません。",
       "relationship": "関係",
-      "removeRelated": "関連チームを削除",
+      "removeRelated": "関連チームを削除する。",
       "selectTeam": "チームを選択",
       "title": "関連チーム"
     },
@@ -1616,19 +1658,19 @@
       "other": "{{common.other}}",
       "parent": "親",
       "related": "関連",
-      "superseded_by": "置き換え元",
+      "superseded_by": "後継:",
       "supersedes": "置き換え"
     },
     "responsiblePartiesDialog": {
-      "addParty": "責任者を追加",
-      "noParties": "責任者なし",
-      "removeParty": "責任者を削除",
-      "title": "責任者"
+      "addParty": "担当者を追加",
+      "noParties": "担当者はいません。",
+      "removeParty": "担当者を削除",
+      "title": "担当者"
     },
     "roles": {
       "business_leader": "ビジネスリーダー",
       "engineer": "エンジニア",
-      "engineering_lead": "エンジニアリングリーダー",
+      "engineering_lead": "エンジニアリングリード",
       "other": "{{common.other}}",
       "product_manager": "プロダクトマネージャー",
       "security_specialist": "セキュリティスペシャリスト"
@@ -1640,13 +1682,13 @@
       "merging": "マージ中",
       "on_hold": "保留中",
       "splitting": "分割中",
-      "winding_down": "終了中"
+      "winding_down": "縮小中"
     },
-    "subtitle": "チーム、メンバー、および関係を作成、編集、管理します",
-    "title": "チームを管理"
+    "subtitle": "チーム、メンバー、関係を作成・編集・管理します。",
+    "title": "チームの管理"
   },
   "threatEditor": {
-    "addMapping": "マッピングを追加",
+    "addMapping": "マッピングを追加...",
     "createNewThreat": "新しい脅威を作成",
     "cvssVectorPlaceholder": "例: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE IDを入力（例: CWE-79）",
@@ -1655,16 +1697,16 @@
       "notApplicable": "現在のセルタイプには適用されません",
       "title": "フレームワークマッピングを選択"
     },
-    "frameworkMappings": "脅威モデルフレームワークマッピング",
+    "frameworkMappings": "脅威モデルフレームワークマッピング。",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "アセットに関連付けられていません",
-    "notAssociatedWithCell": "セルに関連付けられていません",
-    "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません",
+    "notAssociatedWithAsset": "アセットに関連付けられていません。",
+    "notAssociatedWithCell": "セルに関連付けられていません。",
+    "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません。",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
-      "diagramReferences": "図参照",
+      "diagramReferences": "ダイアグラム参照",
       "mitigation": "{{common.mitigation}}",
       "tracking": "追跡"
     },
@@ -1678,7 +1720,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "延期済み（p4）",
+      "high": "高（p1）",
+      "immediate": "即時（p0）",
+      "low": "低（p3）",
+      "medium": "中（p2）"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1692,7 +1739,9 @@
       "critical.description": "悪用可能な脆弱性がシステム全体の侵害、データ漏洩、または安全性への影響を可能にする。即時対応が必要。",
       "high": "高",
       "high.description": "重大な影響または高い可能性。主要な不正アクセス、権限昇格、またはサービス中断を可能にする。",
-      "informational": "情報提供",
+      "informational": {
+        "description": "直接的な悪用可能性なし; 推奨事項、ベストプラクティスからの逸脱、または設定改善"
+      },
       "informational.description": "直接的な悪用可能性なし。推奨事項、ベストプラクティスからの逸脱、または構成の改善。",
       "low": "低",
       "low.description": "最小限の影響または低い可能性。ビジネスへの影響は無視でき、特定の条件またはユーザーの操作が必要。",
@@ -1721,33 +1770,39 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "偽陽性",
+      "mitigation_in_progress": "緩和策を実施中。",
+      "mitigation_planned": "緩和策を計画済み",
+      "verification_pending": "検証保留中"
+    },
+    "addCvssEntry": "CVSSエントリを追加する。",
+    "cvssVector": "CVSSベクター"
   },
   "threatModels": {
     "addPermission": "権限を追加",
     "branch": "ブランチ",
-    "changeSecurityReviewer": "セキュリティレビュアーを変更",
+    "changeSecurityReviewer": "セキュリティレビュアーを変更...",
     "clearSecurityReviewer": "セキュリティレビュアーをクリア",
     "commit": "コミット",
     "confidentialProject": "機密プロジェクト",
-    "createFirstButton": "最初の脅威モデルを作成",
+    "createFirstButton": "最初の脅威モデルを作成する...",
     "createNewDiagram": "新しいダイアグラムを作成",
-    "createNewRepository": "リポジトリ参照を追加",
+    "createNewRepository": "リポジトリ参照を追加...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "データフローダイアグラム",
-    "deleteError": "脅威モデルの削除に失敗しました: {{error}}",
-    "deleteSuccess": "脅威モデルが削除されました: {{name}}",
+    "deleteError": "脅威モデルの削除に失敗しました: {{error}}。",
+    "deleteSuccess": "脅威モデルが削除されました: {{name}}。",
     "deleteWarningPermanent": "この操作は元に戻すことができず、関連するすべてのダイアグラム、脅威、メタデータが永久に削除されます。",
-    "descriptionPlaceholder": "この脅威モデルの目的と範囲を記述してください",
+    "descriptionPlaceholder": "この脅威モデルの目的と範囲を説明してください",
     "details": "脅威モデルの詳細",
     "diagramName": "ダイアグラム名",
     "diagramPreview": "ダイアグラムプレビュー",
     "diagramType": "ダイアグラムタイプ",
     "diagrams": "{{common.objectTypes.diagrams}}",
-    "documentDescriptionPlaceholder": "ドキュメントの目的または内容を記述してください",
+    "documentDescriptionPlaceholder": "ドキュメントの目的または内容を説明してください",
     "documentEditor": {
       "title": {
         "create": "ドキュメント参照を作成",
@@ -1759,38 +1814,38 @@
     "documentUrl": "ドキュメントURL",
     "export": "エクスポート",
     "exportDialog": {
-      "error": "エクスポートデータの準備に失敗しました。もう一度お試しください。",
+      "error": "エクスポートデータの準備に失敗しました。",
       "preparing": "エクスポートデータを準備しています...",
-      "ready": "エクスポートの準備ができました。保存をクリックしてダウンロードしてください。",
+      "ready": "エクスポート準備完了。保存をクリックしてダウンロードしてください。",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "脅威モデルをエクスポート"
     },
-    "fileSizeExceeded": "ファイルが最大インポートサイズを超えています: {{maxSize}} MB",
+    "fileSizeExceeded": "ファイルが最大インポートサイズを超えています: {{maxsize}} MB。",
     "frameworkDisabledHint": "脅威が存在する場合はフレームワークを変更できません",
     "idLabel": "{{common.id}}",
-    "importError": "脅威モデルのインポートに失敗しました: {{error}}",
-    "importFormatError": "無効な脅威モデル形式: 必須フィールド（id、name）が不足しています",
-    "importSuccess": "脅威モデルが正常にインポートされました: {{name}}",
-    "importValidationError": "脅威モデルの検証に失敗しました: {{errors}}",
+    "importError": "脅威モデルのインポートに失敗しました: {{error}}。",
+    "importFormatError": "無効な脅威モデル形式: 必須フィールド（ID、名前）がありません。",
+    "importSuccess": "脅威モデルが正常にインポートされました: {{name}}。",
+    "importValidationError": "脅威モデルのバリデーションに失敗しました: {{errors}}。",
     "importing": "脅威モデルをインポート中...",
     "issueUriHint": "外部システムでこの脅威モデルを追跡するためのURLを入力してください",
     "newThreatModel": "新しい脅威モデル",
-    "noAssets": "まだアセットが追加されていません",
-    "noDiagrams": "まだダイアグラムが追加されていません",
-    "noDocuments": "まだドキュメントが追加されていません",
-    "noItemsMessage": "まだ脅威モデルがありません。",
-    "noNotes": "まだノートが追加されていません",
-    "noPermissions": "権限が定義されていません",
-    "noRepositories": "まだリポジトリが追加されていません",
-    "noThreats": "まだ脅威が追加されていません",
+    "noAssets": "アセットがまだ追加されていません。",
+    "noDiagrams": "ダイアグラムがまだ追加されていません。",
+    "noDocuments": "ドキュメントがまだ追加されていません。",
+    "noItemsMessage": "脅威モデルがまだありません。",
+    "noNotes": "ノートがまだ追加されていません。",
+    "noPermissions": "権限が定義されていません。",
+    "noRepositories": "リポジトリがまだ追加されていません。",
+    "noThreats": "脅威がまだ追加されていません。",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "権限を管理",
     "rename": "名前を変更",
-    "renameDiagram": "ダイアグラム名を変更",
+    "renameDiagram": "ダイアグラムの名前を変更",
     "repositoryDescriptionPlaceholder": "リポジトリまたはその目的を記述してください",
     "repositoryEditor": {
       "title": {
@@ -1811,13 +1866,13 @@
     "sections": {
       "audit": "監査",
       "inputs": "入力",
-      "inputsDescription": "分析対象のシステムを説明するアセット、ドキュメント、およびソースコードリポジトリ",
+      "inputsDescription": "分析対象システムを説明するアセット、ドキュメント、ソースコードリポジトリ。",
       "outputs": "出力",
-      "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威",
+      "outputsDescription": "セキュリティ分析中に作成されたノート、ダイアグラム、脅威。",
       "reviewProcess": "レビュープロセス"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "setAsOwner": "オーナーに設定",
+    "setAsOwner": "オーナーとして設定",
     "sourcesCount": "リポジトリ",
     "status": {
       "0": "Not Started",
@@ -1839,38 +1894,44 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "進行中",
+      "not_started": "未着手",
+      "pending_review": "レビュー保留中",
+      "remediation_in_progress": "修正対応中。",
+      "remediation_required": "修正が必要",
+      "verification_pending": "検証保留中"
     },
-    "statusLastUpdated": "ステータス最終更新",
+    "statusLastUpdated": "ステータス最終更新日時。",
     "tag": "タグ",
     "threatModelFramework": "脅威モデルフレームワーク",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "アセットを追加",
-      "addDiagram": "ダイアグラムを追加",
-      "addDocument": "ドキュメントを追加",
+      "addAsset": "アセットを追加...",
+      "addDiagram": "ダイアグラムを追加...",
+      "addDocument": "ドキュメントを追加...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "アセットとは、データ、ハードウェア、ソフトウェア、インフラストラクチャ、サービス、人員など、保護が必要なシステム内の価値あるリソースです。",
-      "diagramsCardTitle": "TMIのダイアグラムは、システム内のデータの移動とプロセスを機械可読形式で表現したもので、手動および自動のセキュリティ分析を可能にします。",
-      "documentsCardTitle": "ドキュメント参照は、TMI外に保存されているドキュメントへのリンクです。関連ドキュメントは分析対象のシステムを記述し、セキュリティアナリストと自動分析プロセスの両方で使用できます。",
+      "assetsCardTitle": "アセットとは、データ、ハードウェア、ソフトウェア、インフラ、サービス、人員などの保護が必要なシステム内の重要なリソースです",
+      "diagramsCardTitle": "TMIにおけるダイアグラムは、システム内のデータの動きとプロセスを機械可読な形式で表現したものであり、手動および自動のセキュリティ分析を可能にします",
+      "documentsCardTitle": "ドキュメント参照はTMI外に保存されたドキュメントへのリンクです。関連ドキュメントは分析対象システムを説明するもので、セキュリティアナリストと自動分析プロセスの両方が使用できます",
       "downloadModel": "モデルをダウンロード",
       "dropToCreateDocument": "ドロップして作成",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "ドロップしてイシューURIを設定",
       "import": "インポート",
-      "notesCardTitle": "ノートは脅威モデル内に完全に含まれるマークダウン形式のテキストで、セキュリティアナリストや自動分析プロセスからのノートや注釈を記録するために使用されます。",
-      "repositoriesCardTitle": "リポジトリは、システムのソースコードが管理されているソースコードリポジトリへのリンクです。",
-      "threatsCardTitle": "脅威とは、システムの脆弱性や弱点を悪用して機密性、完全性、可用性、その他のセキュリティ目標を損なう可能性のある有害なイベントまたはアクションです。TMIでは、脅威オブジェクトには脅威に関連するリスクのタイプとレベル、および脅威を軽減するために必要な作業を追跡する情報も含まれています。"
+      "notesCardTitle": "ノートはMarkdown形式のテキストで、脅威モデル内に完全に含まれており、セキュリティアナリストと自動分析プロセスからのメモや注釈を記録するために使用されます",
+      "repositoriesCardTitle": "リポジトリは、システムのソースコードが管理されているソースコードリポジトリへのリンクです",
+      "threatsCardTitle": "脅威とは、システムの機密性・完全性・可用性またはその他のセキュリティ目的を侵害するために脆弱性や弱点を悪用する潜在的な有害イベントまたは行為です。TMIでは、脅威オブジェクトには脅威に関連するリスクの種類とレベルに関する情報、および脅威を緩和するために必要な作業を追跡するための情報も含まれています"
     },
     "viewDiagramName": "ダイアグラムのプロパティを表示",
     "yourThreatModels": "あなたの脅威モデル"
   },
   "threats": {
     "filters": {
-      "clearAll": "すべてのフィルタをクリア",
-      "clearName": "名前フィルタをクリア",
+      "clearAll": "すべてのフィルターをクリア",
+      "clearName": "名前フィルターをクリア",
       "lessFilters": "{{dashboard.lessFilters}}",
-      "mitigatedTooltip": "切替: すべて / 軽減済み / 未軽減",
+      "mitigatedTooltip": "サイクル: すべて / 緩和済み / 未緩和",
       "moreFilters": "{{dashboard.moreFilters}}",
       "nameLabel": "{{common.search}}",
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
@@ -1881,17 +1942,17 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "この利用規約についてご質問がある場合は、",
-      "part2": "ページの連絡先情報から運営者にお問い合わせください。"
+      "part1": "これらの利用規約についてご質問がある場合は、",
+      "part2": "ページの連絡先情報からウェブサイトの運営者にお気軽にお問い合わせください。"
     },
     "intro": {
-      "part1": "TMIへようこそ。この利用規約（以下「本規約」）は、",
-      "part2": "ページに記載されている運営者（以下「運営者」）により提供されるこのウェブサイトへのアクセスと利用を規定します。"
+      "part1": "TMIのこのインスタンスへようこそ。本利用規約（「規約」）は、",
+      "part2": "このウェブサイトの「運営元」ページに記載された運営者が提供するこのウェブサイトへのアクセスおよび利用を規定します（以下「運営者」）。"
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "このウェブサイトにアクセスし利用することにより、お客様はこの契約の条件に拘束されることに同意するものとします。これらの条件に同意しない場合は、このウェブサイトを使用しないでください。",
-      "title": "1. 利用規約の同意"
+      "title": "1. 規約の同意"
     },
     "section2": {
       "content": "ウェブサイトは合法的な目的にのみ使用できます。ウェブサイトまたはその基盤システムを悪用、妨害、または不正にアクセスしようとしないことに同意するものとします。",
@@ -1899,31 +1960,31 @@
     },
     "section3": {
       "content": "ウェブサイトは、特定目的への適合性、可用性、正確性を含むがこれに限定されない、明示または黙示のいかなる種類の保証もなく「現状のまま」提供されます。中断なくエラーのない動作を保証するものではありません。",
-      "title": "3. 保証の否認"
+      "title": "3. 無保証"
     },
     "section4": {
-      "content": "法律で認められる最大限の範囲において、運営者は、お客様によるウェブサイトの使用または使用不能に起因する直接的、間接的、付随的、または結果的な損害について責任を負いません。",
+      "content": "法律で許可される最大限の範囲において、運営者はウェブサイトの使用または使用不能から生じるいかなる直接的、間接的、偶発的、または派生的損害についても責任を負いません。",
       "title": "4. 責任の制限"
     },
     "section5": {
       "content": {
-        "part1": "このウェブサイトはTMIオープンソースソフトウェアを実行しています。そのソースコードは、",
-        "part2": "ページに記載されているリンクで入手できます。ソフトウェアの使用はそのオープンソースライセンス条項に従います。運営者はソフトウェア自体について責任を負わず、このインスタンスの運用についてのみ責任を負います。別段の記載がない限り、このウェブサイトの運営者はTMIプロジェクトまたはその作成者と提携していません。"
+        "part1": "このウェブサイトはTMIオープンソースソフトウェアを運用しています。そのソースコードは",
+        "part2": "このウェブサイトの「運営元」ページのリンクから入手できます。ソフトウェアの使用はオープンソースライセンス規約に従います。運営者はソフトウェア自体ではなく、このインスタンスの運営のみに責任を負います。特に明記されていない限り、このウェブサイトの運営者はTMIプロジェクトまたはその作成者とは関係ありません。"
       },
       "title": "5. オープンソースソフトウェア"
     },
     "section6": {
-      "content": "運営者はいつでもこれらの規約を更新できます。変更後もウェブサイトを継続して使用することは、更新された規約を受け入れたことを意味します。",
+      "content": "運営者はいつでもこれらの規約を更新する場合があります。変更後のウェブサイトの継続的な使用は、更新された規約への同意を意味します。",
       "title": "6. 規約の変更"
     },
     "section7": {
-      "content": "運営者は、理由の如何を問わず、予告なしに運営者の裁量でウェブサイトへのアクセスを一時停止または終了する権利を留保します。",
+      "content": "運営者は、理由を問わず、通知なしに運営者の裁量でウェブサイトへのアクセスを停止または終了する権利を留保します。",
       "title": "7. 終了"
     },
     "section8": {
       "content": {
-        "part1": "この規約は、",
-        "part2": "ページで運営者が指定した管轄の法律に準拠し、法の抵触に関する原則には関係なく適用されます。"
+        "part1": "本規約は、",
+        "part2": "ページに運営者が指定した管轄の法律に準拠し、法の抵触に関する原則を適用しません。"
       },
       "title": "8. 準拠法"
     },
@@ -1950,9 +2011,9 @@
         "question": "質問"
       },
       "markdownSupported": "Markdown対応",
-      "noNotes": "トリアージノートはまだありません",
-      "noResponses": "記録された回答がありません",
-      "noRevisionNotes": "修正依頼ノートはありません",
+      "noNotes": "トリアージノートがまだありません。",
+      "noResponses": "記録された回答はありません。",
+      "noRevisionNotes": "修正ノートはありません。",
       "note": "ノート",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "ノート内容を入力...",
@@ -1961,8 +2022,8 @@
       "notes": "ノート",
       "responseDetails": "回答の詳細",
       "reviewedAt": "レビュー日時",
-      "reviewedBy": "レビュー者",
-      "revisionNotesTitle": "修正依頼",
+      "reviewedBy": "レビュー担当者",
+      "revisionNotesTitle": "修正のリクエスト",
       "statusTimeline": "ステータスのタイムライン",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
       "triageNotes": "トリアージノート"
@@ -1980,49 +2041,49 @@
       "approve": "承認",
       "approveSelected": "選択を承認",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "回答の読み込みに失敗しました",
+      "errorLoadingResponses": "回答の読み込みに失敗しました。",
       "loadingResponses": "回答を読み込み中...",
-      "noResponsesFiltered": "フィルターに一致する回答はありません",
-      "noResponsesTitle": "回答なし",
-      "noResponsesToTriage": "トリアージするアンケート回答はありません",
+      "noResponsesFiltered": "フィルターに一致する回答はありません。",
+      "noResponsesTitle": "回答がありません",
+      "noResponsesToTriage": "トリアージするアンケート回答はありません。",
       "notSubmitted": "未提出",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "提出者または調査で検索...",
       "submitted": "提出済み",
       "submitter": "提出者"
     },
-    "markInReview": "レビュー中に設定",
-    "markPendingTriage": "トリアージ待ちに設定",
+    "markInReview": "レビュー中としてマーク",
+    "markPendingTriage": "トリアージ保留中としてマークする。",
     "messages": {
-      "approveError": "回答の承認に失敗しました",
+      "approveError": "回答の承認に失敗しました。",
       "approveSuccess": "回答が承認されました",
-      "createThreatModelError": "脅威モデルの作成に失敗しました",
-      "createThreatModelSuccess": "脅威モデルが正常に作成されました",
-      "returnForRevisionError": "修正依頼への差し戻しに失敗しました",
-      "returnForRevisionSuccess": "回答が修正依頼として差し戻されました"
+      "createThreatModelError": "脅威モデルの作成に失敗しました。",
+      "createThreatModelSuccess": "脅威モデルが正常に作成されました。",
+      "returnForRevisionError": "修正のための回答の返却に失敗しました。",
+      "returnForRevisionSuccess": "回答が修正のために返却されました。"
     },
-    "noResponses": "トリアージする回答がありません",
+    "noResponses": "トリアージする回答はありません。",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
-      "contentPlaceholder": "ノート内容を入力 (Markdown対応)...",
+      "contentPlaceholder": "ノートの内容を入力してください（Markdownサポート）...",
       "nameLabel": "{{common.title}}",
       "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
       "title": {
-        "create": "新規トリアージノート",
+        "create": "新しいトリアージノート",
         "view": "トリアージノートを表示"
       }
     },
     "queue": "トリアージキュー",
-    "returnToSubmitted": "送信済みに戻す",
+    "returnToSubmitted": "送信済みに戻す。",
     "reviewerAssignment": {
       "assign": "割り当てる",
-      "assignToMe": "自分に割り当てる",
-      "errorLoading": "未割り当ての脅威モデルの読み込みに失敗しました",
+      "assignToMe": "自分に割り当て",
+      "errorLoading": "未割り当ての脅威モデルの読み込みに失敗しました。",
       "loading": "未割り当てのレビューを読み込み中...",
-      "noUnassigned": "割り当てられていないレビュー",
-      "noUnassignedDescription": "すべてのアクティブな脅威モデルにセキュリティレビュー担当者が割り当てられています",
+      "noUnassigned": "未割り当てのレビューはありません",
+      "noUnassignedDescription": "すべてのアクティブな脅威モデルにセキュリティレビュアーが割り当てられています。",
       "noUnassignedFiltered": "フィルター条件に一致する脅威モデルはありません",
-      "reviewer": "セキュリティレビュー担当者",
+      "reviewer": "セキュリティレビュアー",
       "reviewerPlaceholder": "レビュー担当者でフィルター...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "レビュー担当者を選択...",
@@ -2030,11 +2091,11 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "修正が必要な内容を説明するノートを記入してください。提出者が回答を確認する際にこれらのノートが表示されます。",
+      "description": "修正が必要な内容を説明するノートを入力してください。提出者は回答を確認する際にこれらのノートを見ることができます",
       "hint": "必須 — 必要な変更を記述してください",
-      "label": "修正依頼ノート",
+      "label": "修正ノート",
       "placeholder": "必要な修正内容を記述...",
-      "title": "修正依頼として差し戻し"
+      "title": "修正のために返却"
     },
     "tabs": {
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
@@ -2054,7 +2115,7 @@
         "vertical": "Vertical"
       }
     },
-    "colorBlindMode": "色覚補助モードを有効にする",
+    "colorBlindMode": "色覚障害モードを有効にする",
     "credentials": {
       "add": "{{common.add}}",
       "clientId": "クライアントID",
@@ -2062,17 +2123,17 @@
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
-        "descriptionHint": "任意: この資格情報の用途を記述してください",
-        "descriptionPlaceholder": "CI/CDパイプライン統合に使用",
-        "descriptionTooLong": "説明は500文字以内で入力してください",
+        "descriptionHint": "任意: この資格情報の用途を説明してください",
+        "descriptionPlaceholder": "CI/CDパイプライン連携に使用します。",
+        "descriptionTooLong": "説明は500文字以内でなければなりません。",
         "expiresAt": "有効期限",
-        "expiresAtHint": "任意: 空白のままにすると無期限になります",
+        "expiresAtHint": "任意: 期限なしの場合は空白のままにしてください",
         "name": "{{common.name}}",
         "nameHint": "この資格情報のわかりやすい名前",
-        "namePlaceholder": "API資格情報",
+        "namePlaceholder": "My API credential",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "名前は100文字以内で入力してください",
-        "title": "クライアント資格情報の作成"
+        "nameTooLong": "名前は100文字以内でなければなりません。",
+        "title": "クライアント資格情報を作成"
       },
       "createdOn": "{{common.created}}",
       "credential": "認証情報",
@@ -2081,22 +2142,22 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "最終使用日時",
       "neverExpires": "無期限",
-      "noCredentials": "クライアント資格情報がありません",
+      "noCredentials": "クライアント資格情報がまだありません。",
       "noCredentialsDescription": "TMI APIにプログラムからアクセスするための資格情報を作成してください。",
       "secretDialog": {
         "title": "クライアント資格情報が作成されました",
         "warning": "これらの資格情報を今すぐ保存してください。クライアントシークレットは再度表示されません。"
       },
-      "title": "API認証情報"
+      "title": "クライアント資格情報"
     },
-    "dashboardListView": "ダッシュボードをリストビューで表示",
+    "dashboardListView": "ダッシュボードをリスト表示にする",
     "deleteMyData": {
       "confirmation": "本当にすべてのデータを削除しますか？",
       "continue": "続行",
       "emailDoesNotMatch": "メールアドレスが一致しません",
       "emailMatches": "メールアドレスが一致しました",
       "explanation": {
-        "bullet1": "ユーザーID、名前、メールアドレスを含むIDプロバイダーデータ。",
+        "bullet1": "ユーザーID、名前、メールを含むIDプロバイダーのデータ。",
         "bullet2": "所有していないすべての脅威モデルオブジェクトからの権限。",
         "bullet3": "所有している脅威モデルについて:",
         "bullet3a": "他のオーナーが存在する場合、所有権は移譲され、権限は取り消されます。",
@@ -2104,10 +2165,10 @@
         "intro": "この操作を確認すると、以下のデータが永久に削除され、関連する権限が取り消されます:"
       },
       "processing": "アカウントを削除中...",
-      "title": "すべてのデータを削除",
+      "title": "全データを削除",
       "validation": "削除リクエストを確認するには、ここに表示されているメールアドレスを正確に入力してください:"
     },
-    "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする",
+    "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする。",
     "displayPreferences": "表示設定",
     "downloadLog": {
       "hint": "トラブルシューティング用に、最新のアプリケーションログエントリをJSONLファイルとしてダウンロードします。",
@@ -2117,23 +2178,23 @@
     "marginSize": {
       "narrow": "狭い",
       "standard": "標準",
-      "title": "レポートの余白サイズ設定",
+      "title": "レポートの推奨マージンサイズ。",
       "wide": "広い"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "レポートのページサイズ設定",
-      "usLetter": "US Letter"
+      "title": "レポートの推奨ページサイズ。",
+      "usLetter": "US レター"
     },
     "reportPreferences": "レポート設定",
     "sections": {
       "developer": "開発者",
       "diagramEditor": "ダイアグラムエディター",
-      "diagramLayout": "Diagram Layout",
+      "diagramLayout": "ダイアグラムレイアウト",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "開発者ツールを表示",
-    "showShapeBordersWithIcons": "アイコン表示時に図形の塗りつぶしと枠線を表示する",
+    "showDeveloperTools": "開発者ツールを表示する。",
+    "showShapeBordersWithIcons": "アイコン表示時に図形の塗りつぶしと境界線を表示する。",
     "tabs": {
       "credentials": "認証情報",
       "danger": "危険",
@@ -2143,18 +2204,18 @@
     },
     "theme": "テーマ",
     "themeMode": {
-      "automatic": "自動（システム設定に従う）",
+      "automatic": "自動（システム）",
       "dark": "ダーク",
       "light": "ライト"
     },
     "title": "ユーザー設定",
     "transferData": {
       "confirmMessage": "本当にすべての脅威モデルと調査回答を{{email}}に転送してもよろしいですか？転送されたアイテムでは編集者ロールにダウングレードされます。",
-      "dialogTitle": "私のデータを転送",
-      "error": "データの転送に失敗しました。もう一度お試しください。",
+      "dialogTitle": "データを転送",
+      "error": "データの転送に失敗しました。",
       "hint": "すべての脅威モデルと調査回答の所有権を別のユーザーに転送します。転送されたアイテムでは編集者ロールにダウングレードされます。",
-      "success": "{{tmCount}}件の脅威モデルと{{responseCount}}件の調査回答を転送しました。",
-      "title": "私のデータを別のユーザーに転送"
+      "success": "{{tmcount}}件の脅威モデルと{{responsecount}}件のアンケート回答が転送されました。",
+      "title": "データを別のユーザーに転送"
     },
     "userProfile": {
       "currentRole": "現在の脅威モデルロール",
@@ -2167,13 +2228,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "プロジェクト、チーム、および関係を表示・編集",
+    "subtitle": "プロジェクト、チーム、関係を表示・編集します。",
     "title": "マイプロジェクト"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "チーム、メンバー、および関係を表示・編集",
+    "subtitle": "チーム、メンバー、関係を表示・編集します。",
     "title": "マイチーム"
   }
 }
