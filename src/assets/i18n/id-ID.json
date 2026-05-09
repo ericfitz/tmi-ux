@@ -32,16 +32,16 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(Semua)",
-      "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
-      "invalidCharacters": "Hanya karakter alfanumerik, spasi, tanda hubung, titik, koma, dan garis miring yang diperbolehkan",
-      "invocationQueued": "Pemanggilan addon dalam antrean",
-      "metadataKeyMissing": "Kunci metadata yang diperlukan \"{{key}}\" tidak ada pada objek ini",
-      "numberMax": "Nilai harus paling banyak {{max}}",
-      "numberMin": "Nilai harus setidaknya {{min}}",
+      "errorInvoking": "Gagal memanggil addon.",
+      "invalidCharacters": "Hanya karakter alfanumerik, spasi, tanda hubung, titik, koma, dan garis miring yang diperbolehkan.",
+      "invocationQueued": "Pemanggilan addon dalam antrean.",
+      "metadataKeyMissing": "Kunci metadata yang diperlukan \"{{key}}\" tidak ada pada objek ini.",
+      "numberMax": "Nilai harus paling banyak {{max}}.",
+      "numberMin": "Nilai harus setidaknya {{min}}.",
       "parameters": "Parameter",
       "threatModelId": "ID Model Ancaman",
       "title": "Panggil Addon",
-      "valueTooLong": "Nilai melebihi panjang maksimum"
+      "valueTooLong": "Nilai melebihi panjang maksimum."
     }
   },
   "admin": {
@@ -52,7 +52,7 @@
         "descriptionHint": "Apa fungsi addon ini?",
         "descriptionPlaceholder": "Jelaskan fungsionalitas addon",
         "icon": "Ikon",
-        "iconHint": "Ikon UI (contoh: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconHint": "Ikon UI (contoh: \"material-symbols:security\", \"fa-regular fa-user-shield\").",
         "iconInvalid": "Format ikon tidak valid",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
@@ -65,19 +65,19 @@
         "title": "Tambah Addon",
         "webhook": "Webhook",
         "webhookHint": "Langganan webhook terkait",
-        "webhookRequired": "Webhook wajib diisi"
+        "webhookRequired": "Webhook wajib diisi."
       },
       "confirmDelete": "Apakah Anda yakin ingin menghapus addon \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Hapus addon",
-      "errorCreatingAddon": "Gagal membuat addon. Silakan coba lagi.",
-      "errorLoadingWebhooks": "Gagal memuat webhook yang tersedia",
+      "errorCreatingAddon": "Gagal membuat addon.",
+      "errorLoadingWebhooks": "Gagal memuat webhook yang tersedia.",
       "filterLabel": "Filter Addon",
       "filterPlaceholder": "Cari berdasarkan nama atau deskripsi",
       "listTitle": "Addon Sistem",
-      "noAddons": "Tidak ada addon ditemukan",
+      "noAddons": "Tidak ada addon ditemukan.",
       "objectTypesTooltip": "Berlaku untuk Jenis Objek Ini",
-      "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI",
+      "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI.",
       "title": "Kelola Addon"
     },
     "createAutomationUserDialog": {
@@ -86,9 +86,9 @@
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "2-64 karakter, diawali huruf",
-      "nameMaxLength": "Nama harus maksimal 64 karakter",
-      "nameMinLength": "Harus minimal 2 karakter",
-      "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka",
+      "nameMaxLength": "Nama harus maksimal 64 karakter.",
+      "nameMinLength": "Harus minimal 2 karakter.",
+      "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka.",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "Buat Pengguna Otomasi",
@@ -103,12 +103,12 @@
         "displayName": "Nama Tampilan",
         "displayNameHint": "Nama grup yang mudah dibaca",
         "displayNamePlaceholder": "Grup Kustom Saya",
-        "displayNameRequired": "Nama tampilan wajib diisi",
+        "displayNameRequired": "Nama tampilan wajib diisi.",
         "groupName": "Pengenal Grup",
         "groupNameHint": "Hanya alfanumerik, tanda hubung, dan garis bawah",
-        "groupNamePattern": "Hanya alfanumerik, tanda hubung, dan garis bawah yang diizinkan",
+        "groupNamePattern": "Hanya alfanumerik, tanda hubung, dan garis bawah yang diizinkan.",
         "groupNamePlaceholder": "grup-kustom-saya",
-        "groupNameRequired": "Pengenal grup wajib diisi",
+        "groupNameRequired": "Pengenal grup wajib diisi.",
         "save": "Buat Grup",
         "title": "Tambah Grup"
       },
@@ -123,9 +123,9 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "Akun otomasi tidak diizinkan menjadi anggota grup Administrator. Akun otomasi tidak boleh memiliki akses ke fungsi administratif aplikasi.",
+        "automationAdminBlocked": "Akun otomasi tidak diizinkan menjadi anggota grup administrator. Akun otomasi tidak boleh memiliki akses ke fungsi administratif aplikasi.",
         "currentMembers": "Anggota Saat Ini",
-        "noMembers": "Tidak ada anggota dalam grup ini",
+        "noMembers": "Tidak ada anggota dalam grup ini.",
         "removeTooltip": "Keluarkan dari grup",
         "searchHint": "Ketik minimal 2 karakter untuk mencari",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,13 +133,13 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "Tidak ada grup ditemukan",
-      "subtitle": "Lihat dan kelola grup sistem",
+      "noGroups": "Tidak ada grup ditemukan.",
+      "subtitle": "Lihat dan kelola grup sistem.",
       "title": "Kelola Grup",
-      "viewMembersTooltip": "Lihat dan kelola anggota grup"
+      "viewMembersTooltip": "Lihat dan kelola anggota grup..."
     },
     "quotas": {
-      "addButton": "Tambah Kuota",
+      "addButton": "Tambah Kuota...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Konfigurasi Kuota",
@@ -160,32 +160,32 @@
       "filterLabel": "Filter Kuota",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau ID pengguna",
       "maxSubscriptions": "Langganan maksimum",
-      "noUserAPIQuotas": "Tidak ada kuota API kustom ditemukan",
-      "noWebhookQuotas": "Tidak ada kuota webhook kustom ditemukan",
+      "noUserAPIQuotas": "Tidak ada kuota API kustom ditemukan.",
+      "noWebhookQuotas": "Tidak ada kuota webhook kustom ditemukan.",
       "requestsPerHour": "Permintaan per jam",
       "requestsPerMinute": "Permintaan per menit",
       "subReqPerDay": "Permintaan langganan per hari",
       "subReqPerMinute": "Permintaan langganan per menit",
-      "subtitle": "Konfigurasikan batas tingkat dan kuota untuk pengguna",
+      "subtitle": "Konfigurasikan batas tingkat dan kuota untuk pengguna.",
       "title": "Kelola Kuota",
       "userAPITitle": "Batas Tingkat API",
       "webhookTitle": "Batas Webhook"
     },
     "sections": {
       "addons": {
-        "description": "Pasang dan konfigurasikan addon aplikasi",
+        "description": "Pasang dan konfigurasikan addon aplikasi.",
         "title": "Pengaya"
       },
       "groups": {
-        "description": "Konfigurasikan grup pengguna dan keanggotaan",
+        "description": "Konfigurasikan grup pengguna dan keanggotaan.",
         "title": "Grup"
       },
       "projects": {
-        "description": "Kelola proyek, hubungan, dan metadata",
+        "description": "Kelola proyek, hubungan, dan metadata.",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "Konfigurasikan kuota dan batas sumber daya",
+        "description": "Konfigurasikan kuota dan batas sumber daya.",
         "title": "Kuota"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "Pengaturan"
       },
       "surveys": {
-        "description": "Buat dan kelola survei",
+        "description": "Buat dan kelola survei.",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "Kelola tim dan keanggotaan tim",
+        "description": "Kelola tim dan keanggotaan tim.",
         "title": "Tim"
       },
       "users": {
-        "description": "Lihat dan kelola akun pengguna",
+        "description": "Lihat dan kelola akun pengguna.",
         "title": "Pengguna"
       },
       "webhooks": {
-        "description": "Pasang dan konfigurasikan integrasi webhook",
+        "description": "Pasang dan konfigurasikan integrasi webhook.",
         "title": "Webhook"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "Deskripsi opsional dari pengaturan ini",
         "key": "{{common.metadataKey}}",
         "keyHint": "Huruf kecil dengan titik dan garis bawah (contoh: rate_limit.max_rpm)",
-        "keyInvalid": "Harus dimulai dengan huruf kecil, hanya gunakan huruf kecil, angka, titik, dan garis bawah",
-        "keyRequired": "Kunci wajib diisi",
+        "keyInvalid": "Harus dimulai dengan huruf kecil, hanya gunakan huruf kecil, angka, titik, dan garis bawah.",
+        "keyRequired": "Kunci wajib diisi.",
         "save": "Buat Pengaturan",
         "title": "Tambah Pengaturan",
         "type": "{{common.type}}",
-        "typeRequired": "Jenis wajib diisi",
+        "typeRequired": "Jenis wajib diisi.",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "Nilai wajib diisi"
+        "valueRequired": "Nilai wajib diisi."
       },
       "cancelTooltip": "Batalkan pengeditan",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "Filter",
       "filterPlaceholder": "Filter berdasarkan kunci, nilai, deskripsi, atau sumber",
       "listTitle": "Pengaturan Sistem",
-      "noSettings": "Tidak ada pengaturan ditemukan",
+      "noSettings": "Tidak ada pengaturan ditemukan.",
       "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
       "saveTooltip": "Simpan perubahan",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "Lingkungan",
         "vault": "Vault"
       },
-      "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
+      "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem.",
       "title": "Kelola Pengaturan",
       "types": {
         "bool": "Boolean",
@@ -255,7 +255,7 @@
         "string": "String"
       }
     },
-    "subtitle": "Kelola pengaturan dan konfigurasi sistem",
+    "subtitle": "Kelola pengaturan dan konfigurasi sistem.",
     "title": "Administrasi",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Hapus akun pengguna",
       "filter": {
-        "automationOnly": "Tampilkan hanya akun otomasi"
+        "automationOnly": "Tampilkan hanya akun otomasi."
       },
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
@@ -280,29 +280,29 @@
       "manageCredentials": {
         "addCredential": "Tambah Kredensial",
         "deleteConfirm": "Apakah Anda yakin ingin menghapus kredensial \"{{name}}\"?",
-        "noCredentials": "Tidak ada kredensial ditemukan",
-        "title": "Kelola Kredensial untuk {{userName}}"
+        "noCredentials": "Tidak ada kredensial ditemukan.",
+        "title": "Kelola Kredensial untuk {{username}}."
       },
       "never": "Tidak Pernah",
-      "noUsers": "Tidak ada pengguna ditemukan",
-      "subtitle": "Lihat dan kelola pengguna sistem",
+      "noUsers": "Tidak ada pengguna ditemukan.",
+      "subtitle": "Lihat dan kelola pengguna sistem.",
       "title": "Kelola Pengguna",
       "transferOwnership": {
         "confirm": "Apakah Anda yakin ingin mengalihkan semua data dari {{source}} ke {{target}}?",
         "dialogTitle": "Alihkan Data Pengguna",
-        "error": "Gagal mengalihkan kepemilikan. Silakan coba lagi.",
+        "error": "Gagal mengalihkan kepemilikan.",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "Alihkan kepemilikan"
+        "tooltip": "Alihkan kepemilikan..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "Buat pengguna otomasi untuk webhook ini",
-        "events": "Jenis Peristiwa untuk Berlangganan",
+        "createAutomationUser": "Buat pengguna otomasi untuk webhook ini.",
+        "events": "Jenis peristiwa untuk berlangganan",
         "eventsHint": "Jenis peristiwa untuk berlangganan (misalnya, threat_model.created)",
         "eventsPlaceholder": "Pilih jenis peristiwa",
-        "eventsRequired": "Minimal satu peristiwa wajib diisi",
+        "eventsRequired": "Minimal satu peristiwa wajib diisi.",
         "name": "{{common.name}}",
         "nameHint": "Nama deskriptif untuk webhook ini",
         "namePlaceholder": "Nama webhook",
@@ -315,10 +315,10 @@
         "url": "URL Webhook",
         "urlHint": "HTTPS disarankan",
         "urlHttpWarning": "Peringatan: URL endpoint webhook harus menggunakan HTTPS. Server mungkin menolak pendaftaran webhook yang menggunakan endpoint non-TLS.",
-        "urlHttpWarningTitle": "URL Webhook Non-HTTPS",
-        "urlInvalid": "Harus berupa URL yang valid",
+        "urlHttpWarningTitle": "URL Webhook Non-HTTPS.",
+        "urlInvalid": "Harus berupa URL yang valid.",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "URL wajib diisi"
+        "urlRequired": "URL wajib diisi."
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Hapus webhook",
@@ -330,7 +330,7 @@
         "warning": "Ini adalah satu-satunya waktu Anda dapat melihat rahasia ini. Silakan salin. Jika Anda kehilangan atau melupakannya, Anda harus menghapus dan membuat ulang webhook."
       },
       "listTitle": "Langganan Webhook",
-      "noWebhooks": "Tidak ada webhook ditemukan",
+      "noWebhooks": "Tidak ada webhook ditemukan.",
       "secret": "Rahasia HMAC",
       "status": {
         "active": "{{common.active}}",
@@ -338,7 +338,7 @@
         "pending_verification": "Menunggu Verifikasi"
       },
       "subscriptionId": "ID Langganan",
-      "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa",
+      "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa.",
       "title": "Kelola Webhook",
       "triggerEvents": "Peristiwa pemicu",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
@@ -353,12 +353,12 @@
       "title": "Buat Survei",
       "versionHint": "Pengenal versi bentuk bebas",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "mis., 1, v2-pilot, 2024-Q1",
-      "versionRequired": "Versi wajib diisi"
+      "versionPlaceholder": "Mis., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Versi wajib diisi."
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "Tidak dapat menghapus survei ini karena memiliki tanggapan yang ada. Hapus tanggapan terlebih dahulu, lalu coba lagi.",
-    "deleteError": "Gagal menghapus survei: {{error}}",
+    "deleteError": "Gagal menghapus survei: {{error}}.",
     "deleteTooltip": "Hapus survei",
     "editTemplate": "Edit survei",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -379,20 +379,20 @@
       "deletePage": "Hapus halaman",
       "deleteQuestion": "Hapus Pertanyaan",
       "enableIf": "Aktifkan Jika",
-      "enableIfHint": "contoh, {questionName} = 'value'",
+      "enableIfHint": "Mis., {questionname} = 'value'",
       "enterSurveyDescription": "Masukkan deskripsi survei",
       "enterSurveyTitle": "Masukkan judul survei",
-      "failedToLoadTemplate": "Gagal memuat survei",
-      "failedToSaveTemplate": "Gagal menyimpan survei",
+      "failedToLoadTemplate": "Gagal memuat survei.",
+      "failedToSaveTemplate": "Gagal menyimpan survei.",
       "loadingTemplate": "Memuat survei...",
-      "mapsToTmField": "Dipetakan ke Bidang TM",
+      "mapsToTmField": "Dipetakan ke bidang TM",
       "metadataKey": "Kunci Metadata",
       "metadataKeyHint": "Nama kunci untuk entri metadata",
       "nameId": "Nama (ID)",
       "nameIdHint": "Pengenal unik untuk pertanyaan ini",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Klik jenis pertanyaan dari palet untuk menambahkannya",
-      "noQuestionsYet": "Belum ada pertanyaan",
+      "noQuestionsYet": "Belum ada pertanyaan.",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Properti Pertanyaan",
@@ -400,9 +400,9 @@
         "boolean": "Tombol beralih boolean",
         "checkbox": "Pilihan ganda",
         "dropdown": "Pilihan dropdown",
-        "panel": "Kelompokkan pertanyaan dalam panel",
+        "panel": "Kelompokkan pertanyaan dalam panel.",
         "paneldynamic": "Grup panel yang dapat diulang",
-        "radiogroup": "Pilihan tunggal dari opsi",
+        "radiogroup": "Pilihan tunggal dari opsi.",
         "text": "Input teks satu baris"
       },
       "questionTypeLabels": {
@@ -419,7 +419,7 @@
       "required": "Wajib diisi",
       "requiredIf": "Wajib Jika",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
+      "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya.",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
@@ -429,7 +429,7 @@
         "description": "Deskripsi Model Ancaman",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "URL Pelacakan Isu",
+        "issueUri": "URL Pelacakan Isu.",
         "metadataKey": "Metadata Kustom",
         "name": "Nama Model Ancaman",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -441,8 +441,8 @@
       "visibleIf": "Terlihat Jika",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} survei",
-    "templateCountPlural": "{{count}} survei"
+    "templateCount": "{{Count}} survei",
+    "templateCountPlural": "{{Count}} survei"
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -492,13 +492,13 @@
     "noEntries": "Tidak ada entri jejak audit yang ditemukan.",
     "rollback": {
       "action": "Kembalikan",
-      "confirmMessage": "Apakah Anda yakin ingin mengembalikan {{objectType}} \"{{name}}\" ke versi {{version}}?",
+      "confirmMessage": "Apakah Anda yakin ingin mengembalikan {{objecttype}} \"{{name}}\" ke versi {{version}}?",
       "confirmTitle": "Konfirmasi Pengembalian",
       "confirmationField": "Ketik untuk mengonfirmasi",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "Pengembalian gagal. Silakan coba lagi.",
+      "error": "Pengembalian gagal",
       "success": "Pengembalian berhasil diselesaikan.",
-      "typeConfirmation": "Untuk mengonfirmasi, ketik \"{{confirmValue}}\" di bawah.",
+      "typeConfirmation": "Untuk mengonfirmasi, ketik \"{{confirmvalue}}\" di bawah",
       "versionPruned": "Snapshot versi telah dipangkas. Pengembalian tidak lagi tersedia.",
       "warning": "Ini akan menimpa status saat ini dari entitas ini dengan versi yang ditangkap dalam entri audit ini. Tindakan ini membuat entri audit baru tetapi status saat ini akan hilang."
     },
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "Tidak dapat terhubung ke Timmy. Periksa koneksi Anda dan coba lagi.",
-      "generic": "Terjadi kesalahan. Silakan coba lagi.",
+      "generic": "Terjadi kesalahan.",
       "interrupted": "Respons terputus. Coba kirim pesan Anda lagi.",
       "notAcceptable": "Timmy tidak tersedia untuk sementara karena masalah konfigurasi server.",
       "notEnabled": "Timmy tidak diaktifkan untuk model ancaman ini.",
@@ -532,16 +532,16 @@
     "hideSidePanel": "Sembunyikan panel samping",
     "inputPlaceholder": "Tanyakan kepada Timmy tentang model ancaman ini...",
     "newSession": "Sesi Baru",
-    "noSessions": "Belum ada sesi chat. Mulai percakapan!",
+    "noSessions": "Belum ada sesi chat. Mulai percakapan.",
     "preparation": {
-      "error": "Persiapan gagal: {{message}}",
-      "processing": "Memproses sumber {{current}} dari {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "Siap! {{sourcesLoaded}} sumber dimuat, {{chunksEmbedded}} potongan diindeks."
+      "error": "Persiapan gagal: {{message}}.",
+      "processing": "Memproses sumber {{current}} dari {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%.",
+      "ready": "Siap! {{Sourcesloaded}} sumber dimuat, {{chunksembedded}} potongan diindeks."
     },
-    "saveAsNoteError": "Tidak dapat disimpan sebagai catatan. Silakan coba lagi.",
+    "saveAsNoteError": "Tidak dapat disimpan sebagai catatan.",
     "saveMessageAsNote": "Simpan pesan sebagai catatan",
     "saveSessionAsNote": "Simpan sesi sebagai catatan",
-    "savedAsNote": "Disimpan sebagai catatan",
+    "savedAsNote": "Disimpan sebagai catatan.",
     "savedAsNoteView": "{{common.view}}",
     "send": "Kirim pesan",
     "sessions": "Sesi",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} sumber disertakan"
+      "title": "{{Count}} sumber disertakan"
     },
     "suggestedPrompts": {
       "assets": "Aset apa saja yang termasuk dalam cakupan?",
@@ -563,21 +563,21 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} pengguna aktif",
+    "activeUsers": "{{Count}} pengguna aktif.",
     "approvePresenterRequest": "Setujui Permintaan Presenter",
-    "availableCollaborationSessions": "Sesi Kolaborasi yang Tersedia",
+    "availableCollaborationSessions": "Sesi Kolaborasi yang Tersedia.",
     "collaboratorsHeader": "Peserta",
     "copyLink": "Salin Tautan",
     "denyPresenterRequest": "Tolak Permintaan Presenter",
     "endCollaboration": "Akhiri Kolaborasi",
     "hostedBy": "Diselenggarakan oleh",
-    "isRequestingPresenterPrivileges": "meminta hak akses presenter",
+    "isRequestingPresenterPrivileges": "meminta hak akses presenter.",
     "joinSession": "Gabung Sesi",
     "justNow": "baru saja",
     "leaveSession": "Tinggalkan Sesi",
     "loadingDiagramContext": "Memuat konteks diagram...",
     "manageParticipants": "Kelola Peserta",
-    "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif",
+    "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif.",
     "participantRequestsPresenterRole": "Peserta Meminta Peran Presenter",
     "presenterModeRequested": "Mode Presenter Diminta",
     "removeFromSession": "Keluarkan dari Sesi",
@@ -586,12 +586,12 @@
     "startCollaboration": "Mulai Kolaborasi",
     "takeBackPresenter": "Ambil Kembali Presenter",
     "title": "Peserta Sesi Kolaborasi",
-    "userJoined": "{{user}} bergabung ke kolaborasi",
-    "userLeft": "{{user}} meninggalkan kolaborasi",
+    "userJoined": "{{User}} bergabung ke kolaborasi.",
+    "userLeft": "{{User}} meninggalkan kolaborasi",
     "websocketStatus": {
       "connected": "Websocket Terhubung",
       "noSession": "Tidak Ada Sesi Kolaborasi Aktif",
-      "notConnected": "Websocket Tidak Terhubung"
+      "notConnected": "Websocket Tidak Terhubung."
     }
   },
   "common": {
@@ -615,8 +615,8 @@
     "close": "Tutup",
     "confirm": "Konfirmasi",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
-    "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
-    "copiedToClipboard": "Disalin ke papan klip",
+    "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objecttype}} \"{{name}}\"?",
+    "copiedToClipboard": "Disalin ke papan klip.",
     "copy": "Salin",
     "copyToClipboard": "Salin ke Papan Klip",
     "create": "Buat",
@@ -626,15 +626,15 @@
     "cut": "Potong",
     "deactivate": "Nonaktifkan",
     "delete": "Hapus",
-    "deleteConfirm": "Hapus Model Ancaman",
+    "deleteConfirm": "Konfirmasi Penghapusan",
     "deleteWarningConfirmationField": "Konfirmasi Penghapusan",
     "deleteWarningConfirmationMatch": "Teks konfirmasi cocok",
     "deleteWarningConfirmationMismatch": "Teks konfirmasi tidak cocok",
-    "deleteWarningConfirmationValue": "hilang selamanya",
-    "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen {{objectType}} beserta semua metadata yang terkait dengannya.",
-    "deleteWarningReferenceOnly": "Untuk objek yang disimpan di luar TMI seperti Dokumen dan Repositori, hanya referensi TMI ke objek tersebut yang akan dihapus.",
+    "deleteWarningConfirmationValue": "Hilang Selamanya",
+    "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen {{objecttype}} beserta semua metadata yang terkait dengannya.",
+    "deleteWarningReferenceOnly": "Untuk objek yang disimpan di luar TMI seperti dokumen dan repositori, hanya referensi TMI ke objek tersebut yang akan dihapus.",
     "deleteWarningSubEntities": "Semua entitas TMI terkait seperti diagram, ancaman, dan catatan juga akan dihapus secara permanen.",
-    "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmValue}}\" di bidang di bawah ini.",
+    "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmvalue}}\" di bidang di bawah ini",
     "description": "Deskripsi",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Tutup",
@@ -675,7 +675,7 @@
     "noDataAvailable": "Tidak Ada Data Tersedia",
     "noMatchingResults": "Tidak ada hasil yang cocok dengan filter Anda.",
     "noMetadata": "Tidak Ada Metadata Tersedia",
-    "noThreats": "Tidak Ada Ancaman Tersedia",
+    "noThreats": "Tidak Ada Ancaman Tersedia.",
     "none": "Tidak Ada",
     "objectTypes": {
       "asset": "Aset",
@@ -715,7 +715,7 @@
     "project": "Proyek",
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
-    "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
+    "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit",
     "retry": "Coba lagi",
     "roles": {
       "owner": "Pemilik",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
     "search": "Cari",
-    "selected": "{{count}} dipilih",
+    "selected": "{{Count}} dipilih",
     "sensitivity": "Sensitivitas",
     "sessionRoles": {
       "host": "Host",
@@ -744,7 +744,7 @@
     "team": "Tim",
     "template": "Templat",
     "threatDescription": "Deskripsi Ancaman",
-    "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
+    "threatDescriptionPlaceholder": "Jelaskan ancaman secara detail",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
     "title": "Judul",
@@ -755,11 +755,11 @@
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "uri": "URI",
     "validation": {
-      "email": "Harap masukkan alamat email yang valid",
+      "email": "Harap masukkan alamat email yang valid.",
       "invalidUrl": "Masukkan URL yang valid",
-      "maxLength": "Panjang maksimum adalah {{max}} karakter",
-      "nameRequired": "Nama wajib diisi",
-      "required": "Bidang ini wajib diisi"
+      "maxLength": "Panjang maksimum adalah {{max}} karakter.",
+      "nameRequired": "Nama wajib diisi.",
+      "required": "Bidang ini wajib diisi."
     },
     "version": "Versi",
     "view": "Lihat",
@@ -771,17 +771,17 @@
     "addInverseConnection": "Tambah Koneksi Terbalik",
     "dataAssets": "Aset Data...",
     "editText": "Edit Teks",
-    "lockLayout": "Lock Layout",
+    "lockLayout": "Kunci Tata Letak",
     "moveBackward": "Pindah ke Belakang",
     "moveForward": "Pindah ke Depan",
     "moveToBack": "Pindah ke Paling Belakang",
     "moveToFront": "Pindah ke Paling Depan",
     "noDataAssetsAvailable": "Tidak ada aset data yang tersedia",
-    "showObject": "Tampilkan Objek",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "Tampilkan Objek...",
+    "unlockLayout": "Buka Kunci Tata Letak"
   },
   "createThreatModel": {
-    "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",
+    "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup peninjau keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Jelaskan tujuan dan ruang lingkup model ancaman ini",
     "framework": "Framework",
@@ -792,15 +792,42 @@
   "cvssCalculator": {
     "apply": "Terapkan",
     "openCalculator": "Tambah CVSS",
-    "parseError": "Tidak dapat mengurai string vektor CVSS yang ada",
+    "parseError": "Tidak dapat mengurai string vektor CVSS yang ada.",
     "pasteVectorPlaceholder": "Tempel string vektor CVSS dan tekan Enter",
     "title": "Kalkulator CVSS",
-    "vectorDuplicateVersion": "Entri CVSS untuk versi ini sudah ada",
-    "vectorInvalid": "String vektor CVSS tidak valid",
-    "vectorPlaceholder": "Tempel atau ketik string vektor CVSS dan tekan Enter",
+    "vectorDuplicateVersion": "Entri CVSS untuk versi ini sudah ada.",
+    "vectorInvalid": "String vektor CVSS tidak valid.",
+    "vectorPlaceholder": "Tempel atau ketik string vektor CVSS dan tekan Enter.",
     "vectorString": "String Vektor",
-    "vectorUnsupportedVersion": "Hanya vektor CVSS 3.1 dan 4.0 yang didukung",
-    "version": "Versi CVSS"
+    "vectorUnsupportedVersion": "Hanya vektor CVSS 3.1 dan 4.0 yang didukung.",
+    "version": "Versi CVSS",
+    "metricDescriptions": {
+      "AR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi ketersediaan.",
+      "AU": "Metrik yang dapat diotomatisasi menangkap jawaban atas pertanyaan 'dapatkah penyerang mengotomatisasi eksploitasi kerentanan di beberapa target?'.",
+      "CR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi kerahasiaan.",
+      "IR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi integritas.",
+      "MAC": "Penggantian untuk kompleksitas serangan. Metrik ini mencerminkan kondisi di luar kendali penyerang yang harus ada agar kerentanan dapat dieksploitasi di lingkungan analis.",
+      "MAT": "Penggantian untuk persyaratan serangan. Menangkap kondisi penerapan dan eksekusi sistem yang menjadi prasyarat serangan di lingkungan analis.",
+      "MAV": "Penggantian untuk vektor serangan. Metrik ini mencerminkan konteks di mana eksploitasi kerentanan dimungkinkan di lingkungan analis.",
+      "MPR": "Penggantian untuk hak istimewa yang diperlukan. Metrik ini menggambarkan tingkat hak istimewa yang harus dimiliki penyerang untuk mengeksploitasi kerentanan di lingkungan analis.",
+      "MSA": "Penggantian untuk dampak ketersediaan sistem berikutnya. Mengukur konsekuensi terhadap ketersediaan sistem di luar sistem yang rentan di lingkungan analis.",
+      "MSC": "Penggantian untuk dampak kerahasiaan sistem berikutnya. Mengukur konsekuensi terhadap kerahasiaan di luar sistem yang rentan di lingkungan analis.",
+      "MSI": "Penggantian untuk dampak integritas sistem berikutnya. Mengukur konsekuensi terhadap integritas di luar sistem yang rentan di lingkungan analis.",
+      "MUI": "Penggantian untuk interaksi pengguna. Menangkap persyaratan keterlibatan pengguna manusia, selain penyerang, untuk keberhasilan kompromi di lingkungan analis.",
+      "MVA": "Penggantian untuk dampak ketersediaan sistem yang rentan. Mengukur konsekuensi terhadap ketersediaan sistem yang mengandung kerentanan di lingkungan analis.",
+      "MVC": "Penggantian untuk dampak kerahasiaan sistem yang rentan. Mengukur konsekuensi terhadap kerahasiaan sistem yang mengandung kerentanan di lingkungan analis.",
+      "MVI": "Penggantian untuk dampak integritas sistem yang rentan. Mengukur konsekuensi terhadap integritas sistem yang mengandung kerentanan di lingkungan analis.",
+      "R": "Metrik pemulihan menggambarkan ketahanan sistem untuk memulihkan layanan, dari segi kinerja dan ketersediaan, setelah serangan dilakukan.",
+      "RE": "Metrik upaya respons kerentanan menangkap tingkat upaya yang dibutuhkan konsumen untuk merespons kerentanan setelah diketahui.",
+      "S": "Metrik keselamatan mencerminkan apakah kerentanan dapat mengakibatkan kondisi yang memengaruhi keselamatan manusia sebagaimana didefinisikan oleh kategori IEC 61508.",
+      "U": "Metrik urgensi penyedia mencerminkan peringkat urgensi yang diberikan pemasok (merah, jingga, hijau, biru) untuk suatu kerentanan.",
+      "V": "Metrik kepadatan nilai menggambarkan sumber daya yang akan dikuasai penyerang dengan satu peristiwa eksploitasi."
+    },
+    "metricGroups": {
+      "environmentalBase": "Lingkungan (basis yang dimodifikasi).",
+      "environmentalSecurityRequirement": "Lingkungan (persyaratan keamanan)"
+    },
+    "metricsConfigured": "{{Count}}/{{total}} dikonfigurasi"
   },
   "cwePicker": {
     "addCwe": "Tambah CWE",
@@ -845,7 +872,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "Status Terakhir Diubah"
+      "statusLastChanged": "Status Terakhir Diubah."
     },
     "viewAsCards": "Tampilkan sebagai Kartu",
     "viewAsList": "Tampilkan sebagai Daftar"
@@ -880,8 +907,8 @@
       "currentIndex": "Indeks Saat Ini",
       "id": "{{common.id}}",
       "maxStackSize": "Ukuran Tumpukan Maksimum",
-      "noRedoEntries": "Tidak ada entri untuk diulangi",
-      "noUndoEntries": "Tidak ada entri untuk dibatalkan",
+      "noRedoEntries": "Tidak ada entri untuk diulangi.",
+      "noUndoEntries": "Tidak ada entri untuk dibatalkan.",
       "operationId": "ID Operasi",
       "previousCells": "Sel Sebelumnya",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +923,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "Ketik untuk mencari di semua penyedia",
-      "emptyStateTryExamples": "Coba: aws ec2, azure sql, gcp compute",
-      "notAvailable": "Ikon tidak tersedia untuk bentuk ini",
+      "emptyStatePrompt": "Ketik untuk mencari di semua penyedia.",
+      "emptyStateTryExamples": "Coba: AWS ec2, azure sql, gcp compute",
+      "notAvailable": "Ikon tidak tersedia untuk bentuk ini.",
       "placement": "Penempatan",
       "remove": "Hapus",
       "searchPlaceholder": "Cari berdasarkan penyedia, layanan, atau kategori...",
       "searchToChange": "Cari untuk mengganti ikon...",
       "selectShape": "Pilih bentuk terlebih dahulu",
-      "statusAvailable": "{count} ikon tersedia",
-      "statusMatches": "{count} hasil",
-      "statusShapesSelected": "{count} bentuk dipilih",
+      "statusAvailable": "{Count} ikon tersedia.",
+      "statusMatches": "{Count} hasil",
+      "statusShapesSelected": "{Count} bentuk dipilih.",
       "title": "Ikon Arsitektur",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -942,7 +969,7 @@
       "labelPosition.top-right": "Atas kanan",
       "labelPositionLabel": "Posisi label",
       "labelTab": "Label",
-      "noSelection": "Pilih objek untuk mengedit gaya",
+      "noSelection": "Pilih objek untuk mengedit gaya.",
       "opacity": "Opasitas",
       "osColorPicker": "Pilih warna dari sistem",
       "removeDiagramColor": "Hapus warna diagram",
@@ -962,30 +989,38 @@
       "other": "Tidak dapat mengakses dokumen ini.",
       "pickerRegistrationInvalid": "Otorisasi pemilih untuk dokumen ini tidak lagi valid.",
       "sourceNotFound": "TMI tidak mengetahui cara membaca URL dokumen ini.",
-      "tokenNotLinked": "Anda belum menautkan akun yang memiliki dokumen ini. Sumber: {{ source }}",
-      "tokenRefreshFailed": "Tautan sumber tidak lagi valid. Sumber: {{ source }}",
-      "tokenTransientFailure": "Tidak dapat menjangkau sumber. Hal ini biasanya bersifat sementara. Sumber: {{ source }}"
+      "tokenNotLinked": "Anda belum menautkan akun yang memiliki dokumen ini. Sumber: {{ source }}.",
+      "tokenRefreshFailed": "Tautan sumber tidak lagi valid. Sumber: {{ source }}.",
+      "tokenTransientFailure": "Tidak dapat menjangkau sumber. Hal ini biasanya bersifat sementara. Sumber: {{ source }}.",
+      "microsoftNotShared": "TMI belum memiliki akses ke berkas OneDrive atau SharePoint ini. Pemilik berkas harus memberikan akses baca kepada TMI menggunakan cuplikan di bawah ini."
     },
     "remediation": {
       "contactOwner": "Hubungi pemilik dokumen",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "Tautkan ulang sumber",
-      "repickAfterShare": "Pilih kembali setelah membagikan",
-      "repickFile": "Pilih kembali berkas ini",
+      "repickAfterShare": "Pilih kembali setelah membagikan.",
+      "repickFile": "Pilih kembali berkas ini.",
       "retry": "Coba lagi",
-      "shareWithServiceAccount": "Bagikan dengan akun layanan TMI"
+      "shareWithServiceAccount": "Bagikan dengan akun layanan TMI",
+      "shareWithApplication": {
+        "copyFailed": "Tidak dapat menyalin ke papan klip",
+        "explanation": "TMI belum memiliki akses ke berkas OneDrive atau SharePoint ini. Minta pemilik berkas untuk menjalankan panggilan Microsoft Graph berikut guna memberikan akses baca kepada TMI. Setelah panggilan berhasil, klik \"periksa sekarang\" — pembaruan status akan muncul dalam beberapa menit setelah izin diberikan.",
+        "powershellLabel": "PowerShell (modul microsoft.graph)",
+        "rawLabel": "Panggilan Microsoft Graph",
+        "title": "Berikan akses TMI ke berkas ini."
+      }
     },
     "serviceAccountEmail": "Bagikan dengan email ini:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "Tidak dapat memberikan akses ke berkas Anda. Silakan coba lagi.",
+      "generic": "Tidak dapat memberikan akses ke berkas Anda.",
       "linkAccountCta": "Tautkan akun",
       "notLinked": "Akun Microsoft Anda belum ditautkan.",
       "permissionDenied": "Microsoft menolak permintaan untuk memberikan akses. Berkas mungkin tidak dapat dibagikan. Coba berkas lain atau hubungi administrator Anda.",
-      "pickerLoadFailed": "Tidak dapat membuka pemilih berkas. Periksa jaringan Anda dan coba lagi.",
-      "timeout": "Permintaan memakan waktu terlalu lama. Silakan coba lagi.",
-      "unavailable": "Microsoft sementara tidak tersedia. Silakan coba lagi dalam beberapa saat."
+      "pickerLoadFailed": "Tidak dapat membuka pemilih berkas. Periksa jaringan Anda dan coba lagi",
+      "timeout": "Permintaan memakan waktu terlalu lama.",
+      "unavailable": "Microsoft sementara tidak tersedia."
     },
     "source": {
       "finalizing": "Memberikan akses…",
@@ -993,12 +1028,18 @@
       "label": "Bagaimana Anda ingin melampirkan dokumen ini?",
       "linkAction": "Tautkan sumber",
       "linkPrompt": "Tautkan akun Anda untuk memilih berkas dari sumber ini.",
-      "linkPromptMicrosoft": "Tautkan akun Microsoft untuk menjelajahi berkas OneDrive/SharePoint",
+      "linkPromptMicrosoft": "Tautkan akun Microsoft untuk menjelajahi berkas OneDrive/SharePoint.",
       "pickAction": "Pilih sebuah berkas",
       "pickActionMicrosoft": "Jelajahi OneDrive/SharePoint",
-      "pickedFile": "Berkas dipilih: {{ fileName }}",
+      "pickedFile": "Berkas dipilih: {{ filename }}.",
       "repickAction": "Pilih berkas yang berbeda",
       "url": "Tempel URL"
+    },
+    "create": {
+      "failed": "Tidak dapat membuat dokumen"
+    },
+    "postCreate": {
+      "hint": "Setelah Anda membagikan berkas, klik \"periksa ulang akses\" di atas. Anda juga dapat menutup dialog ini dan memeriksa ulang nanti dari tampilan edit dokumen."
     }
   },
   "documentSources": {
@@ -1006,7 +1047,8 @@
     "callback": {
       "error": "Tidak dapat menghubungkan sumber. Sumber: {{ source }}. Alasan: {{ reason }}",
       "linking": "Menautkan akun Anda...",
-      "success": "Sumber terhubung. Sumber: {{ source }}"
+      "success": "Sumber terhubung. Sumber: {{ source }}.",
+      "notConfigured": "{{ Source }} tidak dikonfigurasi di server ini. Hubungi administrator Anda."
     },
     "columns": {
       "account": "Akun",
@@ -1016,12 +1058,12 @@
     },
     "empty": {
       "description": "Tautkan akun penyimpanan awan untuk melampirkan dokumen dari Google Drive, dan layanan lainnya seiring ketersediaannya.",
-      "title": "Tidak ada sumber dokumen yang terhubung"
+      "title": "Tidak ada sumber dokumen yang terhubung."
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "Ditautkan {{ relativeTime }}",
+    "linkedAt": "Ditautkan {{ relativetime }}.",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1047,7 +1089,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "Satu atau lebih elemen yang dipilih memiliki entri metadata. Menghapus elemen-elemen ini akan secara permanen menghapus metadata mereka. Apakah Anda ingin melanjutkan?",
-      "title": "Metadata Akan Hilang"
+      "title": "Metadata Akan Hilang."
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Masukkan deskripsi diagram",
@@ -1056,9 +1098,9 @@
     "editDiagramName": "Klik untuk mengedit nama diagram",
     "editDisabledDuringCollaboration": "Pengeditan dinonaktifkan selama kolaborasi",
     "embedding": {
-      "cannotEmbedIntoTextBox": "Tidak dapat menyematkan bentuk ke dalam kotak teks",
-      "circularEmbeddingPrevented": "Penyematan melingkar tidak diizinkan",
-      "securityBoundaryRestriction": "Batas keamanan hanya dapat disematkan ke dalam batas keamanan lainnya"
+      "cannotEmbedIntoTextBox": "Tidak dapat menyematkan bentuk ke dalam kotak teks.",
+      "circularEmbeddingPrevented": "Penyematan melingkar tidak diizinkan.",
+      "securityBoundaryRestriction": "Batas keamanan hanya dapat disematkan ke dalam batas keamanan lainnya."
     },
     "flowLabel": "Aliran",
     "helpDialog": {
@@ -1087,11 +1129,11 @@
         "addTextbox": "Tambah Kotak Teks",
         "deleteSelected": "Hapus yang Dipilih",
         "export": "Ekspor...",
-        "help": "Bantuan",
+        "help": "Bantuan...",
         "redo": "Ulangi",
-        "showClipboard": "Tampilkan Papan Klip",
-        "showGraphData": "Tampilkan Data Grafik",
-        "showHistory": "Tampilkan Riwayat",
+        "showClipboard": "Tampilkan Papan Klip...",
+        "showGraphData": "Tampilkan Data Grafik...",
+        "showHistory": "Tampilkan Riwayat...",
         "undo": "Batalkan",
         "zoomToFit": "Perbesar Sesuai Layar"
       }
@@ -1125,7 +1167,7 @@
     "loggingInWith": "Masuk dengan {{provider}}...",
     "loginWith": "Masuk dengan",
     "noProvidersConfigured": "Tidak ada penyedia autentikasi yang dikonfigurasi.",
-    "oauthFailed": "Autentikasi OAuth gagal. Silakan coba lagi.",
+    "oauthFailed": "Autentikasi OAuth gagal.",
     "oauthProvidersTitle": "Penyedia Masuk OAuth",
     "samlProvidersTitle": "Penyedia Masuk SAML",
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
@@ -1133,9 +1175,9 @@
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Masuk ke TMI",
     "tmiDialog": {
-      "errorMaxLength": "Nama pengguna harus maksimal 20 karakter",
-      "errorMinLength": "Nama pengguna harus minimal 3 karakter",
-      "errorPattern": "Nama pengguna hanya boleh mengandung huruf, angka, titik, garis bawah, tanda persen, tanda tambah, dan tanda hubung",
+      "errorMaxLength": "Nama pengguna harus maksimal 20 karakter.",
+      "errorMinLength": "Nama pengguna harus minimal 3 karakter.",
+      "errorPattern": "Nama pengguna hanya boleh mengandung huruf, angka, titik, garis bawah, tanda persen, tanda tambah, dan tanda hubung.",
       "signIn": "Masuk",
       "title": "Masuk dengan TMI Provider",
       "usernameLabel": "Nama pengguna",
@@ -1144,7 +1186,7 @@
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },
   "mermaidViewer": {
-    "exportFailed": "Gagal mengekspor diagram",
+    "exportFailed": "Gagal mengekspor diagram.",
     "fitToScreen": "Sesuaikan ke Layar",
     "openInViewer": "Buka di Penampil",
     "resetZoom": "Atur Ulang Zoom",
@@ -1153,7 +1195,7 @@
   },
   "navbar": {
     "admin": "Admin",
-    "appTitle": "TMI: Threat Modeling Improved",
+    "appTitle": "TMI: Threat Modeling Improved.",
     "copyUserEmail": "Salin Email Pengguna ke Papan Klip",
     "dashboard": "Dasbor",
     "feedback": "Laporkan bug, minta fitur, atau berikan umpan balik",
@@ -1171,7 +1213,7 @@
       "logout": "Keluar"
     },
     "serverStatus": {
-      "noServerConfigured": "Server Tidak Dikonfigurasi",
+      "noServerConfigured": "Server Tidak Dikonfigurasi.",
       "serverConnected": "Server Terhubung",
       "serverDegraded": "Server Berkinerja Buruk",
       "serverError": "Kesalahan Server",
@@ -1179,14 +1221,14 @@
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} karakter",
+    "characterCount": "{{Current}} / {{max}} karakter",
     "content": "Konten",
-    "contentPlaceholder": "Masukkan konten catatan dalam format markdown. Mendukung GitHub Flavored Markdown dan diagram Mermaid.",
+    "contentPlaceholder": "Masukkan konten catatan dalam format markdown. Mendukung GitHub Flavored Markdown dan diagram Mermaid",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Deskripsi opsional",
     "editMode": "Mode Edit",
     "errors": {
-      "clipboardAccessDenied": "Akses papan klip ditolak"
+      "clipboardAccessDenied": "Akses papan klip ditolak."
     },
     "namePlaceholder": "Masukkan nama catatan",
     "previewMode": "Mode Pratinjau",
@@ -1206,9 +1248,9 @@
     },
     "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus catatan \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
     "deleteConfirmTitle": "Hapus Catatan",
-    "noNotes": "Belum ada catatan",
-    "sharable": "Terlihat oleh semua anggota",
-    "sharableTooltip": "Saat diaktifkan, catatan ini terlihat oleh semua anggota tim/proyek. Saat dinonaktifkan, hanya admin dan peninjau keamanan yang dapat melihatnya.",
+    "noNotes": "Belum ada catatan.",
+    "sharable": "Terlihat oleh semua anggota.",
+    "sharableTooltip": "Saat diaktifkan, catatan ini terlihat oleh semua anggota tim/proyek. Saat dinonaktifkan, hanya admin dan peninjau keamanan yang dapat melihatnya",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "Catatan ({{count}})"
   },
@@ -1216,35 +1258,35 @@
     "actions": {
       "login": "Masuk"
     },
-    "operationError": "Gagal {{operation}}: {{errorMessage}}",
+    "operationError": "Gagal {{operation}}: {{errormessage}}.",
     "operationFailed": "Operasi gagal",
     "operations": {
       "collaboration": "kolaborasi",
       "denyPresenterRequest": "menolak permintaan presenter",
-      "sendPresenterRequest": "mengirim permintaan presenter",
+      "sendPresenterRequest": "mengirim permintaan presenter.",
       "startCollaboration": "memulai kolaborasi",
       "updatePresenter": "memperbarui presenter"
     },
     "presenter": {
-      "assigned": "{{user}} sekarang menjadi presenter",
-      "assignedYou": "Anda sekarang menjadi presenter",
-      "cleared": "Mode presenter telah dihapus",
-      "cursorMoved": "Kursor presenter berpindah",
-      "modeChanged": "Mode presenter berubah",
-      "privilegesRequested": "Hak akses presenter diminta",
-      "removed": "{{user}} bukan lagi presenter",
-      "removedYou": "Anda bukan lagi presenter",
-      "requestDenied": "Permintaan presenter Anda ditolak",
-      "requestSent": "Permintaan presenter dikirim ke pemilik sesi",
-      "requesting": "{{user}} meminta hak akses presenter",
-      "selectionChanged": "Pilihan presenter berubah"
+      "assigned": "{{User}} sekarang menjadi presenter.",
+      "assignedYou": "Anda sekarang menjadi presenter.",
+      "cleared": "Mode presenter telah dihapus.",
+      "cursorMoved": "Kursor presenter berpindah.",
+      "modeChanged": "Mode presenter berubah.",
+      "privilegesRequested": "Hak akses presenter diminta.",
+      "removed": "{{User}} bukan lagi presenter.",
+      "removedYou": "Anda bukan lagi presenter.",
+      "requestDenied": "Permintaan presenter Anda ditolak.",
+      "requestSent": "Permintaan presenter dikirim ke pemilik sesi.",
+      "requesting": "{{User}} meminta hak akses presenter.",
+      "selectionChanged": "Pilihan presenter berubah."
     },
     "session": {
-      "disconnected": "Terputus dari sesi kolaborasi",
-      "reconnected": "Terhubung kembali ke sesi kolaborasi",
+      "disconnected": "Terputus dari sesi kolaborasi.",
+      "reconnected": "Terhubung kembali ke sesi kolaborasi.",
       "reconnecting": "Menghubungkan kembali ke sesi kolaborasi...",
-      "userRemoved": "{{user}} telah dihapus dari sesi",
-      "youWereRemoved": "Anda telah dihapus dari sesi kolaborasi"
+      "userRemoved": "{{User}} telah dihapus dari sesi.",
+      "youWereRemoved": "Anda telah dihapus dari sesi kolaborasi."
     },
     "unknownError": "Kesalahan tidak diketahui",
     "websocket": {
@@ -1256,63 +1298,63 @@
       "disconnected": "Terputus dari server kolaborasi. Perubahan akan disimpan secara lokal.",
       "messageSendFailed": "Gagal mengirim pesan. Perubahan Anda mungkin tidak tersinkronisasi.",
       "multipleFailed": "Koneksi gagal setelah beberapa percobaan. Bekerja dalam mode offline.",
-      "unknownError": "Terjadi kesalahan WebSocket yang tidak diketahui"
+      "unknownError": "Terjadi kesalahan WebSocket yang tidak diketahui."
     }
   },
   "pagination": {
-    "ariaLabel": "Pilih halaman item",
+    "ariaLabel": "Pilih halaman item.",
     "firstPage": "Halaman pertama",
-    "itemsPerPage": "Item per halaman",
+    "itemsPerPage": "Item per halaman.",
     "lastPage": "Halaman terakhir",
     "nextPage": "Halaman berikutnya",
     "previousPage": "Halaman sebelumnya",
     "rangeEmpty": "0 dari {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} dari {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} dari {{length}}"
   },
   "presenter": {
     "startPresenting": "Mulai Presentasi",
     "stopPresenting": "Hentikan Presentasi"
   },
   "privacy": {
-    "changesContent": "Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Perubahan apa pun akan diposting di halaman ini dengan tanggal \"Terakhir Diperbarui\" yang baru.",
+    "changesContent": "Kami dapat memperbarui kebijakan privasi ini dari waktu ke waktu. Perubahan apa pun akan diposting di halaman ini dengan tanggal \"terakhir diperbarui\" yang baru.",
     "changesTitle": "Perubahan Kebijakan Ini",
-    "complianceContent": "Kami hanya akan mengungkapkan informasi jika diwajibkan oleh hukum, seperti sebagai tanggapan atas perintah pemerintah atau panggilan pengadilan yang sah. Dalam kasus tersebut, Operator akan mematuhi kewajiban hukum yang berlaku.",
+    "complianceContent": "Kami hanya akan mengungkapkan informasi jika diwajibkan oleh hukum, seperti sebagai tanggapan atas perintah pemerintah atau panggilan pengadilan yang sah. Dalam kasus tersebut, operator akan mematuhi kewajiban hukum yang berlaku.",
     "complianceTitle": "Kepatuhan Hukum",
     "contactContent": {
-      "part1": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi Operator situs web ini melalui informasi kontak di halaman ",
-      "part2": "."
+      "part1": "Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi operator situs web ini melalui informasi kontak di halaman.",
+      "part2": " Halaman"
     },
     "contactTitle": "Hubungi Kami",
     "dataSecurityContent1": "Operator menerapkan langkah-langkah keamanan standar industri untuk melindungi data pribadi Anda, termasuk enkripsi saat transit dan saat disimpan, protokol autentikasi yang aman, dan pembaruan keamanan rutin. Akses ke informasi Anda dibatasi hanya untuk personel yang berwenang berdasarkan kebutuhan.",
-    "dataSecurityContent2": "Meskipun tidak ada sistem yang sepenuhnya kebal terhadap risiko, Operator terus memantau dan memperbarui perlindungan untuk memitigasi ancaman dan memastikan kerahasiaan, integritas, dan ketersediaan data Anda.",
+    "dataSecurityContent2": "Meskipun tidak ada sistem yang sepenuhnya kebal terhadap risiko, operator terus memantau dan memperbarui perlindungan untuk memitigasi ancaman dan memastikan kerahasiaan, integritas, dan ketersediaan data Anda.",
     "dataSecurityTitle": "Keamanan Data",
     "dataSharingContent1": "Operator tidak membagikan informasi pribadi Anda kepada pihak ketiga mana pun, kecuali dalam keadaan terbatas berikut:",
-    "dataSharingContent2": "Di luar pengecualian ini, Operator tidak menjual, menyewakan, atau membagikan data Anda kepada entitas lain untuk pemasaran, iklan, atau tujuan lain apa pun.",
-    "dataSharingList1": "Penyedia Layanan: Data Anda dapat disimpan dan diproses pada infrastruktur cloud pihak ketiga yang aman (seperti AWS, Google Cloud, atau penyedia serupa) semata-mata untuk mengoperasikan dan memelihara aplikasi. Penyedia ini terikat secara kontraktual untuk melindungi data Anda dan menggunakannya hanya untuk tujuan yang ditentukan Operator.",
-    "dataSharingList2": "Fitur Perluasan: Aplikasi mendukung fitur perluasan opsional (seperti websockets dan addons) yang dapat memperluas fungsionalitas dengan mengirimkan informasi pilihan ke layanan pihak ketiga untuk diproses. Data dibagikan dengan layanan ini hanya ketika Anda secara aktif menggunakan fitur yang memerlukan transmisi tersebut, dan hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang ditransmisikan.",
-    "dataSharingList2a": "Fitur Pemrosesan AI: Ketika Anda secara aktif meminta fitur yang didukung oleh large language models (LLMs) atau layanan AI serupa, data tertentu dapat ditransmisikan ke penyedia AI pihak ketiga (seperti OpenAI, Anthropic, atau layanan setara) untuk pemrosesan dan pembuatan respons. Hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang dibagikan, dan pembagian tersebut terjadi semata-mata atas arahan Anda. Penyedia ini terikat oleh kewajiban kontraktual — termasuk perjanjian pemrosesan data jika berlaku — untuk menggunakan data secara eksklusif untuk menyediakan layanan yang diminta, dengan pembatasan pada penyimpanan, pelatihan, atau penggunaan lainnya.",
-    "dataSharingList3": "Kepatuhan Hukum: Operator dapat mengungkapkan informasi jika diwajibkan oleh hukum, seperti dalam merespons perintah pengadilan yang sah, surat paksa, atau permintaan pemerintah.",
+    "dataSharingContent2": "Di luar pengecualian ini, operator tidak menjual, menyewakan, atau membagikan data Anda kepada entitas lain untuk pemasaran, iklan, atau tujuan lain apa pun.",
+    "dataSharingList1": "Penyedia layanan: data Anda dapat disimpan dan diproses pada infrastruktur cloud pihak ketiga yang aman (seperti AWS, google cloud, atau penyedia serupa) semata-mata untuk mengoperasikan dan memelihara aplikasi. Penyedia ini terikat secara kontraktual untuk melindungi data Anda dan menggunakannya hanya untuk tujuan yang ditentukan operator.",
+    "dataSharingList2": "Fitur perluasan: aplikasi mendukung fitur perluasan opsional (seperti websockets dan addons) yang dapat memperluas fungsionalitas dengan mengirimkan informasi pilihan ke layanan pihak ketiga untuk diproses. Data dibagikan dengan layanan ini hanya ketika Anda secara aktif menggunakan fitur yang memerlukan transmisi tersebut, dan hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang ditransmisikan.",
+    "dataSharingList2a": "Fitur pemrosesan AI: ketika Anda secara aktif meminta fitur yang didukung oleh large language models (LLMs) atau layanan AI serupa, data tertentu dapat ditransmisikan ke penyedia AI pihak ketiga (seperti OpenAI, Anthropic, atau layanan setara) untuk pemrosesan dan pembuatan respons. Hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang dibagikan, dan pembagian tersebut terjadi semata-mata atas arahan Anda. Penyedia ini terikat oleh kewajiban kontraktual — termasuk perjanjian pemrosesan data jika berlaku — untuk menggunakan data secara eksklusif untuk menyediakan layanan yang diminta, dengan pembatasan pada penyimpanan, pelatihan, atau penggunaan lainnya.",
+    "dataSharingList3": "Kepatuhan hukum: operator dapat mengungkapkan informasi jika diwajibkan oleh hukum, seperti dalam merespons perintah pengadilan yang sah, surat paksa, atau permintaan pemerintah.",
     "dataSharingTitle": "Berbagi Data",
     "informationCollectionContent1": "Ketika pengguna mengautentikasi melalui login sosial (menggunakan penyedia OAuth atau OpenID Connect seperti Sign in with Google, Login with GitHub, Microsoft Entra External ID, atau lainnya), aplikasi mengumpulkan informasi berikut dari penyedia yang dipilih, semata-mata untuk memfasilitasi autentikasi dan menyediakan layanan yang dipersonalisasi:",
-    "informationCollectionContent2": "Tidak ada data pribadi tambahan yang dikumpulkan tanpa persetujuan eksplisit pengguna. Operator tidak mengakses atau menyimpan informasi sensitif seperti kata sandi, kontak, atau data khusus penyedia lainnya di luar yang diperlukan untuk autentikasi. Semua informasi yang dikumpulkan ditangani sesuai dengan kebijakan API penyedia masing-masing dan komitmen Operator terhadap privasi pengguna.",
+    "informationCollectionContent2": "Tidak ada data pribadi tambahan yang dikumpulkan tanpa persetujuan eksplisit pengguna. Operator tidak mengakses atau menyimpan informasi sensitif seperti kata sandi, kontak, atau data khusus penyedia lainnya di luar yang diperlukan untuk autentikasi. Semua informasi yang dikumpulkan ditangani sesuai dengan kebijakan API penyedia masing-masing dan komitmen operator terhadap privasi pengguna.",
     "informationCollectionContent3": "Aplikasi menghasilkan log operasional untuk memastikan keandalan sistem, keamanan, dan kinerja. Log ini dapat berisi catatan aktivitas pengguna dalam aplikasi, seperti acara login, penggunaan fitur, dan laporan kesalahan. Operator menyimpan log hanya selama yang diperlukan untuk memenuhi tujuan operasional, termasuk pemecahan masalah, pemantauan keamanan, dan peningkatan layanan. Log disimpan dengan aman dan tidak digunakan untuk tujuan di luar kebutuhan operasional.",
-    "informationCollectionList1": "Informasi Profil Dasar: Nama lengkap, alamat email, dan foto profil (jika tersedia).",
-    "informationCollectionList2": "Pengenal Unik: ID pengguna khusus penyedia untuk mengelola sesi akun dengan aman.",
+    "informationCollectionList1": "Informasi profil dasar: nama lengkap, alamat email, dan foto profil (jika tersedia).",
+    "informationCollectionList2": "Pengenal unik: ID pengguna khusus penyedia untuk mengelola sesi akun dengan aman.",
     "informationCollectionTitle": "Pengumpulan dan Penggunaan Informasi",
     "intro1": {
-      "part1": "Situs web ini adalah instance dari aplikasi web sumber terbuka (\"TMI\") yang disediakan oleh Operator yang terdaftar di halaman ",
-      "part2": " situs web ini (\"Operator\")."
+      "part1": "Situs web ini adalah instance dari aplikasi web sumber terbuka (\"TMI\") yang disediakan oleh operator yang terdaftar di halaman.",
+      "part2": " Halaman situs web ini (\"operator\")."
     },
-    "intro2": "Operator berkomitmen untuk melindungi privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana informasi Anda ditangani.",
+    "intro2": "Operator berkomitmen untuk melindungi privasi Anda. Kebijakan privasi ini menjelaskan bagaimana informasi Anda ditangani.",
     "introductionTitle": "Pendahuluan",
     "lastUpdatedDate": "2026-01-17",
     "title": "Kebijakan Privasi",
-    "userRightsContent1": "Anda memiliki kontrol penuh atas data pribadi Anda. Kapan saja, Anda dapat mengakses fitur \"Hapus Semua Data Saya\" di bagian Preferensi Pengguna aplikasi.",
-    "userRightsContent2": "Opsi ini memungkinkan penghapusan segera semua data yang disimpan Operator atas nama Anda, termasuk informasi profil dan catatan autentikasi. Setelah diaktifkan, data Anda akan dihapus secara permanen dari sistem Operator dan penyedia pihak ketiga, tunduk pada kewajiban retensi hukum apa pun.",
+    "userRightsContent1": "Anda memiliki kontrol penuh atas data pribadi Anda. Kapan saja, Anda dapat mengakses fitur \"hapus semua data saya\" di bagian preferensi pengguna aplikasi.",
+    "userRightsContent2": "Opsi ini memungkinkan penghapusan segera semua data yang disimpan operator atas nama Anda, termasuk informasi profil dan catatan autentikasi. Setelah diaktifkan, data Anda akan dihapus secara permanen dari sistem operator dan penyedia pihak ketiga, tunduk pada kewajiban retensi hukum apa pun.",
     "userRightsTitle": "Hak Pengguna"
   },
   "projects": {
-    "addButton": "Tambah Proyek",
+    "addButton": "Tambah Proyek...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1323,9 +1365,9 @@
     "createDialog": {
       "descriptionPlaceholder": "Masukkan deskripsi proyek",
       "namePlaceholder": "Masukkan nama proyek",
-      "nameRequired": "Nama proyek wajib diisi",
-      "statusPlaceholder": "mis. active, planning, archived",
-      "teamRequired": "Tim wajib diisi",
+      "nameRequired": "Nama proyek wajib diisi.",
+      "statusPlaceholder": "Mis. active, planning, archived",
+      "teamRequired": "Tim wajib diisi.",
       "title": "Buat Proyek",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1349,15 +1391,15 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "Tidak ada proyek yang ditemukan",
+    "noProjects": "Tidak ada proyek yang ditemukan.",
     "picker": {
       "label": "{{common.project}}",
       "none": "Tanpa Proyek"
     },
     "relatedProjectsDialog": {
-      "addRelated": "Tambah Proyek Terkait",
+      "addRelated": "Tambah Proyek Terkait.",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "Tidak ada proyek terkait",
+      "noRelated": "Tidak ada proyek terkait.",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "Pilih Proyek",
       "title": "Proyek Terkait"
@@ -1377,8 +1419,8 @@
       "planning": "Perencanaan"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "Filter berdasarkan Status",
-    "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata",
+    "statusFilterLabel": "Filter berdasarkan Status.",
+    "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata.",
     "teamFilterLabel": "Filter berdasarkan Tim",
     "title": "Kelola Proyek"
   },
@@ -1386,18 +1428,18 @@
     "cvss": "CVSS",
     "cweIds": "CWE IDs",
     "diagramImageUnavailable": "Gambar diagram tidak tersedia",
-    "diagramRenderFailed": "Diagram tidak dapat dirender",
-    "generatedAt": "Laporan Dihasilkan",
+    "diagramRenderFailed": "Diagram tidak dapat dirender.",
+    "generatedAt": "Laporan Dihasilkan.",
     "linkedAsset": "Aset Tertaut",
     "linkedDiagram": "Diagram Tertaut",
     "pageOf": "Halaman {{current}} dari {{total}}",
     "refLabel": "Ref",
-    "summaryCreatedAt": "Model ancaman dibuat pada",
-    "summaryCreatedBy": "Model ancaman dibuat oleh",
+    "summaryCreatedAt": "Model ancaman dibuat pada.",
+    "summaryCreatedBy": "Model ancaman dibuat oleh.",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "Model ancaman terakhir diubah",
+    "summaryLastModified": "Model ancaman terakhir diubah.",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "Status model ancaman"
+    "summaryStatus": "Status model ancaman."
   },
   "sessionExpiry": {
     "extendButton": "Perpanjang Sesi",
@@ -1405,8 +1447,8 @@
     "logoutButton": "Keluar Sekarang",
     "message": "Sesi Anda akan segera berakhir. Apakah Anda ingin memperpanjang sesi atau keluar sekarang?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} detik"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} detik"
     },
     "title": "Sesi Akan Segera Berakhir"
   },
@@ -1431,13 +1473,13 @@
       "description": "Apa status eksploitasi saat ini dari kerentanan ini?",
       "name": "Eksploitasi",
       "none": "{{common.none}}",
-      "noneDesc": "Tidak ada bukti eksploitasi aktif dan tidak ada bukti konsep publik.",
+      "noneDesc": "Tidak ada bukti eksploitasi aktif dan tidak ada bukti konsep publik",
       "poc": "PoC Publik",
       "pocDesc": "Bukti konsep publik yang tipikal ada (misalnya, di Metasploit atau ExploitDB), atau metode eksploitasi yang terkenal terdokumentasi."
     },
     "methodology": "Pemasok",
     "next": "Berikutnya",
-    "openCalculator": "Tambah SSVC",
+    "openCalculator": "Tambah SSVC...",
     "publicSafetyImpact": {
       "description": "Apakah eksploitasi kerentanan ini menimbulkan risiko terhadap keselamatan publik?",
       "minimal": "Minimal",
@@ -1477,16 +1519,16 @@
     },
     "browse": "Jelajahi Survei",
     "confidentialDialog": {
-      "description": "Haruskah pengiriman ini ditandai sebagai rahasia? Pengiriman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah respons dibuat.",
+      "description": "Haruskah pengiriman ini ditandai sebagai rahasia? Pengiriman rahasia tidak secara otomatis dibagikan dengan grup peninjau keamanan. Pengaturan ini tidak dapat diubah setelah respons dibuat.",
       "no": "Tidak",
       "title": "Pengiriman Rahasia",
       "yes": "Ya, tandai sebagai rahasia"
     },
     "confirmation": {
-      "backToSurveys": "Kembali ke Survei",
+      "backToSurveys": "Kembali ke Survei.",
       "message": "Survei Anda berhasil dikirim.",
       "title": "Survei Terkirim",
-      "viewResponses": "Lihat Respons Saya"
+      "viewResponses": "Lihat Respons Saya."
     },
     "continueDraft": "Lanjutkan Draf",
     "fill": {
@@ -1495,9 +1537,9 @@
     },
     "list": {
       "deleteDraft": "Hapus draf",
-      "draftStarted": "Draf dimulai {{time}}",
-      "errorLoadingSurveys": "Gagal memuat survei",
-      "lastModified": "Terakhir diubah {{time}}",
+      "draftStarted": "Draf dimulai {{time}}.",
+      "errorLoadingSurveys": "Gagal memuat survei.",
+      "lastModified": "Terakhir diubah {{time}}.",
       "loadingSurveys": "Memuat survei...",
       "noSurveysMessage": "Tidak ada survei aktif saat ini. Periksa kembali nanti.",
       "noSurveysTitle": "Tidak Ada Survei Tersedia",
@@ -1509,8 +1551,8 @@
     "myResponses": "Respons Saya",
     "noMatchingResponses": "Tidak Ada Respons yang Cocok",
     "noMatchingResponsesMessage": "Tidak ada respons yang cocok dengan filter yang dipilih.",
-    "noResponses": "Anda belum mengirim respons survei apa pun",
-    "noSurveys": "Tidak ada survei tersedia",
+    "noResponses": "Anda belum mengirim respons survei apa pun.",
+    "noSurveys": "Tidak ada survei tersedia.",
     "responses": {
       "continueEditing": "Lanjutkan mengedit",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1519,11 +1561,11 @@
       "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
       "noResponsesTitle": "Belum Ada Respons",
       "pageTitle": "Respons Survei Saya",
-      "responseCount": "{{count}} respons",
-      "responseCountPlural": "{{count}} respons"
+      "responseCount": "{{Count}} respons",
+      "responseCountPlural": "{{Count}} respons"
     },
     "saveDraft": "Simpan Draf",
-    "startNew": "Mulai Survei",
+    "startNew": "Mulai Survei...",
     "status": {
       "draft": "Draf",
       "needsRevision": "Perlu Revisi",
@@ -1541,7 +1583,7 @@
     "viewResponse": "Lihat Respons"
   },
   "teams": {
-    "addButton": "Tambah Tim",
+    "addButton": "Tambah Tim...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "Diubah",
@@ -1554,8 +1596,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "Masukkan nama tim",
-      "nameRequired": "Nama tim wajib diisi",
-      "statusPlaceholder": "mis. active, archived",
+      "nameRequired": "Nama tim wajib diisi.",
+      "statusPlaceholder": "Mis. active, archived.",
       "title": "Buat Tim",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1574,7 +1616,7 @@
     "filterLabel": "Filter Tim",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "Anggota",
+      "members": "Anggota...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1588,13 +1630,13 @@
       "role": "Peran",
       "title": "Anggota Tim"
     },
-    "noTeams": "Tidak ada tim ditemukan",
+    "noTeams": "Tidak ada tim ditemukan.",
     "relatedTeamsDialog": {
-      "addRelated": "Tambah Tim Terkait",
+      "addRelated": "Tambah Tim Terkait.",
       "customRelationship": "Hubungan Kustom",
-      "noRelated": "Tidak ada tim terkait",
+      "noRelated": "Tidak ada tim terkait.",
       "relationship": "Hubungan",
-      "removeRelated": "Hapus Tim Terkait",
+      "removeRelated": "Hapus Tim Terkait.",
       "selectTeam": "Pilih Tim",
       "title": "Tim Terkait"
     },
@@ -1610,7 +1652,7 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "Tambah Pihak Yang Bertanggung Jawab",
-      "noParties": "Tidak ada pihak yang bertanggung jawab",
+      "noParties": "Tidak ada pihak yang bertanggung jawab.",
       "removeParty": "Hapus Pihak Yang Bertanggung Jawab",
       "title": "Pihak Yang Bertanggung Jawab"
     },
@@ -1631,25 +1673,25 @@
       "splitting": "Memisah",
       "winding_down": "Ditutup Bertahap"
     },
-    "subtitle": "Buat, edit, dan kelola tim, anggota, dan hubungan",
+    "subtitle": "Buat, edit, dan kelola tim, anggota, dan hubungan.",
     "title": "Kelola Tim"
   },
   "threatEditor": {
-    "addMapping": "Tambah Pemetaan",
+    "addMapping": "Tambah Pemetaan...",
     "createNewThreat": "Buat Ancaman Baru",
-    "cvssVectorPlaceholder": "mis., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvssVectorPlaceholder": "Mis., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Masukkan ID CWE (mis., CWE-79)",
     "cweMappings": "Pemetaan CWE",
     "frameworkMappingPicker": {
       "notApplicable": "Tidak berlaku untuk jenis sel saat ini",
       "title": "Pilih Pemetaan Kerangka"
     },
-    "frameworkMappings": "Pemetaan Kerangka Model Ancaman",
+    "frameworkMappings": "Pemetaan Kerangka Model Ancaman.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "Tidak terkait dengan aset",
-    "notAssociatedWithCell": "Tidak Terkait dengan Sel",
-    "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram",
+    "notAssociatedWithAsset": "Tidak terkait dengan aset.",
+    "notAssociatedWithCell": "Tidak Terkait dengan Sel.",
+    "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram.",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1667,7 +1709,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "Ditunda (P4)",
+      "high": "Tinggi (P1)",
+      "immediate": "Segera (P0)",
+      "low": "Rendah (P3)",
+      "medium": "Sedang (P2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1682,7 +1729,7 @@
       "high": "Tinggi",
       "high.description": "Dampak signifikan atau kemungkinan tinggi; memungkinkan akses tidak sah besar, eskalasi hak istimewa, atau gangguan layanan.",
       "informational": "Informasional",
-      "informational.description": "Tidak dapat dieksploitasi secara langsung; rekomendasi, penyimpangan praktik terbaik, atau peningkatan konfigurasi.",
+      "informational.description": "Tidak dapat dieksploitasi secara langsung; rekomendasi, penyimpangan praktik terbaik, atau peningkatan konfigurasi",
       "low": "Rendah",
       "low.description": "Dampak minimal atau kemungkinan rendah; dampak bisnis dapat diabaikan, memerlukan kondisi spesifik atau interaksi pengguna.",
       "medium": "Sedang",
@@ -1710,33 +1757,39 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "Positif Palsu",
+      "mitigation_in_progress": "Mitigasi Sedang Berlangsung.",
+      "mitigation_planned": "Mitigasi Direncanakan",
+      "verification_pending": "Verifikasi Tertunda"
+    },
+    "addCvssEntry": "Tambah Entri CVSS.",
+    "cvssVector": "Vektor CVSS"
   },
   "threatModels": {
     "addPermission": "Tambah Izin",
     "branch": "Cabang",
-    "changeSecurityReviewer": "Ubah Peninjau Keamanan",
+    "changeSecurityReviewer": "Ubah Peninjau Keamanan...",
     "clearSecurityReviewer": "Hapus Peninjau Keamanan",
     "commit": "Commit",
     "confidentialProject": "Proyek Rahasia",
-    "createFirstButton": "Buat Model Ancaman Pertama Anda",
+    "createFirstButton": "Buat Model Ancaman Pertama Anda...",
     "createNewDiagram": "Buat Diagram Baru",
-    "createNewRepository": "Tambah Referensi Repositori",
+    "createNewRepository": "Tambah Referensi Repositori...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagram Aliran Data",
-    "deleteError": "Gagal menghapus model ancaman: {{error}}",
-    "deleteSuccess": "Model ancaman telah dihapus: {{name}}",
+    "deleteError": "Gagal menghapus model ancaman: {{error}}.",
+    "deleteSuccess": "Model ancaman telah dihapus: {{name}}.",
     "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen semua diagram, ancaman, dan metadata terkait.",
-    "descriptionPlaceholder": "Jelaskan Tujuan dan Ruang Lingkup Model Ancaman Ini",
+    "descriptionPlaceholder": "Jelaskan tujuan dan ruang lingkup model ancaman ini",
     "details": "Detail Model Ancaman",
     "diagramName": "Nama Diagram",
     "diagramPreview": "Pratinjau Diagram",
     "diagramType": "Jenis Diagram",
     "diagrams": "{{common.objectTypes.diagrams}}",
-    "documentDescriptionPlaceholder": "Jelaskan Tujuan atau Konten Dokumen",
+    "documentDescriptionPlaceholder": "Jelaskan tujuan atau konten dokumen",
     "documentEditor": {
       "title": {
         "create": "Buat Referensi Dokumen",
@@ -1748,31 +1801,31 @@
     "documentUrl": "URL Dokumen",
     "export": "Ekspor",
     "exportDialog": {
-      "error": "Gagal menyiapkan data ekspor. Silakan coba lagi.",
+      "error": "Gagal menyiapkan data ekspor.",
       "preparing": "Menyiapkan data ekspor...",
       "ready": "Ekspor siap. Klik Simpan untuk mengunduh.",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "Ekspor Model Ancaman"
     },
-    "fileSizeExceeded": "File melebihi ukuran impor maksimum: {{maxSize}} MB",
-    "frameworkDisabledHint": "Tidak Dapat Mengubah Framework Ketika Ancaman Ada",
+    "fileSizeExceeded": "File melebihi ukuran impor maksimum: {{maxsize}} MB.",
+    "frameworkDisabledHint": "Tidak dapat mengubah framework ketika ancaman ada",
     "idLabel": "{{common.id}}",
-    "importError": "Gagal mengimpor model ancaman: {{error}}",
-    "importFormatError": "Format model ancaman tidak valid: field wajib tidak ditemukan (id, name)",
-    "importSuccess": "Model ancaman berhasil diimpor: {{name}}",
-    "importValidationError": "Validasi model ancaman gagal: {{errors}}",
+    "importError": "Gagal mengimpor model ancaman: {{error}}.",
+    "importFormatError": "Format model ancaman tidak valid: field wajib tidak ditemukan (ID, name).",
+    "importSuccess": "Model ancaman berhasil diimpor: {{name}}.",
+    "importValidationError": "Validasi model ancaman gagal: {{errors}}.",
     "importing": "Mengimpor model ancaman...",
     "issueUriHint": "Masukkan URL untuk melacak model ancaman ini di sistem eksternal",
     "newThreatModel": "Model Ancaman Baru",
-    "noAssets": "Belum Ada Aset Ditambahkan",
-    "noDiagrams": "Belum Ada Diagram Ditambahkan",
-    "noDocuments": "Belum Ada Dokumen Ditambahkan",
+    "noAssets": "Belum Ada Aset Ditambahkan.",
+    "noDiagrams": "Belum Ada Diagram Ditambahkan.",
+    "noDocuments": "Belum Ada Dokumen Ditambahkan.",
     "noItemsMessage": "Anda Belum Memiliki Model Ancaman.",
-    "noNotes": "Belum Ada Catatan Ditambahkan",
-    "noPermissions": "Tidak Ada Izin Ditetapkan",
-    "noRepositories": "Belum Ada Repositori Ditambahkan",
-    "noThreats": "Belum Ada Ancaman Ditambahkan",
+    "noNotes": "Belum Ada Catatan Ditambahkan.",
+    "noPermissions": "Tidak Ada Izin Ditetapkan.",
+    "noRepositories": "Belum Ada Repositori Ditambahkan.",
+    "noThreats": "Belum Ada Ancaman Ditambahkan.",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
@@ -1800,9 +1853,9 @@
     "sections": {
       "audit": "Audit",
       "inputs": "Input",
-      "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis",
+      "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis.",
       "outputs": "Output",
-      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan",
+      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan.",
       "reviewProcess": "Proses Tinjauan"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1828,28 +1881,34 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "Sedang Berlangsung",
+      "not_started": "Belum Dimulai",
+      "pending_review": "Menunggu Tinjauan",
+      "remediation_in_progress": "Remediasi Sedang Berlangsung.",
+      "remediation_required": "Remediasi Diperlukan",
+      "verification_pending": "Verifikasi Tertunda"
     },
-    "statusLastUpdated": "Status Terakhir Diperbarui",
+    "statusLastUpdated": "Status Terakhir Diperbarui.",
     "tag": "Tag",
     "threatModelFramework": "Framework Model Ancaman",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "Tambah Aset",
-      "addDiagram": "Tambah Diagram",
-      "addDocument": "Tambah Dokumen",
+      "addAsset": "Tambah Aset...",
+      "addDiagram": "Tambah Diagram...",
+      "addDocument": "Tambah Dokumen...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "Aset adalah sumber daya berharga dalam sistem yang memerlukan perlindungan, seperti data, perangkat keras, perangkat lunak, infrastruktur, layanan, atau personel.",
-      "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
-      "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
+      "assetsCardTitle": "Aset adalah sumber daya berharga dalam sistem yang memerlukan perlindungan, seperti data, perangkat keras, perangkat lunak, infrastruktur, layanan, atau personel",
+      "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis",
+      "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis",
       "downloadModel": "Unduh Model",
       "dropToCreateDocument": "Lepas untuk membuat",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "Lepas untuk mengatur URI isu",
       "import": "Impor",
-      "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis.",
-      "repositoriesCardTitle": "Repositori adalah tautan ke Repositori Kode Sumber tempat kode sumber sistem dikelola.",
-      "threatsCardTitle": "Ancaman adalah potensi peristiwa atau tindakan merugikan yang mengeksploitasi kerentanan atau kelemahan dalam sistem untuk mengkompromikan kerahasiaan, integritas, ketersediaan, atau tujuan keamanan lainnya. Di TMI, objek ancaman juga berisi informasi tentang jenis dan tingkat risiko yang terkait dengan ancaman dan informasi untuk melacak pekerjaan yang diperlukan untuk memitigasi ancaman."
+      "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis",
+      "repositoriesCardTitle": "Repositori adalah tautan ke repositori kode sumber tempat kode sumber sistem dikelola",
+      "threatsCardTitle": "Ancaman adalah potensi peristiwa atau tindakan merugikan yang mengeksploitasi kerentanan atau kelemahan dalam sistem untuk mengkompromikan kerahasiaan, integritas, ketersediaan, atau tujuan keamanan lainnya. Di TMI, objek ancaman juga berisi informasi tentang jenis dan tingkat risiko yang terkait dengan ancaman dan informasi untuk melacak pekerjaan yang diperlukan untuk memitigasi ancaman"
     },
     "viewDiagramName": "Lihat Properti Diagram",
     "yourThreatModels": "Model Ancaman Anda"
@@ -1870,12 +1929,12 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Jika Anda memiliki pertanyaan tentang Ketentuan ini, silakan hubungi Operator situs web ini melalui informasi kontak di halaman ",
-      "part2": "."
+      "part1": "Jika Anda memiliki pertanyaan tentang ketentuan ini, silakan hubungi operator situs web ini melalui informasi kontak di halaman.",
+      "part2": " Halaman"
     },
     "intro": {
-      "part1": "Selamat datang di instance TMI kami. Ketentuan Penggunaan (\"Ketentuan\") ini mengatur akses dan penggunaan Anda atas situs web ini, yang disediakan oleh Operator yang terdaftar di halaman ",
-      "part2": " situs web ini (\"Operator\")."
+      "part1": "Selamat datang di instance TMI kami. Ketentuan Penggunaan (\"Ketentuan\") ini mengatur akses dan penggunaan Anda atas situs web ini, yang disediakan oleh operator yang terdaftar di halaman.",
+      "part2": " Halaman situs web ini (\"operator\")."
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
@@ -1891,28 +1950,28 @@
       "title": "3. Tanpa Jaminan"
     },
     "section4": {
-      "content": "Sejauh diizinkan oleh hukum, Operator tidak bertanggung jawab atas kerusakan langsung, tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan Anda atau ketidakmampuan untuk menggunakan situs web.",
+      "content": "Sejauh diizinkan oleh hukum, operator tidak bertanggung jawab atas kerusakan langsung, tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan Anda atau ketidakmampuan untuk menggunakan situs web.",
       "title": "4. Batasan Tanggung Jawab"
     },
     "section5": {
       "content": {
-        "part1": "Situs web ini menjalankan perangkat lunak sumber terbuka TMI. Kode sumbernya tersedia di tautan yang disediakan di halaman ",
-        "part2": " situs web ini. Penggunaan Anda atas perangkat lunak tunduk pada ketentuan lisensi sumber terbukanya. Kami tidak bertanggung jawab atas perangkat lunak itu sendiri, hanya untuk mengoperasikan instance ini. Kecuali dinyatakan lain, Operator situs web ini tidak berafiliasi dengan proyek TMI atau penciptanya."
+        "part1": "Situs web ini menjalankan perangkat lunak sumber terbuka TMI. Kode sumbernya tersedia di tautan yang disediakan di halaman.",
+        "part2": " Halaman situs web ini. Penggunaan Anda atas perangkat lunak tunduk pada ketentuan lisensi sumber terbukanya. Kami tidak bertanggung jawab atas perangkat lunak itu sendiri, hanya untuk mengoperasikan instance ini. Kecuali dinyatakan lain, operator situs web ini tidak berafiliasi dengan proyek TMI atau penciptanya."
       },
       "title": "5. Perangkat Lunak Sumber Terbuka"
     },
     "section6": {
-      "content": "Operator dapat memperbarui Ketentuan ini kapan saja. Penggunaan berkelanjutan atas situs web setelah perubahan merupakan penerimaan atas Ketentuan yang diperbarui.",
+      "content": "Operator dapat memperbarui ketentuan ini kapan saja. Penggunaan berkelanjutan atas situs web setelah perubahan merupakan penerimaan atas ketentuan yang diperbarui.",
       "title": "6. Perubahan Ketentuan"
     },
     "section7": {
-      "content": "Operator berhak untuk menangguhkan atau mengakhiri akses ke situs web atas kebijakan Operator, tanpa pemberitahuan, untuk alasan apa pun.",
+      "content": "Operator berhak untuk menangguhkan atau mengakhiri akses ke situs web atas kebijakan operator, tanpa pemberitahuan, untuk alasan apa pun.",
       "title": "7. Pengakhiran"
     },
     "section8": {
       "content": {
-        "part1": "Ketentuan ini diatur oleh hukum yurisdiksi yang ditentukan oleh Operator di halaman ",
-        "part2": ", tanpa memperhatikan prinsip konflik hukum."
+        "part1": "Ketentuan ini diatur oleh hukum yurisdiksi yang ditentukan oleh operator di halaman.",
+        "part2": " Halaman, tanpa memperhatikan prinsip konflik hukum."
       },
       "title": "8. Hukum yang Berlaku"
     },
@@ -1939,9 +1998,9 @@
         "question": "Pertanyaan"
       },
       "markdownSupported": "Markdown didukung",
-      "noNotes": "Belum ada catatan triage",
-      "noResponses": "Tidak ada respons tercatat",
-      "noRevisionNotes": "Tidak ada catatan revisi",
+      "noNotes": "Belum ada catatan triage.",
+      "noResponses": "Tidak ada respons tercatat.",
+      "noRevisionNotes": "Tidak ada catatan revisi.",
       "note": "catatan",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "Masukkan isi catatan...",
@@ -1969,11 +2028,11 @@
       "approve": "Setujui",
       "approveSelected": "Setujui yang Dipilih",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "Gagal memuat tanggapan",
+      "errorLoadingResponses": "Gagal memuat tanggapan.",
       "loadingResponses": "Memuat tanggapan...",
-      "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda",
+      "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda.",
       "noResponsesTitle": "Tidak Ada Tanggapan",
-      "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase",
+      "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase.",
       "notSubmitted": "Belum dikirim",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Cari berdasarkan pengirim atau survei...",
@@ -1981,16 +2040,16 @@
       "submitter": "Pengirim"
     },
     "markInReview": "Tandai Sedang Ditinjau",
-    "markPendingTriage": "Tandai Menunggu Triase",
+    "markPendingTriage": "Tandai Menunggu Triase.",
     "messages": {
-      "approveError": "Gagal menyetujui tanggapan",
+      "approveError": "Gagal menyetujui tanggapan.",
       "approveSuccess": "Tanggapan disetujui",
-      "createThreatModelError": "Gagal membuat model ancaman",
-      "createThreatModelSuccess": "Model ancaman berhasil dibuat",
-      "returnForRevisionError": "Gagal mengembalikan tanggapan untuk revisi",
-      "returnForRevisionSuccess": "Tanggapan dikembalikan untuk revisi"
+      "createThreatModelError": "Gagal membuat model ancaman.",
+      "createThreatModelSuccess": "Model ancaman berhasil dibuat.",
+      "returnForRevisionError": "Gagal mengembalikan tanggapan untuk revisi.",
+      "returnForRevisionSuccess": "Tanggapan dikembalikan untuk revisi."
     },
-    "noResponses": "Tidak ada respons untuk ditriase",
+    "noResponses": "Tidak ada respons untuk ditriase.",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "Masukkan isi catatan (Markdown didukung)...",
@@ -2002,16 +2061,16 @@
       }
     },
     "queue": "Antrean Triase",
-    "returnToSubmitted": "Kembalikan ke Terkirim",
+    "returnToSubmitted": "Kembalikan ke Terkirim.",
     "reviewerAssignment": {
       "assign": "Tetapkan",
       "assignToMe": "Tetapkan ke Saya",
-      "errorLoading": "Gagal memuat model ancaman yang tidak ditugaskan",
+      "errorLoading": "Gagal memuat model ancaman yang tidak ditugaskan.",
       "loading": "Memuat ulasan yang tidak ditugaskan...",
       "noUnassigned": "Tidak Ada Ulasan yang Tidak Ditugaskan",
-      "noUnassignedDescription": "Semua model ancaman aktif memiliki reviewer keamanan yang ditugaskan",
+      "noUnassignedDescription": "Semua model ancaman aktif memiliki peninjau keamanan yang ditugaskan.",
       "noUnassignedFiltered": "Tidak ada model ancaman yang cocok dengan filter Anda",
-      "reviewer": "Reviewer Keamanan",
+      "reviewer": "Peninjau Keamanan",
       "reviewerPlaceholder": "Filter berdasarkan reviewer...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Pilih reviewer...",
@@ -2019,7 +2078,7 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka.",
+      "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka",
       "hint": "Wajib diisi — jelaskan perubahan apa yang diperlukan",
       "label": "Catatan Revisi",
       "placeholder": "Jelaskan revisi yang diperlukan...",
@@ -2052,15 +2111,15 @@
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "Opsional: Jelaskan untuk apa kredensial ini digunakan",
-        "descriptionPlaceholder": "Digunakan untuk integrasi pipeline CI/CD",
-        "descriptionTooLong": "Deskripsi harus 500 karakter atau kurang",
+        "descriptionPlaceholder": "Digunakan untuk integrasi pipeline CI/CD.",
+        "descriptionTooLong": "Deskripsi harus 500 karakter atau kurang.",
         "expiresAt": "Tanggal Kedaluwarsa",
         "expiresAtHint": "Opsional: Biarkan kosong untuk tanpa kedaluwarsa",
         "name": "{{common.name}}",
         "nameHint": "Nama deskriptif untuk kredensial ini",
         "namePlaceholder": "Kredensial API Saya",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "Nama harus 100 karakter atau kurang",
+        "nameTooLong": "Nama harus 100 karakter atau kurang.",
         "title": "Buat Kredensial Klien"
       },
       "createdOn": "{{common.created}}",
@@ -2070,7 +2129,7 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Terakhir Digunakan",
       "neverExpires": "Tidak pernah kedaluwarsa",
-      "noCredentials": "Belum ada kredensial klien",
+      "noCredentials": "Belum ada kredensial klien.",
       "noCredentialsDescription": "Buat kredensial untuk mengakses API TMI secara terprogram.",
       "secretDialog": {
         "title": "Kredensial Klien Dibuat",
@@ -2085,7 +2144,7 @@
       "emailDoesNotMatch": "Alamat email tidak cocok",
       "emailMatches": "Alamat email cocok",
       "explanation": {
-        "bullet1": "Data Penyedia Identitas Anda, termasuk ID pengguna, nama, dan email.",
+        "bullet1": "Data penyedia identitas Anda, termasuk ID pengguna, nama, dan email.",
         "bullet2": "Izin Anda dari semua objek model ancaman yang tidak Anda miliki.",
         "bullet3": "Untuk model ancaman yang Anda miliki:",
         "bullet3a": "Jika ada pemilik lain, kepemilikan akan dialihkan kepada mereka, dan izin Anda akan dicabut.",
@@ -2096,7 +2155,7 @@
       "title": "Hapus Semua Data Saya",
       "validation": "Untuk mengonfirmasi permintaan penghapusan Anda, ketik alamat email Anda persis seperti yang tertera di sini:"
     },
-    "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
+    "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram.",
     "displayPreferences": "Preferensi Tampilan",
     "downloadLog": {
       "hint": "Mengunduh entri log aplikasi terbaru sebagai file JSONL untuk pemecahan masalah.",
@@ -2106,12 +2165,12 @@
     "marginSize": {
       "narrow": "Sempit",
       "standard": "Standar",
-      "title": "Ukuran Margin Pilihan untuk Laporan",
+      "title": "Ukuran Margin Pilihan untuk Laporan.",
       "wide": "Lebar"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "Ukuran Halaman Pilihan untuk Laporan",
+      "title": "Ukuran Halaman Pilihan untuk Laporan.",
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferensi Laporan",
@@ -2121,8 +2180,8 @@
       "diagramLayout": "Diagram Layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "Tampilkan Alat Pengembang",
-    "showShapeBordersWithIcons": "Tampilkan isian dan batas bentuk saat ikon ditampilkan",
+    "showDeveloperTools": "Tampilkan Alat Pengembang.",
+    "showShapeBordersWithIcons": "Tampilkan isian dan batas bentuk saat ikon ditampilkan.",
     "tabs": {
       "credentials": "Kredensial",
       "danger": "Bahaya",
@@ -2140,9 +2199,9 @@
     "transferData": {
       "confirmMessage": "Apakah Anda yakin ingin mengalihkan semua model ancaman dan respons survei Anda ke {{email}}? Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
       "dialogTitle": "Alihkan Data Saya",
-      "error": "Gagal mengalihkan data. Silakan coba lagi.",
+      "error": "Gagal mengalihkan data.",
       "hint": "Alihkan kepemilikan semua model ancaman dan respons survei Anda ke pengguna lain. Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
-      "success": "Dialihkan {{tmCount}} model ancaman dan {{responseCount}} respons survei.",
+      "success": "Dialihkan {{tmcount}} model ancaman dan {{responsecount}} respons survei.",
       "title": "Alihkan Data Saya ke Pengguna Lain"
     },
     "userProfile": {
@@ -2156,13 +2215,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "Lihat dan edit proyek, tim, dan hubungan Anda",
+    "subtitle": "Lihat dan edit proyek, tim, dan hubungan Anda.",
     "title": "Proyek Saya"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "Lihat dan edit tim, anggota, dan hubungan Anda",
+    "subtitle": "Lihat dan edit tim, anggota, dan hubungan Anda.",
     "title": "Tim Saya"
   }
 }
