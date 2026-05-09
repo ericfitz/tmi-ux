@@ -2,14 +2,14 @@
   "about": {
     "bugReport": "बग रिपोर्ट दर्ज करें या सुविधा का अनुरोध करें",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
-    "contactjurisdiction": "कानूनी अधिकार क्षेत्र",
+    "contactjurisdiction": "कानूनी क्षेत्राधिकार",
     "contactoperator": "संचालक",
     "contactoperatordetails": "संचालक संपर्क",
-    "contacttitle": "संचालक द्वारा",
+    "contacttitle": "द्वारा संचालित",
     "description1": "TMI (थ्रेट मॉडलिंग इम्प्रूव्ड) एक सहयोगी प्लेटफ़ॉर्म है जो किसी संगठन की सुरक्षा समीक्षा प्रक्रिया को प्रबंधित करने के लिए है, जिसमें थ्रेट मॉडलिंग शामिल है। हमारा मिशन सुरक्षा समीक्षा की मेहनत को कम करना और थ्रेट मॉडलिंग को सुलभ, कुशल और सॉफ्टवेयर विकास जीवनचक्र में एकीकृत बनाना है।",
     "description2": "इस प्लेटफ़ॉर्म में सुरक्षा समीक्षा संगठन और स्थिति प्रबंधन, रीयल-टाइम सहयोग के साथ इंटरैक्टिव डेटा फ्लो डायग्राम निर्माण, और व्यापक खतरा दस्तावेज़ीकरण क्षमताएं शामिल हैं। आधुनिक वेब तकनीकों के साथ निर्मित, TMI टीमों को सुरक्षा समीक्षा प्रक्रिया प्रबंधित करने और सहयोगी मॉडलिंग के माध्यम से सुरक्षा खतरों की पहचान, विश्लेषण और शमन करने में मदद करता है।",
     "opensource": {
-      "categoryInputSanitization": "इनपुट सैनिटाइज़ेशन",
+      "categoryInputSanitization": "इनपुट स्वच्छता",
       "categoryNoteEditing": "नोट संपादन",
       "categoryPdfProcessing": "PDF प्रोसेसिंग",
       "paragraph1": "यह एप्लिकेशन असाधारण ओपन-सोर्स प्रोजेक्ट्स के समर्थन से बनाया गया है। हम इन प्रोजेक्ट्स के पीछे के समुदायों के आभारी हैं जो हमारे इंटरफ़ेस और कार्यक्षमता को जीवंत करने वाली क्षमताएं प्रदान करते हैं।",
@@ -22,11 +22,11 @@
     "sourcetitle": "TMI प्रोजेक्ट",
     "title": "TMI के बारे में",
     "trademarks": "सभी उत्पाद नाम, लोगो और ब्रांड उनके संबंधित मालिकों की संपत्ति हैं। इस अनुप्रयोग में उपयोग किए गए सभी कंपनी, उत्पाद और सेवा के नाम केवल पहचान उद्देश्यों के लिए हैं। इन नामों, लोगो और ब्रांड का उपयोग अनुमोदन का संकेत नहीं देता।",
-    "version": "संस्करण जानकारी",
+    "version": "संस्करण",
     "webApplication": "वेब एप्लिकेशन",
     "webApplicationSourceCode": "वेब एप्लिकेशन स्रोत कोड",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "wiki": "TMI विकी",
+    "wiki": "TMI विकि",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "addons": {
@@ -41,7 +41,7 @@
       "parameters": "पैरामीटर",
       "threatModelId": "थ्रेट मॉडल ID",
       "title": "ऐडऑन आमंत्रित करें",
-      "valueTooLong": "मान अधिकतम लंबाई से अधिक है"
+      "valueTooLong": "मान अधिकतम लंबाई से अधिक है।"
     }
   },
   "admin": {
@@ -103,12 +103,12 @@
         "displayName": "प्रदर्शन नाम",
         "displayNameHint": "मानव-पठनीय समूह नाम",
         "displayNamePlaceholder": "मेरा कस्टम समूह",
-        "displayNameRequired": "प्रदर्शन नाम आवश्यक है",
+        "displayNameRequired": "प्रदर्शन नाम आवश्यक है।",
         "groupName": "समूह पहचानकर्ता",
         "groupNameHint": "केवल अल्फ़ान्यूमेरिक, हाइफ़न और अंडरस्कोर",
-        "groupNamePattern": "केवल अल्फ़ान्यूमेरिक, हाइफ़न और अंडरस्कोर की अनुमति है",
+        "groupNamePattern": "केवल अल्फान्यूमेरिक, हाइफ़न, और अंडरस्कोर की अनुमति है।",
         "groupNamePlaceholder": "my-custom-group",
-        "groupNameRequired": "समूह पहचानकर्ता आवश्यक है",
+        "groupNameRequired": "समूह पहचानकर्ता आवश्यक है।",
         "save": "समूह बनाएं",
         "title": "समूह जोड़ें"
       },
@@ -123,9 +123,9 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "ऑटोमेशन खातों को प्रशासक समूह का सदस्य बनने की अनुमति नहीं है। ऑटोमेशन खातों को एप्लिकेशन के प्रशासनिक कार्यों तक कभी भी पहुंच नहीं होनी चाहिए।",
+        "automationAdminBlocked": "ऑटोमेशन खाते प्रशासक समूह के सदस्य नहीं हो सकते। ऑटोमेशन खातों को एप्लिकेशन के प्रशासनिक कार्यों तक कभी भी पहुँच नहीं होनी चाहिए।",
         "currentMembers": "वर्तमान सदस्य",
-        "noMembers": "इस समूह में कोई सदस्य नहीं",
+        "noMembers": "इस समूह में कोई सदस्य नहीं है।",
         "removeTooltip": "समूह से हटाएं",
         "searchHint": "खोजने के लिए कम से कम 2 अक्षर टाइप करें",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,13 +133,13 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "कोई समूह नहीं मिला",
-      "subtitle": "सिस्टम समूहों को देखें और प्रबंधित करें",
+      "noGroups": "कोई समूह नहीं मिला।",
+      "subtitle": "सिस्टम समूह देखें और प्रबंधित करें।",
       "title": "समूह प्रबंधित करें",
-      "viewMembersTooltip": "समूह सदस्यों को देखें और प्रबंधित करें"
+      "viewMembersTooltip": "समूह सदस्य देखें और प्रबंधित करें..."
     },
     "quotas": {
-      "addButton": "कोटा जोड़ें",
+      "addButton": "कोटा जोड़ें...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "कोटा कॉन्फ़िगर करें",
@@ -160,32 +160,32 @@
       "filterLabel": "कोटा फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या उपयोगकर्ता ID द्वारा खोजें",
       "maxSubscriptions": "अधिकतम सब्सक्रिप्शन",
-      "noUserAPIQuotas": "कोई कस्टम API कोटा नहीं मिला",
-      "noWebhookQuotas": "कोई कस्टम webhook कोटा नहीं मिला",
+      "noUserAPIQuotas": "कोई कस्टम API कोटा नहीं मिला।",
+      "noWebhookQuotas": "कोई कस्टम webhook कोटा नहीं मिला।",
       "requestsPerHour": "प्रति घंटे अनुरोध",
       "requestsPerMinute": "प्रति मिनट अनुरोध",
       "subReqPerDay": "प्रति दिन सब्सक्रिप्शन अनुरोध",
       "subReqPerMinute": "प्रति मिनट सब्सक्रिप्शन अनुरोध",
-      "subtitle": "उपयोगकर्ताओं के लिए दर सीमाएं और कोटा कॉन्फ़िगर करें",
+      "subtitle": "उपयोगकर्ताओं के लिए दर सीमाएं और कोटा कॉन्फ़िगर करें।",
       "title": "कोटा प्रबंधित करें",
       "userAPITitle": "API दर सीमाएं",
       "webhookTitle": "Webhook सीमाएं"
     },
     "sections": {
       "addons": {
-        "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें",
+        "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें।",
         "title": "ऐडऑन"
       },
       "groups": {
-        "description": "उपयोगकर्ता समूह और सदस्यताएं कॉन्फ़िगर करें",
+        "description": "उपयोगकर्ता समूह और सदस्यता कॉन्फ़िगर करें।",
         "title": "समूह"
       },
       "projects": {
-        "description": "प्रकल्प, संबंध और मेटाडेटा प्रबंधित करें",
+        "description": "प्रोजेक्ट, संबंध, और मेटाडेटा प्रबंधित करें।",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
+        "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें।",
         "title": "कोटा"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "सेटिंग्स"
       },
       "surveys": {
-        "description": "सर्वेक्षण बनाएं और प्रबंधित करें",
+        "description": "सर्वेक्षण बनाएं और प्रबंधित करें।",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "टीमों और टीम सदस्यता का प्रबंधन करें",
+        "description": "टीमें और टीम सदस्यता प्रबंधित करें।",
         "title": "टीमें"
       },
       "users": {
-        "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
+        "description": "उपयोगकर्ता खाते देखें और प्रबंधित करें।",
         "title": "उपयोगकर्ता"
       },
       "webhooks": {
-        "description": "Webhook एकीकरण इंस्टॉल और कॉन्फ़िगर करें",
+        "description": "Webhook एकीकरण इंस्टॉल और कॉन्फ़िगर करें।",
         "title": "वेबहुक"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "इस सेटिंग का वैकल्पिक विवरण",
         "key": "{{common.metadataKey}}",
         "keyHint": "डॉट और अंडरस्कोर के साथ लोअरकेस (उदा., rate_limit.max_rpm)",
-        "keyInvalid": "लोअरकेस अक्षर से शुरू होना चाहिए, केवल लोअरकेस अक्षर, संख्या, डॉट और अंडरस्कोर का उपयोग करें",
-        "keyRequired": "कुंजी आवश्यक है",
+        "keyInvalid": "लोअरकेस अक्षर से शुरू होना चाहिए, केवल लोअरकेस अक्षर, अंक, डॉट, और अंडरस्कोर उपयोग करें।",
+        "keyRequired": "कुंजी आवश्यक है।",
         "save": "सेटिंग बनाएं",
         "title": "सेटिंग जोड़ें",
         "type": "{{common.type}}",
-        "typeRequired": "प्रकार आवश्यक है",
+        "typeRequired": "प्रकार आवश्यक है।",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "मान आवश्यक है"
+        "valueRequired": "मान आवश्यक है।"
       },
       "cancelTooltip": "संपादन रद्द करें",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "फ़िल्टर",
       "filterPlaceholder": "कुंजी, मान, विवरण या स्रोत द्वारा फ़िल्टर करें",
       "listTitle": "सिस्टम सेटिंग्स",
-      "noSettings": "कोई सेटिंग नहीं मिली",
+      "noSettings": "कोई सेटिंग नहीं मिली।",
       "readOnlyTooltip": "यह सेटिंग केवल पढ़ने योग्य है और इसे यहाँ से संशोधित नहीं किया जा सकता",
       "saveTooltip": "परिवर्तन सहेजें",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "वातावरण",
         "vault": {}
       },
-      "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें",
+      "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें।",
       "title": "सेटिंग्स प्रबंधित करें",
       "types": {
         "bool": "बूलियन",
@@ -255,7 +255,7 @@
         "string": "स्ट्रिंग"
       }
     },
-    "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
+    "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें।",
     "title": "प्रशासन",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
       "filter": {
-        "automationOnly": "केवल ऑटोमेशन खाते दिखाएं"
+        "automationOnly": "केवल ऑटोमेशन खाते दिखाएं।"
       },
       "filterLabel": "उपयोगकर्ता फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या समूह के नाम से खोजें",
@@ -280,29 +280,29 @@
       "manageCredentials": {
         "addCredential": "क्रेडेंशियल जोड़ें",
         "deleteConfirm": "क्या आप वाकई क्रेडेंशियल \"{{name}}\" को हटाना चाहते हैं?",
-        "noCredentials": "कोई क्रेडेंशियल नहीं मिला",
-        "title": "{{userName}} के लिए क्रेडेंशियल प्रबंधित करें"
+        "noCredentials": "कोई क्रेडेंशियल नहीं मिला।",
+        "title": "{{username}} के लिए क्रेडेंशियल प्रबंधित करें।"
       },
       "never": "कभी नहीं",
-      "noUsers": "कोई उपयोगकर्ता नहीं मिला",
-      "subtitle": "सिस्टम उपयोगकर्ताओं को देखें और प्रबंधित करें",
+      "noUsers": "कोई उपयोगकर्ता नहीं मिला।",
+      "subtitle": "TMI उपयोगकर्ता खाते प्रबंधित करें",
       "title": "उपयोगकर्ता प्रबंधित करें",
       "transferOwnership": {
         "confirm": "क्या आप {{source}} से {{target}} को सभी डेटा स्थानांतरित करना सुनिश्चित हैं?",
         "dialogTitle": "उपयोगकर्ता डेटा स्थानांतरित करें",
-        "error": "स्वामित्व स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
+        "error": "स्वामित्व स्थानांतरित करने में विफल।",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "स्वामित्व स्थानांतरित करें"
+        "tooltip": "स्वामित्व स्थानांतरित करें..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "इस webhook के लिए ऑटोमेशन उपयोगकर्ता बनाएं",
-        "events": "सब्सक्राइब करने के लिए इवेंट प्रकार",
+        "createAutomationUser": "इस webhook के लिए ऑटोमेशन उपयोगकर्ता बनाएं।",
+        "events": "सदस्यता लेने के लिए इवेंट प्रकार",
         "eventsHint": "सब्सक्राइब करने के लिए इवेंट प्रकार (उदा., threat_model.created)",
         "eventsPlaceholder": "इवेंट प्रकार चुनें",
-        "eventsRequired": "कम से कम एक इवेंट आवश्यक है",
+        "eventsRequired": "कम से कम एक इवेंट आवश्यक है।",
         "name": "{{common.name}}",
         "nameHint": "इस webhook के लिए वर्णनात्मक नाम",
         "namePlaceholder": "Webhook नाम",
@@ -314,9 +314,9 @@
         "title": "Webhook जोड़ें",
         "url": "Webhook URL",
         "urlHint": "HTTPS अनुशंसित",
-        "urlHttpWarning": "चेतावनी: Webhook एंडपॉइंट URL को HTTPS का उपयोग करना चाहिए। सर्वर उन webhook पंजीकरणों को अस्वीकार कर सकता है जो गैर-TLS एंडपॉइंट निर्दिष्ट करते हैं।",
-        "urlHttpWarningTitle": "गैर-HTTPS Webhook URL",
-        "urlInvalid": "एक वैध URL होना चाहिए",
+        "urlHttpWarning": "चेतावनी: webhook एंडपॉइंट URL को HTTPS का उपयोग करना चाहिए। सर्वर non-TLS एंडपॉइंट निर्दिष्ट करने वाले webhook पंजीकरण को अस्वीकार कर सकता है।",
+        "urlHttpWarningTitle": "Non-HTTPS webhook URL।",
+        "urlInvalid": "एक मान्य URL होना चाहिए।",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL आवश्यक है"
       },
@@ -329,16 +329,16 @@
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "यह एकमात्र समय है जब आप इस सीक्रेट को देख सकते हैं। कृपया इसे कॉपी करें। यदि आप इसे खो देते हैं या भूल जाते हैं, तो आपको webhook को हटाना और पुनः बनाना होगा।"
       },
-      "listTitle": "Webhook सब्सक्रिप्शन",
+      "listTitle": "सिस्टम Webhooks",
       "noWebhooks": "कोई webhook नहीं मिला",
       "secret": "HMAC सीक्रेट",
       "status": {
         "active": "{{common.active}}",
-        "pending_delete": "हटाने की प्रतीक्षा में",
-        "pending_verification": "सत्यापन की प्रतीक्षा में"
+        "pending_delete": "हटाना लंबित",
+        "pending_verification": "सत्यापन लंबित"
       },
       "subscriptionId": "सदस्यता आईडी",
-      "subtitle": "इवेंट नोटिफिकेशन के लिए webhook सब्सक्रिप्शन कॉन्फ़िगर करें",
+      "subtitle": "बाहरी एकीकरण के लिए webhooks कॉन्फ़िगर करें",
       "title": "Webhooks प्रबंधित करें",
       "triggerEvents": "ट्रिगर इवेंट",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
@@ -347,23 +347,23 @@
   "adminSurveys": {
     "cloneSuffix": "(प्रतिलिपि)",
     "createDialog": {
-      "nameLabel": "सर्वेक्षण का नाम",
+      "nameLabel": "सर्वेक्षण नाम",
       "namePlaceholder": "सर्वेक्षण का नाम दर्ज करें",
       "nameRequired": "{{common.validation.nameRequired}}",
       "title": "सर्वेक्षण बनाएं",
       "versionHint": "मुक्त-प्रारूप संस्करण पहचानकर्ता",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "उदा., 1, v2-pilot, 2024-Q1",
-      "versionRequired": "संस्करण आवश्यक है"
+      "versionPlaceholder": "उदाहरण: 1, v2-pilot, 2024-q1",
+      "versionRequired": "संस्करण आवश्यक है।"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "इस सर्वेक्षण को हटाया नहीं जा सकता क्योंकि इसमें मौजूदा प्रतिक्रियाएँ हैं। पहले प्रतिक्रियाएँ हटाएँ, फिर पुनः प्रयास करें।",
-    "deleteError": "सर्वेक्षण हटाने में विफल: {{error}}",
+    "deleteError": "सर्वेक्षण हटाने में विफल: {{error}}।",
     "deleteTooltip": "सर्वेक्षण हटाएं",
     "editTemplate": "सर्वेक्षण संपादित करें",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
-    "noMatchingTitle": "कोई मिलान करने वाला सर्वेक्षण नहीं",
+    "noMatchingTitle": "कोई मिलान करने वाले सर्वेक्षण नहीं",
     "noTemplatesMessage": "आरंभ करने के लिए अपना पहला सर्वेक्षण बनाएं।",
     "noTemplatesTitle": "अभी तक कोई सर्वेक्षण नहीं",
     "pageTitle": "{{admin.sections.surveys.title}}",
@@ -379,20 +379,20 @@
       "deletePage": "पृष्ठ हटाएं",
       "deleteQuestion": "प्रश्न हटाएं",
       "enableIf": "सक्षम करें यदि",
-      "enableIfHint": "उदा., {questionName} = 'value'",
+      "enableIfHint": "उदाहरण: {questionname} = 'value'",
       "enterSurveyDescription": "सर्वेक्षण विवरण दर्ज करें",
       "enterSurveyTitle": "सर्वेक्षण शीर्षक दर्ज करें",
-      "failedToLoadTemplate": "सर्वेक्षण लोड करने में विफल",
-      "failedToSaveTemplate": "सर्वेक्षण सहेजने में विफल",
+      "failedToLoadTemplate": "सर्वेक्षण लोड करने में विफल।",
+      "failedToSaveTemplate": "सर्वेक्षण सहेजने में विफल।",
       "loadingTemplate": "सर्वेक्षण लोड हो रहा है...",
-      "mapsToTmField": "TM फील्ड से मैप करता है",
+      "mapsToTmField": "TM फ़ील्ड से मैप करें",
       "metadataKey": "मेटाडेटा कुंजी",
       "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
       "nameId": "नाम (ID)",
       "nameIdHint": "इस प्रश्न के लिए अद्वितीय पहचानकर्ता",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "इसे जोड़ने के लिए पैलेट से एक प्रश्न प्रकार पर क्लिक करें",
-      "noQuestionsYet": "अभी तक कोई प्रश्न नहीं",
+      "noQuestionsYet": "अभी तक कोई प्रश्न नहीं।",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "प्रश्न गुण",
@@ -400,9 +400,9 @@
         "boolean": "बूलियन टॉगल",
         "checkbox": "बहुविकल्पीय चयन",
         "dropdown": "ड्रॉपडाउन चयन",
-        "panel": "पैनल में प्रश्न समूहित करें",
+        "panel": "एक पैनल में प्रश्न समूहित करें।",
         "paneldynamic": "दोहराने योग्य पैनल समूह",
-        "radiogroup": "विकल्पों में से एकल चयन",
+        "radiogroup": "विकल्पों में से एकल चयन।",
         "text": "एकल पंक्ति टेक्स्ट इनपुट"
       },
       "questionTypeLabels": {
@@ -419,43 +419,43 @@
       "required": "आवश्यक",
       "requiredIf": "आवश्यक यदि",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
+      "selectQuestionHint": "इसके गुण संपादित करने के लिए कोई प्रश्न चुनें।",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
-        "assetDescription": "एसेट विवरण",
+        "assetDescription": "संपत्ति विवरण",
         "assetName": "{{assetEditor.name}}",
         "assetType": "{{assetEditor.type}}",
         "description": "थ्रेट मॉडल विवरण",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "इश्यू ट्रैकिंग URL",
+        "issueUri": "समस्या ट्रैकिंग URL।",
         "metadataKey": "कस्टम मेटाडेटा",
         "name": "थ्रेट मॉडल नाम",
         "repositoryName": "{{threatModels.repositoryName}}",
         "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
-      "tmFieldMapping": "थ्रेट मॉडल फील्ड मैपिंग",
+      "tmFieldMapping": "थ्रेट मॉडल फ़ील्ड मैपिंग",
       "tmFieldMappingHint": "इस उत्तर को थ्रेट मॉडल फील्ड से लिंक करें",
       "unsavedChanges": "असहेजे गए परिवर्तन",
       "visibleIf": "दृश्यमान यदि",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} सर्वेक्षण",
-    "templateCountPlural": "{{count}} सर्वेक्षण"
+    "templateCount": "{{Count}} सर्वेक्षण",
+    "templateCountPlural": "{{Count}} सर्वेक्षण"
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
     "classification": "{{common.classification}}",
     "criticality": "{{common.criticality}}",
-    "name": "एसेट का नाम",
+    "name": "{{common.name}}",
     "sensitivity": "{{common.sensitivity}}",
     "title": {
-      "create": "एसेट बनाएं",
-      "edit": "एसेट संपादित करें",
-      "view": "एसेट देखें"
+      "create": "संपत्ति बनाएं",
+      "edit": "संपत्ति संपादित करें",
+      "view": "संपत्ति देखें"
     },
-    "type": "एसेट का प्रकार",
+    "type": "संपत्ति प्रकार",
     "types": {
       "data": "डेटा",
       "hardware": "हार्डवेयर",
@@ -472,7 +472,7 @@
       "deleted": "हटाया गया",
       "patched": "पैच किया गया",
       "restored": "पुनर्स्थापित",
-      "rolled_back": "रोलबैक किया गया",
+      "rolled_back": "वापस लाया गया",
       "updated": "{{surveys.list.updated}}"
     },
     "columns": {
@@ -483,7 +483,7 @@
       "timestamp": "कब"
     },
     "filters": {
-      "actorEmail": "कर्ता ईमेल",
+      "actorEmail": "अभिनेता ईमेल",
       "actorEmailPlaceholder": "ईमेल द्वारा फ़िल्टर करें...",
       "changeType": "{{auditTrail.columns.changeType}}",
       "clear": "फ़िल्टर साफ़ करें",
@@ -492,13 +492,13 @@
     "noEntries": "कोई ऑडिट ट्रेल प्रविष्टियाँ नहीं मिलीं।",
     "rollback": {
       "action": "रोलबैक",
-      "confirmMessage": "क्या आप वाकई {{objectType}} \"{{name}}\" को संस्करण {{version}} पर रोलबैक करना चाहते हैं?",
-      "confirmTitle": "रोलबैक की पुष्टि करें",
+      "confirmMessage": "क्या आप वाकई {{objecttype}} \"{{name}}\" को संस्करण {{version}} पर वापस लाना चाहते हैं?",
+      "confirmTitle": "वापस लाने की पुष्टि करें",
       "confirmationField": "पुष्टि के लिए टाइप करें",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "रोलबैक विफल रहा। कृपया पुनः प्रयास करें।",
+      "error": "वापस लाना विफल",
       "success": "रोलबैक सफलतापूर्वक पूरा हुआ।",
-      "typeConfirmation": "पुष्टि के लिए, नीचे \"{{confirmValue}}\" टाइप करें।",
+      "typeConfirmation": "पुष्टि करने के लिए, नीचे \"{{confirmvalue}}\" टाइप करें",
       "versionPruned": "संस्करण स्नैपशॉट काट दिया गया है। रोलबैक अब उपलब्ध नहीं है।",
       "warning": "यह इस इकाई की वर्तमान स्थिति को इस ऑडिट प्रविष्टि में कैप्चर किए गए संस्करण से अधिलेखित कर देगा। यह कार्रवाई एक नई ऑडिट प्रविष्टि बनाती है लेकिन वर्तमान स्थिति खो जाएगी।"
     },
@@ -510,7 +510,7 @@
       "403": "403 निषिद्ध",
       "noPermission": "आपको इस पेज तक पहुंचने की अनुमति नहीं है।",
       "requiredRole": "इस सामग्री को देखने के लिए आपको {{role}} भूमिका की आवश्यकता है।",
-      "title": "अनधिकृत पहुंच"
+      "title": "अनधिकृत पहुँच"
     }
   },
   "chat": {
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "Timmy से कनेक्ट नहीं हो सका। अपना कनेक्शन जांचें और पुनः प्रयास करें।",
-      "generic": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
+      "generic": "कुछ गलत हो गया।",
       "interrupted": "प्रतिक्रिया बाधित हुई। अपना संदेश फिर से भेजने का प्रयास करें।",
       "notAcceptable": "सर्वर कॉन्फ़िगरेशन समस्या के कारण Timmy अस्थायी रूप से अनुपलब्ध है।",
       "notEnabled": "इस थ्रेट मॉडल के लिए Timmy सक्षम नहीं है।",
@@ -532,16 +532,16 @@
     "hideSidePanel": "साइड पैनल छुपाएं",
     "inputPlaceholder": "इस थ्रेट मॉडल के बारे में Timmy से पूछें...",
     "newSession": "नया सत्र",
-    "noSessions": "अभी तक कोई चैट सत्र नहीं। एक बातचीत शुरू करें!",
+    "noSessions": "अभी तक कोई चैट सत्र नहीं। एक वार्तालाप शुरू करें।",
     "preparation": {
-      "error": "तैयारी विफल: {{message}}",
-      "processing": "स्रोत {{current}} का {{total}} से प्रसंस्करण — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "तैयार! {{sourcesLoaded}} स्रोत लोड किए गए, {{chunksEmbedded}} चंक्स अनुक्रमित किए गए।"
+      "error": "तैयारी विफल: {{message}}।",
+      "processing": "स्रोत {{current}}/{{total}} प्रोसेस हो रहा है — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%।",
+      "ready": "तैयार! {{Sourcesloaded}} स्रोत लोड हुए, {{chunksembedded}} खंड अनुक्रमित।"
     },
-    "saveAsNoteError": "नोट के रूप में सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+    "saveAsNoteError": "नोट के रूप में सहेजा नहीं जा सका।",
     "saveMessageAsNote": "संदेश को नोट के रूप में सहेजें",
     "saveSessionAsNote": "सत्र को नोट के रूप में सहेजें",
-    "savedAsNote": "नोट के रूप में सहेजा गया",
+    "savedAsNote": "नोट के रूप में सहेजा गया।",
     "savedAsNoteView": "{{common.view}}",
     "send": "संदेश भेजें",
     "sessions": "सत्र",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} स्रोत शामिल हैं"
+      "title": "{{Count}} स्रोत शामिल"
     },
     "suggestedPrompts": {
       "assets": "स्कोप में कौन सी संपत्तियां हैं?",
@@ -563,35 +563,35 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} सक्रिय उपयोगकर्ता",
+    "activeUsers": "{{Count}} सक्रिय उपयोगकर्ता।",
     "approvePresenterRequest": "प्रस्तुतकर्ता अनुरोध स्वीकृत करें",
-    "availableCollaborationSessions": "उपलब्ध सहयोग सत्र",
+    "availableCollaborationSessions": "उपलब्ध सहयोग सत्र।",
     "collaboratorsHeader": "प्रतिभागी",
     "copyLink": "लिंक कॉपी करें",
     "denyPresenterRequest": "प्रस्तुतकर्ता अनुरोध अस्वीकार करें",
     "endCollaboration": "सहयोग समाप्त करें",
     "hostedBy": "द्वारा होस्ट किया गया",
-    "isRequestingPresenterPrivileges": "प्रस्तुतकर्ता विशेषाधिकार का अनुरोध कर रहा है",
+    "isRequestingPresenterPrivileges": "प्रस्तुतकर्ता विशेषाधिकार अनुरोध कर रहा है।",
     "joinSession": "सत्र में शामिल हों",
     "justNow": "अभी-अभी",
     "leaveSession": "सत्र छोड़ें",
     "loadingDiagramContext": "आरेख संदर्भ लोड हो रहा है...",
-    "manageParticipants": "प्रतिभागियों को प्रबंधित करें",
-    "noActiveSessions": "कोई सक्रिय सहयोग सत्र नहीं",
-    "participantRequestsPresenterRole": "प्रतिभागी प्रस्तुतकर्ता भूमिका का अनुरोध करता है",
-    "presenterModeRequested": "प्रस्तुतकर्ता मोड का अनुरोध किया गया",
+    "manageParticipants": "प्रतिभागी प्रबंधित करें",
+    "noActiveSessions": "कोई सक्रिय सहयोग सत्र नहीं।",
+    "participantRequestsPresenterRole": "प्रतिभागी प्रस्तुतकर्ता भूमिका का अनुरोध कर रहा है",
+    "presenterModeRequested": "प्रस्तुतकर्ता मोड अनुरोधित",
     "removeFromSession": "सत्र से हटाएं",
     "requestPresenter": "प्रस्तुतकर्ता का अनुरोध करें",
     "sessionStarted": "शुरू हुआ",
     "startCollaboration": "सहयोग शुरू करें",
     "takeBackPresenter": "प्रस्तुतकर्ता वापस लें",
-    "title": "सहयोग सत्र प्रतिभागी",
-    "userJoined": "{{user}} सहयोग में शामिल हुए",
-    "userLeft": "{{user}} ने सहयोग छोड़ दिया",
+    "title": "सहयोग",
+    "userJoined": "{{User}} सहयोग में शामिल हुए।",
+    "userLeft": "{{User}} सहयोग छोड़ गए",
     "websocketStatus": {
-      "connected": "Websocket कनेक्टेड",
+      "connected": "Websocket जुड़ा है",
       "noSession": "कोई सहयोग सत्र सक्रिय नहीं",
-      "notConnected": "Websocket कनेक्टेड नहीं"
+      "notConnected": "Websocket नहीं जुड़ा है।"
     }
   },
   "common": {
@@ -604,7 +604,7 @@
     "addThreat": "खतरा जोड़ें",
     "addons": "ऐडऑन",
     "all": "सभी",
-    "allStatuses": "सभी स्थितियां",
+    "allStatuses": "सभी स्थितियाँ",
     "archive": "संग्रहित करें",
     "back": "वापस",
     "cancel": "रद्द करें",
@@ -615,8 +615,8 @@
     "close": "बंद करें",
     "confirm": "पुष्टि करें",
     "confirmDelete": "क्या आप वाकई {{item}} \"{{name}}\" को हटाना चाहते हैं? यह कार्य पूर्ववत नहीं किया जा सकता।",
-    "confirmDeleteMessage": "क्या आप वाकई {{objectType}} \"{{name}}\" को हटाना चाहते हैं?",
-    "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+    "confirmDeleteMessage": "क्या आप वाकई {{objecttype}} \"{{name}}\" को हटाना चाहते हैं?",
+    "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया।",
     "copy": "कॉपी",
     "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
     "create": "बनाएं",
@@ -626,15 +626,15 @@
     "cut": "काटें",
     "deactivate": "निष्क्रिय करें",
     "delete": "हटाएं",
-    "deleteConfirm": "थ्रेट मॉडल हटाएं",
+    "deleteConfirm": "हटाने की पुष्टि करें",
     "deleteWarningConfirmationField": "हटाने की पुष्टि",
     "deleteWarningConfirmationMatch": "पुष्टि टेक्स्ट मेल खाता है",
     "deleteWarningConfirmationMismatch": "पुष्टि टेक्स्ट मेल नहीं खाता",
     "deleteWarningConfirmationValue": "हमेशा के लिए चला गया",
-    "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और {{objectType}} तथा इससे जुड़े सभी मेटाडेटा को स्थायी रूप से हटा देगी।",
-    "deleteWarningReferenceOnly": "TMI के बाहर संग्रहीत ऑब्जेक्ट्स जैसे डॉक्यूमेंट्स और रिपॉजिटरीज़ के लिए, केवल ऑब्जेक्ट का TMI संदर्भ हटाया जाएगा।",
+    "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और {{objecttype}} तथा उससे संबंधित सभी मेटाडेटा को स्थायी रूप से हटा देगी।",
+    "deleteWarningReferenceOnly": "TMI के बाहर संग्रहीत ऑब्जेक्ट जैसे दस्तावेज़ और रिपोज़िटरी के लिए, केवल ऑब्जेक्ट का TMI संदर्भ हटाया जाएगा।",
     "deleteWarningSubEntities": "सभी संबंधित TMI एंटिटीज़ जैसे डायग्राम, थ्रेट्स और नोट्स भी स्थायी रूप से हटा दी जाएंगी।",
-    "deleteWarningTypeConfirmation": "पुष्टि करने के लिए, कृपया नीचे दिए गए फ़ील्ड में \"{{confirmValue}}\" टाइप करें।",
+    "deleteWarningTypeConfirmation": "पुष्टि करने के लिए, कृपया नीचे दिए गए फ़ील्ड में \"{{confirmvalue}}\" टाइप करें",
     "description": "विवरण",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "खारिज करें",
@@ -675,7 +675,7 @@
     "noDataAvailable": "कोई डेटा उपलब्ध नहीं",
     "noMatchingResults": "आपके फ़िल्टर से कोई परिणाम मेल नहीं खाता।",
     "noMetadata": "कोई मेटाडेटा उपलब्ध नहीं",
-    "noThreats": "कोई खतरा उपलब्ध नहीं",
+    "noThreats": "कोई खतरे उपलब्ध नहीं।",
     "none": "कोई नहीं",
     "objectTypes": {
       "asset": "एसेट",
@@ -703,7 +703,7 @@
       "teams": "टीमें",
       "threat": "खतरा",
       "threatModel": "थ्रेट मॉडल",
-      "threatModels": "खतरा मॉडल",
+      "threatModels": "थ्रेट मॉडल",
       "threats": "खतरे"
     },
     "ok": "ठीक है",
@@ -715,7 +715,7 @@
     "project": "प्रोजेक्ट",
     "provider": "प्रदाता",
     "readOnly": "केवल पढ़ने के लिए",
-    "readOnlyTooltip": "इस थ्रेट मॉडल तक आपकी केवल पढ़ने की पहुंच है। संपादन अनुमतियों के लिए स्वामी से संपर्क करें।",
+    "readOnlyTooltip": "आपके पास इस थ्रेट मॉडल तक केवल पढ़ने की पहुँच है। संपादन अनुमति के लिए स्वामी से संपर्क करें",
     "retry": "पुनः प्रयास करें",
     "roles": {
       "owner": "स्वामी",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "सफलतापूर्वक सहेजा गया",
     "score": "स्कोर",
     "search": "खोजें",
-    "selected": "{{count}} चयनित",
+    "selected": "{{Count}} चयनित",
     "sensitivity": "संवेदनशीलता",
     "sessionRoles": {
       "host": "होस्ट",
@@ -755,52 +755,79 @@
     "unsavedChangesWarning": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?",
     "uri": "URI",
     "validation": {
-      "email": "कृपया एक वैध ईमेल पता दर्ज करें",
+      "email": "कृपया एक मान्य ईमेल पता दर्ज करें।",
       "invalidUrl": "कृपया एक वैध URL दर्ज करें",
-      "maxLength": "अधिकतम लंबाई {{max}} अक्षर है",
+      "maxLength": "अधिकतम लंबाई {{max}} वर्ण है।",
       "nameRequired": "नाम आवश्यक है",
-      "required": "यह फ़ील्ड आवश्यक है"
+      "required": "यह फ़ील्ड आवश्यक है।"
     },
     "version": "संस्करण",
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
-    "viewPermissions": "अनुमतियां देखें",
+    "viewPermissions": "अनुमतियाँ देखें",
     "viewThreat": "खतरा देखें"
   },
   "contextMenu": {
-    "addInverseConnection": "उलटा कनेक्शन जोड़ें",
-    "dataAssets": "डेटा एसेट्स...",
-    "editText": "टेक्स्ट संपादित करें",
-    "lockLayout": "Lock Layout",
+    "addInverseConnection": "व्युत्क्रम कनेक्शन जोड़ें",
+    "dataAssets": "डेटा संपत्तियाँ...",
+    "editText": "पाठ संपादित करें",
+    "lockLayout": "लेआउट लॉक करें",
     "moveBackward": "पीछे ले जाएं",
     "moveForward": "आगे ले जाएं",
     "moveToBack": "सबसे पीछे ले जाएं",
     "moveToFront": "सबसे आगे ले जाएं",
     "noDataAssetsAvailable": "कोई डेटा एसेट उपलब्ध नहीं है",
-    "showObject": "ऑब्जेक्ट दिखाएं",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "ऑब्जेक्ट दिखाएं...",
+    "unlockLayout": "लेआउट अनलॉक करें"
   },
   "createThreatModel": {
-    "confidentialHint": "गोपनीय खतरा मॉडल स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किए जाते हैं। इस सेटिंग को निर्माण के बाद नहीं बदला जा सकता।",
+    "confidentialHint": "गोपनीय थ्रेट मॉडल स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं होते। यह सेटिंग बनाने के बाद नहीं बदली जा सकती।",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "इस खतरा मॉडल के उद्देश्य और दायरे का वर्णन करें",
     "framework": "ढांचा",
     "namePlaceholder": "खतरा मॉडल का नाम दर्ज करें",
     "nameRequired": "{{common.validation.nameRequired}}",
-    "title": "खतरा मॉडल बनाएं"
+    "title": "थ्रेट मॉडल बनाएं"
   },
   "cvssCalculator": {
     "apply": {},
     "openCalculator": {},
-    "parseError": {},
-    "pasteVectorPlaceholder": "एक CVSS वेक्टर स्ट्रिंग पेस्ट करें और Enter दबाएं",
-    "title": {},
-    "vectorDuplicateVersion": "इस संस्करण के लिए CVSS प्रविष्टि पहले से मौजूद है",
-    "vectorInvalid": "अमान्य CVSS वेक्टर स्ट्रिंग",
-    "vectorPlaceholder": "CVSS वेक्टर स्ट्रिंग पेस्ट या टाइप करें और Enter दबाएं",
-    "vectorString": {},
-    "vectorUnsupportedVersion": "केवल CVSS 3.1 और 4.0 वेक्टर समर्थित हैं",
-    "version": {}
+    "parseError": "मौजूदा CVSS वेक्टर स्ट्रिंग पार्स नहीं की जा सकी।",
+    "pasteVectorPlaceholder": "CVSS वेक्टर स्ट्रिंग पेस्ट करें और Enter दबाएं",
+    "title": "CVSS कैलकुलेटर",
+    "vectorDuplicateVersion": "इस संस्करण के लिए CVSS प्रविष्टि पहले से मौजूद है।",
+    "vectorInvalid": "अमान्य CVSS वेक्टर स्ट्रिंग।",
+    "vectorPlaceholder": "CVSS वेक्टर स्ट्रिंग पेस्ट करें या टाइप करें और Enter दबाएं।",
+    "vectorString": "वेक्टर स्ट्रिंग",
+    "vectorUnsupportedVersion": "केवल CVSS 3.1 और 4.0 वेक्टर समर्थित हैं।",
+    "version": "CVSS संस्करण",
+    "metricDescriptions": {
+      "AR": "यह मेट्रिक उपभोक्ता को उपलब्धता के संदर्भ में प्रभावित IT संपत्ति के विश्लेषक के संगठन के लिए महत्व के आधार पर मूल्यांकन को अनुकूलित करने में सक्षम बनाता है।",
+      "AU": "स्वचालनीय मेट्रिक इस प्रश्न का उत्तर दर्ज करता है: 'क्या कोई हमलावर कई लक्ष्यों पर भेद्यता के दोहन को स्वचालित कर सकता है?'।",
+      "CR": "यह मेट्रिक उपभोक्ता को गोपनीयता के संदर्भ में प्रभावित IT संपत्ति के विश्लेषक के संगठन के लिए महत्व के आधार पर मूल्यांकन को अनुकूलित करने में सक्षम बनाता है।",
+      "IR": "यह मेट्रिक उपभोक्ता को अखंडता के संदर्भ में प्रभावित IT संपत्ति के विश्लेषक के संगठन के लिए महत्व के आधार पर मूल्यांकन को अनुकूलित करने में सक्षम बनाता है।",
+      "MAC": "आक्रमण जटिलता के लिए ओवरराइड। यह मेट्रिक उन शर्तों को दर्शाता है जो हमलावर के नियंत्रण से परे हैं और जो विश्लेषक के वातावरण में भेद्यता का दोहन करने के लिए मौजूद होनी चाहिए।",
+      "MAT": "आक्रमण आवश्यकताओं के लिए ओवरराइड। विश्लेषक के वातावरण में आक्रमण को सक्षम करने वाली सिस्टम की पूर्वापेक्षित तैनाती और निष्पादन शर्तों को दर्ज करता है।",
+      "MAV": "आक्रमण वेक्टर के लिए ओवरराइड। यह मेट्रिक विश्लेषक के वातावरण में भेद्यता दोहन की संभावना के संदर्भ को दर्शाता है।",
+      "MPR": "आवश्यक विशेषाधिकारों के लिए ओवरराइड। यह मेट्रिक विश्लेषक के वातावरण में भेद्यता का दोहन करने के लिए हमलावर के पास होने वाले विशेषाधिकारों के स्तर का वर्णन करता है।",
+      "MSA": "अनुगामी सिस्टम उपलब्धता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता वाले सिस्टम से परे सिस्टम उपलब्धता पर परिणामों को मापता है।",
+      "MSC": "अनुगामी सिस्टम गोपनीयता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता वाले सिस्टम से परे गोपनीयता पर परिणामों को मापता है।",
+      "MSI": "अनुगामी सिस्टम अखंडता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता वाले सिस्टम से परे अखंडता पर परिणामों को मापता है।",
+      "MUI": "उपयोगकर्ता इंटरएक्शन के लिए ओवरराइड। विश्लेषक के वातावरण में सफल समझौता करने में हमलावर के अलावा किसी अन्य मानव उपयोगकर्ता की भागीदारी की आवश्यकता को दर्ज करता है।",
+      "MVA": "भेद्यता वाले सिस्टम उपलब्धता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता युक्त सिस्टम की उपलब्धता पर परिणामों को मापता है।",
+      "MVC": "भेद्यता वाले सिस्टम गोपनीयता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता युक्त सिस्टम की गोपनीयता पर परिणामों को मापता है।",
+      "MVI": "भेद्यता वाले सिस्टम अखंडता प्रभाव के लिए ओवरराइड। विश्लेषक के वातावरण में भेद्यता युक्त सिस्टम की अखंडता पर परिणामों को मापता है।",
+      "R": "रिकवरी मेट्रिक किसी हमले के बाद प्रदर्शन और उपलब्धता के संदर्भ में सेवाओं को पुनः प्राप्त करने के लिए सिस्टम की लचीलापन का वर्णन करता है।",
+      "RE": "भेद्यता प्रतिक्रिया प्रयास मेट्रिक उपभोक्ता को भेद्यता के ज्ञात होने के बाद उसका उत्तर देने के लिए आवश्यक प्रयास के स्तर को दर्ज करता है।",
+      "S": "सुरक्षा मेट्रिक यह दर्शाता है कि क्या भेद्यता IEC 61508 श्रेणियों द्वारा परिभाषित मानव सुरक्षा को प्रभावित करने वाली परिस्थितियों का कारण बन सकती है।",
+      "U": "प्रदाता तात्कालिकता मेट्रिक किसी भेद्यता के लिए आपूर्तिकर्ता-प्रदत्त तात्कालिकता रेटिंग (लाल, एम्बर, हरा, स्पष्ट) को दर्शाता है।",
+      "V": "मूल्य घनत्व मेट्रिक उन संसाधनों का वर्णन करता है जिन पर हमलावर एकल दोहन घटना से नियंत्रण प्राप्त करेगा।"
+    },
+    "metricGroups": {
+      "environmentalBase": "पर्यावरणीय (संशोधित आधार)।",
+      "environmentalSecurityRequirement": "पर्यावरणीय (सुरक्षा आवश्यकताएं)"
+    },
+    "metricsConfigured": "{{Count}}/{{total}} कॉन्फ़िगर किए गए"
   },
   "cwePicker": {
     "addCwe": "CWE जोड़ें",
@@ -808,7 +835,7 @@
     "chooseCwe": "{{cwePicker.title}}",
     "extendedDescription": "विस्तारित विवरण",
     "loading": "कमज़ोरियाँ लोड हो रही हैं...",
-    "matchingWeaknesses": "मिलती-जुलती कमज़ोरियाँ",
+    "matchingWeaknesses": "मिलान करने वाली कमज़ोरियाँ",
     "noResults": "आपकी खोज से मेल खाती कोई कमज़ोरी नहीं मिली",
     "searchLabel": "कमज़ोरियाँ खोजें",
     "title": "एक CWE चुनें"
@@ -816,15 +843,15 @@
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "खोज साफ़ करें",
-    "createdAfter": "निर्माण की तिथि के बाद",
-    "createdBefore": "निर्माण की तिथि से पहले",
+    "createdAfter": "इसके बाद बनाया गया",
+    "createdBefore": "इससे पहले बनाया गया",
     "descriptionFilter": "{{common.description}}",
     "descriptionPlaceholder": "विवरण द्वारा फ़िल्टर करें",
     "issueUriFilter": "{{common.issueUri}}",
     "issueUriPlaceholder": "समस्या URL द्वारा फ़िल्टर करें",
     "lessFilters": "कम फ़िल्टर",
-    "modifiedAfter": "संशोधन की तिथि के बाद",
-    "modifiedBefore": "संशोधन की तिथि से पहले",
+    "modifiedAfter": "इसके बाद संशोधित",
+    "modifiedBefore": "इससे पहले संशोधित",
     "moreFilters": "अधिक फ़िल्टर",
     "nameFilter": "{{common.name}}",
     "namePlaceholder": "नाम द्वारा फ़िल्टर करें",
@@ -835,8 +862,8 @@
     "searchPlaceholder": "नाम, विवरण, स्वामी, या स्थिति से खोजें",
     "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
     "securityReviewerPlaceholder": "Filter by security reviewer name or email",
-    "statusUpdatedAfter": "स्थिति अपडेट की तिथि के बाद",
-    "statusUpdatedBefore": "स्थिति अपडेट की तिथि से पहले",
+    "statusUpdatedAfter": "इसके बाद स्थिति अपडेट",
+    "statusUpdatedBefore": "इससे पहले स्थिति अपडेट",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -845,16 +872,16 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "स्थिति अंतिम बार बदली गई"
+      "statusLastChanged": "स्थिति अंतिम परिवर्तित।"
     },
     "viewAsCards": "कार्ड के रूप में देखें",
     "viewAsList": "सूची के रूप में देखें"
   },
   "dataAssetDialog": {
-    "selectAsset": "डेटा एसेट",
+    "selectAsset": "डेटा संपत्ति",
     "title": {
-      "select": "डेटा एसेट चुनें",
-      "view": "डेटा एसेट देखें"
+      "select": "डेटा संपत्ति चुनें",
+      "view": "डेटा संपत्ति देखें"
     }
   },
   "debugDialogs": {
@@ -867,46 +894,46 @@
       "affectedCells": "प्रभावित सेल",
       "cellIds": "सेल IDs",
       "cells": "{{common.objectTypes.cells}}",
-      "copyFullJson": "पूर्ण JSON कॉपी करें"
+      "copyFullJson": "पूरा JSON कॉपी करें"
     },
     "graphDataDialog": {
       "graphJson": "ग्राफ़ JSON",
       "title": "ग्राफ़ डेटा"
     },
     "historyDialog": {
-      "canRedo": "Redo कर सकते हैं",
-      "canUndo": "Undo कर सकते हैं",
+      "canRedo": "पुनः कर सकते हैं",
+      "canUndo": "पूर्ववत कर सकते हैं",
       "clearHistory": "इतिहास साफ़ करें",
-      "currentIndex": "वर्तमान इंडेक्स",
+      "currentIndex": "वर्तमान सूचकांक",
       "id": "{{common.id}}",
       "maxStackSize": "अधिकतम स्टैक आकार",
-      "noRedoEntries": "कोई redo प्रविष्टियां नहीं",
-      "noUndoEntries": "कोई undo प्रविष्टियां नहीं",
+      "noRedoEntries": "कोई रीडू प्रविष्टियाँ नहीं।",
+      "noUndoEntries": "कोई पूर्ववत प्रविष्टियाँ नहीं।",
       "operationId": "ऑपरेशन ID",
       "previousCells": "पिछले सेल",
       "providerId": "{{settings.userProfile.providerId}}",
-      "redoStack": "Redo स्टैक",
-      "redoStackSize": "Redo स्टैक आकार",
+      "redoStack": "रीडू स्टैक",
+      "redoStackSize": "रीडू स्टैक आकार",
       "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "टाइमस्टैम्प",
       "title": "इतिहास",
-      "undoStack": "Undo स्टैक",
-      "undoStackSize": "Undo स्टैक आकार"
+      "undoStack": "पूर्ववत स्टैक",
+      "undoStackSize": "पूर्ववत स्टैक आकार"
     }
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "सभी प्रदाताओं में खोजने के लिए टाइप करें",
-      "emptyStateTryExamples": "आज़माएं: aws ec2, azure sql, gcp compute",
-      "notAvailable": "इस आकार के लिए आइकन उपलब्ध नहीं हैं",
+      "emptyStatePrompt": "सभी प्रदाताओं में खोजने के लिए टाइप करें।",
+      "emptyStateTryExamples": "प्रयास करें: AWS ec2, azure sql, gcp compute",
+      "notAvailable": "इस आकार के लिए आइकन उपलब्ध नहीं।",
       "placement": "स्थान",
       "remove": "हटाएं",
       "searchPlaceholder": "प्रदाता, सेवा या श्रेणी द्वारा खोजें...",
       "searchToChange": "आइकन बदलने के लिए खोजें...",
       "selectShape": "पहले एक आकार चुनें",
-      "statusAvailable": "{count} आइकन उपलब्ध",
-      "statusMatches": "{count} मिलान",
-      "statusShapesSelected": "{count} आकार चुने गए",
+      "statusAvailable": "{Count} आइकन उपलब्ध।",
+      "statusMatches": "{Count} मिलान",
+      "statusShapesSelected": "{Count} आकार चयनित।",
       "title": "आर्किटेक्चर आइकन",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -953,7 +980,7 @@
       "labelPosition.top-right": "Top right",
       "labelPositionLabel": "लेबल स्थिति",
       "labelTab": "लेबल",
-      "noSelection": "शैलियाँ संपादित करने के लिए एक ऑब्जेक्ट चुनें",
+      "noSelection": "शैलियाँ संपादित करने के लिए कोई ऑब्जेक्ट चुनें।",
       "opacity": "अपारदर्शिता",
       "osColorPicker": "सिस्टम से रंग चुनें",
       "removeDiagramColor": "आरेख रंग हटाएँ",
@@ -973,43 +1000,57 @@
       "other": "इस दस्तावेज़ तक पहुँच प्राप्त करने में असमर्थ।",
       "pickerRegistrationInvalid": "इस दस्तावेज़ का चयनकर्ता प्राधिकरण अब मान्य नहीं है।",
       "sourceNotFound": "TMI को इस दस्तावेज़ का URL पढ़ना ज्ञात नहीं है।",
-      "tokenNotLinked": "आपने उस खाते को लिंक नहीं किया है जो इस दस्तावेज़ का स्वामी है। स्रोत: {{ source }}",
-      "tokenRefreshFailed": "स्रोत लिंक अब मान्य नहीं है। स्रोत: {{ source }}",
-      "tokenTransientFailure": "स्रोत तक पहुँच नहीं हो सकी। यह सामान्यतः अस्थायी है। स्रोत: {{ source }}"
+      "tokenNotLinked": "आपने वह खाता नहीं जोड़ा है जो इस दस्तावेज़ का स्वामी है। स्रोत: {{ source }}।",
+      "tokenRefreshFailed": "स्रोत लिंक अब मान्य नहीं है। स्रोत: {{ source }}।",
+      "tokenTransientFailure": "स्रोत तक नहीं पहुँचा जा सका। यह आमतौर पर अस्थायी है। स्रोत: {{ source }}।",
+      "microsoftNotShared": "TMI के पास अभी तक इस OneDrive या SharePoint फ़ाइल तक पहुँच नहीं है। फ़ाइल स्वामी को नीचे दिए गए स्निपेट का उपयोग करके TMI को पढ़ने की पहुँच देनी होगी।"
     },
     "remediation": {
       "contactOwner": "दस्तावेज़ के स्वामी से संपर्क करें",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "स्रोत को पुनः लिंक करें",
-      "repickAfterShare": "साझा करने के बाद पुनः चयन करें",
-      "repickFile": "इस फ़ाइल को पुनः चयन करें",
+      "repickAfterShare": "साझा करने के बाद फिर से चुनें।",
+      "repickFile": "इस फ़ाइल को फिर से चुनें।",
       "retry": "पुनः प्रयास करें",
-      "shareWithServiceAccount": "TMI सेवा खाते के साथ साझा करें"
+      "shareWithServiceAccount": "TMI सेवा खाते के साथ साझा करें",
+      "shareWithApplication": {
+        "copyFailed": "क्लिपबोर्ड पर कॉपी नहीं हो सका",
+        "explanation": "TMI के पास अभी तक इस OneDrive या SharePoint फ़ाइल तक पहुँच नहीं है। फ़ाइल स्वामी से TMI को पढ़ने की पहुँच देने के लिए निम्नलिखित Microsoft Graph कॉल चलाने का अनुरोध करें। कॉल सफल होने के बाद, \"अभी जांचें\" पर क्लिक करें — ग्रांट होने के कुछ मिनटों में स्थिति अपडेट हो जाती है।",
+        "powershellLabel": "PowerShell (Microsoft.Graph मॉड्यूल)",
+        "rawLabel": "Microsoft Graph कॉल",
+        "title": "इस फ़ाइल तक TMI पहुँच दें।"
+      }
     },
     "serviceAccountEmail": "इस ईमेल के साथ साझा करें:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "आपकी फ़ाइल तक पहुँच प्रदान नहीं की जा सकी। कृपया पुनः प्रयास करें।",
+      "generic": "आपकी फ़ाइल तक पहुँच नहीं दी जा सकी।",
       "linkAccountCta": "खाता लिंक करें",
       "notLinked": "आपका Microsoft खाता लिंक नहीं है।",
       "permissionDenied": "Microsoft ने पहुँच प्रदान करने के अनुरोध को अस्वीकार कर दिया। फ़ाइल साझा करने योग्य नहीं हो सकती है। कोई दूसरी फ़ाइल आज़माएँ या अपने व्यवस्थापक से संपर्क करें।",
-      "pickerLoadFailed": "फ़ाइल पिकर खोला नहीं जा सका। अपना नेटवर्क जाँचें और पुनः प्रयास करें।",
-      "timeout": "अनुरोध में बहुत अधिक समय लगा। कृपया पुनः प्रयास करें।",
-      "unavailable": "Microsoft अस्थायी रूप से अनुपलब्ध है। कृपया कुछ क्षणों में पुनः प्रयास करें।"
+      "pickerLoadFailed": "फ़ाइल पिकर नहीं खोला जा सका। अपना नेटवर्क जांचें और पुनः प्रयास करें",
+      "timeout": "अनुरोध में बहुत अधिक समय लगा।",
+      "unavailable": "Microsoft अस्थायी रूप से अनुपलब्ध है।"
     },
     "source": {
       "finalizing": "पहुँच प्रदान की जा रही है…",
-      "googleDrive": "Google Drive से चयन करें",
+      "googleDrive": "Google Drive से चुनें",
       "label": "आप इस दस्तावेज़ को कैसे संलग्न करना चाहेंगे?",
       "linkAction": "स्रोत लिंक करें",
       "linkPrompt": "इस स्रोत से फ़ाइलें चयन करने के लिए अपना खाता लिंक करें।",
-      "linkPromptMicrosoft": "OneDrive/SharePoint फ़ाइलें ब्राउज़ करने के लिए एक Microsoft खाता लिंक करें",
+      "linkPromptMicrosoft": "OneDrive/SharePoint फ़ाइलें ब्राउज़ करने के लिए Microsoft खाता लिंक करें।",
       "pickAction": "एक फ़ाइल चयन करें",
       "pickActionMicrosoft": "OneDrive/SharePoint ब्राउज़ करें",
-      "pickedFile": "फ़ाइल चयनित: {{ fileName }}",
+      "pickedFile": "फ़ाइल चयनित: {{ filename }}।",
       "repickAction": "एक भिन्न फ़ाइल चयन करें",
       "url": "एक URL चिपकाएँ"
+    },
+    "create": {
+      "failed": "दस्तावेज़ नहीं बनाया जा सका"
+    },
+    "postCreate": {
+      "hint": "एक बार जब आप फ़ाइल साझा कर लें, तो ऊपर \"पहुँच पुनः जांचें\" पर क्लिक करें। आप इस डायलॉग को बंद करके बाद में दस्तावेज़ के संपादन दृश्य से भी जांच सकते हैं।"
     }
   },
   "documentSources": {
@@ -1017,7 +1058,8 @@
     "callback": {
       "error": "स्रोत से कनेक्ट नहीं हो सका। स्रोत: {{ source }}. कारण: {{ reason }}",
       "linking": "आपका खाता लिंक किया जा रहा है...",
-      "success": "स्रोत कनेक्ट हो गया। स्रोत: {{ source }}"
+      "success": "स्रोत जुड़ गया। स्रोत: {{ source }}।",
+      "notConfigured": "{{ Source }} इस सर्वर पर कॉन्फ़िगर नहीं है। अपने प्रशासक से संपर्क करें।"
     },
     "columns": {
       "account": "खाता",
@@ -1027,12 +1069,12 @@
     },
     "empty": {
       "description": "Google Drive और अन्य उपलब्ध सेवाओं से दस्तावेज़ संलग्न करने के लिए एक क्लाउड स्टोरेज खाता लिंक करें।",
-      "title": "कोई दस्तावेज़ स्रोत कनेक्ट नहीं है"
+      "title": "कोई दस्तावेज़ स्रोत नहीं जुड़ा।"
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "{{ relativeTime }} लिंक किया गया",
+    "linkedAt": "{{ relativetime }} को लिंक किया गया।",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1058,7 +1100,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "एक या अधिक चुने गए तत्वों के पास मेटाडेटा प्रविष्टियां हैं। इन तत्वों को हटाने से उनका मेटाडेटा स्थायी रूप से हटा दिया जाएगा। क्या आप जारी रखना चाहते हैं?",
-      "title": "मेटाडेटा खो जाएगा"
+      "title": "मेटाडेटा खो जाएगा।"
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "आरेख विवरण दर्ज करें",
@@ -1067,15 +1109,15 @@
     "editDiagramName": "आरेख का नाम संपादित करने के लिए क्लिक करें",
     "editDisabledDuringCollaboration": "सहयोग के दौरान संपादन अक्षम है",
     "embedding": {
-      "cannotEmbedIntoTextBox": "टेक्स्ट बॉक्स में आकृतियां एम्बेड नहीं की जा सकतीं",
-      "circularEmbeddingPrevented": "वृत्ताकार एम्बेडिंग की अनुमति नहीं है",
-      "securityBoundaryRestriction": "सुरक्षा सीमाओं को केवल अन्य सुरक्षा सीमाओं में एम्बेड किया जा सकता है"
+      "cannotEmbedIntoTextBox": "आकृतियों को टेक्स्ट बॉक्स में एम्बेड नहीं किया जा सकता।",
+      "circularEmbeddingPrevented": "परिपत्र एम्बेडिंग की अनुमति नहीं है।",
+      "securityBoundaryRestriction": "सुरक्षा सीमाएं केवल अन्य सुरक्षा सीमाओं में एम्बेड की जा सकती हैं।"
     },
     "flowLabel": "फ्लो",
     "helpDialog": {
-      "panLabel": "पैन करने के लिए Shift दबाएं और खींचें",
-      "title": "डायग्राम एडिटर सहायता",
-      "zoomLabel": "ज़ूम करने के लिए Shift दबाएं और माउस व्हील का उपयोग करें"
+      "panLabel": "पैन करने के लिए Shift दबाकर खींचें",
+      "title": "आरेख संपादक सहायता",
+      "zoomLabel": "ज़ूम करने के लिए Shift दबाकर माउस व्हील का उपयोग करें"
     },
     "nodeLabels": {
       "actor": "एक्टर",
@@ -1085,24 +1127,24 @@
       "store": "डेटा स्टोर",
       "textbox": "टेक्स्ट"
     },
-    "pageTitle": "डेटा फ्लो डायग्राम एडिटर",
+    "pageTitle": "डेटा प्रवाह आरेख संपादक",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "JPEG के रूप में निर्यात करें"
       },
       "tooltips": {
-        "addActor": "एक्टर जोड़ें",
-        "addProcess": "प्रोसेस जोड़ें",
+        "addActor": "अभिनेता जोड़ें",
+        "addProcess": "प्रक्रिया जोड़ें",
         "addSecurityBoundary": "सुरक्षा सीमा जोड़ें",
         "addStore": "स्टोर जोड़ें",
         "addTextbox": "टेक्स्ट बॉक्स जोड़ें",
         "deleteSelected": "चयनित हटाएं",
         "export": "निर्यात...",
-        "help": "सहायता",
+        "help": "सहायता...",
         "redo": "फिर से करें",
-        "showClipboard": "क्लिपबोर्ड दिखाएं",
-        "showGraphData": "ग्राफ़ डेटा दिखाएं",
-        "showHistory": "इतिहास दिखाएं",
+        "showClipboard": "क्लिपबोर्ड दिखाएं...",
+        "showGraphData": "ग्राफ़ डेटा दिखाएं...",
+        "showHistory": "इतिहास दिखाएं...",
         "undo": "पूर्ववत करें",
         "zoomToFit": "फ़िट करने के लिए ज़ूम करें"
       }
@@ -1128,7 +1170,7 @@
   },
   "login": {
     "chooseMethod": "अपनी साइन इन विधि चुनें:",
-    "explanation": "किसी विश्वसनीय पहचान प्रदाता से अपने मौजूदा खाते से साइन इन करें। इससे अलग पासवर्ड की आवश्यकता समाप्त हो जाती है, जो आपके अनुभव को सुव्यवस्थित करता है और आपको सुरक्षित रखता है। हम कभी भी पासवर्ड संग्रहीत या प्रबंधित नहीं करते—आपके क्रेडेंशियल आपके प्रदाता के पास रहते हैं और हमारे माध्यम से समझौता नहीं किया जा सकता।",
+    "explanation": "किसी विश्वसनीय पहचान प्रदाता के अपने मौजूदा खाते से साइन इन करें। यह एक अलग पासवर्ड की आवश्यकता को समाप्त करता है, आपके अनुभव को सुव्यवस्थित करता है और आपको सुरक्षित रखता है। हम पासवर्ड कभी संग्रहीत या प्रबंधित नहीं करते — आपके क्रेडेंशियल आपके प्रदाता के पास रहते हैं।",
     "loadingProviders": "प्रमाणीकरण प्रदाता लोड हो रहे हैं...",
     "local": {
       "title": "स्थानीय विकास साइन इन"
@@ -1136,7 +1178,7 @@
     "loggingInWith": "{{provider}} के साथ साइन इन हो रहा है...",
     "loginWith": "के साथ साइन इन करें",
     "noProvidersConfigured": "कोई प्रमाणीकरण प्रदाता कॉन्फ़िगर नहीं है।",
-    "oauthFailed": "OAuth प्रमाणीकरण विफल। कृपया पुनः प्रयास करें।",
+    "oauthFailed": "OAuth प्रमाणीकरण विफल।",
     "oauthProvidersTitle": "OAuth साइन-इन प्रदाता",
     "samlProvidersTitle": "SAML साइन-इन प्रदाता",
     "sessionExpired": "आपका सत्र समाप्त हो गया है। कृपया पुनः साइन इन करें।",
@@ -1144,33 +1186,33 @@
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI में साइन इन करें",
     "tmiDialog": {
-      "errorMaxLength": "उपयोगकर्ता नाम अधिकतम 20 वर्णों का होना चाहिए",
-      "errorMinLength": "उपयोगकर्ता नाम कम से कम 3 वर्णों का होना चाहिए",
-      "errorPattern": "उपयोगकर्ता नाम में केवल अक्षर, अंक, अवधि, अंडरस्कोर, प्रतिशत चिह्न, धन चिह्न और हाइफ़न होने चाहिए",
+      "errorMaxLength": "उपयोगकर्ता नाम अधिकतम 20 वर्णों का होना चाहिए।",
+      "errorMinLength": "उपयोगकर्ता नाम कम से कम 3 वर्णों का होना चाहिए।",
+      "errorPattern": "उपयोगकर्ता नाम में केवल अक्षर, अंक, पीरियड, अंडरस्कोर, प्रतिशत चिह्न, प्लस चिह्न, और हाइफ़न हो सकते हैं।",
       "signIn": "साइन इन करें",
-      "title": "TMI Provider से साइन इन करें",
+      "title": "TMI प्रदाता से साइन इन करें",
       "usernameLabel": "उपयोगकर्ता नाम",
       "usernamePlaceholder": "उपयोगकर्ता नाम दर्ज करें (वैकल्पिक)"
     },
     "unexpectedError": "OAuth के दौरान एक अप्रत्याशित त्रुटि हुई।"
   },
   "mermaidViewer": {
-    "exportFailed": "आरेख निर्यात करने में विफल",
+    "exportFailed": "आरेख निर्यात करने में विफल।",
     "fitToScreen": "स्क्रीन पर फ़िट करें",
     "openInViewer": "व्यूअर में खोलें",
     "resetZoom": "ज़ूम रीसेट करें",
-    "zoomIn": "ज़ूम इन",
-    "zoomOut": "ज़ूम आउट"
+    "zoomIn": "ज़ूम इन करें",
+    "zoomOut": "ज़ूम आउट करें"
   },
   "navbar": {
     "admin": "व्यवस्थापक",
-    "appTitle": "TMI: थ्रेट मॉडलिंग इम्प्रूव्ड",
+    "appTitle": "TMI: थ्रेट मॉडलिंग में सुधार।",
     "copyUserEmail": "उपयोगकर्ता ईमेल क्लिपबोर्ड पर कॉपी करें",
     "dashboard": "डैशबोर्ड",
     "feedback": "बग रिपोर्ट करें, सुविधा का अनुरोध करें या प्रतिक्रिया दें",
     "feedbackMenu": {
-      "provideFeedback": "प्रतिक्रिया दें",
-      "reportBug": "बग की रिपोर्ट करें",
+      "provideFeedback": "फ़ीडबैक दें",
+      "reportBug": "बग रिपोर्ट करें",
       "reportBugCopied": "एप्लिकेशन लॉग क्लिपबोर्ड पर कॉपी किया गया। इसे GitHub इश्यू में पेस्ट करें।",
       "requestFeature": "सुविधा का अनुरोध करें"
     },
@@ -1179,25 +1221,25 @@
     "logoutButton": "{{navbar.menu.logout}}",
     "menu": {
       "home": "{{navbar.home}}",
-      "logout": "साइन आउट"
+      "logout": "साइन आउट करें"
     },
     "serverStatus": {
-      "noServerConfigured": "कोई सर्वर कॉन्फ़िगर नहीं",
-      "serverConnected": "सर्वर कनेक्टेड",
-      "serverDegraded": "सर्वर खराब है",
+      "noServerConfigured": "कोई सर्वर कॉन्फ़िगर नहीं।",
+      "serverConnected": "सर्वर जुड़ा है",
+      "serverDegraded": "सर्वर क्षीण है",
       "serverError": "सर्वर त्रुटि",
-      "serverOffline": "सर्वर ऑफ़लाइन है"
+      "serverOffline": "सर्वर ऑफ़लाइन"
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} अक्षर",
+    "characterCount": "{{Current}} / {{max}} वर्ण",
     "content": "सामग्री",
-    "contentPlaceholder": "मार्कडाउन प्रारूप में नोट सामग्री दर्ज करें। GitHub Flavored Markdown और Mermaid डायग्राम का समर्थन करता है।",
+    "contentPlaceholder": "मार्कडाउन प्रारूप में नोट सामग्री दर्ज करें। GitHub फ्लेवर्ड मार्कडाउन और मर्मेड आरेख समर्थित हैं",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "वैकल्पिक विवरण",
     "editMode": "संपादन मोड",
     "errors": {
-      "clipboardAccessDenied": "क्लिपबोर्ड पहुंच अस्वीकृत"
+      "clipboardAccessDenied": "क्लिपबोर्ड पहुँच अस्वीकृत।"
     },
     "namePlaceholder": "नोट का नाम दर्ज करें",
     "previewMode": "पूर्वावलोकन मोड",
@@ -1217,9 +1259,9 @@
     },
     "deleteConfirmMessage": "क्या आप वाकई नोट \"{{name}}\" को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
     "deleteConfirmTitle": "नोट हटाएं",
-    "noNotes": "अभी तक कोई नोट नहीं",
-    "sharable": "सभी सदस्यों को दृश्यमान",
-    "sharableTooltip": "सक्षम होने पर, यह नोट सभी टीम/प्रोजेक्ट सदस्यों को दिखाई देता है। अक्षम होने पर, केवल व्यवस्थापक और सुरक्षा समीक्षक इसे देख सकते हैं।",
+    "noNotes": "कोई नोट नहीं मिला",
+    "sharable": "सभी सदस्यों को दिखाई देता है।",
+    "sharableTooltip": "सक्षम होने पर, यह नोट सभी टीम/प्रोजेक्ट सदस्यों को दिखाई देता है। अक्षम होने पर, केवल प्रशासक और सुरक्षा समीक्षक इसे देख सकते हैं",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "नोट ({{count}})"
   },
@@ -1227,35 +1269,35 @@
     "actions": {
       "login": "लॉगिन"
     },
-    "operationError": "{{operation}} विफल: {{errorMessage}}",
+    "operationError": "{{operation}} में विफल: {{errormessage}}।",
     "operationFailed": "कार्रवाई विफल रही",
     "operations": {
       "collaboration": "सहयोग",
-      "denyPresenterRequest": "प्रस्तुतकर्ता अनुरोध अस्वीकार करना",
-      "sendPresenterRequest": "प्रस्तुतकर्ता अनुरोध भेजना",
-      "startCollaboration": "सहयोग शुरू करना",
-      "updatePresenter": "प्रस्तुतकर्ता अपडेट करना"
+      "denyPresenterRequest": "प्रस्तुतकर्ता अनुरोध अस्वीकार करें",
+      "sendPresenterRequest": "प्रस्तुतकर्ता अनुरोध भेजें।",
+      "startCollaboration": "सहयोग शुरू करें",
+      "updatePresenter": "प्रस्तुतकर्ता अपडेट करें"
     },
     "presenter": {
-      "assigned": "{{user}} अब प्रस्तुतकर्ता हैं",
-      "assignedYou": "अब आप प्रस्तुतकर्ता हैं",
-      "cleared": "प्रस्तुतकर्ता मोड हटा दिया गया",
-      "cursorMoved": "प्रस्तुतकर्ता का कर्सर हिला",
-      "modeChanged": "प्रस्तुतकर्ता मोड बदला गया",
-      "privilegesRequested": "प्रस्तुतकर्ता अधिकार का अनुरोध किया गया",
-      "removed": "{{user}} अब प्रस्तुतकर्ता नहीं हैं",
-      "removedYou": "अब आप प्रस्तुतकर्ता नहीं हैं",
-      "requestDenied": "आपका प्रस्तुतकर्ता अनुरोध अस्वीकार कर दिया गया",
-      "requestSent": "प्रस्तुतकर्ता अनुरोध सत्र स्वामी को भेजा गया",
-      "requesting": "{{user}} प्रस्तुतकर्ता अधिकार का अनुरोध कर रहे हैं",
-      "selectionChanged": "प्रस्तुतकर्ता का चयन बदला गया"
+      "assigned": "{{User}} अब प्रस्तुतकर्ता हैं।",
+      "assignedYou": "आप अब प्रस्तुतकर्ता हैं।",
+      "cleared": "प्रस्तुतकर्ता मोड साफ़ किया गया।",
+      "cursorMoved": "प्रस्तुतकर्ता कर्सर स्थानांतरित।",
+      "modeChanged": "प्रस्तुतकर्ता मोड बदल गया।",
+      "privilegesRequested": "प्रस्तुतकर्ता विशेषाधिकार का अनुरोध किया गया।",
+      "removed": "{{User}} अब प्रस्तुतकर्ता नहीं हैं।",
+      "removedYou": "आप अब प्रस्तुतकर्ता नहीं हैं।",
+      "requestDenied": "आपका प्रस्तुतकर्ता अनुरोध अस्वीकार किया गया।",
+      "requestSent": "प्रस्तुतकर्ता अनुरोध सत्र स्वामी को भेजा गया।",
+      "requesting": "{{User}} प्रस्तुतकर्ता विशेषाधिकार का अनुरोध कर रहे हैं।",
+      "selectionChanged": "प्रस्तुतकर्ता का चयन बदल गया।"
     },
     "session": {
-      "disconnected": "सहयोग सत्र से डिस्कनेक्ट हो गए",
-      "reconnected": "सहयोग सत्र से पुनः कनेक्ट हो गए",
+      "disconnected": "सहयोग सत्र से डिस्कनेक्ट हो गए।",
+      "reconnected": "सहयोग सत्र से पुनः जुड़े।",
       "reconnecting": "सहयोग सत्र से पुनः कनेक्ट हो रहा है...",
-      "userRemoved": "{{user}} को सत्र से हटा दिया गया",
-      "youWereRemoved": "आपको सहयोग सत्र से हटा दिया गया है"
+      "userRemoved": "{{User}} को सत्र से हटा दिया गया।",
+      "youWereRemoved": "आपको सहयोग सत्र से हटा दिया गया है।"
     },
     "unknownError": "अज्ञात त्रुटि",
     "websocket": {
@@ -1267,63 +1309,63 @@
       "disconnected": "सहयोग सर्वर से डिस्कनेक्ट हो गए। परिवर्तन स्थानीय रूप से सहेजे जाएंगे।",
       "messageSendFailed": "संदेश भेजने में विफल। आपके परिवर्तन सिंक नहीं हो सकते।",
       "multipleFailed": "कई प्रयासों के बाद कनेक्शन विफल। ऑफ़लाइन मोड में कार्य कर रहे हैं।",
-      "unknownError": "अज्ञात WebSocket त्रुटि हुई"
+      "unknownError": "अज्ञात websocket त्रुटि हुई।"
     }
   },
   "pagination": {
-    "ariaLabel": "आइटम का पेज चुनें",
+    "ariaLabel": "आइटम का पृष्ठ चुनें।",
     "firstPage": "पहला पेज",
-    "itemsPerPage": "प्रति पेज आइटम",
+    "itemsPerPage": "प्रति पृष्ठ आइटम।",
     "lastPage": "अंतिम पेज",
     "nextPage": "अगला पेज",
     "previousPage": "पिछला पेज",
     "rangeEmpty": "{{length}} में से 0",
-    "rangeLabel": "{{length}} में से {{startIndex}} - {{endIndex}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} / {{length}}"
   },
   "presenter": {
-    "startPresenting": "प्रस्तुति शुरू करें",
-    "stopPresenting": "प्रस्तुति बंद करें"
+    "startPresenting": "प्रस्तुत करना शुरू करें",
+    "stopPresenting": "प्रस्तुत करना बंद करें"
   },
   "privacy": {
-    "changesContent": "हम समय-समय पर इस गोपनीयता नीति को अपडेट कर सकते हैं। कोई भी परिवर्तन इस पेज पर अपडेटेड \"अंतिम अपडेट\" तारीख के साथ पोस्ट किया जाएगा।",
+    "changesContent": "हम समय-समय पर इस गोपनीयता नीति को अपडेट कर सकते हैं। कोई भी परिवर्तन इस पृष्ठ पर अपडेट की गई \"अंतिम अपडेट\" तिथि के साथ पोस्ट किया जाएगा।",
     "changesTitle": "इस नीति में परिवर्तन",
-    "complianceContent": "हम केवल तभी जानकारी का खुलासा करेंगे जब कानून द्वारा ऐसा करना आवश्यक हो, जैसे किसी वैध सरकारी आदेश या सबपोना के जवाब में। ऐसे मामलों में, संचालक लागू कानूनी दायित्वों का पालन करेगा।",
+    "complianceContent": "हम जानकारी का खुलासा तभी करेंगे जब कानून द्वारा आवश्यक हो, जैसे कि किसी वैध सरकारी आदेश या सम्मन के जवाब में। ऐसे मामलों में, संचालक लागू कानूनी दायित्वों का पालन करेगा।",
     "complianceTitle": "कानूनी अनुपालन",
     "contactContent": {
-      "part1": "यदि आपके पास इस गोपनीयता नीति के बारे में कोई प्रश्न हैं, तो कृपया इस वेब साइट के संचालक से संपर्क जानकारी के माध्यम से संपर्क करें ",
-      "part2": " पेज पर।"
+      "part1": "यदि आपके इस गोपनीयता नीति के बारे में कोई प्रश्न हैं, तो कृपया इस वेबसाइट के संचालक से संपर्क करने के लिए इस पर संपर्क जानकारी का उपयोग करें।",
+      "part2": " पृष्ठ"
     },
     "contactTitle": "हमसे संपर्क करें",
-    "dataSecurityContent1": "संचालक आपके व्यक्तिगत डेटा की सुरक्षा के लिए उद्योग-मानक सुरक्षा उपाय लागू करता है, जिसमें ट्रांज़िट और रेस्ट में एन्क्रिप्शन, सुरक्षित प्रमाणीकरण प्रोटोकॉल और नियमित सुरक्षा अपडेट शामिल हैं। आपकी जानकारी तक पहुंच need-to-know आधार पर अधिकृत कर्मियों तक सीमित है।",
-    "dataSecurityContent2": "जबकि कोई भी सिस्टम जोखिमों से पूरी तरह सुरक्षित नहीं है, संचालक खतरों को कम करने और आपके डेटा की गोपनीयता, अखंडता और उपलब्धता सुनिश्चित करने के लिए सुरक्षा उपायों की निरंतर निगरानी और अपडेट करता है।",
+    "dataSecurityContent1": "संचालक आपके व्यक्तिगत डेटा की सुरक्षा के लिए उद्योग-मानक सुरक्षा उपाय लागू करता है, जिसमें ट्रांज़िट और रेस्ट में एन्क्रिप्शन, सुरक्षित प्रमाणीकरण प्रोटोकॉल, और नियमित सुरक्षा अपडेट शामिल हैं। आपकी जानकारी तक पहुँच आवश्यकतानुसार अधिकृत कर्मियों तक सीमित है।",
+    "dataSecurityContent2": "जबकि कोई भी सिस्टम पूरी तरह से जोखिम से मुक्त नहीं है, संचालक लगातार खतरों को कम करने और आपके डेटा की गोपनीयता, अखंडता, और उपलब्धता सुनिश्चित करने के लिए सुरक्षा उपायों की निगरानी और अपडेट करता है।",
     "dataSecurityTitle": "डेटा सुरक्षा",
-    "dataSharingContent1": "संचालक आपकी व्यक्तिगत जानकारी किसी भी तीसरे पक्ष के साथ साझा नहीं करता, सिवाय निम्नलिखित सीमित परिस्थितियों के:",
-    "dataSharingContent2": "इन अपवादों के अलावा, संचालक मार्केटिंग, विज्ञापन या किसी अन्य उद्देश्य के लिए किसी अन्य संस्था के साथ आपके डेटा को बेचता, किराए पर देता या साझा नहीं करता।",
-    "dataSharingList1": "सेवा प्रदाता: आपका डेटा सुरक्षित तृतीय-पक्ष क्लाउड इन्फ्रास्ट्रक्चर (जैसे AWS, Google Cloud, या समान प्रदाता) पर केवल एप्लिकेशन को संचालित और बनाए रखने के लिए संग्रहीत और संसाधित किया जा सकता है। ये प्रदाता अनुबंध द्वारा आपके डेटा की सुरक्षा करने और इसे केवल संचालक द्वारा निर्दिष्ट उद्देश्यों के लिए उपयोग करने के लिए बाध्य हैं।",
-    "dataSharingList2": "विस्तारशीलता सुविधाएं: यह एप्लिकेशन वैकल्पिक विस्तारशीलता सुविधाओं (जैसे websockets और addons) का समर्थन करता है जो तीसरे पक्ष की सेवाओं को प्रसंस्करण के लिए चयनित जानकारी पास करके कार्यक्षमता को बढ़ा सकती हैं। डेटा इन सेवाओं के साथ केवल तभी साझा किया जाता है जब आप सक्रिय रूप से किसी ऐसी सुविधा का उपयोग करते हैं जिसके लिए ऐसे प्रसारण की आवश्यकता होती है, और केवल अनुरोधित कार्यक्षमता के लिए आवश्यक विशिष्ट जानकारी ही प्रेषित की जाती है।",
-    "dataSharingList2a": "AI प्रसंस्करण सुविधाएं: जब आप सक्रिय रूप से large language models (LLMs) या समान AI सेवाओं द्वारा संचालित सुविधाओं का अनुरोध करते हैं, तो चयनित डेटा प्रसंस्करण और प्रतिक्रिया उत्पादन के लिए तीसरे पक्ष के AI प्रदाताओं (जैसे OpenAI, Anthropic, या समकक्ष सेवाओं) को प्रेषित किया जा सकता है। केवल अनुरोधित कार्यक्षमता के लिए आवश्यक विशिष्ट जानकारी ही साझा की जाती है, और ऐसा साझाकरण केवल आपके निर्देश पर होता है। ये प्रदाता अनुबंधात्मक दायित्वों से बंधे हैं — जहां लागू हो वहां डेटा प्रसंस्करण समझौते सहित — जो डेटा को विशेष रूप से अनुरोधित सेवा प्रदान करने के लिए उपयोग करने को सीमित करते हैं, प्रतिधारण, प्रशिक्षण, या अन्य उपयोगों पर प्रतिबंधों के साथ।",
-    "dataSharingList3": "कानूनी अनुपालन: ऑपरेटर को कानून द्वारा आवश्यक होने पर जानकारी का खुलासा करना पड़ सकता है, जैसे कि वैध अदालत के आदेश, सबपीना, या सरकारी अनुरोध के जवाब में।",
+    "dataSharingContent1": "संचालक निम्नलिखित सीमित परिस्थितियों को छोड़कर आपकी व्यक्तिगत जानकारी किसी तीसरे पक्ष के साथ साझा नहीं करता:",
+    "dataSharingContent2": "इन अपवादों से परे, संचालक मार्केटिंग, विज्ञापन, या किसी अन्य उद्देश्य के लिए आपका डेटा किसी अन्य संस्था को नहीं बेचता, किराए पर नहीं देता, या साझा नहीं करता।",
+    "dataSharingList1": "सेवा प्रदाता: आपका डेटा सुरक्षित तृतीय-पक्ष क्लाउड इन्फ्रास्ट्रक्चर (जैसे AWS, Google Cloud, या समान प्रदाताओं) पर संग्रहीत और संसाधित किया जा सकता है, केवल एप्लिकेशन को संचालित और बनाए रखने के लिए। इन प्रदाताओं को आपके डेटा की सुरक्षा करने और इसे केवल संचालक द्वारा निर्दिष्ट उद्देश्यों के लिए उपयोग करने के लिए अनुबंध द्वारा बाध्य किया गया है।",
+    "dataSharingList2": "विस्तारणीयता सुविधाएं: एप्लिकेशन वैकल्पिक विस्तारणीयता सुविधाओं (जैसे websockets और ऐडऑन) का समर्थन करता है जो तृतीय-पक्ष सेवाओं को प्रसंस्करण के लिए चयनित जानकारी पास करके कार्यक्षमता बढ़ा सकती हैं। इन सेवाओं के साथ डेटा तभी साझा किया जाता है जब आप सक्रिय रूप से किसी ऐसी सुविधा का उपयोग करते हैं जिसके लिए ऐसे ट्रांसमिशन की आवश्यकता होती है।",
+    "dataSharingList2a": "AI प्रसंस्करण सुविधाएं: जब आप सक्रिय रूप से बड़े भाषा मॉडल (LLMs) या समान AI सेवाओं द्वारा संचालित सुविधाओं का अनुरोध करते हैं, तो प्रतिक्रिया उत्पन्न करने के लिए चयनित डेटा तृतीय-पक्ष AI प्रदाताओं को प्रेषित किया जा सकता है। केवल अनुरोधित कार्यक्षमता के लिए आवश्यक विशिष्ट जानकारी साझा की जाती है।",
+    "dataSharingList3": "कानूनी अनुपालन: संचालक जानकारी का खुलासा तब कर सकता है जब कानून द्वारा आवश्यक हो, जैसे कि किसी वैध न्यायालय आदेश, सम्मन, या सरकारी अनुरोध के जवाब में।",
     "dataSharingTitle": "डेटा साझाकरण",
-    "informationCollectionContent1": "जब उपयोगकर्ता सोशल लॉगिन के माध्यम से प्रमाणित होते हैं (OAuth या OpenID Connect प्रदाताओं जैसे Sign in with Google, Login with GitHub, Microsoft Entra External ID, या अन्य का उपयोग करके), एप्लिकेशन चयनित प्रदाता से निम्नलिखित जानकारी एकत्र करता है, केवल प्रमाणीकरण की सुविधा और व्यक्तिगत सेवाएं प्रदान करने के लिए:",
-    "informationCollectionContent2": "स्पष्ट उपयोगकर्ता सहमति के बिना कोई अतिरिक्त व्यक्तिगत डेटा एकत्र नहीं किया जाता। संचालक प्रमाणीकरण के लिए आवश्यक जानकारी से परे संवेदनशील जानकारी जैसे पासवर्ड, संपर्क, या अन्य प्रदाता-विशिष्ट डेटा तक पहुंच या संग्रहण नहीं करता। सभी एकत्रित जानकारी संबंधित प्रदाता की API नीतियों और संचालक की उपयोगकर्ता गोपनीयता के प्रति प्रतिबद्धता के अनुसार संभाली जाती है।",
-    "informationCollectionContent3": "एप्लिकेशन सिस्टम की विश्वसनीयता, सुरक्षा और प्रदर्शन सुनिश्चित करने के लिए परिचालन लॉग तैयार करता है। ये लॉग एप्लिकेशन के भीतर उपयोगकर्ता गतिविधि के रिकॉर्ड, जैसे कि लॉगिन इवेंट, सुविधा उपयोग और त्रुटि रिपोर्ट, शामिल कर सकते हैं। ऑपरेटर लॉग को केवल परिचालन उद्देश्यों, जिनमें समस्या निवारण, सुरक्षा निगरानी और सेवा सुधार शामिल हैं, को पूरा करने के लिए आवश्यक समय तक बनाए रखता है। लॉग सुरक्षित रूप से संग्रहीत किए जाते हैं और परिचालन आवश्यकताओं से परे उद्देश्यों के लिए उपयोग नहीं किए जाते हैं।",
-    "informationCollectionList1": "बुनियादी प्रोफ़ाइल जानकारी: पूरा नाम, ईमेल पता, और प्रोफ़ाइल चित्र (यदि उपलब्ध हो)।",
-    "informationCollectionList2": "विशिष्ट पहचानकर्ता: खाता सत्र को सुरक्षित रूप से प्रबंधित करने के लिए प्रदाता-विशिष्ट उपयोगकर्ता ID।",
+    "informationCollectionContent1": "जब उपयोगकर्ता सोशल लॉगिन (OAuth या OpenID Connect प्रदाताओं का उपयोग करके) के माध्यम से प्रमाणित होते हैं, तो एप्लिकेशन प्रमाणीकरण और वैयक्तिकृत सेवाएं प्रदान करने के लिए चयनित प्रदाता से निम्नलिखित जानकारी एकत्र करता है:",
+    "informationCollectionContent2": "स्पष्ट उपयोगकर्ता सहमति के बिना कोई अतिरिक्त व्यक्तिगत डेटा एकत्र नहीं किया जाता। संचालक प्रमाणीकरण के लिए आवश्यक से अधिक संवेदनशील जानकारी जैसे पासवर्ड, संपर्क, या अन्य प्रदाता-विशिष्ट डेटा तक नहीं पहुँचता या संग्रहीत नहीं करता।",
+    "informationCollectionContent3": "एप्लिकेशन सिस्टम विश्वसनीयता, सुरक्षा, और प्रदर्शन सुनिश्चित करने के लिए परिचालन लॉग उत्पन्न करता है। ये लॉग एप्लिकेशन के भीतर उपयोगकर्ता गतिविधि के रिकॉर्ड जैसे लॉगिन इवेंट, सुविधा उपयोग, और त्रुटि रिपोर्ट शामिल कर सकते हैं।",
+    "informationCollectionList1": "बुनियादी प्रोफ़ाइल जानकारी: पूरा नाम, ईमेल पता, और प्रोफ़ाइल चित्र (यदि प्रदान किया गया और उपलब्ध हो)।",
+    "informationCollectionList2": "अद्वितीय पहचानकर्ता: खाता सत्रों को सुरक्षित रूप से प्रबंधित करने के लिए एक प्रदाता-विशिष्ट उपयोगकर्ता ID।",
     "informationCollectionTitle": "जानकारी संग्रह और उपयोग",
     "intro1": {
-      "part1": "यह वेब साइट एक ओपन-सोर्स वेब एप्लिकेशन (\"TMI\") का एक उदाहरण है जो इस वेब साइट के ",
-      "part2": " पेज पर सूचीबद्ध संचालक द्वारा उपलब्ध कराया गया है (\"संचालक\")।"
+      "part1": "यह वेबसाइट एक ओपन-सोर्स वेब एप्लिकेशन (\"TMI\") का एक उदाहरण है जो इस पर सूचीबद्ध संचालक द्वारा उपलब्ध कराया जाता है।",
+      "part2": " इस वेबसाइट का पृष्ठ (\"संचालक\")।"
     },
-    "intro2": "संचालक आपकी गोपनीयता की रक्षा के लिए प्रतिबद्ध है। यह गोपनीयता नीति बताती है कि आपकी जानकारी कैसे संभाली जाती है।",
+    "intro2": "संचालक आपकी गोपनीयता की रक्षा करने के लिए प्रतिबद्ध है। यह गोपनीयता नीति बताती है कि आपकी जानकारी कैसे संभाली जाती है।",
     "introductionTitle": "परिचय",
     "lastUpdatedDate": "2026-01-17",
     "title": "गोपनीयता नीति",
-    "userRightsContent1": "आपके पास अपने व्यक्तिगत डेटा पर पूर्ण नियंत्रण है। किसी भी समय, आप एप्लिकेशन के उपयोगकर्ता प्राथमिकताएं अनुभाग में \"मेरा सारा डेटा हटाएं\" सुविधा तक पहुंच सकते हैं।",
-    "userRightsContent2": "यह विकल्प संचालक द्वारा आपकी ओर से संग्रहीत सभी डेटा को तुरंत हटाने में सक्षम बनाता है, जिसमें प्रोफ़ाइल जानकारी और प्रमाणीकरण रिकॉर्ड शामिल हैं। सक्रियण पर, आपका डेटा किसी भी कानूनी प्रतिधारण दायित्वों के अधीन, संचालक के सिस्टम और तृतीय-पक्ष प्रदाताओं से स्थायी रूप से हटा दिया जाएगा।",
+    "userRightsContent1": "आपके पास अपने व्यक्तिगत डेटा पर पूर्ण नियंत्रण है। किसी भी समय, आप एप्लिकेशन के उपयोगकर्ता प्राथमिकताएं अनुभाग में \"मेरा सभी डेटा हटाएं\" सुविधा का उपयोग कर सकते हैं।",
+    "userRightsContent2": "यह विकल्प संचालक द्वारा आपकी ओर से संग्रहीत सभी डेटा को तुरंत हटाने में सक्षम बनाता है, जिसमें प्रोफ़ाइल जानकारी और प्रमाणीकरण रिकॉर्ड शामिल हैं।",
     "userRightsTitle": "उपयोगकर्ता अधिकार"
   },
   "projects": {
-    "addButton": "प्रकल्प जोड़ें",
+    "addButton": "प्रोजेक्ट जोड़ें...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1334,9 +1376,9 @@
     "createDialog": {
       "descriptionPlaceholder": "प्रोजेक्ट विवरण दर्ज करें",
       "namePlaceholder": "प्रोजेक्ट का नाम दर्ज करें",
-      "nameRequired": "प्रोजेक्ट का नाम आवश्यक है",
-      "statusPlaceholder": "जैसे active, planning, archived",
-      "teamRequired": "टीम आवश्यक है",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "statusPlaceholder": "उदाहरण: सक्रिय, योजना, पुरालेख",
+      "teamRequired": "टीम आवश्यक है।",
       "title": "प्रोजेक्ट बनाएं",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1347,9 +1389,9 @@
     "editDialog": {
       "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
-      "title": "प्रकल्प संपादित करें"
+      "title": "प्रोजेक्ट संपादित करें"
     },
-    "filterLabel": "नाम के अनुसार फ़िल्टर करें",
+    "filterLabel": "प्रोजेक्ट फ़िल्टर करें",
     "filterNameLabel": "{{projects.filterLabel}}",
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
@@ -1360,18 +1402,18 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "कोई प्रकल्प नहीं मिला",
+    "noProjects": "कोई प्रोजेक्ट नहीं मिला",
     "picker": {
       "label": "{{common.project}}",
       "none": "कोई प्रोजेक्ट नहीं"
     },
     "relatedProjectsDialog": {
-      "addRelated": "संबंधित प्रकल्प जोड़ें",
+      "addRelated": "संबंधित प्रोजेक्ट जोड़ें।",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "कोई संबंधित प्रकल्प नहीं",
+      "noRelated": "कोई संबंधित प्रोजेक्ट नहीं।",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
-      "selectProject": "प्रकल्प का चयन करें",
-      "title": "संबंधित प्रकल्प"
+      "selectProject": "प्रोजेक्ट चुनें",
+      "title": "संबंधित प्रोजेक्ट"
     },
     "responsiblePartiesDialog": {
       "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
@@ -1388,27 +1430,27 @@
       "planning": "योजना"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "स्थिति के अनुसार फ़िल्टर करें",
-    "subtitle": "प्रकल्प, संबंध और मेटाडेटा बनाएं, संपादित करें और प्रबंधित करें",
-    "teamFilterLabel": "टीम के अनुसार फ़िल्टर करें",
-    "title": "प्रकल्प प्रबंधित करें"
+    "statusFilterLabel": "स्थिति द्वारा फ़िल्टर करें।",
+    "subtitle": "अपने सुरक्षा प्रोजेक्ट व्यवस्थित करें",
+    "teamFilterLabel": "टीम द्वारा फ़िल्टर करें",
+    "title": "प्रोजेक्ट"
   },
   "report": {
     "cvss": "CVSS",
     "cweIds": "CWE IDs",
     "diagramImageUnavailable": "आरेख छवि उपलब्ध नहीं है",
-    "diagramRenderFailed": "आरेख प्रस्तुत नहीं किया जा सका",
-    "generatedAt": "रिपोर्ट जेनरेट की गई",
-    "linkedAsset": "लिंक किया गया संपत्ति",
+    "diagramRenderFailed": "आरेख रेंडर नहीं किया जा सका।",
+    "generatedAt": "रिपोर्ट उत्पन्न।",
+    "linkedAsset": "लिंक की गई संपत्ति",
     "linkedDiagram": "लिंक किया गया आरेख",
     "pageOf": "पृष्ठ {{current}} / {{total}}",
     "refLabel": "संदर्भ",
-    "summaryCreatedAt": "खतरा मॉडल निर्माण तिथि",
-    "summaryCreatedBy": "खतरा मॉडल निर्माता",
+    "summaryCreatedAt": "थ्रेट मॉडल बनाया गया।",
+    "summaryCreatedBy": "थ्रेट मॉडल बनाया।",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "खतरा मॉडल अंतिम संशोधन",
+    "summaryLastModified": "थ्रेट मॉडल अंतिम संशोधित।",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "खतरा मॉडल स्थिति"
+    "summaryStatus": "थ्रेट मॉडल स्थिति।"
   },
   "sessionExpiry": {
     "extendButton": "सत्र बढ़ाएं",
@@ -1416,10 +1458,10 @@
     "logoutButton": "अभी साइन आउट करें",
     "message": "आपका सत्र समाप्त होने वाला है। क्या आप अपने सत्र का विस्तार करना चाहेंगे या अभी लॉग आउट करना चाहेंगे?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} सेकंड"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} सेकंड"
     },
-    "title": "सत्र जल्द समाप्त हो रहा है"
+    "title": "सत्र समाप्ति"
   },
   "ssvcCalculator": {
     "apply": "{{cvssCalculator.apply}}",
@@ -1442,13 +1484,13 @@
       "description": "इस कमजोरी का दोहन की वर्तमान स्थिति क्या है?",
       "name": "दोहन",
       "none": "{{common.none}}",
-      "noneDesc": "सक्रिय दोहन का कोई सबूत नहीं और कोई सार्वजनिक प्रूफ-ऑफ-कॉन्सेप्ट नहीं।",
+      "noneDesc": "सक्रिय दोहन का कोई प्रमाण नहीं और कोई सार्वजनिक प्रूफ-ऑफ-कॉन्सेप्ट नहीं",
       "poc": "सार्वजनिक PoC",
       "pocDesc": "एक विशिष्ट सार्वजनिक प्रूफ-ऑफ-कॉन्सेप्ट मौजूद है (जैसे Metasploit या ExploitDB पर), या एक अच्छी तरह से ज्ञात दोहन विधि प्रलेखित है।"
     },
     "methodology": "आपूर्तिकर्ता",
     "next": "अगला",
-    "openCalculator": "SSVC जोड़ें",
+    "openCalculator": "SSVC जोड़ें...",
     "publicSafetyImpact": {
       "description": "क्या इस कमजोरी का दोहन सार्वजनिक सुरक्षा के लिए जोखिम पेश करता है?",
       "minimal": "न्यूनतम",
@@ -1488,40 +1530,40 @@
     },
     "browse": "सर्वेक्षण ब्राउज़ करें",
     "confidentialDialog": {
-      "description": "क्या इस प्रस्तुति को गोपनीय के रूप में चिह्नित किया जाए? गोपनीय प्रस्तुतियों को स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किया जाता है। इस सेटिंग को प्रतिक्रिया बनाने के बाद नहीं बदला जा सकता।",
+      "description": "क्या इस सबमिशन को गोपनीय चिह्नित किया जाना चाहिए? गोपनीय सबमिशन स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं होते। यह सेटिंग प्रतिक्रिया बनाने के बाद नहीं बदली जा सकती।",
       "no": "नहीं",
-      "title": "गोपनीय प्रस्तुति",
+      "title": "गोपनीय सबमिशन",
       "yes": "हां, गोपनीय के रूप में चिह्नित करें"
     },
     "confirmation": {
-      "backToSurveys": "सर्वेक्षण पर वापस जाएं",
+      "backToSurveys": "सर्वेक्षण पर वापस जाएं।",
       "message": "आपका सर्वेक्षण सफलतापूर्वक सबमिट किया गया है।",
       "title": "सर्वेक्षण सबमिट किया गया",
-      "viewResponses": "मेरी प्रतिक्रियाएं देखें"
+      "viewResponses": "मेरी प्रतिक्रियाएं देखें।"
     },
-    "continueDraft": "ड्राफ्ट जारी रखें",
+    "continueDraft": "मसौदा जारी रखें",
     "fill": {
       "submitConfirm": "क्या आप निश्चित हैं कि आप सबमिट करना चाहते हैं? सबमिट करने के बाद आप अपनी प्रतिक्रियाओं को संपादित नहीं कर पाएंगे।",
       "title": "सर्वेक्षण भरें"
     },
     "list": {
       "deleteDraft": "ड्राफ्ट हटाएं",
-      "draftStarted": "ड्राफ्ट शुरू हुआ {{time}}",
-      "errorLoadingSurveys": "सर्वेक्षण लोड करने में विफल",
-      "lastModified": "अंतिम संशोधन {{time}}",
+      "draftStarted": "मसौदा {{time}} को शुरू किया।",
+      "errorLoadingSurveys": "सर्वेक्षण लोड करने में विफल।",
+      "lastModified": "अंतिम संशोधित {{time}}।",
       "loadingSurveys": "सर्वेक्षण लोड हो रहे हैं...",
       "noSurveysMessage": "इस समय कोई सक्रिय सर्वेक्षण नहीं है। बाद में पुनः जांचें।",
       "noSurveysTitle": "कोई सर्वेक्षण उपलब्ध नहीं",
       "pageDescription": "निम्नलिखित सूची से उपयुक्त समीक्षा प्रकार चुनें, और फिर सुरक्षा समीक्षा टीम को समीक्षा करने के लिए आवश्यक जानकारी प्रदान करने हेतु प्रस्तुत प्रश्नों का उत्तर दें।",
       "pageTitle": "सुरक्षा समीक्षा का अनुरोध करें",
       "updated": "अपडेट किया गया",
-      "yourDrafts": "आपके ड्राफ्ट"
+      "yourDrafts": "आपके मसौदे"
     },
     "myResponses": "मेरी प्रतिक्रियाएं",
-    "noMatchingResponses": "कोई मिलान प्रतिक्रिया नहीं",
+    "noMatchingResponses": "कोई मिलान करने वाली प्रतिक्रियाएं नहीं",
     "noMatchingResponsesMessage": "चयनित फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती।",
-    "noResponses": "आपने अभी तक कोई सर्वेक्षण प्रतिक्रिया सबमिट नहीं की है",
-    "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है",
+    "noResponses": "आपने अभी तक कोई सर्वेक्षण प्रतिक्रिया सबमिट नहीं की है।",
+    "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है।",
     "responses": {
       "continueEditing": "संपादन जारी रखें",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1530,11 +1572,11 @@
       "noResponsesMessage": "आपने कोई सर्वेक्षण पूरा नहीं किया है। सर्वेक्षण पृष्ठ से एक शुरू करें।",
       "noResponsesTitle": "अभी तक कोई प्रतिक्रिया नहीं",
       "pageTitle": "मेरी सर्वेक्षण प्रतिक्रियाएं",
-      "responseCount": "{{count}} प्रतिक्रिया",
-      "responseCountPlural": "{{count}} प्रतिक्रियाएं"
+      "responseCount": "{{Count}} प्रतिक्रिया",
+      "responseCountPlural": "{{Count}} प्रतिक्रियाएं"
     },
-    "saveDraft": "ड्राफ्ट सहेजें",
-    "startNew": "सर्वेक्षण शुरू करें",
+    "saveDraft": "मसौदा सहेजें",
+    "startNew": "सर्वेक्षण शुरू करें...",
     "status": {
       "draft": "ड्राफ्ट",
       "needsRevision": "संशोधन आवश्यक",
@@ -1552,7 +1594,7 @@
     "viewResponse": "प्रतिक्रिया देखें"
   },
   "teams": {
-    "addButton": "टीम जोड़ें",
+    "addButton": "टीम जोड़ें...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "संशोधित",
@@ -1565,8 +1607,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "टीम का नाम दर्ज करें",
-      "nameRequired": "टीम का नाम आवश्यक है",
-      "statusPlaceholder": "जैसे active, archived",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "statusPlaceholder": "उदाहरण: सक्रिय, पुरालेख।",
       "title": "टीम बनाएं",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1582,10 +1624,10 @@
       "save": "{{common.save}}",
       "title": "टीम संपादित करें"
     },
-    "filterLabel": "टीमों को फ़िल्टर करें",
+    "filterLabel": "टीमें फ़िल्टर करें",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "सदस्य",
+      "members": "सदस्य...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1597,15 +1639,15 @@
       "noMembers": "कोई सदस्य नहीं",
       "removeMember": "सदस्य हटाएं",
       "role": "भूमिका",
-      "title": "टीम के सदस्य"
+      "title": "टीम सदस्य"
     },
     "noTeams": "कोई टीम नहीं मिली",
     "relatedTeamsDialog": {
-      "addRelated": "संबंधित टीम जोड़ें",
+      "addRelated": "संबंधित टीम जोड़ें।",
       "customRelationship": "कस्टम संबंध",
-      "noRelated": "कोई संबंधित टीम नहीं",
+      "noRelated": "कोई संबंधित टीमें नहीं।",
       "relationship": "संबंध",
-      "removeRelated": "संबंधित टीम हटाएं",
+      "removeRelated": "संबंधित टीम हटाएं।",
       "selectTeam": "टीम चुनें",
       "title": "संबंधित टीमें"
     },
@@ -1616,19 +1658,19 @@
       "other": "{{common.other}}",
       "parent": "माता-पिता",
       "related": "संबंधित",
-      "superseded_by": "द्वारा प्रतिस्थापित",
+      "superseded_by": "द्वारा अधिक्रमित",
       "supersedes": "प्रतिस्थापित करता है"
     },
     "responsiblePartiesDialog": {
-      "addParty": "जिम्मेदार पार्टी जोड़ें",
-      "noParties": "कोई जिम्मेदार पार्टी नहीं",
-      "removeParty": "जिम्मेदार पार्टी हटाएं",
-      "title": "जिम्मेदार पार्टियां"
+      "addParty": "जिम्मेदार पक्ष जोड़ें",
+      "noParties": "कोई जिम्मेदार पक्ष नहीं।",
+      "removeParty": "जिम्मेदार पक्ष हटाएं",
+      "title": "जिम्मेदार पक्ष"
     },
     "roles": {
-      "business_leader": "व्यावसायिक नेता",
+      "business_leader": "व्यवसाय नेता",
       "engineer": "इंजीनियर",
-      "engineering_lead": "इंजीनियरिंग लीड",
+      "engineering_lead": "इंजीनियरिंग प्रमुख",
       "other": "{{common.other}}",
       "product_manager": "उत्पाद प्रबंधक",
       "security_specialist": "सुरक्षा विशेषज्ञ"
@@ -1638,29 +1680,29 @@
       "archived": "संग्रहीत",
       "forming": "निर्माणाधीन",
       "merging": "विलय हो रहा है",
-      "on_hold": "प्रतीक्षा में",
+      "on_hold": "प्रतीक्षाधीन",
       "splitting": "विभाजित हो रहा है",
-      "winding_down": "बंद हो रहा है"
+      "winding_down": "समाप्ति की ओर"
     },
-    "subtitle": "टीमों, सदस्यों और संबंधों को बनाएं, संपादित करें और प्रबंधित करें",
-    "title": "टीमों का प्रबंधन करें"
+    "subtitle": "अपनी टीम सदस्यता प्रबंधित करें",
+    "title": "टीमें"
   },
   "threatEditor": {
-    "addMapping": "मैपिंग जोड़ें",
+    "addMapping": "मैपिंग जोड़ें...",
     "createNewThreat": "नया खतरा बनाएं",
-    "cvssVectorPlaceholder": "उदा., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "CWE ID दर्ज करें (उदा., CWE-79)",
+    "cvssVectorPlaceholder": "उदाहरण: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE ID दर्ज करें (उदाहरण: CWE-79)",
     "cweMappings": "CWE मैपिंग",
     "frameworkMappingPicker": {
       "notApplicable": "वर्तमान सेल प्रकार पर लागू नहीं",
       "title": "फ्रेमवर्क मैपिंग चुनें"
     },
-    "frameworkMappings": "खतरा मॉडल ढांचा मैपिंग",
+    "frameworkMappings": "थ्रेट मॉडल फ्रेमवर्क मैपिंग।",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
-    "notAssociatedWithCell": "किसी सेल से संबद्ध नहीं",
-    "notAssociatedWithDiagram": "किसी डायग्राम से संबद्ध नहीं",
+    "notAssociatedWithAsset": "किसी संपत्ति से संबद्ध नहीं।",
+    "notAssociatedWithCell": "किसी सेल से संबद्ध नहीं।",
+    "notAssociatedWithDiagram": "किसी आरेख से संबद्ध नहीं।",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1678,7 +1720,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "स्थगित (p4)",
+      "high": "उच्च (p1)",
+      "immediate": "तत्काल (p0)",
+      "low": "निम्न (p3)",
+      "medium": "मध्यम (p2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1692,7 +1739,9 @@
       "critical.description": "शोषण योग्य भेद्यता पूर्ण सिस्टम समझौता, डेटा उल्लंघन, या सुरक्षा प्रभाव को सक्षम करती है; तत्काल कार्रवाई की आवश्यकता है।",
       "high": "उच्च",
       "high.description": "महत्वपूर्ण प्रभाव या उच्च संभावना; प्रमुख अनधिकृत पहुंच, विशेषाधिकार वृद्धि, या सेवा व्यवधान को सक्षम करता है।",
-      "informational": "सूचनात्मक",
+      "informational": {
+        "description": "कोई प्रत्यक्ष दोहनीयता नहीं; अनुशंसा, सर्वोत्तम अभ्यास विचलन, या कॉन्फ़िगरेशन सुधार"
+      },
       "informational.description": "कोई प्रत्यक्ष शोषण योग्यता नहीं; अनुशंसा, सर्वोत्तम प्रथा विचलन, या कॉन्फ़िगरेशन सुधार।",
       "low": "निम्न",
       "low.description": "न्यूनतम प्रभाव या कम संभावना; नगण्य व्यावसायिक प्रभाव, विशिष्ट शर्तों या उपयोगकर्ता इंटरैक्शन की आवश्यकता।",
@@ -1721,33 +1770,39 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "गलत सकारात्मक",
+      "mitigation_in_progress": "शमन प्रक्रिया में।",
+      "mitigation_planned": "शमन योजनाबद्ध",
+      "verification_pending": "सत्यापन प्रतीक्षित"
+    },
+    "addCvssEntry": "CVSS प्रविष्टि जोड़ें।",
+    "cvssVector": "CVSS वेक्टर"
   },
   "threatModels": {
     "addPermission": "अनुमति जोड़ें",
     "branch": "शाखा",
-    "changeSecurityReviewer": "सुरक्षा समीक्षक बदलें",
+    "changeSecurityReviewer": "सुरक्षा समीक्षक बदलें...",
     "clearSecurityReviewer": "सुरक्षा समीक्षक हटाएं",
     "commit": "कमिट",
-    "confidentialProject": "गोपनीय परियोजना",
-    "createFirstButton": "अपना पहला थ्रेट मॉडल बनाएं",
-    "createNewDiagram": "नया डायग्राम बनाएं",
-    "createNewRepository": "रिपॉजिटरी संदर्भ जोड़ें",
+    "confidentialProject": "गोपनीय प्रोजेक्ट",
+    "createFirstButton": "अपना पहला थ्रेट मॉडल बनाएं...",
+    "createNewDiagram": "नया आरेख बनाएं",
+    "createNewRepository": "रिपोज़िटरी संदर्भ जोड़ें...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
-    "dataFlowDiagram": "डेटा फ्लो डायग्राम",
-    "deleteError": "थ्रेट मॉडल हटाने में विफल: {{error}}",
-    "deleteSuccess": "थ्रेट मॉडल हटा दिया गया है: {{name}}",
+    "dataFlowDiagram": "डेटा प्रवाह आरेख",
+    "deleteError": "थ्रेट मॉडल हटाने में विफल: {{error}}।",
+    "deleteSuccess": "थ्रेट मॉडल हटाया गया: {{name}}।",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और सभी संबंधित डायग्राम, खतरे और मेटाडेटा को स्थायी रूप से हटा देगी।",
-    "descriptionPlaceholder": "इस थ्रेट मॉडल के उद्देश्य और दायरे का वर्णन करें",
+    "descriptionPlaceholder": "इस थ्रेट मॉडल का उद्देश्य और दायरा वर्णित करें",
     "details": "थ्रेट मॉडल विवरण",
-    "diagramName": "डायग्राम का नाम",
-    "diagramPreview": "डायग्राम पूर्वावलोकन",
-    "diagramType": "डायग्राम का प्रकार",
+    "diagramName": "आरेख नाम",
+    "diagramPreview": "आरेख पूर्वावलोकन",
+    "diagramType": "आरेख प्रकार",
     "diagrams": "{{common.objectTypes.diagrams}}",
-    "documentDescriptionPlaceholder": "दस्तावेज़ के उद्देश्य या सामग्री का वर्णन करें",
+    "documentDescriptionPlaceholder": "दस्तावेज़ का उद्देश्य या सामग्री वर्णित करें",
     "documentEditor": {
       "title": {
         "create": "दस्तावेज़ संदर्भ बनाएं",
@@ -1755,65 +1810,65 @@
         "view": "दस्तावेज़ संदर्भ देखें"
       }
     },
-    "documentName": "दस्तावेज़ का नाम",
+    "documentName": "दस्तावेज़ नाम",
     "documentUrl": "दस्तावेज़ URL",
     "export": "निर्यात करें",
     "exportDialog": {
-      "error": "निर्यात डेटा तैयार करने में विफल। कृपया फिर से प्रयास करें।",
+      "error": "निर्यात डेटा तैयार करने में विफल।",
       "preparing": "निर्यात डेटा तैयार किया जा रहा है...",
-      "ready": "निर्यात तैयार है। डाउनलोड करने के लिए सहेजें पर क्लिक करें।",
+      "ready": "निर्यात तैयार। डाउनलोड करने के लिए सहेजें क्लिक करें।",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "थ्रेट मॉडल निर्यात करें"
     },
-    "fileSizeExceeded": "फ़ाइल अधिकतम आयात आकार से अधिक है: {{maxSize}} MB",
-    "frameworkDisabledHint": "खतरे मौजूद होने पर फ्रेमवर्क बदला नहीं जा सकता",
+    "fileSizeExceeded": "फ़ाइल अधिकतम आयात आकार से अधिक: {{maxsize}} MB।",
+    "frameworkDisabledHint": "खतरे मौजूद होने पर फ्रेमवर्क नहीं बदल सकते",
     "idLabel": "{{common.id}}",
-    "importError": "थ्रेट मॉडल आयात करने में विफल: {{error}}",
-    "importFormatError": "अमान्य थ्रेट मॉडल प्रारूप: आवश्यक फ़ील्ड अनुपलब्ध (id, name)",
-    "importSuccess": "थ्रेट मॉडल सफलतापूर्वक आयात किया गया: {{name}}",
-    "importValidationError": "थ्रेट मॉडल सत्यापन विफल: {{errors}}",
+    "importError": "थ्रेट मॉडल आयात करने में विफल: {{error}}।",
+    "importFormatError": "अमान्य थ्रेट मॉडल प्रारूप: आवश्यक फ़ील्ड (ID, नाम) अनुपस्थित।",
+    "importSuccess": "थ्रेट मॉडल सफलतापूर्वक आयात किया गया: {{name}}।",
+    "importValidationError": "थ्रेट मॉडल सत्यापन विफल: {{errors}}।",
     "importing": "थ्रेट मॉडल आयात हो रहा है...",
     "issueUriHint": "इस थ्रेट मॉडल को बाहरी सिस्टम में ट्रैक करने के लिए URL दर्ज करें",
     "newThreatModel": "नया थ्रेट मॉडल",
-    "noAssets": "अभी तक कोई एसेट नहीं जोड़ा गया",
-    "noDiagrams": "अभी तक कोई डायग्राम नहीं जोड़ा गया",
-    "noDocuments": "अभी तक कोई दस्तावेज़ नहीं जोड़ा गया",
+    "noAssets": "अभी तक कोई संपत्ति नहीं जोड़ी गई।",
+    "noDiagrams": "अभी तक कोई आरेख नहीं जोड़ा गया।",
+    "noDocuments": "अभी तक कोई दस्तावेज़ नहीं जोड़ा गया।",
     "noItemsMessage": "आपके पास अभी तक कोई थ्रेट मॉडल नहीं है।",
-    "noNotes": "अभी तक कोई नोट नहीं जोड़ा गया",
-    "noPermissions": "कोई अनुमति परिभाषित नहीं",
-    "noRepositories": "अभी तक कोई रिपॉजिटरी नहीं जोड़ी गई",
-    "noThreats": "अभी तक कोई खतरा नहीं जोड़ा गया",
+    "noNotes": "अभी तक कोई नोट नहीं जोड़ा गया।",
+    "noPermissions": "कोई अनुमतियाँ परिभाषित नहीं।",
+    "noRepositories": "अभी तक कोई रिपोज़िटरी नहीं जोड़ी गई।",
+    "noThreats": "अभी तक कोई खतरे नहीं जोड़े गए।",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
-    "permissionsTooltip": "अनुमतियां प्रबंधित करें",
+    "permissionsTooltip": "अनुमतियाँ प्रबंधित करें",
     "rename": "नाम बदलें",
-    "renameDiagram": "डायग्राम का नाम बदलें",
+    "renameDiagram": "आरेख का नाम बदलें",
     "repositoryDescriptionPlaceholder": "रिपॉजिटरी या इसके उद्देश्य का वर्णन करें",
     "repositoryEditor": {
       "title": {
-        "create": "रिपॉजिटरी संदर्भ बनाएं",
-        "edit": "रिपॉजिटरी संदर्भ संपादित करें",
-        "view": "रिपॉजिटरी संदर्भ देखें"
+        "create": "रिपोज़िटरी संदर्भ बनाएं",
+        "edit": "रिपोज़िटरी संदर्भ संपादित करें",
+        "view": "रिपोज़िटरी संदर्भ देखें"
       }
     },
-    "repositoryName": "रिपॉजिटरी का नाम",
-    "repositoryParameters": "रिपॉजिटरी पैरामीटर",
+    "repositoryName": "रिपोज़िटरी नाम",
+    "repositoryParameters": "रिपोज़िटरी पैरामीटर",
     "repositoryRefType": "संदर्भ प्रकार",
     "repositoryRefValue": "संदर्भ मान",
     "repositoryRefValueHint": "शाखा का नाम, टैग, या कमिट ID",
     "repositorySubPath": "उप-पथ",
     "repositorySubPathHint": "रिपॉजिटरी के भीतर वैकल्पिक पथ",
-    "repositoryType": "रिपॉजिटरी का प्रकार",
+    "repositoryType": "रिपोज़िटरी प्रकार",
     "repositoryUri": "रिपॉजिटरी URL",
     "sections": {
       "audit": "ऑडिट",
       "inputs": "इनपुट",
-      "inputsDescription": "संपत्तियां, दस्तावेज़, और स्रोत कोड भंडार जो विश्लेषण के अंतर्गत सिस्टम का वर्णन करते हैं",
+      "inputsDescription": "संपत्तियाँ, दस्तावेज़, और स्रोत कोड रिपोज़िटरी जो विश्लेषण के अधीन सिस्टम का वर्णन करती हैं।",
       "outputs": "आउटपुट",
-      "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे",
+      "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट, आरेख, और खतरे।",
       "reviewProcess": "समीक्षा प्रक्रिया"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1839,30 +1894,36 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "प्रगति में",
+      "not_started": "शुरू नहीं हुआ",
+      "pending_review": "समीक्षा प्रतीक्षित",
+      "remediation_in_progress": "उपचार प्रक्रिया में।",
+      "remediation_required": "उपचार आवश्यक",
+      "verification_pending": "सत्यापन प्रतीक्षित"
     },
-    "statusLastUpdated": "स्थिति अंतिम बार अपडेट की गई",
+    "statusLastUpdated": "स्थिति अंतिम अपडेट।",
     "tag": "टैग",
     "threatModelFramework": "थ्रेट मॉडल फ्रेमवर्क",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "एसेट जोड़ें",
-      "addDiagram": "डायग्राम जोड़ें",
-      "addDocument": "दस्तावेज़ जोड़ें",
+      "addAsset": "संपत्ति जोड़ें...",
+      "addDiagram": "आरेख जोड़ें...",
+      "addDocument": "दस्तावेज़ जोड़ें...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "एसेट सिस्टम के भीतर मूल्यवान संसाधन हैं जिन्हें सुरक्षा की आवश्यकता है, जैसे डेटा, हार्डवेयर, सॉफ्टवेयर, इन्फ्रास्ट्रक्चर, सेवाएं, या कर्मचारी।",
-      "diagramsCardTitle": "TMI में डायग्राम सिस्टम के भीतर डेटा गतिविधि और प्रक्रियाओं के मशीन-पठनीय प्रतिनिधित्व हैं, जो मैन्युअल और स्वचालित दोनों सुरक्षा विश्लेषण को सक्षम करते हैं।",
-      "documentsCardTitle": "दस्तावेज़ संदर्भ TMI के बाहर संग्रहीत दस्तावेज़ों के लिंक हैं। प्रासंगिक दस्तावेज़ विश्लेषण किए जाने वाले सिस्टम का वर्णन करते हैं, और सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं दोनों द्वारा उपयोग किए जा सकते हैं।",
+      "assetsCardTitle": "संपत्तियाँ सिस्टम के भीतर मूल्यवान संसाधन हैं जिन्हें सुरक्षा की आवश्यकता है, जैसे डेटा, हार्डवेयर, सॉफ़्टवेयर, इन्फ्रास्ट्रक्चर, सेवाएं, या कर्मी",
+      "diagramsCardTitle": "TMI में आरेख किसी सिस्टम के भीतर डेटा आंदोलन और प्रक्रियाओं के मशीन-पठनीय प्रतिनिधित्व हैं, जो मैनुअल और स्वचालित दोनों सुरक्षा विश्लेषण को सक्षम करते हैं",
+      "documentsCardTitle": "दस्तावेज़ संदर्भ TMI के बाहर संग्रहीत दस्तावेज़ों के लिंक हैं। प्रासंगिक दस्तावेज़ विश्लेषण किए जाने वाले सिस्टम का वर्णन करते हैं और सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं दोनों द्वारा उपयोग किए जा सकते हैं",
       "downloadModel": "मॉडल डाउनलोड करें",
       "dropToCreateDocument": "बनाने के लिए छोड़ें",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "इश्यू URI सेट करने के लिए ड्रॉप करें",
       "import": "आयात करें",
-      "notesCardTitle": "नोट्स मार्कडाउन प्रारूप टेक्स्ट हैं जो पूरी तरह से थ्रेट मॉडल के भीतर समाहित हैं, जो सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं से नोट्स और एनोटेशन कैप्चर करने के लिए उपयोग किए जाते हैं।",
-      "repositoriesCardTitle": "रिपॉजिटरी सोर्स कोड रिपॉजिटरी के लिंक हैं जहां सिस्टम का सोर्स कोड प्रबंधित किया जाता है।",
-      "threatsCardTitle": "खतरे संभावित प्रतिकूल घटनाएं या क्रियाएं हैं जो सिस्टम की गोपनीयता, अखंडता, उपलब्धता या अन्य सुरक्षा उद्देश्यों से समझौता करने के लिए किसी भेद्यता या कमजोरी का शोषण करती हैं। TMI में, खतरा ऑब्जेक्ट में खतरे से जुड़े जोखिम के प्रकार और स्तर की जानकारी और खतरे को कम करने के लिए आवश्यक कार्य को ट्रैक करने की जानकारी भी होती है।"
+      "notesCardTitle": "नोट मार्कडाउन प्रारूप पाठ हैं जो पूरी तरह से थ्रेट मॉडल के भीतर समाहित हैं, सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं से नोट और टिप्पणी कैप्चर करने के लिए उपयोग किए जाते हैं",
+      "repositoriesCardTitle": "रिपोज़िटरी स्रोत कोड रिपोज़िटरी के लिंक हैं जहाँ सिस्टम का स्रोत कोड प्रबंधित किया जाता है",
+      "threatsCardTitle": "खतरे संभावित प्रतिकूल घटनाएं या क्रियाएं हैं जो किसी सिस्टम में कमज़ोरी का दोहन करती हैं। TMI में, खतरा ऑब्जेक्ट में खतरे से संबंधित जोखिम के प्रकार और स्तर की जानकारी और शमन कार्य को ट्रैक करने की जानकारी भी होती है"
     },
-    "viewDiagramName": "डायग्राम गुण देखें",
+    "viewDiagramName": "आरेख गुण देखें",
     "yourThreatModels": "आपके थ्रेट मॉडल"
   },
   "threats": {
@@ -1870,7 +1931,7 @@
       "clearAll": "सभी फ़िल्टर साफ़ करें",
       "clearName": "नाम फ़िल्टर साफ़ करें",
       "lessFilters": "{{dashboard.lessFilters}}",
-      "mitigatedTooltip": "चक्र: सभी / शमन किया गया / शमन नहीं किया गया",
+      "mitigatedTooltip": "चक्र: सभी / शमित / शमन नहीं",
       "moreFilters": "{{dashboard.moreFilters}}",
       "nameLabel": "{{common.search}}",
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
@@ -1881,12 +1942,12 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "यदि आपके पास इन शर्तों के बारे में कोई प्रश्न हैं, तो कृपया इस वेब साइट के संचालक से संपर्क जानकारी के माध्यम से संपर्क करें ",
-      "part2": " पेज पर।"
+      "part1": "यदि आपके इन शर्तों के बारे में कोई प्रश्न हैं, तो कृपया इस पर संपर्क जानकारी के माध्यम से इस वेबसाइट के संचालक से संपर्क करें।",
+      "part2": " पृष्ठ"
     },
     "intro": {
-      "part1": "TMI के हमारे उदाहरण में आपका स्वागत है। ये उपयोग की शर्तें (\"शर्तें\") इस वेबसाइट तक आपकी पहुंच और उपयोग को नियंत्रित करती हैं, जो इस वेब साइट के ",
-      "part2": " पेज पर सूचीबद्ध संचालक द्वारा उपलब्ध कराई गई है (\"संचालक\")।"
+      "part1": "हमारे TMI के उदाहरण में आपका स्वागत है। उपयोग की ये शर्तें (\"शर्तें\") इस वेबसाइट तक आपकी पहुँच और उपयोग को नियंत्रित करती हैं, जो इस पर सूचीबद्ध संचालक द्वारा उपलब्ध कराई गई है।",
+      "part2": " इस वेबसाइट का पृष्ठ (\"संचालक\")।"
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
@@ -1895,37 +1956,37 @@
     },
     "section2": {
       "content": "आप केवल वैध उद्देश्यों के लिए वेब साइट का उपयोग कर सकते हैं। आप वेब साइट या इसके अंतर्निहित सिस्टम का दुरुपयोग न करने, बाधित न करने, या अनधिकृत पहुंच प्राप्त करने का प्रयास न करने के लिए सहमत हैं।",
-      "title": "2. वेब साइट का उपयोग"
+      "title": "2. वेबसाइट का उपयोग"
     },
     "section3": {
       "content": "वेब साइट बिना किसी प्रकार की वारंटी के \"जैसा है\" प्रदान की जाती है, व्यक्त या निहित, जिसमें किसी विशेष उद्देश्य के लिए उपयुक्तता, उपलब्धता या सटीकता शामिल है लेकिन इन्हीं तक सीमित नहीं है। हम निर्बाध या त्रुटि-मुक्त संचालन की गारंटी नहीं देते।",
       "title": "3. कोई वारंटी नहीं"
     },
     "section4": {
-      "content": "कानून द्वारा अनुमत पूर्ण सीमा तक, संचालक आपके वेबसाइट के उपयोग या उपयोग करने में असमर्थता से उत्पन्न किसी भी प्रत्यक्ष, अप्रत्यक्ष, आकस्मिक, या परिणामी नुकसान के लिए उत्तरदायी नहीं होगा।",
-      "title": "4. दायित्व की सीमा"
+      "content": "कानून द्वारा अनुमत सीमा तक, संचालक किसी भी प्रत्यक्ष, अप्रत्यक्ष, आकस्मिक, या परिणामी क्षति के लिए उत्तरदायी नहीं होगा जो वेबसाइट के उपयोग या उपयोग न कर पाने से उत्पन्न हो।",
+      "title": "4. देयता की सीमा"
     },
     "section5": {
       "content": {
-        "part1": "यह वेबसाइट TMI ओपन सोर्स सॉफ्टवेयर चलाती है। इसका स्रोत कोड इस वेब साइट के ",
-        "part2": " पेज पर दिए गए लिंक पर उपलब्ध है। सॉफ्टवेयर का आपका उपयोग इसकी ओपन-सोर्स लाइसेंस शर्तों के अधीन है। हम सॉफ्टवेयर के लिए नहीं, केवल इस उदाहरण के संचालन के लिए जिम्मेदार हैं। जब तक अन्यथा नहीं कहा गया, इस वेब साइट का संचालक TMI प्रोजेक्ट या इसके निर्माताओं से संबद्ध नहीं है।"
+        "part1": "यह वेबसाइट TMI ओपन सोर्स सॉफ़्टवेयर चलाती है। इसका स्रोत कोड इस पर दिए गए लिंक पर उपलब्ध है।",
+        "part2": " इस वेबसाइट का पृष्ठ। सॉफ़्टवेयर का आपका उपयोग इसकी ओपन-सोर्स लाइसेंस शर्तों के अधीन है। हम सॉफ़्टवेयर के लिए नहीं, केवल इस उदाहरण को संचालित करने के लिए जिम्मेदार हैं।"
       },
-      "title": "5. ओपन सोर्स सॉफ्टवेयर"
+      "title": "5. ओपन सोर्स सॉफ़्टवेयर"
     },
     "section6": {
-      "content": "संचालक किसी भी समय इन शर्तों को अपडेट कर सकता है। परिवर्तनों के बाद वेब साइट का निरंतर उपयोग अपडेटेड शर्तों की स्वीकृति माना जाएगा।",
+      "content": "संचालक किसी भी समय इन शर्तों को अपडेट कर सकता है। परिवर्तनों के बाद वेबसाइट का निरंतर उपयोग अपडेट की गई शर्तों की स्वीकृति माना जाएगा।",
       "title": "6. शर्तों में परिवर्तन"
     },
     "section7": {
-      "content": "संचालक किसी भी कारण से, बिना सूचना के, संचालक के विवेक पर वेब साइट तक पहुंच को निलंबित या समाप्त करने का अधिकार सुरक्षित रखता है।",
+      "content": "संचालक किसी भी कारण से, बिना सूचना के, अपने विवेक पर वेबसाइट तक पहुँच निलंबित या समाप्त करने का अधिकार सुरक्षित रखता है।",
       "title": "7. समाप्ति"
     },
     "section8": {
       "content": {
-        "part1": "ये शर्तें ",
-        "part2": " पेज पर संचालक द्वारा निर्दिष्ट अधिकार क्षेत्र के कानूनों द्वारा शासित हैं, कानून के टकराव के सिद्धांतों की परवाह किए बिना।"
+        "part1": "ये शर्तें संचालक द्वारा निर्दिष्ट क्षेत्राधिकार के कानूनों द्वारा शासित होती हैं।",
+        "part2": " पृष्ठ, कानून के टकराव के सिद्धांतों की परवाह किए बिना।"
       },
-      "title": "8. शासकीय कानून"
+      "title": "8. शासन कानून"
     },
     "title": "सेवा की शर्तें"
   },
@@ -1936,7 +1997,7 @@
     }
   },
   "triage": {
-    "bulkActions": "बल्क एक्शन",
+    "bulkActions": "थोक क्रियाएं",
     "changeStatus": "स्थिति बदलें",
     "columns": {
       "confidentialTooltip": "गोपनीय प्रस्तुति"
@@ -1950,9 +2011,9 @@
         "question": "प्रश्न"
       },
       "markdownSupported": "Markdown समर्थित",
-      "noNotes": "अभी तक कोई ट्राइएज नोट नहीं",
-      "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",
-      "noRevisionNotes": "कोई संशोधन नोट नहीं",
+      "noNotes": "अभी तक कोई ट्राइएज नोट नहीं।",
+      "noResponses": "कोई प्रतिक्रिया दर्ज नहीं।",
+      "noRevisionNotes": "कोई संशोधन नोट नहीं।",
       "note": "नोट",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "नोट की सामग्री दर्ज करें...",
@@ -1961,11 +2022,11 @@
       "notes": "नोट्स",
       "responseDetails": "प्रतिक्रिया विवरण",
       "reviewedAt": "समीक्षा की गई",
-      "reviewedBy": "समीक्षाकर्ता",
-      "revisionNotesTitle": "संशोधन का अनुरोध किया गया",
+      "reviewedBy": "समीक्षा की गई",
+      "revisionNotesTitle": "संशोधन अनुरोधित",
       "statusTimeline": "स्थिति समयरेखा",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "ट्राइएज नोट्स"
+      "triageNotes": "ट्राइएज नोट"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1980,11 +2041,11 @@
       "approve": "स्वीकृत करें",
       "approveSelected": "चयनित स्वीकृत करें",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल",
+      "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल।",
       "loadingResponses": "प्रतिक्रियाएं लोड हो रही हैं...",
-      "noResponsesFiltered": "आपके फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती",
+      "noResponsesFiltered": "आपके फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती।",
       "noResponsesTitle": "कोई प्रतिक्रिया नहीं",
-      "noResponsesToTriage": "छांटने के लिए कोई सर्वेक्षण प्रतिक्रियाएं नहीं हैं",
+      "noResponsesToTriage": "ट्राइएज करने के लिए कोई सर्वेक्षण प्रतिक्रिया नहीं है।",
       "notSubmitted": "जमा नहीं किया गया",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "प्रस्तुतकर्ता या सर्वेक्षण के अनुसार खोजें...",
@@ -1992,19 +2053,19 @@
       "submitter": "जमाकर्ता"
     },
     "markInReview": "समीक्षा में चिह्नित करें",
-    "markPendingTriage": "लंबित ट्राइएज चिह्नित करें",
+    "markPendingTriage": "ट्राइएज प्रतीक्षित चिह्नित करें।",
     "messages": {
-      "approveError": "प्रतिक्रिया स्वीकृत करने में विफल",
+      "approveError": "प्रतिक्रिया स्वीकृत करने में विफल।",
       "approveSuccess": "प्रतिक्रिया स्वीकृत की गई",
-      "createThreatModelError": "खतरा मॉडल बनाने में विफल",
-      "createThreatModelSuccess": "खतरा मॉडल सफलतापूर्वक बनाया गया",
-      "returnForRevisionError": "प्रतिक्रिया संशोधन के लिए वापस करने में विफल",
-      "returnForRevisionSuccess": "प्रतिक्रिया संशोधन के लिए वापस की गई"
+      "createThreatModelError": "थ्रेट मॉडल बनाने में विफल।",
+      "createThreatModelSuccess": "थ्रेट मॉडल सफलतापूर्वक बनाया गया।",
+      "returnForRevisionError": "प्रतिक्रिया संशोधन के लिए वापस करने में विफल।",
+      "returnForRevisionSuccess": "प्रतिक्रिया संशोधन के लिए वापस की गई।"
     },
-    "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं",
+    "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं।",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
-      "contentPlaceholder": "नोट की सामग्री दर्ज करें (Markdown समर्थित)...",
+      "contentPlaceholder": "नोट सामग्री दर्ज करें (मार्कडाउन समर्थित)...",
       "nameLabel": "{{common.title}}",
       "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
       "title": {
@@ -2013,14 +2074,14 @@
       }
     },
     "queue": "ट्राइएज कतार",
-    "returnToSubmitted": "सबमिट किया गया पर वापस जाएं",
+    "returnToSubmitted": "सबमिट किए पर वापस जाएं।",
     "reviewerAssignment": {
       "assign": "असाइन करें",
-      "assignToMe": "मुझे असाइन करें",
-      "errorLoading": "असाइन नहीं किए गए खतरा मॉडल लोड करने में विफल",
+      "assignToMe": "मुझे सौंपें",
+      "errorLoading": "असाइन न किए गए थ्रेट मॉडल लोड करने में विफल।",
       "loading": "असाइन नहीं किए गए समीक्षाएं लोड हो रही हैं...",
-      "noUnassigned": "कोई असाइन नहीं किए गए समीक्षाएं नहीं",
-      "noUnassignedDescription": "सभी सक्रिय खतरा मॉडल के लिए सुरक्षा समीक्षक असाइन है",
+      "noUnassigned": "कोई असाइन न की गई समीक्षाएं नहीं",
+      "noUnassignedDescription": "सभी सक्रिय थ्रेट मॉडल में एक सुरक्षा समीक्षक असाइन किया गया है।",
       "noUnassignedFiltered": "कोई भी थ्रेट मॉडल आपके फ़िल्टर से मेल नहीं खाता",
       "reviewer": "सुरक्षा समीक्षक",
       "reviewerPlaceholder": "समीक्षक द्वारा फ़िल्टर करें...",
@@ -2030,15 +2091,15 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "यह बताने के लिए नोट्स प्रदान करें कि क्या संशोधित करने की आवश्यकता है। सबमिट करने वाला व्यक्ति अपनी प्रतिक्रिया की समीक्षा करते समय इन नोट्स को देखेगा।",
+      "description": "यह बताने वाले नोट प्रदान करें कि क्या संशोधित करने की आवश्यकता है। सबमिटर अपनी प्रतिक्रिया की समीक्षा करते समय ये नोट देखेगा",
       "hint": "आवश्यक — वर्णन करें कि कौन से परिवर्तन आवश्यक हैं",
-      "label": "संशोधन नोट्स",
+      "label": "संशोधन नोट",
       "placeholder": "आवश्यक संशोधनों का वर्णन करें...",
       "title": "संशोधन के लिए वापस करें"
     },
     "tabs": {
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "unassignedReviews": "असाइन नहीं किए गए समीक्षाएं"
+      "unassignedReviews": "असाइन न की गई समीक्षाएं"
     },
     "title": "ट्राइएज",
     "viewDetails": "विवरण देखें"
@@ -2054,7 +2115,7 @@
         "vertical": "Vertical"
       }
     },
-    "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
+    "colorBlindMode": "रंग अंध मोड सक्षम करें",
     "credentials": {
       "add": "{{common.add}}",
       "clientId": "क्लाइंट आईडी",
@@ -2062,16 +2123,16 @@
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
-        "descriptionHint": "वैकल्पिक: बताएं कि यह क्रेडेंशियल किसके लिए उपयोग होता है",
-        "descriptionPlaceholder": "CI/CD पाइपलाइन एकीकरण के लिए उपयोग किया जाता है",
-        "descriptionTooLong": "विवरण 500 अक्षर या उससे कम होना चाहिए",
+        "descriptionHint": "वैकल्पिक: वर्णन करें कि यह क्रेडेंशियल किस लिए उपयोग किया जाता है",
+        "descriptionPlaceholder": "CI/CD पाइपलाइन एकीकरण के लिए उपयोग किया जाता है।",
+        "descriptionTooLong": "विवरण 500 वर्षों या उससे कम होना चाहिए।",
         "expiresAt": "समाप्ति तिथि",
-        "expiresAtHint": "वैकल्पिक: कोई समाप्ति नहीं के लिए खाली छोड़ें",
+        "expiresAtHint": "वैकल्पिक: कोई समाप्ति न होने के लिए खाली छोड़ें",
         "name": "{{common.name}}",
         "nameHint": "इस क्रेडेंशियल के लिए एक वर्णनात्मक नाम",
         "namePlaceholder": "मेरा API क्रेडेंशियल",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "नाम 100 अक्षर या उससे कम होना चाहिए",
+        "nameTooLong": "नाम 100 वर्षों या उससे कम होना चाहिए।",
         "title": "क्लाइंट क्रेडेंशियल बनाएं"
       },
       "createdOn": "{{common.created}}",
@@ -2081,22 +2142,22 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "अंतिम उपयोग",
       "neverExpires": "कभी नहीं समाप्त होता",
-      "noCredentials": "अभी कोई क्लाइंट क्रेडेंशियल नहीं है",
+      "noCredentials": "अभी तक कोई क्लाइंट क्रेडेंशियल नहीं।",
       "noCredentialsDescription": "TMI API को प्रोग्रामेटिक रूप से एक्सेस करने के लिए क्रेडेंशियल बनाएं।",
       "secretDialog": {
         "title": "क्लाइंट क्रेडेंशियल बनाया गया",
         "warning": "इन क्रेडेंशियल को अभी सहेजें। क्लाइंट सीक्रेट दोबारा नहीं दिखाया जाएगा।"
       },
-      "title": "API क्रेडेंशियल"
+      "title": "क्लाइंट क्रेडेंशियल"
     },
-    "dashboardListView": "डैशबोर्ड को सूची दृश्य के रूप में दिखाएं",
+    "dashboardListView": "डैशबोर्ड को सूची दृश्य में दिखाएं",
     "deleteMyData": {
       "confirmation": "क्या आप वाकई अपना सारा डेटा हटाना चाहते हैं?",
       "continue": "जारी रखें",
       "emailDoesNotMatch": "ईमेल पता मेल नहीं खाता",
       "emailMatches": "ईमेल पता मेल खाता है",
       "explanation": {
-        "bullet1": "आपका पहचान प्रदाता डेटा, जिसमें उपयोगकर्ता ID, नाम और ईमेल शामिल है।",
+        "bullet1": "आपकी पहचान प्रदाता डेटा, जिसमें उपयोगकर्ता ID, नाम, और ईमेल शामिल है।",
         "bullet2": "उन सभी थ्रेट मॉडल ऑब्जेक्ट से आपकी अनुमतियां जिनके आप स्वामी नहीं हैं।",
         "bullet3": "जिन थ्रेट मॉडल के आप स्वामी हैं:",
         "bullet3a": "यदि अन्य स्वामी मौजूद हैं, तो स्वामित्व उन्हें स्थानांतरित हो जाएगा, और आपकी अनुमतियां रद्द कर दी जाएंगी।",
@@ -2104,10 +2165,10 @@
         "intro": "इस ऑपरेशन की पुष्टि करने से निम्नलिखित डेटा स्थायी रूप से हटा दिया जाएगा और संबंधित अनुमतियां रद्द कर दी जाएंगी:"
       },
       "processing": "आपका खाता हटाया जा रहा है...",
-      "title": "मेरा सारा डेटा हटाएं",
+      "title": "मेरा सभी डेटा हटाएं",
       "validation": "अपने हटाने के अनुरोध की पुष्टि करने के लिए, अपना ईमेल पता ठीक वैसे ही टाइप करें जैसा यहां दिखाई देता है:"
     },
-    "diagramAnimationEffects": "डायग्राम एडिटर में एनिमेशन प्रभाव सक्षम करें",
+    "diagramAnimationEffects": "आरेख संपादक में एनिमेशन प्रभाव सक्षम करें।",
     "displayPreferences": "प्रदर्शन प्राथमिकताएं",
     "downloadLog": {
       "hint": "समस्या निवारण के लिए सबसे हालिया एप्लिकेशन लॉग प्रविष्टियों को JSONL फ़ाइल के रूप में डाउनलोड करता है।",
@@ -2117,23 +2178,23 @@
     "marginSize": {
       "narrow": "संकीर्ण",
       "standard": "मानक",
-      "title": "रिपोर्ट के लिए पसंदीदा मार्जिन आकार",
+      "title": "रिपोर्ट के लिए पसंदीदा मार्जिन आकार।",
       "wide": "चौड़ा"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "रिपोर्ट के लिए पसंदीदा पेज आकार",
-      "usLetter": "US Letter"
+      "title": "रिपोर्ट के लिए पसंदीदा पृष्ठ आकार।",
+      "usLetter": "US लेटर"
     },
     "reportPreferences": "रिपोर्ट प्राथमिकताएं",
     "sections": {
       "developer": "डेवलपर",
-      "diagramEditor": "डायग्राम एडिटर",
-      "diagramLayout": "Diagram Layout",
+      "diagramEditor": "आरेख संपादक",
+      "diagramLayout": "आरेख लेआउट",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
-    "showShapeBordersWithIcons": "आइकन प्रदर्शित होने पर आकार भरण और बॉर्डर दिखाएं",
+    "showDeveloperTools": "डेवलपर टूल दिखाएं।",
+    "showShapeBordersWithIcons": "आइकन प्रदर्शित होने पर आकार भरण और बॉर्डर दिखाएं।",
     "tabs": {
       "credentials": "क्रेडेंशियल",
       "danger": "खतरा",
@@ -2151,14 +2212,14 @@
     "transferData": {
       "confirmMessage": "क्या आप {{email}} को अपने सभी खतरा मॉडल और सर्वेक्षण प्रतिक्रियाएं स्थानांतरित करना सुनिश्चित हैं? आप स्थानांतरित आइटम पर लेखक भूमिका में डाउनग्रेड किए जाएंगे।",
       "dialogTitle": "मेरा डेटा स्थानांतरित करें",
-      "error": "डेटा स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
+      "error": "डेटा स्थानांतरित करने में विफल।",
       "hint": "सभी आपके खतरा मॉडल और सर्वेक्षण प्रतिक्रियाओं का स्वामित्व दूसरे उपयोगकर्ता को स्थानांतरित करता है। आप स्थानांतरित आइटम पर लेखक भूमिका में डाउनग्रेड किए जाएंगे।",
-      "success": "{{tmCount}} खतरा मॉडल और {{responseCount}} सर्वेक्षण प्रतिक्रियाएं स्थानांतरित की गईं।",
-      "title": "मेरा डेटा दूसरे उपयोगकर्ता को स्थानांतरित करें"
+      "success": "{{tmcount}} थ्रेट मॉडल और {{responsecount}} सर्वेक्षण प्रतिक्रियाएं स्थानांतरित की गईं।",
+      "title": "मेरा डेटा किसी अन्य उपयोगकर्ता को स्थानांतरित करें"
     },
     "userProfile": {
       "currentRole": "वर्तमान थ्रेट मॉडल भूमिका",
-      "groupMemberships": "समूह सदस्यताएँ",
+      "groupMemberships": "समूह सदस्यताएं",
       "provider": "{{common.identityProvider}}",
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल"
@@ -2167,13 +2228,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "अपनी परियोजनाएं, टीमें और संबंध देखें और संपादित करें",
-    "title": "मेरी परियोजनाएं"
+    "subtitle": "अपने प्रोजेक्ट, टीमें, और संबंध देखें और संपादित करें।",
+    "title": "मेरे प्रोजेक्ट"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "अपनी टीमें, सदस्य और संबंध देखें और संपादित करें",
+    "subtitle": "अपनी टीमें, सदस्य, और संबंध देखें और संपादित करें।",
     "title": "मेरी टीमें"
   }
 }
