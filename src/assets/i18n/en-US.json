@@ -39,7 +39,7 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(All)",
-      "errorInvoking": "Failed to invoke addon. Please try again.",
+      "errorInvoking": "Failed to invoke addon.",
       "invalidCharacters": "Only alphanumeric characters, spaces, hyphens, periods, commas, and forward slashes are allowed",
       "invocationQueued": "Addon invocation queued",
       "metadataKeyMissing": "Required metadata key \"{{key}}\" is not present on this object",
@@ -80,7 +80,7 @@
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Delete addon",
-      "errorCreatingAddon": "Failed to create addon. Please try again.",
+      "errorCreatingAddon": "Failed to create addon.",
       "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter addons",
       "filterPlaceholder": "Search by name or description",
@@ -322,7 +322,7 @@
       "transferOwnership": {
         "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
         "dialogTitle": "Transfer user data",
-        "error": "Failed to transfer ownership. Please try again.",
+        "error": "Failed to transfer ownership.",
         "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transfer ownership"
       },
@@ -553,7 +553,7 @@
       "confirmTitle": "Confirm rollback",
       "confirmationField": "Type to confirm",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "Rollback failed. Please try again.",
+      "error": "Rollback failed.",
       "success": "Rollback completed successfully.",
       "typeConfirmation": "To confirm, type \"{{confirmvalue}}\" below.",
       "versionPruned": "Version snapshot has been pruned. Rollback is no longer available.",
@@ -581,7 +581,7 @@
     },
     "errors": {
       "connectionFailed": "Could not connect to Timmy. Check your connection and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "Something went wrong.",
       "interrupted": "Response interrupted. Try sending your message again.",
       "notAcceptable": "Timmy is temporarily unavailable due to a server configuration issue.",
       "notEnabled": "Timmy is not enabled for this threat model.",
@@ -597,7 +597,7 @@
       "processing": "Processing source {{current}} of {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%",
       "ready": "Ready! {{Sourcesloaded}} sources loaded, {{chunksembedded}} chunks indexed."
     },
-    "saveAsNoteError": "Could not save as note. Please try again.",
+    "saveAsNoteError": "Could not save as note.",
     "saveMessageAsNote": "Save message as note",
     "saveSessionAsNote": "Save session as note",
     "savedAsNote": "Saved as note",
@@ -1212,17 +1212,17 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "Couldn't create the document. Please try again.",
+      "failed": "Couldn't create the document.",
       "inFlight": "Creating document…"
     },
     "grantError": {
-      "generic": "Couldn't grant access to your file. Please try again.",
+      "generic": "Couldn't grant access to your file.",
       "linkAccountCta": "Link account",
       "notLinked": "Your Microsoft account isn't linked.",
       "permissionDenied": "Microsoft rejected the request to grant access. The file may not be shareable. Try a different file or contact your administrator.",
       "pickerLoadFailed": "Couldn't open the file picker. Check your network and try again.",
-      "timeout": "The request took too long. Please try again.",
-      "unavailable": "Microsoft is temporarily unavailable. Please try again in a few moments."
+      "timeout": "The request took too long.",
+      "unavailable": "Microsoft is temporarily unavailable."
     },
     "postCreate": {
       "hint": "Once you've shared the file, click \"recheck access\" above. You can also close this dialog and recheck later from the document's edit view."
@@ -1379,7 +1379,7 @@
     "loggingInWith": "Signing in with {{provider}}...",
     "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
-    "oauthFailed": "OAuth authentication failed. Please try again.",
+    "oauthFailed": "OAuth authentication failed.",
     "oauthProvidersTitle": "OAuth sign-in providers",
     "samlProvidersTitle": "SAML sign-in providers",
     "sessionExpired": "Your session has expired. Please sign in again.",
@@ -2117,7 +2117,7 @@
     "documentUrl": "Document URL",
     "export": "Export",
     "exportDialog": {
-      "error": "Failed to prepare export data. Please try again.",
+      "error": "Failed to prepare export data.",
       "preparing": "Preparing export data...",
       "ready": "Export ready. Click save to download.",
       "retry": "{{common.retry}}",
@@ -2535,7 +2535,7 @@
     "transferData": {
       "confirmMessage": "Are you sure you want to transfer all your threat models and survey responses to {{email}}? You will be downgraded to writer role on transferred items.",
       "dialogTitle": "Transfer my data",
-      "error": "Failed to transfer data. Please try again.",
+      "error": "Failed to transfer data.",
       "hint": "Transfers ownership of all your threat models and survey responses to another user. You will be downgraded to writer role on transferred items.",
       "success": "Transferred {{tmcount}} threat models and {{responsecount}} survey responses.",
       "title": "Transfer my data to another user"
