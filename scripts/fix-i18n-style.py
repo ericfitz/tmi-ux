@@ -30,7 +30,11 @@ from scripts.i18n_style.corrector import (  # noqa: E402
 
 
 def _walk_apply(obj, lists, prefix=""):
-    """Yield (key, old_value, new_value) for each leaf string changed."""
+    """Yield (key, old_value, new_value) for each leaf string changed.
+
+    Skips keys that have a sibling ``<key>.lint-skip`` entry — those are
+    explicitly opted-out of automated corrections.
+    """
     if isinstance(obj, dict):
         for key, value in obj.items():
             full_key = f"{prefix}.{key}" if prefix else key
@@ -39,6 +43,9 @@ def _walk_apply(obj, lists, prefix=""):
             if isinstance(value, dict):
                 yield from _walk_apply(value, lists, full_key)
             elif isinstance(value, str):
+                # Skip if this key has a sibling lint-skip entry.
+                if f"{key}.lint-skip" in obj:
+                    continue
                 fixed = correct_trailing_bang(correct_sentence_case(value, lists))
                 if fixed != value:
                     yield (full_key, value, fixed)

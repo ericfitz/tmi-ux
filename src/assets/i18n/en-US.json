@@ -3,35 +3,35 @@
     "bugReport": "File a bug report or request a feature",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "bugReportUrl.comment": "This is a URL and should not be translated.",
-    "contactjurisdiction": "Legal Jurisdiction",
+    "contactjurisdiction": "Legal jurisdiction",
     "contactoperator": "Operator",
-    "contactoperatordetails": "Operator Contact",
-    "contacttitle": "Operated By",
-    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
+    "contactoperatordetails": "Operator contact",
+    "contacttitle": "Operated by",
+    "description1": "TMI (threat modeling improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
     "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
-      "categoryInputSanitization": "Input Sanitization",
-      "categoryNoteEditing": "Note Editing",
-      "categoryPdfProcessing": "PDF Processing",
+      "categoryInputSanitization": "Input sanitization",
+      "categoryNoteEditing": "Note editing",
+      "categoryPdfProcessing": "PDF processing",
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to ",
       "paragraph3": "And finally thank you to the Windows Core Security/Secure Windows Initiative/Trustworthy Computing teams at Microsoft in the first half of the 2000s, especially Praerit Garg, Mike Howard, John Lambert, and Adam Shostack, for giving me the opportunity to learn and for demonstrating industry-leading thinking in application security and threat modeling.",
       "paragraph3.lint-skip": "Contains real names (Praerit Garg, Mike Howard, John Lambert, Adam Shostack) and team names (Windows Core Security, Trustworthy Computing) that should preserve canonical case."
     },
-    "opensourcetitle": "Open Source",
+    "opensourcetitle": "Open source",
     "server": "Server",
-    "serverSourceCode": "Server Source Code",
+    "serverSourceCode": "Server source code",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "serverSourceCodeUrl.comment": "This is a URL and should not be translated.",
-    "sourcetitle": "TMI Project",
+    "sourcetitle": "TMI project",
     "title": "About TMI",
     "trademarks": "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.",
-    "version": "Version Information",
-    "webApplication": "Web Application",
-    "webApplicationSourceCode": "Web Application Source Code",
+    "version": "Version information",
+    "webApplication": "Web application",
+    "webApplicationSourceCode": "Web application source code",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
     "webappSourceCodeUrl.comment": "This is a URL and should not be translated.",
-    "wiki": "TMI Wiki",
+    "wiki": "TMI wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki",
     "wikiUrl.comment": "This is a URL and should not be translated."
   },
@@ -45,8 +45,8 @@
       "numberMax": "Value must be at most {{max}}",
       "numberMin": "Value must be at least {{min}}",
       "parameters": "Parameters",
-      "threatModelId": "Threat Model ID",
-      "title": "Invoke Addon",
+      "threatModelId": "Threat model ID",
+      "title": "Invoke addon",
       "valueTooLong": "Value exceeds maximum length"
     }
   },
@@ -58,19 +58,19 @@
         "descriptionHint": "What does this addon do?",
         "descriptionPlaceholder": "Describe the addon functionality",
         "icon": "Icon",
-        "iconHint": "UI Icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconHint": "UI icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
         "iconHint.comment": "The text in quotes are proper names and should not be translated.",
         "iconInvalid": "Invalid icon format",
         "iconPlaceholder": "material-symbols:extension",
         "iconPlaceholder.comment": "This is a proper name and should not be translated.",
         "name": "{{common.name}}",
         "nameHint": "Display name for this addon",
-        "namePlaceholder": "My Custom Addon",
+        "namePlaceholder": "My custom addon",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "objects": "Object Types",
+        "objects": "Object types",
         "objectsHint": "Select TMI object types this addon can operate on",
-        "save": "Create Addon",
-        "title": "Add Addon",
+        "save": "Create addon",
+        "title": "Add addon",
         "webhook": "Webhook",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
@@ -80,16 +80,16 @@
       "deleteTooltip": "Delete addon",
       "errorCreatingAddon": "Failed to create addon. Please try again.",
       "errorLoadingWebhooks": "Failed to load available webhooks",
-      "filterLabel": "Filter Addons",
+      "filterLabel": "Filter addons",
       "filterPlaceholder": "Search by name or description",
-      "listTitle": "System Addons",
+      "listTitle": "System addons",
       "noAddons": "No addons found",
-      "objectTypesTooltip": "Applies to These Object Types",
+      "objectTypesTooltip": "Applies to these object types",
       "subtitle": "Configure addons for extending TMI functionality",
-      "title": "Manage Addons"
+      "title": "Manage addons"
     },
     "createAutomationUserDialog": {
-      "email": "Email (Optional)",
+      "email": "Email (optional)",
       "emailHint": "Optional — defaults to auto-generated @tmi.local address",
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
@@ -99,27 +99,27 @@
       "namePattern": "Must start with a letter and end with a letter or digit",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
-      "save": "Create Automation User",
+      "save": "Create automation user",
       "title": "{{admin.createAutomationUserDialog.save}}"
     },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
-        "description": "Description (Optional)",
+        "description": "Description (optional)",
         "descriptionHint": "Optional description of the group's purpose",
         "descriptionPlaceholder": "Description of this group",
-        "displayName": "Display Name",
+        "displayName": "Display name",
         "displayNameHint": "Human-readable group name",
-        "displayNamePlaceholder": "My Custom Group",
+        "displayNamePlaceholder": "My custom group",
         "displayNameRequired": "Display name is required",
-        "groupName": "Group Identifier",
+        "groupName": "Group identifier",
         "groupNameHint": "Alphanumeric, hyphens, and underscores only",
         "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed",
         "groupNamePlaceholder": "my-custom-group",
         "groupNamePlaceholder.comment": "This is placeholder text and should be translated as if the hyphens were spaces.",
         "groupNameRequired": "Group identifier is required",
-        "save": "Create Group",
-        "title": "Add Group"
+        "save": "Create group",
+        "title": "Add group"
       },
       "columns": {
         "group": "{{common.subjectTypes.group}}",
@@ -127,35 +127,35 @@
         "usage": "Usage"
       },
       "deleteTooltip": "Delete group",
-      "filterLabel": "Filter Groups",
+      "filterLabel": "Filter groups",
       "filterPlaceholder": "Search by group name or provider",
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "Automation accounts are not permitted to be members of the Administrators group. Automation accounts must never have access to administrative functions of the application.",
-        "currentMembers": "Current Members",
+        "automationAdminBlocked": "Automation accounts are not permitted to be members of the administrators group. Automation accounts must never have access to administrative functions of the application.",
+        "currentMembers": "Current members",
         "noMembers": "No members in this group",
         "removeTooltip": "Remove from group",
         "searchHint": "Type at least 2 characters to search",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
-        "searchUser": "Search User by Email",
+        "searchUser": "Search user by email",
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Manage Groups",
+      "title": "Manage groups",
       "viewMembersTooltip": "View and manage group members"
     },
     "quotas": {
-      "addButton": "Add Quota",
+      "addButton": "Add quota",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
-        "configureQuotas": "Configure Quotas",
+        "configureQuotas": "Configure quotas",
         "searchLabel": "Search for user",
         "searchPlaceholder": "Type user email to search",
-        "selectUser": "Select User",
-        "title": "Add Custom Quotas",
+        "selectUser": "Select user",
+        "title": "Add custom quotas",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "columns": {
@@ -167,7 +167,7 @@
       "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "deleteTooltip": "Remove custom quota (revert to defaults)",
       "eventsPerMinute": "Events per minute",
-      "filterLabel": "Filter Quotas",
+      "filterLabel": "Filter quotas",
       "filterPlaceholder": "Search by email, name, provider, or user ID",
       "maxSubscriptions": "Max subscriptions",
       "maxSubscriptions.comment": "The word 'Max' is short for 'Maximum'.",
@@ -178,9 +178,9 @@
       "subReqPerDay": "Subscription requests per day",
       "subReqPerMinute": "Subscription requests per minute",
       "subtitle": "Configure rate limits and quotas for users",
-      "title": "Manage Quotas",
-      "userAPITitle": "API Rate Limits",
-      "webhookTitle": "Webhook Limits"
+      "title": "Manage quotas",
+      "userAPITitle": "API rate limits",
+      "webhookTitle": "Webhook limits"
     },
     "sections": {
       "addons": {
@@ -229,8 +229,8 @@
         "keyHint": "Lowercase with dots and underscores (e.g., rate_limit.max_rpm)",
         "keyInvalid": "Must start with lowercase letter, use only lowercase letters, numbers, dots, and underscores",
         "keyRequired": "Key is required",
-        "save": "Create Setting",
-        "title": "Add Setting",
+        "save": "Create setting",
+        "title": "Add setting",
         "type": "{{common.type}}",
         "typeRequired": "Type is required",
         "value": "{{common.metadataValue}}",
@@ -247,19 +247,19 @@
       "editTooltip": "Edit setting",
       "filterLabel": "Filter",
       "filterPlaceholder": "Filter by key, value, description, or source",
-      "listTitle": "System Settings",
+      "listTitle": "System settings",
       "noSettings": "No settings found",
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "saveTooltip": "Save changes",
       "sources": {
-        "config": "Configuration File",
+        "config": "Configuration file",
         "database": "Database",
         "environment": "Environment",
         "vault": "Vault",
         "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
       },
       "subtitle": "View and manage system configuration settings",
-      "title": "Manage Settings",
+      "title": "Manage settings",
       "types": {
         "bool": "Boolean",
         "int": "Integer",
@@ -285,23 +285,23 @@
       "filter": {
         "automationOnly": "Show automation accounts only"
       },
-      "filterLabel": "Filter Users",
+      "filterLabel": "Filter users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
-      "lastLogin": "Last Login",
+      "lastLogin": "Last login",
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
-        "addCredential": "Add Credential",
+        "addCredential": "Add credential",
         "deleteConfirm": "Are you sure you want to delete the credential \"{{name}}\"?",
         "noCredentials": "No credentials found",
-        "title": "Manage Credentials for {{userName}}"
+        "title": "Manage credentials for {{username}}"
       },
       "never": "Never",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
-      "title": "Manage Users",
+      "title": "Manage users",
       "transferOwnership": {
         "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
-        "dialogTitle": "Transfer User Data",
+        "dialogTitle": "Transfer user data",
         "error": "Failed to transfer ownership. Please try again.",
         "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transfer ownership"
@@ -311,7 +311,7 @@
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "createAutomationUser": "Create automation user for this webhook",
-        "events": "Event Types to Subscribe To",
+        "events": "Event types to subscribe to",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
         "eventsPlaceholder": "Select event types",
         "eventsRequired": "At least one event is required",
@@ -319,19 +319,19 @@
         "nameHint": "Descriptive name for this webhook",
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "Create Webhook",
-        "secret": "HMAC Secret",
+        "save": "Create webhook",
+        "secret": "HMAC secret",
         "secret.comment": "The acronym HMAC should not be translated, but the word secret should be translated.",
         "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
         "secretHint.comment": "The acronym HMAC should not be translated.  'Auto-generated' is short for 'Automatically Generated'.",
         "secretPlaceholder": "Leave empty to auto-generate",
         "secretPlaceholder.comment": "'Auto-generate' should be translated as if it were 'generate automatically'.",
-        "title": "Add Webhook",
+        "title": "Add webhook",
         "url": "Webhook URL",
         "urlHint": "HTTPS recommended",
-        "urlHttpWarning": "Warning: The webhook endpoint URL should use HTTPS. The server may reject webhook registrations that specify a non-TLS endpoint.",
+        "urlHttpWarning": "Warning: the webhook endpoint URL should use HTTPS. The server may reject webhook registrations that specify a non-tls endpoint.",
         "urlHttpWarning.comment": "The acronyms HTTPS and TLS should not be translated.",
-        "urlHttpWarningTitle": "Non-HTTPS Webhook URL",
+        "urlHttpWarningTitle": "Non-https webhook URL",
         "urlHttpWarningTitle.comment": "The acronym HTTPS should not be translated.",
         "urlInvalid": "Must be a valid URL",
         "urlPlaceholder": "https://example.com/webhook",
@@ -341,23 +341,23 @@
       "created": "{{common.created}}",
       "deleteTooltip": "Delete webhook",
       "events": "events",
-      "filterLabel": "Filter Webhooks",
+      "filterLabel": "Filter webhooks",
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
       },
-      "listTitle": "Webhook Subscriptions",
+      "listTitle": "Webhook subscriptions",
       "noWebhooks": "No webhooks found",
       "secret": "HMAC secret",
       "status": {
         "active": "{{common.active}}",
-        "pending_delete": "Pending Delete",
-        "pending_verification": "Pending Verification"
+        "pending_delete": "Pending delete",
+        "pending_verification": "Pending verification"
       },
       "subscriptionId": "Subscription ID",
       "subtitle": "Configure webhook subscriptions for event notifications",
-      "title": "Manage Webhooks",
+      "title": "Manage webhooks",
       "triggerEvents": "Trigger events",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -365,46 +365,46 @@
   "adminSurveys": {
     "cloneSuffix": "(Copy)",
     "createDialog": {
-      "nameLabel": "Survey Name",
+      "nameLabel": "Survey name",
       "namePlaceholder": "Enter survey name",
       "nameRequired": "{{common.validation.nameRequired}}",
-      "title": "Create Survey",
+      "title": "Create survey",
       "versionHint": "Free-form version identifier",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "e.g., 1, v2-pilot, 2024-Q1",
+      "versionPlaceholder": "E.g., 1, v2-pilot, 2024-q1",
       "versionRequired": "Version is required"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "Cannot delete this survey because it has existing responses. Delete the responses first, then try again.",
     "deleteError": "Failed to delete survey: {{error}}",
     "deleteTooltip": "Delete survey",
-    "editTemplate": "Edit Survey",
+    "editTemplate": "Edit survey",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
-    "noMatchingTitle": "No Matching Surveys",
+    "noMatchingTitle": "No matching surveys",
     "noTemplatesMessage": "Create your first survey to get started.",
-    "noTemplatesTitle": "No Surveys Yet",
+    "noTemplatesTitle": "No surveys yet",
     "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Search by name...",
     "searchTemplates": "Search surveys",
-    "surveyDetails": "Survey Details",
+    "surveyDetails": "Survey details",
     "templateBuilder": {
       "addPage": "Add page",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Choices (one per line)",
-      "conditionalLogic": "Conditional Logic",
+      "conditionalLogic": "Conditional logic",
       "conditionalLogicHelp": "SurveyJS conditional logic documentation",
       "deletePage": "Delete page",
-      "deleteQuestion": "Delete Question",
-      "enableIf": "Enable If",
-      "enableIfHint": "e.g., {questionName} = 'value'",
+      "deleteQuestion": "Delete question",
+      "enableIf": "Enable if",
+      "enableIfHint": "E.g., {questionname} = 'value'",
       "enterSurveyDescription": "Enter survey description",
       "enterSurveyTitle": "Enter survey title",
       "failedToLoadTemplate": "Failed to load survey",
       "failedToSaveTemplate": "Failed to save survey",
       "loadingTemplate": "Loading survey...",
-      "mapsToTmField": "Maps to TM Field",
-      "metadataKey": "Metadata Key",
+      "mapsToTmField": "Maps to tm field",
+      "metadataKey": "Metadata key",
       "metadataKeyHint": "Key name for the metadata entry",
       "nameId": "Name (ID)",
       "nameIdHint": "Unique identifier for this question",
@@ -413,7 +413,7 @@
       "noQuestionsYet": "No questions yet",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
-      "questionProperties": "Question Properties",
+      "questionProperties": "Question properties",
       "questionTypeDescriptions": {
         "boolean": "Boolean toggle",
         "checkbox": "Multiple choice selection",
@@ -425,58 +425,58 @@
         "text": "Single line text input"
       },
       "questionTypeLabels": {
-        "boolean": "Yes/No",
+        "boolean": "Yes/no",
         "checkbox": "Checkbox",
         "comment": "Multiline",
         "dropdown": "Dropdown",
         "panel": "Panel",
-        "paneldynamic": "Dynamic Panel",
-        "radiogroup": "Radio Group",
+        "paneldynamic": "Dynamic panel",
+        "radiogroup": "Radio group",
         "text": "{{editor.nodeLabels.textbox}}"
       },
-      "questionTypes": "Question Types",
+      "questionTypes": "Question types",
       "questions": "Questions",
       "required": "Required",
-      "requiredIf": "Required If",
+      "requiredIf": "Required if",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Select a question to edit its properties",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
-        "assetDescription": "Asset Description",
+        "assetDescription": "Asset description",
         "assetName": "{{assetEditor.name}}",
         "assetType": "{{assetEditor.type}}",
-        "description": "Threat Model Description",
+        "description": "Threat model description",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "Issue Tracking URL",
-        "metadataKey": "Custom Metadata",
-        "name": "Threat Model Name",
+        "issueUri": "Issue tracking URL",
+        "metadataKey": "Custom metadata",
+        "name": "Threat model name",
         "repositoryName": "{{threatModels.repositoryName}}",
         "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
-      "tmFieldMapping": "Threat Model Field Mapping",
+      "tmFieldMapping": "Threat model field mapping",
       "tmFieldMappingHint": "Link this answer to a threat model field",
       "unsavedChanges": "Unsaved changes",
-      "visibleIf": "Visible If",
+      "visibleIf": "Visible if",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} survey",
-    "templateCountPlural": "{{count}} surveys"
+    "templateCount": "{{Count}} survey",
+    "templateCountPlural": "{{Count}} surveys"
   },
   "assetEditor": {
-    "chipPlaceholder": "Enter value and press Enter",
+    "chipPlaceholder": "Enter value and press enter",
     "chipPlaceholder.comment": "The first 'Enter' is an imperative verb.  The second is a reference to the enter/return key on the keyboard.",
     "classification": "{{common.classification}}",
     "criticality": "{{common.criticality}}",
-    "name": "Asset Name",
+    "name": "Asset name",
     "sensitivity": "{{common.sensitivity}}",
     "title": {
-      "create": "Create Asset",
-      "edit": "Edit Asset",
-      "view": "View Asset"
+      "create": "Create asset",
+      "edit": "Edit asset",
+      "view": "View asset"
     },
-    "type": "Asset Type",
+    "type": "Asset type",
     "types": {
       "data": "Data",
       "hardware": "Hardware",
@@ -493,7 +493,7 @@
       "deleted": "Deleted",
       "patched": "Patched",
       "restored": "Restored",
-      "rolled_back": "Rolled Back",
+      "rolled_back": "Rolled back",
       "updated": "{{surveys.list.updated}}"
     },
     "columns": {
@@ -504,36 +504,36 @@
       "timestamp": "When"
     },
     "filters": {
-      "actorEmail": "Actor Email",
+      "actorEmail": "Actor email",
       "actorEmailPlaceholder": "Filter by email...",
       "changeType": "{{auditTrail.columns.changeType}}",
-      "clear": "Clear Filters",
-      "objectType": "Object Type"
+      "clear": "Clear filters",
+      "objectType": "Object type"
     },
     "noEntries": "No audit trail entries found.",
     "rollback": {
       "action": "Rollback",
-      "confirmMessage": "Are you sure you want to rollback {{objectType}} \"{{name}}\" to version {{version}}?",
-      "confirmTitle": "Confirm Rollback",
+      "confirmMessage": "Are you sure you want to rollback {{objecttype}} \"{{name}}\" to version {{version}}?",
+      "confirmTitle": "Confirm rollback",
       "confirmationField": "Type to confirm",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
       "error": "Rollback failed. Please try again.",
       "success": "Rollback completed successfully.",
-      "typeConfirmation": "To confirm, type \"{{confirmValue}}\" below.",
+      "typeConfirmation": "To confirm, type \"{{confirmvalue}}\" below.",
       "versionPruned": "Version snapshot has been pruned. Rollback is no longer available.",
       "warning": "This will overwrite the current state of this entity with the version captured in this audit entry. This action creates a new audit entry but the current state will be lost."
     },
-    "title": "Audit Trail"
+    "title": "Audit trail"
   },
   "auth": {
     "unauthorized": {
-      "401": "401 Unauthorized",
+      "401": "401 unauthorized",
       "401.comment": "This is a standard error message and should not be translated.",
-      "403": "403 Forbidden",
+      "403": "403 forbidden",
       "403.comment": "This is a standard error message and should not be translated.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
-      "title": "Unauthorized Access"
+      "title": "Unauthorized access"
     }
   },
   "chat": {
@@ -554,12 +554,12 @@
     },
     "hideSidePanel": "Hide side panel",
     "inputPlaceholder": "Ask Timmy about this threat model...",
-    "newSession": "New Session",
-    "noSessions": "No chat sessions yet. Start a conversation!",
+    "newSession": "New session",
+    "noSessions": "No chat sessions yet. Start a conversation.",
     "preparation": {
       "error": "Preparation failed: {{message}}",
-      "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed."
+      "processing": "Processing source {{current}} of {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%",
+      "ready": "Ready! {{Sourcesloaded}} sources loaded, {{chunksembedded}} chunks indexed."
     },
     "saveAsNoteError": "Could not save as note. Please try again.",
     "saveMessageAsNote": "Save message as note",
@@ -576,7 +576,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} sources included"
+      "title": "{{Count}} sources included"
     },
     "suggestedPrompts": {
       "assets": "What assets are in scope?",
@@ -586,35 +586,35 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} active users",
-    "approvePresenterRequest": "Approve Presenter Request",
-    "availableCollaborationSessions": "Available Collaboration Sessions",
+    "activeUsers": "{{Count}} active users",
+    "approvePresenterRequest": "Approve presenter request",
+    "availableCollaborationSessions": "Available collaboration sessions",
     "collaboratorsHeader": "Participants",
-    "copyLink": "Copy Link",
-    "denyPresenterRequest": "Deny Presenter Request",
-    "endCollaboration": "End Collaboration",
+    "copyLink": "Copy link",
+    "denyPresenterRequest": "Deny presenter request",
+    "endCollaboration": "End collaboration",
     "hostedBy": "Hosted by",
-    "isRequestingPresenterPrivileges": "is requesting presenter privileges",
-    "joinSession": "Join Session",
-    "justNow": "just now",
-    "leaveSession": "Leave Session",
+    "isRequestingPresenterPrivileges": "Is requesting presenter privileges",
+    "joinSession": "Join session",
+    "justNow": "Just now",
+    "leaveSession": "Leave session",
     "loadingDiagramContext": "Loading diagram context...",
-    "manageParticipants": "Manage Participants",
-    "noActiveSessions": "No Active Collaboration Sessions",
-    "participantRequestsPresenterRole": "Participant Requests Presenter Role",
-    "presenterModeRequested": "Presenter Mode Requested",
-    "removeFromSession": "Remove from Session",
-    "requestPresenter": "Request Presenter",
+    "manageParticipants": "Manage participants",
+    "noActiveSessions": "No active collaboration sessions",
+    "participantRequestsPresenterRole": "Participant requests presenter role",
+    "presenterModeRequested": "Presenter mode requested",
+    "removeFromSession": "Remove from session",
+    "requestPresenter": "Request presenter",
     "sessionStarted": "Started",
-    "startCollaboration": "Start Collaboration",
-    "takeBackPresenter": "Take Back Presenter",
-    "title": "Collaboration Session Participants",
-    "userJoined": "{{user}} joined the collaboration",
-    "userLeft": "{{user}} left the collaboration",
+    "startCollaboration": "Start collaboration",
+    "takeBackPresenter": "Take back presenter",
+    "title": "Collaboration session participants",
+    "userJoined": "{{User}} joined the collaboration",
+    "userLeft": "{{User}} left the collaboration",
     "websocketStatus": {
-      "connected": "Websocket Connected",
-      "noSession": "No Collaboration Session Active",
-      "notConnected": "Websocket Not Connected"
+      "connected": "Websocket connected",
+      "noSession": "No collaboration session active",
+      "notConnected": "Websocket not connected"
     }
   },
   "common": {
@@ -623,11 +623,11 @@
     "activate": "Activate",
     "active": "Active",
     "add": "Add",
-    "addMetadata": "Add Metadata",
-    "addThreat": "Add Threat",
+    "addMetadata": "Add metadata",
+    "addThreat": "Add threat",
     "addons": "Addons",
     "all": "All",
-    "allStatuses": "All Statuses",
+    "allStatuses": "All statuses",
     "archive": "Archive",
     "back": "Back",
     "back.comment": "Used as a tooltip or label for buttons that allows a user to navigate to the previous page.",
@@ -640,38 +640,38 @@
     "close": "Close",
     "confirm": "Confirm",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
-    "confirmDeleteMessage": "Are you sure you want to delete the {{objectType}} \"{{name}}\"?",
+    "confirmDeleteMessage": "Are you sure you want to delete the {{objecttype}} \"{{name}}\"?",
     "copiedToClipboard": "Copied to clipboard",
     "copy": "Copy",
-    "copyToClipboard": "Copy to Clipboard",
+    "copyToClipboard": "Copy to clipboard",
     "create": "Create",
     "created": "Created",
-    "createdBy": "Created By",
+    "createdBy": "Created by",
     "criticality": "Criticality",
     "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
     "deactivate": "Deactivate",
     "delete": "Delete",
-    "deleteConfirm": "Confirm Deletion",
+    "deleteConfirm": "Confirm deletion",
     "deleteFailed": "Delete failed",
     "deletedSuccessfully": "Deleted successfully",
-    "deleteWarningConfirmationField": "Delete Confirmation",
+    "deleteWarningConfirmationField": "Delete confirmation",
     "deleteWarningConfirmationMatch": "Confirmation text matches",
     "deleteWarningConfirmationMismatch": "Confirmation text does not match",
-    "deleteWarningConfirmationValue": "gone forever",
-    "deleteWarningPermanent": "This action cannot be undone and will permanently delete the {{objectType}} and all metadata associated with it.",
-    "deleteWarningReferenceOnly": "For objects stored outside TMI such as Documents and Repositories, only the TMI reference to the object will be deleted.",
+    "deleteWarningConfirmationValue": "Gone forever",
+    "deleteWarningPermanent": "This action cannot be undone and will permanently delete the {{objecttype}} and all metadata associated with it.",
+    "deleteWarningReferenceOnly": "For objects stored outside TMI such as documents and repositories, only the TMI reference to the object will be deleted.",
     "deleteWarningSubEntities": "All associated TMI entities such as diagrams, threats, and notes will also be permanently deleted.",
-    "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmValue}}\" in the field below.",
+    "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmvalue}}\" in the field below.",
     "description": "Description",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Dismiss",
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
-    "editThreat": "Edit Threat",
+    "editThreat": "Edit threat",
     "email": "Email",
-    "emailLabel": "Email Address",
+    "emailLabel": "Email address",
     "error": "Error",
     "exportAsPng": "Export as PNG",
     "exportAsSvg": "Export as SVG",
@@ -679,19 +679,19 @@
     "fonts": "Fonts",
     "groups": "Groups",
     "id": "ID",
-    "identityProvider": "Identity Provider",
-    "includeInReport": "Include in Report",
+    "identityProvider": "Identity provider",
+    "includeInReport": "Include in report",
     "includeInTimmyChat": "Include in Timmy chat",
     "issueUri": "Issue URL",
     "issueUriOpenHint": "Enter a valid URL to open",
     "issueUriOpenHint.comment": "Tooltip shown on the open-in-new-tab button when the issue URI field does not contain a valid URL.",
     "language": "{{language}}",
-    "lastModified": "Last Modified",
+    "lastModified": "Last modified",
     "lastUpdated": "Last updated",
     "loading": "Loading...",
     "manage": "Manage",
-    "manageMetadata": "Manage Metadata",
-    "manageThreats": "Manage Threats",
+    "manageMetadata": "Manage metadata",
+    "manageThreats": "Manage threats",
     "metadata": "Metadata",
     "metadataKey": "Key",
     "metadataValue": "Value",
@@ -702,10 +702,10 @@
     "name": "Name",
     "name.comment": "The German (de-DE) word for name is the same as the English word.",
     "noAddonsAvailable": "No addons available",
-    "noDataAvailable": "No Data Available",
+    "noDataAvailable": "No data available",
     "noMatchingResults": "No results match your filters.",
-    "noMetadata": "No Metadata Available",
-    "noThreats": "No Threats Available",
+    "noMetadata": "No metadata available",
+    "noThreats": "No threats available",
     "none": "None",
     "objectTypes": {
       "asset": "Asset",
@@ -726,18 +726,18 @@
       "repositories": "Repositories",
       "repository": "Repository",
       "survey": "Survey",
-      "surveyResponse": "Survey Response",
-      "surveyResponses": "Survey Responses",
+      "surveyResponse": "Survey response",
+      "surveyResponses": "Survey responses",
       "surveys": "Surveys",
       "team": "Team",
       "teams": "Teams",
       "threat": "Threat",
-      "threatModel": "Threat Model",
-      "threatModels": "Threat Models",
+      "threatModel": "Threat model",
+      "threatModels": "Threat models",
       "threats": "Threats"
     },
     "ok": "OK",
-    "openInNewTab": "Open in New Tab",
+    "openInNewTab": "Open in new tab",
     "other": "Other",
     "paste": "Paste",
     "permissions": "Permissions",
@@ -753,12 +753,12 @@
       "writer": "Writer"
     },
     "save": "Save",
-    "saveAndClose": "Save and Close",
+    "saveAndClose": "Save and close",
     "saveFailed": "Save failed",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
     "search": "Search",
-    "selected": "{{count}} selected",
+    "selected": "{{Count}} selected",
     "sensitivity": "Sensitivity",
     "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
     "sessionRoles": {
@@ -774,10 +774,10 @@
     },
     "team": "Team",
     "template": "Template",
-    "threatDescription": "Threat Description",
-    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
-    "threatName": "Threat Name",
-    "threatType": "Threat Type",
+    "threatDescription": "Threat description",
+    "threatDescriptionPlaceholder": "Describe the threat in detail",
+    "threatName": "Threat name",
+    "threatType": "Threat type",
     "title": "Title",
     "true": "True",
     "tryAdjustingFilters": "Try adjusting your filters.",
@@ -795,31 +795,31 @@
     "version": "Version",
     "view": "View",
     "view.comment": "View is used as a verb here.",
-    "viewMetadata": "View Metadata",
-    "viewPermissions": "View Permissions",
-    "viewThreat": "View Threat"
+    "viewMetadata": "View metadata",
+    "viewPermissions": "View permissions",
+    "viewThreat": "View threat"
   },
   "contextMenu": {
-    "addInverseConnection": "Add Inverse Connection",
-    "dataAssets": "Data Assets...",
-    "editText": "Edit Text",
-    "lockLayout": "Lock Layout",
-    "moveBackward": "Move Backward",
-    "moveForward": "Move Forward",
-    "moveToBack": "Move to Back",
-    "moveToFront": "Move to Front",
+    "addInverseConnection": "Add inverse connection",
+    "dataAssets": "Data assets...",
+    "editText": "Edit text",
+    "lockLayout": "Lock layout",
+    "moveBackward": "Move backward",
+    "moveForward": "Move forward",
+    "moveToBack": "Move to back",
+    "moveToFront": "Move to front",
     "noDataAssetsAvailable": "No data assets available",
-    "showObject": "Show Object",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "Show object",
+    "unlockLayout": "Unlock layout"
   },
   "createThreatModel": {
-    "confidentialHint": "Confidential threat models are not automatically shared with the Security Reviewers group. This setting cannot be changed after creation.",
+    "confidentialHint": "Confidential threat models are not automatically shared with the security reviewers group. This setting cannot be changed after creation.",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
     "framework": "Framework",
     "namePlaceholder": "Enter threat model name",
     "nameRequired": "{{common.validation.nameRequired}}",
-    "title": "Create Threat Model"
+    "title": "Create threat model"
   },
   "cvssCalculator": {
     "apply": "Apply",
@@ -827,47 +827,47 @@
     "metricDescriptions": {
       "AC": "This metric captures measurable actions that must be taken by the attacker to actively evade or circumvent existing built-in security-enhancing conditions in order to obtain a working exploit.",
       "AC.comment": "CVSS 4.0 metric description for Attack Complexity. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "AR": "This metric enables the consumer to customize the assessment depending on the importance of the affected IT asset to the analyst's organization, measured in terms of Availability.",
+      "AR": "This metric enables the consumer to customize the assessment depending on the importance of the affected it asset to the analyst's organization, measured in terms of availability.",
       "AR.comment": "CVSS 4.0 metric description for Availability Requirement. Sourced from the FIRST.org CVSS 4.0 specification.",
       "AT": "This metric captures the prerequisite deployment and execution conditions or variables of the vulnerable system that enable the attack.",
       "AT.comment": "CVSS 4.0 metric description for Attack Requirements. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "AU": "The Automatable metric captures the answer to the question 'Can an attacker automate exploitation of the vulnerability across multiple targets?'",
+      "AU": "The automatable metric captures the answer to the question 'can an attacker automate exploitation of the vulnerability across multiple targets?'",
       "AU.comment": "CVSS 4.0 metric description for Automatable. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "CR": "This metric enables the consumer to customize the assessment depending on the importance of the affected IT asset to the analyst's organization, measured in terms of Confidentiality.",
+      "CR": "This metric enables the consumer to customize the assessment depending on the importance of the affected it asset to the analyst's organization, measured in terms of confidentiality.",
       "CR.comment": "CVSS 4.0 metric description for Confidentiality Requirement. Sourced from the FIRST.org CVSS 4.0 specification.",
       "E": "This metric measures the likelihood of the vulnerability being attacked, based on the current state of exploit techniques, exploit code availability, or active 'in-the-wild' exploitation.",
       "E.comment": "CVSS 4.0 metric description for Exploit Maturity. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "IR": "This metric enables the consumer to customize the assessment depending on the importance of the affected IT asset to the analyst's organization, measured in terms of Integrity.",
+      "IR": "This metric enables the consumer to customize the assessment depending on the importance of the affected it asset to the analyst's organization, measured in terms of integrity.",
       "IR.comment": "CVSS 4.0 metric description for Integrity Requirement. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "MAC": "Override for Attack Complexity. This metric reflects the conditions beyond the attacker's control that must exist in order to exploit the vulnerability in the analyst's environment.",
+      "MAC": "Override for attack complexity. This metric reflects the conditions beyond the attacker's control that must exist in order to exploit the vulnerability in the analyst's environment.",
       "MAC.comment": "CVSS 4.0 metric description for Modified Attack Complexity.",
-      "MAT": "Override for Attack Requirements. Captures the prerequisite deployment and execution conditions of the system that enable the attack in the analyst's environment.",
+      "MAT": "Override for attack requirements. Captures the prerequisite deployment and execution conditions of the system that enable the attack in the analyst's environment.",
       "MAT.comment": "CVSS 4.0 metric description for Modified Attack Requirements.",
-      "MAV": "Override for Attack Vector. This metric reflects the context by which vulnerability exploitation is possible in the analyst's environment.",
+      "MAV": "Override for attack vector. This metric reflects the context by which vulnerability exploitation is possible in the analyst's environment.",
       "MAV.comment": "CVSS 4.0 metric description for Modified Attack Vector.",
-      "MPR": "Override for Privileges Required. This metric describes the level of privileges an attacker must possess to exploit the vulnerability in the analyst's environment.",
+      "MPR": "Override for privileges required. This metric describes the level of privileges an attacker must possess to exploit the vulnerability in the analyst's environment.",
       "MPR.comment": "CVSS 4.0 metric description for Modified Privileges Required.",
-      "MSA": "Override for Subsequent System Availability impact. Measures the consequences to system availability beyond the vulnerable system in the analyst's environment.",
+      "MSA": "Override for subsequent system availability impact. Measures the consequences to system availability beyond the vulnerable system in the analyst's environment.",
       "MSA.comment": "CVSS 4.0 metric description for Modified Subsequent System Availability.",
-      "MSC": "Override for Subsequent System Confidentiality impact. Measures the consequences to confidentiality beyond the vulnerable system in the analyst's environment.",
+      "MSC": "Override for subsequent system confidentiality impact. Measures the consequences to confidentiality beyond the vulnerable system in the analyst's environment.",
       "MSC.comment": "CVSS 4.0 metric description for Modified Subsequent System Confidentiality.",
-      "MSI": "Override for Subsequent System Integrity impact. Measures the consequences to integrity beyond the vulnerable system in the analyst's environment.",
+      "MSI": "Override for subsequent system integrity impact. Measures the consequences to integrity beyond the vulnerable system in the analyst's environment.",
       "MSI.comment": "CVSS 4.0 metric description for Modified Subsequent System Integrity.",
-      "MUI": "Override for User Interaction. Captures the requirement for a human user, other than the attacker, to participate in the successful compromise in the analyst's environment.",
+      "MUI": "Override for user interaction. Captures the requirement for a human user, other than the attacker, to participate in the successful compromise in the analyst's environment.",
       "MUI.comment": "CVSS 4.0 metric description for Modified User Interaction.",
-      "MVA": "Override for Vulnerable System Availability impact. Measures the consequences to availability of the system containing the vulnerability in the analyst's environment.",
+      "MVA": "Override for vulnerable system availability impact. Measures the consequences to availability of the system containing the vulnerability in the analyst's environment.",
       "MVA.comment": "CVSS 4.0 metric description for Modified Vulnerable System Availability.",
-      "MVC": "Override for Vulnerable System Confidentiality impact. Measures the consequences to confidentiality of the system containing the vulnerability in the analyst's environment.",
+      "MVC": "Override for vulnerable system confidentiality impact. Measures the consequences to confidentiality of the system containing the vulnerability in the analyst's environment.",
       "MVC.comment": "CVSS 4.0 metric description for Modified Vulnerable System Confidentiality.",
-      "MVI": "Override for Vulnerable System Integrity impact. Measures the consequences to integrity of the system containing the vulnerability in the analyst's environment.",
+      "MVI": "Override for vulnerable system integrity impact. Measures the consequences to integrity of the system containing the vulnerability in the analyst's environment.",
       "MVI.comment": "CVSS 4.0 metric description for Modified Vulnerable System Integrity.",
       "PR": "This metric describes the level of privileges an attacker must possess prior to successfully exploiting the vulnerability.",
       "PR.comment": "CVSS 4.0 metric description for Privileges Required. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "R": "The Recovery metric describes the resilience of a system to recover services, in terms of performance and availability, after an attack has been performed.",
+      "R": "The recovery metric describes the resilience of a system to recover services, in terms of performance and availability, after an attack has been performed.",
       "R.comment": "CVSS 4.0 metric description for Recovery. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "RE": "The Vulnerability Response Effort metric captures the level of effort needed for the consumer to respond to a vulnerability once it has become known.",
+      "RE": "The vulnerability response effort metric captures the level of effort needed for the consumer to respond to a vulnerability once it has become known.",
       "RE.comment": "CVSS 4.0 metric description for Vulnerability Response Effort. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "S": "The Safety metric reflects whether the vulnerability could result in conditions affecting human safety as defined by IEC 61508 categories.",
+      "S": "The safety metric reflects whether the vulnerability could result in conditions affecting human safety as defined by IEC 61508 categories.",
       "S.comment": "CVSS 4.0 metric description for Safety. Sourced from the FIRST.org CVSS 4.0 specification.",
       "SA": "This metric measures the impact to availability of subsequent systems beyond the vulnerable system caused by a successfully exploited vulnerability.",
       "SA.comment": "CVSS 4.0 metric description for Subsequent System Availability impact. Sourced from the FIRST.org CVSS 4.0 specification.",
@@ -875,11 +875,11 @@
       "SC.comment": "CVSS 4.0 metric description for Subsequent System Confidentiality impact. Sourced from the FIRST.org CVSS 4.0 specification.",
       "SI": "This metric measures the impact to integrity of subsequent systems beyond the vulnerable system caused by a successfully exploited vulnerability.",
       "SI.comment": "CVSS 4.0 metric description for Subsequent System Integrity impact. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "U": "The Provider Urgency metric reflects the supplier-provided urgency rating (Red, Amber, Green, Clear) for a vulnerability.",
+      "U": "The provider urgency metric reflects the supplier-provided urgency rating (red, amber, green, clear) for a vulnerability.",
       "U.comment": "CVSS 4.0 metric description for Provider Urgency. Sourced from the FIRST.org CVSS 4.0 specification.",
       "UI": "This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable system.",
       "UI.comment": "CVSS 4.0 metric description for User Interaction. Sourced from the FIRST.org CVSS 4.0 specification.",
-      "V": "The Value Density metric describes the resources that the attacker will gain control over with a single exploitation event.",
+      "V": "The value density metric describes the resources that the attacker will gain control over with a single exploitation event.",
       "V.comment": "CVSS 4.0 metric description for Value Density. Sourced from the FIRST.org CVSS 4.0 specification.",
       "VA": "This metric measures the impact to availability of the system that contains the vulnerable component, resulting from a successfully exploited vulnerability.",
       "VA.comment": "CVSS 4.0 metric description for Vulnerable System Availability impact. Sourced from the FIRST.org CVSS 4.0 specification.",
@@ -893,9 +893,9 @@
       "base.comment": "Name of the CVSS Base metric group. Capitalized per CVSS specification.",
       "environmental": "Environmental",
       "environmental.comment": "Name of the CVSS Environmental metric group. Capitalized per CVSS specification.",
-      "environmentalBase": "Environmental (Modified Base)",
+      "environmentalBase": "Environmental (modified base)",
       "environmentalBase.comment": "Name of the CVSS 4.0 Environmental metric subgroup that overrides Base metrics.",
-      "environmentalSecurityRequirement": "Environmental (Security Requirements)",
+      "environmentalSecurityRequirement": "Environmental (security requirements)",
       "environmentalSecurityRequirement.comment": "Name of the CVSS 4.0 Environmental metric subgroup for Security Requirements.",
       "supplemental": "Supplemental",
       "supplemental.comment": "Name of the CVSS 4.0 Supplemental metric group. Capitalized per CVSS specification.",
@@ -904,41 +904,41 @@
       "threat": "Threat",
       "threat.comment": "Name of the CVSS 4.0 Threat metric group. Capitalized per CVSS specification."
     },
-    "metricsConfigured": "{{count}}/{{total}} configured",
+    "metricsConfigured": "{{Count}}/{{total}} configured",
     "metricsConfigured.comment": "Summary showing how many metrics have been configured in a metric group.",
     "openCalculator": "Add CVSS",
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Could not parse the existing CVSS vector string",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
-    "pasteVectorPlaceholder": "Paste a CVSS vector string and press Enter",
+    "pasteVectorPlaceholder": "Paste a CVSS vector string and press enter",
     "pasteVectorPlaceholder.comment": "Placeholder for the vector paste input inside the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
-    "title": "CVSS Calculator",
+    "title": "CVSS calculator",
     "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "A CVSS entry for this version already exists",
     "vectorDuplicateVersion.comment": "Error shown when user enters a CVSS vector string for a version that already has an entry.",
     "vectorInvalid": "Invalid CVSS vector string",
     "vectorInvalid.comment": "Error shown when the entered CVSS vector string cannot be parsed or is incomplete.",
-    "vectorPlaceholder": "Paste or type a CVSS vector string and press Enter",
+    "vectorPlaceholder": "Paste or type a CVSS vector string and press enter",
     "vectorPlaceholder.comment": "Placeholder text for the CVSS vector string input field. CVSS is a proper name and should not be translated.",
-    "vectorString": "Vector String",
+    "vectorString": "Vector string",
     "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "Only CVSS 3.1 and 4.0 vectors are supported",
     "vectorUnsupportedVersion.comment": "Error shown when user enters a CVSS vector string with a version other than 3.1 or 4.0. CVSS is a proper name and should not be translated.",
-    "version": "CVSS Version",
+    "version": "CVSS version",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
     "addCwe": "Add CWE",
     "addCwe.comment": "Button label to open the CWE picker dialog. CWE = Common Weakness Enumeration, should not be translated.",
-    "addCweReference": "Add CWE Reference to Threat",
+    "addCweReference": "Add CWE reference to threat",
     "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
     "chooseCwe": "{{cwePicker.title}}",
     "chooseCwe.comment": "Tooltip for the action button that opens the CWE picker dialog. CWE = Common Weakness Enumeration.",
-    "extendedDescription": "Extended Description",
+    "extendedDescription": "Extended description",
     "extendedDescription.comment": "Label for the extended description field shown when a CWE weakness is selected.",
     "loading": "Loading weaknesses...",
     "loading.comment": "Message shown while CWE weakness data is loading.",
-    "matchingWeaknesses": "Matching Weaknesses",
+    "matchingWeaknesses": "Matching weaknesses",
     "matchingWeaknesses.comment": "Label for the list of CWE weaknesses matching the search query.",
     "noResults": "No weaknesses match your search",
     "noResults.comment": "Message shown when no CWE weaknesses match the search query.",
@@ -949,17 +949,17 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "Clear Search",
-    "createdAfter": "Created After",
-    "createdBefore": "Created Before",
+    "clearSearch": "Clear search",
+    "createdAfter": "Created after",
+    "createdBefore": "Created before",
     "descriptionFilter": "{{common.description}}",
     "descriptionPlaceholder": "Filter by description",
     "issueUriFilter": "{{common.issueUri}}",
     "issueUriPlaceholder": "Filter by issue URL",
-    "lessFilters": "Fewer Filters",
-    "modifiedAfter": "Modified After",
-    "modifiedBefore": "Modified Before",
-    "moreFilters": "More Filters",
+    "lessFilters": "Fewer filters",
+    "modifiedAfter": "Modified after",
+    "modifiedBefore": "Modified before",
+    "moreFilters": "More filters",
     "nameFilter": "{{common.name}}",
     "namePlaceholder": "Filter by name",
     "noMatchingThreatModels": "No threat models match your search or filters.",
@@ -969,8 +969,8 @@
     "searchPlaceholder": "Search by name, description, owner, or status",
     "securityReviewerFilter": "{{triage.reviewerAssignment.reviewer}}",
     "securityReviewerPlaceholder": "Filter by security reviewer name or email",
-    "statusUpdatedAfter": "Status Updated After",
-    "statusUpdatedBefore": "Status Updated Before",
+    "statusUpdatedAfter": "Status updated after",
+    "statusUpdatedBefore": "Status updated before",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -979,69 +979,69 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "Status Last Changed"
+      "statusLastChanged": "Status last changed"
     },
-    "viewAsCards": "View as Cards",
-    "viewAsList": "View as List"
+    "viewAsCards": "View as cards",
+    "viewAsList": "View as list"
   },
   "dataAssetDialog": {
-    "selectAsset": "Data Asset",
+    "selectAsset": "Data asset",
     "title": {
-      "select": "Select Data Asset",
-      "view": "View Data Asset"
+      "select": "Select data asset",
+      "view": "View data asset"
     }
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "clearClipboard": "Clear Clipboard",
+      "clearClipboard": "Clear clipboard",
       "clipboardJson": "Clipboard JSON",
-      "title": "Clipboard Data"
+      "title": "Clipboard data"
     },
     "common": {
-      "affectedCells": "Affected Cells",
-      "cellIds": "Cell IDs",
+      "affectedCells": "Affected cells",
+      "cellIds": "Cell ids",
       "cells": "{{common.objectTypes.cells}}",
-      "copyFullJson": "Copy Full JSON"
+      "copyFullJson": "Copy full JSON"
     },
     "graphDataDialog": {
       "graphJson": "Graph JSON",
-      "title": "Graph Data"
+      "title": "Graph data"
     },
     "historyDialog": {
-      "canRedo": "Can Redo",
-      "canUndo": "Can Undo",
-      "clearHistory": "Clear History",
-      "currentIndex": "Current Index",
+      "canRedo": "Can redo",
+      "canUndo": "Can undo",
+      "clearHistory": "Clear history",
+      "currentIndex": "Current index",
       "id": "{{common.id}}",
-      "maxStackSize": "Max Stack Size",
+      "maxStackSize": "Max stack size",
       "noRedoEntries": "No redo entries",
       "noUndoEntries": "No undo entries",
       "operationId": "Operation ID",
-      "previousCells": "Previous Cells",
+      "previousCells": "Previous cells",
       "providerId": "{{settings.userProfile.providerId}}",
-      "redoStack": "Redo Stack",
-      "redoStackSize": "Redo Stack Size",
+      "redoStack": "Redo stack",
+      "redoStackSize": "Redo stack size",
       "summary": "{{ssvcCalculator.summary}}",
       "timestamp": "Timestamp",
       "title": "History",
-      "undoStack": "Undo Stack",
-      "undoStackSize": "Undo Stack Size"
+      "undoStack": "Undo stack",
+      "undoStackSize": "Undo stack size"
     }
   },
   "dfd": {
     "iconPicker": {
       "emptyStatePrompt": "Type to search across all providers",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
+      "emptyStateTryExamples": "Try: AWS ec2, azure sql, gcp compute",
       "notAvailable": "Icons not available for this shape",
       "placement": "Placement",
       "remove": "Remove",
       "searchPlaceholder": "Search by provider, service, or category...",
       "searchToChange": "Search to change icon...",
       "selectShape": "Select a shape first",
-      "statusAvailable": "{count} icons available",
-      "statusMatches": "{count} matches",
-      "statusShapesSelected": "{count} shape(s) selected",
-      "title": "Architecture Icon",
+      "statusAvailable": "{Count} icons available",
+      "statusMatches": "{Count} matches",
+      "statusShapesSelected": "{Count} shape(s) selected",
+      "title": "Architecture icon",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
@@ -1054,7 +1054,7 @@
       "positionLabel": "Position",
       "textLabel": "Label text",
       "textPlaceholder": "Enter port label",
-      "title": "Port Label"
+      "title": "Port label"
     },
     "stylePanel": {
       "addDiagramColor": "Add diagram color",
@@ -1098,7 +1098,7 @@
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "An error occurred while reading this document.",
-      "microsoftNotShared": "TMI doesn't yet have access to this OneDrive or SharePoint file. The file owner must grant TMI read access using the snippet below.",
+      "microsoftNotShared": "TMI doesn't yet have access to this onedrive or sharepoint file. The file owner must grant TMI read access using the snippet below.",
       "noAccessibleSource": "TMI cannot read this document with current access.",
       "other": "Unable to access this document.",
       "pickerRegistrationInvalid": "This document's picker authorization is no longer valid.",
@@ -1119,9 +1119,9 @@
         "copyButton": "Copy",
         "copyFailed": "Couldn't copy to clipboard.",
         "curlLabel": "curl",
-        "explanation": "TMI doesn't yet have access to this OneDrive or SharePoint file. Ask the file owner to run the following Microsoft Graph call to grant TMI read access. After the call succeeds, click \"Check now\" — status updates within a few minutes once the grant is in place.",
-        "powershellLabel": "PowerShell (Microsoft.Graph module)",
-        "rawLabel": "Microsoft Graph call",
+        "explanation": "TMI doesn't yet have access to this onedrive or sharepoint file. Ask the file owner to run the following Microsoft graph call to grant TMI read access. After the call succeeds, click \"check now\" — status updates within a few minutes once the grant is in place.",
+        "powershellLabel": "Powershell (microsoft.graph module)",
+        "rawLabel": "Microsoft graph call",
         "title": "Grant TMI access to this file",
         "unavailable": "Microsoft remediation details are unavailable. Contact support."
       },
@@ -1144,18 +1144,18 @@
       "unavailable": "Microsoft is temporarily unavailable. Please try again in a few moments."
     },
     "postCreate": {
-      "hint": "Once you've shared the file, click \"Recheck access\" above. You can also close this dialog and recheck later from the document's edit view."
+      "hint": "Once you've shared the file, click \"recheck access\" above. You can also close this dialog and recheck later from the document's edit view."
     },
     "source": {
       "finalizing": "Granting access…",
-      "googleDrive": "Pick from Google Drive",
+      "googleDrive": "Pick from google drive",
       "label": "How would you like to attach this document?",
       "linkAction": "Link source",
       "linkPrompt": "Link your account to pick files from this source.",
-      "linkPromptMicrosoft": "Link a Microsoft account to browse OneDrive/SharePoint files",
+      "linkPromptMicrosoft": "Link a Microsoft account to browse onedrive/sharepoint files",
       "pickAction": "Pick a file",
-      "pickActionMicrosoft": "Browse OneDrive/SharePoint",
-      "pickedFile": "File selected: {{ fileName }}",
+      "pickActionMicrosoft": "Browse onedrive/sharepoint",
+      "pickedFile": "File selected: {{ filename }}",
       "repickAction": "Choose a different file",
       "serviceUrlHint": "Paste the share URL of the file. After saving, you'll be prompted to share it with our service account.",
       "url": "Paste a URL"
@@ -1164,9 +1164,9 @@
   "documentSources": {
     "add": "Connect a source",
     "callback": {
-      "error": "Couldn't connect source. Source: {{ source }}. Reason: {{ reason }}",
+      "error": "Couldn't connect source. Source: {{ source }}. reason: {{ reason }}",
       "linking": "Linking your account...",
-      "notConfigured": "{{ source }} is not configured on this server. Contact your administrator.",
+      "notConfigured": "{{ Source }} is not configured on this server. Contact your administrator.",
       "success": "Source connected. Source: {{ source }}"
     },
     "columns": {
@@ -1176,15 +1176,15 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "Link a cloud storage account to attach documents from Google Drive, and other services as they become available.",
+      "description": "Link a cloud storage account to attach documents from google drive, and other services as they become available.",
       "title": "No document sources connected"
     },
     "googleDrive": {
-      "name": "Google Drive"
+      "name": "Google drive"
     },
-    "linkedAt": "Linked {{ relativeTime }}",
+    "linkedAt": "Linked {{ relativetime }}",
     "microsoft": {
-      "name": "OneDrive/SharePoint"
+      "name": "Onedrive/sharepoint"
     },
     "relink": "Relink",
     "status": {
@@ -1208,7 +1208,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "One or more selected elements have metadata entries. Deleting these elements will permanently remove their metadata. Do you want to continue?",
-      "title": "Metadata Will Be Lost"
+      "title": "Metadata will be lost"
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Enter diagram description",
@@ -1223,82 +1223,82 @@
     },
     "flowLabel": "Flow",
     "helpDialog": {
-      "panLabel": "Hold Shift and drag to pan",
-      "title": "Diagram Editor Help",
-      "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
+      "panLabel": "Hold shift and drag to pan",
+      "title": "Diagram editor help",
+      "zoomLabel": "Hold shift and use the mouse wheel to zoom"
     },
     "nodeLabels": {
       "actor": "Actor",
       "node": "Node",
       "process": "Process",
-      "securityBoundary": "Security Boundary",
-      "store": "Data Store",
+      "securityBoundary": "Security boundary",
+      "store": "Data store",
       "textbox": "Text"
     },
-    "pageTitle": "Data Flow Diagram Editor",
+    "pageTitle": "Data flow diagram editor",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG"
       },
       "tooltips": {
-        "addActor": "Add Actor",
-        "addProcess": "Add Process",
-        "addSecurityBoundary": "Add Security Boundary",
-        "addStore": "Add Store",
-        "addTextbox": "Add Text Box",
-        "deleteSelected": "Delete Selected",
+        "addActor": "Add actor",
+        "addProcess": "Add process",
+        "addSecurityBoundary": "Add security boundary",
+        "addStore": "Add store",
+        "addTextbox": "Add text box",
+        "deleteSelected": "Delete selected",
         "export": "Export...",
         "help": "Help",
         "redo": "Redo",
-        "showClipboard": "Show Clipboard",
-        "showGraphData": "Show Graph Data",
-        "showHistory": "Show History",
+        "showClipboard": "Show clipboard",
+        "showGraphData": "Show graph data",
+        "showHistory": "Show history",
         "undo": "Undo",
-        "zoomToFit": "Zoom to Fit"
+        "zoomToFit": "Zoom to fit"
       }
     }
   },
   "errors": {
-    "validationError": "Validation Error"
+    "validationError": "Validation error"
   },
   "footer": {
     "support": "Support"
   },
-  "getStarted": "Get Started",
+  "getStarted": "Get started",
   "homeDescription": "TMI is a tool that streamlines your organization's security review and threat modeling processes. It drives review workflows, organizes key information, and enables teams to collaboratively build data flow diagrams. It also connects to automation, helping reduce manual toil and surface security threats more efficiently.",
-  "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeWelcomeTitle": "Welcome to TMI: threat modeling improved",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
-      "saveAndExit": "Save & Exit",
-      "submitResponses": "Submit Responses"
+      "saveAndExit": "Save & exit",
+      "submitResponses": "Submit responses"
     }
   },
   "login": {
     "chooseMethod": "Choose your sign in method:",
-    "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
+    "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through US.",
     "loadingProviders": "Loading authentication providers...",
     "local": {
-      "title": "Local Development Sign In"
+      "title": "Local development sign in"
     },
     "loggingInWith": "Signing in with {{provider}}...",
     "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
-    "oauthProvidersTitle": "OAuth Sign-in Providers",
-    "samlProvidersTitle": "SAML Sign-in Providers",
+    "oauthProvidersTitle": "OAuth sign-in providers",
+    "samlProvidersTitle": "SAML sign-in providers",
     "sessionExpired": "Your session has expired. Please sign in again.",
     "signingIn": "Signing in...",
     "signingInWith": "{{login.loggingInWith}}",
-    "title": "Sign In to TMI",
+    "title": "Sign in to TMI",
     "tmiDialog": {
       "errorMaxLength": "Username must be at most 20 characters",
       "errorMinLength": "Username must be at least 3 characters",
       "errorPattern": "Username must contain only letters, digits, periods, underscores, percent signs, plus signs, and hyphens",
-      "signIn": "Sign In",
-      "title": "Sign In with TMI Provider",
+      "signIn": "Sign in",
+      "title": "Sign in with TMI provider",
       "usernameLabel": "Username",
       "usernamePlaceholder": "Enter username (optional)"
     },
@@ -1306,56 +1306,56 @@
   },
   "mermaidViewer": {
     "exportFailed": "Failed to export diagram",
-    "fitToScreen": "Fit to Screen",
-    "openInViewer": "Open in Viewer",
-    "resetZoom": "Reset Zoom",
-    "zoomIn": "Zoom In",
-    "zoomOut": "Zoom Out"
+    "fitToScreen": "Fit to screen",
+    "openInViewer": "Open in viewer",
+    "resetZoom": "Reset zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
   "navbar": {
     "admin": "Admin",
-    "appTitle": "TMI: Threat Modeling Improved",
-    "copyUserEmail": "Copy User Email to Clipboard",
+    "appTitle": "TMI: threat modeling improved",
+    "copyUserEmail": "Copy user email to clipboard",
     "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
     "feedbackMenu": {
-      "provideFeedback": "Provide Feedback",
-      "reportBug": "Report a Bug",
+      "provideFeedback": "Provide feedback",
+      "reportBug": "Report a bug",
       "reportBugCopied": "Application log copied to clipboard. Paste it into the GitHub issue.",
-      "requestFeature": "Request a Feature"
+      "requestFeature": "Request a feature"
     },
     "home": "Home",
     "intake": "Intake",
     "logoutButton": "{{navbar.menu.logout}}",
     "menu": {
       "home": "{{navbar.home}}",
-      "logout": "Sign Out"
+      "logout": "Sign out"
     },
     "serverStatus": {
-      "noServerConfigured": "No Server Configured",
-      "serverConnected": "Server Connected",
-      "serverDegraded": "Server Degraded",
-      "serverError": "Server Error",
-      "serverOffline": "Server Offline"
+      "noServerConfigured": "No server configured",
+      "serverConnected": "Server connected",
+      "serverDegraded": "Server degraded",
+      "serverError": "Server error",
+      "serverOffline": "Server offline"
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} characters",
+    "characterCount": "{{Current}} / {{max}} characters",
     "content": "Content",
-    "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
+    "contentPlaceholder": "Enter note content in markdown format. Supports GitHub flavored markdown and mermaid diagrams.",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Optional description",
-    "editMode": "Edit Mode",
+    "editMode": "Edit mode",
     "errors": {
       "clipboardAccessDenied": "Clipboard access denied"
     },
     "namePlaceholder": "Enter note name",
-    "previewMode": "Preview Mode",
+    "previewMode": "Preview mode",
     "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
-      "create": "Create Note",
-      "edit": "Edit Note",
-      "view": "View Note"
+      "create": "Create note",
+      "edit": "Edit note",
+      "view": "View note"
     }
   },
   "notes": {
@@ -1366,7 +1366,7 @@
       "name": "{{common.name}}"
     },
     "deleteConfirmMessage": "Are you sure you want to delete the note \"{{name}}\"? This action cannot be undone.",
-    "deleteConfirmTitle": "Delete Note",
+    "deleteConfirmTitle": "Delete note",
     "noNotes": "No notes yet",
     "sharable": "Visible to all members",
     "sharableTooltip": "When enabled, this note is visible to all team/project members. When disabled, only admins and security reviewers can see it.",
@@ -1377,34 +1377,34 @@
     "actions": {
       "login": "Login"
     },
-    "operationError": "Failed to {{operation}}: {{errorMessage}}",
+    "operationError": "Failed to {{operation}}: {{errormessage}}",
     "operationFailed": "Operation failed",
     "operations": {
       "collaboration": "collaboration",
-      "denyPresenterRequest": "deny presenter request",
-      "sendPresenterRequest": "send presenter request",
-      "startCollaboration": "start collaboration",
-      "updatePresenter": "update presenter"
+      "denyPresenterRequest": "Deny presenter request",
+      "sendPresenterRequest": "Send presenter request",
+      "startCollaboration": "Start collaboration",
+      "updatePresenter": "Update presenter"
     },
     "presenter": {
-      "assigned": "{{user}} is now the presenter",
+      "assigned": "{{User}} is now the presenter",
       "assignedYou": "You are now the presenter",
       "cleared": "Presenter mode has been cleared",
       "cursorMoved": "Presenter cursor moved",
       "modeChanged": "Presenter mode changed",
       "privilegesRequested": "Presenter privileges requested",
-      "removed": "{{user}} is no longer the presenter",
+      "removed": "{{User}} is no longer the presenter",
       "removedYou": "You are no longer the presenter",
       "requestDenied": "Your presenter request was denied",
       "requestSent": "Presenter request sent to session owner",
-      "requesting": "{{user}} is requesting presenter privileges",
+      "requesting": "{{User}} is requesting presenter privileges",
       "selectionChanged": "Presenter selection changed"
     },
     "session": {
       "disconnected": "Disconnected from collaboration session",
       "reconnected": "Reconnected to collaboration session",
       "reconnecting": "Reconnecting to collaboration session...",
-      "userRemoved": "{{user}} was removed from the session",
+      "userRemoved": "{{User}} was removed from the session",
       "youWereRemoved": "You have been removed from the collaboration session"
     },
     "unknownError": "Unknown error",
@@ -1417,7 +1417,7 @@
       "disconnected": "Disconnected from collaboration server. Changes will be saved locally.",
       "messageSendFailed": "Failed to send message. Your changes may not be synced.",
       "multipleFailed": "Connection failed after multiple attempts. Working in offline mode.",
-      "unknownError": "Unknown WebSocket error occurred"
+      "unknownError": "Unknown websocket error occurred"
     }
   },
   "pagination": {
@@ -1428,53 +1428,53 @@
     "nextPage": "Next page",
     "previousPage": "Previous page",
     "rangeEmpty": "0 of {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} of {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} of {{length}}"
   },
   "presenter": {
-    "startPresenting": "Start Presenting",
-    "stopPresenting": "Stop Presenting"
+    "startPresenting": "Start presenting",
+    "stopPresenting": "Stop presenting"
   },
   "privacy": {
-    "changesContent": "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
-    "changesTitle": "Changes to This Policy",
-    "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
-    "complianceTitle": "Legal Compliance",
+    "changesContent": "We may update this privacy policy from time to time. Any changes will be posted on this page with an updated \"last updated\" date.",
+    "changesTitle": "Changes to this policy",
+    "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, the operator will comply with applicable legal obligations.",
+    "complianceTitle": "Legal compliance",
     "contactContent": {
-      "part1": "If you have any questions about this Privacy Policy, please feel free to contact the Operator of this web site via the contact information on the ",
-      "part2": " page."
+      "part1": "If you have any questions about this privacy policy, please feel free to contact the operator of this web site via the contact information on the ",
+      "part2": " Page."
     },
-    "contactTitle": "Contact Us",
-    "dataSecurityContent1": "The Operator implements industry-standard security measures to protect your personal data, including encryption in transit and at rest, secure authentication protocols, and regular security updates. Access to your information is restricted to authorized personnel on a need-to-know basis.",
-    "dataSecurityContent2": "While no system is entirely impervious to risks, The Operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
-    "dataSecurityTitle": "Data Security",
-    "dataSharingContent1": "The Operator does not share your personal information with any third parties, except in the following limited circumstances:",
-    "dataSharingContent2": "Beyond these exceptions, The Operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
-    "dataSharingList1": "Service Providers: Your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes The Operator specifies.",
-    "dataSharingList2": "Extensibility Features: The application supports optional extensibility features (such as websockets and addons) that may extend functionality by passing selected information to third-party services for processing. Data is shared with these services only when you actively use a feature that requires such transmission, and only the specific information necessary for the requested functionality is transmitted.",
-    "dataSharingList2a": "AI Processing Features: When you actively request features powered by large language models (LLMs) or similar AI services, selected data may be transmitted to third-party AI providers (such as OpenAI, Anthropic, or equivalent services) for processing and response generation. Only the specific information necessary for the requested functionality is shared, and such sharing occurs solely at your direction. These providers are bound by contractual obligations — including data processing agreements where applicable — to use the data exclusively for providing the requested service, with restrictions on retention, training, or other uses.",
-    "dataSharingList3": "Legal Compliance: The Operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
-    "dataSharingTitle": "Data Sharing",
-    "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID Connect providers such as Sign in with Google, Login with GitHub, Microsoft Entra External ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
-    "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The Operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and The Operator's commitment to user privacy.",
-    "informationCollectionContent3": "The application generates operational logs to ensure system reliability, security, and performance. These logs may contain records of user activity within the application, such as login events, feature usage, and error reports. The Operator retains logs only for as long as necessary to fulfill operational purposes, including troubleshooting, security monitoring, and service improvement. Logs are stored securely and are not used for purposes beyond operational needs.",
-    "informationCollectionList1": "Basic Profile Information: Full name, email address, and profile picture (if provided and available).",
-    "informationCollectionList2": "Unique Identifier: A provider-specific user ID to manage account sessions securely.",
-    "informationCollectionTitle": "Information Collection and Use",
+    "contactTitle": "Contact US",
+    "dataSecurityContent1": "The operator implements industry-standard security measures to protect your personal data, including encryption in transit and at rest, secure authentication protocols, and regular security updates. Access to your information is restricted to authorized personnel on a need-to-know basis.",
+    "dataSecurityContent2": "While no system is entirely impervious to risks, the operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
+    "dataSecurityTitle": "Data security",
+    "dataSharingContent1": "The operator does not share your personal information with any third parties, except in the following limited circumstances:",
+    "dataSharingContent2": "Beyond these exceptions, the operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
+    "dataSharingList1": "Service providers: your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, google cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes the operator specifies.",
+    "dataSharingList2": "Extensibility features: the application supports optional extensibility features (such as websockets and addons) that may extend functionality by passing selected information to third-party services for processing. Data is shared with these services only when you actively use a feature that requires such transmission, and only the specific information necessary for the requested functionality is transmitted.",
+    "dataSharingList2a": "AI processing features: when you actively request features powered by large language models (LLMs) or similar AI services, selected data may be transmitted to third-party AI providers (such as OpenAI, Anthropic, or equivalent services) for processing and response generation. Only the specific information necessary for the requested functionality is shared, and such sharing occurs solely at your direction. These providers are bound by contractual obligations — including data processing agreements where applicable — to use the data exclusively for providing the requested service, with restrictions on retention, training, or other uses.",
+    "dataSharingList3": "Legal compliance: the operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
+    "dataSharingTitle": "Data sharing",
+    "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID connect providers such as sign in with google, login with GitHub, Microsoft entra external ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
+    "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and the operator's commitment to user privacy.",
+    "informationCollectionContent3": "The application generates operational logs to ensure system reliability, security, and performance. These logs may contain records of user activity within the application, such as login events, feature usage, and error reports. The operator retains logs only for as long as necessary to fulfill operational purposes, including troubleshooting, security monitoring, and service improvement. Logs are stored securely and are not used for purposes beyond operational needs.",
+    "informationCollectionList1": "Basic profile information: full name, email address, and profile picture (if provided and available).",
+    "informationCollectionList2": "Unique identifier: a provider-specific user ID to manage account sessions securely.",
+    "informationCollectionTitle": "Information collection and use",
     "intro1": {
-      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
-      "part2": " page of this web site (\"The Operator\")."
+      "part1": "This web site is an instance of an open-source web application (\"tmi\") that is made available by the operator listed on the ",
+      "part2": " Page of this web site (\"the operator\")."
     },
-    "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
+    "intro2": "The operator is committed to protecting your privacy. This privacy policy explains how your information is handled.",
     "introductionTitle": "Introduction",
     "lastUpdatedDate": "2026-01-17",
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
-    "title": "Privacy Policy",
-    "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
-    "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
-    "userRightsTitle": "User Rights"
+    "title": "Privacy policy",
+    "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"delete all my data\" feature in the user preferences section of the application.",
+    "userRightsContent2": "This option enables immediate deletion of all data the operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from the operator's systems and third-party providers, subject to any legal retention obligations.",
+    "userRightsTitle": "User rights"
   },
   "projects": {
-    "addButton": "Add Project",
+    "addButton": "Add project",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1486,22 +1486,22 @@
       "descriptionPlaceholder": "Enter project description",
       "namePlaceholder": "Enter project name",
       "nameRequired": "Project name is required",
-      "statusPlaceholder": "e.g. active, planning, archived",
+      "statusPlaceholder": "E.g. active, planning, archived",
       "teamRequired": "Team is required",
-      "title": "Create Project",
+      "title": "Create project",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Create New Project",
+    "createNew": "Create new project",
     "deleteDialog": {
       "message": "Are you sure you want to delete project \"{{name}}\"?"
     },
     "editDialog": {
       "detailsTab": "{{teams.editDialog.detailsTab}}",
       "save": "{{common.save}}",
-      "title": "Edit Project"
+      "title": "Edit project"
     },
-    "filterLabel": "Filter by Name",
+    "filterLabel": "Filter by name",
     "filterNameLabel": "{{projects.filterLabel}}",
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
@@ -1515,15 +1515,15 @@
     "noProjects": "No projects found",
     "picker": {
       "label": "{{common.project}}",
-      "none": "No Project"
+      "none": "No project"
     },
     "relatedProjectsDialog": {
-      "addRelated": "Add Related Project",
+      "addRelated": "Add related project",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
       "noRelated": "No related projects",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
-      "selectProject": "Select Project",
-      "title": "Related Projects"
+      "selectProject": "Select project",
+      "title": "Related projects"
     },
     "responsiblePartiesDialog": {
       "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
@@ -1540,22 +1540,22 @@
       "planning": "Planning"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "Filter by Status",
+    "statusFilterLabel": "Filter by status",
     "subtitle": "Create, edit, and manage projects, relationships, and metadata",
-    "teamFilterLabel": "Filter by Team",
-    "title": "Manage Projects"
+    "teamFilterLabel": "Filter by team",
+    "title": "Manage projects"
   },
   "report": {
     "cvss": "CVSS",
     "cvss.comment": "Common Vulnerability Scoring System label. This is a proper name abbreviation and should not be translated.",
-    "cweIds": "CWE IDs",
+    "cweIds": "CWE ids",
     "cweIds.comment": "Common Weakness Enumeration identifiers for a threat. This is a proper name abbreviation.",
     "diagramImageUnavailable": "Diagram image not available",
     "diagramRenderFailed": "Diagram could not be rendered",
     "generatedAt": "Report generated at",
     "generatedAt.comment": "Label for the date/time the PDF report was generated.",
-    "linkedAsset": "Linked Asset",
-    "linkedDiagram": "Linked Diagram",
+    "linkedAsset": "Linked asset",
+    "linkedDiagram": "Linked diagram",
     "pageOf": "Page {{current}} of {{total}}",
     "pageOf.comment": "Page number footer shown at the bottom of each page in PDF reports.",
     "refLabel": "Ref",
@@ -1574,15 +1574,15 @@
     "summaryStatus.comment": "Label for the current threat model status, shown in the PDF report summary."
   },
   "sessionExpiry": {
-    "extendButton": "Extend Session",
+    "extendButton": "Extend session",
     "extending": "Extending your session, please wait...",
-    "logoutButton": "Sign Out Now",
+    "logoutButton": "Sign out now",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} seconds"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} seconds"
     },
-    "title": "Session Expiring Soon"
+    "title": "Session expiring soon"
   },
   "ssvcCalculator": {
     "apply": "{{cvssCalculator.apply}}",
@@ -1624,7 +1624,7 @@
       "none.comment": "SSVC Exploitation value: no exploitation evidence.",
       "noneDesc": "No evidence of active exploitation and no public proof-of-concept.",
       "noneDesc.comment": "Description of the None exploitation value.",
-      "poc": "Public PoC",
+      "poc": "Public poc",
       "poc.comment": "SSVC Exploitation value: public proof-of-concept exists. PoC is a common abbreviation and should not be translated.",
       "pocDesc": "A typical public proof-of-concept exists (e.g., on Metasploit or ExploitDB), or a well-known exploitation method is documented.",
       "pocDesc.comment": "Description of the Public PoC exploitation value."
@@ -1642,7 +1642,7 @@
       "minimal.comment": "SSVC Public Safety Impact value: negligible safety impact.",
       "minimalDesc": "Safety impact is negligible. No expected harm to persons or critical infrastructure.",
       "minimalDesc.comment": "Description of the Minimal public safety impact value.",
-      "name": "Public Safety Impact",
+      "name": "Public safety impact",
       "name.comment": "Name of the SSVC Public Safety Impact decision point.",
       "significant": "Significant",
       "significant.comment": "SSVC Public Safety Impact value: notable safety risk.",
@@ -1656,7 +1656,7 @@
     "technicalImpact": {
       "description": "What is the severity of the technical impact if the vulnerability is exploited?",
       "description.comment": "Description shown for the Technical Impact decision point step.",
-      "name": "Technical Impact",
+      "name": "Technical impact",
       "name.comment": "Name of the SSVC Technical Impact decision point.",
       "partial": "Partial",
       "partial.comment": "SSVC Technical Impact value: limited control or exposure.",
@@ -1667,7 +1667,7 @@
       "totalDesc": "Total control of the software's behavior, or complete disclosure of all information on the system.",
       "totalDesc.comment": "Description of the Total technical impact value."
     },
-    "title": "SSVC Calculator",
+    "title": "SSVC calculator",
     "title.comment": "Title for the SSVC calculator dialog. SSVC is a proper name and should not be translated.",
     "utility": {
       "description": "How useful is exploitation of this vulnerability to a typical attacker?",
@@ -1682,7 +1682,7 @@
       "laboriousDesc.comment": "Description of the Laborious utility value.",
       "name": "Utility",
       "name.comment": "Name of the SSVC Utility decision point.",
-      "superEffective": "Super Effective",
+      "superEffective": "Super effective",
       "superEffective.comment": "SSVC Utility value: highly automated exploitation of concentrated targets.",
       "superEffectiveDesc": "Exploitation can be automated and targets are concentrated — automated exploitation of high-value systems.",
       "superEffectiveDesc.comment": "Description of the Super Effective utility value."
@@ -1696,23 +1696,23 @@
       "saved": "Saved",
       "saving": "Saving..."
     },
-    "browse": "Browse Surveys",
+    "browse": "Browse surveys",
     "confidentialDialog": {
-      "description": "Should this submission be marked as confidential? Confidential submissions are not automatically shared with the Security Reviewers group. This setting cannot be changed after the response is created.",
+      "description": "Should this submission be marked as confidential? Confidential submissions are not automatically shared with the security reviewers group. This setting cannot be changed after the response is created.",
       "no": "No",
-      "title": "Confidential Submission",
+      "title": "Confidential submission",
       "yes": "Yes, mark as confidential"
     },
     "confirmation": {
-      "backToSurveys": "Back to Surveys",
+      "backToSurveys": "Back to surveys",
       "message": "Your survey has been submitted successfully.",
-      "title": "Survey Submitted",
-      "viewResponses": "View My Responses"
+      "title": "Survey submitted",
+      "viewResponses": "View my responses"
     },
-    "continueDraft": "Continue Draft",
+    "continueDraft": "Continue draft",
     "fill": {
       "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting.",
-      "title": "Fill Survey"
+      "title": "Fill survey"
     },
     "list": {
       "deleteDraft": "Delete draft",
@@ -1721,14 +1721,14 @@
       "lastModified": "Last modified {{time}}",
       "loadingSurveys": "Loading surveys...",
       "noSurveysMessage": "There are no active surveys at this time. Check back later.",
-      "noSurveysTitle": "No Surveys Available",
+      "noSurveysTitle": "No surveys available",
       "pageDescription": "Choose the appropriate type of review from the following list, and then answer the presented questions to provide the security review team with the information they need to perform the review.",
-      "pageTitle": "Request a Security Review",
+      "pageTitle": "Request a security review",
       "updated": "Updated",
-      "yourDrafts": "Your Drafts"
+      "yourDrafts": "Your drafts"
     },
-    "myResponses": "My Responses",
-    "noMatchingResponses": "No Matching Responses",
+    "myResponses": "My responses",
+    "noMatchingResponses": "No matching responses",
     "noMatchingResponsesMessage": "No responses match the selected filters.",
     "noResponses": "You haven't submitted any survey responses yet",
     "noSurveys": "No surveys available",
@@ -1738,31 +1738,31 @@
       "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "You haven't completed any surveys. Start one from the surveys page.",
-      "noResponsesTitle": "No Responses Yet",
-      "pageTitle": "My Survey Responses",
-      "responseCount": "{{count}} response",
-      "responseCountPlural": "{{count}} responses"
+      "noResponsesTitle": "No responses yet",
+      "pageTitle": "My survey responses",
+      "responseCount": "{{Count}} response",
+      "responseCountPlural": "{{Count}} responses"
     },
-    "saveDraft": "Save Draft",
-    "startNew": "Start Survey",
+    "saveDraft": "Save draft",
+    "startNew": "Start survey",
     "status": {
       "draft": "Draft",
-      "needsRevision": "Needs Revision",
-      "readyForReview": "Ready for Review",
-      "reviewCreated": "Review Created",
+      "needsRevision": "Needs revision",
+      "readyForReview": "Ready for review",
+      "reviewCreated": "Review created",
       "submitted": "{{triage.list.submitted}}"
     },
-    "submitSurvey": "Submit Survey",
+    "submitSurvey": "Submit survey",
     "templateStatus": {
       "active": "{{common.active}}",
       "archived": "{{teams.status.archived}}",
       "inactive": "Inactive"
     },
     "title": "{{common.objectTypes.surveys}}",
-    "viewResponse": "View Response"
+    "viewResponse": "View response"
   },
   "teams": {
-    "addButton": "Add Team",
+    "addButton": "Add team",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "Modified",
@@ -1777,24 +1777,24 @@
       "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "Enter team name",
       "nameRequired": "Team name is required",
-      "statusPlaceholder": "e.g. active, archived",
-      "title": "Create Team",
+      "statusPlaceholder": "E.g. active, archived",
+      "title": "Create team",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Create New Team",
+    "createNew": "Create new team",
     "deleteDialog": {
       "confirm": "{{common.delete}}",
       "message": "Are you sure you want to delete team \"{{name}}\"?",
       "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
-      "title": "Delete Team"
+      "title": "Delete team"
     },
     "editDialog": {
       "detailsTab": "Details",
       "save": "{{common.save}}",
-      "title": "Edit Team"
+      "title": "Edit team"
     },
-    "filterLabel": "Filter Teams",
+    "filterLabel": "Filter teams",
     "kebab": {
       "delete": "{{common.delete}}",
       "members": "Members",
@@ -1804,22 +1804,22 @@
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
-      "addMember": "Add Member",
-      "customRole": "Custom Role",
+      "addMember": "Add member",
+      "customRole": "Custom role",
       "noMembers": "No members",
-      "removeMember": "Remove Member",
+      "removeMember": "Remove member",
       "role": "Role",
-      "title": "Team Members"
+      "title": "Team members"
     },
     "noTeams": "No teams found",
     "relatedTeamsDialog": {
-      "addRelated": "Add Related Team",
-      "customRelationship": "Custom Relationship",
+      "addRelated": "Add related team",
+      "customRelationship": "Custom relationship",
       "noRelated": "No related teams",
       "relationship": "Relationship",
-      "removeRelated": "Remove Related Team",
-      "selectTeam": "Select Team",
-      "title": "Related Teams"
+      "removeRelated": "Remove related team",
+      "selectTeam": "Select team",
+      "title": "Related teams"
     },
     "relationships": {
       "child": "Child",
@@ -1828,74 +1828,74 @@
       "other": "{{common.other}}",
       "parent": "Parent",
       "related": "Related",
-      "superseded_by": "Superseded By",
+      "superseded_by": "Superseded by",
       "supersedes": "Supersedes"
     },
     "responsiblePartiesDialog": {
-      "addParty": "Add Responsible Party",
+      "addParty": "Add responsible party",
       "noParties": "No responsible parties",
-      "removeParty": "Remove Responsible Party",
-      "title": "Responsible Parties"
+      "removeParty": "Remove responsible party",
+      "title": "Responsible parties"
     },
     "roles": {
-      "business_leader": "Business Leader",
+      "business_leader": "Business leader",
       "engineer": "Engineer",
-      "engineering_lead": "Engineering Lead",
+      "engineering_lead": "Engineering lead",
       "other": "{{common.other}}",
-      "product_manager": "Product Manager",
-      "security_specialist": "Security Specialist"
+      "product_manager": "Product manager",
+      "security_specialist": "Security specialist"
     },
     "status": {
       "active": "{{common.active}}",
       "archived": "Archived",
       "forming": "Forming",
       "merging": "Merging",
-      "on_hold": "On Hold",
+      "on_hold": "On hold",
       "splitting": "Splitting",
-      "winding_down": "Winding Down"
+      "winding_down": "Winding down"
     },
     "subtitle": "Create, edit, and manage teams, members, and relationships",
-    "title": "Manage Teams"
+    "title": "Manage teams"
   },
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry",
     "addCvssEntry.comment": "Tooltip for button that adds a CVSS vector/score pair. CVSS should not be translated.",
-    "addMapping": "Add Mapping",
+    "addMapping": "Add mapping",
     "addMapping.comment": "Button label to open the framework mapping picker dialog.",
-    "createNewThreat": "Create New Threat",
+    "createNewThreat": "Create new threat",
     "cvss": "{{report.cvss}}",
     "cvss.comment": "Common Vulnerability Scoring System. CVSS is an abbreviation and should not be translated.",
-    "cvssVector": "CVSS Vector",
+    "cvssVector": "CVSS vector",
     "cvssVector.comment": "Label for CVSS vector string input. CVSS should not be translated.",
-    "cvssVectorPlaceholder": "e.g., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvssVectorPlaceholder": "E.g., cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
     "cvssVectorPlaceholder.comment": "Example CVSS vector string. Technical format, do not translate.",
-    "cweIdPlaceholder": "Enter CWE ID (e.g., CWE-79)",
+    "cweIdPlaceholder": "Enter CWE ID (e.g., cwe-79)",
     "cweIdPlaceholder.comment": "Placeholder for CWE ID chip input. CWE-79 is an example identifier.",
     "cweIds": "{{report.cweIds}}",
     "cweIds.comment": "Common Weakness Enumeration identifiers. CWE is an abbreviation and should not be translated.",
-    "cweMappings": "CWE Mappings",
+    "cweMappings": "CWE mappings",
     "cweMappings.comment": "Sub-label for the CWE IDs section. CWE = Common Weakness Enumeration, should not be translated.",
     "frameworkMappingPicker": {
       "notApplicable": "Not applicable to the current cell type",
       "notApplicable.comment": "Hint shown next to disabled mapping options that don't apply to the associated cell's DFD element type.",
-      "title": "Select Framework Mappings",
+      "title": "Select framework mappings",
       "title.comment": "Title for the framework mapping picker dialog."
     },
-    "frameworkMappings": "Threat Model Framework Mappings",
+    "frameworkMappings": "Threat model framework mappings",
     "frameworkMappings.comment": "Sub-label for the Threat Type section within the Classification area.",
     "issueUriHint": "Enter a URL to track this threat in an external system",
     "issueUriHint.comment": "Hint text displayed below the issue URI input field on the threat edit page.",
     "issueUriPlaceholder": "https://example.com/issue/123",
     "issueUriPlaceholder.comment": "Placeholder for the issue URI input. Shows an example URL format.",
     "notAssociatedWithAsset": "Not associated with an asset",
-    "notAssociatedWithCell": "Not Associated With a Cell",
-    "notAssociatedWithDiagram": "Not Associated With a Diagram",
+    "notAssociatedWithCell": "Not associated with a cell",
+    "notAssociatedWithDiagram": "Not associated with a diagram",
     "sections": {
       "classification": "{{common.classification}}",
       "classification.comment": "Section header for threat classification fields (severity, type, CWE, CVSS).",
       "description": "{{common.description}}",
       "description.comment": "Section header for threat description fields (name, asset, description).",
-      "diagramReferences": "Diagram References",
+      "diagramReferences": "Diagram references",
       "diagramReferences.comment": "Section header for diagram and cell association fields.",
       "mitigation": "{{common.mitigation}}",
       "mitigation.comment": "Section header for the mitigation text area.",
@@ -1903,15 +1903,15 @@
       "tracking.comment": "Section header for tracking fields (issue URL, status, checkboxes)."
     },
     "threatPriority": {
-      "deferred": "Deferred (P4)",
+      "deferred": "Deferred (p4)",
       "deferred.description": "Postponed with documented business approval; tracked but not scheduled.",
-      "high": "High (P1)",
+      "high": "High (p1)",
       "high.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
-      "immediate": "Immediate (P0)",
+      "immediate": "Immediate (p0)",
       "immediate.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
-      "low": "Low (P3)",
+      "low": "Low (p3)",
       "low.description": "Include in backlog for future cycles; no immediate exposure.",
-      "medium": "Medium (P2)",
+      "medium": "Medium (p2)",
       "medium.description": "Address within standard development cycles; moderate exposure."
     },
     "threatSeverity": {
@@ -1937,106 +1937,106 @@
       "confirmed.description": "The threat has been validated as legitimate through analysis or evidence.",
       "deferred": "Deferred",
       "deferred.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
-      "false_positive": "False Positive",
+      "false_positive": "False positive",
       "false_positive.description": "Investigation determined the finding is not a valid threat; no further action required.",
-      "mitigation_in_progress": "Mitigation In Progress",
+      "mitigation_in_progress": "Mitigation in progress",
       "mitigation_in_progress.description": "Implementation of controls, code changes, or countermeasures is underway.",
-      "mitigation_planned": "Mitigation Planned",
+      "mitigation_planned": "Mitigation planned",
       "mitigation_planned.description": "A remediation or mitigation strategy has been defined and assigned.",
       "open": "Open",
       "open.description": "The finding has been identified and documented but no action has been initiated.",
       "resolved": "Resolved",
       "resolved.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
-      "verification_pending": "Verification Pending",
+      "verification_pending": "Verification pending",
       "verification_pending.description": "Mitigation is complete; security team must test or review effectiveness."
     }
   },
   "threatModels": {
-    "addPermission": "Add Permission",
+    "addPermission": "Add permission",
     "branch": "Branch",
-    "changeSecurityReviewer": "Change Security Reviewer",
-    "clearSecurityReviewer": "Clear Security Reviewer",
+    "changeSecurityReviewer": "Change security reviewer",
+    "clearSecurityReviewer": "Clear security reviewer",
     "commit": "Commit",
     "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
-    "confidentialProject": "Confidential Project",
-    "createFirstButton": "Create Your First Threat Model",
-    "createNewDiagram": "Create New Diagram",
-    "createNewRepository": "Add Repository Reference",
+    "confidentialProject": "Confidential project",
+    "createFirstButton": "Create your first threat model",
+    "createNewDiagram": "Create new diagram",
+    "createNewRepository": "Add repository reference",
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
-    "dataFlowDiagram": "Data Flow Diagram",
+    "dataFlowDiagram": "Data flow diagram",
     "deleteError": "Failed to delete threat model: {{error}}",
     "deleteSuccess": "Threat model has been deleted: {{name}}",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
-    "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
-    "details": "Threat Model Details",
-    "diagramName": "Diagram Name",
-    "diagramPreview": "Diagram Preview",
-    "diagramType": "Diagram Type",
+    "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
+    "details": "Threat model details",
+    "diagramName": "Diagram name",
+    "diagramPreview": "Diagram preview",
+    "diagramType": "Diagram type",
     "diagrams": "{{common.objectTypes.diagrams}}",
-    "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
+    "documentDescriptionPlaceholder": "Describe the document's purpose or content",
     "documentEditor": {
       "title": {
-        "create": "Create Document Reference",
-        "edit": "Edit Document Reference",
+        "create": "Create document reference",
+        "edit": "Edit document reference",
         "shareRequired": "Share this file with our service account",
-        "view": "View Document Reference"
+        "view": "View document reference"
       }
     },
-    "documentName": "Document Name",
+    "documentName": "Document name",
     "documentUrl": "Document URL",
     "export": "Export",
     "exportDialog": {
       "error": "Failed to prepare export data. Please try again.",
       "preparing": "Preparing export data...",
-      "ready": "Export ready. Click Save to download.",
+      "ready": "Export ready. Click save to download.",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
-      "title": "Export Threat Model"
+      "title": "Export threat model"
     },
-    "fileSizeExceeded": "File exceeds maximum import size: {{maxSize}} MB",
-    "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
+    "fileSizeExceeded": "File exceeds maximum import size: {{maxsize}} MB",
+    "frameworkDisabledHint": "Cannot change framework when threats exist",
     "idLabel": "{{common.id}}",
     "importError": "Failed to import threat model: {{error}}",
-    "importFormatError": "Invalid threat model format: missing required fields (id, name)",
+    "importFormatError": "Invalid threat model format: missing required fields (ID, name)",
     "importSuccess": "Threat model imported successfully: {{name}}",
     "importValidationError": "Threat model validation failed: {{errors}}",
     "importing": "Importing threat model...",
     "issueUriHint": "Enter a URL to track this threat model in an external system",
-    "newThreatModel": "New Threat Model",
-    "noAssets": "No Assets Added Yet",
-    "noDiagrams": "No Diagrams Added Yet",
-    "noDocuments": "No Documents Added Yet",
-    "noItemsMessage": "You Don't Have Any Threat Models Yet.",
-    "noNotes": "No Notes Added Yet",
-    "noPermissions": "No Permissions Defined",
-    "noRepositories": "No Repositories Added Yet",
-    "noThreats": "No Threats Added Yet",
+    "newThreatModel": "New threat model",
+    "noAssets": "No assets added yet",
+    "noDiagrams": "No diagrams added yet",
+    "noDocuments": "No documents added yet",
+    "noItemsMessage": "You don't have any threat models yet.",
+    "noNotes": "No notes added yet",
+    "noPermissions": "No permissions defined",
+    "noRepositories": "No repositories added yet",
+    "noThreats": "No threats added yet",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
-    "permissionsTooltip": "Manage Permissions",
+    "permissionsTooltip": "Manage permissions",
     "rename": "Rename",
-    "renameDiagram": "Rename Diagram",
+    "renameDiagram": "Rename diagram",
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
     "repositoryEditor": {
       "title": {
-        "create": "Create Repository Reference",
-        "edit": "Edit Repository Reference",
-        "view": "View Repository Reference"
+        "create": "Create repository reference",
+        "edit": "Edit repository reference",
+        "view": "View repository reference"
       }
     },
-    "repositoryName": "Repository Name",
-    "repositoryParameters": "Repository Parameters",
-    "repositoryRefType": "Reference Type",
-    "repositoryRefValue": "Reference Value",
+    "repositoryName": "Repository name",
+    "repositoryParameters": "Repository parameters",
+    "repositoryRefType": "Reference type",
+    "repositoryRefValue": "Reference value",
     "repositoryRefValueHint": "Branch name, tag, or commit ID",
     "repositorySubPath": "Sub-path",
     "repositorySubPathHint": "Optional path within the repository",
-    "repositoryType": "Repository Type",
+    "repositoryType": "Repository type",
     "repositoryUri": "Repository URL",
     "sections": {
       "audit": "Audit",
@@ -2047,11 +2047,11 @@
       "outputs": "Outputs",
       "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
       "outputsDescription": "Notes, diagrams, and threats produced during security analysis",
-      "reviewProcess": "Review Process",
+      "reviewProcess": "Review process",
       "reviewProcess.comment": "Section heading for the review process panel containing status, reviewer, framework, and issue URI"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "setAsOwner": "Set as Owner",
+    "setAsOwner": "Set as owner",
     "sourcesCount": "Repos",
     "status": {
       "active": "Active",
@@ -2062,52 +2062,52 @@
       "closed.tooltip": "The review is fully completed and archived, with no further action needed.",
       "deferred": "Deferred",
       "deferred.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
-      "in_progress": "In Progress",
+      "in_progress": "In progress",
       "in_progress.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
-      "not_started": "Not Started",
+      "not_started": "Not started",
       "not_started.tooltip": "The security review has been initiated but no assessment activities have begun.",
-      "pending_review": "Pending Review",
+      "pending_review": "Pending review",
       "pending_review.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
       "rejected": "Rejected",
       "rejected.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
-      "remediation_in_progress": "Remediation In Progress",
+      "remediation_in_progress": "Remediation in progress",
       "remediation_in_progress.tooltip": "Fixes for identified issues are being implemented by the development team.",
-      "remediation_required": "Remediation Required",
+      "remediation_required": "Remediation required",
       "remediation_required.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
-      "verification_pending": "Verification Pending",
+      "verification_pending": "Verification pending",
       "verification_pending.tooltip": "Remediation is complete; security team must verify effectiveness."
     },
-    "statusLastUpdated": "Status Last Updated",
+    "statusLastUpdated": "Status last updated",
     "tag": "Tag",
-    "threatModelFramework": "Threat Model Framework",
+    "threatModelFramework": "Threat model framework",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "Add Asset",
-      "addDiagram": "Add Diagram",
-      "addDocument": "Add Document",
+      "addAsset": "Add asset",
+      "addDiagram": "Add diagram",
+      "addDocument": "Add document",
       "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel.",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis.",
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
-      "downloadModel": "Download Model",
+      "downloadModel": "Download model",
       "downloadModel.comment": "This is a label for a button to instruct the application to download a model file.",
       "dropToCreateDocument": "Drop to create",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "Drop to set issue URI",
       "import": "Import",
       "notesCardTitle": "Notes are markdown format text that is completely contained within the threat model, used to capture notes and annotation from security analysts and automated analysis processes.",
-      "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
+      "repositoriesCardTitle": "Repositories are links to source code repositories where source code for the system is managed.",
       "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."
     },
-    "viewDiagramName": "View Diagram Properties",
-    "yourThreatModels": "Your Threat Models"
+    "viewDiagramName": "View diagram properties",
+    "yourThreatModels": "Your threat models"
   },
   "threats": {
     "filters": {
-      "clearAll": "Clear All Filters",
-      "clearName": "Clear Name Filter",
+      "clearAll": "Clear all filters",
+      "clearName": "Clear name filter",
       "lessFilters": "{{dashboard.lessFilters}}",
-      "mitigatedTooltip": "Cycle: All / Mitigated / Not Mitigated",
+      "mitigatedTooltip": "Cycle: all / mitigated / not mitigated",
       "moreFilters": "{{dashboard.moreFilters}}",
       "nameLabel": "{{common.search}}",
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
@@ -2118,54 +2118,54 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "If you have any questions about these Terms, please feel free to contact the Operator of this web site via the contact information on the ",
-      "part2": " page."
+      "part1": "If you have any questions about these terms, please feel free to contact the operator of this web site via the contact information on the ",
+      "part2": " Page."
     },
     "intro": {
-      "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the Operator listed on the ",
-      "part2": " page of this web site (\"The Operator\")."
+      "part1": "Welcome to our instance of TMI. These terms of use (\"terms\") govern your access to and use of this website, which is made available by the operator listed on the ",
+      "part2": " Page of this web site (\"the operator\")."
     },
     "lastUpdatedDate": "2025-10-10",
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
-      "title": "1. Acceptance of Terms"
+      "title": "1. Acceptance of terms"
     },
     "section2": {
       "content": "You may use the web site for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the web site or its underlying systems.",
-      "title": "2. Use of the Web Site"
+      "title": "2. Use of the web site"
     },
     "section3": {
       "content": "The web site is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
-      "title": "3. No Warranty"
+      "title": "3. No warranty"
     },
     "section4": {
-      "content": "To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.",
-      "title": "4. Limitation of Liability"
+      "content": "To the fullest extent permitted by law, the operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.",
+      "title": "4. Limitation of liability"
     },
     "section5": {
       "content": {
         "part1": "This website runs the TMI open source software. Its source code is available at the links provided on the ",
-        "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the Operator of this web site is not affiliated with the TMI project or its creators."
+        "part2": " Page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the operator of this web site is not affiliated with the TMI project or its creators."
       },
-      "title": "5. Open Source Software"
+      "title": "5. Open source software"
     },
     "section6": {
-      "content": "The Operator may update these Terms at any time. Continued use of the web site after changes constitutes acceptance of the updated Terms.",
-      "title": "6. Changes to Terms"
+      "content": "The operator may update these terms at any time. Continued use of the web site after changes constitutes acceptance of the updated terms.",
+      "title": "6. Changes to terms"
     },
     "section7": {
-      "content": "The Operator reserves the right to suspend or terminate access to the web site at The Operator's discretion, without notice, for any reason.",
+      "content": "The operator reserves the right to suspend or terminate access to the web site at the operator's discretion, without notice, for any reason.",
       "title": "7. Termination"
     },
     "section8": {
       "content": {
-        "part1": "These Terms are governed by the laws of the jurisdiction specified by the Operator on the ",
-        "part2": " page, without regard to conflict of law principles."
+        "part1": "These terms are governed by the laws of the jurisdiction specified by the operator on the ",
+        "part2": " Page, without regard to conflict of law principles."
       },
-      "title": "8. Governing Law"
+      "title": "8. Governing law"
     },
-    "title": "Terms of Service"
+    "title": "Terms of service"
   },
   "transfer": {
     "userPicker": {
@@ -2174,14 +2174,14 @@
     }
   },
   "triage": {
-    "bulkActions": "Bulk Actions",
-    "changeStatus": "Change Status",
+    "bulkActions": "Bulk actions",
+    "changeStatus": "Change status",
     "columns": {
       "confidentialTooltip": "Confidential submission"
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
-      "addNote": "Add Note",
+      "addNote": "Add note",
       "columns": {
         "answer": "Answer",
         "group": "{{common.subjectTypes.group}}",
@@ -2197,13 +2197,13 @@
       "noteNameLabel": "{{common.title}}",
       "noteNamePlaceholder": "Brief note title",
       "notes": "notes",
-      "responseDetails": "Response Details",
+      "responseDetails": "Response details",
       "reviewedAt": "Reviewed",
-      "reviewedBy": "Reviewed By",
-      "revisionNotesTitle": "Revision Requested",
-      "statusTimeline": "Status Timeline",
+      "reviewedBy": "Reviewed by",
+      "revisionNotesTitle": "Revision requested",
+      "statusTimeline": "Status timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "Triage Notes"
+      "triageNotes": "Triage notes"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -2214,14 +2214,14 @@
       "nonConfidential": "Non-confidential"
     },
     "list": {
-      "allSurveys": "All Surveys",
+      "allSurveys": "All surveys",
       "approve": "Approve",
-      "approveSelected": "Approve Selected",
+      "approveSelected": "Approve selected",
       "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Failed to load responses",
       "loadingResponses": "Loading responses...",
       "noResponsesFiltered": "No responses match your filters",
-      "noResponsesTitle": "No Responses",
+      "noResponsesTitle": "No responses",
       "noResponsesToTriage": "There are no survey responses to triage",
       "notSubmitted": "Not submitted",
       "returnForRevision": "{{triage.revisionDialog.title}}",
@@ -2229,8 +2229,8 @@
       "submitted": "Submitted",
       "submitter": "Submitter"
     },
-    "markInReview": "Mark In Review",
-    "markPendingTriage": "Mark Pending Triage",
+    "markInReview": "Mark in review",
+    "markPendingTriage": "Mark pending triage",
     "messages": {
       "approveError": "Failed to approve response",
       "approveSuccess": "Response approved",
@@ -2242,25 +2242,25 @@
     "noResponses": "No responses to triage",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
-      "contentPlaceholder": "Enter note content (Markdown supported)...",
+      "contentPlaceholder": "Enter note content (markdown supported)...",
       "nameLabel": "{{common.title}}",
       "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
       "title": {
-        "create": "New Triage Note",
-        "view": "View Triage Note"
+        "create": "New triage note",
+        "view": "View triage note"
       }
     },
-    "queue": "Triage Queue",
-    "returnToSubmitted": "Return to Submitted",
+    "queue": "Triage queue",
+    "returnToSubmitted": "Return to submitted",
     "reviewerAssignment": {
       "assign": "Assign",
-      "assignToMe": "Assign to Me",
+      "assignToMe": "Assign to me",
       "errorLoading": "Failed to load unassigned threat models",
       "loading": "Loading unassigned reviews...",
-      "noUnassigned": "No Unassigned Reviews",
+      "noUnassigned": "No unassigned reviews",
       "noUnassignedDescription": "All active threat models have a security reviewer assigned",
       "noUnassignedFiltered": "No threat models match your filters",
-      "reviewer": "Security Reviewer",
+      "reviewer": "Security reviewer",
       "reviewerPlaceholder": "Filter by reviewer...",
       "searchPlaceholder": "{{adminSurveys.searchByName}}",
       "selectReviewer": "Select reviewer...",
@@ -2270,16 +2270,16 @@
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Provide notes explaining what needs to be revised. The submitter will see these notes when they review their response.",
       "hint": "Required — describe what changes are needed",
-      "label": "Revision Notes",
+      "label": "Revision notes",
       "placeholder": "Describe the revisions needed...",
-      "title": "Return for Revision"
+      "title": "Return for revision"
     },
     "tabs": {
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "unassignedReviews": "Unassigned Reviews"
+      "unassignedReviews": "Unassigned reviews"
     },
     "title": "Triage",
-    "viewDetails": "View Details"
+    "viewDetails": "View details"
   },
   "userPreferences": {
     "autoLayout": {
@@ -2292,49 +2292,49 @@
         "vertical": "Vertical"
       }
     },
-    "colorBlindMode": "Enable Color Blind Mode",
+    "colorBlindMode": "Enable color blind mode",
     "credentials": {
       "add": "{{common.add}}",
       "clientId": "Client ID",
-      "clientSecret": "Client Secret",
+      "clientSecret": "Client secret",
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
-        "descriptionHint": "Optional: Describe what this credential is used for",
+        "descriptionHint": "Optional: describe what this credential is used for",
         "descriptionPlaceholder": "Used for CI/CD pipeline integration",
         "descriptionTooLong": "Description must be 500 characters or less",
-        "expiresAt": "Expiration Date",
-        "expiresAtHint": "Optional: Leave blank for no expiration",
+        "expiresAt": "Expiration date",
+        "expiresAtHint": "Optional: leave blank for no expiration",
         "name": "{{common.name}}",
         "nameHint": "A descriptive name for this credential",
-        "namePlaceholder": "My API Credential",
+        "namePlaceholder": "My API credential",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Name must be 100 characters or less",
-        "title": "Create Client Credential"
+        "title": "Create client credential"
       },
       "createdOn": "{{common.created}}",
       "credential": "Credential",
       "expired": "Expired",
       "expiresAt": "Expires",
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
-      "lastUsed": "Last Used",
+      "lastUsed": "Last used",
       "neverExpires": "Never expires",
       "noCredentials": "No client credentials yet",
       "noCredentialsDescription": "Create credentials to access the TMI API programmatically.",
       "secretDialog": {
-        "title": "Client Credential Created",
+        "title": "Client credential created",
         "warning": "Save these credentials now. The client secret will not be shown again."
       },
-      "title": "Client Credentials"
+      "title": "Client credentials"
     },
-    "dashboardListView": "Show Dashboard as List View",
+    "dashboardListView": "Show dashboard as list view",
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
       "continue": "Continue",
       "emailDoesNotMatch": "Email address does not match",
       "emailMatches": "Email address matches",
       "explanation": {
-        "bullet1": "Your Identity Provider data, including user ID, name, and email.",
+        "bullet1": "Your identity provider data, including user ID, name, and email.",
         "bullet2": "Your permissions from all threat model objects that you do not own.",
         "bullet3": "For threat models you own:",
         "bullet3a": "If other owners exist, ownership will transfer to them, and your permissions will be revoked.",
@@ -2342,37 +2342,37 @@
         "intro": "Confirming this operation will permanently delete the following data and revoke associated permissions:"
       },
       "processing": "Deleting your account...",
-      "title": "Delete All My Data",
+      "title": "Delete all my data",
       "validation": "To confirm your deletion request, type your email address exactly as it appears here:"
     },
-    "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
-    "displayPreferences": "Display Preferences",
+    "diagramAnimationEffects": "Enable animation effects in diagram editor",
+    "displayPreferences": "Display preferences",
     "downloadLog": {
       "hint": "Downloads the most recent application log entries as a JSONL file for troubleshooting.",
-      "title": "Download Log"
+      "title": "Download log"
     },
     "hoverShowMetadata": "Show cell metadata on hover",
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",
-      "title": "Preferred Margin Size for Reports",
+      "title": "Preferred margin size for reports",
       "wide": "Wide"
     },
     "pageSize": {
       "A4": "A4",
       "A4.comment": "This is a proper name and should not be translated.",
-      "title": "Preferred Page Size for Reports",
-      "usLetter": "US Letter",
+      "title": "Preferred page size for reports",
+      "usLetter": "US letter",
       "usLetter.comment": "This is a proper name and should not be translated."
     },
-    "reportPreferences": "Report Preferences",
+    "reportPreferences": "Report preferences",
     "sections": {
       "developer": "Developer",
-      "diagramEditor": "Diagram Editor",
-      "diagramLayout": "Diagram Layout",
+      "diagramEditor": "Diagram editor",
+      "diagramLayout": "Diagram layout",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "Show Developer Tools",
+    "showDeveloperTools": "Show developer tools",
     "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed",
     "tabs": {
       "credentials": "Credentials",
@@ -2384,37 +2384,37 @@
     "theme": "Theme",
     "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",
     "themeMode": {
-      "automatic": "Automatic (System)",
+      "automatic": "Automatic (system)",
       "dark": "Dark",
       "light": "Light"
     },
-    "title": "User Preferences",
+    "title": "User preferences",
     "transferData": {
       "confirmMessage": "Are you sure you want to transfer all your threat models and survey responses to {{email}}? You will be downgraded to writer role on transferred items.",
-      "dialogTitle": "Transfer My Data",
+      "dialogTitle": "Transfer my data",
       "error": "Failed to transfer data. Please try again.",
       "hint": "Transfers ownership of all your threat models and survey responses to another user. You will be downgraded to writer role on transferred items.",
-      "success": "Transferred {{tmCount}} threat models and {{responseCount}} survey responses.",
-      "title": "Transfer My Data to Another User"
+      "success": "Transferred {{tmcount}} threat models and {{responsecount}} survey responses.",
+      "title": "Transfer my data to another user"
     },
     "userProfile": {
-      "currentRole": "Current Threat Model Role",
-      "groupMemberships": "Group Memberships",
+      "currentRole": "Current threat model role",
+      "groupMemberships": "Group memberships",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
-      "title": "User Profile"
+      "title": "User profile"
     }
   },
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
     "subtitle": "View and edit your projects, teams, and relationships",
-    "title": "My Projects"
+    "title": "My projects"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
     "subtitle": "View and edit your teams, members, and relationships",
-    "title": "My Teams"
+    "title": "My teams"
   }
 }
