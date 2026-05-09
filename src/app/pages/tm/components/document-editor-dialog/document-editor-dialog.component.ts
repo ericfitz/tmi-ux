@@ -187,7 +187,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     private transloco: TranslocoService,
     private logger: LoggerService,
     private contentProviders: ContentProvidersService,
-    @Inject(DOCUMENT) private document: Document,
+    @Inject(DOCUMENT) private htmlDocument: globalThis.Document,
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
@@ -469,7 +469,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    */
   private _setPickingInProgress(active: boolean): void {
     this.pickingInProgress = active;
-    const body = this.document.body;
+    const body = this.htmlDocument.body;
     if (!body) return;
     if (active) {
       body.classList.add('picker-in-progress');
