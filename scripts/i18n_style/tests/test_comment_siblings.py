@@ -19,7 +19,7 @@ class TestRequiredCommentSiblings(unittest.TestCase):
         usage_map = {
             "common.filter": {
                 "ambiguous_word": True,
-                "needs_translator_comment": False,
+                "needs_translator_comment": True,
             }
         }
         self.assertEqual(

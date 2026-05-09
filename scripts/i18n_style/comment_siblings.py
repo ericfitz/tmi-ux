@@ -3,6 +3,18 @@
 from typing import Dict, List, Any
 
 
+def _get_comment_sibling(data: Dict, key: str) -> bool:
+    """Return True if a `.comment` sibling exists for the given dotted key."""
+    parts = key.split(".")
+    cur = data
+    for p in parts[:-1]:
+        if isinstance(cur, dict) and p in cur:
+            cur = cur[p]
+        else:
+            return False
+    return isinstance(cur, dict) and f"{parts[-1]}.comment" in cur
+
+
 def validate_required_comment_siblings(
     en_us_data: Dict, usage_map: Dict[str, Dict[str, Any]]
 ) -> List[str]:
@@ -10,7 +22,8 @@ def validate_required_comment_siblings(
     errors: List[str] = []
     for key, entry in usage_map.items():
         if entry.get("needs_translator_comment"):
-            errors.append(f"{key}: missing `.comment` sibling for ambiguous short string")
+            if not _get_comment_sibling(en_us_data, key):
+                errors.append(f"{key}: missing `.comment` sibling for ambiguous short string")
     return errors
 
 
