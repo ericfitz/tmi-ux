@@ -2,9 +2,9 @@
   "about": {
     "bugReport": "Сообщить об ошибке или запросить функцию",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
-    "contactjurisdiction": "Юридическая юрисдикция",
+    "contactjurisdiction": "Правовая юрисдикция",
     "contactoperator": "Оператор",
-    "contactoperatordetails": "Контактные данные оператора",
+    "contactoperatordetails": "Контакт оператора",
     "contacttitle": "Управляется",
     "description1": "TMI (Threat Modeling Improved) — это платформа для совместной работы по управлению процессом проверки безопасности в организации, включая моделирование угроз. Наша миссия — снизить трудоёмкость проверок безопасности и сделать моделирование угроз доступным, эффективным и интегрированным в жизненный цикл разработки программного обеспечения.",
     "description2": "Платформа включает организацию проверок безопасности и управление состояниями, интерактивное создание диаграмм потоков данных с совместной работой в реальном времени и комплексные возможности документирования угроз. Построенный на современных веб-технологиях, TMI помогает командам управлять процессом проверки безопасности, выявлять, анализировать и смягчать угрозы безопасности посредством совместного моделирования.",
@@ -32,16 +32,16 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(Все)",
-      "errorInvoking": "Не удалось вызвать дополнение. Пожалуйста, попробуйте снова.",
-      "invalidCharacters": "Допускаются только буквенно-цифровые символы, пробелы, дефисы, точки, запятые и косые черты",
-      "invocationQueued": "Вызов дополнения добавлен в очередь",
-      "metadataKeyMissing": "Обязательный ключ метаданных \"{{key}}\" отсутствует у этого объекта",
-      "numberMax": "Значение должно быть не более {{max}}",
-      "numberMin": "Значение должно быть не менее {{min}}",
+      "errorInvoking": "Не удалось вызвать дополнение.",
+      "invalidCharacters": "Допускаются только буквенно-цифровые символы, пробелы, дефисы, точки, запятые и косые черты.",
+      "invocationQueued": "Вызов дополнения добавлен в очередь.",
+      "metadataKeyMissing": "Обязательный ключ метаданных \"{{key}}\" отсутствует у этого объекта.",
+      "numberMax": "Значение должно быть не более {{max}}.",
+      "numberMin": "Значение должно быть не менее {{min}}.",
       "parameters": "Параметры",
       "threatModelId": "Идентификатор модели угроз",
       "title": "Вызвать дополнение",
-      "valueTooLong": "Значение превышает максимальную длину"
+      "valueTooLong": "Значение превышает максимальную длину."
     }
   },
   "admin": {
@@ -52,33 +52,33 @@
         "descriptionHint": "Что делает это дополнение?",
         "descriptionPlaceholder": "Опишите функциональность дополнения",
         "icon": "Иконка",
-        "iconHint": "Иконка UI (примеры: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconHint": "Иконка UI (примеры: \"material-symbols:security\", \"fa-regular fa-user-shield\").",
         "iconInvalid": "Неверный формат иконки",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
         "nameHint": "Отображаемое имя для этого дополнения",
-        "namePlaceholder": "Моё Пользовательское Дополнение",
+        "namePlaceholder": "Моё пользовательское дополнение",
         "nameRequired": "{{common.validation.nameRequired}}",
         "objects": "Типы объектов",
         "objectsHint": "Выберите типы объектов TMI, с которыми может работать это дополнение",
         "save": "Создать дополнение",
-        "title": "Добавить Дополнение",
+        "title": "Добавить дополнение",
         "webhook": "Вебхук",
         "webhookHint": "Связанная подписка вебхука",
-        "webhookRequired": "Вебхук обязателен"
+        "webhookRequired": "Вебхук обязателен."
       },
       "confirmDelete": "Вы уверены, что хотите удалить дополнение \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Удалить дополнение",
-      "errorCreatingAddon": "Не удалось создать дополнение. Пожалуйста, попробуйте снова.",
-      "errorLoadingWebhooks": "Не удалось загрузить доступные вебхуки",
+      "errorCreatingAddon": "Не удалось создать дополнение.",
+      "errorLoadingWebhooks": "Не удалось загрузить доступные вебхуки.",
       "filterLabel": "Фильтр дополнений",
       "filterPlaceholder": "Поиск по названию или описанию",
-      "listTitle": "Системные Дополнения",
-      "noAddons": "Дополнения не найдены",
+      "listTitle": "Системные дополнения",
+      "noAddons": "Дополнения не найдены.",
       "objectTypesTooltip": "Применяется к этим типам объектов",
-      "subtitle": "Настройка дополнений для расширения функциональности TMI",
-      "title": "Управление Дополнениями"
+      "subtitle": "Настройка дополнений для расширения функциональности TMI.",
+      "title": "Управление дополнениями"
     },
     "createAutomationUserDialog": {
       "email": "Электронная почта (необязательно)",
@@ -86,9 +86,9 @@
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "От 2 до 64 символов, начинается с буквы",
-      "nameMaxLength": "Имя должно содержать не более 64 символов",
-      "nameMinLength": "Должно содержать не менее 2 символов",
-      "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой",
+      "nameMaxLength": "Имя должно содержать не более 64 символов.",
+      "nameMinLength": "Должно содержать не менее 2 символов.",
+      "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой.",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "Создать пользователя автоматизации",
@@ -102,15 +102,15 @@
         "descriptionPlaceholder": "Описание этой группы",
         "displayName": "Отображаемое имя",
         "displayNameHint": "Понятное название группы",
-        "displayNamePlaceholder": "Моя Пользовательская Группа",
-        "displayNameRequired": "Отображаемое имя обязательно",
+        "displayNamePlaceholder": "Моя пользовательская группа",
+        "displayNameRequired": "Отображаемое имя обязательно.",
         "groupName": "Идентификатор группы",
         "groupNameHint": "Только буквы, цифры, дефисы и подчёркивания",
-        "groupNamePattern": "Допускаются только буквы, цифры, дефисы и подчёркивания",
+        "groupNamePattern": "Допускаются только буквенно-цифровые символы, дефисы и подчёркивания.",
         "groupNamePlaceholder": "моя-произвольная-группа",
-        "groupNameRequired": "Идентификатор группы обязателен",
+        "groupNameRequired": "Идентификатор группы обязателен.",
         "save": "Создать группу",
-        "title": "Добавить Группу"
+        "title": "Добавить группу"
       },
       "columns": {
         "group": "{{common.subjectTypes.group}}",
@@ -123,30 +123,30 @@
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
-        "automationAdminBlocked": "Учётные записи автоматизации не могут быть участниками группы «Администраторы». Учётные записи автоматизации не должны иметь доступа к административным функциям приложения.",
+        "automationAdminBlocked": "Учётные записи автоматизации не могут быть участниками группы администраторов. Учётные записи автоматизации не должны иметь доступа к административным функциям приложения.",
         "currentMembers": "Текущие участники",
-        "noMembers": "В этой группе нет участников",
+        "noMembers": "В этой группе нет участников.",
         "removeTooltip": "Удалить из группы",
         "searchHint": "Введите не менее 2 символов для поиска",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
-        "searchUser": "Поиск пользователя по Email",
+        "searchUser": "Поиск пользователя по email",
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "Группы не найдены",
-      "subtitle": "Просмотр и управление системными группами",
-      "title": "Управление Группами",
-      "viewMembersTooltip": "Просмотр и управление членами группы"
+      "noGroups": "Группы не найдены.",
+      "subtitle": "Просмотр и управление системными группами.",
+      "title": "Управление группами",
+      "viewMembersTooltip": "Просмотр и управление членами группы..."
     },
     "quotas": {
-      "addButton": "Добавить Квоту",
+      "addButton": "Добавить квоту...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Настроить квоты",
         "searchLabel": "Поиск пользователя",
         "searchPlaceholder": "Введите email пользователя для поиска",
         "selectUser": "Выбрать пользователя",
-        "title": "Добавить Пользовательские Квоты",
+        "title": "Добавить пользовательские квоты",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "columns": {
@@ -160,32 +160,32 @@
       "filterLabel": "Фильтр квот",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или ID пользователя",
       "maxSubscriptions": "Максимум подписок",
-      "noUserAPIQuotas": "Пользовательские квоты API не найдены",
-      "noWebhookQuotas": "Пользовательские квоты вебхуков не найдены",
+      "noUserAPIQuotas": "Пользовательские квоты API не найдены.",
+      "noWebhookQuotas": "Пользовательские квоты вебхуков не найдены.",
       "requestsPerHour": "Запросов в час",
       "requestsPerMinute": "Запросов в минуту",
       "subReqPerDay": "Запросов подписок в день",
       "subReqPerMinute": "Запросов подписок в минуту",
-      "subtitle": "Настройка лимитов и квот для пользователей",
-      "title": "Управление Квотами",
+      "subtitle": "Настройка лимитов и квот для пользователей.",
+      "title": "Управление квотами",
       "userAPITitle": "Лимиты API",
-      "webhookTitle": "Лимиты Webhook"
+      "webhookTitle": "Лимиты вебхуков"
     },
     "sections": {
       "addons": {
-        "description": "Установка и настройка дополнений приложения",
+        "description": "Установка и настройка дополнений приложения.",
         "title": "Дополнения"
       },
       "groups": {
-        "description": "Настройка групп пользователей и членства",
+        "description": "Настройка групп пользователей и членства.",
         "title": "Группы"
       },
       "projects": {
-        "description": "Управление проектами, связями и метаданными",
+        "description": "Управление проектами, связями и метаданными.",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "Настройка квот и лимитов ресурсов",
+        "description": "Настройка квот и лимитов ресурсов.",
         "title": "Квоты"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "Настройки"
       },
       "surveys": {
-        "description": "Создание и управление опросами",
+        "description": "Создание и управление опросами.",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "Управление командами и членством в командах",
+        "description": "Управление командами и членством в командах.",
         "title": "Команды"
       },
       "users": {
-        "description": "Просмотр и управление учётными записями пользователей",
+        "description": "Просмотр и управление учётными записями пользователей.",
         "title": "Пользователи"
       },
       "webhooks": {
-        "description": "Установка и настройка интеграций вебхуков",
+        "description": "Установка и настройка интеграций вебхуков.",
         "title": "Вебхуки"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "Необязательное описание этой настройки",
         "key": "{{common.metadataKey}}",
         "keyHint": "Строчные буквы с точками и подчёркиваниями (например, rate_limit.max_rpm)",
-        "keyInvalid": "Должно начинаться со строчной буквы, использовать только строчные буквы, цифры, точки и подчёркивания",
-        "keyRequired": "Ключ обязателен",
-        "save": "Создать Настройку",
-        "title": "Добавить Настройку",
+        "keyInvalid": "Должно начинаться со строчной буквы, использовать только строчные буквы, цифры, точки и подчёркивания.",
+        "keyRequired": "Ключ обязателен.",
+        "save": "Создать настройку",
+        "title": "Добавить настройку",
         "type": "{{common.type}}",
-        "typeRequired": "Тип обязателен",
+        "typeRequired": "Тип обязателен.",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "Значение обязательно"
+        "valueRequired": "Значение обязательно."
       },
       "cancelTooltip": "Отменить редактирование",
       "columns": {
@@ -236,8 +236,8 @@
       "editTooltip": "Редактировать настройку",
       "filterLabel": "Фильтр",
       "filterPlaceholder": "Фильтр по ключу, значению, описанию или источнику",
-      "listTitle": "Системные Настройки",
-      "noSettings": "Настройки не найдены",
+      "listTitle": "Системные настройки",
+      "noSettings": "Настройки не найдены.",
       "readOnlyTooltip": "Этот параметр доступен только для чтения и не может быть изменён здесь",
       "saveTooltip": "Сохранить изменения",
       "sources": {
@@ -246,8 +246,8 @@
         "environment": "Окружение",
         "vault": "Хранилище"
       },
-      "subtitle": "Просмотр и управление системными настройками конфигурации",
-      "title": "Управление Настройками",
+      "subtitle": "Просмотр и управление системными настройками конфигурации.",
+      "title": "Управление настройками",
       "types": {
         "bool": "Логический",
         "int": "Целое число",
@@ -255,7 +255,7 @@
         "string": "Строка"
       }
     },
-    "subtitle": "Управление системными настройками и конфигурациями",
+    "subtitle": "Управление системными настройками и конфигурациями.",
     "title": "Администрирование",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Удалить учётную запись пользователя",
       "filter": {
-        "automationOnly": "Показать только учётные записи автоматизации"
+        "automationOnly": "Показать только учётные записи автоматизации."
       },
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
@@ -280,29 +280,29 @@
       "manageCredentials": {
         "addCredential": "Добавить учётные данные",
         "deleteConfirm": "Вы уверены, что хотите удалить учётные данные \"{{name}}\"?",
-        "noCredentials": "Учётные данные не найдены",
-        "title": "Управление учётными данными для {{userName}}"
+        "noCredentials": "Учётные данные не найдены.",
+        "title": "Управление учётными данными для {{username}}."
       },
       "never": "Никогда",
-      "noUsers": "Пользователи не найдены",
-      "subtitle": "Просмотр и управление системными пользователями",
-      "title": "Управление Пользователями",
+      "noUsers": "Пользователи не найдены.",
+      "subtitle": "Просмотр и управление системными пользователями.",
+      "title": "Управление пользователями",
       "transferOwnership": {
         "confirm": "Вы уверены, что хотите передать все данные от {{source}} к {{target}}?",
         "dialogTitle": "Передача данных пользователя",
-        "error": "Не удалось передать право собственности. Пожалуйста, попробуйте снова.",
+        "error": "Не удалось передать право собственности.",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "Передать право собственности"
+        "tooltip": "Передать право собственности..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "Создать пользователя автоматизации для этого вебхука",
+        "createAutomationUser": "Создать пользователя автоматизации для этого вебхука.",
         "events": "Типы событий для подписки",
         "eventsHint": "Типы событий для подписки (например, threat_model.created)",
         "eventsPlaceholder": "Выберите типы событий",
-        "eventsRequired": "Требуется хотя бы одно событие",
+        "eventsRequired": "Требуется хотя бы одно событие.",
         "name": "{{common.name}}",
         "nameHint": "Описательное название для этого вебхука",
         "namePlaceholder": "Название вебхука",
@@ -311,14 +311,14 @@
         "secret": "Секрет HMAC",
         "secretHint": "HMAC secret для подписи полезной нагрузки (автоматически генерируется, если пусто)",
         "secretPlaceholder": "Оставить пусто для автоматической генерации",
-        "title": "Добавить Webhook",
+        "title": "Добавить вебхук",
         "url": "URL вебхука",
         "urlHint": "Рекомендуется HTTPS",
         "urlHttpWarning": "Предупреждение: URL конечной точки вебхука должен использовать HTTPS. Сервер может отклонить регистрации вебхуков, указывающие конечную точку без TLS.",
-        "urlHttpWarningTitle": "URL вебхука без HTTPS",
-        "urlInvalid": "Должен быть действительный URL",
+        "urlHttpWarningTitle": "URL вебхука без HTTPS.",
+        "urlInvalid": "Должен быть действительный URL.",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "URL обязателен"
+        "urlRequired": "URL обязателен."
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Удалить вебхук",
@@ -329,8 +329,8 @@
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "Это единственный раз, когда вы сможете увидеть этот секрет. Пожалуйста, скопируйте его. Если вы потеряете или забудете его, вам придётся удалить и заново создать вебхук."
       },
-      "listTitle": "Подписки Webhook",
-      "noWebhooks": "Вебхуки не найдены",
+      "listTitle": "Подписки вебхуков",
+      "noWebhooks": "Вебхуки не найдены.",
       "secret": "Секрет HMAC",
       "status": {
         "active": "{{common.active}}",
@@ -338,8 +338,8 @@
         "pending_verification": "Ожидает подтверждения"
       },
       "subscriptionId": "Идентификатор подписки",
-      "subtitle": "Настройка подписок вебхуков для уведомлений о событиях",
-      "title": "Управление Webhooks",
+      "subtitle": "Настройка подписок вебхуков для уведомлений о событиях.",
+      "title": "Управление вебхуками",
       "triggerEvents": "Триггерные события",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -353,12 +353,12 @@
       "title": "Создать опрос",
       "versionHint": "Произвольный идентификатор версии",
       "versionLabel": "{{common.version}}",
-      "versionPlaceholder": "например, 1, v2-пилот, 2024-Q1",
-      "versionRequired": "Требуется указать версию"
+      "versionPlaceholder": "Например, 1, v2-пилот, 2024-Q1",
+      "versionRequired": "Версия обязательна."
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "Невозможно удалить этот опрос, так как у него есть существующие ответы. Сначала удалите ответы, затем попробуйте снова.",
-    "deleteError": "Не удалось удалить опрос: {{error}}",
+    "deleteError": "Не удалось удалить опрос: {{error}}.",
     "deleteTooltip": "Удалить опрос",
     "editTemplate": "Редактировать опрос",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -379,11 +379,11 @@
       "deletePage": "Удалить страницу",
       "deleteQuestion": "Удалить вопрос",
       "enableIf": "Включить если",
-      "enableIfHint": "напр., {questionName} = 'value'",
+      "enableIfHint": "Например, {questionname} = 'value'",
       "enterSurveyDescription": "Введите описание опроса",
       "enterSurveyTitle": "Введите название опроса",
-      "failedToLoadTemplate": "Не удалось загрузить опрос",
-      "failedToSaveTemplate": "Не удалось сохранить опрос",
+      "failedToLoadTemplate": "Не удалось загрузить опрос.",
+      "failedToSaveTemplate": "Не удалось сохранить опрос.",
       "loadingTemplate": "Загрузка опроса...",
       "mapsToTmField": "Сопоставляется с полем модели угроз",
       "metadataKey": "Ключ метаданных",
@@ -392,7 +392,7 @@
       "nameIdHint": "Уникальный идентификатор для этого вопроса",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Нажмите на тип вопроса из палитры, чтобы добавить его",
-      "noQuestionsYet": "Вопросов пока нет",
+      "noQuestionsYet": "Вопросов пока нет.",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Свойства вопроса",
@@ -400,9 +400,9 @@
         "boolean": "Переключатель да/нет",
         "checkbox": "Выбор нескольких вариантов",
         "dropdown": "Выбор из выпадающего списка",
-        "panel": "Группировка вопросов в панель",
+        "panel": "Группировка вопросов в панель.",
         "paneldynamic": "Повторяющаяся группа панелей",
-        "radiogroup": "Выбор одного варианта",
+        "radiogroup": "Выбор одного варианта из предложенных.",
         "text": "Однострочный ввод текста"
       },
       "questionTypeLabels": {
@@ -417,9 +417,9 @@
       "questionTypes": "Типы вопросов",
       "questions": "Вопросы",
       "required": "Обязательно",
-      "requiredIf": "Требуется если",
+      "requiredIf": "Обязательно если",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
+      "selectQuestionHint": "Выберите вопрос для редактирования его свойств.",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
@@ -429,7 +429,7 @@
         "description": "Описание модели угроз",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "URL отслеживания задач",
+        "issueUri": "URL отслеживания задач.",
         "metadataKey": "Пользовательские метаданные",
         "name": "Название модели угроз",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -438,11 +438,11 @@
       "tmFieldMapping": "Сопоставление полей модели угроз",
       "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
       "unsavedChanges": "Несохранённые изменения",
-      "visibleIf": "Видимо, если",
+      "visibleIf": "Видимо если",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} опрос",
-    "templateCountPlural": "{{count}} опросов"
+    "templateCount": "{{Count}} опрос",
+    "templateCountPlural": "{{Count}} опросов"
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -451,9 +451,9 @@
     "name": "Название актива",
     "sensitivity": "{{common.sensitivity}}",
     "title": {
-      "create": "Создать Актив",
-      "edit": "Редактировать Актив",
-      "view": "Просмотр Актива"
+      "create": "Создать актив",
+      "edit": "Редактировать актив",
+      "view": "Просмотр актива"
     },
     "type": "Тип актива",
     "types": {
@@ -492,13 +492,13 @@
     "noEntries": "Записи журнала аудита не найдены.",
     "rollback": {
       "action": "Откатить",
-      "confirmMessage": "Вы уверены, что хотите откатить {{objectType}} \"{{name}}\" к версии {{version}}?",
+      "confirmMessage": "Вы уверены, что хотите откатить {{objecttype}} \"{{name}}\" к версии {{version}}?",
       "confirmTitle": "Подтвердить откат",
       "confirmationField": "Введите для подтверждения",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "Ошибка отката. Пожалуйста, попробуйте снова.",
+      "error": "Ошибка отката",
       "success": "Откат выполнен успешно.",
-      "typeConfirmation": "Для подтверждения введите \"{{confirmValue}}\" ниже.",
+      "typeConfirmation": "Для подтверждения введите \"{{confirmvalue}}\" ниже",
       "versionPruned": "Снимок версии был удалён. Откат больше недоступен.",
       "warning": "Это перезапишет текущее состояние этой сущности версией, сохранённой в этой записи аудита. Это действие создаст новую запись аудита, но текущее состояние будет потеряно."
     },
@@ -510,7 +510,7 @@
       "403": "403 Запрещено",
       "noPermission": "У вас нет разрешения на доступ к этой странице.",
       "requiredRole": "Для просмотра этого содержимого вам нужна роль {{role}}.",
-      "title": "Несанкционированный Доступ"
+      "title": "Несанкционированный доступ"
     }
   },
   "chat": {
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "Не удалось подключиться к Timmy. Проверьте соединение и попробуйте снова.",
-      "generic": "Что-то пошло не так. Пожалуйста, попробуйте снова.",
+      "generic": "Что-то пошло не так.",
       "interrupted": "Ответ прерван. Попробуйте отправить ваше сообщение снова.",
       "notAcceptable": "Timmy временно недоступен из-за проблемы с конфигурацией сервера.",
       "notEnabled": "Timmy не включён для этой модели угроз.",
@@ -532,16 +532,16 @@
     "hideSidePanel": "Скрыть боковую панель",
     "inputPlaceholder": "Спросите Timmy об этой модели угроз...",
     "newSession": "Новый сеанс",
-    "noSessions": "Нет сеансов чата. Начните разговор!",
+    "noSessions": "Нет сеансов чата. Начните разговор.",
     "preparation": {
-      "error": "Подготовка не удалась: {{message}}",
-      "processing": "Обработка источника {{current}} из {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "Готово! {{sourcesLoaded}} источников загружено, {{chunksEmbedded}} фрагментов проиндексировано."
+      "error": "Подготовка не удалась: {{message}}.",
+      "processing": "Обработка источника {{current}} из {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%.",
+      "ready": "Готово! {{Sourcesloaded}} источников загружено, {{chunksembedded}} фрагментов проиндексировано."
     },
-    "saveAsNoteError": "Не удалось сохранить как заметку. Пожалуйста, попробуйте снова.",
+    "saveAsNoteError": "Не удалось сохранить как заметку.",
     "saveMessageAsNote": "Сохранить сообщение как заметку",
     "saveSessionAsNote": "Сохранить сеанс как заметку",
-    "savedAsNote": "Сохранено как заметка",
+    "savedAsNote": "Сохранено как заметка.",
     "savedAsNoteView": "{{common.view}}",
     "send": "Отправить сообщение",
     "sessions": "Сеансы",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} источников включено"
+      "title": "{{Count}} источников включено"
     },
     "suggestedPrompts": {
       "assets": "Какие активы находятся в области охвата?",
@@ -563,21 +563,21 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} active users",
+    "activeUsers": "{{Count}} активных пользователей.",
     "approvePresenterRequest": "Одобрить запрос ведущего",
-    "availableCollaborationSessions": "Доступные сеансы совместной работы",
+    "availableCollaborationSessions": "Доступные сеансы совместной работы.",
     "collaboratorsHeader": "Участники",
     "copyLink": "Копировать ссылку",
     "denyPresenterRequest": "Отклонить запрос ведущего",
     "endCollaboration": "Завершить совместную работу",
     "hostedBy": "Организатор",
-    "isRequestingPresenterPrivileges": "запрашивает права ведущего",
+    "isRequestingPresenterPrivileges": "Запрашивает права ведущего.",
     "joinSession": "Присоединиться к сеансу",
-    "justNow": "только что",
+    "justNow": "Только что",
     "leaveSession": "Покинуть сеанс",
     "loadingDiagramContext": "Загрузка контекста диаграммы...",
     "manageParticipants": "Управление участниками",
-    "noActiveSessions": "Нет активных сеансов совместной работы",
+    "noActiveSessions": "Нет активных сеансов совместной работы.",
     "participantRequestsPresenterRole": "Участник запрашивает роль ведущего",
     "presenterModeRequested": "Запрошен режим ведущего",
     "removeFromSession": "Удалить из сеанса",
@@ -585,13 +585,13 @@
     "sessionStarted": "Начало",
     "startCollaboration": "Начать совместную работу",
     "takeBackPresenter": "Вернуть роль ведущего",
-    "title": "Участники Сеанса Совместной Работы",
-    "userJoined": "{{user}} присоединился к совместной работе",
-    "userLeft": "{{user}} покинул совместную работу",
+    "title": "Участники сеанса совместной работы",
+    "userJoined": "{{User}} присоединился к совместной работе.",
+    "userLeft": "{{User}} покинул совместную работу",
     "websocketStatus": {
       "connected": "Websocket подключён",
       "noSession": "Нет активного сеанса совместной работы",
-      "notConnected": "Websocket не подключён"
+      "notConnected": "Websocket не подключён."
     }
   },
   "common": {
@@ -600,8 +600,8 @@
     "activate": "Активировать",
     "active": "Активный",
     "add": "Добавить",
-    "addMetadata": "Добавить Метаданные",
-    "addThreat": "Добавить Угрозу",
+    "addMetadata": "Добавить метаданные",
+    "addThreat": "Добавить угрозу",
     "addons": "Дополнения",
     "all": "Все",
     "allStatuses": "Все статусы",
@@ -615,10 +615,10 @@
     "close": "Закрыть",
     "confirm": "Подтвердить",
     "confirmDelete": "Вы уверены, что хотите удалить {{item}} \"{{name}}\"? Это действие нельзя отменить.",
-    "confirmDeleteMessage": "Вы уверены, что хотите удалить {{objectType}} \"{{name}}\"?",
-    "copiedToClipboard": "Скопировано в буфер обмена",
+    "confirmDeleteMessage": "Вы уверены, что хотите удалить {{objecttype}} \"{{name}}\"?",
+    "copiedToClipboard": "Скопировано в буфер обмена.",
     "copy": "Копировать",
-    "copyToClipboard": "Копировать в Буфер Обмена",
+    "copyToClipboard": "Копировать в буфер обмена",
     "create": "Создать",
     "created": "Создано",
     "createdBy": "Создал",
@@ -626,24 +626,24 @@
     "cut": "Вырезать",
     "deactivate": "Деактивировать",
     "delete": "Удалить",
-    "deleteConfirm": "Удалить Модель Угроз",
+    "deleteConfirm": "Подтвердить удаление",
     "deleteWarningConfirmationField": "Подтверждение удаления",
     "deleteWarningConfirmationMatch": "Текст подтверждения совпадает",
     "deleteWarningConfirmationMismatch": "Текст подтверждения не совпадает",
     "deleteWarningConfirmationValue": "удалить навсегда",
-    "deleteWarningPermanent": "Это действие необратимо и приведёт к безвозвратному удалению {{objectType}} и всех связанных метаданных.",
+    "deleteWarningPermanent": "Это действие необратимо и приведёт к безвозвратному удалению {{objecttype}} и всех связанных метаданных.",
     "deleteWarningReferenceOnly": "Для объектов, хранящихся вне TMI, таких как документы и репозитории, будет удалена только ссылка TMI на объект.",
     "deleteWarningSubEntities": "Все связанные сущности TMI, такие как диаграммы, угрозы и заметки, также будут безвозвратно удалены.",
-    "deleteWarningTypeConfirmation": "Для подтверждения введите \"{{confirmValue}}\" в поле ниже.",
+    "deleteWarningTypeConfirmation": "Для подтверждения введите \"{{confirmvalue}}\" в поле ниже",
     "description": "Описание",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Отклонить",
     "done": "Готово",
     "download": "Скачать",
     "edit": "Редактировать",
-    "editThreat": "Редактировать Угрозу",
+    "editThreat": "Редактировать угрозу",
     "email": "Электронная почта",
-    "emailLabel": "Адрес Электронной Почты",
+    "emailLabel": "Адрес электронной почты",
     "error": "Ошибка",
     "exportAsPng": "Экспортировать как PNG",
     "exportAsSvg": "Экспортировать как SVG",
@@ -652,17 +652,17 @@
     "groups": "Группы",
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
-    "includeInReport": "Включить в отчет",
+    "includeInReport": "Включить в отчёт",
     "includeInTimmyChat": "Включить в чат Timmy",
     "issueUri": "URL Задачи",
     "issueUriOpenHint": "{{common.issueUriOpenHint}}",
     "language": "{{language}}",
-    "lastModified": "Последнее Изменение",
+    "lastModified": "Последнее изменение",
     "lastUpdated": "Последнее обновление",
     "loading": "Загрузка...",
     "manage": "Управление",
-    "manageMetadata": "Управление Метаданными",
-    "manageThreats": "Управление Угрозами",
+    "manageMetadata": "Управление метаданными",
+    "manageThreats": "Управление угрозами",
     "metadata": "Метаданные",
     "metadataKey": "Ключ",
     "metadataValue": "Значение",
@@ -672,10 +672,10 @@
     "moreActions": "Дополнительные действия",
     "name": "Название",
     "noAddonsAvailable": "Дополнения недоступны",
-    "noDataAvailable": "Данные Недоступны",
+    "noDataAvailable": "Данные недоступны",
     "noMatchingResults": "Нет результатов, соответствующих вашим фильтрам.",
-    "noMetadata": "Метаданные Недоступны",
-    "noThreats": "Угрозы Недоступны",
+    "noMetadata": "Метаданные недоступны",
+    "noThreats": "Угрозы недоступны.",
     "none": "Нет",
     "objectTypes": {
       "asset": "Актив",
@@ -702,12 +702,12 @@
       "team": "Команда",
       "teams": "Команды",
       "threat": "Угроза",
-      "threatModel": "Модель Угроз",
+      "threatModel": "Модель угроз",
       "threatModels": "Модели угроз",
       "threats": "Угрозы"
     },
     "ok": "ОК",
-    "openInNewTab": "Открыть в Новой Вкладке",
+    "openInNewTab": "Открыть в новой вкладке",
     "other": "Другое",
     "paste": "Вставить",
     "permissions": "Разрешения",
@@ -715,7 +715,7 @@
     "project": "Проект",
     "provider": "Поставщик",
     "readOnly": "Только Чтение",
-    "readOnlyTooltip": "У вас есть доступ только для чтения к этой модели угроз. Свяжитесь с владельцем для запроса прав редактирования.",
+    "readOnlyTooltip": "У вас есть доступ только для чтения к этой модели угроз. Свяжитесь с владельцем для запроса прав редактирования",
     "retry": "Повторить",
     "roles": {
       "owner": "Владелец",
@@ -723,12 +723,12 @@
       "writer": "Редактор"
     },
     "save": "Сохранить",
-    "saveAndClose": "Сохранить и Закрыть",
+    "saveAndClose": "Сохранить и закрыть",
     "saveFailed": "Не удалось сохранить",
     "savedSuccessfully": "Успешно сохранено",
     "score": "Оценка",
     "search": "Поиск",
-    "selected": "{{count}} выбрано",
+    "selected": "{{Count}} выбрано",
     "sensitivity": "Конфиденциальность",
     "sessionRoles": {
       "host": "Хост",
@@ -743,10 +743,10 @@
     },
     "team": "Команда",
     "template": "Шаблон",
-    "threatDescription": "Описание Угрозы",
+    "threatDescription": "Описание угрозы",
     "threatDescriptionPlaceholder": "Подробно опишите угрозу",
-    "threatName": "Название Угрозы",
-    "threatType": "Тип Угрозы",
+    "threatName": "Название угрозы",
+    "threatType": "Тип угрозы",
     "title": "Название",
     "true": "Истина",
     "tryAdjustingFilters": "Попробуйте изменить фильтры.",
@@ -755,52 +755,79 @@
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
     "uri": "URI",
     "validation": {
-      "email": "Пожалуйста, введите действительный адрес электронной почты",
+      "email": "Пожалуйста, введите действительный адрес электронной почты.",
       "invalidUrl": "Пожалуйста, введите корректный URL",
-      "maxLength": "Максимальная длина {{max}} символов",
-      "nameRequired": "Название обязательно",
-      "required": "Это поле обязательно"
+      "maxLength": "Максимальная длина — {{max}} символов.",
+      "nameRequired": "Название обязательно.",
+      "required": "Это поле обязательно."
     },
     "version": "Версия",
     "view": "Просмотр",
-    "viewMetadata": "Просмотр Метаданных",
-    "viewPermissions": "Просмотр Разрешений",
-    "viewThreat": "Просмотр Угрозы"
+    "viewMetadata": "Просмотр метаданных",
+    "viewPermissions": "Просмотр разрешений",
+    "viewThreat": "Просмотр угрозы"
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",
     "dataAssets": "Активы данных...",
     "editText": "Редактировать текст",
-    "lockLayout": "Lock Layout",
+    "lockLayout": "Заблокировать макет",
     "moveBackward": "Переместить назад",
     "moveForward": "Переместить вперёд",
     "moveToBack": "На задний план",
     "moveToFront": "На передний план",
     "noDataAssetsAvailable": "Нет доступных активов данных",
-    "showObject": "Показать объект",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "Показать объект...",
+    "unlockLayout": "Разблокировать макет"
   },
   "createThreatModel": {
-    "confidentialHint": "Конфиденциальные модели угроз не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания.",
+    "confidentialHint": "Конфиденциальные модели угроз не автоматически распределяются группе проверяющих безопасности. Эта настройка не может быть изменена после создания.",
     "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
     "framework": "Фреймворк",
     "namePlaceholder": "Введите название модели угроз",
     "nameRequired": "{{common.validation.nameRequired}}",
-    "title": "Создать Модель Угроз"
+    "title": "Создать модель угроз"
   },
   "cvssCalculator": {
     "apply": "Применить",
     "openCalculator": "Добавить CVSS",
-    "parseError": "Не удалось разобрать существующую строку вектора CVSS",
+    "parseError": "Не удалось разобрать существующую строку вектора CVSS.",
     "pasteVectorPlaceholder": "Вставьте строку вектора CVSS и нажмите Enter",
     "title": "Калькулятор CVSS",
-    "vectorDuplicateVersion": "Запись CVSS для этой версии уже существует",
-    "vectorInvalid": "Недопустимая строка вектора CVSS",
-    "vectorPlaceholder": "Вставьте или введите строку вектора CVSS и нажмите Enter",
+    "vectorDuplicateVersion": "Запись CVSS для этой версии уже существует.",
+    "vectorInvalid": "Недопустимая строка вектора CVSS.",
+    "vectorPlaceholder": "Вставьте или введите строку вектора CVSS и нажмите Enter.",
     "vectorString": "Строка вектора",
-    "vectorUnsupportedVersion": "Поддерживаются только векторы CVSS 3.1 и 4.0",
-    "version": "Версия CVSS"
+    "vectorUnsupportedVersion": "Поддерживаются только векторы CVSS 3.1 и 4.0.",
+    "version": "Версия CVSS",
+    "metricDescriptions": {
+      "AR": "Эта метрика позволяет потребителю настраивать оценку в зависимости от важности затронутого IT-актива для организации аналитика, измеряемой с точки зрения доступности.",
+      "AU": "Метрика автоматизируемости фиксирует ответ на вопрос «может ли злоумышленник автоматизировать эксплуатацию уязвимости на нескольких целях?».",
+      "CR": "Эта метрика позволяет потребителю настраивать оценку в зависимости от важности затронутого IT-актива для организации аналитика, измеряемой с точки зрения конфиденциальности.",
+      "IR": "Эта метрика позволяет потребителю настраивать оценку в зависимости от важности затронутого IT-актива для организации аналитика, измеряемой с точки зрения целостности.",
+      "MAC": "Переопределение сложности атаки. Эта метрика отражает условия, неподконтрольные злоумышленнику, которые должны существовать для эксплуатации уязвимости в среде аналитика.",
+      "MAT": "Переопределение требований к атаке. Фиксирует предварительные условия развёртывания и выполнения системы, обеспечивающие атаку в среде аналитика.",
+      "MAV": "Переопределение вектора атаки. Эта метрика отражает контекст, в котором возможна эксплуатация уязвимости в среде аналитика.",
+      "MPR": "Переопределение необходимых привилегий. Эта метрика описывает уровень привилегий, которыми должен обладать злоумышленник для эксплуатации уязвимости в среде аналитика.",
+      "MSA": "Переопределение влияния на доступность последующей системы. Измеряет последствия для доступности системы за пределами уязвимой системы в среде аналитика.",
+      "MSC": "Переопределение влияния на конфиденциальность последующей системы. Измеряет последствия для конфиденциальности за пределами уязвимой системы в среде аналитика.",
+      "MSI": "Переопределение влияния на целостность последующей системы. Измеряет последствия для целостности за пределами уязвимой системы в среде аналитика.",
+      "MUI": "Переопределение взаимодействия с пользователем. Фиксирует требование участия пользователя-человека, отличного от злоумышленника, в успешной компрометации в среде аналитика.",
+      "MVA": "Переопределение влияния на доступность уязвимой системы. Измеряет последствия для доступности системы, содержащей уязвимость, в среде аналитика.",
+      "MVC": "Переопределение влияния на конфиденциальность уязвимой системы. Измеряет последствия для конфиденциальности системы, содержащей уязвимость, в среде аналитика.",
+      "MVI": "Переопределение влияния на целостность уязвимой системы. Измеряет последствия для целостности системы, содержащей уязвимость, в среде аналитика.",
+      "R": "Метрика восстановления описывает устойчивость системы к восстановлению сервисов по производительности и доступности после проведения атаки.",
+      "RE": "Метрика усилий по реагированию на уязвимость фиксирует уровень усилий, необходимых потребителю для реагирования на уязвимость после её обнаружения.",
+      "S": "Метрика безопасности отражает, может ли уязвимость привести к условиям, влияющим на безопасность людей, как определено категориями IEC 61508.",
+      "U": "Метрика срочности поставщика отражает предоставленный поставщиком рейтинг срочности (красный, янтарный, зелёный, прозрачный) для уязвимости.",
+      "V": "Метрика плотности ценности описывает ресурсы, над которыми злоумышленник получит контроль в результате одного события эксплуатации."
+    },
+    "metricGroups": {
+      "environmentalBase": "Экологические (модифицированная база).",
+      "environmentalSecurityRequirement": "Экологические (требования безопасности)"
+    },
+    "metricsConfigured": "{{Count}}/{{total}} настроено"
   },
   "cwePicker": {
     "addCwe": "Добавить CWE",
@@ -845,7 +872,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "Последнее изменение статуса"
+      "statusLastChanged": "Последнее изменение статуса."
     },
     "viewAsCards": "Отобразить в виде карточек",
     "viewAsList": "Отобразить в виде списка"
@@ -853,15 +880,15 @@
   "dataAssetDialog": {
     "selectAsset": "Актив данных",
     "title": {
-      "select": "Выбрать Актив Данных",
-      "view": "Просмотр Актива Данных"
+      "select": "Выбрать актив данных",
+      "view": "Просмотр актива данных"
     }
   },
   "debugDialogs": {
     "clipboardDialog": {
       "clearClipboard": "Очистить буфер обмена",
       "clipboardJson": "JSON буфера обмена",
-      "title": "Данные Буфера Обмена"
+      "title": "Данные буфера обмена"
     },
     "common": {
       "affectedCells": "Затронутые ячейки",
@@ -871,7 +898,7 @@
     },
     "graphDataDialog": {
       "graphJson": "JSON графа",
-      "title": "Данные Графа"
+      "title": "Данные графа"
     },
     "historyDialog": {
       "canRedo": "Можно повторить",
@@ -880,8 +907,8 @@
       "currentIndex": "Текущий индекс",
       "id": "{{common.id}}",
       "maxStackSize": "Максимальный размер стека",
-      "noRedoEntries": "Нет записей для повтора",
-      "noUndoEntries": "Нет записей для отмены",
+      "noRedoEntries": "Нет записей для повтора.",
+      "noUndoEntries": "Нет записей для отмены.",
       "operationId": "ID операции",
       "previousCells": "Предыдущие ячейки",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +923,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "Введите текст для поиска по всем провайдерам",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "Иконки недоступны для этой фигуры",
+      "emptyStatePrompt": "Введите текст для поиска по всем провайдерам.",
+      "emptyStateTryExamples": "Попробуйте: AWS ec2, azure sql, gcp compute",
+      "notAvailable": "Иконки недоступны для этой фигуры.",
       "placement": "Расположение",
       "remove": "Удалить",
       "searchPlaceholder": "Поиск по провайдеру, сервису или категории...",
       "searchToChange": "Введите запрос для смены иконки...",
       "selectShape": "Сначала выберите фигуру",
-      "statusAvailable": "{count} иконок доступно",
-      "statusMatches": "{count} совпадений",
-      "statusShapesSelected": "Выбрано {count} фигур(а)",
+      "statusAvailable": "{Count} иконок доступно.",
+      "statusMatches": "{Count} совпадений",
+      "statusShapesSelected": "Выбрано {Count} фигур(а).",
       "title": "Иконка архитектуры",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -942,7 +969,7 @@
       "labelPosition.top-right": "Сверху справа",
       "labelPositionLabel": "Позиция метки",
       "labelTab": "Метка",
-      "noSelection": "Выберите объект для редактирования стилей",
+      "noSelection": "Выберите объект для редактирования стилей.",
       "opacity": "Непрозрачность",
       "osColorPicker": "Выбрать цвет из системы",
       "removeDiagramColor": "Удалить цвет диаграммы",
@@ -962,30 +989,38 @@
       "other": "Невозможно получить доступ к этому документу.",
       "pickerRegistrationInvalid": "Авторизация средства выбора для этого документа более недействительна.",
       "sourceNotFound": "TMI не знает, как прочитать URL-адрес этого документа.",
-      "tokenNotLinked": "Вы не привязали учётную запись, которая владеет этим документом. Источник: {{ source }}",
-      "tokenRefreshFailed": "Ссылка на источник более недействительна. Источник: {{ source }}",
-      "tokenTransientFailure": "Не удалось связаться с источником. Обычно это временная проблема. Источник: {{ source }}"
+      "tokenNotLinked": "Вы не привязали учётную запись, которая владеет этим документом. Источник: {{ source }}.",
+      "tokenRefreshFailed": "Ссылка на источник более недействительна. Источник: {{ source }}.",
+      "tokenTransientFailure": "Не удалось связаться с источником. Обычно это временная проблема. Источник: {{ source }}.",
+      "microsoftNotShared": "TMI ещё не имеет доступа к этому файлу OneDrive или SharePoint. Владелец файла должен предоставить TMI доступ для чтения с помощью приведённого ниже фрагмента кода."
     },
     "remediation": {
       "contactOwner": "Свяжитесь с владельцем документа",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "Повторно привязать источник",
-      "repickAfterShare": "Выбрать снова после предоставления общего доступа",
-      "repickFile": "Выбрать этот файл снова",
+      "repickAfterShare": "Выбрать снова после предоставления общего доступа.",
+      "repickFile": "Выбрать этот файл снова.",
       "retry": "Повторить попытку",
-      "shareWithServiceAccount": "Предоставить общий доступ сервисной учётной записи TMI"
+      "shareWithServiceAccount": "Предоставить общий доступ сервисной учётной записи TMI",
+      "shareWithApplication": {
+        "copyFailed": "Не удалось скопировать в буфер обмена",
+        "explanation": "TMI ещё не имеет доступа к этому файлу OneDrive или SharePoint. Попросите владельца файла выполнить следующий вызов Microsoft Graph для предоставления TMI доступа для чтения. После успешного выполнения вызова нажмите «Проверить сейчас» — статус обновится в течение нескольких минут после выдачи разрешения.",
+        "powershellLabel": "PowerShell (модуль microsoft.graph)",
+        "rawLabel": "Вызов Microsoft Graph",
+        "title": "Предоставить TMI доступ к этому файлу."
+      }
     },
     "serviceAccountEmail": "Предоставьте общий доступ по этому адресу:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "Не удалось предоставить доступ к вашему файлу. Повторите попытку.",
+      "generic": "Не удалось предоставить доступ к вашему файлу.",
       "linkAccountCta": "Привязать учётную запись",
       "notLinked": "Ваша учётная запись Microsoft не привязана.",
       "permissionDenied": "Microsoft отклонила запрос на предоставление доступа. Возможно, файл недоступен для общего доступа. Попробуйте другой файл или обратитесь к администратору.",
-      "pickerLoadFailed": "Не удалось открыть выбор файлов. Проверьте подключение к сети и повторите попытку.",
-      "timeout": "Запрос выполнялся слишком долго. Повторите попытку.",
-      "unavailable": "Microsoft временно недоступна. Повторите попытку через несколько мгновений."
+      "pickerLoadFailed": "Не удалось открыть средство выбора файлов. Проверьте подключение к сети и повторите попытку",
+      "timeout": "Запрос выполнялся слишком долго.",
+      "unavailable": "Microsoft временно недоступна."
     },
     "source": {
       "finalizing": "Предоставление доступа…",
@@ -993,12 +1028,18 @@
       "label": "Каким образом вы хотите прикрепить этот документ?",
       "linkAction": "Привязать источник",
       "linkPrompt": "Привяжите свою учётную запись, чтобы выбирать файлы из этого источника.",
-      "linkPromptMicrosoft": "Привяжите учётную запись Microsoft, чтобы просматривать файлы OneDrive/SharePoint",
+      "linkPromptMicrosoft": "Привяжите учётную запись Microsoft, чтобы просматривать файлы OneDrive/SharePoint.",
       "pickAction": "Выбрать файл",
       "pickActionMicrosoft": "Просмотр OneDrive/SharePoint",
-      "pickedFile": "Файл выбран: {{ fileName }}",
+      "pickedFile": "Файл выбран: {{ filename }}.",
       "repickAction": "Выбрать другой файл",
       "url": "Вставьте URL-адрес"
+    },
+    "create": {
+      "failed": "Не удалось создать документ"
+    },
+    "postCreate": {
+      "hint": "После предоставления общего доступа к файлу нажмите «Повторить проверку доступа» выше. Вы также можете закрыть это диалоговое окно и повторить проверку позже из режима редактирования документа."
     }
   },
   "documentSources": {
@@ -1006,7 +1047,8 @@
     "callback": {
       "error": "Не удалось подключить источник. Источник: {{ source }}. Причина: {{ reason }}",
       "linking": "Привязка вашей учётной записи...",
-      "success": "Источник подключён. Источник: {{ source }}"
+      "success": "Источник подключён. Источник: {{ source }}.",
+      "notConfigured": "{{ Source }} не настроен на этом сервере. Обратитесь к администратору."
     },
     "columns": {
       "account": "Учётная запись",
@@ -1016,12 +1058,12 @@
     },
     "empty": {
       "description": "Привяжите учётную запись облачного хранилища, чтобы прикреплять документы из Google Drive и других сервисов по мере их появления.",
-      "title": "Источники документов не подключены"
+      "title": "Источники документов не подключены."
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "Привязано {{ relativeTime }}",
+    "linkedAt": "Привязано {{ relativetime }}.",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1047,7 +1089,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "Один или несколько выбранных элементов содержат метаданные. Удаление этих элементов безвозвратно удалит их метаданные. Вы хотите продолжить?",
-      "title": "Метаданные Будут Потеряны"
+      "title": "Метаданные будут потеряны."
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Введите описание диаграммы",
@@ -1056,14 +1098,14 @@
     "editDiagramName": "Нажмите для редактирования названия диаграммы",
     "editDisabledDuringCollaboration": "Редактирование отключено во время совместной работы",
     "embedding": {
-      "cannotEmbedIntoTextBox": "Невозможно встроить фигуры в текстовые блоки",
-      "circularEmbeddingPrevented": "Циклическое встраивание не допускается",
-      "securityBoundaryRestriction": "Границы безопасности можно встраивать только в другие границы безопасности"
+      "cannotEmbedIntoTextBox": "Невозможно встроить фигуры в текстовые блоки.",
+      "circularEmbeddingPrevented": "Циклическое встраивание не допускается.",
+      "securityBoundaryRestriction": "Границы безопасности можно встраивать только в другие границы безопасности."
     },
     "flowLabel": "Поток",
     "helpDialog": {
       "panLabel": "Удерживайте Shift и перетаскивайте для панорамирования",
-      "title": "Справка Редактора Диаграмм",
+      "title": "Справка редактора диаграмм",
       "zoomLabel": "Удерживайте Shift и используйте колесо мыши для масштабирования"
     },
     "nodeLabels": {
@@ -1074,7 +1116,7 @@
       "store": "Хранилище данных",
       "textbox": "Текст"
     },
-    "pageTitle": "Редактор Диаграмм Потоков Данных",
+    "pageTitle": "Редактор диаграмм потоков данных",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Экспортировать как JPEG"
@@ -1087,11 +1129,11 @@
         "addTextbox": "Добавить текстовый блок",
         "deleteSelected": "Удалить выбранное",
         "export": "Экспорт...",
-        "help": "Справка",
+        "help": "Справка...",
         "redo": "Повторить",
-        "showClipboard": "Показать буфер обмена",
-        "showGraphData": "Показать данные графа",
-        "showHistory": "Показать историю",
+        "showClipboard": "Показать буфер обмена...",
+        "showGraphData": "Показать данные графа...",
+        "showHistory": "Показать историю...",
         "undo": "Отменить",
         "zoomToFit": "Масштабировать по размеру"
       }
@@ -1120,31 +1162,31 @@
     "explanation": "Войдите с помощью существующей учётной записи доверенного поставщика удостоверений. Это избавляет от необходимости создавать отдельный пароль, упрощая работу и обеспечивая вашу безопасность. Мы никогда не храним и не управляем паролями — ваши учётные данные остаются у вашего поставщика и не могут быть скомпрометированы через нас.",
     "loadingProviders": "Загрузка поставщиков аутентификации...",
     "local": {
-      "title": "Локальный Вход для Разработки"
+      "title": "Локальный вход для разработки"
     },
     "loggingInWith": "Вход с помощью {{provider}}...",
     "loginWith": "Войти с помощью",
     "noProvidersConfigured": "Поставщики аутентификации не настроены.",
-    "oauthFailed": "Ошибка аутентификации OAuth. Пожалуйста, попробуйте снова.",
-    "oauthProvidersTitle": "Провайдеры Входа OAuth",
-    "samlProvidersTitle": "Провайдеры Входа SAML",
+    "oauthFailed": "Ошибка аутентификации OAuth.",
+    "oauthProvidersTitle": "Провайдеры входа OAuth",
+    "samlProvidersTitle": "Провайдеры входа SAML",
     "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова.",
     "signingIn": "Вход в систему...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Вход в TMI",
     "tmiDialog": {
-      "errorMaxLength": "Имя пользователя должно содержать не более 20 символов",
-      "errorMinLength": "Имя пользователя должно содержать не менее 3 символов",
-      "errorPattern": "Имя пользователя должно содержать только буквы, цифры, точки, подчёркивания, знаки процента, знаки плюса и дефисы",
+      "errorMaxLength": "Имя пользователя должно содержать не более 20 символов.",
+      "errorMinLength": "Имя пользователя должно содержать не менее 3 символов.",
+      "errorPattern": "Имя пользователя должно содержать только буквы, цифры, точки, подчёркивания, знаки процента, знаки плюса и дефисы.",
       "signIn": "Войти",
-      "title": "Войти с TMI Provider",
+      "title": "Войти с провайдером TMI",
       "usernameLabel": "Имя пользователя",
       "usernamePlaceholder": "Введите имя пользователя (необязательно)"
     },
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },
   "mermaidViewer": {
-    "exportFailed": "Не удалось экспортировать диаграмму",
+    "exportFailed": "Не удалось экспортировать диаграмму.",
     "fitToScreen": "По размеру экрана",
     "openInViewer": "Открыть в просмотрщике",
     "resetZoom": "Сбросить масштаб",
@@ -1153,7 +1195,7 @@
   },
   "navbar": {
     "admin": "Админ",
-    "appTitle": "TMI: Улучшенное Моделирование Угроз",
+    "appTitle": "TMI: улучшенное моделирование угроз.",
     "copyUserEmail": "Копировать email пользователя в буфер обмена",
     "dashboard": "Панель",
     "feedback": "Сообщить об ошибке, запросить функцию или оставить отзыв",
@@ -1171,7 +1213,7 @@
       "logout": "Выйти"
     },
     "serverStatus": {
-      "noServerConfigured": "Сервер не настроен",
+      "noServerConfigured": "Сервер не настроен.",
       "serverConnected": "Сервер подключён",
       "serverDegraded": "Сервер деградирован",
       "serverError": "Ошибка сервера",
@@ -1179,22 +1221,22 @@
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} символов",
+    "characterCount": "{{Current}} / {{max}} символов",
     "content": "Содержимое",
-    "contentPlaceholder": "Введите содержимое заметки в формате markdown. Поддерживается GitHub Flavored Markdown и диаграммы Mermaid.",
+    "contentPlaceholder": "Введите содержимое заметки в формате Markdown. Поддерживается GitHub Flavored Markdown и диаграммы Mermaid",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Необязательное описание",
     "editMode": "Режим редактирования",
     "errors": {
-      "clipboardAccessDenied": "Доступ к буферу обмена запрещён"
+      "clipboardAccessDenied": "Доступ к буферу обмена запрещён."
     },
     "namePlaceholder": "Введите название заметки",
     "previewMode": "Режим предпросмотра",
     "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
-      "create": "Создать Заметку",
-      "edit": "Редактировать Заметку",
-      "view": "Просмотр Заметки"
+      "create": "Создать заметку",
+      "edit": "Редактировать заметку",
+      "view": "Просмотр заметки"
     }
   },
   "notes": {
@@ -1206,9 +1248,9 @@
     },
     "deleteConfirmMessage": "Вы уверены, что хотите удалить заметку \"{{name}}\"? Это действие нельзя отменить.",
     "deleteConfirmTitle": "Удалить заметку",
-    "noNotes": "Заметок пока нет",
-    "sharable": "Видно всем участникам",
-    "sharableTooltip": "При включении эта заметка видна всем участникам команды/проекта. При отключении её могут видеть только администраторы и проверяющие безопасности.",
+    "noNotes": "Заметок пока нет.",
+    "sharable": "Видно всем участникам.",
+    "sharableTooltip": "При включении эта заметка видна всем участникам команды/проекта. При отключении её могут видеть только администраторы и проверяющие безопасности",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "Заметки ({{count}})"
   },
@@ -1216,35 +1258,35 @@
     "actions": {
       "login": "Войти"
     },
-    "operationError": "Не удалось выполнить {{operation}}: {{errorMessage}}",
+    "operationError": "Не удалось выполнить {{operation}}: {{errormessage}}.",
     "operationFailed": "Операция не выполнена",
     "operations": {
       "collaboration": "совместная работа",
-      "denyPresenterRequest": "отклонить запрос на роль докладчика",
-      "sendPresenterRequest": "отправить запрос на роль докладчика",
-      "startCollaboration": "начать совместную работу",
-      "updatePresenter": "обновить докладчика"
+      "denyPresenterRequest": "Отклонить запрос на роль докладчика",
+      "sendPresenterRequest": "Отправить запрос на роль докладчика.",
+      "startCollaboration": "Начать совместную работу",
+      "updatePresenter": "Обновить докладчика"
     },
     "presenter": {
-      "assigned": "{{user}} теперь докладчик",
-      "assignedYou": "Вы теперь докладчик",
-      "cleared": "Режим докладчика отключён",
-      "cursorMoved": "Курсор докладчика перемещён",
-      "modeChanged": "Режим докладчика изменён",
-      "privilegesRequested": "Запрошены права докладчика",
-      "removed": "{{user}} больше не является докладчиком",
-      "removedYou": "Вы больше не являетесь докладчиком",
-      "requestDenied": "Ваш запрос на роль докладчика отклонён",
-      "requestSent": "Запрос на роль докладчика отправлен владельцу сессии",
-      "requesting": "{{user}} запрашивает права докладчика",
-      "selectionChanged": "Выделение докладчика изменено"
+      "assigned": "{{User}} теперь докладчик.",
+      "assignedYou": "Вы теперь докладчик.",
+      "cleared": "Режим докладчика отключён.",
+      "cursorMoved": "Курсор докладчика перемещён.",
+      "modeChanged": "Режим докладчика изменён.",
+      "privilegesRequested": "Запрошены права докладчика.",
+      "removed": "{{User}} больше не является докладчиком.",
+      "removedYou": "Вы больше не являетесь докладчиком.",
+      "requestDenied": "Ваш запрос на роль докладчика отклонён.",
+      "requestSent": "Запрос на роль докладчика отправлен владельцу сессии.",
+      "requesting": "{{User}} запрашивает права докладчика.",
+      "selectionChanged": "Выделение докладчика изменено."
     },
     "session": {
-      "disconnected": "Отключено от сессии совместной работы",
-      "reconnected": "Повторное подключение к сессии совместной работы выполнено",
+      "disconnected": "Отключено от сессии совместной работы.",
+      "reconnected": "Повторное подключение к сессии совместной работы выполнено.",
       "reconnecting": "Повторное подключение к сессии совместной работы...",
-      "userRemoved": "{{user}} удалён из сессии",
-      "youWereRemoved": "Вы были удалены из сессии совместной работы"
+      "userRemoved": "{{User}} удалён из сессии.",
+      "youWereRemoved": "Вы были удалены из сессии совместной работы."
     },
     "unknownError": "Неизвестная ошибка",
     "websocket": {
@@ -1256,63 +1298,63 @@
       "disconnected": "Отключено от сервера совместной работы. Изменения будут сохранены локально.",
       "messageSendFailed": "Не удалось отправить сообщение. Ваши изменения могут не синхронизироваться.",
       "multipleFailed": "Подключение не удалось после нескольких попыток. Работа в автономном режиме.",
-      "unknownError": "Произошла неизвестная ошибка WebSocket"
+      "unknownError": "Произошла неизвестная ошибка WebSocket."
     }
   },
   "pagination": {
-    "ariaLabel": "Выбор страницы элементов",
+    "ariaLabel": "Выбор страницы элементов.",
     "firstPage": "Первая страница",
-    "itemsPerPage": "Элементов на странице",
+    "itemsPerPage": "Элементов на странице.",
     "lastPage": "Последняя страница",
     "nextPage": "Следующая страница",
     "previousPage": "Предыдущая страница",
     "rangeEmpty": "0 из {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} из {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} из {{length}}"
   },
   "presenter": {
     "startPresenting": "Начать презентацию",
     "stopPresenting": "Остановить презентацию"
   },
   "privacy": {
-    "changesContent": "Мы можем время от времени обновлять эту Политику конфиденциальности. Любые изменения будут опубликованы на этой странице с обновлённой датой «Последнее обновление».",
-    "changesTitle": "Изменения Этой Политики",
-    "complianceContent": "Мы раскроем информацию только в случае, если этого требует закон, например, в ответ на действительный правительственный приказ или повестку в суд. В таких случаях Оператор будет соблюдать применимые правовые обязательства.",
-    "complianceTitle": "Соблюдение Законодательства",
+    "changesContent": "Мы можем время от времени обновлять эту политику конфиденциальности. Любые изменения будут опубликованы на этой странице с обновлённой датой «последнего обновления».",
+    "changesTitle": "Изменения этой политики",
+    "complianceContent": "Мы раскроем информацию только в случае, если этого требует закон, например, в ответ на действительный правительственный приказ или повестку в суд. В таких случаях оператор будет соблюдать применимые правовые обязательства.",
+    "complianceTitle": "Соблюдение законодательства",
     "contactContent": {
-      "part1": "Если у вас есть вопросы об этой Политике конфиденциальности, пожалуйста, свяжитесь с Оператором этого веб-сайта через контактную информацию на странице ",
-      "part2": "."
+      "part1": "Если у вас есть вопросы об этой политике конфиденциальности, пожалуйста, свяжитесь с оператором этого веб-сайта через контактную информацию на странице.",
+      "part2": " Страница"
     },
-    "contactTitle": "Свяжитесь с Нами",
+    "contactTitle": "Свяжитесь с нами",
     "dataSecurityContent1": "Оператор применяет стандартные отраслевые меры безопасности для защиты ваших персональных данных, включая шифрование при передаче и хранении, протоколы безопасной аутентификации и регулярные обновления безопасности. Доступ к вашей информации ограничен уполномоченным персоналом по принципу служебной необходимости.",
-    "dataSecurityContent2": "Хотя ни одна система не является полностью защищённой от рисков, Оператор постоянно контролирует и обновляет защитные меры для снижения угроз и обеспечения конфиденциальности, целостности и доступности ваших данных.",
-    "dataSecurityTitle": "Безопасность Данных",
+    "dataSecurityContent2": "Хотя ни одна система не является полностью защищённой от рисков, оператор постоянно контролирует и обновляет защитные меры для снижения угроз и обеспечения конфиденциальности, целостности и доступности ваших данных.",
+    "dataSecurityTitle": "Безопасность данных",
     "dataSharingContent1": "Оператор не передаёт вашу личную информацию третьим лицам, за исключением следующих ограниченных случаев:",
-    "dataSharingContent2": "Помимо этих исключений, Оператор не продаёт, не сдаёт в аренду и не передаёт ваши данные другим организациям для маркетинга, рекламы или любых других целей.",
-    "dataSharingList1": "Поставщики услуг: Ваши данные могут храниться и обрабатываться на защищённой облачной инфраструктуре третьих сторон (таких как AWS, Google Cloud или аналогичные поставщики) исключительно для эксплуатации и обслуживания приложения. Эти поставщики обязаны по договору защищать ваши данные и использовать их только для целей, указанных Оператором.",
-    "dataSharingList2": "Функции расширяемости: Приложение поддерживает опциональные функции расширяемости (такие как websockets и addons), которые могут расширять функциональность путём передачи выбранной информации сторонним сервисам для обработки. Данные передаются этим сервисам только при активном использовании функции, требующей такой передачи, и передаётся только конкретная информация, необходимая для запрошенной функциональности.",
-    "dataSharingList2a": "Функции обработки ИИ: При активном запросе функций, использующих большие языковые модели (LLMs) или аналогичные ИИ-сервисы, выбранные данные могут передаваться сторонним провайдерам ИИ (таким как OpenAI, Anthropic или аналогичным сервисам) для обработки и генерации ответов. Передаётся только конкретная информация, необходимая для запрошенной функциональности, и такая передача происходит исключительно по вашему указанию. Эти провайдеры связаны договорными обязательствами — включая соглашения об обработке данных, где это применимо — использовать данные исключительно для предоставления запрошенной услуги, с ограничениями на хранение, обучение или иное использование.",
-    "dataSharingList3": "Соответствие законодательству: Оператор может раскрыть информацию, если это требуется законом, в том числе в ответ на законное судебное решение, повестку или официальный запрос государственного органа.",
-    "dataSharingTitle": "Обмен Данными",
-    "informationCollectionContent1": "Когда пользователи проходят аутентификацию через социальный вход (используя провайдеры OAuth или OpenID Connect, такие как Вход через Google, Вход через GitHub, Microsoft Entra External ID или другие), приложение собирает следующую информацию от выбранного провайдера исключительно для упрощения аутентификации и предоставления персонализированных услуг:",
-    "informationCollectionContent2": "Никакие дополнительные персональные данные не собираются без явного согласия пользователя. Оператор не получает доступа и не хранит конфиденциальную информацию, такую как пароли, контакты или другие данные провайдера, помимо необходимых для аутентификации. Вся собранная информация обрабатывается в соответствии с политиками API соответствующего провайдера и обязательством Оператора по защите конфиденциальности пользователей.",
-    "informationCollectionContent3": "Приложение генерирует журналы операций для обеспечения надежности системы, безопасности и производительности. Эти журналы могут содержать записи о деятельности пользователя в приложении, такие как события входа в систему, использование функций и отчеты об ошибках. Оператор ведет журналы только столько времени, сколько необходимо для выполнения операционных целей, включая устранение неполадок, мониторинг безопасности и улучшение обслуживания. Журналы хранятся в защищенном виде и не используются в целях, выходящих за пределы операционных потребностей.",
-    "informationCollectionList1": "Базовая информация профиля: Полное имя, адрес электронной почты и фотография профиля (если предоставлены и доступны).",
+    "dataSharingContent2": "Помимо этих исключений, оператор не продаёт, не сдаёт в аренду и не передаёт ваши данные другим организациям для маркетинга, рекламы или любых других целей.",
+    "dataSharingList1": "Поставщики услуг: ваши данные могут храниться и обрабатываться на защищённой облачной инфраструктуре третьих сторон (таких как AWS, Google Cloud или аналогичные поставщики) исключительно для эксплуатации и обслуживания приложения. Эти поставщики обязаны по договору защищать ваши данные и использовать их только для целей, указанных оператором.",
+    "dataSharingList2": "Функции расширяемости: приложение поддерживает опциональные функции расширяемости (такие как websockets и addons), которые могут расширять функциональность путём передачи выбранной информации сторонним сервисам для обработки. Данные передаются этим сервисам только при активном использовании функции, требующей такой передачи, и передаётся только конкретная информация, необходимая для запрошенной функциональности.",
+    "dataSharingList2a": "Функции обработки ИИ: при активном запросе функций, использующих большие языковые модели (LLMs) или аналогичные ИИ-сервисы, выбранные данные могут передаваться сторонним провайдерам ИИ (таким как OpenAI, Anthropic или аналогичным сервисам) для обработки и генерации ответов. Передаётся только конкретная информация, необходимая для запрошенной функциональности, и такая передача происходит исключительно по вашему указанию. Эти провайдеры связаны договорными обязательствами — включая соглашения об обработке данных, где это применимо — использовать данные исключительно для предоставления запрошенной услуги, с ограничениями на хранение, обучение или иное использование.",
+    "dataSharingList3": "Соответствие законодательству: оператор может раскрыть информацию, если это требуется законом, в том числе в ответ на законное судебное решение, повестку или официальный запрос государственного органа.",
+    "dataSharingTitle": "Обмен данными",
+    "informationCollectionContent1": "Когда пользователи проходят аутентификацию через социальный вход (используя провайдеры OAuth или OpenID Connect, такие как вход через Google, вход через GitHub, Microsoft Entra External ID или другие), приложение собирает следующую информацию от выбранного провайдера исключительно для упрощения аутентификации и предоставления персонализированных услуг:",
+    "informationCollectionContent2": "Никакие дополнительные персональные данные не собираются без явного согласия пользователя. Оператор не получает доступа и не хранит конфиденциальную информацию, такую как пароли, контакты или другие данные провайдера, помимо необходимых для аутентификации. Вся собранная информация обрабатывается в соответствии с политиками API соответствующего провайдера и обязательством оператора по защите конфиденциальности пользователей.",
+    "informationCollectionContent3": "Приложение генерирует журналы операций для обеспечения надёжности системы, безопасности и производительности. Эти журналы могут содержать записи о деятельности пользователя в приложении, такие как события входа в систему, использование функций и отчёты об ошибках. Оператор ведёт журналы только столько времени, сколько необходимо для выполнения операционных целей, включая устранение неполадок, мониторинг безопасности и улучшение обслуживания. Журналы хранятся в защищённом виде и не используются в целях, выходящих за пределы операционных потребностей.",
+    "informationCollectionList1": "Базовая информация профиля: полное имя, адрес электронной почты и фотография профиля (если предоставлены и доступны).",
     "informationCollectionList2": "Уникальный идентификатор: ID пользователя, специфичный для провайдера, для безопасного управления сессиями учётной записи.",
-    "informationCollectionTitle": "Сбор и Использование Информации",
+    "informationCollectionTitle": "Сбор и использование информации",
     "intro1": {
-      "part1": "Этот веб-сайт является экземпляром веб-приложения с открытым исходным кодом («TMI»), предоставляемого Оператором, указанным на странице ",
-      "part2": " этого веб-сайта («Оператор»)."
+      "part1": "Этот веб-сайт является экземпляром веб-приложения с открытым исходным кодом («TMI»), предоставляемого оператором, указанным на странице.",
+      "part2": " Страница этого веб-сайта («оператор»)."
     },
-    "intro2": "Оператор стремится защитить вашу конфиденциальность. Эта Политика конфиденциальности объясняет, как обрабатывается ваша информация.",
+    "intro2": "Оператор стремится защитить вашу конфиденциальность. Эта политика конфиденциальности объясняет, как обрабатывается ваша информация.",
     "introductionTitle": "Введение",
     "lastUpdatedDate": "2026-01-17",
-    "title": "Политика Конфиденциальности",
-    "userRightsContent1": "Вы имеете полный контроль над своими персональными данными. В любое время вы можете воспользоваться функцией «Удалить все мои данные» в разделе «Настройки пользователя» приложения.",
-    "userRightsContent2": "Эта опция позволяет немедленно удалить все данные, которые Оператор хранит от вашего имени, включая информацию профиля и записи аутентификации. После активации ваши данные будут безвозвратно удалены из систем Оператора и сторонних поставщиков, с учётом любых требований законодательства о хранении данных.",
-    "userRightsTitle": "Права Пользователей"
+    "title": "Политика конфиденциальности",
+    "userRightsContent1": "Вы имеете полный контроль над своими персональными данными. В любое время вы можете воспользоваться функцией «Удалить все мои данные» в разделе настроек пользователя приложения.",
+    "userRightsContent2": "Эта опция позволяет немедленно удалить все данные, которые оператор хранит от вашего имени, включая информацию профиля и записи аутентификации. После активации ваши данные будут безвозвратно удалены из систем оператора и сторонних поставщиков, с учётом любых требований законодательства о хранении данных.",
+    "userRightsTitle": "Права пользователей"
   },
   "projects": {
-    "addButton": "Добавить проект",
+    "addButton": "Добавить проект...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1323,9 +1365,9 @@
     "createDialog": {
       "descriptionPlaceholder": "Введите описание проекта",
       "namePlaceholder": "Введите название проекта",
-      "nameRequired": "Название проекта обязательно",
-      "statusPlaceholder": "напр., active, planning, archived",
-      "teamRequired": "Команда обязательна",
+      "nameRequired": "Название проекта обязательно.",
+      "statusPlaceholder": "Например, active, planning, archived",
+      "teamRequired": "Команда обязательна.",
       "title": "Создать проект",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1349,15 +1391,15 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "Проектов не найдено",
+    "noProjects": "Проектов не найдено.",
     "picker": {
       "label": "{{common.project}}",
       "none": "Без проекта"
     },
     "relatedProjectsDialog": {
-      "addRelated": "Добавить связанный проект",
+      "addRelated": "Добавить связанный проект.",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "Нет связанных проектов",
+      "noRelated": "Нет связанных проектов.",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "Выбрать проект",
       "title": "Связанные проекты"
@@ -1377,8 +1419,8 @@
       "planning": "Планирование"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "Фильтровать по статусу",
-    "subtitle": "Создание, редактирование и управление проектами, связями и метаданными",
+    "statusFilterLabel": "Фильтровать по статусу.",
+    "subtitle": "Создание, редактирование и управление проектами, связями и метаданными.",
     "teamFilterLabel": "Фильтровать по команде",
     "title": "Управление проектами"
   },
@@ -1386,29 +1428,29 @@
     "cvss": "CVSS",
     "cweIds": "CWE IDs",
     "diagramImageUnavailable": "Изображение диаграммы недоступно",
-    "diagramRenderFailed": "Не удалось отобразить диаграмму",
-    "generatedAt": "Отчёт создан",
-    "linkedAsset": "Связанный ресурс",
+    "diagramRenderFailed": "Не удалось отобразить диаграмму.",
+    "generatedAt": "Отчёт создан.",
+    "linkedAsset": "Связанный актив",
     "linkedDiagram": "Связанная диаграмма",
     "pageOf": "Страница {{current}} из {{total}}",
     "refLabel": "Ref",
-    "summaryCreatedAt": "Модель угроз создана",
-    "summaryCreatedBy": "Модель угроз создал",
+    "summaryCreatedAt": "Модель угроз создана.",
+    "summaryCreatedBy": "Модель угроз создал.",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "Последнее изменение модели угроз",
+    "summaryLastModified": "Последнее изменение модели угроз.",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "Статус модели угроз"
+    "summaryStatus": "Статус модели угроз."
   },
   "sessionExpiry": {
-    "extendButton": "Продлить Сеанс",
+    "extendButton": "Продлить сеанс",
     "extending": "Продление вашего сеанса, пожалуйста, подождите...",
-    "logoutButton": "Выйти Сейчас",
+    "logoutButton": "Выйти сейчас",
     "message": "Ваш сеанс скоро истечёт. Хотите продлить сеанс или выйти сейчас?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} seconds"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} секунд"
     },
-    "title": "Сеанс Скоро Истечёт"
+    "title": "Сеанс скоро истечёт"
   },
   "ssvcCalculator": {
     "apply": "{{cvssCalculator.apply}}",
@@ -1431,13 +1473,13 @@
       "description": "Каково текущее состояние эксплуатации этой уязвимости?",
       "name": "Эксплуатация",
       "none": "{{common.none}}",
-      "noneDesc": "Нет доказательств активной эксплуатации и нет публичного PoC.",
+      "noneDesc": "Нет доказательств активной эксплуатации и нет публичного PoC",
       "poc": "Публичный PoC",
       "pocDesc": "Существует типичный публичный PoC (например, на Metasploit или ExploitDB), или хорошо известный метод эксплуатации задокументирован."
     },
     "methodology": "Поставщик",
     "next": "Далее",
-    "openCalculator": "Добавить SSVC",
+    "openCalculator": "Добавить SSVC...",
     "publicSafetyImpact": {
       "description": "Представляет ли эксплуатация этой уязвимости риск для общественной безопасности?",
       "minimal": "Минимальное",
@@ -1477,16 +1519,16 @@
     },
     "browse": "Обзор опросов",
     "confidentialDialog": {
-      "description": "Следует ли отметить эту отправку как конфиденциальную? Конфиденциальные отправки не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания ответа.",
+      "description": "Следует ли отметить эту отправку как конфиденциальную? Конфиденциальные отправки не автоматически распределяются группе проверяющих безопасности. Эта настройка не может быть изменена после создания ответа.",
       "no": "Нет",
       "title": "Конфиденциальная отправка",
       "yes": "Да, отметить как конфиденциальное"
     },
     "confirmation": {
-      "backToSurveys": "Вернуться к опросам",
+      "backToSurveys": "Вернуться к опросам.",
       "message": "Ваш опрос успешно отправлен.",
       "title": "Опрос отправлен",
-      "viewResponses": "Просмотреть мои ответы"
+      "viewResponses": "Просмотреть мои ответы."
     },
     "continueDraft": "Продолжить черновик",
     "fill": {
@@ -1495,9 +1537,9 @@
     },
     "list": {
       "deleteDraft": "Удалить черновик",
-      "draftStarted": "Черновик начат {{time}}",
-      "errorLoadingSurveys": "Не удалось загрузить опросы",
-      "lastModified": "Последнее изменение {{time}}",
+      "draftStarted": "Черновик начат {{time}}.",
+      "errorLoadingSurveys": "Не удалось загрузить опросы.",
+      "lastModified": "Последнее изменение {{time}}.",
       "loadingSurveys": "Загрузка опросов...",
       "noSurveysMessage": "В настоящее время нет активных опросов. Проверьте позже.",
       "noSurveysTitle": "Нет доступных опросов",
@@ -1509,8 +1551,8 @@
     "myResponses": "Мои ответы",
     "noMatchingResponses": "Нет подходящих ответов",
     "noMatchingResponsesMessage": "Ни один ответ не соответствует выбранным фильтрам.",
-    "noResponses": "Вы еще не отправили ни одного ответа на опрос",
-    "noSurveys": "Нет доступных опросов",
+    "noResponses": "Вы ещё не отправили ни одного ответа на опрос.",
+    "noSurveys": "Нет доступных опросов.",
     "responses": {
       "continueEditing": "Продолжить редактирование",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1519,11 +1561,11 @@
       "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
       "noResponsesTitle": "Пока нет ответов",
       "pageTitle": "Мои ответы на опросы",
-      "responseCount": "{{count}} ответ",
-      "responseCountPlural": "{{count}} ответов"
+      "responseCount": "{{Count}} ответ",
+      "responseCountPlural": "{{Count}} ответов"
     },
     "saveDraft": "Сохранить черновик",
-    "startNew": "Начать опрос",
+    "startNew": "Начать опрос...",
     "status": {
       "draft": "Черновик",
       "needsRevision": "Требуется доработка",
@@ -1541,7 +1583,7 @@
     "viewResponse": "Просмотреть ответ"
   },
   "teams": {
-    "addButton": "Добавить команду",
+    "addButton": "Добавить команду...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "Изменено",
@@ -1554,8 +1596,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "Введите название команды",
-      "nameRequired": "Название команды обязательно",
-      "statusPlaceholder": "напр., active, archived",
+      "nameRequired": "Название команды обязательно.",
+      "statusPlaceholder": "Например, active, archived.",
       "title": "Создать команду",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1574,7 +1616,7 @@
     "filterLabel": "Фильтр команд",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "Участники",
+      "members": "Участники...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1588,14 +1630,14 @@
       "role": "Роль",
       "title": "Участники команды"
     },
-    "noTeams": "Команды не найдены",
+    "noTeams": "Команды не найдены.",
     "relatedTeamsDialog": {
-      "addRelated": "Добавить связанную команду",
+      "addRelated": "Добавить связанную команду.",
       "customRelationship": "Пользовательская связь",
-      "noRelated": "Нет связанных команд",
+      "noRelated": "Нет связанных команд.",
       "relationship": "Связь",
-      "removeRelated": "Удалить связанную команду",
-      "selectTeam": "Выберите команду",
+      "removeRelated": "Удалить связанную команду.",
+      "selectTeam": "Выбрать команду",
       "title": "Связанные команды"
     },
     "relationships": {
@@ -1610,7 +1652,7 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "Добавить ответственную сторону",
-      "noParties": "Нет ответственных сторон",
+      "noParties": "Нет ответственных сторон.",
       "removeParty": "Удалить ответственную сторону",
       "title": "Ответственные стороны"
     },
@@ -1631,25 +1673,25 @@
       "splitting": "Разделяется",
       "winding_down": "Завершается"
     },
-    "subtitle": "Создание, редактирование и управление командами, участниками и связями",
+    "subtitle": "Создание, редактирование и управление командами, участниками и связями.",
     "title": "Управление командами"
   },
   "threatEditor": {
-    "addMapping": "Добавить сопоставление",
+    "addMapping": "Добавить сопоставление...",
     "createNewThreat": "Создать новую угрозу",
-    "cvssVectorPlaceholder": "напр., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "Введите идентификатор CWE (напр., CWE-79)",
+    "cvssVectorPlaceholder": "Например, cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
+    "cweIdPlaceholder": "Введите идентификатор CWE (например, cwe-79)",
     "cweMappings": "Сопоставления CWE",
     "frameworkMappingPicker": {
       "notApplicable": "Неприменимо к текущему типу ячейки",
       "title": "Выбрать сопоставления фреймворка"
     },
-    "frameworkMappings": "Сопоставления инфраструктуры модели угроз",
+    "frameworkMappings": "Сопоставления фреймворка модели угроз.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "Не связано с активом",
-    "notAssociatedWithCell": "Не связано с ячейкой",
-    "notAssociatedWithDiagram": "Не связано с диаграммой",
+    "notAssociatedWithAsset": "Не связано с активом.",
+    "notAssociatedWithCell": "Не связано с ячейкой.",
+    "notAssociatedWithDiagram": "Не связано с диаграммой.",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1667,7 +1709,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "Отложено (P4)",
+      "high": "Высокий (P1)",
+      "immediate": "Немедленно (P0)",
+      "low": "Низкий (P3)",
+      "medium": "Средний (P2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1682,7 +1729,7 @@
       "high": "Высокий",
       "high.description": "Значительное воздействие или высокая вероятность; позволяет серьёзный несанкционированный доступ, повышение привилегий или нарушение работы сервиса.",
       "informational": "Информационный",
-      "informational.description": "Нет прямой эксплуатируемости; рекомендация, отклонение от лучших практик или улучшение конфигурации.",
+      "informational.description": "Нет прямой эксплуатируемости; рекомендация, отклонение от лучших практик или улучшение конфигурации",
       "low": "Низкий",
       "low.description": "Минимальное воздействие или низкая вероятность; незначительное влияние на бизнес, требует особых условий или взаимодействия с пользователем.",
       "medium": "Средний",
@@ -1710,25 +1757,31 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "Ложноположительный",
+      "mitigation_in_progress": "Устранение в процессе.",
+      "mitigation_planned": "Устранение запланировано",
+      "verification_pending": "Ожидает верификации"
+    },
+    "addCvssEntry": "Добавить запись CVSS.",
+    "cvssVector": "Вектор CVSS"
   },
   "threatModels": {
     "addPermission": "Добавить разрешение",
     "branch": "Ветка",
-    "changeSecurityReviewer": "Изменить ревизора безопасности",
-    "clearSecurityReviewer": "Убрать ревизора безопасности",
+    "changeSecurityReviewer": "Изменить проверяющего безопасности...",
+    "clearSecurityReviewer": "Убрать проверяющего безопасности",
     "commit": "Коммит",
     "confidentialProject": "Конфиденциальный проект",
-    "createFirstButton": "Создайте Свою Первую Модель Угроз",
+    "createFirstButton": "Создайте свою первую модель угроз...",
     "createNewDiagram": "Создать новую диаграмму",
-    "createNewRepository": "Добавить ссылку на репозиторий",
+    "createNewRepository": "Добавить ссылку на репозиторий...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Диаграмма потоков данных",
-    "deleteError": "Не удалось удалить модель угроз: {{error}}",
-    "deleteSuccess": "Модель угроз удалена: {{name}}",
+    "deleteError": "Не удалось удалить модель угроз: {{error}}.",
+    "deleteSuccess": "Модель угроз удалена: {{name}}.",
     "deleteWarningPermanent": "Это действие нельзя отменить, и оно безвозвратно удалит все связанные диаграммы, угрозы и метаданные.",
     "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
     "details": "Детали модели угроз",
@@ -1739,40 +1792,40 @@
     "documentDescriptionPlaceholder": "Опишите назначение или содержимое документа",
     "documentEditor": {
       "title": {
-        "create": "Создать Ссылку на Документ",
-        "edit": "Редактировать Ссылку на Документ",
-        "view": "Просмотр Ссылки на Документ"
+        "create": "Создать ссылку на документ",
+        "edit": "Редактировать ссылку на документ",
+        "view": "Просмотр ссылки на документ"
       }
     },
     "documentName": "Название документа",
     "documentUrl": "URL документа",
     "export": "Экспортировать",
     "exportDialog": {
-      "error": "Ошибка подготовки данных экспорта. Пожалуйста, попробуйте снова.",
+      "error": "Не удалось подготовить данные экспорта.",
       "preparing": "Подготовка данных для экспорта...",
       "ready": "Экспорт готов. Нажмите «Сохранить» для скачивания.",
       "retry": "Повторить",
       "save": "Сохранить",
       "title": "Экспортировать модель угроз"
     },
-    "fileSizeExceeded": "Файл превышает максимальный размер импорта: {{maxSize}} МБ",
+    "fileSizeExceeded": "Файл превышает максимальный размер импорта: {{maxsize}} МБ.",
     "frameworkDisabledHint": "Невозможно изменить фреймворк при наличии угроз",
     "idLabel": "{{common.id}}",
-    "importError": "Не удалось импортировать модель угроз: {{error}}",
-    "importFormatError": "Недопустимый формат модели угроз: отсутствуют обязательные поля (id, name)",
-    "importSuccess": "Модель угроз успешно импортирована: {{name}}",
-    "importValidationError": "Ошибка валидации модели угроз: {{errors}}",
+    "importError": "Не удалось импортировать модель угроз: {{error}}.",
+    "importFormatError": "Недопустимый формат модели угроз: отсутствуют обязательные поля (ID, name).",
+    "importSuccess": "Модель угроз успешно импортирована: {{name}}.",
+    "importValidationError": "Ошибка валидации модели угроз: {{errors}}.",
     "importing": "Импорт модели угроз...",
     "issueUriHint": "Введите URL для отслеживания этой модели угроз во внешней системе",
     "newThreatModel": "Новая модель угроз",
-    "noAssets": "Активы ещё не добавлены",
-    "noDiagrams": "Диаграммы ещё не добавлены",
-    "noDocuments": "Документы ещё не добавлены",
+    "noAssets": "Активы ещё не добавлены.",
+    "noDiagrams": "Диаграммы ещё не добавлены.",
+    "noDocuments": "Документы ещё не добавлены.",
     "noItemsMessage": "У вас ещё нет моделей угроз.",
-    "noNotes": "Заметки ещё не добавлены",
-    "noPermissions": "Разрешения не определены",
-    "noRepositories": "Репозитории ещё не добавлены",
-    "noThreats": "Угрозы ещё не добавлены",
+    "noNotes": "Заметки ещё не добавлены.",
+    "noPermissions": "Разрешения не определены.",
+    "noRepositories": "Репозитории ещё не добавлены.",
+    "noThreats": "Угрозы ещё не добавлены.",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
@@ -1783,9 +1836,9 @@
     "repositoryDescriptionPlaceholder": "Опишите репозиторий или его назначение",
     "repositoryEditor": {
       "title": {
-        "create": "Создать Ссылку на Репозиторий",
-        "edit": "Редактировать Ссылку на Репозиторий",
-        "view": "Просмотр Ссылки на Репозиторий"
+        "create": "Создать ссылку на репозиторий",
+        "edit": "Редактировать ссылку на репозиторий",
+        "view": "Просмотр ссылки на репозиторий"
       }
     },
     "repositoryName": "Название репозитория",
@@ -1800,9 +1853,9 @@
     "sections": {
       "audit": "Аудит",
       "inputs": "Входные данные",
-      "inputsDescription": "Активы, документы и репозитории исходного кода, которые описывают анализируемую систему",
+      "inputsDescription": "Активы, документы и репозитории исходного кода, которые описывают анализируемую систему.",
       "outputs": "Выходные данные",
-      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности",
+      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности.",
       "reviewProcess": "Процесс проверки"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1828,28 +1881,34 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "В процессе",
+      "not_started": "Не начато",
+      "pending_review": "Ожидает проверки",
+      "remediation_in_progress": "Устранение в процессе.",
+      "remediation_required": "Требуется устранение",
+      "verification_pending": "Ожидает верификации"
     },
-    "statusLastUpdated": "Статус последнего обновления",
+    "statusLastUpdated": "Статус последнего обновления.",
     "tag": "Тег",
     "threatModelFramework": "Фреймворк модели угроз",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "Добавить актив",
-      "addDiagram": "Добавить диаграмму",
-      "addDocument": "Добавить документ",
+      "addAsset": "Добавить актив...",
+      "addDiagram": "Добавить диаграмму...",
+      "addDocument": "Добавить документ...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "Активы — это ценные ресурсы в системе, которые требуют защиты, такие как данные, оборудование, программное обеспечение, инфраструктура, услуги или персонал.",
-      "diagramsCardTitle": "Диаграммы в TMI — это машиночитаемые представления движения данных и процессов в системе, позволяющие проводить как ручной, так и автоматизированный анализ безопасности.",
-      "documentsCardTitle": "Ссылки на документы — это ссылки на документы, хранящиеся вне TMI. Соответствующие документы описывают анализируемую систему и могут использоваться как аналитиками безопасности, так и автоматизированными процессами анализа.",
+      "assetsCardTitle": "Активы — это ценные ресурсы в системе, которые требуют защиты, такие как данные, оборудование, программное обеспечение, инфраструктура, услуги или персонал",
+      "diagramsCardTitle": "Диаграммы в TMI — это машиночитаемые представления движения данных и процессов в системе, позволяющие проводить как ручной, так и автоматизированный анализ безопасности",
+      "documentsCardTitle": "Ссылки на документы — это ссылки на документы, хранящиеся вне TMI. Соответствующие документы описывают анализируемую систему и могут использоваться как аналитиками безопасности, так и автоматизированными процессами анализа",
       "downloadModel": "Скачать модель",
       "dropToCreateDocument": "Перетащите для создания",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "Перетащите, чтобы задать URI задачи",
       "import": "Импортировать",
-      "notesCardTitle": "Заметки — это текст в формате markdown, полностью содержащийся в модели угроз, используемый для фиксации заметок и аннотаций от аналитиков безопасности и автоматизированных процессов анализа.",
-      "repositoriesCardTitle": "Репозитории — это ссылки на репозитории исходного кода, где управляется исходный код системы.",
-      "threatsCardTitle": "Угрозы — это потенциальные неблагоприятные события или действия, которые используют уязвимость или слабость в системе для компрометации её конфиденциальности, целостности, доступности или других целей безопасности. В TMI объекты угроз также содержат информацию о типе и уровне риска, связанного с угрозой, и информацию для отслеживания работы, необходимой для смягчения угрозы."
+      "notesCardTitle": "Заметки — это текст в формате Markdown, полностью содержащийся в модели угроз, используемый для фиксации заметок и аннотаций от аналитиков безопасности и автоматизированных процессов анализа",
+      "repositoriesCardTitle": "Репозитории — это ссылки на репозитории исходного кода, где управляется исходный код системы",
+      "threatsCardTitle": "Угрозы — это потенциальные неблагоприятные события или действия, которые используют уязвимость или слабость в системе для компрометации её конфиденциальности, целостности, доступности или других целей безопасности. В TMI объекты угроз также содержат информацию о типе и уровне риска, связанного с угрозой, и информацию для отслеживания работы, необходимой для смягчения угрозы"
     },
     "viewDiagramName": "Просмотреть свойства диаграммы",
     "yourThreatModels": "Ваши модели угроз"
@@ -1857,9 +1916,9 @@
   "threats": {
     "filters": {
       "clearAll": "Сбросить все фильтры",
-      "clearName": "Сбросить фильтр по имени",
+      "clearName": "Сбросить фильтр по названию",
       "lessFilters": "{{dashboard.lessFilters}}",
-      "mitigatedTooltip": "Цикл: Все / Устранённые / Неустранённые",
+      "mitigatedTooltip": "Цикл: все / устранённые / неустранённые",
       "moreFilters": "{{dashboard.moreFilters}}",
       "nameLabel": "{{common.search}}",
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
@@ -1870,40 +1929,40 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Если у вас есть вопросы об этих Условиях, пожалуйста, свяжитесь с Оператором этого веб-сайта через контактную информацию на странице ",
-      "part2": "."
+      "part1": "Если у вас есть вопросы об этих условиях, пожалуйста, свяжитесь с оператором этого веб-сайта через контактную информацию на странице.",
+      "part2": " Страница"
     },
     "intro": {
-      "part1": "Добро пожаловать в наш экземпляр TMI. Эти Условия использования («Условия») регулируют ваш доступ к этому веб-сайту и его использование, который предоставляется Оператором, указанным на странице ",
-      "part2": " этого веб-сайта («Оператор»)."
+      "part1": "Добро пожаловать в наш экземпляр TMI. Эти условия использования («условия») регулируют ваш доступ к этому веб-сайту и его использование, который предоставляется оператором, указанным на странице.",
+      "part2": " Страница этого веб-сайта («оператор»)."
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "Получая доступ к этому веб-сайту и используя его, вы принимаете и соглашаетесь соблюдать условия и положения этого соглашения. Если вы не согласны с этими условиями, пожалуйста, не используйте этот веб-сайт.",
-      "title": "1. Принятие Условий"
+      "title": "1. Принятие условий"
     },
     "section2": {
       "content": "Вы можете использовать веб-сайт только в законных целях. Вы соглашаетесь не злоупотреблять, не нарушать работу и не пытаться получить несанкционированный доступ к веб-сайту или его базовым системам.",
-      "title": "2. Использование Веб-сайта"
+      "title": "2. Использование веб-сайта"
     },
     "section3": {
       "content": "Веб-сайт предоставляется «как есть» без каких-либо гарантий, явных или подразумеваемых, включая, но не ограничиваясь, пригодностью для определённой цели, доступностью или точностью. Мы не гарантируем бесперебойную или безошибочную работу.",
-      "title": "3. Отказ от Гарантий"
+      "title": "3. Отказ от гарантий"
     },
     "section4": {
-      "content": "В максимальной степени, разрешённой законом, Оператор не несёт ответственности за любые прямые, косвенные, случайные или последующие убытки, возникающие в результате использования вами веб-сайта или невозможности его использования.",
-      "title": "4. Ограничение Ответственности"
+      "content": "В максимальной степени, разрешённой законом, оператор не несёт ответственности за любые прямые, косвенные, случайные или последующие убытки, возникающие в результате использования вами веб-сайта или невозможности его использования.",
+      "title": "4. Ограничение ответственности"
     },
     "section5": {
       "content": {
-        "part1": "Этот веб-сайт работает на программном обеспечении с открытым исходным кодом TMI. Его исходный код доступен по ссылкам, представленным на странице ",
-        "part2": " этого веб-сайта. Использование вами программного обеспечения регулируется условиями его лицензии с открытым исходным кодом. Мы не несём ответственности за само программное обеспечение, только за эксплуатацию этого экземпляра. Если не указано иное, Оператор этого веб-сайта не связан с проектом TMI или его создателями."
+        "part1": "Этот веб-сайт работает на программном обеспечении с открытым исходным кодом TMI. Его исходный код доступен по ссылкам, представленным на странице.",
+        "part2": " Страница этого веб-сайта. Использование вами программного обеспечения регулируется условиями его лицензии с открытым исходным кодом. Мы не несём ответственности за само программное обеспечение, только за эксплуатацию этого экземпляра. Если не указано иное, оператор этого веб-сайта не связан с проектом TMI или его создателями."
       },
-      "title": "5. Программное Обеспечение с Открытым Исходным Кодом"
+      "title": "5. Программное обеспечение с открытым исходным кодом"
     },
     "section6": {
-      "content": "Оператор может обновить эти Условия в любое время. Продолжение использования веб-сайта после внесения изменений означает принятие обновлённых Условий.",
-      "title": "6. Изменения Условий"
+      "content": "Оператор может обновить эти условия в любое время. Продолжение использования веб-сайта после внесения изменений означает принятие обновлённых условий.",
+      "title": "6. Изменения условий"
     },
     "section7": {
       "content": "Оператор оставляет за собой право приостановить или прекратить доступ к веб-сайту по своему усмотрению, без уведомления и по любой причине.",
@@ -1911,12 +1970,12 @@
     },
     "section8": {
       "content": {
-        "part1": "Эти Условия регулируются законодательством юрисдикции, указанной Оператором на странице ",
-        "part2": ", без учёта принципов коллизионного права."
+        "part1": "Эти условия регулируются законодательством юрисдикции, указанной оператором на странице.",
+        "part2": " Страница, без учёта принципов коллизионного права."
       },
-      "title": "8. Применимое Право"
+      "title": "8. Применимое право"
     },
-    "title": "Условия Использования"
+    "title": "Условия использования"
   },
   "transfer": {
     "userPicker": {
@@ -1939,9 +1998,9 @@
         "question": "Вопрос"
       },
       "markdownSupported": "Поддерживается Markdown",
-      "noNotes": "Заметок триажа пока нет",
-      "noResponses": "Ответы не записаны",
-      "noRevisionNotes": "Заметок по доработке нет",
+      "noNotes": "Заметок триажа пока нет.",
+      "noResponses": "Ответы не записаны.",
+      "noRevisionNotes": "Заметок по доработке нет.",
       "note": "заметка",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "Введите содержание заметки...",
@@ -1969,11 +2028,11 @@
       "approve": "Утвердить",
       "approveSelected": "Утвердить выбранные",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "Не удалось загрузить ответы",
+      "errorLoadingResponses": "Не удалось загрузить ответы.",
       "loadingResponses": "Загрузка ответов...",
-      "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам",
+      "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам.",
       "noResponsesTitle": "Нет ответов",
-      "noResponsesToTriage": "Нет ответов на опросы для сортировки",
+      "noResponsesToTriage": "Нет ответов на опросы для сортировки.",
       "notSubmitted": "Не отправлено",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Поиск по отправителю или опросу...",
@@ -1981,16 +2040,16 @@
       "submitter": "Отправитель"
     },
     "markInReview": "Отметить на проверке",
-    "markPendingTriage": "Отметить ожидающим сортировки",
+    "markPendingTriage": "Отметить ожидающим сортировки.",
     "messages": {
-      "approveError": "Не удалось утвердить ответ",
+      "approveError": "Не удалось утвердить ответ.",
       "approveSuccess": "Ответ утверждён",
-      "createThreatModelError": "Не удалось создать модель угроз",
-      "createThreatModelSuccess": "Модель угроз успешно создана",
-      "returnForRevisionError": "Не удалось вернуть ответ на доработку",
-      "returnForRevisionSuccess": "Ответ возвращён на доработку"
+      "createThreatModelError": "Не удалось создать модель угроз.",
+      "createThreatModelSuccess": "Модель угроз успешно создана.",
+      "returnForRevisionError": "Не удалось вернуть ответ на доработку.",
+      "returnForRevisionSuccess": "Ответ возвращён на доработку."
     },
-    "noResponses": "Нет ответов для сортировки",
+    "noResponses": "Нет ответов для сортировки.",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "Введите содержание заметки (поддерживается Markdown)...",
@@ -2002,16 +2061,16 @@
       }
     },
     "queue": "Очередь сортировки",
-    "returnToSubmitted": "Вернуть в отправленные",
+    "returnToSubmitted": "Вернуть в отправленные.",
     "reviewerAssignment": {
       "assign": "Назначить",
       "assignToMe": "Назначить мне",
-      "errorLoading": "Не удалось загрузить неназначенные модели угроз",
+      "errorLoading": "Не удалось загрузить неназначенные модели угроз.",
       "loading": "Загрузка неназначенных рецензий...",
       "noUnassigned": "Нет неназначенных рецензий",
-      "noUnassignedDescription": "Все активные модели угроз имеют назначенного рецензента безопасности",
+      "noUnassignedDescription": "Все активные модели угроз имеют назначенного проверяющего безопасности.",
       "noUnassignedFiltered": "Нет моделей угроз, соответствующих вашим фильтрам",
-      "reviewer": "Рецензент по безопасности",
+      "reviewer": "Проверяющий безопасности",
       "reviewerPlaceholder": "Фильтр по рецензенту...",
       "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
       "selectReviewer": "Выберите рецензента...",
@@ -2019,7 +2078,7 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "Укажите заметки с объяснением, что необходимо доработать. Отправитель увидит эти заметки при просмотре своего ответа.",
+      "description": "Укажите заметки с объяснением, что необходимо доработать. Отправитель увидит эти заметки при просмотре своего ответа",
       "hint": "Обязательно — опишите, какие изменения необходимы",
       "label": "Заметки по доработке",
       "placeholder": "Опишите необходимые доработки...",
@@ -2052,15 +2111,15 @@
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "Необязательно: опишите назначение этих учётных данных",
-        "descriptionPlaceholder": "Используется для интеграции CI/CD конвейера",
-        "descriptionTooLong": "Описание должно содержать не более 500 символов",
+        "descriptionPlaceholder": "Используется для интеграции CI/CD конвейера.",
+        "descriptionTooLong": "Описание должно содержать не более 500 символов.",
         "expiresAt": "Дата истечения срока действия",
         "expiresAtHint": "Необязательно: оставьте пустым для бессрочного действия",
         "name": "{{common.name}}",
         "nameHint": "Понятное название для этих учётных данных",
         "namePlaceholder": "Мои учётные данные API",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "Название должно содержать не более 100 символов",
+        "nameTooLong": "Название должно содержать не более 100 символов.",
         "title": "Создать учётные данные клиента"
       },
       "createdOn": "{{common.created}}",
@@ -2070,13 +2129,13 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Последнее использование",
       "neverExpires": "Никогда не истекает",
-      "noCredentials": "Учётные данные клиента отсутствуют",
+      "noCredentials": "Учётные данные клиента отсутствуют.",
       "noCredentialsDescription": "Создайте учётные данные для программного доступа к API TMI.",
       "secretDialog": {
         "title": "Учётные данные клиента созданы",
         "warning": "Сохраните эти учётные данные сейчас. Секретный ключ клиента больше не будет показан."
       },
-      "title": "API учетные данные"
+      "title": "API учётные данные"
     },
     "dashboardListView": "Показывать панель управления в виде списка",
     "deleteMyData": {
@@ -2093,10 +2152,10 @@
         "intro": "Подтверждение этой операции безвозвратно удалит следующие данные и отзовёт связанные разрешения:"
       },
       "processing": "Удаление вашей учётной записи...",
-      "title": "Удалить Все Мои Данные",
+      "title": "Удалить все мои данные",
       "validation": "Чтобы подтвердить запрос на удаление, введите свой адрес электронной почты точно так, как он указан здесь:"
     },
-    "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
+    "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм.",
     "displayPreferences": "Настройки отображения",
     "downloadLog": {
       "hint": "Загружает последние записи журнала приложения в формате JSONL для диагностики.",
@@ -2106,23 +2165,23 @@
     "marginSize": {
       "narrow": "Узкие",
       "standard": "Стандартный",
-      "title": "Предпочтительный Размер Полей для Отчётов",
+      "title": "Предпочтительный размер полей для отчётов.",
       "wide": "Широкие"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "Предпочтительный Размер Страницы для Отчётов",
+      "title": "Предпочтительный размер страницы для отчётов.",
       "usLetter": "US Letter"
     },
     "reportPreferences": "Настройки отчётов",
     "sections": {
       "developer": "Разработчик",
       "diagramEditor": "Редактор диаграмм",
-      "diagramLayout": "Diagram Layout",
+      "diagramLayout": "Макет диаграммы",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "Показать инструменты разработчика",
-    "showShapeBordersWithIcons": "Показывать заливку и границу фигуры при отображении иконки",
+    "showDeveloperTools": "Показать инструменты разработчика.",
+    "showShapeBordersWithIcons": "Показывать заливку и границу фигуры при отображении иконки.",
     "tabs": {
       "credentials": "Учетные данные",
       "danger": "Опасная зона",
@@ -2136,33 +2195,33 @@
       "dark": "Тёмная",
       "light": "Светлая"
     },
-    "title": "Настройки Пользователя",
+    "title": "Настройки пользователя",
     "transferData": {
       "confirmMessage": "Вы уверены, что хотите передать все свои модели угроз и ответы на опросы {{email}}? Вы будете понижены в роли до редактора на переданных элементах.",
-      "dialogTitle": "Передать Мои Данные",
-      "error": "Не удалось передать данные. Пожалуйста, попробуйте снова.",
+      "dialogTitle": "Передать мои данные",
+      "error": "Не удалось передать данные.",
       "hint": "Передает право собственности на все ваши модели угроз и ответы на опросы другому пользователю. Вы будете понижены в роли до редактора на переданных элементах.",
-      "success": "Передано {{tmCount}} моделей угроз и {{responseCount}} ответов на опросы.",
-      "title": "Передать Мои Данные Другому Пользователю"
+      "success": "Передано {{tmcount}} моделей угроз и {{responsecount}} ответов на опросы.",
+      "title": "Передать мои данные другому пользователю"
     },
     "userProfile": {
       "currentRole": "Текущая роль в модели угроз",
       "groupMemberships": "Членство в группах",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
-      "title": "Профиль Пользователя"
+      "title": "Профиль пользователя"
     }
   },
   "userProjects": {
     "listTitle": "{{projects.listTitle}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "Просмотр и редактирование ваших проектов, команд и связей",
-    "title": "Мои Проекты"
+    "subtitle": "Просмотр и редактирование ваших проектов, команд и связей.",
+    "title": "Мои проекты"
   },
   "userTeams": {
     "listTitle": "{{teams.listTitle}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "Просмотр и редактирование ваших команд, участников и связей",
-    "title": "Мои Команды"
+    "subtitle": "Просмотр и редактирование ваших команд, участников и связей.",
+    "title": "Мои команды"
   }
 }
