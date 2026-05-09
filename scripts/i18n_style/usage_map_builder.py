@@ -22,6 +22,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 
+from scripts.i18n_style.ellipsis_detector import is_ellipsis_candidate
 from scripts.i18n_style.key_enumerator import enumerate_keys
 from scripts.i18n_style.usage_scanner import scan_for_key, scan_for_partial_key
 from scripts.i18n_style.surface_inference import infer_surfaces
@@ -65,10 +66,16 @@ def build_usage_map(en_us_path: Path, repo_root: Path) -> Dict[str, Dict[str, An
         usages = scan_for_key(key, repo_root)
         if usages:
             surfaces = infer_surfaces(usages)
+            # The surface guard is intentionally omitted here: surface inference
+            # operates on single context lines and misclassifies button keys
+            # whose i18n reference is inside a child <span> (the common Angular
+            # multi-line pattern).  The detector itself filters non-button
+            # usages via its internal button hint and surrounding-window logic.
+            ellipsis = is_ellipsis_candidate(usages, repo_root)
             usage_map[key] = {
                 "surfaces": sorted(surfaces),
                 "uses": [_serialize_use(u) for u in usages],
-                "ellipsis_candidate": False,
+                "ellipsis_candidate": ellipsis,
                 "ambiguous_word": False,
                 "needs_translator_comment": False,
                 "confidence": "high",
