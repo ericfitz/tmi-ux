@@ -652,6 +652,8 @@
     "deactivate": "Deactivate",
     "delete": "Delete",
     "deleteConfirm": "Confirm Deletion",
+    "deleteFailed": "Delete failed",
+    "deletedSuccessfully": "Deleted successfully",
     "deleteWarningConfirmationField": "Delete Confirmation",
     "deleteWarningConfirmationMatch": "Confirmation text matches",
     "deleteWarningConfirmationMismatch": "Confirmation text does not match",
