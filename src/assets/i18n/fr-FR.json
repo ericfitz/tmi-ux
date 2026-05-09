@@ -244,8 +244,7 @@
         "config": "Fichier de configuration",
         "database": "Base de données",
         "environment": "Environnement",
-        "vault": "Coffre-fort",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "Coffre-fort"
       },
       "subtitle": "Afficher et gérer les paramètres de configuration du système",
       "title": "Gérer les paramètres",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "Bouton Oui/Non",
         "checkbox": "Sélection à choix multiples",
-        "comment": "Zone de texte multiligne",
         "dropdown": "Sélection déroulante",
         "panel": "Regrouper les questions dans un panneau",
         "paneldynamic": "Groupe de panneaux répétable",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "Oui/Non",
         "checkbox": "Case à cocher",
-        "comment": "Multiligne",
         "dropdown": "Liste déroulante",
         "panel": "Panneau",
         "paneldynamic": "Panneau dynamique",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "Appliquer",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "Ajouter CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Impossible d'analyser la chaîne de vecteur CVSS existante",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "Collez une chaîne de vecteur CVSS et appuyez sur Entrée",
     "title": "Calculateur CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Une entrée CVSS pour cette version existe déjà",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "Chaîne de vecteur CVSS invalide",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "Coller ou saisir une chaîne de vecteur CVSS et appuyer sur Entrée",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "Chaîne de vecteur",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "Seuls les vecteurs CVSS 3.1 et 4.0 sont pris en charge",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "Version CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "Version CVSS"
   },
   "cwePicker": {
     "addCwe": "Ajouter un CWE",
@@ -1340,8 +1327,7 @@
       "statusPlaceholder": "p. ex. active, planning, archived",
       "teamRequired": "L'equipe est requise",
       "title": "Creer un Projet",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "Creer un Nouveau Projet",
     "deleteDialog": {
@@ -1567,13 +1553,11 @@
       "descriptionPlaceholder": "Saisir la description de l'equipe",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "Saisir le nom de l'equipe",
       "nameRequired": "Le nom de l'equipe est requis",
       "statusPlaceholder": "p. ex. active, archived",
       "title": "Creer une Equipe",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "Creer une Nouvelle Equipe",
     "deleteDialog": {

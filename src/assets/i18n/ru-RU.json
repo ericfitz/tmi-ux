@@ -244,8 +244,7 @@
         "config": "Файл конфигурации",
         "database": "База данных",
         "environment": "Окружение",
-        "vault": "Хранилище",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "Хранилище"
       },
       "subtitle": "Просмотр и управление системными настройками конфигурации",
       "title": "Управление Настройками",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "Переключатель да/нет",
         "checkbox": "Выбор нескольких вариантов",
-        "comment": "Многострочное текстовое поле",
         "dropdown": "Выбор из выпадающего списка",
         "panel": "Группировка вопросов в панель",
         "paneldynamic": "Повторяющаяся группа панелей",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "Да/Нет",
         "checkbox": "Флажок",
-        "comment": "Многострочный",
         "dropdown": "Выпадающий список",
         "panel": "Панель",
         "paneldynamic": "Динамическая панель",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "Применить",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "Добавить CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Не удалось разобрать существующую строку вектора CVSS",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "Вставьте строку вектора CVSS и нажмите Enter",
     "title": "Калькулятор CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Запись CVSS для этой версии уже существует",
-    "vectorDuplicateVersion.comment": "Error shown when user enters a CVSS vector string for a version that already has an entry.",
     "vectorInvalid": "Недопустимая строка вектора CVSS",
-    "vectorInvalid.comment": "Error shown when the entered CVSS vector string cannot be parsed or is incomplete.",
     "vectorPlaceholder": "Вставьте или введите строку вектора CVSS и нажмите Enter",
-    "vectorPlaceholder.comment": "Placeholder text for the CVSS vector string input field. CVSS is a proper name and should not be translated.",
     "vectorString": "Строка вектора",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "Поддерживаются только векторы CVSS 3.1 и 4.0",
-    "vectorUnsupportedVersion.comment": "Error shown when user enters a CVSS vector string with a version other than 3.1 or 4.0. CVSS is a proper name and should not be translated.",
-    "version": "Версия CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "Версия CVSS"
   },
   "cwePicker": {
     "addCwe": "Добавить CWE",
@@ -1340,8 +1327,7 @@
       "statusPlaceholder": "напр., active, planning, archived",
       "teamRequired": "Команда обязательна",
       "title": "Создать проект",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "Создать новый проект",
     "deleteDialog": {
@@ -1567,13 +1553,11 @@
       "descriptionPlaceholder": "Введите описание команды",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "Введите название команды",
       "nameRequired": "Название команды обязательно",
       "statusPlaceholder": "напр., active, archived",
       "title": "Создать команду",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "Создать новую команду",
     "deleteDialog": {

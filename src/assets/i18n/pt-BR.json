@@ -244,8 +244,7 @@
         "config": "Arquivo de Configuração",
         "database": "Banco de Dados",
         "environment": "Ambiente",
-        "vault": "Cofre",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "Cofre"
       },
       "subtitle": "Visualizar e gerenciar configurações do sistema",
       "title": "Gerenciar Configurações",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "Alternância booleana",
         "checkbox": "Seleção de múltipla escolha",
-        "comment": "Área de texto multilinha",
         "dropdown": "Seleção suspensa",
         "panel": "Agrupar perguntas em um painel",
         "paneldynamic": "Grupo de painéis repetível",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "Sim/Não",
         "checkbox": "Caixa de Seleção",
-        "comment": "Multilinha",
         "dropdown": "Suspenso",
         "panel": "Painel",
         "paneldynamic": "Painel Dinâmico",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "Aplicar",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "Adicionar CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Não foi possível analisar a string de vetor CVSS existente",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "Cole uma string de vetor CVSS e pressione Enter",
     "title": "Calculadora CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Já existe uma entrada CVSS para esta versão",
-    "vectorDuplicateVersion.comment": "Error shown when user enters a CVSS vector string for a version that already has an entry.",
     "vectorInvalid": "String de vetor CVSS inválida",
-    "vectorInvalid.comment": "Error shown when the entered CVSS vector string cannot be parsed or is incomplete.",
     "vectorPlaceholder": "Cole ou digite uma string de vetor CVSS e pressione Enter",
-    "vectorPlaceholder.comment": "Placeholder text for the CVSS vector string input field. CVSS is a proper name and should not be translated.",
     "vectorString": "String do vetor",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "Apenas vetores CVSS 3.1 e 4.0 são suportados",
-    "vectorUnsupportedVersion.comment": "Error shown when user enters a CVSS vector string with a version other than 3.1 or 4.0. CVSS is a proper name and should not be translated.",
-    "version": "Versão do CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "Versão do CVSS"
   },
   "cwePicker": {
     "addCwe": "Adicionar CWE",
@@ -1351,8 +1338,7 @@
       "statusPlaceholder": "ex.: active, planning, archived",
       "teamRequired": "A equipe é obrigatória",
       "title": "Criar Projeto",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "Criar Novo Projeto",
     "deleteDialog": {
@@ -1578,13 +1564,11 @@
       "descriptionPlaceholder": "Insira a descrição da equipe",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "Insira o nome da equipe",
       "nameRequired": "O nome da equipe é obrigatório",
       "statusPlaceholder": "ex.: active, archived",
       "title": "Criar Equipe",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "Criar Nova Equipe",
     "deleteDialog": {

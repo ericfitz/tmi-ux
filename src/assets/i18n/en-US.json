@@ -75,7 +75,8 @@
         "webhook": "Webhook",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add addon'."
+        "title.comment": "Noun phrase. Title of a dialog: 'Add addon'.",
+        "iconPlaceholder.lint-skip": "Technical identifier (Material Symbols icon name), not a translatable phrase."
       },
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "{{common.created}}",
@@ -104,7 +105,10 @@
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "Create automation user",
-      "title": "{{admin.createAutomationUserDialog.save}}"
+      "title": "{{admin.createAutomationUserDialog.save}}",
+      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
+      "nameHint.lint-skip": "Starts with numeric constraint notation '2-64', not a capitalized sentence.",
+      "namePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase."
     },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
@@ -125,7 +129,8 @@
         "save": "Create group",
         "title": "Add group",
         "displayName.comment": "Noun. Labels a form field or UI section: 'Display name'.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add group'."
+        "title.comment": "Noun phrase. Title of a dialog: 'Add group'.",
+        "groupNamePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase."
       },
       "columns": {
         "group": "{{common.subjectTypes.group}}",
@@ -388,7 +393,8 @@
       "triggerEvents": "Trigger events",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}",
       "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete webhook'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter webhooks'."
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter webhooks'.",
+      "events.lint-skip": "Single-word technical category label, intentionally lowercase."
     }
   },
   "adminSurveys": {
@@ -454,7 +460,7 @@
         "text": "Single line text input"
       },
       "questionTypeLabels": {
-        "boolean": "Yes/no",
+        "boolean": "Yes/No",
         "checkbox": "Checkbox",
         "comment": "Multiline",
         "dropdown": "Dropdown",
@@ -575,7 +581,9 @@
       "403.comment": "This is a standard error message and should not be translated.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
-      "title": "Unauthorized access"
+      "title": "Unauthorized access",
+      "401.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
+      "403.lint-skip": "HTTP status code label starting with numeric code, not a sentence."
     }
   },
   "chat": {
@@ -1004,7 +1012,8 @@
     "vectorUnsupportedVersion": "Only CVSS 3.1 and 4.0 vectors are supported.",
     "vectorUnsupportedVersion.comment": "Error shown when user enters a CVSS vector string with a version other than 3.1 or 4.0. CVSS is a proper name and should not be translated.",
     "version": "CVSS version",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated.",
+    "metricsConfigured.lint-skip": "Slash between two {{...}} placeholders; not a slash-joined enum."
   },
   "cwePicker": {
     "addCwe": "Add CWE",
@@ -1132,7 +1141,10 @@
       "toolbarTooltip": "{{dfd.iconPicker.title}}",
       "remove.comment": "Action description on a tooltip (typically for an icon button): 'Remove'.",
       "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
-      "searchToChange.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      "searchToChange.lint-skip": "Placeholder text; ellipsis (...) signals input context",
+      "statusAvailable.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence.",
+      "statusMatches.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence.",
+      "statusShapesSelected.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence."
     },
     "portLabel": {
       "position.bottom": "Bottom",
@@ -1216,7 +1228,8 @@
         "rawLabel": "Microsoft graph call",
         "title": "Grant TMI access to this file.",
         "unavailable": "Microsoft remediation details are unavailable. Contact support.",
-        "copyButton.comment": "Verb (imperative form). Used as an action label: 'Copy'. Surface not identified in source scan."
+        "copyButton.comment": "Verb (imperative form). Used as an action label: 'Copy'. Surface not identified in source scan.",
+        "curlLabel.lint-skip": "Technical tool name 'curl' is always lowercase by convention."
       },
       "shareWithServiceAccount": "Share with TMI service account"
     },
@@ -1247,9 +1260,9 @@
       "label": "How would you like to attach this document?",
       "linkAction": "Link source",
       "linkPrompt": "Link your account to pick files from this source.",
-      "linkPromptMicrosoft": "Link a Microsoft account to browse onedrive/sharepoint files.",
+      "linkPromptMicrosoft": "Link a Microsoft account to browse OneDrive/SharePoint files.",
       "pickAction": "Pick a file",
-      "pickActionMicrosoft": "Browse onedrive/sharepoint",
+      "pickActionMicrosoft": "Browse OneDrive/SharePoint",
       "pickedFile": "File selected: {{ filename }}.",
       "repickAction": "Choose a different file",
       "serviceUrlHint": "Paste the share URL of the file. After saving, you'll be prompted to share it with our service account.",
@@ -1259,10 +1272,11 @@
   "documentSources": {
     "add": "Connect a source",
     "callback": {
-      "error": "Couldn't connect source. Source: {{ source }}. reason: {{ reason }}",
+      "error": "Couldn't connect source. Source: {{ source }}. Reason: {{ reason }}",
       "linking": "Linking your account...",
       "notConfigured": "{{ Source }} is not configured on this server. Contact your administrator.",
-      "success": "Source connected. Source: {{ source }}."
+      "success": "Source connected. Source: {{ source }}.",
+      "notConfigured.lint-skip": "Leading {{Source}} is a placeholder; 'Source' is not a mid-sentence domain noun here."
     },
     "columns": {
       "account": "Account",
@@ -1279,7 +1293,7 @@
     },
     "linkedAt": "Linked {{ relativetime }}.",
     "microsoft": {
-      "name": "Onedrive/sharepoint"
+      "name": "OneDrive/SharePoint"
     },
     "relink": "Relink",
     "status": {
@@ -1493,7 +1507,8 @@
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "Notes ({{count}})",
     "addNote.comment": "Verb (imperative form). Used as an action label: 'Add note'. Surface not identified in source scan.",
-    "deleteConfirmTitle.comment": "Verb (imperative form). Used as an action label: 'Delete note'. Surface not identified in source scan."
+    "deleteConfirmTitle.comment": "Verb (imperative form). Used as an action label: 'Delete note'. Surface not identified in source scan.",
+    "sharableTooltip.lint-skip": "Slash-joined pair 'team/project' are domain nouns intentionally lowercase."
   },
   "notifications": {
     "actions": {
@@ -1507,7 +1522,8 @@
       "sendPresenterRequest": "Send presenter request.",
       "startCollaboration": "Start collaboration",
       "updatePresenter": "Update presenter",
-      "sendPresenterRequest.comment": "Verb (imperative form). Used as an action label: 'Send presenter request'. Surface not identified in source scan."
+      "sendPresenterRequest.comment": "Verb (imperative form). Used as an action label: 'Send presenter request'. Surface not identified in source scan.",
+      "collaboration.lint-skip": "Technical category label, intentionally lowercase (enum/tag value)."
     },
     "presenter": {
       "assigned": "{{User}} is now the presenter.",
@@ -1551,7 +1567,8 @@
     "nextPage": "Next page",
     "previousPage": "Previous page",
     "rangeEmpty": "0 of {{length}}",
-    "rangeLabel": "{{Startindex}} - {{endindex}} of {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} of {{length}}",
+    "rangeEmpty.lint-skip": "Starts with numeric value '0'; this is a count/range format string."
   },
   "presenter": {
     "startPresenting": "Start presenting",
@@ -1585,7 +1602,7 @@
     "informationCollectionList2": "Unique identifier: a provider-specific user ID to manage account sessions securely.",
     "informationCollectionTitle": "Information collection and use",
     "intro1": {
-      "part1": "This web site is an instance of an open-source web application (\"tmi\") that is made available by the operator listed on the.",
+      "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the operator listed on the.",
       "part2": " Page of this web site (\"the operator\")."
     },
     "intro2": "The operator is committed to protecting your privacy. This privacy policy explains how your information is handled.",
@@ -1597,7 +1614,9 @@
     "userRightsContent2": "This option enables immediate deletion of all data the operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from the operator's systems and third-party providers, subject to any legal retention obligations.",
     "userRightsTitle": "User rights",
     "dataSharingContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
-    "informationCollectionContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period"
+    "informationCollectionContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
+    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence.",
+    "dataSharingList2a.lint-skip": "Contains 'LLMs' (plural acronym); validator's upper() comparison doesn't match mixed-case acronyms."
   },
   "projects": {
     "addButton": "Add project...",
@@ -1616,7 +1635,8 @@
       "teamRequired": "Team is required.",
       "title": "Create project",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder.comment": "This is an example URL and should not be translated.",
+      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form."
     },
     "createNew": "Create new project",
     "deleteDialog": {
@@ -1923,7 +1943,9 @@
       "statusPlaceholder": "E.g. active, archived.",
       "title": "Create team",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder.comment": "This is an example URL and should not be translated.",
+      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
+      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form."
     },
     "createNew": "Create new team",
     "deleteDialog": {
@@ -2106,7 +2128,8 @@
       "verification_pending.description": "Mitigation is complete; security team must test or review effectiveness.",
       "open.comment": "Verb (imperative form). Used as an action label: 'Open'. Surface not identified in source scan."
     },
-    "addMapping.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "addMapping.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
+    "cvssVectorPlaceholder.lint-skip": "CVSS vector notation is a technical identifier format, not slash-joined enum segments."
   },
   "threatModels": {
     "addPermission": "Add permission",
@@ -2303,43 +2326,52 @@
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
-      "title": "1. Acceptance of terms"
+      "title": "1. Acceptance of terms",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section2": {
       "content": "You may use the web site for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the web site or its underlying systems.",
-      "title": "2. Use of the web site"
+      "title": "2. Use of the web site",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section3": {
       "content": "The web site is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
-      "title": "3. No warranty"
+      "title": "3. No warranty",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section4": {
       "content": "To the fullest extent permitted by law, the operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.",
-      "title": "4. Limitation of liability"
+      "title": "4. Limitation of liability",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section5": {
       "content": {
         "part1": "This website runs the TMI open source software. Its source code is available at the links provided on the.",
         "part2": " Page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the operator of this web site is not affiliated with the TMI project or its creators."
       },
-      "title": "5. Open source software"
+      "title": "5. Open source software",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section6": {
       "content": "The operator may update these terms at any time. Continued use of the web site after changes constitutes acceptance of the updated terms.",
-      "title": "6. Changes to terms"
+      "title": "6. Changes to terms",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section7": {
       "content": "The operator reserves the right to suspend or terminate access to the web site at the operator's discretion, without notice, for any reason.",
-      "title": "7. Termination"
+      "title": "7. Termination",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
     "section8": {
       "content": {
         "part1": "These terms are governed by the laws of the jurisdiction specified by the operator on the.",
         "part2": " Page, without regard to conflict of law principles."
       },
-      "title": "8. Governing law"
+      "title": "8. Governing law",
+      "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
-    "title": "Terms of service"
+    "title": "Terms of service",
+    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence."
   },
   "transfer": {
     "userPicker": {
@@ -2381,7 +2413,9 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
       "triageNotes": "Triage notes",
       "addNote.comment": "Verb (imperative). Used on a button that initiates the action: 'Add note'.",
-      "noteContentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      "noteContentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
+      "note.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase.",
+      "notes.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase."
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",

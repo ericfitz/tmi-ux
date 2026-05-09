@@ -103,8 +103,10 @@ def validate_sentence_case(value: str, lists: StyleLists) -> List[str]:
             sentence_start = False
             continue
 
-        # Word may have trailing sentence-end punctuation.
-        bare = word.rstrip(",.;:!?)")
+        # Word may have trailing punctuation. Also strip leading parens/quotes
+        # so things like "(All)" check the 'A' rather than '(' for the
+        # first-word-capitalization rule.
+        bare = word.rstrip(",.;:!?)\"'").lstrip("(\"'")
 
         # Acronym? Must be canonical (exact upper case).
         if _matches_acronym_case_insensitive(bare, lists.acronyms):
@@ -120,9 +122,13 @@ def validate_sentence_case(value: str, lists: StyleLists) -> List[str]:
             sentence_start = _word_ends_sentence(word)
             continue
 
-        # Symbol-joined: split on '/' or '-' and check each segment.
-        if "/" in bare or "-" in bare:
-            segments = re.split(r"[\-/]", bare)
+        # Symbol-joined values (slash-joined enums like Yes/No, A/B):
+        # each segment first-letter capitalized. Hyphens are NOT treated as
+        # symbol-joined segments mid-sentence; "real-time" is one compound
+        # word in sentence case. Slashes still are because we use them for
+        # enum values where each side is a distinct concept.
+        if "/" in bare:
+            segments = bare.split("/")
             for seg in segments:
                 if not seg:
                     continue

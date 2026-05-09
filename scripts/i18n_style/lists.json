@@ -48,7 +48,8 @@
     "IEC",
     "CI/CD",
     "JSONL",
-    "US"
+    "US",
+    "TMs"
   ],
   "domain_nouns": [
     "threat model",

@@ -244,8 +244,7 @@
         "config": "ملف التكوين",
         "database": "قاعدة البيانات",
         "environment": "البيئة",
-        "vault": "المخزن الآمن",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "المخزن الآمن"
       },
       "subtitle": "عرض وإدارة إعدادات تكوين النظام",
       "title": "إدارة الإعدادات",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "تبديل منطقي",
         "checkbox": "اختيار متعدد",
-        "comment": "منطقة نص متعددة الأسطر",
         "dropdown": "اختيار من قائمة منسدلة",
         "panel": "تجميع الأسئلة في لوحة",
         "paneldynamic": "مجموعة لوحات قابلة للتكرار",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "نعم/لا",
         "checkbox": "خانة اختيار",
-        "comment": "متعدد الأسطر",
         "dropdown": "قائمة منسدلة",
         "panel": "لوحة",
         "paneldynamic": "لوحة ديناميكية",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "تطبيق",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "إضافة CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "تعذر تحليل سلسلة متجه CVSS الموجودة",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "الصق سلسلة متجه CVSS واضغط Enter",
     "title": "حاسبة CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "يوجد بالفعل إدخال CVSS لهذا الإصدار",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "سلسلة متجه CVSS غير صالحة",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "الصق أو اكتب سلسلة متجه CVSS واضغط Enter",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "سلسلة المتجه",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "يتم دعم متجهات CVSS 3.1 و 4.0 فقط",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "إصدار CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "إصدار CVSS"
   },
   "cwePicker": {
     "addCwe": "إضافة CWE",
@@ -1351,8 +1338,7 @@
       "statusPlaceholder": "مثال: active, planning, archived",
       "teamRequired": "الفريق مطلوب",
       "title": "إنشاء مشروع",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "إنشاء مشروع جديد",
     "deleteDialog": {
@@ -1578,13 +1564,11 @@
       "descriptionPlaceholder": "أدخل وصف الفريق",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "أدخل اسم الفريق",
       "nameRequired": "اسم الفريق مطلوب",
       "statusPlaceholder": "مثال: active, archived",
       "title": "إنشاء فريق",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "إنشاء فريق جديد",
     "deleteDialog": {

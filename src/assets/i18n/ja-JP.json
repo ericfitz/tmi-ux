@@ -244,8 +244,7 @@
         "config": "設定ファイル",
         "database": "データベース",
         "environment": "環境変数",
-        "vault": "Vault",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "Vault"
       },
       "subtitle": "システム構成設定を表示および管理",
       "title": "設定の管理",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "真偽値トグル",
         "checkbox": "複数選択",
-        "comment": "複数行テキストエリア",
         "dropdown": "ドロップダウン選択",
         "panel": "パネル内に質問をグループ化",
         "paneldynamic": "繰り返し可能なパネルグループ",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "はい/いいえ",
         "checkbox": "チェックボックス",
-        "comment": "複数行",
         "dropdown": "ドロップダウン",
         "panel": "パネル",
         "paneldynamic": "動的パネル",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "適用",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "CVSSを追加",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "既存のCVSSベクター文字列を解析できませんでした",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "CVSSベクトル文字列を貼り付けてEnterキーを押してください",
     "title": "CVSS計算機",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "このバージョンのCVSSエントリは既に存在します",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "無効なCVSSベクター文字列",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "CVSSベクター文字列を貼り付けまたは入力してEnterを押してください",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "ベクター文字列",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "CVSS 3.1および4.0ベクターのみサポートされています",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "CVSSバージョン",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "CVSSバージョン"
   },
   "cwePicker": {
     "addCwe": "CWEを追加",
@@ -1351,8 +1338,7 @@
       "statusPlaceholder": "例: active, planning, archived",
       "teamRequired": "チームは必須です",
       "title": "プロジェクトを作成",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "新しいプロジェクトを作成",
     "deleteDialog": {
@@ -1578,13 +1564,11 @@
       "descriptionPlaceholder": "チームの説明を入力",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "チーム名を入力",
       "nameRequired": "チーム名は必須です",
       "statusPlaceholder": "例: active, archived",
       "title": "チームを作成",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "新しいチームを作成",
     "deleteDialog": {

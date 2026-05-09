@@ -244,8 +244,7 @@
         "config": "구성 파일",
         "database": "데이터베이스",
         "environment": "환경",
-        "vault": "볼트",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "볼트"
       },
       "subtitle": "시스템 구성 설정 보기 및 관리",
       "title": "설정 관리",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "부울 토글",
         "checkbox": "다중 선택",
-        "comment": "여러 줄 텍스트 영역",
         "dropdown": "드롭다운 선택",
         "panel": "패널에 질문 그룹화",
         "paneldynamic": "반복 가능한 패널 그룹",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "예/아니오",
         "checkbox": "체크박스",
-        "comment": "여러 줄",
         "dropdown": "드롭다운",
         "panel": "패널",
         "paneldynamic": "동적 패널",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "적용",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "CVSS 추가",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "기존 CVSS 벡터 문자열을 구문 분석할 수 없습니다",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "CVSS 벡터 문자열을 붙여넣고 Enter를 누르세요",
     "title": "CVSS 계산기",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "이 버전의 CVSS 항목이 이미 존재합니다",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "잘못된 CVSS 벡터 문자열",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "CVSS 벡터 문자열을 붙여넣거나 입력하고 Enter를 누르세요",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "벡터 문자열",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "CVSS 3.1 및 4.0 벡터만 지원됩니다",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "CVSS 버전",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "CVSS 버전"
   },
   "cwePicker": {
     "addCwe": "CWE 추가",
@@ -1340,8 +1327,7 @@
       "statusPlaceholder": "예: active, planning, archived",
       "teamRequired": "팀은 필수입니다",
       "title": "프로젝트 생성",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "새 프로젝트 생성",
     "deleteDialog": {
@@ -1567,13 +1553,11 @@
       "descriptionPlaceholder": "팀 설명을 입력하세요",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "팀 이름을 입력하세요",
       "nameRequired": "팀 이름은 필수입니다",
       "statusPlaceholder": "예: active, archived",
       "title": "팀 생성",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "새 팀 생성",
     "deleteDialog": {

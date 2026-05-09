@@ -244,8 +244,7 @@
         "config": "File Konfigurasi",
         "database": "Basis Data",
         "environment": "Lingkungan",
-        "vault": "Vault",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "Vault"
       },
       "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
       "title": "Kelola Pengaturan",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "Tombol beralih boolean",
         "checkbox": "Pilihan ganda",
-        "comment": "Area teks multi-baris",
         "dropdown": "Pilihan dropdown",
         "panel": "Kelompokkan pertanyaan dalam panel",
         "paneldynamic": "Grup panel yang dapat diulang",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "Ya/Tidak",
         "checkbox": "Kotak centang",
-        "comment": "Multiline",
         "dropdown": "Menu dropdown",
         "panel": "Panel",
         "paneldynamic": "Panel Dinamis",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "Terapkan",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "Tambah CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Tidak dapat mengurai string vektor CVSS yang ada",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "Tempel string vektor CVSS dan tekan Enter",
     "title": "Kalkulator CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "Entri CVSS untuk versi ini sudah ada",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "String vektor CVSS tidak valid",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "Tempel atau ketik string vektor CVSS dan tekan Enter",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "String Vektor",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "Hanya vektor CVSS 3.1 dan 4.0 yang didukung",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "Versi CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "Versi CVSS"
   },
   "cwePicker": {
     "addCwe": "Tambah CWE",
@@ -1340,8 +1327,7 @@
       "statusPlaceholder": "mis. active, planning, archived",
       "teamRequired": "Tim wajib diisi",
       "title": "Buat Proyek",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "Buat Proyek Baru",
     "deleteDialog": {
@@ -1567,13 +1553,11 @@
       "descriptionPlaceholder": "Masukkan deskripsi tim",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "Masukkan nama tim",
       "nameRequired": "Nama tim wajib diisi",
       "statusPlaceholder": "mis. active, archived",
       "title": "Buat Tim",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "Buat Tim Baru",
     "deleteDialog": {

@@ -244,8 +244,7 @@
         "config": "קובץ תצורה",
         "database": "מסד נתונים",
         "environment": "סביבה",
-        "vault": "כספת",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+        "vault": "כספת"
       },
       "subtitle": "צפה ונהל הגדרות תצורת מערכת",
       "title": "ניהול הגדרות",
@@ -400,7 +399,6 @@
       "questionTypeDescriptions": {
         "boolean": "מתג בוליאני",
         "checkbox": "בחירה מרובה",
-        "comment": "תיבת טקסט רב-שורתי",
         "dropdown": "בחירה מתפריט נפתח",
         "panel": "קבוצת שאלות בפאנל",
         "paneldynamic": "קבוצת פאנל חוזרת",
@@ -410,7 +408,6 @@
       "questionTypeLabels": {
         "boolean": "כן/לא",
         "checkbox": "תיבת סימון",
-        "comment": "רב-שורתי",
         "dropdown": "תפריט נפתח",
         "panel": "פאנל",
         "paneldynamic": "פאנל דינמי",
@@ -794,26 +791,16 @@
   },
   "cvssCalculator": {
     "apply": "החל",
-    "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "openCalculator": "הוסף CVSS",
-    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "לא ניתן לנתח את מחרוזת וקטור ה-CVSS הקיימת",
-    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
     "pasteVectorPlaceholder": "הדבק מחרוזת וקטור CVSS והקש Enter",
     "title": "מחשבון CVSS",
-    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "vectorDuplicateVersion": "כבר קיים רשומת CVSS לגרסה זו",
-    "vectorDuplicateVersion.comment": "A CVSS entry for this version already exists",
     "vectorInvalid": "מחרוזת וקטור CVSS לא חוקית",
-    "vectorInvalid.comment": "Invalid CVSS vector string",
     "vectorPlaceholder": "הדבק או הקלד מחרוזת וקטור CVSS ולחץ Enter",
-    "vectorPlaceholder.comment": "Paste or type a CVSS vector string",
     "vectorString": "מחרוזת וקטור",
-    "vectorString.comment": "Label for the CVSS vector string display.",
     "vectorUnsupportedVersion": "רק וקטורי CVSS 3.1 ו-4.0 נתמכים",
-    "vectorUnsupportedVersion.comment": "Only CVSS 3.1 and 4.0 vectors are supported",
-    "version": "גרסת CVSS",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+    "version": "גרסת CVSS"
   },
   "cwePicker": {
     "addCwe": "הוסף CWE",
@@ -1340,8 +1327,7 @@
       "statusPlaceholder": "למשל active, planning, archived",
       "teamRequired": "צוות נדרש",
       "title": "צור פרויקט",
-      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
     "createNew": "צור פרויקט חדש",
     "deleteDialog": {
@@ -1567,13 +1553,11 @@
       "descriptionPlaceholder": "הזן תיאור צוות",
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
-      "emailPlaceholder.comment": "This is an example email and should not be translated.",
       "namePlaceholder": "הזן שם צוות",
       "nameRequired": "שם הצוות נדרש",
       "statusPlaceholder": "למשל active, archived",
       "title": "צור צוות",
-      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
     "createNew": "צור צוות חדש",
     "deleteDialog": {
