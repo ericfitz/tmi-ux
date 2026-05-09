@@ -1,8 +1,8 @@
 """Build the en-US.usage.json sidecar from source-code analysis.
 
-Implements the minimum-viable pipeline (stages 1, 2, 7, 9). Subsequent tasks
-add stages 3 (partial-key search), 6 (model verification), and 8 (ellipsis
-candidate detection) to populate additional fields on each entry.
+Implements stages 1, 2, 3, 7, and 9 of the usage-map pipeline. Subsequent
+tasks add stages 6 (model verification) and 8 (ellipsis candidate detection)
+to populate additional fields on each entry.
 
 Output schema:
 {
@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 from scripts.i18n_style.key_enumerator import enumerate_keys
-from scripts.i18n_style.usage_scanner import scan_for_key
+from scripts.i18n_style.usage_scanner import scan_for_key, scan_for_partial_key
 from scripts.i18n_style.surface_inference import infer_surfaces
 
 
@@ -63,19 +63,43 @@ def build_usage_map(en_us_path: Path, repo_root: Path) -> Dict[str, Dict[str, An
 
     for key in keys:
         usages = scan_for_key(key, repo_root)
-        if not usages:
-            usage_map[key] = _entry_for_unfound_key()
+        if usages:
+            surfaces = infer_surfaces(usages)
+            usage_map[key] = {
+                "surfaces": sorted(surfaces),
+                "uses": [_serialize_use(u) for u in usages],
+                "ellipsis_candidate": False,
+                "ambiguous_word": False,
+                "needs_translator_comment": False,
+                "confidence": "high",
+                "found_by": "fully-qualified",
+            }
             continue
-        surfaces = infer_surfaces(usages)
-        usage_map[key] = {
-            "surfaces": sorted(surfaces),
-            "uses": [_serialize_use(u) for u in usages],
-            "ellipsis_candidate": False,
-            "ambiguous_word": False,
-            "needs_translator_comment": False,
-            "confidence": "high",
-            "found_by": "fully-qualified",
-        }
+
+        # Stage 3: try partial-key search.
+        candidates = scan_for_partial_key(key, repo_root)
+        if candidates:
+            best = "medium" if any(c.confidence == "medium" for c in candidates) else "low"
+            usage_map[key] = {
+                "surfaces": ["general"],
+                "uses": [
+                    {
+                        "file": str(c.file),
+                        "line": c.line,
+                        "context": c.context,
+                        "classes": [],
+                        "partial_match": c.confidence,
+                    }
+                    for c in candidates[:10]  # cap to avoid blowing up the file
+                ],
+                "ellipsis_candidate": False,
+                "ambiguous_word": False,
+                "needs_translator_comment": False,
+                "confidence": best,
+                "found_by": "leaf",
+            }
+        else:
+            usage_map[key] = _entry_for_unfound_key()
 
     return usage_map
 

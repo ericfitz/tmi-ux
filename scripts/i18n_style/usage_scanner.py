@@ -85,3 +85,87 @@ def scan_for_key(key: str, root: Path) -> List[KeyUsage]:
             )
 
     return list(found.values())
+
+
+@dataclass
+class PartialKeyCandidate:
+    """A candidate usage location matching a partial key."""
+
+    file: Path
+    line: int
+    context: str
+    confidence: str  # "medium" or "low"
+
+
+def scan_for_partial_key(key: str, root: Path) -> List[PartialKeyCandidate]:
+    """Search for keys whose path is constructed dynamically.
+
+    Looks for two patterns:
+
+    1. Parent-prefix match (medium confidence): any ancestor prefix of the key
+       as a quoted string, e.g., 'admin.users.' for the key 'admin.users.x'.
+       All ancestor prefixes are tried (from shortest to longest) so that
+       dynamic construction patterns like ``'admin.users.' + state + '.label'``
+       are found for a 4-segment key.
+    2. Leaf-only match (low confidence): the final segment of the key as a
+       quoted string, e.g., `'filterLabel'` for the key 'admin.users.filterLabel'.
+
+    Returns a list of candidates with confidence levels.
+    """
+    parts = key.split(".")
+    if len(parts) < 2:
+        return []
+
+    # All ancestor prefixes (with trailing dot), from shortest to longest,
+    # excluding the full key itself.
+    ancestor_prefixes = [
+        ".".join(parts[:i]) + "." for i in range(1, len(parts))
+    ]
+    leaf = parts[-1]
+
+    candidates: List[PartialKeyCandidate] = []
+    seen: set[tuple[Path, int]] = set()
+
+    def _search(pattern: str, confidence: str, quoted: bool = True) -> None:
+        """Run ripgrep for `pattern` and record candidates."""
+        quote_variants = ("'", '"', "`") if quoted else ("",)
+        for quote in quote_variants:
+            cmd = ["rg", "-F", "-n", f"{quote}{pattern}"]
+            cmd.extend(["-g", "*.ts", "-g", "*.html", "-g", "*.scss"])
+            for d in _EXCLUDE_DIRS:
+                cmd.extend(["-g", f"!**/{d}/**"])
+            cmd.append(str(root))
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode not in (0, 1):
+                continue
+            for raw_line in result.stdout.splitlines():
+                parts2 = raw_line.split(":", 2)
+                if len(parts2) != 3:
+                    continue
+                file_str, line_str, context = parts2
+                try:
+                    line = int(line_str)
+                except ValueError:
+                    continue
+                dedup = (Path(file_str), line)
+                if dedup in seen:
+                    continue
+                seen.add(dedup)
+                candidates.append(
+                    PartialKeyCandidate(
+                        file=Path(file_str),
+                        line=line,
+                        context=context.strip(),
+                        confidence=confidence,
+                    )
+                )
+
+    for prefix in ancestor_prefixes:
+        _search(prefix, "medium")
+
+    # Low-confidence leaf search: look for the leaf as a quoted token,
+    # or as a dot-prefixed bare token inside template literals (e.g. `.filterLabel`).
+    _search(leaf, "low")
+    _search(f".{leaf}", "low", quoted=False)
+
+    return candidates

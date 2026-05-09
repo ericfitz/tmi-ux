@@ -71,5 +71,42 @@ class TestScanForKey(unittest.TestCase):
         self.assertIn("big", usages[0].classes)
 
 
+class TestScanForPartialKey(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmpdir.name)
+
+    def tearDown(self):
+        self.tmpdir.cleanup()
+
+    def _write(self, relpath: str, content: str):
+        full = self.root / relpath
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content)
+
+    def test_finds_dynamic_key_with_parent_prefix(self):
+        # Code constructs keys dynamically: 'admin.users.' + state + '.label'
+        from scripts.i18n_style.usage_scanner import scan_for_partial_key
+
+        self._write(
+            "src/foo.ts",
+            "const k = 'admin.users.' + this.state + '.label';\n",
+        )
+        candidates = scan_for_partial_key("admin.users.active.label", self.root)
+        self.assertGreater(len(candidates), 0)
+        self.assertEqual(candidates[0].confidence, "medium")
+
+    def test_finds_leaf_only_match(self):
+        from scripts.i18n_style.usage_scanner import scan_for_partial_key
+
+        self._write(
+            "src/foo.ts",
+            "const k = `${prefix}.filterLabel`;\n",
+        )
+        candidates = scan_for_partial_key("admin.users.filterLabel", self.root)
+        leaf_matches = [c for c in candidates if c.confidence == "low"]
+        self.assertGreater(len(leaf_matches), 0)
+
+
 if __name__ == "__main__":
     unittest.main()
