@@ -68,5 +68,59 @@ class TestBuildUsageMap(unittest.TestCase):
         self.assertIn("found_by", entry)
 
 
+class TestAmbiguousWordFlag(unittest.TestCase):
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmpdir.name)
+        (self.root / "src").mkdir()
+
+    def tearDown(self):
+        self.tmpdir.cleanup()
+
+    def test_short_ambiguous_word_flagged(self):
+        # "Filter" is in the ambiguous_words list; ≤3 words.
+        locale_path = self.root / "en-US.json"
+        with open(locale_path, "w") as f:
+            json.dump({"common": {"filter": "Filter"}}, f)
+        usage_map = build_usage_map(locale_path, self.root)
+        entry = usage_map["common.filter"]
+        self.assertTrue(entry["ambiguous_word"])
+
+    def test_existing_comment_marks_no_translator_need(self):
+        locale_path = self.root / "en-US.json"
+        with open(locale_path, "w") as f:
+            json.dump(
+                {
+                    "common": {
+                        "filter": "Filter",
+                        "filter.comment": "Verb. Used on filter buttons.",
+                    }
+                },
+                f,
+            )
+        usage_map = build_usage_map(locale_path, self.root)
+        entry = usage_map["common.filter"]
+        self.assertTrue(entry["ambiguous_word"])
+        self.assertFalse(entry["needs_translator_comment"])
+
+    def test_missing_comment_marks_translator_need(self):
+        locale_path = self.root / "en-US.json"
+        with open(locale_path, "w") as f:
+            json.dump({"common": {"filter": "Filter"}}, f)
+        usage_map = build_usage_map(locale_path, self.root)
+        entry = usage_map["common.filter"]
+        self.assertTrue(entry["needs_translator_comment"])
+
+    def test_long_string_not_flagged(self):
+        # > 3 words, even if it contains an ambiguous word.
+        locale_path = self.root / "en-US.json"
+        with open(locale_path, "w") as f:
+            json.dump({"common": {"filter": "Filter the list of users by role"}}, f)
+        usage_map = build_usage_map(locale_path, self.root)
+        entry = usage_map["common.filter"]
+        self.assertFalse(entry["ambiguous_word"])
+        self.assertFalse(entry["needs_translator_comment"])
+
+
 if __name__ == "__main__":
     unittest.main()
