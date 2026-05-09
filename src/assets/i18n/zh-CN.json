@@ -32,16 +32,16 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "（全部）",
-      "errorInvoking": "调用插件失败。请重试。",
-      "invalidCharacters": "仅允许使用字母数字字符、空格、连字符、句点、逗号和正斜杠",
-      "invocationQueued": "插件调用已排队",
-      "metadataKeyMissing": "此对象上不存在必需的元数据键 \"{{key}}\"",
-      "numberMax": "值不能超过 {{max}}",
-      "numberMin": "值不能小于 {{min}}",
+      "errorInvoking": "调用插件失败。",
+      "invalidCharacters": "仅允许使用字母数字字符、空格、连字符、句点、逗号和正斜杠。",
+      "invocationQueued": "插件调用已排队。",
+      "metadataKeyMissing": "此对象上不存在必需的元数据键 \"{{key}}\"。",
+      "numberMax": "值不能超过 {{max}}。",
+      "numberMin": "值不能小于 {{min}}。",
       "parameters": "参数",
-      "threatModelId": "威胁模型ID",
+      "threatModelId": "威胁模型 ID",
       "title": "调用插件",
-      "valueTooLong": "值超过最大长度"
+      "valueTooLong": "值超过最大长度。"
     }
   },
   "admin": {
@@ -52,7 +52,7 @@
         "descriptionHint": "此插件有什么功能？",
         "descriptionPlaceholder": "描述插件功能",
         "icon": "图标",
-        "iconHint": "UI图标（示例：\"material-symbols:security\"，\"fa-regular fa-user-shield\"）",
+        "iconHint": "UI图标（示例：\"material-symbols:security\"、\"fa-regular fa-user-shield\"）。",
         "iconInvalid": "图标格式无效",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
@@ -65,19 +65,19 @@
         "title": "添加插件",
         "webhook": "Webhook",
         "webhookHint": "关联的webhook订阅",
-        "webhookRequired": "Webhook为必填项"
+        "webhookRequired": "Webhook 为必填项。"
       },
       "confirmDelete": "您确定要删除插件\"{{name}}\"吗？",
       "created": "{{common.created}}",
       "deleteTooltip": "删除插件",
-      "errorCreatingAddon": "创建插件失败。请重试。",
-      "errorLoadingWebhooks": "加载可用webhook失败",
+      "errorCreatingAddon": "创建插件失败。",
+      "errorLoadingWebhooks": "加载可用 webhook 失败。",
       "filterLabel": "筛选插件",
       "filterPlaceholder": "按名称或描述搜索",
       "listTitle": "系统插件",
-      "noAddons": "未找到插件",
+      "noAddons": "未找到插件。",
       "objectTypesTooltip": "适用于这些对象类型",
-      "subtitle": "配置插件以扩展TMI功能",
+      "subtitle": "配置插件以扩展 TMI 功能。",
       "title": "管理插件"
     },
     "createAutomationUserDialog": {
@@ -86,9 +86,9 @@
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "2-64 个字符，以字母开头",
-      "nameMaxLength": "名称最多 64 个字符",
-      "nameMinLength": "至少需要 2 个字符",
-      "namePattern": "必须以字母开头，以字母或数字结尾",
+      "nameMaxLength": "名称最多 64 个字符。",
+      "nameMinLength": "至少需要 2 个字符。",
+      "namePattern": "必须以字母开头，以字母或数字结尾。",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "创建自动化用户",
@@ -103,12 +103,12 @@
         "displayName": "显示名称",
         "displayNameHint": "人类可读的用户组名称",
         "displayNamePlaceholder": "我的自定义组",
-        "displayNameRequired": "显示名称为必填项",
+        "displayNameRequired": "显示名称为必填项。",
         "groupName": "组标识符",
         "groupNameHint": "仅限字母数字、连字符和下划线",
-        "groupNamePattern": "仅允许字母数字、连字符和下划线",
+        "groupNamePattern": "仅允许字母数字、连字符和下划线。",
         "groupNamePlaceholder": "我的自定义组",
-        "groupNameRequired": "组标识符为必填项",
+        "groupNameRequired": "组标识符为必填项。",
         "save": "创建用户组",
         "title": "添加用户组"
       },
@@ -125,7 +125,7 @@
         "addMember": "{{teams.membersDialog.addMember}}",
         "automationAdminBlocked": "自动化账户不允许成为管理员组的成员。自动化账户绝不能拥有应用程序管理功能的访问权限。",
         "currentMembers": "当前成员",
-        "noMembers": "此组中没有成员",
+        "noMembers": "此组中没有成员。",
         "removeTooltip": "从组中移除",
         "searchHint": "输入至少2个字符进行搜索",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,13 +133,13 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "未找到用户组",
-      "subtitle": "查看和管理系统用户组",
+      "noGroups": "未找到用户组。",
+      "subtitle": "查看和管理系统用户组。",
       "title": "管理用户组",
-      "viewMembersTooltip": "查看和管理组成员"
+      "viewMembersTooltip": "查看和管理组成员..."
     },
     "quotas": {
-      "addButton": "添加配额",
+      "addButton": "添加配额...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "配置配额",
@@ -160,32 +160,32 @@
       "filterLabel": "筛选配额",
       "filterPlaceholder": "按电子邮件、姓名、提供商或用户ID搜索",
       "maxSubscriptions": "最大订阅数",
-      "noUserAPIQuotas": "未找到自定义API配额",
-      "noWebhookQuotas": "未找到自定义webhook配额",
+      "noUserAPIQuotas": "未找到自定义 API 配额。",
+      "noWebhookQuotas": "未找到自定义 webhook 配额。",
       "requestsPerHour": "每小时请求数",
       "requestsPerMinute": "每分钟请求数",
       "subReqPerDay": "每日订阅请求数",
       "subReqPerMinute": "每分钟订阅请求数",
-      "subtitle": "为用户配置速率限制和配额",
+      "subtitle": "为用户配置速率限制和配额。",
       "title": "管理配额",
-      "userAPITitle": "API速率限制",
-      "webhookTitle": "Webhook限制"
+      "userAPITitle": "API 速率限制",
+      "webhookTitle": "Webhook 限制"
     },
     "sections": {
       "addons": {
-        "description": "安装和配置应用程序插件",
+        "description": "安装和配置应用程序插件。",
         "title": "附加组件"
       },
       "groups": {
-        "description": "配置用户组和成员资格",
+        "description": "配置用户组和成员资格。",
         "title": "群组"
       },
       "projects": {
-        "description": "管理项目、关系和元数据",
+        "description": "管理项目、关系和元数据。",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "配置资源配额和限制",
+        "description": "配置资源配额和限制。",
         "title": "配额"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "设置"
       },
       "surveys": {
-        "description": "创建和管理调查问卷",
+        "description": "创建和管理调查问卷。",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "管理团队和团队成员",
+        "description": "管理团队和团队成员。",
         "title": "团队"
       },
       "users": {
-        "description": "查看和管理用户账户",
+        "description": "查看和管理用户账户。",
         "title": "用户"
       },
       "webhooks": {
-        "description": "安装和配置 webhook 集成",
+        "description": "安装和配置 webhook 集成。",
         "title": "Webhook"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "此设置的可选描述",
         "key": "{{common.metadataKey}}",
         "keyHint": "小写字母加点和下划线（例如：rate_limit.max_rpm）",
-        "keyInvalid": "必须以小写字母开头，只能使用小写字母、数字、点和下划线",
-        "keyRequired": "键为必填项",
+        "keyInvalid": "必须以小写字母开头，只能使用小写字母、数字、点和下划线。",
+        "keyRequired": "键为必填项。",
         "save": "创建设置",
         "title": "添加设置",
         "type": "{{common.type}}",
-        "typeRequired": "类型为必填项",
+        "typeRequired": "类型为必填项。",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "值为必填项"
+        "valueRequired": "值为必填项。"
       },
       "cancelTooltip": "取消编辑",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "筛选",
       "filterPlaceholder": "按键名、值、描述或来源筛选",
       "listTitle": "系统设置",
-      "noSettings": "未找到设置",
+      "noSettings": "未找到设置。",
       "readOnlyTooltip": "此设置为只读，无法在此处修改",
       "saveTooltip": "保存更改",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "环境变量",
         "vault": "密钥库"
       },
-      "subtitle": "查看和管理系统配置设置",
+      "subtitle": "查看和管理系统配置设置。",
       "title": "管理设置",
       "types": {
         "bool": "布尔值",
@@ -255,7 +255,7 @@
         "string": "字符串"
       }
     },
-    "subtitle": "管理系统设置和配置",
+    "subtitle": "管理系统设置和配置。",
     "title": "系统管理",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "删除用户账户",
       "filter": {
-        "automationOnly": "仅显示自动化账户"
+        "automationOnly": "仅显示自动化账户。"
       },
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
@@ -280,57 +280,57 @@
       "manageCredentials": {
         "addCredential": "添加凭证",
         "deleteConfirm": "确定要删除凭证\"{{name}}\"吗？",
-        "noCredentials": "未找到凭证",
-        "title": "管理 {{userName}} 的凭证"
+        "noCredentials": "未找到凭证。",
+        "title": "管理 {{username}} 的凭证。"
       },
       "never": "从未",
-      "noUsers": "未找到用户",
-      "subtitle": "查看和管理系统用户",
+      "noUsers": "未找到用户。",
+      "subtitle": "查看和管理系统用户。",
       "title": "管理用户",
       "transferOwnership": {
         "confirm": "您确定要将所有数据从 {{source}} 转移到 {{target}} 吗？",
         "dialogTitle": "转移用户数据",
-        "error": "所有权转移失败。请重试。",
+        "error": "所有权转移失败。",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "转移所有权"
+        "tooltip": "转移所有权..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "为此 webhook 创建自动化用户",
+        "createAutomationUser": "为此 webhook 创建自动化用户。",
         "events": "要订阅的事件类型",
         "eventsHint": "要订阅的事件类型（例如：threat_model.created）",
         "eventsPlaceholder": "选择事件类型",
-        "eventsRequired": "至少需要一个事件",
+        "eventsRequired": "至少需要一个事件。",
         "name": "{{common.name}}",
         "nameHint": "此webhook的描述性名称",
         "namePlaceholder": "Webhook名称",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "save": "创建Webhook",
-        "secret": "HMAC密钥",
+        "save": "创建 webhook",
+        "secret": "HMAC 密钥",
         "secretHint": "用于签名载荷的HMAC密钥（留空自动生成）",
         "secretPlaceholder": "留空以自动生成",
-        "title": "添加Webhook",
+        "title": "添加 webhook",
         "url": "Webhook URL",
         "urlHint": "建议使用HTTPS",
-        "urlHttpWarning": "警告：Webhook端点URL应使用HTTPS。服务器可能会拒绝指定非TLS端点的webhook注册。",
-        "urlHttpWarningTitle": "非HTTPS的Webhook URL",
-        "urlInvalid": "必须是有效的URL",
+        "urlHttpWarning": "警告：webhook 端点 URL 应使用 HTTPS。服务器可能会拒绝指定非 TLS 端点的 webhook 注册。",
+        "urlHttpWarningTitle": "非 HTTPS 的 webhook URL。",
+        "urlInvalid": "必须是有效的 URL。",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "URL为必填项"
+        "urlRequired": "URL 为必填项。"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "删除webhook",
       "events": "事件",
-      "filterLabel": "筛选Webhook",
+      "filterLabel": "筛选 webhook",
       "filterPlaceholder": "按名称或URL搜索",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "这是您唯一可以查看此密钥的机会。请复制它。如果您丢失或忘记它，您将需要删除并重新创建webhook。"
       },
-      "listTitle": "Webhook订阅",
-      "noWebhooks": "未找到webhook",
+      "listTitle": "Webhook 订阅",
+      "noWebhooks": "未找到 webhook。",
       "secret": "HMAC密钥",
       "status": {
         "active": "{{common.active}}",
@@ -338,8 +338,8 @@
         "pending_verification": "待验证"
       },
       "subscriptionId": "订阅 ID",
-      "subtitle": "配置webhook订阅以接收事件通知",
-      "title": "管理Webhook",
+      "subtitle": "配置 webhook 订阅以接收事件通知。",
+      "title": "管理 webhook",
       "triggerEvents": "触发事件",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -354,11 +354,11 @@
       "versionHint": "自由格式的版本标识符",
       "versionLabel": "{{common.version}}",
       "versionPlaceholder": "例如：1、v2-pilot、2024-Q1",
-      "versionRequired": "版本为必填项"
+      "versionRequired": "版本为必填项。"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "无法删除此问卷，因为已有现有回复。请先删除回复，然后重试。",
-    "deleteError": "删除问卷失败: {{error}}",
+    "deleteError": "删除调查问卷失败：{{error}}。",
     "deleteTooltip": "删除问卷",
     "editTemplate": "编辑调查问卷",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -379,20 +379,20 @@
       "deletePage": "删除页面",
       "deleteQuestion": "删除问题",
       "enableIf": "启用条件",
-      "enableIfHint": "例如，{questionName} = 'value'",
+      "enableIfHint": "例如，{questionname} = 'value'",
       "enterSurveyDescription": "输入调查描述",
       "enterSurveyTitle": "输入调查标题",
-      "failedToLoadTemplate": "加载调查问卷失败",
-      "failedToSaveTemplate": "保存调查问卷失败",
+      "failedToLoadTemplate": "加载调查问卷失败。",
+      "failedToSaveTemplate": "保存调查问卷失败。",
       "loadingTemplate": "正在加载调查问卷...",
-      "mapsToTmField": "映射到TM字段",
+      "mapsToTmField": "映射到 TM 字段",
       "metadataKey": "元数据键",
       "metadataKeyHint": "元数据条目的键名称",
       "nameId": "名称（ID）",
       "nameIdHint": "此问题的唯一标识符",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "从调色板点击问题类型以添加它",
-      "noQuestionsYet": "暂无问题",
+      "noQuestionsYet": "暂无问题。",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "问题属性",
@@ -400,9 +400,9 @@
         "boolean": "布尔切换",
         "checkbox": "多项选择",
         "dropdown": "下拉选择",
-        "panel": "在面板中分组问题",
+        "panel": "在面板中分组问题。",
         "paneldynamic": "可重复面板组",
-        "radiogroup": "从选项中单选",
+        "radiogroup": "从选项中单选。",
         "text": "单行文本输入"
       },
       "questionTypeLabels": {
@@ -419,7 +419,7 @@
       "required": "必填",
       "requiredIf": "必填条件",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "选择一个问题以编辑其属性",
+      "selectQuestionHint": "选择一个问题以编辑其属性。",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
@@ -429,7 +429,7 @@
         "description": "威胁模型描述",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "问题跟踪URL",
+        "issueUri": "问题跟踪 URL。",
         "metadataKey": "自定义元数据",
         "name": "威胁模型名称",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -441,8 +441,8 @@
       "visibleIf": "可见条件",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} 个调查问卷",
-    "templateCountPlural": "{{count}} 个调查问卷"
+    "templateCount": "{{Count}} 个调查问卷",
+    "templateCountPlural": "{{Count}} 个调查问卷"
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -492,13 +492,13 @@
     "noEntries": "未找到审计跟踪条目。",
     "rollback": {
       "action": "回滚",
-      "confirmMessage": "您确定要将 {{objectType}} \"{{name}}\" 回滚到版本 {{version}} 吗？",
+      "confirmMessage": "您确定要将 {{objecttype}} \"{{name}}\" 回滚到版本 {{version}} 吗？",
       "confirmTitle": "确认回滚",
       "confirmationField": "输入以确认",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "回滚失败。请重试。",
+      "error": "回滚失败",
       "success": "回滚成功完成。",
-      "typeConfirmation": "要确认，请在下方输入 \"{{confirmValue}}\"。",
+      "typeConfirmation": "要确认，请在下方输入 \"{{confirmvalue}}\"",
       "versionPruned": "版本快照已被清除。回滚不再可用。",
       "warning": "这将用此审计条目中捕获的版本覆盖此实体的当前状态。此操作会创建新的审计条目，但当前状态将会丢失。"
     },
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "无法连接到 Timmy。请检查您的网络连接后重试。",
-      "generic": "出错了。请重试。",
+      "generic": "出错了。",
       "interrupted": "响应已中断。请重新发送您的消息。",
       "notAcceptable": "由于服务器配置问题，Timmy 暂时不可用。",
       "notEnabled": "此威胁模型未启用 Timmy。",
@@ -532,16 +532,16 @@
     "hideSidePanel": "隐藏边侧面板",
     "inputPlaceholder": "向 Timmy 咨询有关此威胁模型的信息...",
     "newSession": "新建会话",
-    "noSessions": "还没有聊天会话。开始对话吧！",
+    "noSessions": "还没有聊天会话。开始对话吧。",
     "preparation": {
-      "error": "准备失败：{{message}}",
-      "processing": "处理源 {{current}} / {{total}} — {{entityType}}：{{entityName}} — {{phase}} {{progress}}%",
-      "ready": "就绪！已加载 {{sourcesLoaded}} 个源，已索引 {{chunksEmbedded}} 个块。"
+      "error": "准备失败：{{message}}。",
+      "processing": "处理源 {{current}} / {{total}} — {{entitytype}}：{{entityname}} — {{phase}} {{progress}}%。",
+      "ready": "就绪！已加载 {{Sourcesloaded}} 个源，已索引 {{chunksembedded}} 个块。"
     },
-    "saveAsNoteError": "无法保存为笔记。请重试。",
+    "saveAsNoteError": "无法保存为笔记。",
     "saveMessageAsNote": "将消息保存为笔记",
     "saveSessionAsNote": "将会话保存为笔记",
-    "savedAsNote": "已保存为笔记",
+    "savedAsNote": "已保存为笔记。",
     "savedAsNoteView": "{{common.view}}",
     "send": "发送消息",
     "sessions": "会话",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} 个源已包含"
+      "title": "{{Count}} 个源已包含"
     },
     "suggestedPrompts": {
       "assets": "范围内有哪些资产？",
@@ -563,21 +563,21 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} 个活跃用户",
+    "activeUsers": "{{Count}} 个活跃用户。",
     "approvePresenterRequest": "批准主讲人请求",
-    "availableCollaborationSessions": "可用协作会话",
+    "availableCollaborationSessions": "可用协作会话。",
     "collaboratorsHeader": "参与者",
     "copyLink": "复制链接",
     "denyPresenterRequest": "拒绝主讲人请求",
     "endCollaboration": "结束协作",
     "hostedBy": "由以下主办",
-    "isRequestingPresenterPrivileges": "正在请求主讲人权限",
+    "isRequestingPresenterPrivileges": "正在请求主讲人权限。",
     "joinSession": "加入会话",
     "justNow": "刚刚",
     "leaveSession": "离开会话",
     "loadingDiagramContext": "正在加载图表上下文...",
     "manageParticipants": "管理参与者",
-    "noActiveSessions": "没有活跃的协作会话",
+    "noActiveSessions": "没有活跃的协作会话。",
     "participantRequestsPresenterRole": "参与者请求主讲人角色",
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
@@ -586,12 +586,12 @@
     "startCollaboration": "开始协作",
     "takeBackPresenter": "收回主讲人",
     "title": "协作会话参与者",
-    "userJoined": "{{user}} 加入了协作",
-    "userLeft": "{{user}} 离开了协作",
+    "userJoined": "{{User}} 加入了协作。",
+    "userLeft": "{{User}} 离开了协作",
     "websocketStatus": {
       "connected": "WebSocket 已连接",
       "noSession": "没有活跃的协作会话",
-      "notConnected": "WebSocket 未连接"
+      "notConnected": "WebSocket 未连接。"
     }
   },
   "common": {
@@ -615,8 +615,8 @@
     "close": "关闭",
     "confirm": "确认",
     "confirmDelete": "您确定要删除{{item}}\"{{name}}\"吗？此操作无法撤销。",
-    "confirmDeleteMessage": "您确定要删除{{objectType}}\"{{name}}\"吗？",
-    "copiedToClipboard": "已复制到剪贴板",
+    "confirmDeleteMessage": "您确定要删除 {{objecttype}} \"{{name}}\" 吗？",
+    "copiedToClipboard": "已复制到剪贴板。",
     "copy": "复制",
     "copyToClipboard": "复制到剪贴板",
     "create": "创建",
@@ -626,15 +626,15 @@
     "cut": "剪切",
     "deactivate": "停用",
     "delete": "删除",
-    "deleteConfirm": "删除威胁模型",
+    "deleteConfirm": "确认删除",
     "deleteWarningConfirmationField": "删除确认",
     "deleteWarningConfirmationMatch": "确认文本匹配",
     "deleteWarningConfirmationMismatch": "确认文本不匹配",
     "deleteWarningConfirmationValue": "永久删除",
-    "deleteWarningPermanent": "此操作无法撤销，将永久删除{{objectType}}及其所有相关元数据。",
-    "deleteWarningReferenceOnly": "对于存储在TMI外部的对象（如文档和仓库），仅删除TMI对该对象的引用。",
+    "deleteWarningPermanent": "此操作无法撤销，将永久删除 {{objecttype}} 及其所有相关元数据。",
+    "deleteWarningReferenceOnly": "对于存储在 TMI 外部的对象（如文档和仓库），仅删除 TMI 对该对象的引用。",
     "deleteWarningSubEntities": "所有关联的TMI实体（如图表、威胁和笔记）也将被永久删除。",
-    "deleteWarningTypeConfirmation": "请在下方输入\"{{confirmValue}}\"以确认。",
+    "deleteWarningTypeConfirmation": "要确认，请在下方输入 \"{{confirmvalue}}\"",
     "description": "描述",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "关闭",
@@ -675,7 +675,7 @@
     "noDataAvailable": "无可用数据",
     "noMatchingResults": "没有与您的筛选条件匹配的结果。",
     "noMetadata": "无可用元数据",
-    "noThreats": "无可用威胁",
+    "noThreats": "无可用威胁。",
     "none": "无",
     "objectTypes": {
       "asset": "资产",
@@ -715,7 +715,7 @@
     "project": "项目",
     "provider": "提供商",
     "readOnly": "只读",
-    "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限。",
+    "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限",
     "retry": "重试",
     "roles": {
       "owner": "所有者",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "保存成功",
     "score": "评分",
     "search": "搜索",
-    "selected": "已选择 {{count}} 项",
+    "selected": "已选择 {{Count}} 项",
     "sensitivity": "敏感性",
     "sessionRoles": {
       "host": "主持人",
@@ -755,11 +755,11 @@
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "uri": "URI",
     "validation": {
-      "email": "请输入有效的电子邮件地址",
+      "email": "请输入有效的电子邮件地址。",
       "invalidUrl": "请输入有效的 URL",
-      "maxLength": "最大长度为{{max}}个字符",
-      "nameRequired": "名称为必填项",
-      "required": "此字段为必填项"
+      "maxLength": "最大长度为 {{max}} 个字符。",
+      "nameRequired": "名称为必填项。",
+      "required": "此字段为必填项。"
     },
     "version": "版本",
     "view": "查看",
@@ -771,14 +771,14 @@
     "addInverseConnection": "添加反向连接",
     "dataAssets": "数据资产...",
     "editText": "编辑文本",
-    "lockLayout": "Lock Layout",
+    "lockLayout": "锁定布局",
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
     "moveToFront": "移到最前",
     "noDataAssetsAvailable": "没有可用的数据资产",
-    "showObject": "显示对象",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "显示对象...",
+    "unlockLayout": "解锁布局"
   },
   "createThreatModel": {
     "confidentialHint": "机密威胁模型不会自动与安全审查员组共享。此设置在创建后无法更改。",
@@ -792,15 +792,42 @@
   "cvssCalculator": {
     "apply": "应用",
     "openCalculator": "添加 CVSS",
-    "parseError": "无法解析现有的 CVSS 向量字符串",
+    "parseError": "无法解析现有的 CVSS 向量字符串。",
     "pasteVectorPlaceholder": "粘贴 CVSS 向量字符串并按 Enter",
     "title": "CVSS 计算器",
-    "vectorDuplicateVersion": "该版本的CVSS条目已存在",
-    "vectorInvalid": "无效的CVSS向量字符串",
-    "vectorPlaceholder": "粘贴或输入CVSS向量字符串并按Enter",
+    "vectorDuplicateVersion": "该版本的 CVSS 条目已存在。",
+    "vectorInvalid": "无效的 CVSS 向量字符串。",
+    "vectorPlaceholder": "粘贴或输入 CVSS 向量字符串并按 Enter。",
     "vectorString": "向量字符串",
-    "vectorUnsupportedVersion": "仅支持CVSS 3.1和4.0向量",
-    "version": "CVSS 版本"
+    "vectorUnsupportedVersion": "仅支持 CVSS 3.1 和 4.0 向量。",
+    "version": "CVSS 版本",
+    "metricDescriptions": {
+      "AR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以可用性衡量）来定制评估。",
+      "AU": "可自动化指标捕获对以下问题的回答：'攻击者能否在多个目标上自动利用该漏洞？'。",
+      "CR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以保密性衡量）来定制评估。",
+      "IR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以完整性衡量）来定制评估。",
+      "MAC": "攻击复杂性覆盖。此指标反映了攻击者控制范围之外必须存在的条件，以便在分析者环境中利用该漏洞。",
+      "MAT": "攻击要求覆盖。捕获在分析者环境中启用攻击的系统先决部署和执行条件。",
+      "MAV": "攻击向量覆盖。此指标反映了在分析者环境中可能进行漏洞利用的上下文。",
+      "MPR": "所需权限覆盖。此指标描述了攻击者在分析者环境中利用该漏洞所必须具备的权限级别。",
+      "MSA": "后续系统可用性影响覆盖。衡量在分析者环境中对受影响系统之外的系统可用性的影响。",
+      "MSC": "后续系统保密性影响覆盖。衡量在分析者环境中对受影响系统之外的系统保密性的影响。",
+      "MSI": "后续系统完整性影响覆盖。衡量在分析者环境中对受影响系统之外的系统完整性的影响。",
+      "MUI": "用户交互覆盖。捕获在分析者环境中成功入侵时，除攻击者之外的人工用户参与的要求。",
+      "MVA": "受影响系统可用性影响覆盖。衡量在分析者环境中包含漏洞的系统可用性受到的影响。",
+      "MVC": "受影响系统保密性影响覆盖。衡量在分析者环境中包含漏洞的系统保密性受到的影响。",
+      "MVI": "受影响系统完整性影响覆盖。衡量在分析者环境中包含漏洞的系统完整性受到的影响。",
+      "R": "恢复指标描述了系统在遭受攻击后恢复服务（包括性能和可用性方面）的韧性。",
+      "RE": "漏洞响应工作量指标捕获消费者在漏洞已知后进行响应所需的工作量级别。",
+      "S": "安全指标反映了该漏洞是否可能导致 IEC 61508 类别所定义的影响人身安全的状况。",
+      "U": "提供者紧迫性指标反映了供应商提供的漏洞紧迫性评级（红色、琥珀色、绿色、清除）。",
+      "V": "价值密度指标描述了攻击者通过单次利用事件获得控制权的资源。"
+    },
+    "metricGroups": {
+      "environmentalBase": "环境（修改后的基础）。",
+      "environmentalSecurityRequirement": "环境（安全要求）"
+    },
+    "metricsConfigured": "已配置 {{Count}}/{{total}} 项"
   },
   "cwePicker": {
     "addCwe": "添加CWE",
@@ -845,7 +872,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "状态最后更改"
+      "statusLastChanged": "状态最后更改。"
     },
     "viewAsCards": "以卡片形式查看",
     "viewAsList": "以列表形式查看"
@@ -865,7 +892,7 @@
     },
     "common": {
       "affectedCells": "受影响的单元格",
-      "cellIds": "单元格ID",
+      "cellIds": "单元格 ID",
       "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "复制完整 JSON"
     },
@@ -880,8 +907,8 @@
       "currentIndex": "当前索引",
       "id": "{{common.id}}",
       "maxStackSize": "最大堆栈大小",
-      "noRedoEntries": "没有重做条目",
-      "noUndoEntries": "没有撤销条目",
+      "noRedoEntries": "没有重做条目。",
+      "noUndoEntries": "没有撤销条目。",
       "operationId": "操作ID",
       "previousCells": "之前的单元格",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +923,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "输入以搜索所有提供商",
-      "emptyStateTryExamples": "试试：aws ec2、azure sql、gcp compute",
-      "notAvailable": "此形状无可用图标",
+      "emptyStatePrompt": "输入以搜索所有提供商。",
+      "emptyStateTryExamples": "试试：AWS ec2、azure sql、gcp compute",
+      "notAvailable": "此形状无可用图标。",
       "placement": "位置",
       "remove": "移除",
       "searchPlaceholder": "按提供商、服务或类别搜索...",
       "searchToChange": "搜索以更改图标...",
       "selectShape": "请先选择一个形状",
-      "statusAvailable": "{count} 个图标可用",
-      "statusMatches": "{count} 个匹配",
-      "statusShapesSelected": "已选择 {count} 个形状",
+      "statusAvailable": "{Count} 个图标可用。",
+      "statusMatches": "{Count} 个匹配",
+      "statusShapesSelected": "已选择 {Count} 个形状。",
       "title": "架构图标",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -942,7 +969,7 @@
       "labelPosition.top-right": "顶部右对齐",
       "labelPositionLabel": "标签位置",
       "labelTab": "标签",
-      "noSelection": "选择一个对象以编辑样式",
+      "noSelection": "选择一个对象以编辑样式。",
       "opacity": "不透明度",
       "osColorPicker": "从系统选取颜色",
       "removeDiagramColor": "移除图表颜色",
@@ -962,30 +989,38 @@
       "other": "无法访问此文档。",
       "pickerRegistrationInvalid": "此文档的选择器授权不再有效。",
       "sourceNotFound": "TMI 不知道如何读取此文档的 URL。",
-      "tokenNotLinked": "您尚未关联拥有此文档的账户。来源：{{ source }}",
-      "tokenRefreshFailed": "来源链接不再有效。来源：{{ source }}",
-      "tokenTransientFailure": "无法连接到来源。这通常是暂时性问题。来源：{{ source }}"
+      "tokenNotLinked": "您尚未关联拥有此文档的账户。来源：{{ source }}。",
+      "tokenRefreshFailed": "来源链接不再有效。来源：{{ source }}。",
+      "tokenTransientFailure": "无法连接到来源。这通常是暂时性问题。来源：{{ source }}。",
+      "microsoftNotShared": "TMI 尚未获得访问此 OneDrive 或 SharePoint 文件的权限。文件所有者必须使用以下代码片段授予 TMI 读取访问权限。"
     },
     "remediation": {
       "contactOwner": "联系文档所有者",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "重新关联来源",
-      "repickAfterShare": "共享后重新选择",
-      "repickFile": "重新选择此文件",
+      "repickAfterShare": "共享后重新选择。",
+      "repickFile": "重新选择此文件。",
       "retry": "重试",
-      "shareWithServiceAccount": "与 TMI 服务账户共享"
+      "shareWithServiceAccount": "与 TMI 服务账户共享",
+      "shareWithApplication": {
+        "copyFailed": "无法复制到剪贴板",
+        "explanation": "TMI 尚未获得访问此 OneDrive 或 SharePoint 文件的权限。请让文件所有者运行以下 Microsoft Graph 调用来授予 TMI 读取访问权限。调用成功后，点击\"立即检查\"——授权到位后状态将在几分钟内更新。",
+        "powershellLabel": "PowerShell（microsoft.graph 模块）",
+        "rawLabel": "Microsoft Graph 调用",
+        "title": "授予 TMI 访问此文件的权限。"
+      }
     },
     "serviceAccountEmail": "与此邮箱共享："
   },
   "documentEditor": {
     "grantError": {
-      "generic": "无法授予对您文件的访问权限。请重试。",
+      "generic": "无法授予对您文件的访问权限。",
       "linkAccountCta": "关联账户",
       "notLinked": "您的 Microsoft 账户未关联。",
       "permissionDenied": "Microsoft 拒绝了授予访问权限的请求。该文件可能无法共享。请尝试其他文件或联系您的管理员。",
-      "pickerLoadFailed": "无法打开文件选择器。请检查您的网络后重试。",
-      "timeout": "请求耗时过长。请重试。",
-      "unavailable": "Microsoft 暂时不可用。请稍后再试。"
+      "pickerLoadFailed": "无法打开文件选择器。请检查您的网络后重试",
+      "timeout": "请求耗时过长。",
+      "unavailable": "Microsoft 暂时不可用。"
     },
     "source": {
       "finalizing": "正在授予访问权限…",
@@ -993,12 +1028,18 @@
       "label": "您希望如何附加此文档？",
       "linkAction": "关联来源",
       "linkPrompt": "关联您的账户以从此来源选择文件。",
-      "linkPromptMicrosoft": "关联 Microsoft 账户以浏览 OneDrive/SharePoint 文件",
+      "linkPromptMicrosoft": "关联 Microsoft 账户以浏览 OneDrive/SharePoint 文件。",
       "pickAction": "选择文件",
       "pickActionMicrosoft": "浏览 OneDrive/SharePoint",
-      "pickedFile": "已选择文件：{{ fileName }}",
+      "pickedFile": "已选择文件：{{ filename }}。",
       "repickAction": "选择其他文件",
       "url": "粘贴 URL"
+    },
+    "create": {
+      "failed": "无法创建文档"
+    },
+    "postCreate": {
+      "hint": "共享文件后，点击上方的\"重新检查访问权限\"。您也可以关闭此对话框，稍后从文档编辑视图重新检查。"
     }
   },
   "documentSources": {
@@ -1006,7 +1047,8 @@
     "callback": {
       "error": "无法连接来源。来源：{{ source }}。原因：{{ reason }}",
       "linking": "正在关联您的账户...",
-      "success": "来源已连接。来源：{{ source }}"
+      "success": "来源已连接。来源：{{ source }}。",
+      "notConfigured": "{{ Source }} 未在此服务器上配置。请联系您的管理员。"
     },
     "columns": {
       "account": "账户",
@@ -1016,12 +1058,12 @@
     },
     "empty": {
       "description": "关联云存储账户即可从 Google Drive 以及其他后续可用的服务附加文档。",
-      "title": "尚未连接文档来源"
+      "title": "尚未连接文档来源。"
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "已于 {{ relativeTime }} 关联",
+    "linkedAt": "已于 {{ relativetime }} 关联。",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1047,7 +1089,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "一个或多个选定的元素具有元数据条目。删除这些元素将永久删除它们的元数据。您要继续吗？",
-      "title": "元数据将丢失"
+      "title": "元数据将丢失。"
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "输入图表描述",
@@ -1056,9 +1098,9 @@
     "editDiagramName": "点击编辑图表名称",
     "editDisabledDuringCollaboration": "协作期间禁用编辑",
     "embedding": {
-      "cannotEmbedIntoTextBox": "无法将形状嵌入文本框中",
-      "circularEmbeddingPrevented": "不允许循环嵌入",
-      "securityBoundaryRestriction": "安全边界只能嵌入其他安全边界中"
+      "cannotEmbedIntoTextBox": "无法将形状嵌入文本框中。",
+      "circularEmbeddingPrevented": "不允许循环嵌入。",
+      "securityBoundaryRestriction": "安全边界只能嵌入其他安全边界中。"
     },
     "flowLabel": "数据流",
     "helpDialog": {
@@ -1070,7 +1112,7 @@
       "actor": "外部实体",
       "node": "节点",
       "process": "处理过程",
-      "securityBoundary": "信任边界",
+      "securityBoundary": "安全边界",
       "store": "数据存储",
       "textbox": "文本"
     },
@@ -1087,11 +1129,11 @@
         "addTextbox": "添加文本框",
         "deleteSelected": "删除所选",
         "export": "导出...",
-        "help": "帮助",
+        "help": "帮助...",
         "redo": "重做",
-        "showClipboard": "显示剪贴板",
-        "showGraphData": "显示图表数据",
-        "showHistory": "显示历史",
+        "showClipboard": "显示剪贴板...",
+        "showGraphData": "显示图表数据...",
+        "showHistory": "显示历史...",
         "undo": "撤销",
         "zoomToFit": "缩放至适合大小"
       }
@@ -1117,7 +1159,7 @@
   },
   "login": {
     "chooseMethod": "选择您的登录方式：",
-    "explanation": "使用您在受信任的身份提供商处的现有帐户登录。这消除了对单独密码的需求，简化了您的体验，同时确保您的安全。我们从不存储或管理密码 - 您的凭据保留在您的提供商处，无法通过我们被泄露。",
+    "explanation": "使用您在受信任的身份提供商处的现有账户登录。这消除了对单独密码的需求，简化了您的体验，同时确保您的安全。我们从不存储或管理密码——您的凭据保留在您的提供商处，无法通过我们被泄露。",
     "loadingProviders": "正在加载身份验证提供程序...",
     "local": {
       "title": "本地开发登录"
@@ -1125,26 +1167,26 @@
     "loggingInWith": "正在使用{{provider}}登录...",
     "loginWith": "使用以下方式登录",
     "noProvidersConfigured": "未配置身份验证提供程序。",
-    "oauthFailed": "OAuth身份验证失败。请重试。",
-    "oauthProvidersTitle": "OAuth登录提供商",
-    "samlProvidersTitle": "SAML登录提供商",
+    "oauthFailed": "OAuth 身份验证失败。",
+    "oauthProvidersTitle": "OAuth 登录提供商",
+    "samlProvidersTitle": "SAML 登录提供商",
     "sessionExpired": "您的会话已过期。请重新登录。",
     "signingIn": "正在登录...",
     "signingInWith": "{{login.loggingInWith}}",
-    "title": "登录到TMI",
+    "title": "登录到 TMI",
     "tmiDialog": {
-      "errorMaxLength": "用户名最多为20个字符",
-      "errorMinLength": "用户名至少为3个字符",
-      "errorPattern": "用户名只能包含字母、数字、句点、下划线、百分号、加号和连字符",
+      "errorMaxLength": "用户名最多为 20 个字符。",
+      "errorMinLength": "用户名至少为 3 个字符。",
+      "errorPattern": "用户名只能包含字母、数字、句点、下划线、百分号、加号和连字符。",
       "signIn": "登录",
-      "title": "使用TMI Provider登录",
+      "title": "使用 TMI Provider 登录",
       "usernameLabel": "用户名",
       "usernamePlaceholder": "输入用户名（可选）"
     },
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "mermaidViewer": {
-    "exportFailed": "导出图表失败",
+    "exportFailed": "导出图表失败。",
     "fitToScreen": "适应屏幕",
     "openInViewer": "在查看器中打开",
     "resetZoom": "重置缩放",
@@ -1153,7 +1195,7 @@
   },
   "navbar": {
     "admin": "管理",
-    "appTitle": "TMI: 威胁建模改进",
+    "appTitle": "TMI: 威胁建模改进。",
     "copyUserEmail": "复制用户邮箱到剪贴板",
     "dashboard": "仪表盘",
     "feedback": "报告错误、请求功能或提供反馈",
@@ -1171,7 +1213,7 @@
       "logout": "退出登录"
     },
     "serverStatus": {
-      "noServerConfigured": "未配置服务器",
+      "noServerConfigured": "未配置服务器。",
       "serverConnected": "服务器已连接",
       "serverDegraded": "服务器性能下降",
       "serverError": "服务器错误",
@@ -1179,14 +1221,14 @@
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} 个字符",
+    "characterCount": "{{Current}} / {{max}} 个字符",
     "content": "内容",
-    "contentPlaceholder": "以 markdown 格式输入笔记内容。支持 GitHub Flavored Markdown 和 Mermaid 图表。",
+    "contentPlaceholder": "以 Markdown 格式输入笔记内容。支持 GitHub Flavored Markdown 和 Mermaid 图表",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "可选描述",
     "editMode": "编辑模式",
     "errors": {
-      "clipboardAccessDenied": "剪贴板访问被拒绝"
+      "clipboardAccessDenied": "剪贴板访问被拒绝。"
     },
     "namePlaceholder": "输入笔记名称",
     "previewMode": "预览模式",
@@ -1206,9 +1248,9 @@
     },
     "deleteConfirmMessage": "您确定要删除备注“{{name}}”吗？此操作无法撤销。",
     "deleteConfirmTitle": "删除备注",
-    "noNotes": "暂无备注",
-    "sharable": "对所有成员可见",
-    "sharableTooltip": "启用后，此备注对所有团队/项目成员可见。禁用后，只有管理员和安全审查员可以看到它。",
+    "noNotes": "暂无备注。",
+    "sharable": "对所有成员可见。",
+    "sharableTooltip": "启用后，此备注对所有团队/项目成员可见。禁用后，只有管理员和安全审查员可以看到它",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "备注 ({{count}})"
   },
@@ -1216,35 +1258,35 @@
     "actions": {
       "login": "登录"
     },
-    "operationError": "{{operation}}失败：{{errorMessage}}",
+    "operationError": "{{operation}} 失败：{{errormessage}}。",
     "operationFailed": "操作失败",
     "operations": {
       "collaboration": "协作",
       "denyPresenterRequest": "拒绝演示者请求",
-      "sendPresenterRequest": "发送演示者请求",
+      "sendPresenterRequest": "发送演示者请求。",
       "startCollaboration": "开始协作",
       "updatePresenter": "更新演示者"
     },
     "presenter": {
-      "assigned": "{{user}} 现在是演示者",
-      "assignedYou": "您现在是演示者",
-      "cleared": "演示者模式已清除",
-      "cursorMoved": "演示者光标已移动",
-      "modeChanged": "演示者模式已更改",
-      "privilegesRequested": "已请求演示者权限",
-      "removed": "{{user}} 不再是演示者",
-      "removedYou": "您不再是演示者",
-      "requestDenied": "您的演示者请求已被拒绝",
-      "requestSent": "演示者请求已发送给会话所有者",
-      "requesting": "{{user}} 正在请求演示者权限",
-      "selectionChanged": "演示者选择已更改"
+      "assigned": "{{User}} 现在是演示者。",
+      "assignedYou": "您现在是演示者。",
+      "cleared": "演示者模式已清除。",
+      "cursorMoved": "演示者光标已移动。",
+      "modeChanged": "演示者模式已更改。",
+      "privilegesRequested": "已请求演示者权限。",
+      "removed": "{{User}} 不再是演示者。",
+      "removedYou": "您不再是演示者。",
+      "requestDenied": "您的演示者请求已被拒绝。",
+      "requestSent": "演示者请求已发送给会话所有者。",
+      "requesting": "{{User}} 正在请求演示者权限。",
+      "selectionChanged": "演示者选择已更改。"
     },
     "session": {
-      "disconnected": "已从协作会话断开连接",
-      "reconnected": "已重新连接到协作会话",
+      "disconnected": "已从协作会话断开连接。",
+      "reconnected": "已重新连接到协作会话。",
       "reconnecting": "正在重新连接到协作会话...",
-      "userRemoved": "{{user}} 已被移出会话",
-      "youWereRemoved": "您已被移出协作会话"
+      "userRemoved": "{{User}} 已被移出会话。",
+      "youWereRemoved": "您已被移出协作会话。"
     },
     "unknownError": "未知错误",
     "websocket": {
@@ -1256,18 +1298,18 @@
       "disconnected": "已从协作服务器断开连接，更改将保存在本地。",
       "messageSendFailed": "消息发送失败，您的更改可能无法同步。",
       "multipleFailed": "多次尝试后连接失败，正在离线模式下工作。",
-      "unknownError": "发生未知的 WebSocket 错误"
+      "unknownError": "发生未知的 WebSocket 错误。"
     }
   },
   "pagination": {
-    "ariaLabel": "选择项目页面",
+    "ariaLabel": "选择项目页面。",
     "firstPage": "第一页",
-    "itemsPerPage": "每页项目数",
+    "itemsPerPage": "每页项目数。",
     "lastPage": "最后一页",
     "nextPage": "下一页",
     "previousPage": "上一页",
     "rangeEmpty": "{{length}} 中的 0",
-    "rangeLabel": "{{length}} 中的 {{startIndex}} - {{endIndex}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}}，共 {{length}} 项"
   },
   "presenter": {
     "startPresenting": "开始演示",
@@ -1279,8 +1321,8 @@
     "complianceContent": "我们只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
     "complianceTitle": "法律合规",
     "contactContent": {
-      "part1": "如果您对本隐私政策有任何疑问，请随时通过",
-      "part2": "页面上的联系信息与本网站的运营商联系。"
+      "part1": "如果您对本隐私政策有任何疑问，请随时通过以下联系信息与本网站的运营商联系：",
+      "part2": "页面"
     },
     "contactTitle": "联系我们",
     "dataSecurityContent1": "运营商采用行业标准的安全措施来保护您的个人数据，包括传输中和静态加密、安全身份验证协议以及定期安全更新。对您信息的访问仅限于需要知道的授权人员。",
@@ -1288,20 +1330,20 @@
     "dataSecurityTitle": "数据安全",
     "dataSharingContent1": "运营商不会与任何第三方共享您的个人信息，除以下有限情况外：",
     "dataSharingContent2": "除这些例外情况外，运营商不会出于营销、广告或任何其他目的向任何其他实体出售、出租或共享您的数据。",
-    "dataSharingList1": "服务提供商：您的数据可能存储和处理在安全的第三方云基础设施上（如AWS、Google Cloud或类似提供商），仅用于操作和维护应用程序。这些提供商有合同义务保护您的数据，并仅将其用于运营商指定的目的。",
-    "dataSharingList2": "可扩展功能：本应用程序支持可选的可扩展功能（如websockets和addons），这些功能可以通过将选定信息传输给第三方服务进行处理来扩展功能。仅当您主动使用需要此类传输的功能时，数据才会与这些服务共享，且仅传输所请求功能所需的特定信息。",
-    "dataSharingList2a": "AI处理功能：当您主动请求由大型语言模型（LLMs）或类似AI服务驱动的功能时，选定的数据可能会被传输给第三方AI提供商（如OpenAI、Anthropic或同等服务）进行处理和响应生成。仅共享所请求功能所需的特定信息，且此类共享仅在您的指示下进行。这些提供商受合同义务约束——包括适用的数据处理协议——仅可将数据用于提供所请求的服务，并对数据保留、训练或其他用途有相应限制。",
-    "dataSharingList3": "法律合规：如法律要求,运营方可能会披露信息，例如在响应有效的法院命令、传票或政府请求时。",
+    "dataSharingList1": "服务提供商：您的数据可能存储和处理在安全的第三方云基础设施上（如 AWS、Google Cloud 或类似提供商），仅用于操作和维护应用程序。这些提供商有合同义务保护您的数据，并仅将其用于运营商指定的目的。",
+    "dataSharingList2": "可扩展功能：本应用程序支持可选的可扩展功能（如 websockets 和 addons），这些功能可以通过将选定信息传输给第三方服务进行处理来扩展功能。仅当您主动使用需要此类传输的功能时，数据才会与这些服务共享，且仅传输所请求功能所需的特定信息。",
+    "dataSharingList2a": "AI 处理功能：当您主动请求由大型语言模型（LLMs）或类似 AI 服务驱动的功能时，选定的数据可能会被传输给第三方 AI 提供商（如 OpenAI、Anthropic 或同等服务）进行处理和响应生成。仅共享所请求功能所需的特定信息，且此类共享仅在您的指示下进行。这些提供商受合同义务约束——包括适用的数据处理协议——仅可将数据用于提供所请求的服务，并对数据保留、训练或其他用途有相应限制。",
+    "dataSharingList3": "法律合规：如法律要求，运营商可能会披露信息，例如在响应有效的法院命令、传票或政府请求时。",
     "dataSharingTitle": "数据共享",
-    "informationCollectionContent1": "当用户通过社交登录进行身份验证时（使用OAuth或OpenID Connect提供商，如使用Google登录、使用GitHub登录、Microsoft Entra External ID或其他），应用程序会从选定的提供商收集以下信息，仅用于促进身份验证和提供个性化服务：",
-    "informationCollectionContent2": "未经用户明确同意，不会收集任何其他个人数据。运营商不访问或存储敏感信息，如密码、联系人或其他超出身份验证所需的提供商特定数据。所有收集的信息都按照相应提供商的API政策和运营商对用户隐私的承诺进行处理。",
-    "informationCollectionContent3": "本应用程序生成操作日志以确保系统可靠性、安全性和性能。这些日志可能包含应用程序内用户活动的记录，如登录事件、功能使用情况和错误报告。运营方仅在必要时间内保留日志以满足操作目的，包括故障排除、安全监控和服务改进。日志存储安全，且仅用于操作需求之外的目的不会被使用。",
+    "informationCollectionContent1": "当用户通过社交登录进行身份验证时（使用 OAuth 或 OpenID Connect 提供商，如使用 Google 登录、使用 GitHub 登录、Microsoft Entra External ID 或其他），应用程序会从选定的提供商收集以下信息，仅用于促进身份验证和提供个性化服务：",
+    "informationCollectionContent2": "未经用户明确同意，不会收集任何其他个人数据。运营商不访问或存储敏感信息，如密码、联系人或其他超出身份验证所需的提供商特定数据。所有收集的信息都按照相应提供商的 API 政策和运营商对用户隐私的承诺进行处理。",
+    "informationCollectionContent3": "本应用程序生成操作日志以确保系统可靠性、安全性和性能。这些日志可能包含应用程序内用户活动的记录，如登录事件、功能使用情况和错误报告。运营商仅在必要时间内保留日志以满足操作目的，包括故障排除、安全监控和服务改进。日志存储安全，且不会用于操作需求之外的目的。",
     "informationCollectionList1": "基本个人资料信息：全名、电子邮件地址和个人资料图片（如果提供且可用）。",
-    "informationCollectionList2": "唯一标识符：特定于提供商的用户ID，用于安全管理账户会话。",
+    "informationCollectionList2": "唯一标识符：特定于提供商的用户 ID，用于安全管理账户会话。",
     "informationCollectionTitle": "信息收集和使用",
     "intro1": {
       "part1": "本网站是由本网站",
-      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序(\"TMI\")的一个实例。"
+      "part2": "页面上列出的运营商（\"运营商\"）提供的开源 Web 应用程序（\"TMI\"）的一个实例。"
     },
     "intro2": "运营商致力于保护您的隐私。本隐私政策解释了如何处理您的信息。",
     "introductionTitle": "简介",
@@ -1312,7 +1354,7 @@
     "userRightsTitle": "用户权利"
   },
   "projects": {
-    "addButton": "添加项目",
+    "addButton": "添加项目...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1323,9 +1365,9 @@
     "createDialog": {
       "descriptionPlaceholder": "输入项目描述",
       "namePlaceholder": "输入项目名称",
-      "nameRequired": "项目名称为必填项",
-      "statusPlaceholder": "例如 active, planning, archived",
-      "teamRequired": "团队为必填项",
+      "nameRequired": "项目名称为必填项。",
+      "statusPlaceholder": "例如 active、planning、archived",
+      "teamRequired": "团队为必填项。",
       "title": "创建项目",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1349,15 +1391,15 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "未找到项目",
+    "noProjects": "未找到项目。",
     "picker": {
       "label": "{{common.project}}",
       "none": "无项目"
     },
     "relatedProjectsDialog": {
-      "addRelated": "添加相关项目",
+      "addRelated": "添加相关项目。",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "无相关项目",
+      "noRelated": "无相关项目。",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "选择项目",
       "title": "相关项目"
@@ -1377,27 +1419,27 @@
       "planning": "规划中"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "按状态筛选",
-    "subtitle": "创建、编辑和管理项目、关系和元数据",
+    "statusFilterLabel": "按状态筛选。",
+    "subtitle": "创建、编辑和管理项目、关系和元数据。",
     "teamFilterLabel": "按团队筛选",
     "title": "管理项目"
   },
   "report": {
     "cvss": "CVSS",
-    "cweIds": "CWE IDs",
+    "cweIds": "CWE ID",
     "diagramImageUnavailable": "图表图像不可用",
-    "diagramRenderFailed": "无法呈现图表",
-    "generatedAt": "报告生成时间",
+    "diagramRenderFailed": "无法呈现图表。",
+    "generatedAt": "报告生成时间。",
     "linkedAsset": "关联资产",
     "linkedDiagram": "关联图表",
     "pageOf": "第 {{current}} 页，共 {{total}} 页",
     "refLabel": "参考",
-    "summaryCreatedAt": "威胁模型创建于",
-    "summaryCreatedBy": "威胁模型创建者",
+    "summaryCreatedAt": "威胁模型创建于。",
+    "summaryCreatedBy": "威胁模型创建者。",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "威胁模型最后修改",
+    "summaryLastModified": "威胁模型最后修改。",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "威胁模型状态"
+    "summaryStatus": "威胁模型状态。"
   },
   "sessionExpiry": {
     "extendButton": "延长会话",
@@ -1405,8 +1447,8 @@
     "logoutButton": "立即退出",
     "message": "您的会话即将过期。您想要延长会话还是立即退出登录？",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}}秒"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} 秒"
     },
     "title": "会话即将过期"
   },
@@ -1431,13 +1473,13 @@
       "description": "此漏洞的当前利用状态是什么？",
       "name": "利用",
       "none": "{{common.none}}",
-      "noneDesc": "没有证据表明存在活跃利用，也没有公开的PoC。",
-      "poc": "公开PoC",
+      "noneDesc": "没有证据表明存在活跃利用，也没有公开的概念验证",
+      "poc": "公开 PoC",
       "pocDesc": "存在典型的公开PoC（例如在Metasploit或ExploitDB上），或者已记录一个众所周知的利用方法。"
     },
     "methodology": "供应商",
     "next": "下一步",
-    "openCalculator": "添加SSVC",
+    "openCalculator": "添加 SSVC...",
     "publicSafetyImpact": {
       "description": "利用此漏洞是否会对公共安全造成风险？",
       "minimal": "最小",
@@ -1456,7 +1498,7 @@
       "total": "完全",
       "totalDesc": "完全控制软件的行为，或完全披露系统上的所有信息。"
     },
-    "title": "SSVC计算器",
+    "title": "SSVC 计算器",
     "utility": {
       "description": "利用此漏洞对典型攻击者有多大用处？",
       "efficient": "高效",
@@ -1483,10 +1525,10 @@
       "yes": "是，标记为机密"
     },
     "confirmation": {
-      "backToSurveys": "返回调查",
+      "backToSurveys": "返回调查。",
       "message": "您的调查已成功提交。",
       "title": "调查已提交",
-      "viewResponses": "查看我的回复"
+      "viewResponses": "查看我的回复。"
     },
     "continueDraft": "继续草稿",
     "fill": {
@@ -1495,9 +1537,9 @@
     },
     "list": {
       "deleteDraft": "删除草稿",
-      "draftStarted": "草稿开始于 {{time}}",
-      "errorLoadingSurveys": "加载调查失败",
-      "lastModified": "最后修改于 {{time}}",
+      "draftStarted": "草稿开始于 {{time}}。",
+      "errorLoadingSurveys": "加载调查失败。",
+      "lastModified": "最后修改于 {{time}}。",
       "loadingSurveys": "正在加载调查...",
       "noSurveysMessage": "目前没有活跃的调查。请稍后再查看。",
       "noSurveysTitle": "没有可用的调查",
@@ -1509,8 +1551,8 @@
     "myResponses": "我的回复",
     "noMatchingResponses": "没有匹配的回复",
     "noMatchingResponsesMessage": "没有符合所选筛选条件的回复。",
-    "noResponses": "您还没有提交任何调查回复",
-    "noSurveys": "暂无可用调查",
+    "noResponses": "您还没有提交任何调查回复。",
+    "noSurveys": "暂无可用调查。",
     "responses": {
       "continueEditing": "继续编辑",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1519,11 +1561,11 @@
       "noResponsesMessage": "您还没有完成任何调查问卷。请从调查问卷页面开始。",
       "noResponsesTitle": "暂无回复",
       "pageTitle": "我的调查问卷回复",
-      "responseCount": "{{count}} 条回复",
-      "responseCountPlural": "{{count}} 条回复"
+      "responseCount": "{{Count}} 条回复",
+      "responseCountPlural": "{{Count}} 条回复"
     },
     "saveDraft": "保存草稿",
-    "startNew": "开始调查",
+    "startNew": "开始调查...",
     "status": {
       "draft": "草稿",
       "needsRevision": "需要修订",
@@ -1541,7 +1583,7 @@
     "viewResponse": "查看回复"
   },
   "teams": {
-    "addButton": "添加团队",
+    "addButton": "添加团队...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "已修改",
@@ -1554,8 +1596,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "输入团队名称",
-      "nameRequired": "团队名称为必填项",
-      "statusPlaceholder": "例如 active, archived",
+      "nameRequired": "团队名称为必填项。",
+      "statusPlaceholder": "例如 active、archived。",
       "title": "创建团队",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1574,7 +1616,7 @@
     "filterLabel": "筛选团队",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "成员",
+      "members": "成员...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1588,13 +1630,13 @@
       "role": "角色",
       "title": "团队成员"
     },
-    "noTeams": "未找到团队",
+    "noTeams": "未找到团队。",
     "relatedTeamsDialog": {
-      "addRelated": "添加相关团队",
+      "addRelated": "添加相关团队。",
       "customRelationship": "自定义关系",
-      "noRelated": "无相关团队",
+      "noRelated": "无相关团队。",
       "relationship": "关系",
-      "removeRelated": "移除相关团队",
+      "removeRelated": "移除相关团队。",
       "selectTeam": "选择团队",
       "title": "相关团队"
     },
@@ -1610,7 +1652,7 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "添加负责方",
-      "noParties": "无负责方",
+      "noParties": "无负责方。",
       "removeParty": "移除负责方",
       "title": "负责方"
     },
@@ -1631,25 +1673,25 @@
       "splitting": "分裂中",
       "winding_down": "逐步关闭"
     },
-    "subtitle": "创建、编辑和管理团队、成员和关系",
+    "subtitle": "创建、编辑和管理团队、成员和关系。",
     "title": "管理团队"
   },
   "threatEditor": {
-    "addMapping": "添加映射",
+    "addMapping": "添加映射...",
     "createNewThreat": "创建新威胁",
-    "cvssVectorPlaceholder": "例如，CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "输入 CWE ID（例如，CWE-79）",
-    "cweMappings": "CWE映射",
+    "cvssVectorPlaceholder": "例如，cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
+    "cweIdPlaceholder": "输入 CWE ID（例如，cwe-79）",
+    "cweMappings": "CWE 映射",
     "frameworkMappingPicker": {
       "notApplicable": "不适用于当前单元格类型",
       "title": "选择框架映射"
     },
-    "frameworkMappings": "威胁建模框架映射",
+    "frameworkMappings": "威胁模型框架映射。",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "未关联资产",
-    "notAssociatedWithCell": "未关联单元格",
-    "notAssociatedWithDiagram": "未关联图表",
+    "notAssociatedWithAsset": "未关联资产。",
+    "notAssociatedWithCell": "未关联单元格。",
+    "notAssociatedWithDiagram": "未关联图表。",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -1667,7 +1709,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "已延迟（P4）",
+      "high": "高（P1）",
+      "immediate": "立即（P0）",
+      "low": "低（P3）",
+      "medium": "中等（P2）"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1682,7 +1729,7 @@
       "high": "高",
       "high.description": "重大影响或高可能性；可导致重大未授权访问、权限提升或服务中断。",
       "informational": "信息性",
-      "informational.description": "无直接可利用性；建议、最佳实践偏离或配置改进。",
+      "informational.description": "无直接可利用性；建议、最佳实践偏离或配置改进",
       "low": "低",
       "low.description": "最小影响或低可能性；业务影响可忽略不计，需要特定条件或用户交互。",
       "medium": "中等",
@@ -1710,25 +1757,31 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "误报",
+      "mitigation_in_progress": "缓解措施进行中。",
+      "mitigation_planned": "缓解措施已计划",
+      "verification_pending": "验证待处理"
+    },
+    "addCvssEntry": "添加 CVSS 条目。",
+    "cvssVector": "CVSS 向量"
   },
   "threatModels": {
     "addPermission": "添加权限",
     "branch": "分支",
-    "changeSecurityReviewer": "更换安全审查员",
+    "changeSecurityReviewer": "更换安全审查员...",
     "clearSecurityReviewer": "清除安全审查员",
     "commit": "提交",
     "confidentialProject": "机密项目",
-    "createFirstButton": "创建您的第一个威胁模型",
+    "createFirstButton": "创建您的第一个威胁模型...",
     "createNewDiagram": "创建新图表",
-    "createNewRepository": "添加仓库引用",
+    "createNewRepository": "添加仓库引用...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "数据流图",
-    "deleteError": "删除威胁模型失败：{{error}}",
-    "deleteSuccess": "威胁模型已删除：{{name}}",
+    "deleteError": "删除威胁模型失败：{{error}}。",
+    "deleteSuccess": "威胁模型已删除：{{name}}。",
     "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
     "details": "威胁模型详情",
@@ -1748,31 +1801,31 @@
     "documentUrl": "文档链接",
     "export": "导出",
     "exportDialog": {
-      "error": "导出数据准备失败。请重试。",
+      "error": "导出数据准备失败。",
       "preparing": "正在准备导出数据...",
       "ready": "导出已准备就绪。点击保存以下载。",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "导出威胁模型"
     },
-    "fileSizeExceeded": "文件超出最大导入大小限制：{{maxSize}} MB",
+    "fileSizeExceeded": "文件超出最大导入大小限制：{{maxsize}} MB。",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "{{common.id}}",
-    "importError": "导入威胁模型失败：{{error}}",
-    "importFormatError": "无效的威胁模型格式：缺少必填字段（id、name）",
-    "importSuccess": "威胁模型导入成功：{{name}}",
-    "importValidationError": "威胁模型验证失败：{{errors}}",
+    "importError": "导入威胁模型失败：{{error}}。",
+    "importFormatError": "无效的威胁模型格式：缺少必填字段（ID、name）。",
+    "importSuccess": "威胁模型导入成功：{{name}}。",
+    "importValidationError": "威胁模型验证失败：{{errors}}。",
     "importing": "正在导入威胁模型...",
     "issueUriHint": "输入URL以在外部系统中跟踪此威胁模型",
     "newThreatModel": "新威胁模型",
-    "noAssets": "尚未添加资产",
-    "noDiagrams": "尚未添加图表",
-    "noDocuments": "尚未添加文档",
+    "noAssets": "尚未添加资产。",
+    "noDiagrams": "尚未添加图表。",
+    "noDocuments": "尚未添加文档。",
     "noItemsMessage": "您还没有任何威胁模型。",
-    "noNotes": "尚未添加笔记",
-    "noPermissions": "未定义权限",
-    "noRepositories": "尚未添加仓库",
-    "noThreats": "尚未添加威胁",
+    "noNotes": "尚未添加笔记。",
+    "noPermissions": "未定义权限。",
+    "noRepositories": "尚未添加仓库。",
+    "noThreats": "尚未添加威胁。",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
@@ -1800,9 +1853,9 @@
     "sections": {
       "audit": "审计",
       "inputs": "输入",
-      "inputsDescription": "描述被分析系统的资产、文档和源代码仓库",
+      "inputsDescription": "描述被分析系统的资产、文档和源代码仓库。",
       "outputs": "输出",
-      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁",
+      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁。",
       "reviewProcess": "审查流程"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1828,28 +1881,34 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "进行中",
+      "not_started": "未开始",
+      "pending_review": "待审核",
+      "remediation_in_progress": "修复措施进行中。",
+      "remediation_required": "需要修复",
+      "verification_pending": "验证待处理"
     },
-    "statusLastUpdated": "状态最后更新",
+    "statusLastUpdated": "状态最后更新。",
     "tag": "标签",
     "threatModelFramework": "威胁模型框架",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "添加资产",
-      "addDiagram": "添加图表",
-      "addDocument": "添加文档",
+      "addAsset": "添加资产...",
+      "addDiagram": "添加图表...",
+      "addDocument": "添加文档...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "资产是系统内需要保护的宝贵资源，例如数据、硬件、软件、基础设施、服务或人员。",
-      "diagramsCardTitle": "TMI中的图表是系统内数据流动和处理过程的机器可读表示，支持手动和自动化安全分析。",
-      "documentsCardTitle": "文档引用是指向存储在TMI外部的文档的链接。相关文档描述要分析的系统，可供安全分析师和自动化分析流程使用。",
+      "assetsCardTitle": "资产是系统内需要保护的宝贵资源，例如数据、硬件、软件、基础设施、服务或人员",
+      "diagramsCardTitle": "TMI 中的图表是系统内数据流动和处理过程的机器可读表示，支持手动和自动化安全分析",
+      "documentsCardTitle": "文档引用是指向存储在 TMI 外部的文档的链接。相关文档描述要分析的系统，可供安全分析师和自动化分析流程使用",
       "downloadModel": "下载模型",
       "dropToCreateDocument": "拖放以创建",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "拖放以设置问题URI",
       "import": "导入",
-      "notesCardTitle": "笔记是完全包含在威胁模型中的markdown格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释。",
-      "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",
-      "threatsCardTitle": "威胁是潜在的不利事件或行动，它利用系统中的漏洞或弱点来破坏其机密性、完整性、可用性或其他安全目标。在TMI中，威胁对象还包含有关与威胁相关的风险类型和级别的信息，以及跟踪缓解威胁所需工作的信息。"
+      "notesCardTitle": "笔记是完全包含在威胁模型中的 Markdown 格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释",
+      "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码",
+      "threatsCardTitle": "威胁是潜在的不利事件或行动，它利用系统中的漏洞或弱点来破坏其机密性、完整性、可用性或其他安全目标。在 TMI 中，威胁对象还包含有关与威胁相关的风险类型和级别的信息，以及跟踪缓解威胁所需工作的信息"
     },
     "viewDiagramName": "查看图表属性",
     "yourThreatModels": "您的威胁模型"
@@ -1870,12 +1929,12 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "如果您对这些条款有任何疑问，请随时通过",
-      "part2": "页面上的联系信息与本网站的运营商联系。"
+      "part1": "如果您对这些条款有任何疑问，请随时通过以下联系信息与本网站的运营商联系：",
+      "part2": "页面"
     },
     "intro": {
-      "part1": "欢迎使用我们的TMI实例。这些使用条款(\"条款\")规范您对本网站的访问和使用，本网站是由本网站",
-      "part2": "页面上列出的运营商(\"运营商\")提供的开源Web应用程序的一个实例。"
+      "part1": "欢迎使用我们的 TMI 实例。这些使用条款（\"条款\"）规范您对本网站的访问和使用，本网站是由本网站",
+      "part2": "页面上列出的运营商（\"运营商\"）提供的开源 Web 应用程序的一个实例。"
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
@@ -1896,8 +1955,8 @@
     },
     "section5": {
       "content": {
-        "part1": "本网站运行TMI软件，其源代码可在本网站",
-        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。除非另有说明，本网站的运营商与TMI项目或其创建者无关。"
+        "part1": "本网站运行 TMI 开源软件，其源代码可在本网站",
+        "part2": "页面提供的链接获取。您对软件的使用受其开源许可条款约束。我们不对软件本身负责，只负责运营此实例。除非另有说明，本网站的运营商与 TMI 项目或其创建者无关。"
       },
       "title": "5. 开源软件"
     },
@@ -1939,9 +1998,9 @@
         "question": "问题"
       },
       "markdownSupported": "支持 Markdown",
-      "noNotes": "暂无分诊备注",
-      "noResponses": "无回复记录",
-      "noRevisionNotes": "无修订备注",
+      "noNotes": "暂无分诊备注。",
+      "noResponses": "无回复记录。",
+      "noRevisionNotes": "无修订备注。",
       "note": "备注",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "输入备注内容...",
@@ -1969,11 +2028,11 @@
       "approve": "批准",
       "approveSelected": "批准所选",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "加载回复失败",
+      "errorLoadingResponses": "加载回复失败。",
       "loadingResponses": "正在加载回复...",
-      "noResponsesFiltered": "没有与您的筛选条件匹配的回复",
+      "noResponsesFiltered": "没有与您的筛选条件匹配的回复。",
       "noResponsesTitle": "没有回复",
-      "noResponsesToTriage": "没有需要分类的调查回复",
+      "noResponsesToTriage": "没有需要分类的调查回复。",
       "notSubmitted": "未提交",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "按提交者或调查问卷搜索...",
@@ -1981,16 +2040,16 @@
       "submitter": "提交者"
     },
     "markInReview": "标记为审核中",
-    "markPendingTriage": "标记为待分诊",
+    "markPendingTriage": "标记为待分诊。",
     "messages": {
-      "approveError": "批准回复失败",
+      "approveError": "批准回复失败。",
       "approveSuccess": "回复已批准",
-      "createThreatModelError": "创建威胁模型失败",
-      "createThreatModelSuccess": "威胁模型创建成功",
-      "returnForRevisionError": "退回修订失败",
-      "returnForRevisionSuccess": "回复已退回修订"
+      "createThreatModelError": "创建威胁模型失败。",
+      "createThreatModelSuccess": "威胁模型创建成功。",
+      "returnForRevisionError": "退回修订失败。",
+      "returnForRevisionSuccess": "回复已退回修订。"
     },
-    "noResponses": "暂无待分诊回复",
+    "noResponses": "暂无待分诊回复。",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "输入备注内容（支持 Markdown）...",
@@ -2002,14 +2061,14 @@
       }
     },
     "queue": "分诊队列",
-    "returnToSubmitted": "返回已提交",
+    "returnToSubmitted": "返回已提交。",
     "reviewerAssignment": {
       "assign": "分配",
       "assignToMe": "分配给我",
-      "errorLoading": "加载未分配的威胁模型失败",
+      "errorLoading": "加载未分配的威胁模型失败。",
       "loading": "正在加载未分配的审核...",
       "noUnassigned": "无未分配的审核",
-      "noUnassignedDescription": "所有活跃威胁模型都已分配了安全审核员",
+      "noUnassignedDescription": "所有活跃威胁模型都已分配了安全审核员。",
       "noUnassignedFiltered": "没有威胁模型匹配您的筛选条件",
       "reviewer": "安全审核员",
       "reviewerPlaceholder": "按审核者筛选...",
@@ -2019,7 +2078,7 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "提供说明需要修订内容的备注。提交者在审核其回复时将看到这些备注。",
+      "description": "提供说明需要修订内容的备注。提交者在审核其回复时将看到这些备注",
       "hint": "必填 — 描述需要进行的更改",
       "label": "修订备注",
       "placeholder": "描述需要修订的内容...",
@@ -2052,15 +2111,15 @@
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "可选：描述此凭证的用途",
-        "descriptionPlaceholder": "用于CI/CD流水线集成",
-        "descriptionTooLong": "描述不能超过500个字符",
+        "descriptionPlaceholder": "用于 CI/CD 流水线集成。",
+        "descriptionTooLong": "描述不能超过 500 个字符。",
         "expiresAt": "过期日期",
         "expiresAtHint": "可选：留空表示永不过期",
         "name": "{{common.name}}",
         "nameHint": "此凭证的描述性名称",
-        "namePlaceholder": "我的API凭证",
+        "namePlaceholder": "我的 API 凭证",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "名称不能超过100个字符",
+        "nameTooLong": "名称不能超过 100 个字符。",
         "title": "创建客户端凭证"
       },
       "createdOn": "{{common.created}}",
@@ -2070,13 +2129,13 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "上次使用",
       "neverExpires": "永不过期",
-      "noCredentials": "暂无客户端凭证",
+      "noCredentials": "暂无客户端凭证。",
       "noCredentialsDescription": "创建凭证以编程方式访问TMI API。",
       "secretDialog": {
         "title": "客户端凭证已创建",
         "warning": "请立即保存这些凭证。客户端密钥不会再次显示。"
       },
-      "title": "API凭证"
+      "title": "API 凭证"
     },
     "dashboardListView": "将仪表板显示为列表视图",
     "deleteMyData": {
@@ -2085,7 +2144,7 @@
       "emailDoesNotMatch": "电子邮件地址不匹配",
       "emailMatches": "电子邮件地址匹配",
       "explanation": {
-        "bullet1": "您的身份提供者数据，包括用户ID、姓名和电子邮件。",
+        "bullet1": "您的身份提供者数据，包括用户 ID、姓名和电子邮件。",
         "bullet2": "您对所有不拥有的威胁模型对象的权限。",
         "bullet3": "对于您拥有的威胁模型：",
         "bullet3a": "如果存在其他所有者，所有权将转移给他们，您的权限将被撤销。",
@@ -2096,7 +2155,7 @@
       "title": "删除我的所有数据",
       "validation": "要确认您的删除请求，请准确输入此处显示的电子邮件地址："
     },
-    "diagramAnimationEffects": "在图表编辑器中启用动画效果",
+    "diagramAnimationEffects": "在图表编辑器中启用动画效果。",
     "displayPreferences": "显示偏好设置",
     "downloadLog": {
       "hint": "将最近的应用程序日志条目下载为 JSONL 文件，用于故障排除。",
@@ -2106,23 +2165,23 @@
     "marginSize": {
       "narrow": "窄",
       "standard": "标准",
-      "title": "报告的首选边距大小",
+      "title": "报告的首选边距大小。",
       "wide": "宽"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "报告的首选页面大小",
+      "title": "报告的首选页面大小。",
       "usLetter": "US Letter"
     },
     "reportPreferences": "报告首选项",
     "sections": {
       "developer": "开发者",
       "diagramEditor": "图表编辑器",
-      "diagramLayout": "Diagram Layout",
+      "diagramLayout": "图表布局",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "显示开发者工具",
-    "showShapeBordersWithIcons": "显示图标时显示形状填充和边框",
+    "showDeveloperTools": "显示开发者工具。",
+    "showShapeBordersWithIcons": "显示图标时显示形状填充和边框。",
     "tabs": {
       "credentials": "凭证",
       "danger": "危险区域",
@@ -2140,9 +2199,9 @@
     "transferData": {
       "confirmMessage": "您确定要将所有威胁模型和调查响应转移到 {{email}} 吗？您在转移的项目中将被降级为编写者角色。",
       "dialogTitle": "转移我的数据",
-      "error": "数据转移失败。请重试。",
+      "error": "数据转移失败。",
       "hint": "将您所有威胁模型和调查响应的所有权转移给另一个用户。您在转移的项目中将被降级为编写者角色。",
-      "success": "已转移 {{tmCount}} 个威胁模型和 {{responseCount}} 个调查响应。",
+      "success": "已转移 {{tmcount}} 个威胁模型和 {{responsecount}} 个调查回复。",
       "title": "将我的数据转移给其他用户"
     },
     "userProfile": {
@@ -2156,13 +2215,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "查看和编辑您的项目、团队和关系",
+    "subtitle": "查看和编辑您的项目、团队和关系。",
     "title": "我的项目"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "查看和编辑您的团队、成员和关系",
+    "subtitle": "查看和编辑您的团队、成员和关系。",
     "title": "我的团队"
   }
 }
