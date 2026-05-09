@@ -1,7 +1,7 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of, throwError, Subject } from 'rxjs';
 import { Injector } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -86,6 +86,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       mockTransloco as unknown as TranslocoService,
       mockLogger as unknown as LoggerService,
       mockContentProviders as unknown as ContentProvidersService,
+      document,
     );
   }
 
@@ -115,6 +116,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     mockLogger = { warn: vi.fn(), error: vi.fn() };
     sources$ = new BehaviorSubject<SelectableSource[]>(DEFAULT_SOURCES);
     mockContentProviders = { selectableSources$: sources$ };
+    document.body.classList.remove('picker-in-progress');
   });
 
   it('defaults selectedSource to "url" in create mode', () => {
@@ -551,6 +553,54 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
       c.onPickFile();
       expect(mockPicker.pick).not.toHaveBeenCalled();
       expect(mockLogger.warn).toHaveBeenCalled();
+    });
+
+    it('toggles body.picker-in-progress while picker is open and clears on picked event', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      const event: PickerEvent = {
+        kind: 'picked',
+        file: {
+          fileId: 'abc',
+          name: 'doc.pdf',
+          mimeType: 'application/pdf',
+          url: 'https://drive.google.com/file/d/abc',
+        },
+      };
+      // Use a Subject so we can observe the in-flight state before the event fires
+      const pickStream = new Subject<PickerEvent>();
+      mockPicker.pick.mockReturnValue(pickStream.asObservable());
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      expect(c.pickingInProgress).toBe(true);
+      expect(document.body.classList.contains('picker-in-progress')).toBe(true);
+      pickStream.next(event);
+      pickStream.complete();
+      expect(c.pickingInProgress).toBe(false);
+      expect(document.body.classList.contains('picker-in-progress')).toBe(false);
+    });
+
+    it('clears body.picker-in-progress when picker is cancelled', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      mockPicker.pick.mockReturnValue(of<PickerEvent>({ kind: 'cancelled' }));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      expect(c.pickingInProgress).toBe(false);
+      expect(document.body.classList.contains('picker-in-progress')).toBe(false);
+    });
+
+    it('clears body.picker-in-progress when picker errors', () => {
+      sources$.next([SERVICE_SOURCE_WITH_PICKER]);
+      mockPicker.pick.mockReturnValue(throwError(() => new Error('boom')));
+      const c = createComponent({ mode: 'create' });
+      c.ngOnInit();
+      c.selectedSource = 'google_drive';
+      c.onPickFile();
+      expect(c.pickingInProgress).toBe(false);
+      expect(document.body.classList.contains('picker-in-progress')).toBe(false);
     });
 
     it('onPickFile in delegated mode passes no context (default behavior)', () => {

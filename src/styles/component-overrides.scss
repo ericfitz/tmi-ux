@@ -486,32 +486,30 @@ body {
 }
 
 // =============================================================================
-// GOOGLE PICKER — third-party widget z-index + positioning
+// GOOGLE PICKER — third-party widget positioning + dialog visibility coordination
 // =============================================================================
-// Google Picker injects elements into <body> at its own z-index (varies by
-// SDK version, often around 1500 for the dialog itself). When invoked from
-// inside a Material Dialog (CDK overlay z-index ~1000), the picker can end
-// up rendering behind a higher-stacking-context Material panel. Force the
-// picker above any plausible CDK overlay layer and re-center on viewport.
+// Google Picker injects its DOM directly under <body> in its own stacking
+// context. When invoked from inside a Material Dialog (CDK overlay), the
+// picker can render behind the dialog's overlay layer regardless of z-index
+// (CDK creates a stacking context that traps anything z-index can't escape).
+// Coordinated approach: the dialog component sets `body.picker-in-progress`
+// while a picker is open. We hide the entire CDK overlay container during
+// that window — the dialog component stays mounted (form state preserved),
+// the picker has the viewport to itself.
 
-.picker-dialog-bg {
-  z-index: 99998 !important;
+body.picker-in-progress .cdk-overlay-container {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
+// Re-center the picker on viewport (defensive: some versions position it
+// at top:0 left:0 which leaves it partially off-screen on small viewports).
 .picker-dialog,
 .picker.modal-dialog {
-  z-index: 99999 !important;
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   max-height: 90vh !important;
   max-width: 90vw !important;
-}
-
-// Some Picker versions inject the iframe at a separate stacking layer. Make
-// sure it inherits the dialog's z-index space.
-.picker.modal-dialog-bg,
-.picker-dialog .picker-frame {
-  z-index: 99999 !important;
 }

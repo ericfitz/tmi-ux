@@ -1,4 +1,4 @@
-import { Component, Inject, Injector, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, Injector, OnInit, OnDestroy, DOCUMENT } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -162,6 +162,15 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   /** Inline error shown when the in-place create call fails. */
   createErrorKey: string | null = null;
 
+  /**
+   * True while a Google Picker (or other third-party file picker) iframe is
+   * open. The dialog hides itself (visibility + pointer-events suppressed)
+   * during this window so the picker isn't visually trapped behind the CDK
+   * overlay's stacking context. Component stays mounted — form state is
+   * preserved and restored when the picker resolves.
+   */
+  pickingInProgress = false;
+
   private _pickerRegistration: PickerRegistration | null = null;
   private _suppressPasteDetection = false;
 
@@ -178,6 +187,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     private transloco: TranslocoService,
     private logger: LoggerService,
     private contentProviders: ContentProvidersService,
+    @Inject(DOCUMENT) private document: Document,
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
@@ -359,6 +369,11 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Defensive: ensure the body class is cleared if the component is torn
+    // down with a picker still open (e.g. user navigates away).
+    if (this.pickingInProgress) {
+      this._setPickingInProgress(false);
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -435,6 +450,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     }
 
     this.pickerError = null;
+    this._setPickingInProgress(true);
     const svc = this.injector.get<IContentPickerService>(meta.pickerService);
     svc
       .pick(context)
@@ -443,6 +459,23 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
         next: (event: PickerEvent) => this._handlePickerEvent(event),
         error: err => this._handlePickerError(err),
       });
+  }
+
+  /**
+   * Toggle the body-level class that hides the CDK overlay container while a
+   * third-party picker is open. Hiding the container (not just our component)
+   * prevents the dialog's stacking context from trapping the picker behind it.
+   * Picker DOM is injected directly on document.body and remains visible.
+   */
+  private _setPickingInProgress(active: boolean): void {
+    this.pickingInProgress = active;
+    const body = this.document.body;
+    if (!body) return;
+    if (active) {
+      body.classList.add('picker-in-progress');
+    } else {
+      body.classList.remove('picker-in-progress');
+    }
   }
 
   private _handlePickerEvent(event: PickerEvent): void {
@@ -454,10 +487,12 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       case 'cancelled':
         this.finalizing = false;
         this.finalizingMessageKey = null;
+        this._setPickingInProgress(false);
         return;
       case 'picked': {
         this.finalizing = false;
         this.finalizingMessageKey = null;
+        this._setPickingInProgress(false);
         this.pickedFile = event.file;
         // picker_registration is a delegated-mode artifact; service-mode dispatches
         // via content_source on the server and doesn't carry a per-document grant.
@@ -480,6 +515,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.finalizingMessageKey = null;
     this.pickedFile = null;
     this._pickerRegistration = null;
+    this._setPickingInProgress(false);
     this.pickerError = this._mapErrorToState(err);
     this.logger.warn('Picker failed', err);
   }
