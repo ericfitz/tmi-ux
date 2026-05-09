@@ -4,8 +4,8 @@
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
     "contactjurisdiction": "الولاية القضائية القانونية",
     "contactoperator": "المشغل",
-    "contactoperatordetails": "معلومات الاتصال بالمشغل",
-    "contacttitle": "المشغل",
+    "contactoperatordetails": "جهة الاتصال بالمشغل",
+    "contacttitle": "يُشغَّل بواسطة",
     "description1": "تي إم آي (نمذجة التهديدات المحسّنة) هي منصة تعاونية لإدارة عملية المراجعة الأمنية في المؤسسة، بما في ذلك نمذجة التهديدات. مهمتنا هي تقليل العبء في المراجعات الأمنية، وجعل نمذجة التهديدات سهلة الوصول وفعالة ومدمجة في دورة حياة تطوير البرمجيات.",
     "description2": "تتميز المنصة بتنظيم المراجعة الأمنية وإدارة الحالة، وإنشاء مخططات تدفق البيانات التفاعلية مع التعاون في الوقت الفعلي، وقدرات توثيق التهديدات الشاملة. مبني بتقنيات الويب الحديثة، يساعد تي إم آي الفرق على إدارة عملية المراجعة الأمنية وتحديد وتحليل وتخفيف تهديدات الأمان من خلال النمذجة التعاونية.",
     "opensource": {
@@ -15,33 +15,33 @@
       "paragraph1": "تم بناء هذا التطبيق بدعم من مشاريع مفتوحة المصدر استثنائية. نحن ممتنون للمجتمعات وراء هذه المشاريع لتوفير القدرات التي تضفي الحيوية على واجهتنا ووظائفنا.",
       "paragraph2": "شكر خاص لتوفير الإلهام الذي ساعد في تشكيل رؤيتنا ونهجنا لبناء تطبيق آمن وسهل الاستخدام يذهب إلى "
     },
-    "opensourcetitle": "البرمجيات مفتوحة المصدر",
+    "opensourcetitle": "مفتوح المصدر",
     "server": "الخادم",
     "serverSourceCode": "الكود المصدري للخادم",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourcetitle": "مشروع تي إم آي",
+    "sourcetitle": "مشروع TMI",
     "title": "حول تي إم آي",
     "trademarks": "جميع أسماء المنتجات والشعارات والعلامات التجارية هي ملك لأصحابها الأصليين. جميع أسماء الشركات والمنتجات والخدمات المستخدمة في هذا التطبيق لأغراض التعريف فقط. استخدام هذه الأسماء والشعارات والعلامات التجارية لا يعني المصادقة أو الموافقة.",
     "version": "معلومات الإصدار",
     "webApplication": "تطبيق الويب",
     "webApplicationSourceCode": "الكود المصدري لتطبيق الويب",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "wiki": "ويكي تي إم آي",
+    "wiki": "ويكي TMI",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "addons": {
     "invokeDialog": {
       "allObjects": "(الكل)",
-      "errorInvoking": "فشل في استدعاء التوسيع. يرجى المحاولة مرة أخرى.",
-      "invalidCharacters": "يُسمح فقط بالأحرف الأبجدية الرقمية والمسافات والواصلات والنقاط والفواصل والشرطات المائلة الأمامية",
-      "invocationQueued": "تم وضع استدعاء التوسيع في قائمة الانتظار",
-      "metadataKeyMissing": "مفتاح البيانات الوصفية المطلوب \"{{key}}\" غير موجود في هذا الكائن",
-      "numberMax": "يجب أن تكون القيمة {{max}} على الأكثر",
-      "numberMin": "يجب أن تكون القيمة {{min}} على الأقل",
+      "errorInvoking": "فشل في استدعاء التوسيع.",
+      "invalidCharacters": "يُسمح فقط بالأحرف الأبجدية الرقمية والمسافات والواصلات والنقاط والفواصل والشرطات المائلة الأمامية.",
+      "invocationQueued": "تم وضع استدعاء التوسيع في قائمة الانتظار.",
+      "metadataKeyMissing": "مفتاح البيانات الوصفية المطلوب \"{{key}}\" غير موجود في هذا الكائن.",
+      "numberMax": "يجب أن تكون القيمة {{max}} على الأكثر.",
+      "numberMin": "يجب أن تكون القيمة {{min}} على الأقل.",
       "parameters": "المعلمات",
       "threatModelId": "معرّف نموذج التهديد",
       "title": "استدعاء التوسيع",
-      "valueTooLong": "القيمة تتجاوز الحد الأقصى للطول"
+      "valueTooLong": "القيمة تتجاوز الحد الأقصى للطول."
     }
   },
   "admin": {
@@ -52,12 +52,12 @@
         "descriptionHint": "ما هي وظيفة هذا الملحق؟",
         "descriptionPlaceholder": "وصف وظيفة الملحق",
         "icon": "أيقونة",
-        "iconHint": "أيقونة واجهة المستخدم (أمثلة: \"material-symbols:security\"، \"fa-regular fa-user-shield\")",
+        "iconHint": "أيقونة واجهة المستخدم (أمثلة: \"material-symbols:security\"، \"fa-regular fa-user-shield\").",
         "iconInvalid": "تنسيق الأيقونة غير صالح",
         "iconPlaceholder": "material-symbols:extension",
         "name": "{{common.name}}",
         "nameHint": "اسم العرض لهذا الملحق",
-        "namePlaceholder": "الملحق المخصص",
+        "namePlaceholder": "ملحقي المخصص",
         "nameRequired": "{{common.validation.nameRequired}}",
         "objects": "أنواع الكائنات",
         "objectsHint": "حدد أنواع كائنات TMI التي يمكن لهذا الملحق العمل عليها",
@@ -65,19 +65,19 @@
         "title": "إضافة ملحق",
         "webhook": "ويبهوك",
         "webhookHint": "اشتراك Webhook المرتبط",
-        "webhookRequired": "Webhook مطلوب"
+        "webhookRequired": "Webhook مطلوب."
       },
       "confirmDelete": "هل أنت متأكد من حذف الملحق \"{{name}}\"؟",
       "created": "{{common.created}}",
       "deleteTooltip": "حذف الملحق",
-      "errorCreatingAddon": "فشل في إنشاء الملحق. يرجى المحاولة مرة أخرى.",
-      "errorLoadingWebhooks": "فشل في تحميل Webhooks المتاحة",
+      "errorCreatingAddon": "فشل في إنشاء الملحق.",
+      "errorLoadingWebhooks": "فشل في تحميل Webhooks المتاحة.",
       "filterLabel": "تصفية الملحقات",
       "filterPlaceholder": "البحث بالاسم أو الوصف",
       "listTitle": "ملحقات النظام",
-      "noAddons": "لم يتم العثور على ملحقات",
+      "noAddons": "لم يتم العثور على ملحقات.",
       "objectTypesTooltip": "ينطبق على أنواع الكائنات هذه",
-      "subtitle": "تكوين الملحقات لتوسيع وظائف TMI",
+      "subtitle": "تكوين الملحقات لتوسيع وظائف TMI.",
       "title": "إدارة الملحقات"
     },
     "createAutomationUserDialog": {
@@ -86,9 +86,9 @@
       "emailPlaceholder": "user@example.com",
       "name": "{{common.name}}",
       "nameHint": "2-64 حرفاً، يبدأ بحرف",
-      "nameMaxLength": "يجب ألا يتجاوز الاسم 64 حرفاً",
-      "nameMinLength": "يجب أن يكون على الأقل حرفين",
-      "namePattern": "يجب أن يبدأ بحرف وينتهي بحرف أو رقم",
+      "nameMaxLength": "يجب ألا يتجاوز الاسم 64 حرفاً.",
+      "nameMinLength": "يجب أن يتكون من حرفين على الأقل.",
+      "namePattern": "يجب أن يبدأ بحرف وينتهي بحرف أو رقم.",
       "namePlaceholder": "automation-user",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "إنشاء مستخدم أتمتة",
@@ -103,13 +103,13 @@
         "displayName": "اسم العرض",
         "displayNameHint": "اسم المجموعة القابل للقراءة",
         "displayNamePlaceholder": "مجموعتي المخصصة",
-        "displayNameRequired": "اسم العرض مطلوب",
+        "displayNameRequired": "اسم العرض مطلوب.",
         "groupName": "معرف المجموعة",
         "groupNameHint": "أحرف أبجدية رقمية وشرطات وشرطات سفلية فقط",
-        "groupNamePattern": "مسموح فقط بالأحرف الأبجدية الرقمية والشرطات والشرطات السفلية",
+        "groupNamePattern": "مسموح فقط بالأحرف الأبجدية الرقمية والشرطات والشرطات السفلية.",
         "groupNamePlaceholder": "مجموعتي-المخصصة",
-        "groupNameRequired": "معرف المجموعة مطلوب",
-        "save": "إنشاء المجموعة",
+        "groupNameRequired": "معرف المجموعة مطلوب.",
+        "save": "إنشاء مجموعة",
         "title": "إضافة مجموعة"
       },
       "columns": {
@@ -125,7 +125,7 @@
         "addMember": "{{teams.membersDialog.addMember}}",
         "automationAdminBlocked": "لا يُسمح لحسابات الأتمتة بأن تكون أعضاءً في مجموعة المسؤولين. يجب ألا تحصل حسابات الأتمتة على حق الوصول إلى الوظائف الإدارية للتطبيق مطلقاً.",
         "currentMembers": "الأعضاء الحاليون",
-        "noMembers": "لا يوجد أعضاء في هذه المجموعة",
+        "noMembers": "لا يوجد أعضاء في هذه المجموعة.",
         "removeTooltip": "إزالة من المجموعة",
         "searchHint": "اكتب حرفين على الأقل للبحث",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
@@ -133,19 +133,19 @@
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
         "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
-      "noGroups": "لم يتم العثور على مجموعات",
-      "subtitle": "عرض وإدارة مجموعات النظام",
+      "noGroups": "لم يتم العثور على مجموعات.",
+      "subtitle": "عرض وإدارة مجموعات النظام.",
       "title": "إدارة المجموعات",
-      "viewMembersTooltip": "عرض وإدارة أعضاء المجموعة"
+      "viewMembersTooltip": "عرض وإدارة أعضاء المجموعة..."
     },
     "quotas": {
-      "addButton": "إضافة حصة",
+      "addButton": "إضافة حصة...",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "تكوين الحصص",
         "searchLabel": "البحث عن مستخدم",
         "searchPlaceholder": "اكتب البريد الإلكتروني للمستخدم للبحث",
-        "selectUser": "اختر مستخدم",
+        "selectUser": "اختر مستخدماً",
         "title": "إضافة حصص مخصصة",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
@@ -160,32 +160,32 @@
       "filterLabel": "تصفية الحصص",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو معرف المستخدم",
       "maxSubscriptions": "الحد الأقصى للاشتراكات",
-      "noUserAPIQuotas": "لم يتم العثور على حصص API مخصصة",
-      "noWebhookQuotas": "لم يتم العثور على حصص Webhook مخصصة",
+      "noUserAPIQuotas": "لم يتم العثور على حصص API مخصصة.",
+      "noWebhookQuotas": "لم يتم العثور على حصص Webhook مخصصة.",
       "requestsPerHour": "الطلبات في الساعة",
       "requestsPerMinute": "الطلبات في الدقيقة",
       "subReqPerDay": "طلبات الاشتراك في اليوم",
       "subReqPerMinute": "طلبات الاشتراك في الدقيقة",
-      "subtitle": "تكوين حدود المعدل والحصص للمستخدمين",
+      "subtitle": "تكوين حدود المعدل والحصص للمستخدمين.",
       "title": "إدارة الحصص",
       "userAPITitle": "حدود معدل API",
       "webhookTitle": "حدود Webhook"
     },
     "sections": {
       "addons": {
-        "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق",
+        "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق.",
         "title": "الإضافات"
       },
       "groups": {
-        "description": "تكوين مجموعات المستخدمين والعضويات",
+        "description": "تكوين مجموعات المستخدمين والعضويات.",
         "title": "المجموعات"
       },
       "projects": {
-        "description": "إدارة المشاريع والعلاقات والبيانات الوصفية",
+        "description": "إدارة المشاريع والعلاقات والبيانات الوصفية.",
         "title": "{{teams.columns.projects}}"
       },
       "quotas": {
-        "description": "تكوين حصص الموارد والحدود",
+        "description": "تكوين حصص الموارد والحدود.",
         "title": "الحصص"
       },
       "settings": {
@@ -193,19 +193,19 @@
         "title": "الإعدادات"
       },
       "surveys": {
-        "description": "إنشاء وإدارة الاستبيانات",
+        "description": "إنشاء وإدارة الاستبيانات.",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
-        "description": "إدارة الفرق وعضويات الفريق",
+        "description": "إدارة الفرق وعضويات الفريق.",
         "title": "الفرق"
       },
       "users": {
-        "description": "عرض وإدارة حسابات المستخدمين",
+        "description": "عرض وإدارة حسابات المستخدمين.",
         "title": "المستخدمون"
       },
       "webhooks": {
-        "description": "تثبيت وتكوين تكاملات الخطافات",
+        "description": "تثبيت وتكوين تكاملات الخطافات.",
         "title": "خطافات الويب"
       }
     },
@@ -216,14 +216,14 @@
         "descriptionHint": "وصف اختياري لهذا الإعداد",
         "key": "{{common.metadataKey}}",
         "keyHint": "أحرف صغيرة مع نقاط وشرطات سفلية (مثل: rate_limit.max_rpm)",
-        "keyInvalid": "يجب أن يبدأ بحرف صغير، ويستخدم فقط الأحرف الصغيرة والأرقام والنقاط والشرطات السفلية",
-        "keyRequired": "المفتاح مطلوب",
+        "keyInvalid": "يجب أن يبدأ بحرف صغير، ويستخدم فقط الأحرف الصغيرة والأرقام والنقاط والشرطات السفلية.",
+        "keyRequired": "المفتاح مطلوب.",
         "save": "إنشاء إعداد",
         "title": "إضافة إعداد",
         "type": "{{common.type}}",
-        "typeRequired": "النوع مطلوب",
+        "typeRequired": "النوع مطلوب.",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "القيمة مطلوبة"
+        "valueRequired": "القيمة مطلوبة."
       },
       "cancelTooltip": "إلغاء التحرير",
       "columns": {
@@ -237,7 +237,7 @@
       "filterLabel": "تصفية",
       "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف أو المصدر",
       "listTitle": "إعدادات النظام",
-      "noSettings": "لم يتم العثور على إعدادات",
+      "noSettings": "لم يتم العثور على إعدادات.",
       "readOnlyTooltip": "هذا الإعداد للقراءة فقط ولا يمكن تعديله من هنا",
       "saveTooltip": "حفظ التغييرات",
       "sources": {
@@ -246,7 +246,7 @@
         "environment": "البيئة",
         "vault": "المخزن الآمن"
       },
-      "subtitle": "عرض وإدارة إعدادات تكوين النظام",
+      "subtitle": "عرض وإدارة إعدادات تكوين النظام.",
       "title": "إدارة الإعدادات",
       "types": {
         "bool": "منطقي",
@@ -255,7 +255,7 @@
         "string": "نص"
       }
     },
-    "subtitle": "إدارة إعدادات النظام والتكوينات",
+    "subtitle": "إدارة إعدادات النظام والتكوينات.",
     "title": "الإدارة",
     "users": {
       "actions": {
@@ -271,7 +271,7 @@
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "حذف حساب المستخدم",
       "filter": {
-        "automationOnly": "عرض حسابات الأتمتة فقط"
+        "automationOnly": "عرض حسابات الأتمتة فقط."
       },
       "filterLabel": "تصفية المستخدمين",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو اسم المجموعة",
@@ -280,29 +280,29 @@
       "manageCredentials": {
         "addCredential": "إضافة بيانات اعتماد",
         "deleteConfirm": "هل أنت متأكد من أنك تريد حذف بيانات الاعتماد \"{{name}}\"؟",
-        "noCredentials": "لم يتم العثور على بيانات اعتماد",
-        "title": "إدارة بيانات الاعتماد لـ {{userName}}"
+        "noCredentials": "لم يتم العثور على بيانات اعتماد.",
+        "title": "إدارة بيانات الاعتماد لـ {{username}}."
       },
       "never": "أبداً",
-      "noUsers": "لم يتم العثور على مستخدمين",
-      "subtitle": "عرض وإدارة مستخدمي النظام",
+      "noUsers": "لم يتم العثور على مستخدمين.",
+      "subtitle": "عرض وإدارة مستخدمي النظام.",
       "title": "إدارة المستخدمين",
       "transferOwnership": {
         "confirm": "هل أنت متأكد من أنك تريد نقل جميع البيانات من {{source}} إلى {{target}}؟",
         "dialogTitle": "نقل بيانات المستخدم",
-        "error": "فشل نقل الملكية. يرجى المحاولة مرة أخرى.",
+        "error": "فشل نقل الملكية.",
         "success": "{{userPreferences.transferData.success}}",
-        "tooltip": "نقل الملكية"
+        "tooltip": "نقل الملكية..."
       }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
-        "createAutomationUser": "إنشاء مستخدم أتمتة لهذا الـ Webhook",
+        "createAutomationUser": "إنشاء مستخدم أتمتة لهذا الـ Webhook.",
         "events": "أنواع الأحداث للاشتراك فيها",
         "eventsHint": "أنواع الأحداث للاشتراك فيها (مثال: threat_model.created)",
         "eventsPlaceholder": "اختر أنواع الأحداث",
-        "eventsRequired": "مطلوب حدث واحد على الأقل",
+        "eventsRequired": "مطلوب حدث واحد على الأقل.",
         "name": "{{common.name}}",
         "nameHint": "اسم وصفي لهذا الـ Webhook",
         "namePlaceholder": "اسم Webhook",
@@ -315,10 +315,10 @@
         "url": "رابط Webhook",
         "urlHint": "يُوصى باستخدام HTTPS",
         "urlHttpWarning": "تحذير: يجب أن يستخدم رابط نقطة نهاية الـ Webhook بروتوكول HTTPS. قد يرفض الخادم تسجيلات Webhook التي تحدد نقطة نهاية بدون TLS.",
-        "urlHttpWarningTitle": "رابط Webhook بدون HTTPS",
-        "urlInvalid": "يجب أن يكون URL صالحاً",
+        "urlHttpWarningTitle": "رابط Webhook بدون HTTPS.",
+        "urlInvalid": "يجب أن يكون URL صالحاً.",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlRequired": "الرابط مطلوب"
+        "urlRequired": "الرابط مطلوب."
       },
       "created": "{{common.created}}",
       "deleteTooltip": "حذف Webhook",
@@ -330,7 +330,7 @@
         "warning": "هذه هي المرة الوحيدة التي ستتمكن فيها من عرض هذا المفتاح السري. يرجى نسخه. إذا فقدته أو نسيته، سيتعين عليك حذف وإعادة إنشاء الـ Webhook."
       },
       "listTitle": "اشتراكات Webhook",
-      "noWebhooks": "لم يتم العثور على Webhooks",
+      "noWebhooks": "لم يتم العثور على Webhooks.",
       "secret": "مفتاح HMAC السري",
       "status": {
         "active": "{{common.active}}",
@@ -338,7 +338,7 @@
         "pending_verification": "في انتظار التحقق"
       },
       "subscriptionId": "معرّف الاشتراك",
-      "subtitle": "تكوين اشتراكات Webhook لإشعارات الأحداث",
+      "subtitle": "تكوين اشتراكات Webhook لإشعارات الأحداث.",
       "title": "إدارة Webhooks",
       "triggerEvents": "أحداث التشغيل",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
@@ -354,11 +354,11 @@
       "versionHint": "معرّف الإصدار (نص حر)",
       "versionLabel": "{{common.version}}",
       "versionPlaceholder": "مثال: 1، v2-pilot، 2024-Q1",
-      "versionRequired": "الإصدار مطلوب"
+      "versionRequired": "الإصدار مطلوب."
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
     "deleteConflict": "لا يمكن حذف هذا الاستبيان لأنه يحتوي على ردود موجودة. احذف الردود أولاً، ثم حاول مرة أخرى.",
-    "deleteError": "فشل في حذف الاستبيان: {{error}}",
+    "deleteError": "فشل في حذف الاستبيان: {{error}}.",
     "deleteTooltip": "حذف الاستبيان",
     "editTemplate": "تحرير الاستبيان",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -382,8 +382,8 @@
       "enableIfHint": "مثال: {questionName} = 'value'",
       "enterSurveyDescription": "أدخل وصف الاستبيان",
       "enterSurveyTitle": "أدخل عنوان الاستبيان",
-      "failedToLoadTemplate": "فشل تحميل الاستبيان",
-      "failedToSaveTemplate": "فشل حفظ الاستبيان",
+      "failedToLoadTemplate": "فشل تحميل الاستبيان.",
+      "failedToSaveTemplate": "فشل حفظ الاستبيان.",
       "loadingTemplate": "جاري تحميل الاستبيان...",
       "mapsToTmField": "يُربط بحقل نموذج التهديد",
       "metadataKey": "مفتاح البيانات الوصفية",
@@ -392,7 +392,7 @@
       "nameIdHint": "معرف فريد لهذا السؤال",
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "انقر على نوع سؤال من اللوحة لإضافته",
-      "noQuestionsYet": "لا توجد أسئلة بعد",
+      "noQuestionsYet": "لا توجد أسئلة بعد.",
       "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "خصائص السؤال",
@@ -400,9 +400,9 @@
         "boolean": "تبديل منطقي",
         "checkbox": "اختيار متعدد",
         "dropdown": "اختيار من قائمة منسدلة",
-        "panel": "تجميع الأسئلة في لوحة",
+        "panel": "تجميع الأسئلة في لوحة.",
         "paneldynamic": "مجموعة لوحات قابلة للتكرار",
-        "radiogroup": "اختيار واحد من خيارات",
+        "radiogroup": "اختيار واحد من خيارات.",
         "text": "إدخال نص من سطر واحد"
       },
       "questionTypeLabels": {
@@ -419,7 +419,7 @@
       "required": "مطلوب",
       "requiredIf": "مطلوب إذا",
       "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
+      "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه.",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
@@ -429,7 +429,7 @@
         "description": "وصف نموذج التهديد",
         "documentName": "{{threatModels.documentName}}",
         "documentUrl": "{{threatModels.documentUrl}}",
-        "issueUri": "رابط تتبع المشكلة",
+        "issueUri": "رابط تتبع المشكلة.",
         "metadataKey": "بيانات وصفية مخصصة",
         "name": "اسم نموذج التهديد",
         "repositoryName": "{{threatModels.repositoryName}}",
@@ -441,8 +441,8 @@
       "visibleIf": "مرئي إذا",
       "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
-    "templateCount": "{{count}} استبيان",
-    "templateCountPlural": "{{count}} استبيانات"
+    "templateCount": "{{Count}} استبيان",
+    "templateCountPlural": "{{Count}} استبيانات"
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -492,13 +492,13 @@
     "noEntries": "لم يتم العثور على إدخالات في سجل التدقيق.",
     "rollback": {
       "action": "التراجع",
-      "confirmMessage": "هل أنت متأكد أنك تريد التراجع عن {{objectType}} \"{{name}}\" إلى الإصدار {{version}}؟",
+      "confirmMessage": "هل أنت متأكد أنك تريد التراجع عن {{objecttype}} \"{{name}}\" إلى الإصدار {{version}}؟",
       "confirmTitle": "تأكيد التراجع",
       "confirmationField": "اكتب للتأكيد",
       "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
-      "error": "فشل التراجع. يرجى المحاولة مرة أخرى.",
+      "error": "فشل التراجع",
       "success": "تم التراجع بنجاح.",
-      "typeConfirmation": "للتأكيد، اكتب \"{{confirmValue}}\" أدناه.",
+      "typeConfirmation": "للتأكيد، اكتب \"{{confirmvalue}}\" أدناه",
       "versionPruned": "تم تقليم لقطة الإصدار. لم يعد التراجع متاحًا.",
       "warning": "سيؤدي هذا إلى الكتابة فوق الحالة الحالية لهذا الكيان بالإصدار المسجل في إدخال التدقيق هذا. ينشئ هذا الإجراء إدخال تدقيق جديدًا ولكن سيتم فقدان الحالة الحالية."
     },
@@ -522,7 +522,7 @@
     },
     "errors": {
       "connectionFailed": "تعذر الاتصال بـ Timmy. تحقق من اتصالك وحاول مرة أخرى.",
-      "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "generic": "حدث خطأ ما.",
       "interrupted": "تم قطع الرد. حاول إرسال رسالتك مرة أخرى.",
       "notAcceptable": "Timmy غير متاح مؤقتاً بسبب مشكلة في تكوين الخادم.",
       "notEnabled": "Timmy غير مفعّل لنموذج التهديد هذا.",
@@ -532,16 +532,16 @@
     "hideSidePanel": "إخفاء اللوحة الجانبية",
     "inputPlaceholder": "اسأل Timmy عن نموذج التهديد هذا...",
     "newSession": "جلسة جديدة",
-    "noSessions": "لا توجد جلسات دردشة حتى الآن. ابدأ محادثة!",
+    "noSessions": "لا توجد جلسات دردشة بعد. ابدأ محادثة.",
     "preparation": {
-      "error": "فشل التحضير: {{message}}",
-      "processing": "معالجة المصدر {{current}} من {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "جاهز! {{sourcesLoaded}} مصدر تم تحميله، {{chunksEmbedded}} مقطع مفهرس."
+      "error": "فشل التحضير: {{message}}.",
+      "processing": "معالجة المصدر {{current}} من {{total}} — {{entitytype}}: {{entityname}} — {{phase}} {{progress}}%.",
+      "ready": "جاهز! تم تحميل {{Sourcesloaded}} مصدر، وفهرسة {{chunksembedded}} مقطع."
     },
-    "saveAsNoteError": "تعذّر الحفظ كملاحظة. يرجى المحاولة مرة أخرى.",
+    "saveAsNoteError": "تعذّر الحفظ كملاحظة.",
     "saveMessageAsNote": "حفظ الرسالة كملاحظة",
     "saveSessionAsNote": "حفظ الجلسة كملاحظة",
-    "savedAsNote": "تم الحفظ كملاحظة",
+    "savedAsNote": "تم الحفظ كملاحظة.",
     "savedAsNoteView": "{{common.view}}",
     "send": "إرسال الرسالة",
     "sessions": "الجلسات",
@@ -553,7 +553,7 @@
       "notes": "{{common.objectTypes.notes}}",
       "repositories": "{{common.objectTypes.repositories}}",
       "threats": "{{common.objectTypes.threats}}",
-      "title": "{{count}} مصدر مضمن"
+      "title": "{{Count}} مصدر مضمن"
     },
     "suggestedPrompts": {
       "assets": "ما الأصول الموجودة في النطاق؟",
@@ -563,21 +563,21 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} مستخدمين نشطين",
+    "activeUsers": "{{Count}} مستخدمين نشطين.",
     "approvePresenterRequest": "الموافقة على طلب المقدم",
-    "availableCollaborationSessions": "جلسات التعاون المتاحة",
+    "availableCollaborationSessions": "جلسات التعاون المتاحة.",
     "collaboratorsHeader": "المشاركون",
     "copyLink": "نسخ الرابط",
     "denyPresenterRequest": "رفض طلب المقدم",
     "endCollaboration": "إنهاء التعاون",
     "hostedBy": "مستضاف من قبل",
-    "isRequestingPresenterPrivileges": "يطلب امتيازات المقدم",
+    "isRequestingPresenterPrivileges": "يطلب امتيازات المقدم.",
     "joinSession": "الانضمام إلى الجلسة",
     "justNow": "الآن",
     "leaveSession": "مغادرة الجلسة",
     "loadingDiagramContext": "جارٍ تحميل سياق المخطط...",
     "manageParticipants": "إدارة المشاركين",
-    "noActiveSessions": "لا توجد جلسات تعاون نشطة",
+    "noActiveSessions": "لا توجد جلسات تعاون نشطة.",
     "participantRequestsPresenterRole": "المشارك يطلب دور المقدم",
     "presenterModeRequested": "تم طلب وضع المقدم",
     "removeFromSession": "إزالة من الجلسة",
@@ -586,12 +586,12 @@
     "startCollaboration": "بدء التعاون",
     "takeBackPresenter": "استرداد المقدم",
     "title": "مشاركو جلسة التعاون",
-    "userJoined": "انضم {{user}} إلى جلسة التعاون",
-    "userLeft": "غادر {{user}} جلسة التعاون",
+    "userJoined": "انضم {{User}} إلى التعاون.",
+    "userLeft": "غادر {{User}} التعاون",
     "websocketStatus": {
       "connected": "ويب سوكيت متصل",
       "noSession": "لا توجد جلسة تعاون نشطة",
-      "notConnected": "ويب سوكيت غير متصل"
+      "notConnected": "ويب سوكيت غير متصل."
     }
   },
   "common": {
@@ -615,8 +615,8 @@
     "close": "إغلاق",
     "confirm": "تأكيد",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
-    "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objectType}} \"{{name}}\"؟",
-    "copiedToClipboard": "تم النسخ إلى الحافظة",
+    "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objecttype}} \"{{name}}\"؟",
+    "copiedToClipboard": "تم النسخ إلى الحافظة.",
     "copy": "نسخ",
     "copyToClipboard": "نسخ إلى الحافظة",
     "create": "إنشاء",
@@ -626,15 +626,15 @@
     "cut": "قص",
     "deactivate": "إلغاء التفعيل",
     "delete": "حذف",
-    "deleteConfirm": "حذف نموذج التهديد",
+    "deleteConfirm": "تأكيد الحذف",
     "deleteWarningConfirmationField": "تأكيد الحذف",
     "deleteWarningConfirmationMatch": "نص التأكيد متطابق",
     "deleteWarningConfirmationMismatch": "نص التأكيد غير متطابق",
     "deleteWarningConfirmationValue": "حذف نهائي",
-    "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيؤدي إلى حذف {{objectType}} نهائياً مع جميع البيانات الوصفية المرتبطة به.",
+    "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيؤدي إلى حذف {{objecttype}} نهائياً مع جميع البيانات الوصفية المرتبطة به.",
     "deleteWarningReferenceOnly": "بالنسبة للكائنات المخزنة خارج TMI مثل المستندات والمستودعات، سيتم حذف مرجع TMI للكائن فقط.",
     "deleteWarningSubEntities": "سيتم أيضاً حذف جميع كيانات TMI المرتبطة مثل المخططات والتهديدات والملاحظات بشكل نهائي.",
-    "deleteWarningTypeConfirmation": "للتأكيد، يرجى كتابة \"{{confirmValue}}\" في الحقل أدناه.",
+    "deleteWarningTypeConfirmation": "للتأكيد، يرجى كتابة \"{{confirmvalue}}\" في الحقل أدناه",
     "description": "الوصف",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "إغلاق",
@@ -675,7 +675,7 @@
     "noDataAvailable": "لا توجد بيانات متاحة",
     "noMatchingResults": "لا توجد نتائج تطابق عوامل التصفية.",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
-    "noThreats": "لا توجد تهديدات متاحة",
+    "noThreats": "لا توجد تهديدات متاحة.",
     "none": "لا شيء",
     "objectTypes": {
       "asset": "أصل",
@@ -715,7 +715,7 @@
     "project": "مشروع",
     "provider": "المزود",
     "readOnly": "للقراءة فقط",
-    "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
+    "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير",
     "retry": "إعادة المحاولة",
     "roles": {
       "owner": "مالك",
@@ -728,7 +728,7 @@
     "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
     "search": "بحث",
-    "selected": "{{count}} محدد",
+    "selected": "{{Count}} محدد",
     "sensitivity": "الحساسية",
     "sessionRoles": {
       "host": "مضيف",
@@ -744,7 +744,7 @@
     "team": "فريق",
     "template": "قالب",
     "threatDescription": "وصف التهديد",
-    "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
+    "threatDescriptionPlaceholder": "صف التهديد بالتفصيل",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
     "title": "العنوان",
@@ -755,11 +755,11 @@
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "uri": "URI",
     "validation": {
-      "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+      "email": "يرجى إدخال عنوان بريد إلكتروني صحيح.",
       "invalidUrl": "يرجى إدخال رابط صحيح",
-      "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
-      "nameRequired": "الاسم مطلوب",
-      "required": "هذا الحقل مطلوب"
+      "maxLength": "الحد الأقصى للطول هو {{max}} حرف.",
+      "nameRequired": "الاسم مطلوب.",
+      "required": "هذا الحقل مطلوب."
     },
     "version": "الإصدار",
     "view": "عرض",
@@ -771,14 +771,14 @@
     "addInverseConnection": "إضافة اتصال عكسي",
     "dataAssets": "أصول البيانات...",
     "editText": "تحرير النص",
-    "lockLayout": "Lock Layout",
+    "lockLayout": "قفل التخطيط",
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
     "moveToFront": "نقل إلى المقدمة",
     "noDataAssetsAvailable": "لا توجد أصول بيانات متاحة",
-    "showObject": "عرض الكائن",
-    "unlockLayout": "Unlock Layout"
+    "showObject": "عرض الكائن...",
+    "unlockLayout": "إلغاء قفل التخطيط"
   },
   "createThreatModel": {
     "confidentialHint": "نماذج التهديدات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد الإنشاء.",
@@ -792,15 +792,42 @@
   "cvssCalculator": {
     "apply": "تطبيق",
     "openCalculator": "إضافة CVSS",
-    "parseError": "تعذر تحليل سلسلة متجه CVSS الموجودة",
+    "parseError": "تعذّر تحليل سلسلة متجه CVSS الموجودة.",
     "pasteVectorPlaceholder": "الصق سلسلة متجه CVSS واضغط Enter",
     "title": "حاسبة CVSS",
-    "vectorDuplicateVersion": "يوجد بالفعل إدخال CVSS لهذا الإصدار",
-    "vectorInvalid": "سلسلة متجه CVSS غير صالحة",
-    "vectorPlaceholder": "الصق أو اكتب سلسلة متجه CVSS واضغط Enter",
+    "vectorDuplicateVersion": "يوجد بالفعل إدخال CVSS لهذا الإصدار.",
+    "vectorInvalid": "سلسلة متجه CVSS غير صالحة.",
+    "vectorPlaceholder": "الصق أو اكتب سلسلة متجه CVSS واضغط Enter.",
     "vectorString": "سلسلة المتجه",
-    "vectorUnsupportedVersion": "يتم دعم متجهات CVSS 3.1 و 4.0 فقط",
-    "version": "إصدار CVSS"
+    "vectorUnsupportedVersion": "يتم دعم متجهات CVSS 3.1 و 4.0 فقط.",
+    "version": "إصدار CVSS",
+    "metricDescriptions": {
+      "AR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث التوافر.",
+      "AU": "يرصد مقياس قابلية الأتمتة الإجابة على سؤال: «هل يستطيع المهاجم أتمتة استغلال الثغرة عبر أهداف متعددة؟».",
+      "CR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث السرية.",
+      "IR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث السلامة.",
+      "MAC": "تجاوز لتعقيد الهجوم. يعكس هذا المقياس الشروط الخارجة عن سيطرة المهاجم والتي يجب أن تتوفر لاستغلال الثغرة في بيئة المحلل.",
+      "MAT": "تجاوز لمتطلبات الهجوم. يرصد شروط نشر النظام وتشغيله اللازمة لتمكين الهجوم في بيئة المحلل.",
+      "MAV": "تجاوز لمتجه الهجوم. يعكس هذا المقياس السياق الذي يُتاح فيه استغلال الثغرة في بيئة المحلل.",
+      "MPR": "تجاوز للصلاحيات المطلوبة. يصف هذا المقياس مستوى الصلاحيات التي يجب أن يمتلكها المهاجم لاستغلال الثغرة في بيئة المحلل.",
+      "MSA": "تجاوز لتأثير توافر النظام اللاحق. يقيس العواقب على توافر النظام خارج النظام الضعيف في بيئة المحلل.",
+      "MSC": "تجاوز لتأثير سرية النظام اللاحق. يقيس العواقب على السرية خارج النظام الضعيف في بيئة المحلل.",
+      "MSI": "تجاوز لتأثير سلامة النظام اللاحق. يقيس العواقب على السلامة خارج النظام الضعيف في بيئة المحلل.",
+      "MUI": "تجاوز لتفاعل المستخدم. يرصد اشتراط مشاركة مستخدم بشري غير المهاجم في الاختراق الناجح في بيئة المحلل.",
+      "MVA": "تجاوز لتأثير توافر النظام الضعيف. يقيس العواقب على توافر النظام الذي يحتوي الثغرة في بيئة المحلل.",
+      "MVC": "تجاوز لتأثير سرية النظام الضعيف. يقيس العواقب على سرية النظام الذي يحتوي الثغرة في بيئة المحلل.",
+      "MVI": "تجاوز لتأثير سلامة النظام الضعيف. يقيس العواقب على سلامة النظام الذي يحتوي الثغرة في بيئة المحلل.",
+      "R": "يصف مقياس الاستعادة مرونة النظام في استعادة الخدمات من حيث الأداء والتوافر بعد وقوع الهجوم.",
+      "RE": "يرصد مقياس جهد الاستجابة للثغرة مستوى الجهد المطلوب من المستهلك للتعامل مع ثغرة باتت معروفة.",
+      "S": "يعكس مقياس السلامة ما إذا كانت الثغرة قد تُفضي إلى ظروف تؤثر على سلامة الإنسان وفق تصنيفات IEC 61508.",
+      "U": "يعكس مقياس إلحاحية الموفر تقييم الإلحاحية الصادر عن المورد (أحمر، كهرماني، أخضر، شفاف) للثغرة.",
+      "V": "يصف مقياس كثافة القيمة الموارد التي سيسيطر عليها المهاجم من خلال حدث استغلال واحد."
+    },
+    "metricGroups": {
+      "environmentalBase": "بيئي (أساس معدَّل).",
+      "environmentalSecurityRequirement": "بيئي (متطلبات الأمان)"
+    },
+    "metricsConfigured": "{{Count}}/{{total}} تم تكوينها"
   },
   "cwePicker": {
     "addCwe": "إضافة CWE",
@@ -845,7 +872,7 @@
       "name": "{{common.name}}",
       "owner": "{{common.roles.owner}}",
       "status": "{{common.status}}",
-      "statusLastChanged": "آخر تغيير للحالة"
+      "statusLastChanged": "آخر تغيير للحالة."
     },
     "viewAsCards": "عرض كبطاقات",
     "viewAsList": "عرض كقائمة"
@@ -880,8 +907,8 @@
       "currentIndex": "الفهرس الحالي",
       "id": "{{common.id}}",
       "maxStackSize": "الحد الأقصى لحجم المكدس",
-      "noRedoEntries": "لا توجد إدخالات للإعادة",
-      "noUndoEntries": "لا توجد إدخالات للتراجع",
+      "noRedoEntries": "لا توجد إدخالات للإعادة.",
+      "noUndoEntries": "لا توجد إدخالات للتراجع.",
       "operationId": "معرف العملية",
       "previousCells": "الخلايا السابقة",
       "providerId": "{{settings.userProfile.providerId}}",
@@ -896,17 +923,17 @@
   },
   "dfd": {
     "iconPicker": {
-      "emptyStatePrompt": "اكتب للبحث عبر جميع المزودين",
-      "emptyStateTryExamples": "Try: aws ec2, azure sql, gcp compute",
-      "notAvailable": "الأيقونات غير متاحة لهذا الشكل",
+      "emptyStatePrompt": "اكتب للبحث عبر جميع المزودين.",
+      "emptyStateTryExamples": "جرّب: AWS ec2، azure sql، gcp compute",
+      "notAvailable": "الأيقونات غير متاحة لهذا الشكل.",
       "placement": "الموضع",
       "remove": "إزالة",
       "searchPlaceholder": "ابحث حسب المزود أو الخدمة أو الفئة...",
       "searchToChange": "ابحث لتغيير الأيقونة...",
       "selectShape": "حدد شكلاً أولاً",
-      "statusAvailable": "{count} أيقونة متاحة",
-      "statusMatches": "{count} تطابق",
-      "statusShapesSelected": "{count} شكل/أشكال محددة",
+      "statusAvailable": "{Count} أيقونة متاحة.",
+      "statusMatches": "{Count} تطابق",
+      "statusShapesSelected": "{Count} شكل/أشكال محددة.",
       "title": "أيقونة المعمارية",
       "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
@@ -953,7 +980,7 @@
       "labelPosition.top-right": "Top right",
       "labelPositionLabel": "موضع التسمية",
       "labelTab": "التسمية",
-      "noSelection": "حدد كائنًا لتحرير الأنماط",
+      "noSelection": "حدد كائناً لتحرير الأنماط.",
       "opacity": "الشفافية",
       "osColorPicker": "اختيار لون من النظام",
       "removeDiagramColor": "إزالة لون المخطط",
@@ -973,30 +1000,38 @@
       "other": "تعذّر الوصول إلى هذه الوثيقة.",
       "pickerRegistrationInvalid": "لم يعد تفويض المُنتقِي لهذه الوثيقة صالحًا.",
       "sourceNotFound": "لا يعرف TMI كيفية قراءة عنوان URL لهذه الوثيقة.",
-      "tokenNotLinked": "لم تربط الحساب الذي يملك هذه الوثيقة. المصدر: {{ source }}",
-      "tokenRefreshFailed": "لم يعد ارتباط المصدر صالحًا. المصدر: {{ source }}",
-      "tokenTransientFailure": "تعذّر الوصول إلى المصدر. عادةً ما يكون ذلك مؤقتًا. المصدر: {{ source }}"
+      "tokenNotLinked": "لم تربط الحساب الذي يملك هذه الوثيقة. المصدر: {{ source }}.",
+      "tokenRefreshFailed": "لم يعد ارتباط المصدر صالحًا. المصدر: {{ source }}.",
+      "tokenTransientFailure": "تعذّر الوصول إلى المصدر. عادةً ما يكون ذلك مؤقتًا. المصدر: {{ source }}.",
+      "microsoftNotShared": "لا يملك TMI بعد وصولاً إلى ملف OneDrive أو SharePoint هذا. يجب على مالك الملف منح TMI حق الوصول للقراءة باستخدام المقتطف أدناه."
     },
     "remediation": {
       "contactOwner": "تواصل مع مالك الوثيقة",
       "linkAccount": "{{documentEditor.source.linkAction}}",
       "relinkAccount": "إعادة ربط المصدر",
-      "repickAfterShare": "اختر مرة أخرى بعد المشاركة",
-      "repickFile": "اختر هذا الملف مرة أخرى",
+      "repickAfterShare": "اختر مرة أخرى بعد المشاركة.",
+      "repickFile": "اختر هذا الملف مرة أخرى.",
       "retry": "حاول مرة أخرى",
-      "shareWithServiceAccount": "مشاركة مع حساب خدمة TMI"
+      "shareWithServiceAccount": "مشاركة مع حساب خدمة TMI",
+      "shareWithApplication": {
+        "copyFailed": "تعذّر النسخ إلى الحافظة",
+        "explanation": "لا يملك TMI بعد وصولاً إلى ملف OneDrive أو SharePoint هذا. اطلب من مالك الملف تشغيل استدعاء Microsoft Graph التالي لمنح TMI حق الوصول للقراءة. بعد نجاح الاستدعاء، انقر فوق «تحقق الآن» — يتم تحديث الحالة في غضون دقائق بمجرد منح الإذن.",
+        "powershellLabel": "PowerShell (وحدة microsoft.graph)",
+        "rawLabel": "استدعاء Microsoft Graph",
+        "title": "منح TMI حق الوصول إلى هذا الملف."
+      }
     },
     "serviceAccountEmail": "شارك مع هذا البريد الإلكتروني:"
   },
   "documentEditor": {
     "grantError": {
-      "generic": "تعذّر منح حق الوصول إلى ملفك. يرجى المحاولة مرة أخرى.",
+      "generic": "تعذّر منح حق الوصول إلى ملفك.",
       "linkAccountCta": "ربط الحساب",
       "notLinked": "حساب Microsoft الخاص بك غير مرتبط.",
       "permissionDenied": "رفضت Microsoft طلب منح الوصول. قد لا يكون الملف قابلاً للمشاركة. جرّب ملفًا آخر أو اتصل بالمسؤول.",
-      "pickerLoadFailed": "تعذّر فتح أداة اختيار الملفات. تحقّق من اتصالك بالشبكة وحاول مرة أخرى.",
-      "timeout": "استغرق الطلب وقتًا طويلاً جدًا. يرجى المحاولة مرة أخرى.",
-      "unavailable": "Microsoft غير متاحة مؤقتًا. يرجى المحاولة مرة أخرى بعد قليل."
+      "pickerLoadFailed": "تعذّر فتح أداة اختيار الملفات. تحقق من اتصالك بالشبكة وحاول مرة أخرى",
+      "timeout": "استغرق الطلب وقتًا طويلاً جداً.",
+      "unavailable": "Microsoft غير متاحة مؤقتًا."
     },
     "source": {
       "finalizing": "جارٍ منح الوصول…",
@@ -1004,12 +1039,18 @@
       "label": "كيف تودّ إرفاق هذه الوثيقة؟",
       "linkAction": "ربط المصدر",
       "linkPrompt": "اربط حسابك لاختيار الملفات من هذا المصدر.",
-      "linkPromptMicrosoft": "اربط حساب Microsoft لتصفّح ملفات OneDrive/SharePoint",
+      "linkPromptMicrosoft": "اربط حساب Microsoft لتصفّح ملفات OneDrive/SharePoint.",
       "pickAction": "اختر ملفًا",
       "pickActionMicrosoft": "تصفّح OneDrive/SharePoint",
-      "pickedFile": "الملف المحدد: {{ fileName }}",
+      "pickedFile": "الملف المحدد: {{ filename }}.",
       "repickAction": "اختر ملفًا آخر",
       "url": "ألصق عنوان URL"
+    },
+    "create": {
+      "failed": "تعذّر إنشاء الوثيقة"
+    },
+    "postCreate": {
+      "hint": "بعد مشاركة الملف، انقر فوق «إعادة التحقق من الوصول» أعلاه. يمكنك أيضاً إغلاق هذا الحوار وإعادة التحقق لاحقاً من عرض تحرير الوثيقة."
     }
   },
   "documentSources": {
@@ -1017,7 +1058,8 @@
     "callback": {
       "error": "تعذّر ربط المصدر. المصدر: {{ source }}. السبب: {{ reason }}",
       "linking": "جارٍ ربط حسابك...",
-      "success": "تم ربط المصدر. المصدر: {{ source }}"
+      "success": "تم ربط المصدر. المصدر: {{ source }}.",
+      "notConfigured": "{{ Source }} غير مكوَّن على هذا الخادم. اتصل بالمسؤول."
     },
     "columns": {
       "account": "الحساب",
@@ -1027,12 +1069,12 @@
     },
     "empty": {
       "description": "اربط حساب تخزين سحابي لإرفاق الوثائق من Google Drive، ومن خدمات أخرى عند توفّرها.",
-      "title": "لا توجد مصادر وثائق مرتبطة"
+      "title": "لا توجد مصادر وثائق مرتبطة."
     },
     "googleDrive": {
       "name": "Google Drive"
     },
-    "linkedAt": "تم الربط {{ relativeTime }}",
+    "linkedAt": "تم الربط {{ relativetime }}.",
     "microsoft": {
       "name": "OneDrive/SharePoint"
     },
@@ -1058,7 +1100,7 @@
     "deleteMetadataWarning": {
       "confirm": "{{common.delete}}",
       "message": "واحد أو أكثر من العناصر المحددة يحتوي على إدخالات بيانات وصفية. سيؤدي حذف هذه العناصر إلى إزالة بيانات الوصف الخاصة بها بشكل دائم. هل تريد المتابعة؟",
-      "title": "سيتم فقدان البيانات الوصفية"
+      "title": "سيتم فقدان البيانات الوصفية."
     },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "أدخل وصف المخطط",
@@ -1067,9 +1109,9 @@
     "editDiagramName": "انقر لتحرير اسم المخطط",
     "editDisabledDuringCollaboration": "التحرير معطل أثناء التعاون",
     "embedding": {
-      "cannotEmbedIntoTextBox": "لا يمكن تضمين الأشكال في مربعات النص",
-      "circularEmbeddingPrevented": "التضمين الدائري غير مسموح به",
-      "securityBoundaryRestriction": "يمكن تضمين حدود الأمان فقط في حدود أمان أخرى"
+      "cannotEmbedIntoTextBox": "لا يمكن تضمين الأشكال في مربعات النص.",
+      "circularEmbeddingPrevented": "التضمين الدائري غير مسموح به.",
+      "securityBoundaryRestriction": "يمكن تضمين حدود الأمان فقط في حدود أمان أخرى."
     },
     "flowLabel": "تدفق",
     "helpDialog": {
@@ -1098,11 +1140,11 @@
         "addTextbox": "إضافة مربع نص",
         "deleteSelected": "حذف المحدد",
         "export": "تصدير...",
-        "help": "مساعدة",
+        "help": "مساعدة...",
         "redo": "إعادة",
-        "showClipboard": "عرض الحافظة",
-        "showGraphData": "عرض بيانات الرسم البياني",
-        "showHistory": "عرض السجل",
+        "showClipboard": "عرض الحافظة...",
+        "showGraphData": "عرض بيانات الرسم البياني...",
+        "showHistory": "عرض السجل...",
         "undo": "تراجع",
         "zoomToFit": "تكبير لملائمة العرض"
       }
@@ -1128,7 +1170,7 @@
   },
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
-    "explanation": "سجل الدخول باستخدام حسابك الموجود من موفر هوية موثوق به. وهذا يلغي الحاجة إلى كلمة مرور منفصلة، مما يبسط تجربتك مع الحفاظ على أمانك. نحن لا نقوم أبدًا بتخزين أو إدارة كلمات المرور - تبقى بيانات اعتمادك مع موفر الخدمة الخاص بك ولا يمكن اختراقها من خلالنا.",
+    "explanation": "سجل الدخول باستخدام حسابك الموجود من موفر هوية موثوق به. وهذا يلغي الحاجة إلى كلمة مرور منفصلة، مما يبسط تجربتك مع الحفاظ على أمانك. نحن لا نقوم أبداً بتخزين أو إدارة كلمات المرور — تبقى بيانات اعتمادك مع موفر الخدمة ولا يمكن اختراقها من خلالنا.",
     "loadingProviders": "جاري تحميل موفري المصادقة...",
     "local": {
       "title": "تسجيل الدخول للتطوير المحلي"
@@ -1136,17 +1178,17 @@
     "loggingInWith": "جاري تسجيل الدخول باستخدام {{provider}}...",
     "loginWith": "تسجيل الدخول باستخدام",
     "noProvidersConfigured": "لم يتم تكوين موفري المصادقة.",
-    "oauthFailed": "فشل في مصادقة OAuth. يرجى المحاولة مرة أخرى.",
+    "oauthFailed": "فشل في مصادقة OAuth.",
     "oauthProvidersTitle": "موفرو تسجيل الدخول OAuth",
     "samlProvidersTitle": "موفرو تسجيل الدخول SAML",
     "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
     "signingIn": "جارٍ تسجيل الدخول...",
     "signingInWith": "{{login.loggingInWith}}",
-    "title": "تسجيل الدخول إلى تي إم آي",
+    "title": "تسجيل الدخول إلى TMI",
     "tmiDialog": {
-      "errorMaxLength": "يجب ألا يتجاوز اسم المستخدم 20 حرفاً",
-      "errorMinLength": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل",
-      "errorPattern": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام ونقاط وشرطات سفلية وعلامات نسبة مئوية وعلامات جمع وواصلات فقط",
+      "errorMaxLength": "يجب ألا يتجاوز اسم المستخدم 20 حرفاً.",
+      "errorMinLength": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل.",
+      "errorPattern": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام ونقاط وشرطات سفلية وعلامات نسبة مئوية وعلامات جمع وواصلات فقط.",
       "signIn": "تسجيل الدخول",
       "title": "تسجيل الدخول باستخدام TMI Provider",
       "usernameLabel": "اسم المستخدم",
@@ -1155,7 +1197,7 @@
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },
   "mermaidViewer": {
-    "exportFailed": "فشل في تصدير المخطط",
+    "exportFailed": "فشل في تصدير المخطط.",
     "fitToScreen": "ملاءمة الشاشة",
     "openInViewer": "فتح في العارض",
     "resetZoom": "إعادة تعيين التكبير",
@@ -1164,7 +1206,7 @@
   },
   "navbar": {
     "admin": "المسؤول",
-    "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
+    "appTitle": "TMI: نمذجة التهديدات المحسنة.",
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
     "dashboard": "لوحة التحكم",
     "feedback": "الإبلاغ عن خطأ أو طلب ميزة أو تقديم ملاحظات",
@@ -1182,7 +1224,7 @@
       "logout": "تسجيل الخروج"
     },
     "serverStatus": {
-      "noServerConfigured": "لم يتم تكوين خادم",
+      "noServerConfigured": "لم يتم تكوين خادم.",
       "serverConnected": "الخادم متصل",
       "serverDegraded": "الخادم متدهور الحالة",
       "serverError": "خطأ في الخادم",
@@ -1190,14 +1232,14 @@
     }
   },
   "noteEditor": {
-    "characterCount": "{{current}} / {{max}} حرف",
+    "characterCount": "{{Current}} / {{max}} حرف",
     "content": "المحتوى",
     "contentPlaceholder": "أدخل محتوى الملاحظة بتنسيق markdown. يدعم GitHub Flavored Markdown ومخططات Mermaid.",
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "وصف اختياري",
     "editMode": "وضع التحرير",
     "errors": {
-      "clipboardAccessDenied": "تم رفض الوصول إلى الحافظة"
+      "clipboardAccessDenied": "تم رفض الوصول إلى الحافظة."
     },
     "namePlaceholder": "أدخل اسم الملاحظة",
     "previewMode": "وضع المعاينة",
@@ -1217,9 +1259,9 @@
     },
     "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف الملاحظة \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
     "deleteConfirmTitle": "حذف الملاحظة",
-    "noNotes": "لا توجد ملاحظات بعد",
-    "sharable": "مرئي لجميع الأعضاء",
-    "sharableTooltip": "عند التفعيل، تكون هذه الملاحظة مرئية لجميع أعضاء الفريق/المشروع. عند التعطيل، يمكن فقط للمسؤولين ومحللي الأمان رؤيتها.",
+    "noNotes": "لا توجد ملاحظات بعد.",
+    "sharable": "مرئي لجميع الأعضاء.",
+    "sharableTooltip": "عند التفعيل، تكون هذه الملاحظة مرئية لجميع أعضاء الفريق/المشروع. عند التعطيل، يمكن فقط للمسؤولين ومراجعي الأمان رؤيتها",
     "tab": "{{common.objectTypes.notes}}",
     "tabWithCount": "ملاحظات ({{count}})"
   },
@@ -1227,35 +1269,35 @@
     "actions": {
       "login": "تسجيل الدخول"
     },
-    "operationError": "فشل في {{operation}}: {{errorMessage}}",
+    "operationError": "فشل في {{operation}}: {{errormessage}}.",
     "operationFailed": "فشلت العملية",
     "operations": {
       "collaboration": "التعاون",
       "denyPresenterRequest": "رفض طلب مقدم العرض",
-      "sendPresenterRequest": "إرسال طلب مقدم العرض",
+      "sendPresenterRequest": "إرسال طلب مقدم العرض.",
       "startCollaboration": "بدء التعاون",
       "updatePresenter": "تحديث مقدم العرض"
     },
     "presenter": {
-      "assigned": "{{user}} هو مقدم العرض الآن",
-      "assignedYou": "أنت مقدم العرض الآن",
-      "cleared": "تم إلغاء وضع مقدم العرض",
-      "cursorMoved": "تحرك مؤشر مقدم العرض",
-      "modeChanged": "تغيّر وضع مقدم العرض",
-      "privilegesRequested": "تم طلب صلاحيات مقدم العرض",
-      "removed": "{{user}} لم يعد مقدم العرض",
-      "removedYou": "لم تعد مقدم العرض",
-      "requestDenied": "تم رفض طلب مقدم العرض الخاص بك",
-      "requestSent": "تم إرسال طلب مقدم العرض إلى مالك الجلسة",
-      "requesting": "{{user}} يطلب صلاحيات مقدم العرض",
-      "selectionChanged": "تغيّر تحديد مقدم العرض"
+      "assigned": "{{User}} هو مقدم العرض الآن.",
+      "assignedYou": "أنت مقدم العرض الآن.",
+      "cleared": "تم إلغاء وضع مقدم العرض.",
+      "cursorMoved": "تحرك مؤشر مقدم العرض.",
+      "modeChanged": "تغيّر وضع مقدم العرض.",
+      "privilegesRequested": "تم طلب صلاحيات مقدم العرض.",
+      "removed": "{{User}} لم يعد مقدم العرض.",
+      "removedYou": "لم تعد مقدم العرض.",
+      "requestDenied": "تم رفض طلب مقدم العرض الخاص بك.",
+      "requestSent": "تم إرسال طلب مقدم العرض إلى مالك الجلسة.",
+      "requesting": "{{User}} يطلب صلاحيات مقدم العرض.",
+      "selectionChanged": "تغيّر تحديد مقدم العرض."
     },
     "session": {
-      "disconnected": "تم قطع الاتصال بجلسة التعاون",
-      "reconnected": "تمت إعادة الاتصال بجلسة التعاون",
+      "disconnected": "تم قطع الاتصال بجلسة التعاون.",
+      "reconnected": "تمت إعادة الاتصال بجلسة التعاون.",
       "reconnecting": "جارٍ إعادة الاتصال بجلسة التعاون...",
-      "userRemoved": "تمت إزالة {{user}} من الجلسة",
-      "youWereRemoved": "تمت إزالتك من جلسة التعاون"
+      "userRemoved": "تمت إزالة {{User}} من الجلسة.",
+      "youWereRemoved": "تمت إزالتك من جلسة التعاون."
     },
     "unknownError": "خطأ غير معروف",
     "websocket": {
@@ -1267,63 +1309,63 @@
       "disconnected": "تم قطع الاتصال بخادم التعاون. سيتم حفظ التغييرات محلياً.",
       "messageSendFailed": "فشل إرسال الرسالة. قد لا تتم مزامنة تغييراتك.",
       "multipleFailed": "فشل الاتصال بعد عدة محاولات. العمل في وضع عدم الاتصال.",
-      "unknownError": "حدث خطأ غير معروف في WebSocket"
+      "unknownError": "حدث خطأ غير معروف في WebSocket."
     }
   },
   "pagination": {
-    "ariaLabel": "اختر صفحة العناصر",
+    "ariaLabel": "اختر صفحة العناصر.",
     "firstPage": "الصفحة الأولى",
-    "itemsPerPage": "العناصر في الصفحة",
+    "itemsPerPage": "العناصر في الصفحة.",
     "lastPage": "الصفحة الأخيرة",
     "nextPage": "الصفحة التالية",
     "previousPage": "الصفحة السابقة",
     "rangeEmpty": "٠ من {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} من {{length}}"
+    "rangeLabel": "{{Startindex}} - {{endindex}} من {{length}}"
   },
   "presenter": {
     "startPresenting": "بدء العرض",
     "stopPresenting": "إيقاف العرض"
   },
   "privacy": {
-    "changesContent": "قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ \"آخر تحديث\" محدث.",
+    "changesContent": "قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة مع تاريخ «آخر تحديث» محدث.",
     "changesTitle": "التغييرات في هذه السياسة",
-    "complianceContent": "لن نكشف عن المعلومات إلا إذا كان مطلوبًا القيام بذلك بموجب القانون، مثل الاستجابة لأمر حكومي صالح أو استدعاء. في مثل هذه الحالات، سيمتثل المشغل للالتزامات القانونية المعمول بها.",
+    "complianceContent": "لن نكشف عن المعلومات إلا إذا كان مطلوباً بموجب القانون، مثل الاستجابة لأمر حكومي صالح أو استدعاء. في مثل هذه الحالات، سيمتثل المشغل للالتزامات القانونية المعمول بها.",
     "complianceTitle": "الامتثال القانوني",
     "contactContent": {
-      "part1": "إذا كانت لديك أي أسئلة حول سياسة الخصوصية هذه، فلا تتردد في الاتصال بالمشغل لهذا الموقع عبر معلومات الاتصال الموجودة على صفحة ",
-      "part2": "."
+      "part1": "إذا كانت لديك أي أسئلة حول سياسة الخصوصية هذه، فلا تتردد في الاتصال بالمشغل لهذا الموقع عبر معلومات الاتصال الموجودة على صفحة",
+      "part2": " الصفحة"
     },
     "contactTitle": "اتصل بنا",
-    "dataSecurityContent1": "يطبق المشغل تدابير أمنية قياسية في الصناعة لحماية بياناتك الشخصية، بما في ذلك التشفير أثناء النقل وفي حالة السكون، وبروتوكولات المصادقة الآمنة، والتحديثات الأمنية المنتظمة. يقتصر الوصول إلى معلوماتك على الموظفين المصرح لهم على أساس الحاجة إلى المعرفة.",
-    "dataSecurityContent2": "على الرغم من أن أي نظام ليس محصنًا تمامًا ضد المخاطر، يراقب المشغل باستمرار ويحدث الضمانات للتخفيف من التهديدات وضمان سرية بياناتك وسلامتها وتوافرها.",
+    "dataSecurityContent1": "يطبق المشغل تدابير أمنية قياسية لحماية بياناتك الشخصية، بما في ذلك التشفير أثناء النقل وفي حالة السكون، وبروتوكولات المصادقة الآمنة، والتحديثات الأمنية المنتظمة. يقتصر الوصول إلى معلوماتك على الموظفين المصرح لهم على أساس الحاجة إلى المعرفة.",
+    "dataSecurityContent2": "على الرغم من أن أي نظام ليس محصناً تماماً ضد المخاطر، يراقب المشغل باستمرار ويحدّث الضمانات للتخفيف من التهديدات وضمان سرية بياناتك وسلامتها وتوافرها.",
     "dataSecurityTitle": "أمن البيانات",
     "dataSharingContent1": "لا يشارك المشغل معلوماتك الشخصية مع أي أطراف ثالثة، إلا في الظروف المحدودة التالية:",
     "dataSharingContent2": "بخلاف هذه الاستثناءات، لا يبيع المشغل أو يؤجر أو يشارك بياناتك مع أي كيانات أخرى لأغراض التسويق أو الإعلان أو أي غرض آخر.",
-    "dataSharingList1": "مزودو الخدمة: قد يتم تخزين بياناتك ومعالجتها على بنية تحتية سحابية آمنة لطرف ثالث (مثل AWS أو Google Cloud أو مزودين مماثلين) فقط لتشغيل التطبيق وصيانته. هؤلاء المزودون ملزمون تعاقديًا بحماية بياناتك واستخدامها فقط للأغراض التي يحددها المشغل.",
-    "dataSharingList2": "ميزات التوسعية: يدعم التطبيق ميزات توسعية اختيارية (مثل websockets وaddons) التي قد توسع الوظائف عن طريق تمرير معلومات محددة إلى خدمات الجهات الخارجية للمعالجة. يتم مشاركة البيانات مع هذه الخدمات فقط عندما تستخدم بنشاط ميزة تتطلب مثل هذا النقل، ويتم نقل المعلومات المحددة الضرورية للوظيفة المطلوبة فقط.",
-    "dataSharingList2a": "ميزات معالجة الذكاء الاصطناعي: عندما تطلب بنشاط ميزات مدعومة بنماذج اللغة الكبيرة (LLMs) أو خدمات الذكاء الاصطناعي المماثلة، قد يتم نقل بيانات محددة إلى مزودي الذكاء الاصطناعي من الجهات الخارجية (مثل OpenAI أو Anthropic أو خدمات مكافئة) للمعالجة وإنشاء الاستجابات. يتم مشاركة المعلومات المحددة الضرورية للوظيفة المطلوبة فقط، وتحدث هذه المشاركة بناءً على توجيهاتك فقط. يلتزم هؤلاء المزودون بالتزامات تعاقدية — بما في ذلك اتفاقيات معالجة البيانات حيثما ينطبق ذلك — لاستخدام البيانات حصريًا لتقديم الخدمة المطلوبة، مع قيود على الاحتفاظ أو التدريب أو الاستخدامات الأخرى.",
-    "dataSharingList3": "الامتثال القانوني: قد يفصح المشغل عن المعلومات إذا كان ذلك مطلوبًا بموجب القانون، مثل الاستجابة لأمر محكمة صالح أو مذكرة استدعاء أو طلب حكومي.",
+    "dataSharingList1": "مزودو الخدمة: قد يتم تخزين بياناتك ومعالجتها على بنية تحتية سحابية آمنة لطرف ثالث (مثل AWS أو Google Cloud أو مزودين مماثلين) فقط لتشغيل التطبيق وصيانته. هؤلاء المزودون ملزمون تعاقدياً بحماية بياناتك واستخدامها فقط للأغراض التي يحددها المشغل.",
+    "dataSharingList2": "ميزات التوسعية: يدعم التطبيق ميزات توسعية اختيارية (مثل WebSockets والإضافات) التي قد توسّع الوظائف عن طريق تمرير معلومات محددة إلى خدمات الجهات الخارجية للمعالجة. يتم مشاركة البيانات مع هذه الخدمات فقط عندما تستخدم بنشاط ميزة تتطلب مثل هذا النقل، ويتم نقل المعلومات المحددة الضرورية للوظيفة المطلوبة فقط.",
+    "dataSharingList2a": "ميزات معالجة الذكاء الاصطناعي: عندما تطلب بنشاط ميزات مدعومة بنماذج اللغة الكبيرة (LLMs) أو خدمات الذكاء الاصطناعي المماثلة، قد يتم نقل بيانات محددة إلى مزودي الذكاء الاصطناعي من الجهات الخارجية (مثل OpenAI أو Anthropic أو خدمات مكافئة) للمعالجة وإنشاء الاستجابات. يتم مشاركة المعلومات المحددة الضرورية للوظيفة المطلوبة فقط، وتحدث هذه المشاركة بناءً على توجيهاتك فقط. يلتزم هؤلاء المزودون بالتزامات تعاقدية — بما في ذلك اتفاقيات معالجة البيانات حيثما ينطبق ذلك — لاستخدام البيانات حصرياً لتقديم الخدمة المطلوبة، مع قيود على الاحتفاظ أو التدريب أو الاستخدامات الأخرى.",
+    "dataSharingList3": "الامتثال القانوني: قد يفصح المشغل عن المعلومات إذا كان ذلك مطلوباً بموجب القانون، مثل الاستجابة لأمر محكمة صالح أو مذكرة استدعاء أو طلب حكومي.",
     "dataSharingTitle": "مشاركة البيانات",
-    "informationCollectionContent1": "عندما يقوم المستخدمون بالمصادقة عبر تسجيل الدخول الاجتماعي (باستخدام موفري OAuth أو OpenID Connect مثل تسجيل الدخول باستخدام Google أو تسجيل الدخول باستخدام GitHub أو Microsoft Entra External ID أو غيرها)، يجمع التطبيق المعلومات التالية من المزود المحدد، فقط لتسهيل المصادقة وتقديم الخدمات المخصصة:",
-    "informationCollectionContent2": "لا يتم جمع أي بيانات شخصية إضافية دون موافقة صريحة من المستخدم. لا يصل المشغل أو يخزن معلومات حساسة مثل كلمات المرور أو جهات الاتصال أو بيانات أخرى خاصة بالمزود بما يتجاوز ما هو ضروري للمصادقة. يتم التعامل مع جميع المعلومات المجمعة وفقًا لسياسات واجهة برمجة التطبيقات الخاصة بالمزود المعني والتزام المشغل بخصوصية المستخدم.",
-    "informationCollectionContent3": "يقوم التطبيق بإنشاء السجلات التشغيلية لضمان موثوقية النظام والأمان والأداء. قد تحتوي هذه السجلات على سجلات لنشاط المستخدم داخل التطبيق، مثل أحداث تسجيل الدخول واستخدام المزايا وتقارير الأخطاء. يحتفظ المشغّل بالسجلات فقط لطالما لزم الأمر لتحقيق الأغراض التشغيلية، بما في ذلك استكشاف الأخطاء والمراقبة الأمنية وتحسين الخدمة. يتم تخزين السجلات بأمان ولا تُستخدم لأغراض تتجاوز الاحتياجات التشغيلية.",
+    "informationCollectionContent1": "عندما يقوم المستخدمون بالمصادقة عبر تسجيل الدخول الاجتماعي (باستخدام موفري OAuth أو OpenID Connect مثل تسجيل الدخول باستخدام Google أو GitHub أو Microsoft Entra External ID أو غيرها)، يجمع التطبيق المعلومات التالية من المزود المحدد، فقط لتسهيل المصادقة وتقديم الخدمات المخصصة:",
+    "informationCollectionContent2": "لا يتم جمع أي بيانات شخصية إضافية دون موافقة صريحة من المستخدم. لا يصل المشغل أو يخزن معلومات حساسة مثل كلمات المرور أو جهات الاتصال أو بيانات أخرى خاصة بالمزود بما يتجاوز ما هو ضروري للمصادقة. يتم التعامل مع جميع المعلومات المجمعة وفقاً لسياسات API الخاصة بالمزود المعني والتزام المشغل بخصوصية المستخدم.",
+    "informationCollectionContent3": "يقوم التطبيق بإنشاء السجلات التشغيلية لضمان موثوقية النظام والأمان والأداء. قد تحتوي هذه السجلات على سجلات لنشاط المستخدم داخل التطبيق، مثل أحداث تسجيل الدخول واستخدام الميزات وتقارير الأخطاء. يحتفظ المشغل بالسجلات فقط طالما لزم الأمر لتحقيق الأغراض التشغيلية، بما في ذلك استكشاف الأخطاء والمراقبة الأمنية وتحسين الخدمة. يتم تخزين السجلات بأمان ولا تُستخدم لأغراض تتجاوز الاحتياجات التشغيلية.",
     "informationCollectionList1": "معلومات الملف الشخصي الأساسية: الاسم الكامل وعنوان البريد الإلكتروني وصورة الملف الشخصي (إذا تم توفيرها وكانت متاحة).",
     "informationCollectionList2": "المعرف الفريد: معرف مستخدم خاص بالمزود لإدارة جلسات الحساب بشكل آمن.",
     "informationCollectionTitle": "جمع واستخدام المعلومات",
     "intro1": {
-      "part1": "هذا الموقع هو نسخة من تطبيق ويب مفتوح المصدر (\"تي إم آي\") الذي يتم توفيره بواسطة المشغل المدرج في صفحة ",
-      "part2": " هذا الموقع (\"المشغل\")."
+      "part1": "هذا الموقع هو نسخة من تطبيق ويب مفتوح المصدر («TMI») الذي يتم توفيره بواسطة المشغل المدرج في صفحة",
+      "part2": " هذا الموقع («المشغل»)."
     },
     "intro2": "يلتزم المشغل بحماية خصوصيتك. توضح سياسة الخصوصية هذه كيفية التعامل مع معلوماتك.",
     "introductionTitle": "المقدمة",
     "lastUpdatedDate": "2026-01-17",
     "title": "سياسة الخصوصية",
-    "userRightsContent1": "لديك السيطرة الكاملة على بياناتك الشخصية. في أي وقت، يمكنك الوصول إلى ميزة \"حذف جميع بياناتي\" في قسم تفضيلات المستخدم في التطبيق.",
-    "userRightsContent2": "يتيح هذا الخيار الحذف الفوري لجميع البيانات التي يخزنها المشغل نيابة عنك، بما في ذلك معلومات الملف الشخصي وسجلات المصادقة. عند التفعيل، سيتم إزالة بياناتك بشكل دائم من أنظمة المشغل ومزودي الطرف الثالث، مع مراعاة أي التزامات قانونية للاحتفاظ بالبيانات.",
+    "userRightsContent1": "لديك السيطرة الكاملة على بياناتك الشخصية. في أي وقت، يمكنك الوصول إلى ميزة «حذف جميع بياناتي» في قسم تفضيلات المستخدم في التطبيق.",
+    "userRightsContent2": "يتيح هذا الخيار الحذف الفوري لجميع البيانات التي يخزنها المشغل نيابةً عنك، بما في ذلك معلومات الملف الشخصي وسجلات المصادقة. عند التفعيل، سيتم إزالة بياناتك بشكل دائم من أنظمة المشغل ومزودي الطرف الثالث، مع مراعاة أي التزامات قانونية للاحتفاظ بالبيانات.",
     "userRightsTitle": "حقوق المستخدم"
   },
   "projects": {
-    "addButton": "إضافة مشروع",
+    "addButton": "إضافة مشروع...",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1334,9 +1376,9 @@
     "createDialog": {
       "descriptionPlaceholder": "أدخل وصف المشروع",
       "namePlaceholder": "أدخل اسم المشروع",
-      "nameRequired": "اسم المشروع مطلوب",
+      "nameRequired": "اسم المشروع مطلوب.",
       "statusPlaceholder": "مثال: active, planning, archived",
-      "teamRequired": "الفريق مطلوب",
+      "teamRequired": "الفريق مطلوب.",
       "title": "إنشاء مشروع",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project"
     },
@@ -1360,17 +1402,17 @@
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.projects.title}}",
-    "noProjects": "لم يتم العثور على مشاريع",
+    "noProjects": "لم يتم العثور على مشاريع.",
     "picker": {
       "label": "{{common.project}}",
       "none": "لا يوجد مشروع"
     },
     "relatedProjectsDialog": {
-      "addRelated": "إضافة مشروع ذي صلة",
+      "addRelated": "إضافة مشروع ذي صلة.",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
-      "noRelated": "لا توجد مشاريع ذات صلة",
+      "noRelated": "لا توجد مشاريع ذات صلة.",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
-      "selectProject": "اختر مشروعًا",
+      "selectProject": "اختر مشروعاً",
       "title": "المشاريع ذات الصلة"
     },
     "responsiblePartiesDialog": {
@@ -1388,8 +1430,8 @@
       "planning": "التخطيط"
     },
     "statusAll": "{{common.allStatuses}}",
-    "statusFilterLabel": "التصفية حسب الحالة",
-    "subtitle": "إنشاء وتحرير وإدارة المشاريع والعلاقات والبيانات الوصفية",
+    "statusFilterLabel": "التصفية حسب الحالة.",
+    "subtitle": "إنشاء وتحرير وإدارة المشاريع والعلاقات والبيانات الوصفية.",
     "teamFilterLabel": "التصفية حسب الفريق",
     "title": "إدارة المشاريع"
   },
@@ -1397,18 +1439,18 @@
     "cvss": "CVSS",
     "cweIds": "CWE IDs",
     "diagramImageUnavailable": "صورة المخطط غير متاحة",
-    "diagramRenderFailed": "تعذر عرض المخطط",
-    "generatedAt": "تم إنشاء التقرير",
+    "diagramRenderFailed": "تعذر عرض المخطط.",
+    "generatedAt": "تم إنشاء التقرير.",
     "linkedAsset": "الأصل المرتبط",
     "linkedDiagram": "المخطط المرتبط",
     "pageOf": "الصفحة {{current}} من {{total}}",
     "refLabel": "المرجع",
-    "summaryCreatedAt": "تاريخ إنشاء نموذج التهديد",
-    "summaryCreatedBy": "منشئ نموذج التهديد",
+    "summaryCreatedAt": "تاريخ إنشاء نموذج التهديد.",
+    "summaryCreatedBy": "منشئ نموذج التهديد.",
     "summaryDescription": "{{common.description}}",
-    "summaryLastModified": "آخر تعديل لنموذج التهديد",
+    "summaryLastModified": "آخر تعديل لنموذج التهديد.",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
-    "summaryStatus": "حالة نموذج التهديد"
+    "summaryStatus": "حالة نموذج التهديد."
   },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",
@@ -1416,8 +1458,8 @@
     "logoutButton": "تسجيل الخروج الآن",
     "message": "جلستك على وشك الانتهاء. هل ترغب في تمديد جلستك أو تسجيل الخروج الآن؟",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
-      "seconds": "{{seconds}} ثانية"
+      "minutesSeconds": "{{Minutes}}:{{seconds}}",
+      "seconds": "{{Seconds}} ثانية"
     },
     "title": "الجلسة على وشك الانتهاء"
   },
@@ -1448,7 +1490,7 @@
     },
     "methodology": "المورد",
     "next": "التالي",
-    "openCalculator": "إضافة SSVC",
+    "openCalculator": "إضافة SSVC...",
     "publicSafetyImpact": {
       "description": "هل استغلال هذه الثغرة يشكل خطراً على سلامة الجمهور؟",
       "minimal": "ضئيل",
@@ -1494,10 +1536,10 @@
       "yes": "نعم، ضع علامة كسري"
     },
     "confirmation": {
-      "backToSurveys": "العودة إلى الاستبيانات",
+      "backToSurveys": "العودة إلى الاستبيانات.",
       "message": "تم تقديم الاستبيان بنجاح.",
       "title": "تم تقديم الاستبيان",
-      "viewResponses": "عرض ردودي"
+      "viewResponses": "عرض ردودي."
     },
     "continueDraft": "متابعة المسودة",
     "fill": {
@@ -1506,9 +1548,9 @@
     },
     "list": {
       "deleteDraft": "حذف المسودة",
-      "draftStarted": "بدأت المسودة {{time}}",
-      "errorLoadingSurveys": "فشل تحميل الاستبيانات",
-      "lastModified": "آخر تعديل {{time}}",
+      "draftStarted": "بدأت المسودة {{time}}.",
+      "errorLoadingSurveys": "فشل تحميل الاستبيانات.",
+      "lastModified": "آخر تعديل {{time}}.",
       "loadingSurveys": "جارٍ تحميل الاستبيانات...",
       "noSurveysMessage": "لا توجد استبيانات نشطة حالياً. تحقق لاحقاً.",
       "noSurveysTitle": "لا توجد استبيانات متاحة",
@@ -1520,8 +1562,8 @@
     "myResponses": "ردودي",
     "noMatchingResponses": "لا توجد ردود مطابقة",
     "noMatchingResponsesMessage": "لا توجد ردود تطابق الفلاتر المحددة.",
-    "noResponses": "لم تقدم أي ردود على الاستبيانات بعد",
-    "noSurveys": "لا توجد استبيانات متاحة",
+    "noResponses": "لم تقدم أي ردود على الاستبيانات بعد.",
+    "noSurveys": "لا توجد استبيانات متاحة.",
     "responses": {
       "continueEditing": "متابعة التحرير",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
@@ -1530,11 +1572,11 @@
       "noResponsesMessage": "لم تكمل أي استبيانات بعد. ابدأ واحداً من صفحة الاستبيانات.",
       "noResponsesTitle": "لا توجد ردود بعد",
       "pageTitle": "ردودي على الاستبيانات",
-      "responseCount": "رد واحد ({{count}})",
-      "responseCountPlural": "{{count}} ردود"
+      "responseCount": "{{Count}} رد",
+      "responseCountPlural": "{{Count}} ردود"
     },
     "saveDraft": "حفظ كمسودة",
-    "startNew": "بدء الاستبيان",
+    "startNew": "بدء الاستبيان...",
     "status": {
       "draft": "مسودة",
       "needsRevision": "يحتاج إلى مراجعة",
@@ -1552,7 +1594,7 @@
     "viewResponse": "عرض الرد"
   },
   "teams": {
-    "addButton": "إضافة فريق",
+    "addButton": "إضافة فريق...",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "تم التعديل",
@@ -1565,8 +1607,8 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "namePlaceholder": "أدخل اسم الفريق",
-      "nameRequired": "اسم الفريق مطلوب",
-      "statusPlaceholder": "مثال: active, archived",
+      "nameRequired": "اسم الفريق مطلوب.",
+      "statusPlaceholder": "مثال: active, archived.",
       "title": "إنشاء فريق",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team"
     },
@@ -1585,7 +1627,7 @@
     "filterLabel": "تصفية الفرق",
     "kebab": {
       "delete": "{{common.delete}}",
-      "members": "أعضاء الفريق",
+      "members": "أعضاء الفريق...",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
@@ -1599,14 +1641,14 @@
       "role": "الدور",
       "title": "أعضاء الفريق"
     },
-    "noTeams": "لم يتم العثور على فرق",
+    "noTeams": "لم يتم العثور على فرق.",
     "relatedTeamsDialog": {
-      "addRelated": "إضافة فريق ذي صلة",
+      "addRelated": "إضافة فريق ذي صلة.",
       "customRelationship": "علاقة مخصصة",
-      "noRelated": "لا توجد فرق ذات صلة",
+      "noRelated": "لا توجد فرق ذات صلة.",
       "relationship": "العلاقة",
-      "removeRelated": "إزالة فريق ذي صلة",
-      "selectTeam": "اختر فريق",
+      "removeRelated": "إزالة فريق ذي صلة.",
+      "selectTeam": "اختر فريقاً",
       "title": "الفرق ذات الصلة"
     },
     "relationships": {
@@ -1621,7 +1663,7 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "إضافة جهة مسؤولة",
-      "noParties": "لا توجد جهات مسؤولة",
+      "noParties": "لا توجد جهات مسؤولة.",
       "removeParty": "إزالة جهة مسؤولة",
       "title": "الجهات المسؤولة"
     },
@@ -1638,33 +1680,33 @@
       "archived": "مؤرشف",
       "forming": "قيد التشكيل",
       "merging": "قيد الدمج",
-      "on_hold": "مع إيقاف",
+      "on_hold": "موقوف مؤقتاً",
       "splitting": "قيد الانقسام",
       "winding_down": "قيد الإغلاق"
     },
-    "subtitle": "إنشاء وتحرير وإدارة الفرق والأعضاء والعلاقات",
+    "subtitle": "إنشاء وتحرير وإدارة الفرق والأعضاء والعلاقات.",
     "title": "إدارة الفرق"
   },
   "threatEditor": {
-    "addMapping": "إضافة التعيين",
+    "addMapping": "إضافة تعيين...",
     "createNewThreat": "إنشاء تهديد جديد",
-    "cvssVectorPlaceholder": "مثال، CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-    "cweIdPlaceholder": "أدخل معرف CWE (مثال، CWE-79)",
+    "cvssVectorPlaceholder": "مثال: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "أدخل معرف CWE (مثال: CWE-79)",
     "cweMappings": "تعيينات CWE",
     "frameworkMappingPicker": {
       "notApplicable": "غير قابل للتطبيق على نوع الخلية الحالي",
-      "title": "تحديد تعيينات الإطار عمل"
+      "title": "تحديد تعيينات الإطار"
     },
-    "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات",
+    "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
-    "notAssociatedWithAsset": "غير مرتبط بأصل",
-    "notAssociatedWithCell": "غير مرتبط بخلية",
-    "notAssociatedWithDiagram": "غير مرتبط بمخطط",
+    "notAssociatedWithAsset": "غير مرتبط بأصل.",
+    "notAssociatedWithCell": "غير مرتبط بخلية.",
+    "notAssociatedWithDiagram": "غير مرتبط بمخطط.",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
-      "diagramReferences": "مراجع الرسم البياني",
+      "diagramReferences": "مراجع المخطط",
       "mitigation": "{{common.mitigation}}",
       "tracking": "التتبع"
     },
@@ -1678,7 +1720,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred": "مؤجل (P4)",
+      "high": "عالي (P1)",
+      "immediate": "فوري (P0)",
+      "low": "منخفض (P3)",
+      "medium": "متوسط (P2)"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1693,7 +1740,7 @@
       "high": "عالي",
       "high.description": "تأثير كبير أو احتمالية عالية؛ تمكن من وصول غير مصرح به كبير، تصعيد الصلاحيات، أو تعطيل الخدمة.",
       "informational": "معلوماتي",
-      "informational.description": "لا توجد قابلية للاستغلال المباشر؛ توصية، انحراف عن أفضل الممارسات، أو تحسين في التكوين.",
+      "informational.description": "لا توجد قابلية للاستغلال المباشر؛ توصية، انحراف عن أفضل الممارسات، أو تحسين في التكوين",
       "low": "منخفض",
       "low.description": "تأثير ضئيل أو احتمالية منخفضة؛ تأثير ضئيل على الأعمال، تتطلب شروطاً محددة أو تفاعل المستخدم.",
       "medium": "متوسط",
@@ -1721,25 +1768,31 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
-    }
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "false_positive": "إيجابية كاذبة",
+      "mitigation_in_progress": "التخفيف قيد التنفيذ.",
+      "mitigation_planned": "التخفيف مخطط له",
+      "verification_pending": "التحقق قيد الانتظار"
+    },
+    "addCvssEntry": "إضافة إدخال CVSS.",
+    "cvssVector": "متجه CVSS"
   },
   "threatModels": {
     "addPermission": "إضافة إذن",
     "branch": "فرع",
-    "changeSecurityReviewer": "تغيير مراجع الأمان",
+    "changeSecurityReviewer": "تغيير مراجع الأمان...",
     "clearSecurityReviewer": "مسح مراجع الأمان",
     "commit": "التزام",
     "confidentialProject": "مشروع سري",
-    "createFirstButton": "أنشئ نموذج التهديد الأول",
+    "createFirstButton": "أنشئ نموذج التهديد الأول...",
     "createNewDiagram": "إنشاء مخطط جديد",
-    "createNewRepository": "إضافة مرجع مستودع",
+    "createNewRepository": "إضافة مرجع مستودع...",
     "created": "{{common.created}}",
     "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "مخطط تدفق البيانات",
-    "deleteError": "فشل حذف نموذج التهديد: {{error}}",
-    "deleteSuccess": "تم حذف نموذج التهديد: {{name}}",
+    "deleteError": "فشل حذف نموذج التهديد: {{error}}.",
+    "deleteSuccess": "تم حذف نموذج التهديد: {{name}}.",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
     "details": "تفاصيل نموذج التهديد",
@@ -1759,31 +1812,31 @@
     "documentUrl": "رابط الوثيقة",
     "export": "تصدير",
     "exportDialog": {
-      "error": "فشل في تحضير بيانات التصدير. يرجى المحاولة مرة أخرى.",
+      "error": "فشل في تحضير بيانات التصدير.",
       "preparing": "جاري تحضير بيانات التصدير...",
-      "ready": "التصدير جاهز. انقر على حفظ للتحميل.",
+      "ready": "التصدير جاهز. انقر فوق حفظ للتحميل.",
       "retry": "{{common.retry}}",
       "save": "{{common.save}}",
       "title": "تصدير نموذج التهديد"
     },
-    "fileSizeExceeded": "الملف يتجاوز الحد الأقصى لحجم الاستيراد: {{maxSize}} ميغابايت",
+    "fileSizeExceeded": "الملف يتجاوز الحد الأقصى لحجم الاستيراد: {{maxsize}} ميغابايت.",
     "frameworkDisabledHint": "لا يمكن تغيير الإطار عند وجود تهديدات",
     "idLabel": "{{common.id}}",
-    "importError": "فشل استيراد نموذج التهديد: {{error}}",
-    "importFormatError": "تنسيق نموذج التهديد غير صالح: حقول مطلوبة مفقودة (id, name)",
-    "importSuccess": "تم استيراد نموذج التهديد بنجاح: {{name}}",
-    "importValidationError": "فشل التحقق من صحة نموذج التهديد: {{errors}}",
+    "importError": "فشل استيراد نموذج التهديد: {{error}}.",
+    "importFormatError": "تنسيق نموذج التهديد غير صالح: حقول مطلوبة مفقودة (ID, name).",
+    "importSuccess": "تم استيراد نموذج التهديد بنجاح: {{name}}.",
+    "importValidationError": "فشل التحقق من صحة نموذج التهديد: {{errors}}.",
     "importing": "جارٍ استيراد نموذج التهديد...",
     "issueUriHint": "أدخل رابطًا لتتبع نموذج التهديد هذا في نظام خارجي",
     "newThreatModel": "نموذج تهديد جديد",
-    "noAssets": "لم يتم إضافة أصول بعد",
-    "noDiagrams": "لم تتم إضافة أي مخططات بعد",
-    "noDocuments": "لم تتم إضافة أي وثائق بعد",
+    "noAssets": "لم يتم إضافة أصول بعد.",
+    "noDiagrams": "لم تتم إضافة أي مخططات بعد.",
+    "noDocuments": "لم تتم إضافة أي وثائق بعد.",
     "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
-    "noNotes": "لم تتم إضافة أي ملاحظات بعد",
-    "noPermissions": "لم يتم تحديد أي أذونات",
-    "noRepositories": "لم تتم إضافة أي مستودعات بعد",
-    "noThreats": "لم تتم إضافة أي تهديدات بعد",
+    "noNotes": "لم تتم إضافة أي ملاحظات بعد.",
+    "noPermissions": "لم يتم تحديد أي أذونات.",
+    "noRepositories": "لم تتم إضافة أي مستودعات بعد.",
+    "noThreats": "لم تتم إضافة أي تهديدات بعد.",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
@@ -1811,9 +1864,9 @@
     "sections": {
       "audit": "التدقيق",
       "inputs": "المدخلات",
-      "inputsDescription": "الأصول والمستندات ومستودعات الأكواد المصدرية التي تصف النظام قيد التحليل",
+      "inputsDescription": "الأصول والمستندات ومستودعات الأكواد المصدرية التي تصف النظام قيد التحليل.",
       "outputs": "المخرجات",
-      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان",
+      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان.",
       "reviewProcess": "عملية المراجعة"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
@@ -1839,28 +1892,34 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "in_progress": "قيد التنفيذ",
+      "not_started": "لم يبدأ",
+      "pending_review": "في انتظار المراجعة",
+      "remediation_in_progress": "المعالجة قيد التنفيذ.",
+      "remediation_required": "المعالجة مطلوبة",
+      "verification_pending": "التحقق قيد الانتظار"
     },
-    "statusLastUpdated": "آخر تحديث للحالة",
+    "statusLastUpdated": "آخر تحديث للحالة.",
     "tag": "علامة",
     "threatModelFramework": "إطار نموذج التهديد",
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
-      "addAsset": "إضافة أصل",
-      "addDiagram": "إضافة مخطط",
-      "addDocument": "إضافة وثيقة",
+      "addAsset": "إضافة أصل...",
+      "addDiagram": "إضافة مخطط...",
+      "addDocument": "إضافة وثيقة...",
       "addNote": "{{triage.detail.addNote}}",
-      "assetsCardTitle": "الأصول هي موارد قيمة داخل النظام تتطلب الحماية، مثل البيانات والأجهزة والبرامج والبنية التحتية والخدمات أو الموظفين.",
-      "diagramsCardTitle": "المخططات في TMI هي تمثيلات قابلة للقراءة آليًا لحركة البيانات والعمليات داخل النظام، مما يتيح التحليل الأمني اليدوي والآلي.",
-      "documentsCardTitle": "مراجع الوثائق هي روابط للوثائق المخزنة خارج TMI. الوثائق ذات الصلة تصف النظام المراد تحليله، ويمكن استخدامها من قبل محللي الأمن وعمليات التحليل الآلي.",
+      "assetsCardTitle": "الأصول هي موارد قيمة داخل النظام تتطلب الحماية، مثل البيانات والأجهزة والبرامج والبنية التحتية والخدمات أو الموظفين",
+      "diagramsCardTitle": "المخططات في TMI هي تمثيلات قابلة للقراءة آلياً لحركة البيانات والعمليات داخل النظام، مما يتيح التحليل الأمني اليدوي والآلي",
+      "documentsCardTitle": "مراجع الوثائق هي روابط للوثائق المخزنة خارج TMI. الوثائق ذات الصلة تصف النظام المراد تحليله، ويمكن استخدامها من قبل محللي الأمن وعمليات التحليل الآلي",
       "downloadModel": "تنزيل النموذج",
       "dropToCreateDocument": "إفلات للإنشاء",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
       "dropToSetIssueUri": "إفلات لتعيين رابط المشكلة",
       "import": "استيراد",
-      "notesCardTitle": "الملاحظات هي نصوص بتنسيق markdown موجودة بالكامل داخل نموذج التهديد، وتستخدم لالتقاط الملاحظات والتعليقات التوضيحية من محللي الأمن وعمليات التحليل الآلي.",
-      "repositoriesCardTitle": "المستودعات هي روابط لمستودعات الكود المصدري حيث تتم إدارة الكود المصدري للنظام.",
-      "threatsCardTitle": "التهديدات هي أحداث أو إجراءات ضارة محتملة تستغل ثغرة أو نقطة ضعف في النظام لتعريض سريته أو سلامته أو توفره أو أهداف الأمان الأخرى للخطر. في TMI، تحتوي كائنات التهديد أيضًا على معلومات حول نوع ومستوى المخاطر المرتبطة بالتهديد ومعلومات لتتبع العمل اللازم للتخفيف من التهديد."
+      "notesCardTitle": "الملاحظات هي نصوص بتنسيق markdown موجودة بالكامل داخل نموذج التهديد، وتستخدم لالتقاط الملاحظات والتعليقات التوضيحية من محللي الأمن وعمليات التحليل الآلي",
+      "repositoriesCardTitle": "المستودعات هي روابط لمستودعات الكود المصدري حيث تتم إدارة الكود المصدري للنظام",
+      "threatsCardTitle": "التهديدات هي أحداث أو إجراءات ضارة محتملة تستغل ثغرة أو نقطة ضعف في النظام لتعريض سريته أو سلامته أو توفره أو أهداف الأمان الأخرى للخطر. في TMI، تحتوي كائنات التهديد أيضاً على معلومات حول نوع ومستوى المخاطر المرتبطة بالتهديد ومعلومات لتتبع العمل اللازم للتخفيف من التهديد"
     },
     "viewDiagramName": "عرض خصائص المخطط",
     "yourThreatModels": "نماذج التهديدات الخاصة بك"
@@ -1881,12 +1940,12 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "إذا كانت لديك أي أسئلة حول هذه الشروط، فلا تتردد في الاتصال بالمشغل لهذا الموقع عبر معلومات الاتصال الموجودة على صفحة ",
-      "part2": "."
+      "part1": "إذا كانت لديك أي أسئلة حول هذه الشروط، فلا تتردد في الاتصال بالمشغل لهذا الموقع عبر معلومات الاتصال الموجودة على صفحة",
+      "part2": " الصفحة"
     },
     "intro": {
-      "part1": "مرحبًا بك في نسختنا من تي إم آي. تحكم شروط الاستخدام هذه (\"الشروط\") وصولك إلى واستخدامك لهذا الموقع الإلكتروني، وهو نسخة من تطبيق ويب مفتوح المصدر متاح من قبل المشغل المدرج في صفحة ",
-      "part2": " هذا الموقع (\"المشغل\")."
+      "part1": "مرحباً بك في نسختنا من TMI. تحكم شروط الاستخدام هذه («الشروط») وصولك إلى واستخدامك لهذا الموقع الإلكتروني، وهو متاح من قبل المشغل المدرج في صفحة",
+      "part2": " هذا الموقع («المشغل»)."
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
@@ -1907,8 +1966,8 @@
     },
     "section5": {
       "content": {
-        "part1": "يستخدم هذا الموقع برنامج تي إم آي، ويتوفر رمزه المصدري في الروابط المتوفرة في صفحة ",
-        "part2": " هذا الموقع. يخضع استخدامك للبرنامج لشروط ترخيصه مفتوح المصدر. نحن لسنا مسؤولين عن البرنامج نفسه، ولكن فقط عن تشغيل هذه النسخة. ما لم ينص على خلاف ذلك، فإن المشغل لهذا الموقع غير مرتبط بمشروع تي إم آي أو مبتكريه."
+        "part1": "يستخدم هذا الموقع برنامج TMI مفتوح المصدر. يتوفر الكود المصدري في الروابط المتوفرة في صفحة",
+        "part2": " هذا الموقع. يخضع استخدامك للبرنامج لشروط ترخيصه مفتوح المصدر. نحن لسنا مسؤولين عن البرنامج نفسه، ولكن فقط عن تشغيل هذه النسخة. ما لم ينص على خلاف ذلك، فإن المشغل لهذا الموقع غير مرتبط بمشروع TMI أو مبتكريه."
       },
       "title": "5. برمجيات مفتوحة المصدر"
     },
@@ -1917,13 +1976,13 @@
       "title": "6. تغييرات في الشروط"
     },
     "section7": {
-      "content": "يحتفظ المشغل بالحق في تعليق أو إنهاء الوصول إلى الموقع وفقًا لتقدير المشغل، دون إشعار، لأي سبب من الأسباب.",
+      "content": "يحتفظ المشغل بالحق في تعليق أو إنهاء الوصول إلى الموقع وفقاً لتقدير المشغل، دون إشعار، لأي سبب من الأسباب.",
       "title": "7. الإنهاء"
     },
     "section8": {
       "content": {
-        "part1": "تخضع هذه الشروط لقوانين الولاية القضائية المحددة من قبل المشغل في صفحة ",
-        "part2": "، بغض النظر عن مبادئ تنازع القوانين."
+        "part1": "تخضع هذه الشروط لقوانين الولاية القضائية المحددة من قبل المشغل في صفحة",
+        "part2": " الصفحة، بغض النظر عن مبادئ تنازع القوانين."
       },
       "title": "8. القانون الحاكم"
     },
@@ -1950,9 +2009,9 @@
         "question": "سؤال"
       },
       "markdownSupported": "يدعم Markdown",
-      "noNotes": "لا توجد ملاحظات فرز بعد",
-      "noResponses": "لم يتم تسجيل أي ردود",
-      "noRevisionNotes": "لا توجد ملاحظات مراجعة",
+      "noNotes": "لا توجد ملاحظات فرز بعد.",
+      "noResponses": "لم يتم تسجيل أي ردود.",
+      "noRevisionNotes": "لا توجد ملاحظات مراجعة.",
       "note": "ملاحظة",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "أدخل محتوى الملاحظة...",
@@ -1980,11 +2039,11 @@
       "approve": "موافقة",
       "approveSelected": "الموافقة على المحدد",
       "createThreatModel": "{{createThreatModel.title}}",
-      "errorLoadingResponses": "فشل تحميل الردود",
+      "errorLoadingResponses": "فشل تحميل الردود.",
       "loadingResponses": "جارٍ تحميل الردود...",
-      "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية",
+      "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية.",
       "noResponsesTitle": "لا توجد ردود",
-      "noResponsesToTriage": "لا توجد ردود استبيانات للفرز",
+      "noResponsesToTriage": "لا توجد ردود استبيانات للفرز.",
       "notSubmitted": "لم يتم الإرسال",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "البحث حسب مقدم الطلب أو الاستبيان...",
@@ -1992,16 +2051,16 @@
       "submitter": "المرسل"
     },
     "markInReview": "وضع علامة قيد المراجعة",
-    "markPendingTriage": "وضع علامة في انتظار الفرز",
+    "markPendingTriage": "وضع علامة في انتظار الفرز.",
     "messages": {
-      "approveError": "فشل في الموافقة على الرد",
+      "approveError": "فشل في الموافقة على الرد.",
       "approveSuccess": "تمت الموافقة على الرد",
-      "createThreatModelError": "فشل في إنشاء نموذج التهديد",
-      "createThreatModelSuccess": "تم إنشاء نموذج التهديد بنجاح",
-      "returnForRevisionError": "فشل في إعادة الرد للمراجعة",
-      "returnForRevisionSuccess": "تمت إعادة الرد للمراجعة"
+      "createThreatModelError": "فشل في إنشاء نموذج التهديد.",
+      "createThreatModelSuccess": "تم إنشاء نموذج التهديد بنجاح.",
+      "returnForRevisionError": "فشل في إعادة الرد للمراجعة.",
+      "returnForRevisionSuccess": "تمت إعادة الرد للمراجعة."
     },
-    "noResponses": "لا توجد ردود للفرز",
+    "noResponses": "لا توجد ردود للفرز.",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "أدخل محتوى الملاحظة (يدعم Markdown)...",
@@ -2013,14 +2072,14 @@
       }
     },
     "queue": "قائمة انتظار الفرز",
-    "returnToSubmitted": "الإرجاع إلى مقدم",
+    "returnToSubmitted": "الإرجاع إلى مقدم.",
     "reviewerAssignment": {
       "assign": "تعيين",
       "assignToMe": "تعيين لي",
-      "errorLoading": "فشل في تحميل نماذج التهديد غير المعينة",
+      "errorLoading": "فشل في تحميل نماذج التهديد غير المعينة.",
       "loading": "جارٍ تحميل المراجعات غير المعينة...",
       "noUnassigned": "لا توجد مراجعات غير معينة",
-      "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين",
+      "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين.",
       "noUnassignedFiltered": "لا توجد نماذج تهديد تطابق عوامل التصفية",
       "reviewer": "مراجع الأمان",
       "reviewerPlaceholder": "تصفية حسب المراجع...",
@@ -2030,7 +2089,7 @@
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
-      "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده.",
+      "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده",
       "hint": "مطلوب — صف التغييرات المطلوبة",
       "label": "ملاحظات المراجعة",
       "placeholder": "صف المراجعات المطلوبة...",
@@ -2063,15 +2122,15 @@
         "create": "{{common.create}}",
         "description": "{{common.description}}",
         "descriptionHint": "اختياري: اوصف الاستخدام المقصود لهذه بيانات الاعتماد",
-        "descriptionPlaceholder": "يُستخدم لتكامل خط أنابيب CI/CD",
-        "descriptionTooLong": "يجب أن يكون الوصف 500 حرف أو أقل",
+        "descriptionPlaceholder": "يُستخدم لتكامل خط أنابيب CI/CD.",
+        "descriptionTooLong": "يجب أن يكون الوصف 500 حرف أو أقل.",
         "expiresAt": "تاريخ انتهاء الصلاحية",
         "expiresAtHint": "اختياري: اترك فارغاً لعدم وجود تاريخ انتهاء",
         "name": "{{common.name}}",
         "nameHint": "اسم وصفي لهذه بيانات الاعتماد",
         "namePlaceholder": "بيانات اعتماد API الخاصة بي",
         "nameRequired": "{{common.validation.nameRequired}}",
-        "nameTooLong": "يجب أن يكون الاسم 100 حرف أو أقل",
+        "nameTooLong": "يجب أن يكون الاسم 100 حرف أو أقل.",
         "title": "إنشاء بيانات اعتماد العميل"
       },
       "createdOn": "{{common.created}}",
@@ -2081,7 +2140,7 @@
       "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "آخر استخدام",
       "neverExpires": "لا تنتهي الصلاحية أبداً",
-      "noCredentials": "لا توجد بيانات اعتماد عميل حتى الآن",
+      "noCredentials": "لا توجد بيانات اعتماد عميل حتى الآن.",
       "noCredentialsDescription": "أنشئ بيانات اعتماد للوصول إلى TMI API برمجياً.",
       "secretDialog": {
         "title": "تم إنشاء بيانات اعتماد العميل",
@@ -2107,7 +2166,7 @@
       "title": "حذف جميع بياناتي",
       "validation": "لتأكيد طلب الحذف الخاص بك، اكتب عنوان بريدك الإلكتروني بالضبط كما يظهر هنا:"
     },
-    "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات",
+    "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات.",
     "displayPreferences": "تفضيلات العرض",
     "downloadLog": {
       "hint": "يقوم بتنزيل أحدث إدخالات سجل التطبيق كملف JSONL لاستكشاف الأخطاء وإصلاحها.",
@@ -2117,23 +2176,23 @@
     "marginSize": {
       "narrow": "ضيق",
       "standard": "قياسي",
-      "title": "حجم الهامش المفضل للتقارير",
+      "title": "حجم الهامش المفضل للتقارير.",
       "wide": "واسع"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "حجم الصفحة المفضل للتقارير",
+      "title": "حجم الصفحة المفضل للتقارير.",
       "usLetter": "US Letter"
     },
     "reportPreferences": "تفضيلات التقرير",
     "sections": {
       "developer": "المطوّر",
       "diagramEditor": "محرر المخططات",
-      "diagramLayout": "Diagram Layout",
+      "diagramLayout": "تخطيط المخطط",
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
-    "showDeveloperTools": "عرض أدوات المطور",
-    "showShapeBordersWithIcons": "عرض تعبئة الشكل والحدود عند عرض الأيقونة",
+    "showDeveloperTools": "عرض أدوات المطور.",
+    "showShapeBordersWithIcons": "عرض تعبئة الشكل والحدود عند عرض الأيقونة.",
     "tabs": {
       "credentials": "بيانات الاعتماد",
       "danger": "خطر",
@@ -2151,9 +2210,9 @@
     "transferData": {
       "confirmMessage": "هل أنت متأكد من أنك تريد نقل جميع نماذج التهديدات واستجابات الاستبيان إلى {{email}}؟ سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
       "dialogTitle": "نقل بياناتي",
-      "error": "فشل نقل البيانات. يرجى المحاولة مرة أخرى.",
+      "error": "فشل نقل البيانات.",
       "hint": "نقل ملكية جميع نماذج التهديدات واستجابات الاستبيان إلى مستخدم آخر. سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
-      "success": "تم نقل {{tmCount}} نماذج تهديدات و {{responseCount}} استجابات الاستبيان.",
+      "success": "تم نقل {{tmcount}} نماذج تهديدات و {{responsecount}} استجابات الاستبيان.",
       "title": "نقل بياناتي إلى مستخدم آخر"
     },
     "userProfile": {
@@ -2167,13 +2226,13 @@
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
     "noProjects": "{{projects.noProjects}}",
-    "subtitle": "عرض وتعديل مشاريعك وفرقك وعلاقاتك",
+    "subtitle": "عرض وتعديل مشاريعك وفرقك وعلاقاتك.",
     "title": "مشاريعي"
   },
   "userTeams": {
     "listTitle": "{{admin.sections.teams.title}}",
     "noTeams": "{{teams.noTeams}}",
-    "subtitle": "عرض وتعديل فرقك وأعضائك وعلاقاتك",
+    "subtitle": "عرض وتعديل فرقك وأعضائك وعلاقاتك.",
     "title": "فرقي"
   }
 }
