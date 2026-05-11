@@ -90,7 +90,7 @@
     "express-rate-limit": "^8.5.1",
     "fontkit": "^2.0.4",
     "marked": "^17.0.5",
-    "mermaid": "^11.14.0",
+    "mermaid": "^11.15.0",
     "ngx-markdown": "^21.3.0",
     "pdf-lib": "^1.17.1",
     "prismjs": "^1.30.0",
