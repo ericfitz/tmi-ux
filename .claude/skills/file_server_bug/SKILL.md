@@ -127,9 +127,23 @@ The TMI project ID is `PVT_kwHOACjZhM4BC0Z1` (project number 2, owner ericfitz).
 gh project item-add 2 --owner ericfitz --url <issue_url>
 ```
 
-### Step 5: Set Status to "In Progress"
+### Step 5: Set Status to "This milestone"
 
-Find the project item ID and set its status:
+Find the project item ID and set its status. The default for a newly-filed
+bug is "This milestone" — the bug is prioritized for the current release
+but work has not yet started. Use a different option ID if the caller
+asks for a different status.
+
+Status field id: `PVTSSF_lAHOACjZhM4BC0Z1zg06000`
+
+Status option IDs (verified 2026-05-12 via `gh project field-list 2 --owner ericfitz`):
+
+| Status | Option ID |
+|--------|-----------|
+| Backlog | `f75ad846` |
+| This milestone | `47fc9ee4` |
+| In progress | `2dc26114` |
+| Done | `98236657` |
 
 ```bash
 # Find the project item ID
@@ -143,9 +157,7 @@ for item in data.get('items', []):
         break
 ")
 
-# Set status to "In Progress"
-# Status field ID: PVTSSF_lAHOACjZhM4BC0Z1zg06000
-# "In Progress" option ID: 47fc9ee4
+# Set status to "This milestone" (option ID 47fc9ee4)
 gh project item-edit \
   --project-id PVT_kwHOACjZhM4BC0Z1 \
   --id "$ITEM_ID" \
@@ -161,7 +173,7 @@ Output the created issue URL and a summary of what was configured:
 Created: <issue_url>
   Labels: bug, api
   Milestone: <milestone or "none">
-  Project: TMI (In Progress)
+  Project: TMI (This milestone)
 ```
 
 ## Output
@@ -191,7 +203,7 @@ Output:
   Created: https://github.com/ericfitz/tmi/issues/166
     Labels: bug, api
     Milestone: release/1.3.0
-    Project: TMI (In Progress)
+    Project: TMI (This milestone)
 ```
 
 ## Implementation Notes
