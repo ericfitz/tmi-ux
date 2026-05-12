@@ -10,5 +10,3 @@
 
 import 'zone.js';
 import 'zone.js/testing'; // Standard import for Zone.js testing bundle
-import 'zone.js/dist/zone-patch-rxjs'; // Patch for RxJS operators
-import 'zone.js/dist/zone-patch-rxjs-interop'; // Patch for RxJS interop
