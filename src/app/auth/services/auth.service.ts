@@ -98,7 +98,7 @@ export class AuthService {
   private isLoggingOut = false;
 
   private get defaultProvider(): string {
-    return environment.defaultAuthProvider || 'google';
+    return environment.defaultAuthProvider || 'tmi';
   }
 
   // SessionManager instance (injected via forwardRef to avoid circular dependency)
