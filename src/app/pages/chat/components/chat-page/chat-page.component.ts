@@ -33,6 +33,7 @@ import {
   ProgressEvent,
   ReadyEvent,
   MessageStartEvent,
+  MessageStatusEvent,
   TokenEvent,
   MessageEndEvent,
   ChatErrorEvent,
@@ -375,6 +376,19 @@ export class ChatPageComponent implements OnInit {
       .subscribe({
         next: (event: SseEvent) => {
           switch (event.event) {
+            case 'status': {
+              const data = JSON.parse(event.data) as MessageStatusEvent;
+              this.preparationStatus = {
+                phase: data.phase,
+                entityName: data.entity_name ?? '',
+                progress: 0,
+                current: 0,
+                total: 0,
+                mode: 'message-status',
+              };
+              this.loading = false;
+              break;
+            }
             case 'message_start': {
               const data = JSON.parse(event.data) as MessageStartEvent;
               currentMessageId = data.message_id ?? '';
@@ -390,6 +404,7 @@ export class ChatPageComponent implements OnInit {
               this.messages = [...this.messages, assistantMessage];
               this.streamingMessageId = currentMessageId;
               this.loading = false;
+              this.preparationStatus = null;
               break;
             }
             case 'token': {
@@ -406,7 +421,14 @@ export class ChatPageComponent implements OnInit {
               const data = JSON.parse(event.data) as MessageEndEvent;
               this.reconcileMessage(data, currentMessageId, assembledContent);
               this.streamingMessageId = null;
+              const userTurnCount = this.messages.filter(m => m.role === 'user').length;
               this.loadSessions();
+              if (userTurnCount === 1) {
+                // First user turn: the server generates the session title
+                // out-of-band, so reload again shortly to pick it up if it
+                // wasn't persisted in time for the immediate refresh.
+                setTimeout(() => this.loadSessions(), 1500);
+              }
               break;
             }
             case 'error': {
@@ -422,6 +444,7 @@ export class ChatPageComponent implements OnInit {
           this.logger.error('Message send failed', err);
           this.streamingMessageId = null;
           this.loading = false;
+          this.preparationStatus = null;
 
           const sseErr = err as SseHttpError;
           if (sseErr.status === 429) {
@@ -440,6 +463,7 @@ export class ChatPageComponent implements OnInit {
   private handleStreamError(data: ChatErrorEvent, currentMessageId: string): void {
     this.streamingMessageId = null;
     this.loading = false;
+    this.preparationStatus = null;
 
     if (currentMessageId) {
       const msg = this.messages.find(m => m.id === currentMessageId);

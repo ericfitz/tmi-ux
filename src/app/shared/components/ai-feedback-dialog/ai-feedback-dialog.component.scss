@@ -1,0 +1,22 @@
+.prompt {
+  margin: 0 0 1rem;
+}
+
+.sentiment-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.sentiment-button {
+  &.selected {
+    background-color: rgb(0 0 0 / 8%);
+  }
+}
+
+.reason-field,
+.subreason-field,
+.verbatim-field {
+  width: 100%;
+}

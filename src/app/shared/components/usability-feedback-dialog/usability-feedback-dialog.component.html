@@ -1,0 +1,63 @@
+<ng-container *transloco="let t">
+  <h2 mat-dialog-title>{{ t('usabilityFeedback.title') }}</h2>
+  <mat-dialog-content [formGroup]="form">
+    <p class="prompt">{{ t('usabilityFeedback.prompt') }}</p>
+
+    <div
+      class="sentiment-buttons"
+      role="radiogroup"
+      [attr.aria-label]="t('usabilityFeedback.title')"
+    >
+      <button
+        type="button"
+        mat-icon-button
+        class="sentiment-button"
+        role="radio"
+        [attr.aria-checked]="sentiment === 'up'"
+        [class.selected]="sentiment === 'up'"
+        [matTooltip]="t('usabilityFeedback.thumbsUp')"
+        (click)="setSentiment('up')"
+      >
+        <mat-icon>thumb_up</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-icon-button
+        class="sentiment-button"
+        role="radio"
+        [attr.aria-checked]="sentiment === 'down'"
+        [class.selected]="sentiment === 'down'"
+        [matTooltip]="t('usabilityFeedback.thumbsDown')"
+        (click)="setSentiment('down')"
+      >
+        <mat-icon>thumb_down</mat-icon>
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="verbatim-field">
+      <mat-label>{{ t('usabilityFeedback.verbatimLabel') }}</mat-label>
+      <textarea
+        matInput
+        formControlName="verbatim"
+        rows="4"
+        [maxlength]="maxVerbatim"
+        [placeholder]="t('usabilityFeedback.verbatimPlaceholder')"
+      ></textarea>
+      <mat-hint align="end">{{ form.get('verbatim')!.value.length }} / {{ maxVerbatim }}</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="submitting">
+      {{ t('common.cancel') }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="form.invalid || submitting"
+      (click)="onSubmit()"
+    >
+      {{ t('usabilityFeedback.submit') }}
+    </button>
+  </mat-dialog-actions>
+</ng-container>

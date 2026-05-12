@@ -81,6 +81,8 @@ export interface Note {
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
+  /** True when the server attributes this note to an automation/service account. */
+  auto_generated?: boolean;
 }
 
 export interface Asset {
@@ -133,6 +135,8 @@ export interface Threat {
   cwe_id?: string[];
   cvss?: CVSSScore[];
   ssvc?: SSVCScore;
+  /** True when the server attributes this threat to an automation/service account. */
+  auto_generated?: boolean;
 }
 
 export interface ThreatModel {

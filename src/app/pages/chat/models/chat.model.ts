@@ -79,6 +79,20 @@ export interface ReadyEvent {
 
 // Message streaming SSE events
 // Field names match the server's snake_case JSON payloads.
+
+/**
+ * Status events fire before message_start so the client can show a
+ * "Timmy is …" affordance during the often-multi-second pre-token latency.
+ * `phase` is a stable snake_case identifier from the server; unknown phases
+ * are treated as opaque labels.
+ */
+export interface MessageStatusEvent {
+  phase: string;
+  entity_type?: string;
+  entity_name?: string;
+  detail?: string;
+}
+
 export interface MessageStartEvent {
   status: string;
   message_id?: string;
@@ -118,4 +132,10 @@ export interface PreparationStatus {
   ready?: boolean;
   readyStats?: ReadyEvent;
   error?: string;
+  /**
+   * Distinguishes session-creation progress (counted/percent-bar style)
+   * from message-stream phase events (phase label only). Defaults to
+   * 'session-prep' when omitted so existing call sites stay unchanged.
+   */
+  mode?: 'session-prep' | 'message-status';
 }

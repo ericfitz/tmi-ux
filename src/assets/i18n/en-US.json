@@ -8,6 +8,7 @@
     "contactoperatordetails": "Operator contact",
     "contacttitle": "Operated by",
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
+    "description1.lint-skip": "Contains tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case.",
     "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
       "categoryInputSanitization": "Input sanitization",
@@ -15,11 +16,12 @@
       "categoryPdfProcessing": "PDF processing",
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to ",
+      "paragraph2.lint-skip": "Intentionally ends without period and with trailing space; followed by a list of names that completes the sentence.",
       "paragraph3": "And finally thank you to the Windows Core Security/Secure Windows Initiative/Trustworthy Computing teams at Microsoft in the first half of the 2000s, especially Praerit Garg, Mike Howard, John Lambert, and Adam Shostack, for giving me the opportunity to learn and for demonstrating industry-leading thinking in application security and threat modeling.",
-      "paragraph3.lint-skip": "Contains real names (Praerit Garg, Mike Howard, John Lambert, Adam Shostack) and team names (Windows Core Security, Trustworthy Computing) that should preserve canonical case.",
-      "paragraph2.lint-skip": "Intentionally ends without period and with trailing space; followed by a list of names that completes the sentence."
+      "paragraph3.lint-skip": "Contains real names (Praerit Garg, Mike Howard, John Lambert, Adam Shostack) and team names (Windows Core Security, Trustworthy Computing) that should preserve canonical case."
     },
     "opensourcetitle": "Open source",
+    "opensourcetitle.comment": "Noun phrase. Title of a page or section: 'Open source'.",
     "server": "Server",
     "serverSourceCode": "Server source code",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
@@ -34,9 +36,7 @@
     "webappSourceCodeUrl.comment": "This is a URL and should not be translated.",
     "wiki": "TMI wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki",
-    "wikiUrl.comment": "This is a URL and should not be translated.",
-    "opensourcetitle.comment": "Noun phrase. Title of a page or section: 'Open source'.",
-    "description1.lint-skip": "Contains tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case."
+    "wikiUrl.comment": "This is a URL and should not be translated."
   },
   "addons": {
     "invokeDialog": {
@@ -66,6 +66,7 @@
         "iconInvalid": "Invalid icon format",
         "iconPlaceholder": "material-symbols:extension",
         "iconPlaceholder.comment": "This is a proper name and should not be translated.",
+        "iconPlaceholder.lint-skip": "Technical identifier (Material Symbols icon name), not a translatable phrase.",
         "name": "{{common.name}}",
         "nameHint": "Display name for this addon",
         "namePlaceholder": "My custom addon",
@@ -74,43 +75,42 @@
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create addon",
         "title": "Add addon",
+        "title.comment": "Noun phrase. Title of a dialog: 'Add addon'.",
         "webhook": "Webhook",
         "webhookHint": "Associated webhook subscription",
-        "webhookRequired": "Webhook is required.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add addon'.",
-        "iconPlaceholder.lint-skip": "Technical identifier (Material Symbols icon name), not a translatable phrase."
+        "webhookRequired": "Webhook is required."
       },
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Delete addon",
+      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete addon'.",
       "errorCreatingAddon": "Failed to create addon.",
       "errorLoadingWebhooks": "Failed to load available webhooks.",
       "filterLabel": "Filter addons",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter addons'.",
       "filterPlaceholder": "Search by name or description",
       "listTitle": "System addons",
       "noAddons": "No addons found.",
       "objectTypesTooltip": "Applies to these object types",
       "subtitle": "Configure addons for extending TMI functionality.",
-      "title": "Manage addons",
-      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete addon'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter addons'."
+      "title": "Manage addons"
     },
     "createAutomationUserDialog": {
       "email": "Email (optional)",
       "emailHint": "Optional — defaults to auto-generated @tmi.local address",
       "emailPlaceholder": "user@example.com",
+      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
       "name": "{{common.name}}",
       "nameHint": "2-64 characters, starts with letter",
+      "nameHint.lint-skip": "Starts with numeric constraint notation '2-64', not a capitalized sentence.",
       "nameMaxLength": "Name must be at most 64 characters.",
       "nameMinLength": "Must be at least 2 characters.",
       "namePattern": "Must start with a letter and end with a letter or digit.",
       "namePlaceholder": "automation-user",
+      "namePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase.",
       "nameRequired": "{{common.validation.nameRequired}}",
       "save": "Create automation user",
-      "title": "{{admin.createAutomationUserDialog.save}}",
-      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
-      "nameHint.lint-skip": "Starts with numeric constraint notation '2-64', not a capitalized sentence.",
-      "namePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase."
+      "title": "{{admin.createAutomationUserDialog.save}}"
     },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
@@ -119,6 +119,7 @@
         "descriptionHint": "Optional description of the group's purpose",
         "descriptionPlaceholder": "Description of this group",
         "displayName": "Display name",
+        "displayName.comment": "Noun. Labels a form field or UI section: 'Display name'.",
         "displayNameHint": "Human-readable group name",
         "displayNamePlaceholder": "My custom group",
         "displayNameRequired": "Display name is required.",
@@ -127,12 +128,11 @@
         "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed.",
         "groupNamePlaceholder": "my-custom-group",
         "groupNamePlaceholder.comment": "This is placeholder text and should be translated as if the hyphens were spaces.",
+        "groupNamePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase.",
         "groupNameRequired": "Group identifier is required.",
         "save": "Create group",
         "title": "Add group",
-        "displayName.comment": "Noun. Labels a form field or UI section: 'Display name'.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add group'.",
-        "groupNamePlaceholder.lint-skip": "Kebab-case example identifier, not a translatable phrase."
+        "title.comment": "Noun phrase. Title of a dialog: 'Add group'."
       },
       "columns": {
         "group": "{{common.subjectTypes.group}}",
@@ -140,7 +140,9 @@
         "usage": "Usage"
       },
       "deleteTooltip": "Delete group",
+      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete group'.",
       "filterLabel": "Filter groups",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter groups'.",
       "filterPlaceholder": "Search by group name or provider",
       "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
@@ -149,33 +151,33 @@
         "currentMembers": "Current members",
         "noMembers": "No members in this group.",
         "removeTooltip": "Remove from group",
+        "removeTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Remove from group'.",
         "searchHint": "Type at least 2 characters to search",
         "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Search user by email",
         "subjectTypeGroup": "{{common.subjectTypes.group}}",
-        "subjectTypeUser": "{{common.subjectTypes.user}}",
-        "removeTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Remove from group'."
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "No groups found.",
       "subtitle": "View and manage system groups.",
       "title": "Manage groups",
       "viewMembersTooltip": "View and manage group members...",
-      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete group'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter groups'.",
       "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
     },
     "quotas": {
       "addButton": "Add quota...",
+      "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add quota'.",
+      "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configure quotas",
         "searchLabel": "Search for user",
+        "searchLabel.comment": "Noun. Labels a form field or UI section: 'Search for user'.",
         "searchPlaceholder": "Type user email to search",
         "selectUser": "Select user",
         "title": "Add custom quotas",
-        "webhookQuotas": "{{admin.quotas.webhookTitle}}",
-        "searchLabel.comment": "Noun. Labels a form field or UI section: 'Search for user'.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add custom quotas'."
+        "title.comment": "Noun phrase. Title of a dialog: 'Add custom quotas'.",
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "columns": {
         "modified": "{{common.lastModified}}",
@@ -187,6 +189,7 @@
       "deleteTooltip": "Remove custom quota (revert to defaults)",
       "eventsPerMinute": "Events per minute",
       "filterLabel": "Filter quotas",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter quotas'.",
       "filterPlaceholder": "Search by email, name, provider, or user ID",
       "maxSubscriptions": "Max subscriptions",
       "maxSubscriptions.comment": "The word 'Max' is short for 'Maximum'.",
@@ -199,10 +202,7 @@
       "subtitle": "Configure rate limits and quotas for users.",
       "title": "Manage quotas",
       "userAPITitle": "API rate limits",
-      "webhookTitle": "Webhook limits",
-      "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add quota'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter quotas'.",
-      "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+      "webhookTitle": "Webhook limits"
     },
     "sections": {
       "addons": {
@@ -253,13 +253,14 @@
         "keyRequired": "Key is required.",
         "save": "Create setting",
         "title": "Add setting",
+        "title.comment": "Noun phrase. Title of a dialog: 'Add setting'.",
         "type": "{{common.type}}",
         "typeRequired": "Type is required.",
         "value": "{{common.metadataValue}}",
-        "valueRequired": "Value is required.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add setting'."
+        "valueRequired": "Value is required."
       },
       "cancelTooltip": "Cancel editing",
+      "cancelTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Cancel editing'.",
       "columns": {
         "key": "{{common.metadataKey}}",
         "source": "Source",
@@ -267,13 +268,17 @@
       },
       "confirmDelete": "Are you sure you want to delete the setting \"{{key}}\"?",
       "deleteTooltip": "Delete setting",
+      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete setting'.",
       "editTooltip": "Edit setting",
+      "editTooltip.comment": "Verb (imperative). Used on a button that initiates the action: 'Edit setting'.",
       "filterLabel": "Filter",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter'.",
       "filterPlaceholder": "Filter by key, value, description, or source",
       "listTitle": "System settings",
       "noSettings": "No settings found.",
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "saveTooltip": "Save changes",
+      "saveTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Save changes'.",
       "sources": {
         "config": "Configuration file",
         "database": "Database",
@@ -288,12 +293,7 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
-      },
-      "cancelTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Cancel editing'.",
-      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete setting'.",
-      "editTooltip.comment": "Verb (imperative). Used on a button that initiates the action: 'Edit setting'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter'.",
-      "saveTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Save changes'."
+      }
     },
     "subtitle": "Manage system settings and configurations.",
     "title": "Administration",
@@ -310,19 +310,21 @@
       },
       "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
       "deleteTooltip": "Delete user account",
+      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete user account'.",
       "filter": {
         "automationOnly": "Show automation accounts only."
       },
       "filterLabel": "Filter users",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter users'.",
       "filterPlaceholder": "Search by email, name, provider, or group name",
       "lastLogin": "Last login",
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Add credential",
+        "addCredential.comment": "Verb (imperative form). Used as an action label: 'Add credential'. Surface not identified in source scan.",
         "deleteConfirm": "Are you sure you want to delete the credential \"{{name}}\"?",
         "noCredentials": "No credentials found.",
-        "title": "Manage credentials for {{username}}.",
-        "addCredential.comment": "Verb (imperative form). Used as an action label: 'Add credential'. Surface not identified in source scan."
+        "title": "Manage credentials for {{username}}."
       },
       "never": "Never",
       "noUsers": "No users found.",
@@ -335,9 +337,7 @@
         "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transfer ownership...",
         "tooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
-      },
-      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete user account'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter users'."
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -359,6 +359,7 @@
         "secretPlaceholder": "Leave empty to auto-generate",
         "secretPlaceholder.comment": "'Auto-generate' should be translated as if it were 'generate automatically'.",
         "title": "Add webhook",
+        "title.comment": "Noun phrase. Title of a dialog: 'Add webhook'.",
         "url": "Webhook URL",
         "urlHint": "HTTPS recommended",
         "urlHttpWarning": "Warning: the webhook endpoint URL should use HTTPS. The server may reject webhook registrations that specify a non-tls endpoint.",
@@ -368,13 +369,15 @@
         "urlInvalid": "Must be a valid URL.",
         "urlPlaceholder": "https://example.com/webhook",
         "urlPlaceholder.comment": "This is a URL and should not be translated.",
-        "urlRequired": "URL is required.",
-        "title.comment": "Noun phrase. Title of a dialog: 'Add webhook'."
+        "urlRequired": "URL is required."
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Delete webhook",
+      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete webhook'.",
       "events": "events",
+      "events.lint-skip": "Single-word technical category label, intentionally lowercase.",
       "filterLabel": "Filter webhooks",
+      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter webhooks'.",
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
@@ -386,17 +389,14 @@
       "status": {
         "active": "{{common.active}}",
         "pending_delete": "Pending delete",
-        "pending_verification": "Pending verification",
-        "pending_delete.comment": "Noun. Used as a label or identifier: 'Pending delete'. Surface not identified in source scan."
+        "pending_delete.comment": "Noun. Used as a label or identifier: 'Pending delete'. Surface not identified in source scan.",
+        "pending_verification": "Pending verification"
       },
       "subscriptionId": "Subscription ID",
       "subtitle": "Configure webhook subscriptions for event notifications.",
       "title": "Manage webhooks",
       "triggerEvents": "Trigger events",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
-      "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete webhook'.",
-      "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter webhooks'.",
-      "events.lint-skip": "Single-word technical category label, intentionally lowercase."
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
@@ -415,7 +415,9 @@
     "deleteConflict": "Cannot delete this survey because it has existing responses. Delete the responses first, then try again.",
     "deleteError": "Failed to delete survey: {{error}}.",
     "deleteTooltip": "Delete survey",
+    "deleteTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Delete survey'.",
     "editTemplate": "Edit survey",
+    "editTemplate.comment": "Action description on a tooltip (typically for an icon button): 'Edit survey'.",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
     "noMatchingTitle": "No matching surveys",
@@ -423,16 +425,22 @@
     "noTemplatesTitle": "No surveys yet",
     "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Search by name...",
+    "searchByName.comment": "Placeholder text shown inside an input field: 'Search by name...'.",
+    "searchByName.lint-skip": "Placeholder text; ellipsis (...) signals input context",
     "searchTemplates": "Search surveys",
+    "searchTemplates.comment": "Noun. Labels a form field or UI section: 'Search surveys'.",
     "surveyDetails": "Survey details",
     "templateBuilder": {
       "addPage": "Add page",
+      "addPage.comment": "Action description on a tooltip (typically for an icon button): 'Add page'.",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Choices (one per line)",
       "conditionalLogic": "Conditional logic",
       "conditionalLogicHelp": "SurveyJS conditional logic documentation",
       "deletePage": "Delete page",
+      "deletePage.comment": "Action description on a tooltip (typically for an icon button): 'Delete page'.",
       "deleteQuestion": "Delete question",
+      "deleteQuestion.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete question'.",
       "enableIf": "Enable if",
       "enableIfHint": "E.g., {questionname} = 'value'",
       "enterSurveyDescription": "Enter survey description",
@@ -440,6 +448,7 @@
       "failedToLoadTemplate": "Failed to load survey.",
       "failedToSaveTemplate": "Failed to save survey.",
       "loadingTemplate": "Loading survey...",
+      "loadingTemplate.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
       "mapsToTmField": "Maps to tm field",
       "metadataKey": "Metadata key",
       "metadataKeyHint": "Key name for the metadata entry",
@@ -496,19 +505,64 @@
       "tmFieldMappingHint": "Link this answer to a threat model field",
       "unsavedChanges": "Unsaved changes",
       "visibleIf": "Visible if",
-      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
-      "addPage.comment": "Action description on a tooltip (typically for an icon button): 'Add page'.",
-      "deletePage.comment": "Action description on a tooltip (typically for an icon button): 'Delete page'.",
-      "deleteQuestion.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete question'.",
-      "loadingTemplate.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{Count}} survey",
-    "templateCountPlural": "{{Count}} surveys",
-    "deleteTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Delete survey'.",
-    "editTemplate.comment": "Action description on a tooltip (typically for an icon button): 'Edit survey'.",
-    "searchByName.comment": "Placeholder text shown inside an input field: 'Search by name...'.",
-    "searchTemplates.comment": "Noun. Labels a form field or UI section: 'Search surveys'.",
-    "searchByName.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+    "templateCountPlural": "{{Count}} surveys"
+  },
+  "aiFeedback": {
+    "autoGeneratedLabel": "Generated by AI:",
+    "autoGeneratedLabel.comment": "Inline label preceding the AI-feedback thumb buttons on the threat editor.",
+    "autoGeneratedLabel.lint-skip": "Inline form label; intentional trailing colon, not a complete sentence.",
+    "prompt": "Was this helpful?",
+    "reason": {
+      "already_remediated": "Already remediated",
+      "detection_misfired": "Detection misfired",
+      "detection_rule_flawed": "Detection rule is flawed",
+      "duplicate": "Duplicate",
+      "intended_behavior": "Intended behavior",
+      "out_of_scope": "Out of scope",
+      "real_but_mitigated": "Real but mitigated",
+      "real_but_not_exploitable": "Real but not exploitable",
+      "detection_rule_flawed.lint-skip": "Dropdown option label; fragment by design.",
+      "real_but_mitigated.lint-skip": "Dropdown option label; fragment by design."
+    },
+    "reasonLabel": "Reason",
+    "snackbarFailed": "Could not submit feedback. Try again later.",
+    "snackbarSubmitted": "Thanks for the feedback.",
+    "submit": "Send feedback",
+    "subreason": {
+      "code_does_not_exist": "Referenced code or call doesn't exist",
+      "component_outside_threat_model": "Component outside threat model",
+      "needs_tuning": "Rule needs tuning",
+      "not_a_real_risk": "Pattern isn't a real security risk",
+      "sanctioned_by_design": "Sanctioned by design",
+      "trigger_conditions_not_met": "Trigger conditions not met in this instance",
+      "code_does_not_exist.lint-skip": "Dropdown option label; fragment by design.",
+      "component_outside_threat_model.lint-skip": "Dropdown option label; fragment by design.",
+      "needs_tuning.lint-skip": "Dropdown option label; fragment by design.",
+      "not_a_real_risk.lint-skip": "Dropdown option label; fragment by design.",
+      "sanctioned_by_design.lint-skip": "Dropdown option label; fragment by design.",
+      "trigger_conditions_not_met.lint-skip": "Dropdown option label; fragment by design."
+    },
+    "subreasonLabel": "Sub-reason",
+    "thumbsDown": "Thumbs down",
+    "thumbsDown.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs down'.",
+    "thumbsUp": "Thumbs up",
+    "thumbsUp.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs up'.",
+    "title": {
+      "diagram": "Feedback on AI-generated diagram",
+      "note": "Feedback on AI-generated note",
+      "threat": "Feedback on AI-generated threat",
+      "threat_classification": "Feedback on threat classification",
+      "diagram.lint-skip": "Dialog title (noun phrase). 'AI' is an acronym used as a compound-adjective prefix; intentional uppercase.",
+      "note.lint-skip": "Dialog title (noun phrase). 'AI' is an acronym used as a compound-adjective prefix; intentional uppercase.",
+      "threat.lint-skip": "Dialog title (noun phrase). 'AI' is an acronym used as a compound-adjective prefix; intentional uppercase.",
+      "threat_classification.lint-skip": "Dialog title (noun phrase)."
+    },
+    "verbatimLabelOptional": "Comments (optional)",
+    "verbatimLabelRequired": "Comments (required)",
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press enter",
@@ -520,8 +574,8 @@
     "title": {
       "create": "Create asset",
       "edit": "Edit asset",
-      "view": "View asset",
       "edit.comment": "Noun phrase. Title of a dialog: 'Edit asset'.",
+      "view": "View asset",
       "view.comment": "Noun phrase. Title of a dialog: 'View asset'."
     },
     "type": "Asset type",
@@ -554,11 +608,11 @@
     "filters": {
       "actorEmail": "Actor email",
       "actorEmailPlaceholder": "Filter by email...",
+      "actorEmailPlaceholder.comment": "Verb (imperative form). Used as an action label: 'Filter by email...'. Surface not identified in source scan.",
+      "actorEmailPlaceholder.lint-skip": "Placeholder text with ellipsis for input context",
       "changeType": "{{auditTrail.columns.changeType}}",
       "clear": "Clear filters",
-      "objectType": "Object type",
-      "actorEmailPlaceholder.comment": "Verb (imperative form). Used as an action label: 'Filter by email...'. Surface not identified in source scan.",
-      "actorEmailPlaceholder.lint-skip": "Placeholder text with ellipsis for input context"
+      "objectType": "Object type"
     },
     "noEntries": "No audit trail entries found.",
     "rollback": {
@@ -579,18 +633,19 @@
     "unauthorized": {
       "401": "401 unauthorized",
       "401.comment": "This is a standard error message and should not be translated.",
+      "401.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
       "403": "403 forbidden",
       "403.comment": "This is a standard error message and should not be translated.",
+      "403.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
-      "title": "Unauthorized access",
-      "401.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
-      "403.lint-skip": "HTTP status code label starting with numeric code, not a sentence."
+      "title": "Unauthorized access"
     }
   },
   "chat": {
     "back": "Back to threat model",
     "deleteSession": "Delete session",
+    "deleteSession.comment": "Action description on a tooltip (typically for an icon button): 'Delete session'.",
     "emptyState": {
       "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture.",
       "title": "Chat with Timmy"
@@ -605,7 +660,19 @@
       "serverBusy": "Server is busy. Try again in a moment."
     },
     "hideSidePanel": "Hide side panel",
+    "hideSidePanel.comment": "Action description on a tooltip (typically for an icon button): 'Hide side panel'.",
     "inputPlaceholder": "Ask Timmy about this threat model...",
+    "inputPlaceholder.lint-skip": "Placeholder text with ellipsis for input context",
+    "messageStatus": {
+      "building_context": "Building context…",
+      "building_context.lint-skip": "Progress indicator ending in ellipsis to signal ongoing activity; intentional no terminal period.",
+      "loading_history": "Loading conversation history…",
+      "loading_history.lint-skip": "Progress indicator ending in ellipsis to signal ongoing activity; intentional no terminal period.",
+      "querying_embeddings": "Searching the threat model…",
+      "querying_embeddings.lint-skip": "Progress indicator ending in ellipsis to signal ongoing activity; intentional no terminal period.",
+      "waiting_for_llm": "Thinking…",
+      "waiting_for_llm.lint-skip": "Progress indicator ending in ellipsis to signal ongoing activity; intentional no terminal period."
+    },
     "newSession": "New session",
     "noSessions": "No chat sessions yet. Start a conversation.",
     "preparation": {
@@ -619,8 +686,10 @@
     "savedAsNote": "Saved as note.",
     "savedAsNoteView": "{{common.view}}",
     "send": "Send message",
+    "send.comment": "Action description on a tooltip (typically for an icon button): 'Send message'.",
     "sessions": "Sessions",
     "showSidePanel": "Show side panel",
+    "showSidePanel.comment": "Action description on a tooltip (typically for an icon button): 'Show side panel'.",
     "sourceSummary": {
       "assets": "{{common.objectTypes.assets}}",
       "diagrams": "{{common.objectTypes.diagrams}}",
@@ -635,12 +704,7 @@
       "summary": "Give me a summary of this threat model",
       "threats": "What threats have been identified?"
     },
-    "title": "Timmy",
-    "deleteSession.comment": "Action description on a tooltip (typically for an icon button): 'Delete session'.",
-    "hideSidePanel.comment": "Action description on a tooltip (typically for an icon button): 'Hide side panel'.",
-    "send.comment": "Action description on a tooltip (typically for an icon button): 'Send message'.",
-    "showSidePanel.comment": "Action description on a tooltip (typically for an icon button): 'Show side panel'.",
-    "inputPlaceholder.lint-skip": "Placeholder text with ellipsis for input context"
+    "title": "Timmy"
   },
   "collaboration": {
     "activeUsers": "{{Count}} active users.",
@@ -648,6 +712,7 @@
     "availableCollaborationSessions": "Available collaboration sessions.",
     "collaboratorsHeader": "Participants",
     "copyLink": "Copy link",
+    "copyLink.comment": "Action description on a tooltip (typically for an icon button): 'Copy link'.",
     "denyPresenterRequest": "Deny presenter request",
     "endCollaboration": "End collaboration",
     "hostedBy": "Hosted by",
@@ -661,6 +726,7 @@
     "participantRequestsPresenterRole": "Participant requests presenter role",
     "presenterModeRequested": "Presenter mode requested",
     "removeFromSession": "Remove from session",
+    "removeFromSession.comment": "Action description on a tooltip (typically for an icon button): 'Remove from session'.",
     "requestPresenter": "Request presenter",
     "sessionStarted": "Started",
     "startCollaboration": "Start collaboration",
@@ -672,9 +738,7 @@
       "connected": "Websocket connected",
       "noSession": "No collaboration session active",
       "notConnected": "Websocket not connected."
-    },
-    "copyLink.comment": "Action description on a tooltip (typically for an icon button): 'Copy link'.",
-    "removeFromSession.comment": "Action description on a tooltip (typically for an icon button): 'Remove from session'."
+    }
   },
   "common": {
     "about": "About",
@@ -682,8 +746,11 @@
     "activate": "Activate",
     "active": "Active",
     "add": "Add",
+    "add.comment": "Verb (imperative form). Used as an action label: 'Add'. Surface not identified in source scan.",
     "addMetadata": "Add metadata",
+    "addMetadata.comment": "Verb (imperative). Used on a button that initiates the action: 'Add metadata'.",
     "addThreat": "Add threat",
+    "addThreat.comment": "Action description on a tooltip (typically for an icon button): 'Add threat'.",
     "addons": "Addons",
     "all": "All",
     "allStatuses": "All statuses",
@@ -691,18 +758,22 @@
     "back": "Back",
     "back.comment": "Used as a tooltip or label for buttons that allows a user to navigate to the previous page.",
     "cancel": "Cancel",
+    "cancel.comment": "Verb (imperative). Used on a button that initiates the action: 'Cancel'.",
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "Classification",
     "classification.comment": "Used in the sense of the category that something is placed in.",
     "clear": "Clear",
     "clone": "Clone",
     "close": "Close",
+    "close.comment": "Verb (imperative). Used on a button that initiates the action: 'Close'.",
     "confirm": "Confirm",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "confirmDeleteMessage": "Are you sure you want to delete the {{objecttype}} \"{{name}}\"?",
     "copiedToClipboard": "Copied to clipboard.",
     "copy": "Copy",
+    "copy.comment": "Verb (imperative). Used on a button that initiates the action: 'Copy'.",
     "copyToClipboard": "Copy to clipboard",
+    "copyToClipboard.comment": "Verb (imperative). Used on a button that initiates the action: 'Copy to clipboard'.",
     "create": "Create",
     "created": "Created",
     "createdBy": "Created by",
@@ -711,10 +782,12 @@
     "cut": "Cut",
     "deactivate": "Deactivate",
     "delete": "Delete",
+    "delete.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete'.",
     "deleteConfirm": "Confirm deletion",
     "deleteFailed": "Delete failed",
-    "deletedSuccessfully": "Deleted successfully",
+    "deleteFailed.comment": "Verb (imperative form). Used as an action label: 'Delete failed'. Surface not identified in source scan.",
     "deleteWarningConfirmationField": "Delete confirmation",
+    "deleteWarningConfirmationField.comment": "Noun. Labels a form field or UI section: 'Delete confirmation'.",
     "deleteWarningConfirmationMatch": "Confirmation text matches",
     "deleteWarningConfirmationMismatch": "Confirmation text does not match",
     "deleteWarningConfirmationValue": "Gone forever",
@@ -722,13 +795,16 @@
     "deleteWarningReferenceOnly": "For objects stored outside TMI such as documents and repositories, only the TMI reference to the object will be deleted.",
     "deleteWarningSubEntities": "All associated TMI entities such as diagrams, threats, and notes will also be permanently deleted.",
     "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmvalue}}\" in the field below",
+    "deletedSuccessfully": "Deleted successfully",
     "description": "Description",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Dismiss",
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
+    "edit.comment": "Action description on a tooltip (typically for an icon button): 'Edit'.",
     "editThreat": "Edit threat",
+    "editThreat.comment": "Verb (imperative form). Used as an action label: 'Edit threat'. Surface not identified in source scan.",
     "email": "Email",
     "emailLabel": "Email address",
     "error": "Error",
@@ -748,6 +824,7 @@
     "lastModified": "Last modified",
     "lastUpdated": "Last updated",
     "loading": "Loading...",
+    "loading.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "manage": "Manage",
     "manageMetadata": "Manage metadata",
     "manageThreats": "Manage threats",
@@ -812,11 +889,15 @@
       "writer": "Writer"
     },
     "save": "Save",
+    "save.comment": "Verb (imperative). Used on a button that initiates the action: 'Save'.",
     "saveAndClose": "Save and close",
+    "saveAndClose.comment": "Verb (imperative). Used on a button that initiates the action: 'Save and close'.",
     "saveFailed": "Save failed",
+    "saveFailed.comment": "Verb (imperative form). Used as an action label: 'Save failed'. Surface not identified in source scan.",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
     "search": "Search",
+    "search.comment": "Noun. Labels a form field or UI section: 'Search'.",
     "selected": "{{Count}} selected",
     "sensitivity": "Sensitivity",
     "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
@@ -855,51 +936,34 @@
     "view": "View",
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View metadata",
-    "viewPermissions": "View permissions",
-    "viewThreat": "View threat",
-    "add.comment": "Verb (imperative form). Used as an action label: 'Add'. Surface not identified in source scan.",
-    "addMetadata.comment": "Verb (imperative). Used on a button that initiates the action: 'Add metadata'.",
-    "addThreat.comment": "Action description on a tooltip (typically for an icon button): 'Add threat'.",
-    "cancel.comment": "Verb (imperative). Used on a button that initiates the action: 'Cancel'.",
-    "close.comment": "Verb (imperative). Used on a button that initiates the action: 'Close'.",
-    "copy.comment": "Verb (imperative). Used on a button that initiates the action: 'Copy'.",
-    "copyToClipboard.comment": "Verb (imperative). Used on a button that initiates the action: 'Copy to clipboard'.",
-    "delete.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete'.",
-    "deleteFailed.comment": "Verb (imperative form). Used as an action label: 'Delete failed'. Surface not identified in source scan.",
-    "deleteWarningConfirmationField.comment": "Noun. Labels a form field or UI section: 'Delete confirmation'.",
-    "edit.comment": "Action description on a tooltip (typically for an icon button): 'Edit'.",
-    "editThreat.comment": "Verb (imperative form). Used as an action label: 'Edit threat'. Surface not identified in source scan.",
-    "save.comment": "Verb (imperative). Used on a button that initiates the action: 'Save'.",
-    "saveAndClose.comment": "Verb (imperative). Used on a button that initiates the action: 'Save and close'.",
-    "saveFailed.comment": "Verb (imperative form). Used as an action label: 'Save failed'. Surface not identified in source scan.",
-    "search.comment": "Noun. Labels a form field or UI section: 'Search'.",
     "viewMetadata.comment": "Verb (imperative). Used on a button that initiates the action: 'View metadata'.",
+    "viewPermissions": "View permissions",
     "viewPermissions.comment": "Verb (imperative form). Used as an action label: 'View permissions'. Surface not identified in source scan.",
-    "viewThreat.comment": "Verb (imperative form). Used as an action label: 'View threat'. Surface not identified in source scan.",
-    "loading.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+    "viewThreat": "View threat",
+    "viewThreat.comment": "Verb (imperative form). Used as an action label: 'View threat'. Surface not identified in source scan."
   },
   "contextMenu": {
     "addInverseConnection": "Add inverse connection",
+    "addInverseConnection.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Add inverse connection'.",
     "dataAssets": "Data assets...",
+    "dataAssets.lint-skip": "Ellipsis (...) indicates opening a submenu/dialog",
     "editText": "Edit text",
+    "editText.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Edit text'.",
     "lockLayout": "Lock layout",
+    "lockLayout.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Lock layout'.",
     "moveBackward": "Move backward",
+    "moveBackward.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move backward'.",
     "moveForward": "Move forward",
+    "moveForward.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move forward'.",
     "moveToBack": "Move to back",
+    "moveToBack.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move to back'.",
     "moveToFront": "Move to front",
+    "moveToFront.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move to front'.",
     "noDataAssetsAvailable": "No data assets available",
     "showObject": "Show object...",
-    "unlockLayout": "Unlock layout",
-    "addInverseConnection.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Add inverse connection'.",
-    "editText.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Edit text'.",
-    "lockLayout.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Lock layout'.",
-    "moveBackward.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move backward'.",
-    "moveForward.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move forward'.",
-    "moveToBack.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move to back'.",
-    "moveToFront.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Move to front'.",
     "showObject.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Show object'.",
-    "dataAssets.lint-skip": "Ellipsis (...) indicates opening a submenu/dialog",
-    "showObject.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "showObject.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
+    "unlockLayout": "Unlock layout"
   },
   "createThreatModel": {
     "confidentialHint": "Confidential threat models are not automatically shared with the security reviewers group. This setting cannot be changed after creation.",
@@ -995,6 +1059,7 @@
     },
     "metricsConfigured": "{{Count}}/{{total}} configured",
     "metricsConfigured.comment": "Summary showing how many metrics have been configured in a metric group.",
+    "metricsConfigured.lint-skip": "Slash between two {{...}} placeholders; not a slash-joined enum.",
     "openCalculator": "Add CVSS",
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Could not parse the existing CVSS vector string.",
@@ -1014,8 +1079,7 @@
     "vectorUnsupportedVersion": "Only CVSS 3.1 and 4.0 vectors are supported.",
     "vectorUnsupportedVersion.comment": "Error shown when user enters a CVSS vector string with a version other than 3.1 or 4.0. CVSS is a proper name and should not be translated.",
     "version": "CVSS version",
-    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated.",
-    "metricsConfigured.lint-skip": "Slash between two {{...}} placeholders; not a slash-joined enum."
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
   "cwePicker": {
     "addCwe": "Add CWE",
@@ -1028,6 +1092,7 @@
     "extendedDescription.comment": "Label for the extended description field shown when a CWE weakness is selected.",
     "loading": "Loading weaknesses...",
     "loading.comment": "Message shown while CWE weakness data is loading.",
+    "loading.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "matchingWeaknesses": "Matching weaknesses",
     "matchingWeaknesses.comment": "Label for the list of CWE weaknesses matching the search query.",
     "noResults": "No weaknesses match your search",
@@ -1035,16 +1100,17 @@
     "searchLabel": "Search weaknesses",
     "searchLabel.comment": "Label for the search input in the CWE picker dialog.",
     "title": "Choose a CWE",
-    "title.comment": "Dialog title for CWE weakness picker. CWE = Common Weakness Enumeration.",
-    "loading.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+    "title.comment": "Dialog title for CWE weakness picker. CWE = Common Weakness Enumeration."
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "Clear search",
+    "clearSearch.comment": "Action description on a tooltip (typically for an icon button): 'Clear search'.",
     "createdAfter": "Created after",
     "createdBefore": "Created before",
     "descriptionFilter": "{{common.description}}",
     "descriptionPlaceholder": "Filter by description",
+    "descriptionPlaceholder.comment": "Placeholder text shown inside an input field: 'Filter by description'.",
     "issueUriFilter": "{{common.issueUri}}",
     "issueUriPlaceholder": "Filter by issue URL",
     "lessFilters": "Fewer filters",
@@ -1053,6 +1119,7 @@
     "moreFilters": "More filters",
     "nameFilter": "{{common.name}}",
     "namePlaceholder": "Filter by name",
+    "namePlaceholder.comment": "Placeholder text shown inside an input field: 'Filter by name'.",
     "noMatchingThreatModels": "No threat models match your search or filters.",
     "ownerFilter": "{{common.roles.owner}}",
     "ownerPlaceholder": "Filter by owner name or email",
@@ -1073,11 +1140,8 @@
       "statusLastChanged": "Status last changed."
     },
     "viewAsCards": "View as cards",
-    "viewAsList": "View as list",
-    "clearSearch.comment": "Action description on a tooltip (typically for an icon button): 'Clear search'.",
-    "descriptionPlaceholder.comment": "Placeholder text shown inside an input field: 'Filter by description'.",
-    "namePlaceholder.comment": "Placeholder text shown inside an input field: 'Filter by name'.",
     "viewAsCards.comment": "Verb (imperative). Used on a button that initiates the action: 'View as cards'.",
+    "viewAsList": "View as list",
     "viewAsList.comment": "Verb (imperative). Used on a button that initiates the action: 'View as list'."
   },
   "dataAssetDialog": {
@@ -1133,20 +1197,20 @@
       "notAvailable": "Icons not available for this shape.",
       "placement": "Placement",
       "remove": "Remove",
+      "remove.comment": "Action description on a tooltip (typically for an icon button): 'Remove'.",
       "searchPlaceholder": "Search by provider, service, or category...",
+      "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "searchToChange": "Search to change icon...",
+      "searchToChange.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "selectShape": "Select a shape first",
       "statusAvailable": "{Count} icons available.",
-      "statusMatches": "{Count} matches",
-      "statusShapesSelected": "{Count} shape(s) selected.",
-      "title": "Architecture icon",
-      "toolbarTooltip": "{{dfd.iconPicker.title}}",
-      "remove.comment": "Action description on a tooltip (typically for an icon button): 'Remove'.",
-      "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
-      "searchToChange.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "statusAvailable.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence.",
+      "statusMatches": "{Count} matches",
       "statusMatches.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence.",
-      "statusShapesSelected.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence."
+      "statusShapesSelected": "{Count} shape(s) selected.",
+      "statusShapesSelected.lint-skip": "Starts with {Count} single-brace Angular placeholder; not a capitalized sentence.",
+      "title": "Architecture icon",
+      "toolbarTooltip": "{{dfd.iconPicker.title}}"
     },
     "portLabel": {
       "position.bottom": "Bottom",
@@ -1162,6 +1226,7 @@
     },
     "stylePanel": {
       "addDiagramColor": "Add diagram color",
+      "addDiagramColor.comment": "Action description on a tooltip (typically for an icon button): 'Add diagram color'.",
       "clearCustomFormatting": "Clear custom formatting",
       "defaultColors": "{{common.objectTypes.diagram}}",
       "diagramColors": "{{common.objectTypes.diagram}}",
@@ -1184,12 +1249,11 @@
       "opacity": "Opacity",
       "osColorPicker": "Pick color from system",
       "removeDiagramColor": "Remove diagram color",
+      "removeDiagramColor.comment": "Action description on a tooltip (typically for an icon button): 'Remove diagram color'.",
       "strokeNotApplicable": "Stroke is not applicable to selected objects",
       "strokeTab": "Stroke",
       "title": "Style",
-      "toggleStylePanel": "Toggle style panel",
-      "addDiagramColor.comment": "Action description on a tooltip (typically for an icon button): 'Add diagram color'.",
-      "removeDiagramColor.comment": "Action description on a tooltip (typically for an icon button): 'Remove diagram color'."
+      "toggleStylePanel": "Toggle style panel"
     }
   },
   "documentAccess": {
@@ -1201,6 +1265,7 @@
     },
     "copiedEmail": "Email copied",
     "copyEmail": "Copy email",
+    "copyEmail.comment": "Action description on a tooltip (typically for an icon button): 'Copy email'.",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "An error occurred while reading this document.",
@@ -1223,20 +1288,19 @@
       "shareWithApplication": {
         "copied": "Copied to clipboard.",
         "copyButton": "Copy",
+        "copyButton.comment": "Verb (imperative form). Used as an action label: 'Copy'. Surface not identified in source scan.",
         "copyFailed": "Couldn't copy to clipboard",
         "curlLabel": "curl",
+        "curlLabel.lint-skip": "Technical tool name 'curl' is always lowercase by convention.",
         "explanation": "TMI doesn't yet have access to this onedrive or sharepoint file. Ask the file owner to run the following Microsoft graph call to grant TMI read access. After the call succeeds, click \"check now\" — status updates within a few minutes once the grant is in place.",
         "powershellLabel": "Powershell (microsoft.graph module)",
         "rawLabel": "Microsoft graph call",
         "title": "Grant TMI access to this file.",
-        "unavailable": "Microsoft remediation details are unavailable. Contact support.",
-        "copyButton.comment": "Verb (imperative form). Used as an action label: 'Copy'. Surface not identified in source scan.",
-        "curlLabel.lint-skip": "Technical tool name 'curl' is always lowercase by convention."
+        "unavailable": "Microsoft remediation details are unavailable. Contact support."
       },
       "shareWithServiceAccount": "Share with TMI service account"
     },
     "serviceAccountEmail": "Share with this email:",
-    "copyEmail.comment": "Action description on a tooltip (typically for an icon button): 'Copy email'.",
     "serviceAccountEmail.lint-skip": "Sentence introducing a list; correctly ends with colon, not period"
   },
   "documentEditor": {
@@ -1277,8 +1341,8 @@
       "error": "Couldn't connect source. Source: {{ source }}. Reason: {{ reason }}",
       "linking": "Linking your account...",
       "notConfigured": "{{ Source }} is not configured on this server. Contact your administrator.",
-      "success": "Source connected. Source: {{ source }}.",
-      "notConfigured.lint-skip": "Leading {{Source}} is a placeholder; 'Source' is not a mid-sentence domain noun here."
+      "notConfigured.lint-skip": "Leading {{Source}} is a placeholder; 'Source' is not a mid-sentence domain noun here.",
+      "success": "Source connected. Source: {{ source }}."
     },
     "columns": {
       "account": "Account",
@@ -1336,8 +1400,8 @@
     "helpDialog": {
       "panLabel": "Hold shift and drag to pan",
       "title": "Diagram editor help",
-      "zoomLabel": "Hold shift and use the mouse wheel to zoom",
-      "title.comment": "Noun phrase. Title of a dialog: 'Diagram editor help'."
+      "title.comment": "Noun phrase. Title of a dialog: 'Diagram editor help'.",
+      "zoomLabel": "Hold shift and use the mouse wheel to zoom"
     },
     "nodeLabels": {
       "actor": "Actor",
@@ -1354,34 +1418,34 @@
       },
       "tooltips": {
         "addActor": "Add actor",
+        "addActor.comment": "Action description on a tooltip (typically for an icon button): 'Add actor'.",
         "addProcess": "Add process",
+        "addProcess.comment": "Action description on a tooltip (typically for an icon button): 'Add process'.",
         "addSecurityBoundary": "Add security boundary",
+        "addSecurityBoundary.comment": "Action description on a tooltip (typically for an icon button): 'Add security boundary'.",
         "addStore": "Add store",
+        "addStore.comment": "Action description on a tooltip (typically for an icon button): 'Add store'.",
         "addTextbox": "Add text box",
+        "addTextbox.comment": "Action description on a tooltip (typically for an icon button): 'Add text box'.",
         "deleteSelected": "Delete selected",
+        "deleteSelected.comment": "Action description on a tooltip (typically for an icon button): 'Delete selected'.",
         "export": "Export...",
+        "export.lint-skip": "Ellipsis (...) indicates opening a submenu/dialog",
         "help": "Help...",
+        "help.comment": "Action description on a tooltip (typically for an icon button): 'Help'.",
+        "help.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
         "redo": "Redo",
         "showClipboard": "Show clipboard...",
-        "showGraphData": "Show graph data...",
-        "showHistory": "Show history...",
-        "undo": "Undo",
-        "zoomToFit": "Zoom to fit",
-        "addActor.comment": "Action description on a tooltip (typically for an icon button): 'Add actor'.",
-        "addProcess.comment": "Action description on a tooltip (typically for an icon button): 'Add process'.",
-        "addSecurityBoundary.comment": "Action description on a tooltip (typically for an icon button): 'Add security boundary'.",
-        "addStore.comment": "Action description on a tooltip (typically for an icon button): 'Add store'.",
-        "addTextbox.comment": "Action description on a tooltip (typically for an icon button): 'Add text box'.",
-        "deleteSelected.comment": "Action description on a tooltip (typically for an icon button): 'Delete selected'.",
-        "help.comment": "Action description on a tooltip (typically for an icon button): 'Help'.",
         "showClipboard.comment": "Action description on a tooltip (typically for an icon button): 'Show clipboard'.",
-        "showGraphData.comment": "Action description on a tooltip (typically for an icon button): 'Show graph data'.",
-        "showHistory.comment": "Action description on a tooltip (typically for an icon button): 'Show history'.",
-        "export.lint-skip": "Ellipsis (...) indicates opening a submenu/dialog",
         "showClipboard.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
+        "showGraphData": "Show graph data...",
+        "showGraphData.comment": "Action description on a tooltip (typically for an icon button): 'Show graph data'.",
         "showGraphData.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
+        "showHistory": "Show history...",
+        "showHistory.comment": "Action description on a tooltip (typically for an icon button): 'Show history'.",
         "showHistory.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-        "help.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+        "undo": "Undo",
+        "zoomToFit": "Zoom to fit"
       }
     }
   },
@@ -1394,14 +1458,15 @@
   "getStarted": "Get started",
   "homeDescription": "TMI is a tool that streamlines your organization's security review and threat modeling processes. It drives review workflows, organizes key information, and enables teams to collaboratively build data flow diagrams. It also connects to automation, helping reduce manual toil and surface security threats more efficiently.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeWelcomeTitle.lint-skip": "Tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case.",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Save & exit",
-      "submitResponses": "Submit responses",
-      "saveAndExit.comment": "Action description on a tooltip (typically for an icon button): 'Save & exit'."
+      "saveAndExit.comment": "Action description on a tooltip (typically for an icon button): 'Save & exit'.",
+      "submitResponses": "Submit responses"
     }
   },
   "login": {
@@ -1413,12 +1478,14 @@
     },
     "loggingInWith": "Signing in with {{provider}}...",
     "loginWith": "Sign in with",
+    "loginWith.comment": "Verb (imperative form). Used as an action label: 'Sign in with'. Surface not identified in source scan.",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed.",
     "oauthProvidersTitle": "OAuth sign-in providers",
     "samlProvidersTitle": "SAML sign-in providers",
     "sessionExpired": "Your session has expired. Please sign in again.",
     "signingIn": "Signing in...",
+    "signingIn.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Sign in to TMI",
     "tmiDialog": {
@@ -1426,27 +1493,26 @@
       "errorMinLength": "Username must be at least 3 characters.",
       "errorPattern": "Username must contain only letters, digits, periods, underscores, percent signs, plus signs, and hyphens.",
       "signIn": "Sign in",
+      "signIn.comment": "Verb (imperative form). Used as an action label: 'Sign in'. Surface not identified in source scan.",
       "title": "Sign in with TMI provider",
       "usernameLabel": "Username",
-      "usernamePlaceholder": "Enter username (optional)",
-      "signIn.comment": "Verb (imperative form). Used as an action label: 'Sign in'. Surface not identified in source scan."
+      "usernamePlaceholder": "Enter username (optional)"
     },
-    "unexpectedError": "An unexpected error occurred during OAuth.",
-    "loginWith.comment": "Verb (imperative form). Used as an action label: 'Sign in with'. Surface not identified in source scan.",
-    "signingIn.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+    "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "mermaidViewer": {
     "exportFailed": "Failed to export diagram.",
     "fitToScreen": "Fit to screen",
     "openInViewer": "Open in viewer",
+    "openInViewer.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Open in viewer'.",
     "resetZoom": "Reset zoom",
     "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "openInViewer.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Open in viewer'."
+    "zoomOut": "Zoom out"
   },
   "navbar": {
     "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",
+    "appTitle.lint-skip": "Proper-name expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case, no terminal punctuation.",
     "copyUserEmail": "Copy user email to clipboard",
     "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
@@ -1470,8 +1536,7 @@
       "serverDegraded": "Server degraded",
       "serverError": "Server error",
       "serverOffline": "Server offline"
-    },
-    "appTitle.lint-skip": "Proper-name expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case, no terminal punctuation."
+    }
   },
   "noteEditor": {
     "characterCount": "{{Current}} / {{max}} characters",
@@ -1480,6 +1545,7 @@
     "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Optional description",
     "editMode": "Edit mode",
+    "editMode.comment": "Action description on a tooltip (typically for an icon button): 'Edit mode'.",
     "errors": {
       "clipboardAccessDenied": "Clipboard access denied."
     },
@@ -1489,14 +1555,14 @@
     "title": {
       "create": "Create note",
       "edit": "Edit note",
-      "view": "View note",
       "edit.comment": "Verb (imperative form). Used as an action label: 'Edit note'. Surface not identified in source scan.",
+      "view": "View note",
       "view.comment": "Verb (imperative form). Used as an action label: 'View note'. Surface not identified in source scan."
-    },
-    "editMode.comment": "Action description on a tooltip (typically for an icon button): 'Edit mode'."
+    }
   },
   "notes": {
     "addNote": "Add note",
+    "addNote.comment": "Verb (imperative form). Used as an action label: 'Add note'. Surface not identified in source scan.",
     "columns": {
       "actions": "{{common.actions}}",
       "description": "{{common.description}}",
@@ -1504,14 +1570,13 @@
     },
     "deleteConfirmMessage": "Are you sure you want to delete the note \"{{name}}\"? This action cannot be undone.",
     "deleteConfirmTitle": "Delete note",
+    "deleteConfirmTitle.comment": "Verb (imperative form). Used as an action label: 'Delete note'. Surface not identified in source scan.",
     "noNotes": "No notes yet.",
     "sharable": "Visible to all members.",
     "sharableTooltip": "When enabled, this note is visible to all team/project members. When disabled, only admins and security reviewers can see it",
+    "sharableTooltip.lint-skip": "Slash-joined pair 'team/project' are domain nouns intentionally lowercase.",
     "tab": "{{common.objectTypes.notes}}",
-    "tabWithCount": "Notes ({{count}})",
-    "addNote.comment": "Verb (imperative form). Used as an action label: 'Add note'. Surface not identified in source scan.",
-    "deleteConfirmTitle.comment": "Verb (imperative form). Used as an action label: 'Delete note'. Surface not identified in source scan.",
-    "sharableTooltip.lint-skip": "Slash-joined pair 'team/project' are domain nouns intentionally lowercase."
+    "tabWithCount": "Notes ({{count}})"
   },
   "notifications": {
     "actions": {
@@ -1521,12 +1586,12 @@
     "operationFailed": "Operation failed",
     "operations": {
       "collaboration": "collaboration",
+      "collaboration.lint-skip": "Technical category label, intentionally lowercase (enum/tag value).",
       "denyPresenterRequest": "Deny presenter request",
       "sendPresenterRequest": "Send presenter request.",
-      "startCollaboration": "Start collaboration",
-      "updatePresenter": "Update presenter",
       "sendPresenterRequest.comment": "Verb (imperative form). Used as an action label: 'Send presenter request'. Surface not identified in source scan.",
-      "collaboration.lint-skip": "Technical category label, intentionally lowercase (enum/tag value)."
+      "startCollaboration": "Start collaboration",
+      "updatePresenter": "Update presenter"
     },
     "presenter": {
       "assigned": "{{User}} is now the presenter.",
@@ -1570,8 +1635,8 @@
     "nextPage": "Next page",
     "previousPage": "Previous page",
     "rangeEmpty": "0 of {{length}}",
-    "rangeLabel": "{{Startindex}} - {{endindex}} of {{length}}",
-    "rangeEmpty.lint-skip": "Starts with numeric value '0'; this is a count/range format string."
+    "rangeEmpty.lint-skip": "Starts with numeric value '0'; this is a count/range format string.",
+    "rangeLabel": "{{Startindex}} - {{endindex}} of {{length}}"
   },
   "presenter": {
     "startPresenting": "Start presenting",
@@ -1592,13 +1657,16 @@
     "dataSecurityContent2": "While no system is entirely impervious to risks, the operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
     "dataSecurityTitle": "Data security",
     "dataSharingContent1": "The operator does not share your personal information with any third parties, except in the following limited circumstances:",
+    "dataSharingContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
     "dataSharingContent2": "Beyond these exceptions, the operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
     "dataSharingList1": "Service providers: your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, google cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes the operator specifies.",
     "dataSharingList2": "Extensibility features: the application supports optional extensibility features (such as websockets and addons) that may extend functionality by passing selected information to third-party services for processing. Data is shared with these services only when you actively use a feature that requires such transmission, and only the specific information necessary for the requested functionality is transmitted.",
     "dataSharingList2a": "AI processing features: when you actively request features powered by large language models (LLMs) or similar AI services, selected data may be transmitted to third-party AI providers (such as OpenAI, Anthropic, or equivalent services) for processing and response generation. Only the specific information necessary for the requested functionality is shared, and such sharing occurs solely at your direction. These providers are bound by contractual obligations — including data processing agreements where applicable — to use the data exclusively for providing the requested service, with restrictions on retention, training, or other uses.",
+    "dataSharingList2a.lint-skip": "Contains 'LLMs' (plural acronym); validator's upper() comparison doesn't match mixed-case acronyms.",
     "dataSharingList3": "Legal compliance: the operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
     "dataSharingTitle": "Data sharing",
     "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID connect providers such as sign in with google, login with GitHub, Microsoft entra external ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
+    "informationCollectionContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
     "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and the operator's commitment to user privacy.",
     "informationCollectionContent3": "The application generates operational logs to ensure system reliability, security, and performance. These logs may contain records of user activity within the application, such as login events, feature usage, and error reports. The operator retains logs only for as long as necessary to fulfill operational purposes, including troubleshooting, security monitoring, and service improvement. Logs are stored securely and are not used for purposes beyond operational needs.",
     "informationCollectionList1": "Basic profile information: full name, email address, and profile picture (if provided and available).",
@@ -1612,17 +1680,16 @@
     "introductionTitle": "Introduction",
     "lastUpdatedDate": "2026-01-17",
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
+    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence.",
     "title": "Privacy policy",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"delete all my data\" feature in the user preferences section of the application.",
     "userRightsContent2": "This option enables immediate deletion of all data the operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from the operator's systems and third-party providers, subject to any legal retention obligations.",
-    "userRightsTitle": "User rights",
-    "dataSharingContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
-    "informationCollectionContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
-    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence.",
-    "dataSharingList2a.lint-skip": "Contains 'LLMs' (plural acronym); validator's upper() comparison doesn't match mixed-case acronyms."
+    "userRightsTitle": "User rights"
   },
   "projects": {
     "addButton": "Add project...",
+    "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add project'.",
+    "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
       "modified": "{{teams.columns.modified}}",
@@ -1635,11 +1702,11 @@
       "namePlaceholder": "Enter project name",
       "nameRequired": "Project name is required.",
       "statusPlaceholder": "E.g. active, planning, archived",
+      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form.",
       "teamRequired": "Team is required.",
       "title": "Create project",
       "uriPlaceholder": "https://wiki.example.com/projects/my-project",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated.",
-      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form."
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Create new project",
     "deleteDialog": {
@@ -1652,6 +1719,7 @@
       "title.comment": "Noun phrase. Title of a dialog: 'Edit project'."
     },
     "filterLabel": "Filter by name",
+    "filterLabel.comment": "Verb (imperative form). Used as an action label: 'Filter by name'. Surface not identified in source scan.",
     "filterNameLabel": "{{projects.filterLabel}}",
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
@@ -1669,12 +1737,12 @@
     },
     "relatedProjectsDialog": {
       "addRelated": "Add related project.",
+      "addRelated.comment": "Verb (imperative form). Used as an action label: 'Add related project'. Surface not identified in source scan.",
       "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
       "noRelated": "No related projects.",
       "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "Select project",
-      "title": "Related projects",
-      "addRelated.comment": "Verb (imperative form). Used as an action label: 'Add related project'. Surface not identified in source scan."
+      "title": "Related projects"
     },
     "responsiblePartiesDialog": {
       "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
@@ -1692,14 +1760,11 @@
     },
     "statusAll": "{{common.allStatuses}}",
     "statusFilterLabel": "Filter by status.",
+    "statusFilterLabel.comment": "Verb (imperative form). Used as an action label: 'Filter by status'. Surface not identified in source scan.",
     "subtitle": "Create, edit, and manage projects, relationships, and metadata.",
     "teamFilterLabel": "Filter by team",
-    "title": "Manage projects",
-    "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add project'.",
-    "filterLabel.comment": "Verb (imperative form). Used as an action label: 'Filter by name'. Surface not identified in source scan.",
-    "statusFilterLabel.comment": "Verb (imperative form). Used as an action label: 'Filter by status'. Surface not identified in source scan.",
     "teamFilterLabel.comment": "Verb (imperative form). Used as an action label: 'Filter by team'. Surface not identified in source scan.",
-    "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "title": "Manage projects"
   },
   "report": {
     "cvss": "CVSS",
@@ -1732,15 +1797,15 @@
   "sessionExpiry": {
     "extendButton": "Extend session",
     "extending": "Extending your session, please wait...",
+    "extending.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "logoutButton": "Sign out now",
+    "logoutButton.comment": "Verb (imperative form). Used as an action label: 'Sign out now'. Surface not identified in source scan.",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
       "minutesSeconds": "{{Minutes}}:{{seconds}}",
       "seconds": "{{Seconds}} seconds"
     },
-    "title": "Session expiring soon",
-    "logoutButton.comment": "Verb (imperative form). Used as an action label: 'Sign out now'. Surface not identified in source scan.",
-    "extending.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+    "title": "Session expiring soon"
   },
   "ssvcCalculator": {
     "apply": "{{cvssCalculator.apply}}",
@@ -1793,6 +1858,7 @@
     "next.comment": "Button label to advance to the next step in the SSVC calculator.",
     "openCalculator": "Add SSVC...",
     "openCalculator.comment": "Button label to open the SSVC calculator dialog. SSVC is a proper name and should not be translated.",
+    "openCalculator.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "publicSafetyImpact": {
       "description": "Does exploitation of this vulnerability pose a risk to public safety?",
       "description.comment": "Description shown for the Public Safety Impact decision point step.",
@@ -1846,8 +1912,7 @@
       "superEffectiveDesc.comment": "Description of the Super Effective utility value."
     },
     "vectorString": "{{cvssCalculator.vectorString}}",
-    "vectorString.comment": "Label for the SSVC vector string display.",
-    "openCalculator.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "vectorString.comment": "Label for the SSVC vector string display."
   },
   "surveys": {
     "autoSave": {
@@ -1877,18 +1942,18 @@
     },
     "list": {
       "deleteDraft": "Delete draft",
+      "deleteDraft.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete draft'.",
       "draftStarted": "Draft started {{time}}.",
       "errorLoadingSurveys": "Failed to load surveys.",
       "lastModified": "Last modified {{time}}.",
       "loadingSurveys": "Loading surveys...",
+      "loadingSurveys.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
       "noSurveysMessage": "There are no active surveys at this time. Check back later.",
       "noSurveysTitle": "No surveys available",
       "pageDescription": "Choose the appropriate type of review from the following list, and then answer the presented questions to provide the security review team with the information they need to perform the review.",
       "pageTitle": "Request a security review",
       "updated": "Updated",
-      "yourDrafts": "Your drafts",
-      "deleteDraft.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete draft'.",
-      "loadingSurveys.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states"
+      "yourDrafts": "Your drafts"
     },
     "myResponses": "My responses",
     "noMatchingResponses": "No matching responses",
@@ -1907,7 +1972,9 @@
       "responseCountPlural": "{{Count}} responses"
     },
     "saveDraft": "Save draft",
+    "saveDraft.comment": "Verb (imperative form). Used as an action label: 'Save draft'. Surface not identified in source scan.",
     "startNew": "Start survey...",
+    "startNew.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "status": {
       "draft": "Draft",
       "needsRevision": "Needs revision",
@@ -1923,12 +1990,12 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "View response",
-    "saveDraft.comment": "Verb (imperative form). Used as an action label: 'Save draft'. Surface not identified in source scan.",
-    "viewResponse.comment": "Action description on a tooltip (typically for an icon button): 'View response'.",
-    "startNew.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "viewResponse.comment": "Action description on a tooltip (typically for an icon button): 'View response'."
   },
   "teams": {
     "addButton": "Add team...",
+    "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add team'.",
+    "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "columns": {
       "members": "{{teams.kebab.members}}",
       "modified": "Modified",
@@ -1941,14 +2008,14 @@
       "emailAddress": "{{common.emailLabel}}",
       "emailPlaceholder": "team@example.com",
       "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
       "namePlaceholder": "Enter team name",
       "nameRequired": "Team name is required.",
       "statusPlaceholder": "E.g. active, archived.",
+      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form.",
       "title": "Create team",
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
-      "uriPlaceholder.comment": "This is an example URL and should not be translated.",
-      "emailPlaceholder.lint-skip": "Example email address placeholder, not a sentence.",
-      "statusPlaceholder.lint-skip": "E.g. prefix with example values; validator's E.g. detection requires lowercase+comma form."
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Create new team",
     "deleteDialog": {
@@ -1965,36 +2032,37 @@
       "title.comment": "Noun phrase. Title of a dialog: 'Edit team'."
     },
     "filterLabel": "Filter teams",
+    "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter teams'.",
     "kebab": {
       "delete": "{{common.delete}}",
       "members": "Members...",
+      "members.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
-      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}",
-      "members.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
       "addMember": "Add member",
+      "addMember.comment": "Verb (imperative form). Used as an action label: 'Add member'. Surface not identified in source scan.",
       "customRole": "Custom role",
       "noMembers": "No members",
       "removeMember": "Remove member",
+      "removeMember.comment": "Verb (imperative form). Used as an action label: 'Remove member'. Surface not identified in source scan.",
       "role": "Role",
-      "title": "Team members",
-      "addMember.comment": "Verb (imperative form). Used as an action label: 'Add member'. Surface not identified in source scan.",
-      "removeMember.comment": "Verb (imperative form). Used as an action label: 'Remove member'. Surface not identified in source scan."
+      "title": "Team members"
     },
     "noTeams": "No teams found.",
     "relatedTeamsDialog": {
       "addRelated": "Add related team.",
+      "addRelated.comment": "Verb (imperative form). Used as an action label: 'Add related team'. Surface not identified in source scan.",
       "customRelationship": "Custom relationship",
       "noRelated": "No related teams.",
       "relationship": "Relationship",
       "removeRelated": "Remove related team.",
+      "removeRelated.comment": "Verb (imperative form). Used as an action label: 'Remove related team'. Surface not identified in source scan.",
       "selectTeam": "Select team",
-      "title": "Related teams",
-      "addRelated.comment": "Verb (imperative form). Used as an action label: 'Add related team'. Surface not identified in source scan.",
-      "removeRelated.comment": "Verb (imperative form). Used as an action label: 'Remove related team'. Surface not identified in source scan."
+      "title": "Related teams"
     },
     "relationships": {
       "child": "Child",
@@ -2008,11 +2076,11 @@
     },
     "responsiblePartiesDialog": {
       "addParty": "Add responsible party",
+      "addParty.comment": "Verb (imperative form). Used as an action label: 'Add responsible party'. Surface not identified in source scan.",
       "noParties": "No responsible parties.",
       "removeParty": "Remove responsible party",
-      "title": "Responsible parties",
-      "addParty.comment": "Verb (imperative form). Used as an action label: 'Add responsible party'. Surface not identified in source scan.",
-      "removeParty.comment": "Verb (imperative form). Used as an action label: 'Remove responsible party'. Surface not identified in source scan."
+      "removeParty.comment": "Verb (imperative form). Used as an action label: 'Remove responsible party'. Surface not identified in source scan.",
+      "title": "Responsible parties"
     },
     "roles": {
       "business_leader": "Business leader",
@@ -2032,16 +2100,14 @@
       "winding_down": "Winding down"
     },
     "subtitle": "Create, edit, and manage teams, members, and relationships.",
-    "title": "Manage teams",
-    "addButton.comment": "Verb (imperative). Used on a button that initiates the action: 'Add team'.",
-    "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter teams'.",
-    "addButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "title": "Manage teams"
   },
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry.",
     "addCvssEntry.comment": "Tooltip for button that adds a CVSS vector/score pair. CVSS should not be translated.",
     "addMapping": "Add mapping...",
     "addMapping.comment": "Button label to open the framework mapping picker dialog.",
+    "addMapping.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "createNewThreat": "Create new threat",
     "cvss": "{{report.cvss}}",
     "cvss.comment": "Common Vulnerability Scoring System. CVSS is an abbreviation and should not be translated.",
@@ -2049,6 +2115,7 @@
     "cvssVector.comment": "Label for CVSS vector string input. CVSS should not be translated.",
     "cvssVectorPlaceholder": "E.g., cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
     "cvssVectorPlaceholder.comment": "Example CVSS vector string. Technical format, do not translate.",
+    "cvssVectorPlaceholder.lint-skip": "CVSS vector notation is a technical identifier format, not slash-joined enum segments.",
     "cweIdPlaceholder": "Enter CWE ID (e.g., cwe-79)",
     "cweIdPlaceholder.comment": "Placeholder for CWE ID chip input. CWE-79 is an example identifier.",
     "cweIds": "{{report.cweIds}}",
@@ -2124,27 +2191,30 @@
       "mitigation_planned": "Mitigation planned",
       "mitigation_planned.description": "A remediation or mitigation strategy has been defined and assigned.",
       "open": "Open",
+      "open.comment": "Verb (imperative form). Used as an action label: 'Open'. Surface not identified in source scan.",
       "open.description": "The finding has been identified and documented but no action has been initiated.",
       "resolved": "Resolved",
       "resolved.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
       "verification_pending": "Verification pending",
-      "verification_pending.description": "Mitigation is complete; security team must test or review effectiveness.",
-      "open.comment": "Verb (imperative form). Used as an action label: 'Open'. Surface not identified in source scan."
-    },
-    "addMapping.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-    "cvssVectorPlaceholder.lint-skip": "CVSS vector notation is a technical identifier format, not slash-joined enum segments."
+      "verification_pending.description": "Mitigation is complete; security team must test or review effectiveness."
+    }
   },
   "threatModels": {
     "addPermission": "Add permission",
+    "addPermission.comment": "Verb (imperative form). Used as an action label: 'Add permission'. Surface not identified in source scan.",
     "branch": "Branch",
     "changeSecurityReviewer": "Change security reviewer...",
+    "changeSecurityReviewer.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "clearSecurityReviewer": "Clear security reviewer",
     "commit": "Commit",
     "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
     "confidentialProject": "Confidential project",
     "createFirstButton": "Create your first threat model...",
+    "createFirstButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "createNewDiagram": "Create new diagram",
     "createNewRepository": "Add repository reference...",
+    "createNewRepository.comment": "Action description on a tooltip (typically for an icon button): 'Add repository reference'.",
+    "createNewRepository.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
     "createdBy": "{{common.createdBy}}",
@@ -2164,9 +2234,9 @@
       "title": {
         "create": "Create document reference",
         "edit": "Edit document reference",
+        "edit.comment": "Noun phrase. Title of a dialog: 'Edit document reference'.",
         "shareRequired": "Share this file with our service account",
         "view": "View document reference",
-        "edit.comment": "Noun phrase. Title of a dialog: 'Edit document reference'.",
         "view.comment": "Noun phrase. Title of a dialog: 'View document reference'."
       }
     },
@@ -2211,8 +2281,8 @@
       "title": {
         "create": "Create repository reference",
         "edit": "Edit repository reference",
-        "view": "View repository reference",
         "edit.comment": "Noun phrase. Title of a dialog: 'Edit repository reference'.",
+        "view": "View repository reference",
         "view.comment": "Noun phrase. Title of a dialog: 'View repository reference'."
       }
     },
@@ -2270,8 +2340,14 @@
     "threatModelPrefix": "{{common.objectTypes.threatModel}}",
     "tooltips": {
       "addAsset": "Add asset...",
+      "addAsset.comment": "Action description on a tooltip (typically for an icon button): 'Add asset'.",
+      "addAsset.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
       "addDiagram": "Add diagram...",
+      "addDiagram.comment": "Action description on a tooltip (typically for an icon button): 'Add diagram'.",
+      "addDiagram.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
       "addDocument": "Add document...",
+      "addDocument.comment": "Action description on a tooltip (typically for an icon button): 'Add document'.",
+      "addDocument.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
       "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis",
@@ -2284,27 +2360,17 @@
       "import": "Import",
       "notesCardTitle": "Notes are markdown format text that is completely contained within the threat model, used to capture notes and annotation from security analysts and automated analysis processes",
       "repositoriesCardTitle": "Repositories are links to source code repositories where source code for the system is managed",
-      "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat",
-      "addAsset.comment": "Action description on a tooltip (typically for an icon button): 'Add asset'.",
-      "addDiagram.comment": "Action description on a tooltip (typically for an icon button): 'Add diagram'.",
-      "addDocument.comment": "Action description on a tooltip (typically for an icon button): 'Add document'.",
-      "addAsset.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-      "addDiagram.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-      "addDocument.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+      "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat"
     },
     "viewDiagramName": "View diagram properties",
-    "yourThreatModels": "Your threat models",
-    "addPermission.comment": "Verb (imperative form). Used as an action label: 'Add permission'. Surface not identified in source scan.",
-    "createNewRepository.comment": "Action description on a tooltip (typically for an icon button): 'Add repository reference'.",
     "viewDiagramName.comment": "Noun phrase. Title of a dialog: 'View diagram properties'.",
-    "changeSecurityReviewer.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-    "createFirstButton.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-    "createNewRepository.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
+    "yourThreatModels": "Your threat models"
   },
   "threats": {
     "filters": {
       "clearAll": "Clear all filters",
       "clearName": "Clear name filter",
+      "clearName.comment": "Action description on a tooltip (typically for an icon button): 'Clear name filter'.",
       "lessFilters": "{{dashboard.lessFilters}}",
       "mitigatedTooltip": "Cycle: all / mitigated / not mitigated",
       "moreFilters": "{{dashboard.moreFilters}}",
@@ -2312,8 +2378,7 @@
       "namePlaceholder": "{{dashboard.namePlaceholder}}",
       "noMatchingThreats": "No threats match your current filters.",
       "priority": "{{common.priority}}",
-      "threatType": "{{common.threatType}}",
-      "clearName.comment": "Action description on a tooltip (typically for an icon button): 'Clear name filter'."
+      "threatType": "{{common.threatType}}"
     }
   },
   "tos": {
@@ -2327,6 +2392,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
+    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence.",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
       "title": "1. Acceptance of terms",
@@ -2373,14 +2439,13 @@
       "title": "8. Governing law",
       "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },
-    "title": "Terms of service",
-    "lastUpdatedDate.lint-skip": "ISO date string, not a sentence."
+    "title": "Terms of service"
   },
   "transfer": {
     "userPicker": {
       "searchLabel": "Search by email",
-      "searchPlaceholder": "Start typing email address...",
       "searchLabel.comment": "Noun. Labels a form field or UI section: 'Search by email'.",
+      "searchPlaceholder": "Start typing email address...",
       "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context"
     }
   },
@@ -2393,6 +2458,7 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Add note",
+      "addNote.comment": "Verb (imperative). Used on a button that initiates the action: 'Add note'.",
       "columns": {
         "answer": "Answer",
         "group": "{{common.subjectTypes.group}}",
@@ -2403,22 +2469,21 @@
       "noResponses": "No responses recorded.",
       "noRevisionNotes": "No revision notes.",
       "note": "note",
+      "note.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase.",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "Enter note content...",
+      "noteContentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "noteNameLabel": "{{common.title}}",
       "noteNamePlaceholder": "Brief note title",
       "notes": "notes",
+      "notes.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase.",
       "responseDetails": "Response details",
       "reviewedAt": "Reviewed",
       "reviewedBy": "Reviewed by",
       "revisionNotesTitle": "Revision requested",
       "statusTimeline": "Status timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "Triage notes",
-      "addNote.comment": "Verb (imperative). Used on a button that initiates the action: 'Add note'.",
-      "noteContentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
-      "note.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase.",
-      "notes.lint-skip": "Single-word domain noun label used as a tab/category, intentionally lowercase."
+      "triageNotes": "Triage notes"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -2435,16 +2500,16 @@
       "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Failed to load responses.",
       "loadingResponses": "Loading responses...",
+      "loadingResponses.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
       "noResponsesFiltered": "No responses match your filters.",
       "noResponsesTitle": "No responses",
       "noResponsesToTriage": "There are no survey responses to triage.",
       "notSubmitted": "Not submitted",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Search by submitter or survey...",
+      "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "submitted": "Submitted",
-      "submitter": "Submitter",
-      "loadingResponses.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
-      "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      "submitter": "Submitter"
     },
     "markInReview": "Mark in review",
     "markPendingTriage": "Mark pending triage.",
@@ -2460,14 +2525,14 @@
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
       "contentPlaceholder": "Enter note content (markdown supported)...",
+      "contentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
       "nameLabel": "{{common.title}}",
       "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
       "title": {
         "create": "New triage note",
         "view": "View triage note",
         "view.comment": "Verb (imperative form). Used as an action label: 'View triage note'. Surface not identified in source scan."
-      },
-      "contentPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      }
     },
     "queue": "Triage queue",
     "returnToSubmitted": "Return to submitted.",
@@ -2481,12 +2546,12 @@
       "noUnassignedFiltered": "No threat models match your filters",
       "reviewer": "Security reviewer",
       "reviewerPlaceholder": "Filter by reviewer...",
-      "searchPlaceholder": "{{adminSurveys.searchByName}}",
-      "selectReviewer": "Select reviewer...",
-      "unassigned": "Unassigned",
       "reviewerPlaceholder.comment": "Placeholder text shown inside an input field: 'Filter by reviewer...'.",
       "reviewerPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
-      "selectReviewer.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      "searchPlaceholder": "{{adminSurveys.searchByName}}",
+      "selectReviewer": "Select reviewer...",
+      "selectReviewer.lint-skip": "Placeholder text; ellipsis (...) signals input context",
+      "unassigned": "Unassigned"
     },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
@@ -2494,8 +2559,8 @@
       "hint": "Required — describe what changes are needed",
       "label": "Revision notes",
       "placeholder": "Describe the revisions needed...",
-      "title": "Return for revision",
-      "placeholder.lint-skip": "Placeholder text; ellipsis (...) signals input context"
+      "placeholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
+      "title": "Return for revision"
     },
     "tabs": {
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
@@ -2504,6 +2569,19 @@
     "title": "Triage",
     "viewDetails": "View details",
     "viewDetails.comment": "Action description on a tooltip (typically for an icon button): 'View details'."
+  },
+  "usabilityFeedback": {
+    "prompt": "Was this experience helpful?",
+    "snackbarFailed": "Could not submit feedback. Try again later.",
+    "snackbarSubmitted": "Thanks for the feedback.",
+    "submit": "Send feedback",
+    "thumbsDown": "Thumbs down",
+    "thumbsDown.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs down'.",
+    "thumbsUp": "Thumbs up",
+    "thumbsUp.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs up'.",
+    "title": "Share your feedback",
+    "verbatimLabel": "Comments (optional)",
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
   },
   "userPreferences": {
     "autoLayout": {
@@ -2561,10 +2639,10 @@
         "bullet1": "Your identity provider data, including user ID, name, and email.",
         "bullet2": "Your permissions from all threat model objects that you do not own.",
         "bullet3": "For threat models you own:",
+        "bullet3.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
         "bullet3a": "If other owners exist, ownership will transfer to them, and your permissions will be revoked.",
         "bullet3b": "If no other owners exist, the threat model along with all associated diagrams, threat data, metadata, and references will be irrevocably deleted.",
         "intro": "Confirming this operation will permanently delete the following data and revoke associated permissions:",
-        "bullet3.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
         "intro.lint-skip": "Sentence introducing a list; correctly ends with colon, not period"
       },
       "processing": "Deleting your account...",
@@ -2574,6 +2652,7 @@
     },
     "diagramAnimationEffects": "Enable animation effects in diagram editor.",
     "displayPreferences": "Display preferences",
+    "displayPreferences.comment": "Noun phrase. Title of a page or section: 'Display preferences'.",
     "downloadLog": {
       "hint": "Downloads the most recent application log entries as a JSONL file for troubleshooting.",
       "title": "Download log"
@@ -2600,14 +2679,15 @@
       "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Show developer tools.",
+    "showDeveloperTools.comment": "Verb (imperative form). Used as an action label: 'Show developer tools'. Surface not identified in source scan.",
     "showShapeBordersWithIcons": "Show shape fill and border when icon is displayed.",
     "tabs": {
       "credentials": "Credentials",
       "danger": "Danger",
       "display": "Display",
+      "display.comment": "Noun. Used as a label or identifier: 'Display'. Surface not identified in source scan.",
       "profile": "Profile",
-      "reports": "{{common.objectTypes.reports}}",
-      "display.comment": "Noun. Used as a label or identifier: 'Display'. Surface not identified in source scan."
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Theme",
     "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",
@@ -2631,9 +2711,7 @@
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "title": "User profile"
-    },
-    "displayPreferences.comment": "Noun phrase. Title of a page or section: 'Display preferences'.",
-    "showDeveloperTools.comment": "Verb (imperative form). Used as an action label: 'Show developer tools'. Surface not identified in source scan."
+    }
   },
   "userProjects": {
     "listTitle": "{{teams.columns.projects}}",
@@ -2646,6 +2724,5 @@
     "noTeams": "{{teams.noTeams}}",
     "subtitle": "View and edit your teams, members, and relationships.",
     "title": "My teams"
-  },
-  "homeWelcomeTitle.lint-skip": "Tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case."
+  }
 }

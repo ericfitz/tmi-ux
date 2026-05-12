@@ -86,6 +86,11 @@
           } @else if (preparationStatus.error) {
             <mat-icon class="status-icon error">error</mat-icon>
             <span>{{ t('chat.preparation.error', { message: preparationStatus.error }) }}</span>
+          } @else if (preparationStatus.mode === 'message-status') {
+            <mat-spinner diameter="18" class="status-spinner"></mat-spinner>
+            <span>{{
+              messageStatusLabel(t, preparationStatus.phase, preparationStatus.entityName)
+            }}</span>
           } @else {
             <mat-spinner diameter="18" class="status-spinner"></mat-spinner>
             <span>{{

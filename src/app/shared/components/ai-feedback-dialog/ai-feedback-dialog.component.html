@@ -1,0 +1,92 @@
+<ng-container *transloco="let t">
+  <h2 mat-dialog-title>{{ t('aiFeedback.title.' + data.targetType) }}</h2>
+  <mat-dialog-content [formGroup]="form">
+    <p class="prompt">{{ t('aiFeedback.prompt') }}</p>
+
+    <div
+      class="sentiment-buttons"
+      role="radiogroup"
+      [attr.aria-label]="t('aiFeedback.title.' + data.targetType)"
+    >
+      <button
+        type="button"
+        mat-icon-button
+        class="sentiment-button"
+        role="radio"
+        [attr.aria-checked]="form.get('sentiment')!.value === 'up'"
+        [class.selected]="form.get('sentiment')!.value === 'up'"
+        [matTooltip]="t('aiFeedback.thumbsUp')"
+        (click)="setSentiment('up')"
+      >
+        <mat-icon>thumb_up</mat-icon>
+      </button>
+      <button
+        type="button"
+        mat-icon-button
+        class="sentiment-button"
+        role="radio"
+        [attr.aria-checked]="form.get('sentiment')!.value === 'down'"
+        [class.selected]="form.get('sentiment')!.value === 'down'"
+        [matTooltip]="t('aiFeedback.thumbsDown')"
+        (click)="setSentiment('down')"
+      >
+        <mat-icon>thumb_down</mat-icon>
+      </button>
+    </div>
+
+    @if (showFalsePositiveTaxonomy) {
+      <mat-form-field appearance="outline" class="reason-field">
+        <mat-label>{{ t('aiFeedback.reasonLabel') }}</mat-label>
+        <mat-select formControlName="falsePositiveReason">
+          @for (reason of reasons; track reason) {
+            <mat-option [value]="reason">{{ t('aiFeedback.reason.' + reason) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (availableSubreasons.length > 0) {
+        <mat-form-field appearance="outline" class="subreason-field">
+          <mat-label>{{ t('aiFeedback.subreasonLabel') }}</mat-label>
+          <mat-select formControlName="falsePositiveSubreason">
+            @for (sub of availableSubreasons; track sub) {
+              <mat-option [value]="sub">{{ t('aiFeedback.subreason.' + sub) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+    }
+
+    <mat-form-field appearance="outline" class="verbatim-field">
+      <mat-label>
+        {{
+          verbatimRequired
+            ? t('aiFeedback.verbatimLabelRequired')
+            : t('aiFeedback.verbatimLabelOptional')
+        }}
+      </mat-label>
+      <textarea
+        matInput
+        formControlName="verbatim"
+        rows="4"
+        [maxlength]="maxVerbatim"
+        [placeholder]="t('aiFeedback.verbatimPlaceholder')"
+      ></textarea>
+      <mat-hint align="end">{{ form.get('verbatim')!.value.length }} / {{ maxVerbatim }}</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="submitting">
+      {{ t('common.cancel') }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="form.invalid || submitting"
+      (click)="onSubmit()"
+    >
+      {{ t('aiFeedback.submit') }}
+    </button>
+  </mat-dialog-actions>
+</ng-container>

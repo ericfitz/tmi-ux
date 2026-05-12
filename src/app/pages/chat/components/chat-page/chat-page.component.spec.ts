@@ -753,6 +753,46 @@ describe('ChatPageComponent', () => {
         expect.objectContaining({ serverId: 'orphan-msg' }),
       );
     });
+
+    it('should surface message status events as the ephemeral status bubble', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'status',
+        data: JSON.stringify({
+          phase: 'querying_embeddings',
+          entity_type: 'document',
+          entity_name: 'Auth Spec',
+        }),
+      });
+
+      expect(component.preparationStatus).toEqual({
+        phase: 'querying_embeddings',
+        entityName: 'Auth Spec',
+        progress: 0,
+        current: 0,
+        total: 0,
+        mode: 'message-status',
+      });
+      expect(component.loading).toBe(false);
+    });
+
+    it('should clear the status bubble when message_start arrives', () => {
+      const messageStream = setupSessionAndSendMessage();
+
+      messageStream.next({
+        event: 'status',
+        data: JSON.stringify({ phase: 'waiting_for_llm' }),
+      });
+      expect(component.preparationStatus).not.toBeNull();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ status: 'processing', message_id: 'msg-1' }),
+      });
+
+      expect(component.preparationStatus).toBeNull();
+    });
   });
 
   describe('onMessageSavedAsNote', () => {

@@ -103,6 +103,21 @@ export class ChatMessagesComponent implements AfterViewChecked, OnChanges {
     return message.id;
   }
 
+  /**
+   * Resolve a phase-specific localized label for the message-status bubble.
+   * Falls back to the snake_case phase identifier verbatim when no key is
+   * defined — the server is free to add or rename phases at any time.
+   */
+  messageStatusLabel(
+    t: (key: string, params?: Record<string, unknown>) => string,
+    phase: string,
+    entityName: string,
+  ): string {
+    const key = `chat.messageStatus.${phase}`;
+    const translated = t(key, { entityName });
+    return translated === key ? phase : translated;
+  }
+
   scrollToBottom(): void {
     const el = this.messagesContainer?.nativeElement;
     if (el) {

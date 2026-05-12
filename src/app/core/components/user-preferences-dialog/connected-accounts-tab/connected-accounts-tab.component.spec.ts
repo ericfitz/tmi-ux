@@ -112,6 +112,62 @@ describe('ConnectedAccountsTabComponent', () => {
     expect(component.connectableProviders.some(p => p.id === 'google_workspace')).toBe(true);
   });
 
+  it('connectableProviders includes both google_workspace and microsoft when server advertises both', () => {
+    sources$.next([
+      ...DEFAULT_SOURCES,
+      {
+        id: 'microsoft',
+        displayName: 'OneDrive/SharePoint',
+        displayNameKey: 'documentSources.microsoft.name',
+        icon: 'fa-brands fa-microsoft',
+        kind: 'delegated',
+        hasPicker: true,
+      },
+    ]);
+    const component = createComponent();
+    component.ngOnInit();
+    expect(component.connectableProviders.some(p => p.id === 'google_workspace')).toBe(true);
+    expect(component.connectableProviders.some(p => p.id === 'microsoft')).toBe(true);
+  });
+
+  it('onConnect routes Microsoft authorize call with the correct provider id', () => {
+    sources$.next([
+      {
+        id: 'microsoft',
+        displayName: 'OneDrive/SharePoint',
+        displayNameKey: 'documentSources.microsoft.name',
+        icon: 'fa-brands fa-microsoft',
+        kind: 'delegated',
+        hasPicker: true,
+      },
+    ]);
+    mockTokenSvc.authorize.mockReturnValue(
+      of({ authorization_url: 'https://auth.microsoft.com', expires_at: '...' }),
+    );
+    const component = createComponent();
+    component.ngOnInit();
+    const originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      writable: true,
+      value: { href: '' },
+    });
+    try {
+      component.onConnect('microsoft');
+      expect(mockTokenSvc.authorize).toHaveBeenCalledWith(
+        'microsoft',
+        expect.stringContaining('openPrefs=document-sources'),
+      );
+      expect(window.location.href).toBe('https://auth.microsoft.com');
+    } finally {
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        writable: true,
+        value: originalLocation,
+      });
+    }
+  });
+
   it('connectableProviders is empty when server advertises no delegated providers', () => {
     sources$.next([
       {

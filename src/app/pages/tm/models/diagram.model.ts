@@ -58,6 +58,8 @@ export interface Diagram {
   update_vector?: number; // Server-managed version counter
   image?: DiagramImage; // Image data with version information
   cells?: Cell[]; // Using proper Cell type instead of any[]
+  /** True when the server attributes this diagram to an automation/service account. */
+  auto_generated?: boolean;
 }
 
 // Mock data for development until API is connected

@@ -37,6 +37,10 @@ import { environment } from '../../../../environments/environment';
 import { BrandingConfigService } from '../../services/branding-config.service';
 import { version } from '../../../../../package.json';
 import { gitCommit } from '../../../../build-info.json';
+import {
+  UsabilityFeedbackDialogComponent,
+  UsabilityFeedbackDialogData,
+} from '../../../shared/components/usability-feedback-dialog/usability-feedback-dialog.component';
 
 /**
  * Max characters of log JSONL to copy to the clipboard for a bug report.
@@ -435,10 +439,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open the general feedback URL in a new browser window
+   * Open the in-app usability feedback dialog (thumbs up/down + verbatim).
+   * Posts to /usability_feedback via UsabilityFeedbackService.
    */
   openFeedbackUrl(): void {
-    window.open('https://github.com/ericfitz/tmi-ux/issues/new', '_blank');
+    this.dialog.open<UsabilityFeedbackDialogComponent, UsabilityFeedbackDialogData>(
+      UsabilityFeedbackDialogComponent,
+      {
+        width: '480px',
+        data: { surface: 'navbar' },
+      },
+    );
   }
 
   /**
