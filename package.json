@@ -95,7 +95,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.1",
     "fontkit": "^2.0.4",
-    "marked": "^17.0.6",
+    "marked": "^18.0.3",
     "mermaid": "^11.15.0",
     "ngx-markdown": "^21.3.0",
     "pdf-lib": "^1.17.1",
@@ -109,7 +109,7 @@
     "zone.js": "~0.16.2"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "2.4.10",
+    "@analogjs/vite-plugin-angular": "^2.5.0",
     "@angular-devkit/build-angular": "^21.2.10",
     "@angular-eslint/builder": "^21.3.1",
     "@angular-eslint/eslint-plugin": "^21.3.1",
@@ -202,10 +202,7 @@
   },
   "comments": {
     "dependencies": {
-      "@antv/x6": "Pinned to v2.x - v3.x has breaking changes that require significant refactoring"
-    },
-    "devDependencies": {
-      "@analogjs/vite-plugin-angular": "Pinned to 2.4.10 - 2.5.0+ imports zone.js/dist/zone-patch-rxjs-interop, which is not exported by zone.js@0.16.x"
+      "@antv/x6": "Pinned to v2.x - blocked by upstream antvis/X6#5048 (ESM/CJS module type conflict in v3.x). Tracking in issue #446"
     }
   }
 }
