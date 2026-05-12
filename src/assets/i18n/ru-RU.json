@@ -1195,7 +1195,7 @@
   },
   "navbar": {
     "admin": "Админ",
-    "appTitle": "TMI: улучшенное моделирование угроз.",
+    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Копировать email пользователя в буфер обмена",
     "dashboard": "Панель",
     "feedback": "Сообщить об ошибке, запросить функцию или оставить отзыв",

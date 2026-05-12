@@ -1195,7 +1195,7 @@
   },
   "navbar": {
     "admin": "Administración",
-    "appTitle": "TMI: modelado de amenazas mejorado.",
+    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copiar correo del usuario al portapapeles",
     "dashboard": "Panel",
     "feedback": "Informar de un error, solicitar una funcionalidad o enviar comentarios",

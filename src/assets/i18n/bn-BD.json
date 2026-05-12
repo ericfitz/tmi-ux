@@ -1153,7 +1153,7 @@
   },
   "navbar": {
     "admin": "অ্যাডমিন",
-    "appTitle": "TMI: থ্রেট মডেলিং ইমপ্রুভড",
+    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
     "dashboard": "ড্যাশবোর্ড",
     "feedback": "একটি বাগ রিপোর্ট করুন, একটি ফিচার অনুরোধ করুন বা মতামত দিন",
@@ -2568,7 +2568,7 @@
   "mermaidViewer.resetZoom": "জুম রিসেট করুন",
   "mermaidViewer.zoomIn": "জুম ইন করুন",
   "mermaidViewer.zoomOut": "জুম আউট করুন",
-  "navbar.appTitle": "TMI: threat modeling improved।",
+  "navbar.appTitle": "TMI: Threat Modeling Improved",
   "navbar.copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
   "navbar.feedbackMenu.provideFeedback": "মতামত দিন",
   "navbar.feedbackMenu.reportBug": "বাগ রিপোর্ট করুন",

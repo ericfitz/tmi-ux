@@ -1446,7 +1446,7 @@
   },
   "navbar": {
     "admin": "Admin",
-    "appTitle": "TMI: threat modeling improved.",
+    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy user email to clipboard",
     "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
@@ -1470,7 +1470,8 @@
       "serverDegraded": "Server degraded",
       "serverError": "Server error",
       "serverOffline": "Server offline"
-    }
+    },
+    "appTitle.lint-skip": "Proper-name expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case, no terminal punctuation."
   },
   "noteEditor": {
     "characterCount": "{{Current}} / {{max}} characters",
