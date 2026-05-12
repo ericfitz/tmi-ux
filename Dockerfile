@@ -4,7 +4,7 @@
 # Stage 1: Build the Angular application
 # Use the host's native architecture for the build stage — the output is
 # static JS/CSS/HTML so it doesn't matter what arch compiles it.
-FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:24-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -25,7 +25,7 @@ COPY . .
 RUN pnpm run build:hosted-container
 
 # Stage 2: Production server
-FROM node:22-alpine
+FROM node:24-alpine
 ARG APP_VERSION=unknown
 LABEL org.opencontainers.image.version=$APP_VERSION
 

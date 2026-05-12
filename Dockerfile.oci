@@ -5,8 +5,8 @@
 # Stage 1: Build the Angular application
 FROM container-registry.oracle.com/os/oraclelinux:9-slim AS builder
 
-# Install Node.js 22 LTS from Oracle AppStream
-RUN microdnf module enable -y nodejs:22 && \
+# Install Node.js 24 LTS from Oracle AppStream
+RUN microdnf module enable -y nodejs:24 && \
     microdnf install -y nodejs npm && \
     microdnf clean all && \
     rm -rf /var/cache/yum
@@ -41,8 +41,8 @@ FROM container-registry.oracle.com/os/oraclelinux:9-slim
 ARG APP_VERSION=unknown
 LABEL org.opencontainers.image.version=$APP_VERSION
 
-# Install Node.js 22 LTS from Oracle AppStream
-RUN microdnf module enable -y nodejs:22 && \
+# Install Node.js 24 LTS from Oracle AppStream
+RUN microdnf module enable -y nodejs:24 && \
     microdnf install -y nodejs && \
     microdnf clean all && \
     rm -rf /var/cache/yum
