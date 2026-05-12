@@ -41,6 +41,7 @@ import {
   UsabilityFeedbackDialogComponent,
   UsabilityFeedbackDialogData,
 } from '../../../shared/components/usability-feedback-dialog/usability-feedback-dialog.component';
+import { captureViewportScreenshot } from '../../utils/capture-screenshot';
 
 /**
  * Max characters of log JSONL to copy to the clipboard for a bug report.
@@ -440,16 +441,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   /**
    * Open the in-app usability feedback dialog (thumbs up/down + verbatim).
+   * Captures a viewport screenshot BEFORE rendering the dialog so the
+   * snapshot reflects what the user was looking at, not the feedback UI.
    * Posts to /usability_feedback via UsabilityFeedbackService.
    */
   openFeedbackUrl(): void {
-    this.dialog.open<UsabilityFeedbackDialogComponent, UsabilityFeedbackDialogData>(
-      UsabilityFeedbackDialogComponent,
-      {
-        width: '480px',
-        data: { surface: 'navbar' },
-      },
-    );
+    // Wait one animation frame so the menu overlay finishes detaching, then
+    // capture the page, then open the dialog. The capture is best-effort —
+    // if it fails or takes too long the dialog still opens without a thumb.
+    requestAnimationFrame(() => {
+      void captureViewportScreenshot().then(screenshot => {
+        this.dialog.open<UsabilityFeedbackDialogComponent, UsabilityFeedbackDialogData>(
+          UsabilityFeedbackDialogComponent,
+          {
+            width: '480px',
+            data: { surface: 'navbar', screenshot: screenshot ?? undefined },
+          },
+        );
+      });
+    });
   }
 
   /**

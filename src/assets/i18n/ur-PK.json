@@ -2141,6 +2141,9 @@
   },
   "usabilityFeedback": {
     "prompt": "کیا یہ تجربہ مفید تھا؟",
+    "screenshotAlt": "جائزہ لیے جانے والے صفحے کا لیا گیا اسکرین شاٹ۔",
+    "screenshotLabel": "منسلک اسکرین شاٹ",
+    "screenshotRemove": "اسکرین شاٹ ہٹائیں",
     "snackbarFailed": "رائے ارسال نہیں ہو سکی۔ بعد میں دوبارہ کوشش کریں۔",
     "snackbarSubmitted": "رائے کا شکریہ۔",
     "submit": "رائے بھیجیں",

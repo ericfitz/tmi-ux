@@ -2143,6 +2143,9 @@
   },
   "usabilityFeedback": {
     "prompt": "War diese Erfahrung hilfreich?",
+    "screenshotAlt": "Aufgenommener Screenshot der überprüften Seite.",
+    "screenshotLabel": "Angehängter Screenshot",
+    "screenshotRemove": "Screenshot entfernen",
     "snackbarFailed": "Feedback konnte nicht gesendet werden. Versuchen Sie es später.",
     "snackbarSubmitted": "Danke für Ihr Feedback.",
     "submit": "Feedback senden",

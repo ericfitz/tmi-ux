@@ -2131,6 +2131,9 @@
   },
   "usabilityFeedback": {
     "prompt": "이 경험이 도움이 되었나요?",
+    "screenshotAlt": "검토 중인 페이지의 캡처된 스크린샷.",
+    "screenshotLabel": "첨부된 스크린샷",
+    "screenshotRemove": "스크린샷 제거",
     "snackbarFailed": "피드백을 보낼 수 없습니다. 나중에 다시 시도하세요.",
     "snackbarSubmitted": "피드백 감사합니다.",
     "submit": "피드백 보내기",

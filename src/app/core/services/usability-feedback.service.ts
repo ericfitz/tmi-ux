@@ -19,6 +19,13 @@ export interface UsabilityFeedbackInput {
   sentiment: UsabilityFeedbackSentiment;
   surface: UsabilityFeedbackSurface;
   verbatim?: string;
+  /**
+   * Optional viewport screenshot as a data URL (typically `image/jpeg`).
+   * The server contract for this field is tracked in ericfitz/tmi (see
+   * the schema bug filed alongside this change). Until the server adopts
+   * the field, the value is sent but silently dropped server-side.
+   */
+  screenshot?: string;
 }
 
 export interface UsabilityFeedbackResponse {
@@ -60,6 +67,10 @@ export class UsabilityFeedbackService {
     const trimmed = input.verbatim?.trim();
     if (trimmed) {
       body['verbatim'] = trimmed;
+    }
+
+    if (input.screenshot) {
+      body['screenshot'] = input.screenshot;
     }
 
     const uaData = (navigator as unknown as NavigatorWithUAData).userAgentData;

@@ -2131,6 +2131,9 @@
   },
   "usabilityFeedback": {
     "prompt": "האם החוויה הייתה מועילה?",
+    "screenshotAlt": "צילום מסך שנלכד של הדף הנבדק.",
+    "screenshotLabel": "צילום מסך מצורף",
+    "screenshotRemove": "הסר צילום מסך",
     "snackbarFailed": "שליחת המשוב נכשלה. נסו שוב מאוחר יותר.",
     "snackbarSubmitted": "תודה על המשוב.",
     "submit": "שליחת משוב",

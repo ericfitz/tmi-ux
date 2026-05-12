@@ -2154,6 +2154,9 @@
   },
   "usabilityFeedback": {
     "prompt": "क्या यह अनुभव सहायक था?",
+    "screenshotAlt": "समीक्षा किए जा रहे पृष्ठ का कैप्चर किया गया स्क्रीनशॉट।",
+    "screenshotLabel": "संलग्न स्क्रीनशॉट",
+    "screenshotRemove": "स्क्रीनशॉट हटाएँ",
     "snackbarFailed": "फ़ीडबैक नहीं भेजा जा सका। बाद में पुनः प्रयास करें।",
     "snackbarSubmitted": "फ़ीडबैक के लिए धन्यवाद।",
     "submit": "फ़ीडबैक भेजें",

@@ -2152,6 +2152,9 @@
   },
   "usabilityFeedback": {
     "prompt": "هل كانت هذه التجربة مفيدة؟",
+    "screenshotAlt": "لقطة شاشة ملتقطة للصفحة قيد المراجعة.",
+    "screenshotLabel": "لقطة الشاشة المرفقة",
+    "screenshotRemove": "إزالة لقطة الشاشة",
     "snackbarFailed": "تعذر إرسال الملاحظات. حاول لاحقًا.",
     "snackbarSubmitted": "شكرًا على ملاحظاتك.",
     "submit": "إرسال الملاحظات",

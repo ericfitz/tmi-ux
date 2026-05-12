@@ -2141,6 +2141,9 @@
   },
   "usabilityFeedback": {
     "prompt": "Apakah pengalaman ini membantu?",
+    "screenshotAlt": "Tangkapan layar halaman yang sedang ditinjau.",
+    "screenshotLabel": "Tangkapan layar terlampir",
+    "screenshotRemove": "Hapus tangkapan layar",
     "snackbarFailed": "Gagal mengirim umpan balik. Coba lagi nanti.",
     "snackbarSubmitted": "Terima kasih atas umpan baliknya.",
     "submit": "Kirim umpan balik",

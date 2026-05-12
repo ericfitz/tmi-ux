@@ -2154,6 +2154,9 @@
   },
   "usabilityFeedback": {
     "prompt": "この体験は役に立ちましたか？",
+    "screenshotAlt": "レビュー中のページのスクリーンショット。",
+    "screenshotLabel": "添付スクリーンショット",
+    "screenshotRemove": "スクリーンショットを削除",
     "snackbarFailed": "フィードバックを送信できませんでした。後で再試行してください。",
     "snackbarSubmitted": "フィードバックありがとうございます。",
     "submit": "フィードバックを送信",

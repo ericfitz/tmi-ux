@@ -46,4 +46,17 @@ describe('UsabilityFeedbackService', () => {
     const [, body] = mockApi.post.mock.calls[0];
     expect('verbatim' in body).toBe(false);
   });
+
+  it('forwards screenshot when provided', () => {
+    const png = 'data:image/jpeg;base64,abc';
+    service.submit({ sentiment: 'up', surface: 'navbar', screenshot: png }).subscribe();
+    const [, body] = mockApi.post.mock.calls[0];
+    expect(body.screenshot).toBe(png);
+  });
+
+  it('omits screenshot when not provided', () => {
+    service.submit({ sentiment: 'up', surface: 'navbar' }).subscribe();
+    const [, body] = mockApi.post.mock.calls[0];
+    expect('screenshot' in body).toBe(false);
+  });
 });

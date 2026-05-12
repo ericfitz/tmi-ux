@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,6 +21,13 @@ export interface UsabilityFeedbackDialogData {
   surface: string;
   /** Pre-selected sentiment, if any. Otherwise the user picks. */
   initialSentiment?: UsabilityFeedbackSentiment;
+  /**
+   * Optional pre-captured screenshot (data URL, image/jpeg or image/png).
+   * The caller is expected to capture before opening the dialog so the
+   * capture excludes the dialog overlay itself. Showing the thumbnail in
+   * the dialog lets the user inspect and remove it before submission.
+   */
+  screenshot?: string;
 }
 
 export interface UsabilityFeedbackDialogResult {
@@ -45,6 +52,7 @@ export class UsabilityFeedbackDialogComponent {
   readonly form: FormGroup;
   readonly maxVerbatim = VERBATIM_MAX;
   submitting = false;
+  screenshot: string | null;
 
   constructor(
     private readonly _dialogRef: MatDialogRef<
@@ -57,7 +65,9 @@ export class UsabilityFeedbackDialogComponent {
     private readonly _snack: MatSnackBar,
     private readonly _transloco: TranslocoService,
     private readonly _logger: LoggerService,
+    private readonly _cdr: ChangeDetectorRef,
   ) {
+    this.screenshot = data.screenshot ?? null;
     this.form = fb.group({
       sentiment: [data.initialSentiment ?? null, Validators.required],
       verbatim: ['', [Validators.maxLength(VERBATIM_MAX)]],
@@ -70,6 +80,11 @@ export class UsabilityFeedbackDialogComponent {
 
   get sentiment(): UsabilityFeedbackSentiment | null {
     return this.form.get('sentiment')!.value;
+  }
+
+  removeScreenshot(): void {
+    this.screenshot = null;
+    this._cdr.markForCheck();
   }
 
   onCancel(): void {
@@ -89,6 +104,7 @@ export class UsabilityFeedbackDialogComponent {
         sentiment,
         surface: this.data.surface,
         verbatim,
+        screenshot: this.screenshot ?? undefined,
       })
       .subscribe({
         next: () => {

@@ -2179,6 +2179,9 @@
   },
   "usabilityFeedback": {
     "prompt": "Esta experiência foi útil?",
+    "screenshotAlt": "Captura de tela da página em análise.",
+    "screenshotLabel": "Captura de tela anexada",
+    "screenshotRemove": "Remover captura de tela",
     "snackbarFailed": "Não foi possível enviar o feedback. Tente novamente mais tarde.",
     "snackbarSubmitted": "Obrigado pelo feedback.",
     "submit": "Enviar feedback",

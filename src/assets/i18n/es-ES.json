@@ -2141,6 +2141,9 @@
   },
   "usabilityFeedback": {
     "prompt": "¿Te resultó útil esta experiencia?",
+    "screenshotAlt": "Captura de pantalla de la página revisada.",
+    "screenshotLabel": "Captura de pantalla adjunta",
+    "screenshotRemove": "Quitar captura de pantalla",
     "snackbarFailed": "No se pudo enviar la opinión. Inténtalo más tarde.",
     "snackbarSubmitted": "Gracias por tu opinión.",
     "submit": "Enviar comentarios",

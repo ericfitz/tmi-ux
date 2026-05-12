@@ -2141,6 +2141,9 @@
   },
   "usabilityFeedback": {
     "prompt": "此次体验是否有帮助？",
+    "screenshotAlt": "所审视页面的截图。",
+    "screenshotLabel": "附加的截图",
+    "screenshotRemove": "移除截图",
     "snackbarFailed": "反馈提交失败，请稍后重试。",
     "snackbarSubmitted": "感谢您的反馈。",
     "submit": "发送反馈",

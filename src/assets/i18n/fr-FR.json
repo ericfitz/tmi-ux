@@ -2143,6 +2143,9 @@
   },
   "usabilityFeedback": {
     "prompt": "Cette expérience a-t-elle été utile ?",
+    "screenshotAlt": "Capture d’écran de la page examinée.",
+    "screenshotLabel": "Capture d’écran jointe",
+    "screenshotRemove": "Retirer la capture d’écran",
     "snackbarFailed": "L’envoi de l’avis a échoué. Réessayez plus tard.",
     "snackbarSubmitted": "Merci pour votre avis.",
     "submit": "Envoyer l’avis",

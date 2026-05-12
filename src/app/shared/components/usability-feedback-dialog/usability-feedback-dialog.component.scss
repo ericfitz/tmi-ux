@@ -18,3 +18,31 @@
 .verbatim-field {
   width: 100%;
 }
+
+.screenshot-block {
+  margin-top: 0.5rem;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.screenshot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.screenshot-label {
+  font-size: 0.85rem;
+  color: rgb(0 0 0 / 60%);
+}
+
+.screenshot-thumb {
+  display: block;
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  border: 1px solid rgb(0 0 0 / 8%);
+  border-radius: 2px;
+}

@@ -2823,6 +2823,9 @@
   "triage.viewDetails": "বিবরণ দেখুন",
   "usabilityFeedback": {
     "prompt": "এই অভিজ্ঞতা কি সহায়ক ছিল?",
+    "screenshotAlt": "পর্যালোচিত পৃষ্ঠার ক্যাপচার করা স্ক্রিনশট।",
+    "screenshotLabel": "সংযুক্ত স্ক্রিনশট",
+    "screenshotRemove": "স্ক্রিনশট সরান",
     "snackbarFailed": "মতামত পাঠানো যায়নি। পরে চেষ্টা করুন।",
     "snackbarSubmitted": "মতামতের জন্য ধন্যবাদ।",
     "submit": "মতামত পাঠান",

@@ -45,6 +45,28 @@
       ></textarea>
       <mat-hint align="end">{{ form.get('verbatim')!.value.length }} / {{ maxVerbatim }}</mat-hint>
     </mat-form-field>
+
+    @if (screenshot) {
+      <div class="screenshot-block">
+        <div class="screenshot-header">
+          <span class="screenshot-label">{{ t('usabilityFeedback.screenshotLabel') }}</span>
+          <button
+            mat-icon-button
+            type="button"
+            class="screenshot-remove"
+            [matTooltip]="t('usabilityFeedback.screenshotRemove')"
+            (click)="removeScreenshot()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <img
+          [src]="screenshot"
+          [alt]="t('usabilityFeedback.screenshotAlt')"
+          class="screenshot-thumb"
+        />
+      </div>
+    }
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button type="button" (click)="onCancel()" [disabled]="submitting">
