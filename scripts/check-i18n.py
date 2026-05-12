@@ -210,7 +210,7 @@ def compare_keys(data1, data2, file1_name, file2_name, allowlist=None):
         for key in sorted(untranslated):
             print(f"  {key}")
     else:
-        print(f"\nNo untranslated placeholders detected.")
+        print("\nNo untranslated placeholders detected.")
 
 
 def confirm_overwrite(file_path, auto_yes):

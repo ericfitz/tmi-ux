@@ -17,6 +17,7 @@ import io
 import json
 import zipfile
 from pathlib import Path
+from xml.etree.ElementTree import Element  # noqa: S405 - type only; parsing uses defusedxml below
 
 import requests
 from defusedxml import ElementTree as ET
@@ -26,7 +27,7 @@ OUTPUT_PATH = Path(__file__).resolve().parent.parent / 'src' / 'assets' / 'cwe' 
 VIEW_ID = '699'
 
 
-def download_and_parse_xml() -> ET.Element:
+def download_and_parse_xml() -> Element:
     """Download the CWE XML zip and parse the XML content."""
     print(f'Downloading CWE XML from {CWE_XML_URL}...')
     response = requests.get(CWE_XML_URL, timeout=60)
@@ -38,10 +39,13 @@ def download_and_parse_xml() -> ET.Element:
             raise RuntimeError('No XML file found in zip archive')
         print(f'Parsing {xml_files[0]}...')
         with zf.open(xml_files[0]) as xml_file:
-            return ET.parse(xml_file).getroot()
+            root = ET.parse(xml_file).getroot()
+            if root is None:
+                raise RuntimeError('Parsed XML has no root element')
+            return root
 
 
-def get_namespace(root: ET.Element) -> str:
+def get_namespace(root: Element) -> str:
     """Extract the XML namespace from the root element."""
     tag = root.tag
     if tag.startswith('{'):
@@ -49,7 +53,7 @@ def get_namespace(root: ET.Element) -> str:
     return ''
 
 
-def collect_view_members(root: ET.Element, ns: str, view_id: str) -> set[str]:
+def collect_view_members(root: Element, ns: str, view_id: str) -> set[str]:
     """Collect all weakness IDs that are members of the given view, recursively through categories."""
     weakness_ids: set[str] = set()
     category_ids: set[str] = set()
@@ -59,7 +63,6 @@ def collect_view_members(root: ET.Element, ns: str, view_id: str) -> set[str]:
         if view.get('ID') == view_id:
             for member in view.findall(f'.//{{{ns}}}Has_Member'):
                 cwe_id = member.get('CWE_ID', '')
-                view_type = member.get('View_ID', '')
                 # Members can be weaknesses or categories
                 if cwe_id:
                     # We'll determine if it's a weakness or category below
@@ -102,7 +105,7 @@ def collect_view_members(root: ET.Element, ns: str, view_id: str) -> set[str]:
     return expanded
 
 
-def extract_text(element: ET.Element | None, ns: str) -> str:
+def extract_text(element: Element | None, ns: str) -> str:
     """Extract text content from an element, handling mixed content and nested tags."""
     if element is None:
         return ''
@@ -118,7 +121,7 @@ def extract_text(element: ET.Element | None, ns: str) -> str:
     return ' '.join(parts).strip()
 
 
-def get_parent_id(weakness: ET.Element, ns: str) -> str:
+def get_parent_id(weakness: Element, ns: str) -> str:
     """Get the parent CWE ID from ChildOf or MemberOf relationships."""
     # Try ChildOf first
     for rel in weakness.findall(f'.//{{{ns}}}Related_Weakness'):
@@ -133,7 +136,7 @@ def get_parent_id(weakness: ET.Element, ns: str) -> str:
     return ''
 
 
-def extract_weaknesses(root: ET.Element, ns: str, member_ids: set[str]) -> list[dict]:
+def extract_weaknesses(root: Element, ns: str, member_ids: set[str]) -> list[dict]:
     """Extract weakness data for all members, filtered to Base abstraction."""
     weaknesses: list[dict] = []
 
