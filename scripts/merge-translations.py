@@ -305,15 +305,15 @@ def print_summary(summary: dict) -> None:
     print(f"Translations file: {summary['translations_file']}")
 
     if summary["success"]:
-        print(f"\nStatus: SUCCESS")
+        print("\nStatus: SUCCESS")
         print(f"Backup created: {summary['backup_file']}")
-        print(f"\nStatistics:")
+        print("\nStatistics:")
         print(f"  Keys updated:   {summary['keys_updated']}")
         print(f"  Keys added:     {summary['keys_added']}")
         print(f"  Keys unchanged: {summary['keys_unchanged']}")
         print(f"  Total keys:     {summary['total_keys']}")
     else:
-        print(f"\nStatus: FAILED")
+        print("\nStatus: FAILED")
         print(f"Error: {summary['error']}")
 
     print("\n" + "=" * 60)

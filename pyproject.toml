@@ -1,0 +1,37 @@
+[project]
+name = "tmi-ux-scripts"
+version = "0.0.0"
+description = "Dev/maintenance scripts for tmi-ux (i18n tooling, CWE extraction, etc.). Not a published package."
+requires-python = ">=3.13"
+dependencies = [
+    "defusedxml",
+    "pyyaml",
+    "requests",
+]
+
+[tool.ruff]
+# Scripts include argparse help text and example commands that read better unwrapped;
+# 120 lets those stay on one line.
+line-length = 120
+target-version = "py313"
+extend-exclude = [".venv", "node_modules", "dist", "scripts/i18n_style"]
+
+[tool.ruff.lint]
+# Default ruff rule set (Pyflakes + a subset of pycodestyle).
+# Expand to include "I", "UP", "B" etc. when you want stricter linting.
+select = ["E", "F"]
+
+[tool.pyright]
+include = ["scripts"]
+exclude = [
+    "**/__pycache__",
+    "**/.*",
+    ".venv",
+    "node_modules",
+    "dist",
+    "scripts/i18n_style",
+]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
