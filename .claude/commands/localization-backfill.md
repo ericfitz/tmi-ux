@@ -1,267 +1,214 @@
-# Localization Backfill Command
+---
+name: localization-backfill
+description: Translate every missing or untranslated key across all i18n locale files using the master locale as the source. Tool-agnostic; reads project i18n configuration.
+---
 
-Automatically translate missing and untranslated keys in all localization files using the English master as the source.
+# Localization Backfill
 
-## Overview
+Translate every missing or untranslated key across all i18n locale files using the master locale as the source.
 
-This command performs a complete localization backfill:
-1. Runs deduplication to consolidate duplicate translation values into references
-2. Analyzes all language files to identify missing translations AND potentially untranslated strings (values identical to English)
-3. Spawns parallel sub-agents to translate each language independently
-4. Validates all translations and updates the files
-5. Reports final coverage statistics
+This command orchestrates a set of skills; the skills do not assume any particular i18n tooling. Project-specific paths and commands come from `.claude/i18n.config.json`.
 
-## Process
+## Bundled scripts
 
-### Step 1: Run Deduplication
+- `localization-backfill.scripts/find_duplicate_localizations.py` — bundled dedupe analyzer used in Step 1 of this command.
+- The translation analysis itself runs through [[analyze-localization-files]], which bundles its own `scripts/check-i18n.py`.
 
-Before analyzing for missing translations, consolidate duplicate values:
+## Configuration
 
-1. Run `pnpm run loc-dedupe` to detect duplicate translation values across `en-US.json`
-2. Read the generated `localization_dedup_plan.txt`
-3. If the plan contains REFER recommendations:
-   a. Apply each REFER change to `en-US.json` — replace the literal value with the `{{reference}}` template
-   b. Propagate the same reference changes to all non-English locale files using a jq script:
-      - Back up all locale files first: `mkdir -p /tmp/i18n-dedup-backups && cp src/assets/i18n/*.json /tmp/i18n-dedup-backups/`
-      - Build a jq filter from the REFER entries (e.g., `.admin.groups.membersDialog.searchPlaceholder = "{{transfer.userPicker.searchPlaceholder}}"`)
-      - Run the jq filter against each non-English locale file
-   c. Run `pnpm run format` to normalize formatting
-   d. Run `pnpm run loc-dedupe` again to verify 0 duplicate groups remain
-4. If no duplicates are found, skip this step
+Same config used by the i18n skill family — see [[analyze-localization-files]] for the full schema. Required fields:
 
-### Step 2: Analyze Localization Files
+- `locales_dir`
+- `master_locale`
+- `file_extension`
 
-Use the `analyze_localization_files` skill:
+Optional:
 
-1. Run `pnpm run check-i18n` to compare all language files against `en-US.json`
-2. Parse the output to build task manifests for each language
-3. For each language, extract:
-   - Language code (e.g., `ar-SA`, `es-ES`)
-   - Language name (e.g., `Arabic (Saudi Arabia)`, `Spanish (Spain)`)
-   - List of missing keys with their English values
-   - List of potentially untranslated keys (same value as English) with their values
-   - Any extra keys (for reporting)
-
-Language code to name mapping:
-| Code | Language Name |
-|------|---------------|
-| ar-SA | Arabic (Saudi Arabia) |
-| bn-BD | Bengali (Bangladesh) |
-| de-DE | German (Germany) |
-| es-ES | Spanish (Spain) |
-| fr-FR | French (France) |
-| he-IL | Hebrew (Israel) |
-| hi-IN | Hindi (India) |
-| id-ID | Indonesian (Indonesia) |
-| ja-JP | Japanese (Japan) |
-| ko-KR | Korean (South Korea) |
-| pt-BR | Portuguese (Brazil) |
-| ru-RU | Russian (Russia) |
-| th-TH | Thai (Thailand) |
-| ur-PK | Urdu (Pakistan) |
-| zh-CN | Chinese (Simplified, China) |
-
-### Step 3: Display Analysis Summary
-
-Present the analysis results to the user:
-
-```
-📊 Localization Analysis Complete
-
-Master file: src/assets/i18n/en-US.json
-Total languages: 15
-
-┌─────────┬──────────────────────────────┬─────────────┬──────────────┐
-│ Code    │ Language                     │ Missing     │ Untranslated │
-├─────────┼──────────────────────────────┼─────────────┼──────────────┤
-│ ar-SA   │ Arabic (Saudi Arabia)        │ 0           │ 143          │
-│ bn-BD   │ Bengali (Bangladesh)         │ 0           │ 337          │
-│ de-DE   │ German (Germany)             │ 0           │ 27           │
-│ ...     │ ...                          │ ...         │ ...          │
-└─────────┴──────────────────────────────┴─────────────┴──────────────┘
-
-Total strings to translate: 2,847 (missing: 0, untranslated: 2,847)
-Languages needing work: 15
-Languages complete: 0
-```
-
-If no translations are needed, report that and exit:
-```
-✅ All localization files are complete! No missing or untranslated strings found.
-```
-
-### Step 4: Spawn Translation Sub-Agents
-
-For each language with missing or untranslated strings, spawn a sub-agent using the Task tool:
-
-1. Use `subagent_type="general-purpose"`
-2. Run ALL agents in parallel (single message with multiple Task calls)
-3. Each agent receives its language's task manifest (combining both missing and untranslated keys)
-
-**Sub-agent prompt template:**
-
-```
-You are translating keys for {{LANGUAGE_NAME}} ({{LANGUAGE_CODE}}).
-
-Target file: {{FILE_PATH}}
-
-## Instructions
-
-For each key below, perform these steps:
-
-1. **Check if localizable**: Apply the detect_non_localizable skill rules:
-   - Skip URLs, email addresses, file paths, version numbers
-   - Skip UUIDs, config keys (SCREAMING_SNAKE_CASE), pure numbers
-   - Skip template-only values like "{{common.name}}"
-   - Skip date format strings that should remain standard (e.g., "A4", "usLetter")
-   - Skip proper nouns, brand names, and technical terms that don't translate
-   - When in doubt, translate it
-
-2. **Translate**: For localizable strings, translate to {{LANGUAGE_NAME}}:
-   - Preserve all placeholders exactly ({{var}}, {var}, %s, etc.)
-   - Match the formality/tone of the original
-   - Keep similar length when reasonable
-   - Use appropriate {{LANGUAGE_NAME}} conventions
-
-3. **Validate**: Check each translation:
-   - All placeholders from original are present
-   - No extra placeholders added
-   - Not empty or just whitespace
-   - Reasonable length ratio
-
-## Keys to Translate
-
-This includes both missing keys (not present in target file) and untranslated keys (present but identical to English):
-
-{{KEYS_JSON}}
-
-## Output Format
-
-Return a JSON object with the translations:
-
-```json
+```jsonc
 {
-  "translations": {
-    "key.path.here": "translated value",
-    "another.key": "another translation"
-  },
-  "skipped": [
-    {"key": "some.key", "reason": "URL - non-localizable"}
-  ],
-  "errors": [
-    {"key": "problem.key", "error": "description of issue"}
-  ]
+  "format_command":    "<shell command that normalizes formatting, e.g. 'pnpm run format'>",
+  "dedupe_plan_file":  "<path where the dedupe script writes its plan, default 'localization_dedup_plan.txt'>"
 }
 ```
 
-IMPORTANT: Do NOT create any git commits. Only modify the localization files. The parent agent will handle committing.
+If `format_command` is absent, the format step is skipped.
 
-Now process all {{COUNT}} keys.
+## Process
+
+### Step 1: Deduplicate
+
+Run the bundled dedupe script (`$COMMAND_DIR` is the directory holding this `.md` file):
+
+```bash
+uv run "$COMMAND_DIR/localization-backfill.scripts/find_duplicate_localizations.py" \
+  --skippolicy --reference
 ```
 
-### Step 5: Collect Sub-Agent Results
+The script reads `.claude/i18n.config.json` to find the master locale, then writes its plan to `localization_dedup_plan.txt` in the current directory (override with `-o`).
 
-1. Wait for all sub-agents to complete
-2. Collect results from each:
-   - Successful translations
-   - Skipped keys (with reasons)
-   - Errors (if any)
-3. Track overall progress
+Then:
 
-### Step 6: Update Localization Files
+1. Read the plan file.
+2. If it contains REFER recommendations:
+   1. Back up locale files: `mkdir -p /tmp/i18n-dedup-backups && cp <locales_dir>/*.<ext> /tmp/i18n-dedup-backups/`.
+   2. Apply each REFER change to the master locale — replace the literal value with a `{{reference}}` template.
+   3. Apply the same reference change to every non-master locale (jq filter).
+   4. Run `format_command` from config if present.
+   5. Re-run the dedupe script to verify zero duplicates remain.
+3. If no duplicates, continue to step 2.
 
-For each language with successful translations:
+### Step 2: Analyze locales
 
-1. Use the `update_json_localization_file` skill approach:
-   - Read the current language file
-   - Apply all translations (additions/updates)
-   - Write back with proper formatting (2-space indent, final newline)
-   - Create backup before writing
+Use the [[analyze-localization-files]] skill to build per-locale task manifests:
 
-2. Track changes:
-   - Keys added
-   - Keys updated
-   - Any write errors
+For each locale, extract:
+- Locale code (BCP 47)
+- Missing keys (with master values)
+- Potentially untranslated keys (value identical to master) — these are included for re-translation
+- Extra keys (reported only)
 
-### Step 7: Final Validation
+### Step 3: Display analysis summary
 
-Use the `validate_localization_coverage` skill:
-
-1. Run `pnpm run check-i18n` again
-2. Parse output to generate coverage report
-3. Calculate final statistics
-
-### Step 8: Display Final Report
+Present to the user (locale display names should come from `Intl.DisplayNames`, not a hand-rolled map):
 
 ```
-✅ Localization Backfill Complete
+Localization analysis complete
 
-## Summary
+Master file: <locales_dir>/<master_locale>.<ext>
+Total locales: <N>
 
-Total languages processed: 15
-Total strings translated: 2,500
-Total strings skipped: 347 (non-localizable)
-Errors: 0
+  Code    Missing  Untranslated
+  ar-SA   0        143
+  bn-BD   0        337
+  de-DE   0        27
+  …
 
-## Per-Language Results
+Total strings to translate: <X>
+Locales needing work:       <Y>
+Locales complete:           <Z>
+```
 
-┌─────────┬──────────────────────────────┬────────────┬─────────┬──────────┐
-│ Code    │ Language                     │ Translated │ Skipped │ Errors   │
-├─────────┼──────────────────────────────┼────────────┼─────────┼──────────┤
-│ ar-SA   │ Arabic (Saudi Arabia)        │ 120        │ 23      │ 0        │
-│ bn-BD   │ Bengali (Bangladesh)         │ 310        │ 27      │ 0        │
-│ de-DE   │ German (Germany)             │ 20         │ 7       │ 0        │
-│ ...     │ ...                          │ ...        │ ...     │ ...      │
-└─────────┴──────────────────────────────┴────────────┴─────────┴──────────┘
+If nothing to translate, report and exit.
 
-## Final Validation
+### Step 4: Spawn translation sub-agents in parallel
 
-Run `pnpm run check-i18n` again to verify:
-- All missing keys are now present
-- Remaining "potentially untranslated" entries are intentionally non-localizable
+For each locale with work, dispatch a `general-purpose` sub-agent (one Task call per locale, all in a single message so they run in parallel).
 
-📄 Files modified:
-  - src/assets/i18n/ar-SA.json (120 keys updated)
-  - src/assets/i18n/bn-BD.json (310 keys updated)
-  - src/assets/i18n/de-DE.json (20 keys updated)
-  ...
+Sub-agent prompt template:
+
+```
+You are translating keys for {LOCALE_CODE}.
+
+Target file: {FILE_PATH}
+
+## Instructions
+
+For each key below:
+
+1. Check if localizable using [[detect-non-localizable]] rules:
+   - Skip URLs, emails, file paths, version numbers
+   - Skip UUIDs, SCREAMING_SNAKE_CASE config keys, pure numbers
+   - Skip template-only values like "{{common.name}}"
+   - Skip format-token strings (e.g. "A4", "usLetter") that should remain standard
+   - Skip proper nouns and brand names that don't translate
+   - When in doubt, translate.
+
+2. Translate using [[translate-to-language]]:
+   - Preserve all placeholders exactly ({{var}}, {var}, %s, etc.)
+   - Match the formality the locale expects for UI text
+   - Keep similar length when reasonable
+   - Use natural target-language phrasing
+
+3. Validate using [[validate-translation]]:
+   - All source placeholders present, none added
+   - Not empty/whitespace
+   - Reasonable length ratio
+
+## Keys to translate
+
+This list combines missing keys (absent in target) and untranslated keys
+(present but identical to source):
+
+{KEYS_JSON}
+
+## Output
+
+```json
+{
+  "translations": {"key.path": "translated value", ...},
+  "skipped":      [{"key": "x", "reason": "URL - non-localizable"}],
+  "errors":       [{"key": "y", "error": "description"}]
+}
+```
+
+IMPORTANT: Do NOT create git commits. The parent agent handles commits.
+```
+
+### Step 5: Collect results
+
+Wait for all sub-agents, then collect translations, skipped keys, and errors per locale.
+
+### Step 6: Write translations
+
+Use [[update-json-localization-file]] for each locale:
+- Read current file
+- Apply translations (additions/updates)
+- Atomic write with 2-space indent and final newline
+- Backup before writing
+
+### Step 7: Final validation
+
+Run [[validate-localization-coverage]] to produce a final coverage report.
+
+### Step 8: Display final report
+
+```
+Localization backfill complete
+
+Total locales processed:    <N>
+Total strings translated:   <X>
+Total strings skipped:      <Y>  (non-localizable)
+Errors:                     <Z>
+
+Per-locale:
+  Code    Translated  Skipped  Errors
+  ar-SA   120         23       0
+  …
+
+Files modified:
+  <locales_dir>/ar-SA.<ext> (120 keys)
+  …
 ```
 
 ## Error Handling
 
-- **check-i18n fails**: Report error and exit
-- **Sub-agent fails**: Log error, continue with other languages, report at end
-- **File write fails**: Log error, continue with other files, report at end
-- **Invalid JSON in response**: Log error, skip that language
-- **Validation fails**: Log warnings, still apply translations if placeholders are valid
+| Error | Behavior |
+|-------|----------|
+| `check_command` fails | Report and exit. |
+| Sub-agent fails | Log, continue other locales, report at end. |
+| File write fails | Log, continue, report at end. |
+| Invalid JSON in sub-agent response | Skip that locale, log. |
+| Validation fails for a translation | Apply it if placeholders are valid; otherwise drop and log. |
 
 ## Usage
 
-```bash
-/localization-backfill           # Run full backfill
+```
+/localization-backfill
 ```
 
 ## Implementation Notes
 
-- All sub-agents run in parallel for speed
-- Each sub-agent handles one language completely
-- Backups are created before modifying files
-- The check-i18n script automatically sorts files
-- Progress is shown after all agents complete (no streaming updates)
-- Non-localizable strings are detected and skipped automatically
-- "Potentially untranslated" strings (identical to English) are included for translation
-- Some strings intentionally remain identical to English (proper nouns, technical terms, standard formats like "A4") - these are reported as skipped
+- All sub-agents run in parallel (one message, many Task calls).
+- Each sub-agent handles one locale end-to-end.
+- Backups are created before file modifications.
+- Non-localizable strings are detected and skipped.
+- "Potentially untranslated" strings (value identical to source) are re-translated; legitimate cases (proper nouns, format tokens) are reported as skipped.
 
 ## Skills Used
 
-This command orchestrates the following skills:
-1. `analyze_localization_files` - Initial analysis using check-i18n
-2. `detect_non_localizable` - Filter out non-translatable strings (inline in sub-agent)
-3. `translate_to_language` - Perform translations (inline in sub-agent)
-4. `validate_translation` - Verify translation quality (inline in sub-agent)
-5. `update_json_localization_file` - Write changes to files
-6. `validate_localization_coverage` - Final coverage report
-
----
-
-Now execute this process.
+- [[analyze-localization-files]] — analysis using the configured `check_command`.
+- [[detect-non-localizable]] — filter (inline in sub-agent).
+- [[translate-to-language]] — translate (inline in sub-agent).
+- [[validate-translation]] — verify (inline in sub-agent).
+- [[update-json-localization-file]] — write changes.
+- [[validate-localization-coverage]] — final coverage report.

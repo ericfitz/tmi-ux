@@ -1,65 +1,108 @@
 ---
 name: visual-regression-triage
-description: Triage visual regression test failures by presenting baseline/actual/diff images with task context, then guiding the user to fix the bug or update the baseline
+description: Use when a Playwright visual regression test fails (screenshot mismatch) or a user mentions a screenshot test failure. Presents baseline, actual, and diff images framed against the current task context, then helps the user decide bug vs. expected change.
 ---
 
 # Visual Regression Triage
 
-Use this skill when a Playwright visual regression test fails (screenshot mismatch) during `pnpm test:e2e` or when the user mentions a screenshot test failure.
+When a Playwright visual regression test fails, present the baseline, actual, and diff images alongside the user's current task context, then guide the user to either fix the underlying bug or update the baseline.
+
+## Configuration (optional)
+
+Reads `.local-projects.json` (walked up from `pwd`) to look up the GitHub owner/repo for the current project so that `gh issue view` can fetch task context. If `.local-projects.json` is missing or the current project isn't found, the skill falls back to whatever `gh` is configured to use.
+
+```jsonc
+{
+  "projects": [{
+    "name": "...",
+    "path": "<absolute repo path matching pwd>",
+    "github": {"owner": "...", "repo": "..."}
+  }]
+}
+```
+
+The skill identifies the current project by matching the parent directory of `pwd` to a project's `path` value.
+
+A skill-specific config file `.claude/visual-regression.config.json` is supported but optional:
+
+```jsonc
+{
+  "test_command":            "pnpm test:e2e --project=visual-regression",
+  "update_command":          "pnpm test:e2e --project=visual-regression --update-snapshots",
+  "results_glob":            "test-results/**/*-actual.png",
+  "snapshot_naming": {
+    "actual_suffix":   "-actual.png",
+    "expected_suffix": "-expected.png",
+    "diff_suffix":     "-diff.png"
+  }
+}
+```
+
+If the config is missing, defaults match Playwright's standard layout and use a generic `npx playwright test` invocation.
 
 ## Process
 
-### Step 1: Gather Task Context
+### 1. Gather task context
 
 Before examining images, understand what the user is working on:
 
-1. Run `git branch --show-current` to get the current branch
-2. Run `git log --oneline -5` to see recent commits — look for issue references and conventional commit types
-3. If commits or branch name reference a GitHub issue number, run `gh issue view <number> --repo ericfitz/tmi-ux --json title,body` to get the issue context
-4. Run `git diff --name-only HEAD~5` to see recently changed files
+1. `git branch --show-current` — current branch.
+2. `git log --oneline -5` — recent commits; look for issue numbers and Conventional Commit types.
+3. If commits or branch name reference an issue number `#N`, look up the issue:
+   ```bash
+   OWNER=$(jq -r ... .local-projects.json)   # from config
+   REPO=$(jq -r ...)
+   gh issue view "$N" --repo "$OWNER/$REPO" --json title,body
+   ```
+   If `OWNER`/`REPO` are unavailable, run `gh issue view "$N"` with no `--repo` flag.
+4. `git diff --name-only HEAD~5` — recently changed files.
 
-### Step 2: Parse Failure Output
+### 2. Parse failure output
 
-From the Playwright test output (provided by the user or from the most recent test run), identify which screenshot(s) failed. Playwright stores three files per failure in the test results directory (typically `test-results/`):
+From the Playwright run output (provided by user or last run), identify failing screenshots. Playwright stores three files per failure under `test-results/`:
 
 - `{test-name}/{screenshot-name}-actual.png` — what the test produced
 - `{test-name}/{screenshot-name}-expected.png` — the baseline
-- `{test-name}/{screenshot-name}-diff.png` — visual diff highlighting changes
+- `{test-name}/{screenshot-name}-diff.png` — visual diff
 
-Use the Glob tool to find these files:
+Discover them with `Glob`:
+
 ```
-test-results/**/*-actual.png
+<results_glob>   # default: test-results/**/*-actual.png
 ```
 
-### Step 3: Present Evidence with Context
+### 3. Present evidence with context
 
 For each failing screenshot:
 
-1. Read all three images (baseline, actual, diff) using the Read tool
-2. Describe the visual differences you observe
-3. Frame the analysis against the task context:
-   - If the diff is on a page/component related to the current issue: flag as **likely expected change**
-   - If the diff is on an unrelated page: flag as **likely unintended regression**
-   - If uncertain: present both possibilities
+1. `Read` baseline, actual, and diff.
+2. Describe the visual differences.
+3. Frame them against task context:
+   - Diff on a page/component related to the current issue → **likely expected change**.
+   - Diff on unrelated UI → **likely unintended regression**.
+   - Uncertain → present both possibilities.
 
-Example framing:
-- "You're working on #123 (feat: add widget to page Y). The screenshot diff for page Y shows a new button in the toolbar. This is likely an expected change from your feature work."
-- "You're working on #456 (fix: auth token refresh). The screenshot diff for the dashboard shows shifted layout. This page isn't related to your current work — this looks like an unintended regression."
+Example framings:
 
-### Step 4: Ask for Decision
+- "You're working on #123 (feat: add widget to page Y). The diff on page Y shows a new button in the toolbar — likely an expected change."
+- "You're working on #456 (fix: auth token refresh). The diff on the dashboard shows shifted layout, but the dashboard isn't related to your current work — likely an unintended regression."
 
-Present two options:
+### 4. Ask for a decision
 
-**Bug** — The visual change is unintended:
-- Help identify the responsible code change by examining recent diffs to CSS, templates, and component files near the affected area
-- Suggest a fix
-- Offer to re-run the failing test: `pnpm test:e2e --project=visual-regression`
+Present two paths:
 
-**Expected change** — The visual change is intentional:
-- Ask the user to confirm
-- Update the baseline by running the test with `--update-snapshots`:
-  ```bash
-  pnpm test:e2e --project=visual-regression --update-snapshots
-  ```
-- Re-run the test to verify it passes
-- Stage and commit the updated baseline images
+**Bug** — the visual change is unintended:
+1. Examine recent diffs to CSS, templates, and components near the affected area.
+2. Suggest a fix.
+3. Offer to re-run the failing test (`<test_command>`).
+
+**Expected change** — the visual change is intentional:
+1. Confirm with the user.
+2. Update the baseline with `<update_command>` (or equivalent; default `npx playwright test --update-snapshots`).
+3. Re-run the test to verify it now passes.
+4. Stage and commit the updated baseline images.
+
+## Notes
+
+- This skill is Playwright-flavored but the framing approach (baseline/actual/diff + task context) applies to any visual-regression tool that produces three artifacts per failure. Adjust `snapshot_naming` and the command fields if using a different tool.
+- The skill never updates baselines without explicit user confirmation.

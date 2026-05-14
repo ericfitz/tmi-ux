@@ -132,6 +132,14 @@ The application has three sets of users:
 
 TMI has several sibling projects. When you need to read files from or interact with these projects, check `.local-projects.json` in the project root for local filesystem paths before fetching from GitHub. This file is gitignored (local to each developer's machine).
 
+The `.local-projects.json` file also carries GitHub coordinates used by some skills:
+
+- `github.owner` and `github.repo` for each project — used by repo-targeted skills.
+- `github.wiki_path` — local clone of the project's wiki, used by `verify-migrate-doc`.
+- `github.issues_project` — GitHub Project (v2) number, node ID, and status field/option IDs — used by `file-github-bug`.
+
+See the `schema` block in `.local-projects.json` itself for the full shape.
+
 ## API and Backend
 
 - API specs: check `.local-projects.json` for the local `tmi` project path, then read `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallback URLs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json`, `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml`
@@ -145,7 +153,7 @@ When you encounter a problem during development or debugging that appears to ori
 1. **Stop** working on the current task
 2. **Explain** why you believe the problem is a server-side bug, including the evidence (request/response payloads, log entries, spec violations, etc.)
 3. **Ask** the user whether to file a server bug report
-4. If the user confirms, use the `/file_server_bug` skill to create the issue in the server repo
+4. If the user confirms, use the `file-github-bug` skill with target `tmi` to create the issue in the server repo
 
 ## Development Commands
 
@@ -210,6 +218,14 @@ The post-commit hook only auto-bumps versions on `main`, so the `rc.0` prereleas
 ## UI Terminology
 
 - **Action button**: A `mat-icon-button` that displays only an icon (no text label) and uses `matTooltip` to show the button's localized label. Action buttons must not implement any button styling locally — centering and icon sizing are handled globally by the `.mat-mdc-icon-button` override in `src/styles/component-overrides.scss`.
+
+## Skill Configuration
+
+Project-local config files for generalized skills live under `.claude/`:
+
+- **`.claude/i18n.config.json`** — used by the i18n skill family (`analyze-localization-files`, `validate-localization-coverage`, `update-json-localization-file`, `detect-non-localizable`, `translate-to-language`, `validate-translation`) and the `/localization-backfill` command. Defines `locales_dir`, `master_locale`, `file_extension`, `check_command`, and the parser regexes for `check_command`'s output.
+
+GitHub repo and Project (v2) metadata used by `file-github-bug` and `verify-migrate-doc` lives in `.local-projects.json` (see "Related Projects" above), not in skill-specific config.
 
 ## Code Style
 
