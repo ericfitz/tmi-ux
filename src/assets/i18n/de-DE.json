@@ -7,7 +7,7 @@
     "contactoperatordetails": "Kontaktinformation des Betreibers",
     "contacttitle": "Betrieben von",
     "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform zur Verwaltung des Sicherheitsüberprüfungsprozesses einer Organisation, einschließlich Bedrohungsmodellierung. Unsere Mission ist es, den Aufwand bei Sicherheitsüberprüfungen zu reduzieren und die Bedrohungsmodellierung zugänglich, effizient und in den Softwareentwicklungszyklus integriert zu machen.",
-    "description2": "Die Plattform bietet Organisation und Statusverwaltung von Sicherheitsüberprüfungen, interaktive Erstellung von Datenflussdiagrammen mit Echtzeit-Zusammenarbeit und umfassende Bedrohungsdokumentationsfunktionen. Mit modernen Webtechnologien entwickelt, hilft TMI Teams bei der Verwaltung des Sicherheitsüberprüfungsprozesses und der Identifizierung, Analyse und Minderung von Sicherheitsbedrohungen durch kollaborative Modellierung.",
+    "description2": "Die Plattform bietet Organisation und Statusverwaltung von Sicherheitsüberprüfungen, interaktive Erstellung von Datenflussdiagrammen mit Echtzeit-Zusammenarbeit und umfassende Bedrohungsdokumentationsfunktionen. TMI hilft Teams bei der Verwaltung des Sicherheitsüberprüfungsprozesses und der Identifizierung, Analyse und Minderung von Sicherheitsbedrohungen durch kollaborative Modellierung.",
     "opensource": {
       "categoryInputSanitization": "Eingabebereinigung",
       "categoryNoteEditing": "Notizbearbeitung",
@@ -327,7 +327,7 @@
       "filterPlaceholder": "Nach Name oder URL suchen",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "Dies ist die einzige Gelegenheit, dieses Geheimnis anzuzeigen. Bitte kopieren Sie es. Wenn Sie es verlieren oder vergessen, müssen Sie den Webhook löschen und neu erstellen."
+        "warning": "Dies ist die einzige Gelegenheit, das Secret einzusehen. Kopieren Sie es jetzt. Bei Verlust muss der Webhook gelöscht und neu erstellt werden."
       },
       "listTitle": "Webhook-Abonnements",
       "noWebhooks": "Keine Webhooks gefunden.",
@@ -803,8 +803,8 @@
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
     "uri": "URI",
     "validation": {
-      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
-      "invalidUrl": "Bitte geben Sie eine gültige URL ein",
+      "email": "E-Mail-Adresse muss gültig sein.",
+      "invalidUrl": "URL muss gültig sein.",
       "maxLength": "Maximale Länge ist {{max}} Zeichen.",
       "nameRequired": "Name ist erforderlich.",
       "required": "Dieses Feld ist erforderlich."
@@ -1028,7 +1028,7 @@
     }
   },
   "documentAccess": {
-    "copiedEmail": "E-Mail kopiert",
+    "copiedEmail": "E-Mail in die Zwischenablage kopiert.",
     "copyEmail": "E-Mail kopieren",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
@@ -1105,7 +1105,7 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "Verknüpfen Sie ein Cloud-Speicher-Konto, um Dokumente aus Google Drive und weiteren Diensten anzuhängen, sobald diese verfügbar werden.",
+      "description": "Verknüpfen Sie ein Cloud-Speicherkonto, um Dokumente aus Google Drive und – sobald verfügbar – aus anderen Diensten anzuhängen.",
       "title": "Keine Dokumentquellen verbunden."
     },
     "googleDrive": {
@@ -1194,7 +1194,7 @@
     "support": "Unterstützung"
   },
   "getStarted": "Loslegen",
-  "homeDescription": "TMI ist ein Tool, das die Sicherheitsüberprüfungs- und Threat-Modeling-Prozesse deiner Organisation optimiert. Es steuert Review-Workflows, organisiert wichtige Informationen und ermöglicht es Teams, gemeinsam Data-Flow-Diagramme zu erstellen. Es verbindet sich auch mit Automatisierungen und hilft, manuelle Arbeit zu reduzieren und Sicherheitsrisiken effizienter zu identifizieren.",
+  "homeDescription": "TMI wurde von Sicherheitsprüfern entwickelt, die aus erster Hand wissen, wie mühsam Sicherheitsüberprüfungen sind. Es steuert die Prüfungs-Workflows, organisiert die unterstützenden Informationen und ermöglicht es Teams, gemeinsam an Datenflussdiagrammen zu arbeiten. Es ist außerdem dafür ausgelegt, dass KI-Agenten sich anbinden und Seite an Seite mit menschlichen Prüfern arbeiten können.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
@@ -1207,7 +1207,7 @@
   },
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
-    "explanation": "Melden Sie sich mit Ihrem bestehenden Konto bei einem vertrauenswürdigen Identitätsanbieter an. Dies macht ein separates Passwort überflüssig, optimiert Ihr Erlebnis und sorgt für Ihre Sicherheit. Wir speichern oder verwalten niemals Passwörter – Ihre Anmeldedaten bleiben bei Ihrem Anbieter und können nicht über uns kompromittiert werden.",
+    "explanation": "Melden Sie sich mit Ihrem bestehenden Konto bei einem vertrauenswürdigen Identitätsanbieter an. Ihr Passwort verbleibt beim Anbieter — TMI speichert oder verwaltet es niemals.",
     "loadingProviders": "Lade Authentifizierungsanbieter...",
     "local": {
       "title": "Lokale Entwicklungsanmeldung"
@@ -1218,7 +1218,7 @@
     "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen.",
     "oauthProvidersTitle": "OAuth-Anmeldeanbieter",
     "samlProvidersTitle": "SAML-Anmeldeanbieter",
-    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "sessionExpired": "Sitzung abgelaufen. Melden Sie sich an, um fortzufahren.",
     "signingIn": "Anmeldung läuft...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Bei TMI anmelden",
@@ -1369,7 +1369,7 @@
     "complianceContent": "Wir werden Informationen nur dann offenlegen, wenn wir gesetzlich dazu verpflichtet sind, z.B. als Reaktion auf eine gültige behördliche Anordnung oder Vorladung. In solchen Fällen wird der Betreiber die geltenden gesetzlichen Verpflichtungen einhalten.",
     "complianceTitle": "Gesetzliche Konformität",
     "contactContent": {
-      "part1": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben, wenden Sie sich bitte über die Kontaktinformationen auf der.",
+      "part1": "Für Fragen zu dieser Datenschutzerklärung wenden Sie sich an den Betreiber über die Angaben auf der Seite",
       "part2": " Seite"
     },
     "contactTitle": "Kontaktieren Sie uns",
@@ -1378,7 +1378,7 @@
     "dataSecurityTitle": "Datensicherheit",
     "dataSharingContent1": "Der Betreiber gibt Ihre persönlichen Informationen nicht an Dritte weiter, außer unter den folgenden eingeschränkten Umständen:",
     "dataSharingContent2": "Über diese Ausnahmen hinaus verkauft, vermietet oder teilt der Betreiber Ihre Daten nicht mit anderen Einrichtungen für Marketing-, Werbe- oder andere Zwecke.",
-    "dataSharingList1": "Dienstanbieter: Ihre Daten können auf sicherer Cloud-Infrastruktur von Drittanbietern (wie AWS, Google Cloud oder ähnlichen Anbietern) gespeichert und verarbeitet werden, ausschließlich zum Betrieb und zur Wartung der Anwendung. Diese Anbieter sind vertraglich verpflichtet, Ihre Daten zu schützen und nur für die vom Betreiber festgelegten Zwecke zu verwenden.",
+    "dataSharingList1": "Dienstanbieter: Ihre Daten können auf sicherer Cloud-Infrastruktur von Drittanbietern (etwa AWS, Google Cloud oder ähnlichen Anbietern) gespeichert und verarbeitet werden, ausschließlich zum Betrieb und zur Wartung der Anwendung. Diese Anbieter sind vertraglich verpflichtet, Ihre Daten zu schützen und ausschließlich für die vom Betreiber festgelegten Zwecke zu verwenden.",
     "dataSharingList2": "Erweiterungsfunktionen: Die Anwendung unterstützt optionale Erweiterungsfunktionen (wie Websockets und Addons), die die Funktionalität erweitern können, indem sie ausgewählte Informationen an Drittanbieterdienste zur Verarbeitung weitergeben. Daten werden mit diesen Diensten nur dann geteilt, wenn Sie aktiv eine Funktion nutzen, die eine solche Übertragung erfordert, und es werden nur die spezifischen Informationen übermittelt, die für die angeforderte Funktionalität erforderlich sind.",
     "dataSharingList2a": "KI-Verarbeitungsfunktionen: Wenn Sie aktiv Funktionen anfordern, die von Large Language Models (LLMs) oder ähnlichen KI-Diensten unterstützt werden, können ausgewählte Daten an KI-Drittanbieter (wie OpenAI, Anthropic oder vergleichbare Dienste) zur Verarbeitung und Antwortgenerierung übermittelt werden. Es werden nur die spezifischen Informationen geteilt, die für die angeforderte Funktionalität erforderlich sind, und diese Weitergabe erfolgt ausschließlich auf Ihre Anweisung. Diese Anbieter sind durch vertragliche Verpflichtungen – einschließlich Datenverarbeitungsvereinbarungen, wo zutreffend – gebunden, die Daten ausschließlich zur Bereitstellung des angeforderten Dienstes zu verwenden, mit Beschränkungen hinsichtlich Speicherung, Training oder anderer Verwendungen.",
     "dataSharingList3": "Rechtliche Einhaltung: Der Betreiber kann Informationen offenlegen, wenn dies gesetzlich erforderlich ist, z. B. als Reaktion auf eine gültige Gerichtsverfügung, Vorladung oder behördliche Anfrage.",
@@ -1982,7 +1982,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Wenn Sie Fragen zu diesen Bedingungen haben, können Sie sich gerne über die Kontaktinformationen auf der.",
+      "part1": "Für Fragen zu diesen Bedingungen wenden Sie sich an den Betreiber über die Angaben auf der Seite",
       "part2": " Seite"
     },
     "intro": {
@@ -1991,7 +1991,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
-      "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht.",
+      "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich an diese gebunden. Wenn Sie diesen Bedingungen nicht zustimmen, nutzen Sie diese Website nicht.",
       "title": "1. Annahme der Bedingungen"
     },
     "section2": {

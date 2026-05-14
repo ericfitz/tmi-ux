@@ -7,7 +7,7 @@
     "contactoperatordetails": "Contacto del operador",
     "contacttitle": "Operado por",
     "description1": "TMI (Threat Modeling Improved) es una plataforma colaborativa para gestionar el proceso de revisión de seguridad de una organización, incluyendo el modelado de amenazas. Nuestra misión es reducir el esfuerzo de las revisiones de seguridad y hacer que el modelado de amenazas sea accesible, eficiente e integrado en el ciclo de vida del desarrollo de software.",
-    "description2": "La plataforma incluye organización de revisiones de seguridad y gestión de estados, creación interactiva de diagramas de flujo de datos con colaboración en tiempo real, y capacidades completas de documentación de amenazas. Desarrollado con tecnologías web modernas, TMI ayuda a los equipos a gestionar el proceso de revisión de seguridad e identificar, analizar y mitigar amenazas de seguridad mediante modelado colaborativo.",
+    "description2": "La plataforma incluye organización de revisiones de seguridad y gestión de estados, creación interactiva de diagramas de flujo de datos con colaboración en tiempo real, y capacidades completas de documentación de amenazas. TMI ayuda a los equipos a gestionar el proceso de revisión de seguridad e identificar, analizar y mitigar amenazas de seguridad mediante modelado colaborativo.",
     "opensource": {
       "categoryInputSanitization": "Saneamiento de entrada",
       "categoryNoteEditing": "Edición de notas",
@@ -327,7 +327,7 @@
       "filterPlaceholder": "Buscar por nombre o URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "Esta es la única vez que podrá ver este secreto. Por favor, cópielo. Si lo pierde u olvida, tendrá que eliminar y volver a crear el webhook."
+        "warning": "Esta es la única vez que se mostrará el secreto. Cópielo ahora. Si se pierde, el webhook deberá eliminarse y volverse a crear."
       },
       "listTitle": "Suscripciones de webhook",
       "noWebhooks": "No se encontraron webhooks.",
@@ -803,8 +803,8 @@
     "unsavedChangesWarning": "Tiene cambios sin guardar. ¿Está seguro de que desea cerrar?",
     "uri": "URI",
     "validation": {
-      "email": "Por favor, introduzca una dirección de correo electrónico válida.",
-      "invalidUrl": "Por favor ingrese una URL válida",
+      "email": "La dirección de correo electrónico debe ser válida.",
+      "invalidUrl": "La URL debe ser válida.",
       "maxLength": "La longitud máxima es {{max}} caracteres.",
       "nameRequired": "El nombre es obligatorio.",
       "required": "Este campo es obligatorio."
@@ -1028,7 +1028,7 @@
     }
   },
   "documentAccess": {
-    "copiedEmail": "Correo electrónico copiado",
+    "copiedEmail": "Correo electrónico copiado al portapapeles.",
     "copyEmail": "Copiar correo electrónico",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
@@ -1078,7 +1078,7 @@
     },
     "source": {
       "finalizing": "Otorgando acceso…",
-      "googleDrive": "Seleccionar desde Google Drive",
+      "googleDrive": "Elegir de Google Drive",
       "label": "¿Cómo deseas adjuntar este documento?",
       "linkAction": "Vincular origen",
       "linkPrompt": "Vincula tu cuenta para seleccionar archivos de este origen.",
@@ -1194,7 +1194,7 @@
     "support": "Soporte"
   },
   "getStarted": "Comenzar",
-  "homeDescription": "TMI es una herramienta que optimiza los procesos de revisión de seguridad y modelado de amenazas de tu organización. Impulsa flujos de trabajo de revisión, organiza información clave y permite que los equipos construyan colaborativamente diagramas de flujo de datos. También se conecta con automatización, ayudando a reducir trabajo manual y a detectar amenazas de seguridad de manera más eficiente.",
+  "homeDescription": "TMI ha sido creado por revisores de seguridad que conocen de primera mano lo arduo que es el proceso de revisión. Ejecuta los flujos de trabajo de revisión, organiza la información de apoyo y permite a los equipos colaborar en diagramas de flujo de datos. Además, está diseñado para que agentes de IA se conecten y trabajen junto a los revisores humanos.",
   "homeWelcomeTitle": "Bienvenido a TMI: Modelado de Amenazas Mejorado",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
@@ -1207,7 +1207,7 @@
   },
   "login": {
     "chooseMethod": "Elija su método de inicio de sesión:",
-    "explanation": "Inicie sesión con su cuenta existente de un proveedor de identidad de confianza. Esto elimina la necesidad de una contraseña separada, agilizando su experiencia mientras le mantiene seguro. Nunca almacenamos ni gestionamos contraseñas: sus credenciales permanecen con su proveedor y no pueden verse comprometidas a través de nosotros.",
+    "explanation": "Inicie sesión con su cuenta existente en un proveedor de identidad de confianza. Su contraseña permanece con el proveedor — TMI nunca la almacena ni la gestiona.",
     "loadingProviders": "Cargando proveedores de autenticación...",
     "local": {
       "title": "Inicio de sesión de desarrollo local"
@@ -1218,7 +1218,7 @@
     "oauthFailed": "La autenticación OAuth ha fallado.",
     "oauthProvidersTitle": "Proveedores de inicio de sesión OAuth",
     "samlProvidersTitle": "Proveedores de inicio de sesión SAML",
-    "sessionExpired": "Su sesión ha caducado. Por favor, inicie sesión de nuevo.",
+    "sessionExpired": "Sesión caducada. Inicie sesión para continuar.",
     "signingIn": "Iniciando sesión...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Iniciar sesión en TMI",
@@ -1369,7 +1369,7 @@
     "complianceContent": "Solo divulgaremos información si la ley lo requiere, como en respuesta a una orden gubernamental válida o citación. En tales casos, el operador cumplirá con las obligaciones legales aplicables.",
     "complianceTitle": "Cumplimiento legal",
     "contactContent": {
-      "part1": "Si tiene alguna pregunta sobre esta política de privacidad, no dude en contactar al operador de este sitio web a través de la información de contacto en la página.",
+      "part1": "Para preguntas sobre esta política de privacidad, póngase en contacto con el operador a través de la información indicada en la página",
       "part2": " Página"
     },
     "contactTitle": "Contáctenos",
@@ -1378,7 +1378,7 @@
     "dataSecurityTitle": "Seguridad de datos",
     "dataSharingContent1": "El operador no comparte su información personal con terceros, excepto en las siguientes circunstancias limitadas:",
     "dataSharingContent2": "Más allá de estas excepciones, el operador no vende, alquila ni comparte sus datos con ninguna otra entidad para marketing, publicidad ni ningún otro propósito.",
-    "dataSharingList1": "Proveedores de servicios: sus datos pueden almacenarse y procesarse en infraestructura de nube segura de terceros (como AWS, Google Cloud o proveedores similares) únicamente para operar y mantener la aplicación. Estos proveedores están obligados contractualmente a proteger sus datos y usarlos solo para los fines que el operador especifique.",
+    "dataSharingList1": "Proveedores de servicios: sus datos pueden almacenarse y procesarse en infraestructura segura de terceros en la nube (como AWS, Google Cloud o proveedores similares) únicamente para operar y mantener la aplicación. Estos proveedores están contractualmente obligados a proteger sus datos y a utilizarlos solo para los fines especificados por el operador.",
     "dataSharingList2": "Características de extensibilidad: la aplicación admite características de extensibilidad opcionales (como websockets y complementos) que pueden ampliar la funcionalidad transmitiendo información seleccionada a servicios de terceros para su procesamiento. Los datos se comparten con estos servicios únicamente cuando utiliza activamente una función que requiere dicha transmisión, y solo se transmite la información específica necesaria para la funcionalidad solicitada.",
     "dataSharingList2a": "Características de procesamiento de IA: cuando solicita activamente funciones impulsadas por modelos de lenguaje extenso (LLMs) o servicios de IA similares, los datos seleccionados pueden transmitirse a proveedores de IA de terceros (como OpenAI, Anthropic o servicios equivalentes) para su procesamiento y generación de respuestas. Solo se comparte la información específica necesaria para la funcionalidad solicitada, y dicho intercambio ocurre únicamente bajo su dirección. Estos proveedores están vinculados por obligaciones contractuales — incluyendo acuerdos de procesamiento de datos cuando corresponda — para utilizar los datos exclusivamente para proporcionar el servicio solicitado, con restricciones sobre retención, entrenamiento u otros usos.",
     "dataSharingList3": "Cumplimiento legal: el operador puede divulgar información si es requerido por ley, como en respuesta a una orden judicial válida, citación o solicitud gubernamental.",
@@ -1980,7 +1980,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Si tiene alguna pregunta sobre estos términos, no dude en contactar al operador de este sitio web a través de la información de contacto en la página.",
+      "part1": "Para preguntas sobre estos términos, póngase en contacto con el operador a través de la información indicada en la página",
       "part2": " Página"
     },
     "intro": {
@@ -1989,7 +1989,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
-      "content": "Al acceder y utilizar este sitio web, acepta y acuerda estar sujeto a los términos y disposiciones de este acuerdo. Si no está de acuerdo con estos términos, por favor no utilice este sitio web.",
+      "content": "Al acceder y utilizar este sitio web, acepta y se compromete a quedar sujeto a los términos y disposiciones de este acuerdo. Si no está de acuerdo con estos términos, no utilice este sitio web.",
       "title": "1. Aceptación de términos"
     },
     "section2": {

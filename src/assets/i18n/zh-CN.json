@@ -7,7 +7,7 @@
     "contactoperatordetails": "运营者联系方式",
     "contacttitle": "运营者",
     "description1": "TMI（威胁建模改进）是一个用于管理组织安全审查流程（包括威胁建模）的协作平台。我们的使命是减少安全审查的繁琐工作，使威胁建模变得易于访问、高效，并融入软件开发生命周期。",
-    "description2": "该平台具有安全审查组织和状态管理、具有实时协作功能的交互式数据流图创建以及全面的威胁文档功能。采用现代网络技术构建，TMI帮助团队管理安全审查流程，并通过协作建模识别、分析和缓解安全威胁。",
+    "description2": "该平台提供安全审查组织和状态管理、支持实时协作的交互式数据流图创建以及全面的威胁文档能力。TMI 帮助团队管理安全审查流程,并通过协作建模识别、分析和缓解安全威胁。",
     "opensource": {
       "categoryInputSanitization": "输入清理",
       "categoryNoteEditing": "笔记编辑",
@@ -327,7 +327,7 @@
       "filterPlaceholder": "按名称或URL搜索",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "这是您唯一可以查看此密钥的机会。请复制它。如果您丢失或忘记它，您将需要删除并重新创建webhook。"
+        "warning": "这是唯一一次显示该密钥的机会。请立即复制。如果丢失,必须删除并重新创建该 webhook。"
       },
       "listTitle": "Webhook 订阅",
       "noWebhooks": "未找到 webhook。",
@@ -803,8 +803,8 @@
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "uri": "URI",
     "validation": {
-      "email": "请输入有效的电子邮件地址。",
-      "invalidUrl": "请输入有效的 URL",
+      "email": "电子邮件地址必须有效。",
+      "invalidUrl": "URL必须有效。",
       "maxLength": "最大长度为 {{max}} 个字符。",
       "nameRequired": "名称为必填项。",
       "required": "此字段为必填项。"
@@ -1028,7 +1028,7 @@
     }
   },
   "documentAccess": {
-    "copiedEmail": "邮箱已复制",
+    "copiedEmail": "电子邮件已复制到剪贴板。",
     "copyEmail": "复制邮箱",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
@@ -1105,7 +1105,7 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "关联云存储账户即可从 Google Drive 以及其他后续可用的服务附加文档。",
+      "description": "链接云存储账户,以便从 Google Drive 及后续推出的其他服务附加文档。",
       "title": "尚未连接文档来源。"
     },
     "googleDrive": {
@@ -1194,7 +1194,7 @@
     "support": "支持"
   },
   "getStarted": "开始使用",
-  "homeDescription": "TMI 是一款简化组织安全审查和威胁建模流程的工具。它驱动审查工作流程，组织关键信息，并使团队能够协作构建数据流图。它还可以连接到自动化工具，帮助减少手动工作并更高效地发现安全威胁。",
+  "homeDescription": "TMI 由深知安全审查何等繁琐的安全审查人员构建。它驱动审查工作流,整理相关信息,并让团队协同绘制数据流图。它还专为 AI 代理设计,可与人类审查人员并肩工作。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
@@ -1207,7 +1207,7 @@
   },
   "login": {
     "chooseMethod": "选择您的登录方式：",
-    "explanation": "使用您在受信任的身份提供商处的现有账户登录。这消除了对单独密码的需求，简化了您的体验，同时确保您的安全。我们从不存储或管理密码——您的凭据保留在您的提供商处，无法通过我们被泄露。",
+    "explanation": "使用您在受信任的身份提供方的现有账户登录。您的密码留在提供方处——TMI 从不存储或管理密码。",
     "loadingProviders": "正在加载身份验证提供程序...",
     "local": {
       "title": "本地开发登录"
@@ -1218,7 +1218,7 @@
     "oauthFailed": "OAuth 身份验证失败。",
     "oauthProvidersTitle": "OAuth 登录提供商",
     "samlProvidersTitle": "SAML 登录提供商",
-    "sessionExpired": "您的会话已过期。请重新登录。",
+    "sessionExpired": "会话已过期。请登录以继续。",
     "signingIn": "正在登录...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "登录到 TMI",
@@ -1369,7 +1369,7 @@
     "complianceContent": "我们只有在法律要求的情况下才会披露信息，例如响应有效的政府命令或传票。在这种情况下，运营商将遵守适用的法律义务。",
     "complianceTitle": "法律合规",
     "contactContent": {
-      "part1": "如果您对本隐私政策有任何疑问，请随时通过以下联系信息与本网站的运营商联系：",
+      "part1": "如对本隐私政策有任何疑问,请通过页面上的联系方式与运营方联系:",
       "part2": "页面"
     },
     "contactTitle": "联系我们",
@@ -1378,7 +1378,7 @@
     "dataSecurityTitle": "数据安全",
     "dataSharingContent1": "运营商不会与任何第三方共享您的个人信息，除以下有限情况外：",
     "dataSharingContent2": "除这些例外情况外，运营商不会出于营销、广告或任何其他目的向任何其他实体出售、出租或共享您的数据。",
-    "dataSharingList1": "服务提供商：您的数据可能存储和处理在安全的第三方云基础设施上（如 AWS、Google Cloud 或类似提供商），仅用于操作和维护应用程序。这些提供商有合同义务保护您的数据，并仅将其用于运营商指定的目的。",
+    "dataSharingList1": "服务提供方:您的数据可能仅出于运营和维护本应用的目的,存储和处理在安全的第三方云基础设施上(例如 AWS、Google Cloud 或类似服务商)。这些服务商在合同上有义务保护您的数据,且仅按运营方指定的用途使用。",
     "dataSharingList2": "可扩展功能：本应用程序支持可选的可扩展功能（如 websockets 和 addons），这些功能可以通过将选定信息传输给第三方服务进行处理来扩展功能。仅当您主动使用需要此类传输的功能时，数据才会与这些服务共享，且仅传输所请求功能所需的特定信息。",
     "dataSharingList2a": "AI 处理功能：当您主动请求由大型语言模型（LLMs）或类似 AI 服务驱动的功能时，选定的数据可能会被传输给第三方 AI 提供商（如 OpenAI、Anthropic 或同等服务）进行处理和响应生成。仅共享所请求功能所需的特定信息，且此类共享仅在您的指示下进行。这些提供商受合同义务约束——包括适用的数据处理协议——仅可将数据用于提供所请求的服务，并对数据保留、训练或其他用途有相应限制。",
     "dataSharingList3": "法律合规：如法律要求，运营商可能会披露信息，例如在响应有效的法院命令、传票或政府请求时。",
@@ -1980,7 +1980,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "如果您对这些条款有任何疑问，请随时通过以下联系信息与本网站的运营商联系：",
+      "part1": "如对本条款有任何疑问,请通过页面上的联系方式与运营方联系:",
       "part2": "页面"
     },
     "intro": {
@@ -1989,7 +1989,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
-      "content": "通过访问和使用本网站，您接受并同意受本协议的条款和规定的约束。如果您不同意这些条款，请不要使用本网站。",
+      "content": "访问和使用本网站,即表示您接受并同意受本协议条款和规定的约束。如果您不同意这些条款,请勿使用本网站。",
       "title": "1. 接受条款"
     },
     "section2": {

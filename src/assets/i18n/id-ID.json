@@ -7,7 +7,7 @@
     "contactoperatordetails": "Kontak Operator",
     "contacttitle": "Dioperasikan Oleh",
     "description1": "TMI (Threat Modeling Improved) adalah platform kolaboratif untuk mengelola proses tinjauan keamanan organisasi, termasuk pemodelan ancaman. Misi kami adalah mengurangi beban kerja tinjauan keamanan, dan menjadikan pemodelan ancaman lebih mudah diakses, efisien, dan terintegrasi dalam siklus pengembangan perangkat lunak.",
-    "description2": "Platform ini menawarkan organisasi tinjauan keamanan dan manajemen status, pembuatan diagram aliran data interaktif dengan kolaborasi waktu nyata, dan kemampuan dokumentasi ancaman yang komprehensif. Dibangun dengan teknologi web modern, TMI membantu tim mengelola proses tinjauan keamanan dan mengidentifikasi, menganalisis, serta memitigasi ancaman keamanan melalui pemodelan kolaboratif.",
+    "description2": "Platform ini menyediakan pengorganisasian tinjauan keamanan dan manajemen status, pembuatan diagram alur data interaktif dengan kolaborasi waktu nyata, dan kemampuan dokumentasi ancaman yang komprehensif. TMI membantu tim mengelola proses tinjauan keamanan serta mengidentifikasi, menganalisis, dan memitigasi ancaman keamanan melalui pemodelan kolaboratif.",
     "opensource": {
       "categoryInputSanitization": "Sanitasi Input",
       "categoryNoteEditing": "Pengeditan Catatan",
@@ -327,7 +327,7 @@
       "filterPlaceholder": "Cari berdasarkan nama atau URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "Ini adalah satu-satunya waktu Anda dapat melihat rahasia ini. Silakan salin. Jika Anda kehilangan atau melupakannya, Anda harus menghapus dan membuat ulang webhook."
+        "warning": "Ini adalah satu-satunya kesempatan untuk melihat rahasia ini. Salin sekarang. Jika hilang, webhook harus dihapus dan dibuat ulang."
       },
       "listTitle": "Langganan Webhook",
       "noWebhooks": "Tidak ada webhook ditemukan.",
@@ -803,8 +803,8 @@
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "uri": "URI",
     "validation": {
-      "email": "Harap masukkan alamat email yang valid.",
-      "invalidUrl": "Masukkan URL yang valid",
+      "email": "Alamat email harus valid.",
+      "invalidUrl": "URL harus valid.",
       "maxLength": "Panjang maksimum adalah {{max}} karakter.",
       "nameRequired": "Nama wajib diisi.",
       "required": "Bidang ini wajib diisi."
@@ -1028,7 +1028,7 @@
     }
   },
   "documentAccess": {
-    "copiedEmail": "Email disalin",
+    "copiedEmail": "Email disalin ke clipboard.",
     "copyEmail": "Salin email",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
@@ -1105,7 +1105,7 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "Tautkan akun penyimpanan awan untuk melampirkan dokumen dari Google Drive, dan layanan lainnya seiring ketersediaannya.",
+      "description": "Tautkan akun penyimpanan cloud untuk melampirkan dokumen dari Google Drive, dan layanan lain saat tersedia.",
       "title": "Tidak ada sumber dokumen yang terhubung."
     },
     "googleDrive": {
@@ -1194,7 +1194,7 @@
     "support": "Dukungan"
   },
   "getStarted": "Mulai",
-  "homeDescription": "TMI adalah alat yang menyederhanakan proses peninjauan keamanan dan pemodelan ancaman organisasi Anda. Ini mendorong alur kerja peninjauan, mengorganisir informasi penting, dan memungkinkan tim untuk secara kolaboratif membangun diagram alur data. Alat ini juga terhubung dengan otomasi, membantu mengurangi pekerjaan manual dan mengidentifikasi ancaman keamanan dengan lebih efisien.",
+  "homeDescription": "TMI dibangun oleh peninjau keamanan yang tahu langsung betapa melelahkan tinjauan keamanan itu. TMI menjalankan alur kerja tinjauan, mengorganisir informasi pendukung, dan memungkinkan tim berkolaborasi pada diagram alur data. TMI juga dirancang agar agen AI dapat terhubung dan bekerja berdampingan dengan peninjau manusia.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
@@ -1207,7 +1207,7 @@
   },
   "login": {
     "chooseMethod": "Pilih metode masuk Anda:",
-    "explanation": "Masuk dengan akun yang ada dari penyedia identitas terpercaya. Ini menghilangkan kebutuhan akan kata sandi terpisah, menyederhanakan pengalaman Anda sambil tetap aman. Kami tidak pernah menyimpan atau mengelola kata sandi—kredensial Anda tetap bersama penyedia Anda dan tidak dapat dikompromikan melalui kami.",
+    "explanation": "Masuk dengan akun yang sudah ada dari penyedia identitas tepercaya. Kata sandi Anda tetap berada di penyedia — TMI tidak pernah menyimpan atau mengelolanya.",
     "loadingProviders": "Memuat penyedia autentikasi...",
     "local": {
       "title": "Masuk Pengembangan Lokal"
@@ -1218,7 +1218,7 @@
     "oauthFailed": "Autentikasi OAuth gagal.",
     "oauthProvidersTitle": "Penyedia Masuk OAuth",
     "samlProvidersTitle": "Penyedia Masuk SAML",
-    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
+    "sessionExpired": "Sesi telah berakhir. Masuk untuk melanjutkan.",
     "signingIn": "Sedang masuk...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Masuk ke TMI",
@@ -1369,7 +1369,7 @@
     "complianceContent": "Kami hanya akan mengungkapkan informasi jika diwajibkan oleh hukum, seperti sebagai tanggapan atas perintah pemerintah atau panggilan pengadilan yang sah. Dalam kasus tersebut, operator akan mematuhi kewajiban hukum yang berlaku.",
     "complianceTitle": "Kepatuhan Hukum",
     "contactContent": {
-      "part1": "Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi operator situs web ini melalui informasi kontak di halaman.",
+      "part1": "Untuk pertanyaan tentang kebijakan privasi ini, hubungi operator melalui informasi yang tercantum pada halaman",
       "part2": " Halaman"
     },
     "contactTitle": "Hubungi Kami",
@@ -1378,7 +1378,7 @@
     "dataSecurityTitle": "Keamanan Data",
     "dataSharingContent1": "Operator tidak membagikan informasi pribadi Anda kepada pihak ketiga mana pun, kecuali dalam keadaan terbatas berikut:",
     "dataSharingContent2": "Di luar pengecualian ini, operator tidak menjual, menyewakan, atau membagikan data Anda kepada entitas lain untuk pemasaran, iklan, atau tujuan lain apa pun.",
-    "dataSharingList1": "Penyedia layanan: data Anda dapat disimpan dan diproses pada infrastruktur cloud pihak ketiga yang aman (seperti AWS, google cloud, atau penyedia serupa) semata-mata untuk mengoperasikan dan memelihara aplikasi. Penyedia ini terikat secara kontraktual untuk melindungi data Anda dan menggunakannya hanya untuk tujuan yang ditentukan operator.",
+    "dataSharingList1": "Penyedia layanan: data Anda mungkin disimpan dan diproses pada infrastruktur cloud pihak ketiga yang aman (seperti AWS, Google Cloud, atau penyedia serupa) semata-mata untuk mengoperasikan dan memelihara aplikasi. Penyedia ini terikat kontrak untuk melindungi data Anda dan hanya menggunakannya untuk tujuan yang ditentukan operator.",
     "dataSharingList2": "Fitur perluasan: aplikasi mendukung fitur perluasan opsional (seperti websockets dan addons) yang dapat memperluas fungsionalitas dengan mengirimkan informasi pilihan ke layanan pihak ketiga untuk diproses. Data dibagikan dengan layanan ini hanya ketika Anda secara aktif menggunakan fitur yang memerlukan transmisi tersebut, dan hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang ditransmisikan.",
     "dataSharingList2a": "Fitur pemrosesan AI: ketika Anda secara aktif meminta fitur yang didukung oleh large language models (LLMs) atau layanan AI serupa, data tertentu dapat ditransmisikan ke penyedia AI pihak ketiga (seperti OpenAI, Anthropic, atau layanan setara) untuk pemrosesan dan pembuatan respons. Hanya informasi spesifik yang diperlukan untuk fungsionalitas yang diminta yang dibagikan, dan pembagian tersebut terjadi semata-mata atas arahan Anda. Penyedia ini terikat oleh kewajiban kontraktual — termasuk perjanjian pemrosesan data jika berlaku — untuk menggunakan data secara eksklusif untuk menyediakan layanan yang diminta, dengan pembatasan pada penyimpanan, pelatihan, atau penggunaan lainnya.",
     "dataSharingList3": "Kepatuhan hukum: operator dapat mengungkapkan informasi jika diwajibkan oleh hukum, seperti dalam merespons perintah pengadilan yang sah, surat paksa, atau permintaan pemerintah.",
@@ -1980,7 +1980,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Jika Anda memiliki pertanyaan tentang ketentuan ini, silakan hubungi operator situs web ini melalui informasi kontak di halaman.",
+      "part1": "Untuk pertanyaan tentang ketentuan ini, hubungi operator melalui informasi yang tercantum pada halaman",
       "part2": " Halaman"
     },
     "intro": {
@@ -1989,7 +1989,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
-      "content": "Dengan mengakses dan menggunakan situs web ini, Anda menerima dan menyetujui untuk terikat oleh syarat dan ketentuan perjanjian ini. Jika Anda tidak menyetujui ketentuan ini, harap jangan menggunakan situs web ini.",
+      "content": "Dengan mengakses dan menggunakan situs web ini, Anda menerima dan setuju untuk terikat oleh ketentuan dan persyaratan perjanjian ini. Jika Anda tidak menyetujui ketentuan ini, jangan gunakan situs web ini.",
       "title": "1. Penerimaan Ketentuan"
     },
     "section2": {

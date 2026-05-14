@@ -9,7 +9,7 @@
     "contacttitle": "Operated by",
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
     "description1.lint-skip": "Contains tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case.",
-    "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
+    "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
       "categoryInputSanitization": "Input sanitization",
       "categoryNoteEditing": "Note editing",
@@ -381,7 +381,7 @@
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
+        "warning": "This is the only time the secret will be shown. Copy it now. If lost, the webhook must be deleted and re-created."
       },
       "listTitle": "Webhook subscriptions",
       "noWebhooks": "No webhooks found.",
@@ -794,7 +794,7 @@
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete the {{objecttype}} and all metadata associated with it.",
     "deleteWarningReferenceOnly": "For objects stored outside TMI such as documents and repositories, only the TMI reference to the object will be deleted.",
     "deleteWarningSubEntities": "All associated TMI entities such as diagrams, threats, and notes will also be permanently deleted.",
-    "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmvalue}}\" in the field below",
+    "deleteWarningTypeConfirmation": "To confirm, type \"{{confirmvalue}}\" in the field below",
     "deletedSuccessfully": "Deleted successfully",
     "description": "Description",
     "diagramId": "{{common.objectTypes.diagram}}",
@@ -926,8 +926,8 @@
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "uri": "URI",
     "validation": {
-      "email": "Please enter a valid email address.",
-      "invalidUrl": "Please enter a valid URL",
+      "email": "Email address must be valid.",
+      "invalidUrl": "URL must be valid.",
       "maxLength": "Maximum length is {{max}} characters.",
       "nameRequired": "Name is required.",
       "required": "This field is required."
@@ -1263,7 +1263,7 @@
       "stillPending": "Status checked — still pending.",
       "success": "Access granted. The document is now accessible."
     },
-    "copiedEmail": "Email copied",
+    "copiedEmail": "Email copied to clipboard.",
     "copyEmail": "Copy email",
     "copyEmail.comment": "Action description on a tooltip (typically for an icon button): 'Copy email'.",
     "reason": {
@@ -1322,7 +1322,7 @@
     },
     "source": {
       "finalizing": "Granting access…",
-      "googleDrive": "Pick from google drive",
+      "googleDrive": "Pick from Google Drive",
       "label": "How would you like to attach this document?",
       "linkAction": "Link source",
       "linkPrompt": "Link your account to pick files from this source.",
@@ -1351,11 +1351,11 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "Link a cloud storage account to attach documents from google drive, and other services as they become available.",
+      "description": "Link a cloud storage account to attach documents from Google Drive, and other services as they become available.",
       "title": "No document sources connected."
     },
     "googleDrive": {
-      "name": "Google drive"
+      "name": "Google Drive"
     },
     "linkedAt": "Linked {{ relativetime }}.",
     "microsoft": {
@@ -1456,7 +1456,7 @@
     "support": "Support"
   },
   "getStarted": "Get started",
-  "homeDescription": "TMI is a tool that streamlines your organization's security review and threat modeling processes. It drives review workflows, organizes key information, and enables teams to collaboratively build data flow diagrams. It also connects to automation, helping reduce manual toil and surface security threats more efficiently.",
+  "homeDescription": "TMI is built by security reviewers who know firsthand how toilsome security review is. It runs the review workflows, organizes the supporting information, and lets teams collaborate on data flow diagrams. It's also designed for AI agents to connect to and work alongside human reviewers.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "homeWelcomeTitle.lint-skip": "Tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case.",
   "intake": {
@@ -1471,7 +1471,7 @@
   },
   "login": {
     "chooseMethod": "Choose your sign in method:",
-    "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through US.",
+    "explanation": "Sign in with your existing account from a trusted identity provider. Your password stays with the provider — TMI never stores or manages it.",
     "loadingProviders": "Loading authentication providers...",
     "local": {
       "title": "Local development sign in"
@@ -1483,7 +1483,7 @@
     "oauthFailed": "OAuth authentication failed.",
     "oauthProvidersTitle": "OAuth sign-in providers",
     "samlProvidersTitle": "SAML sign-in providers",
-    "sessionExpired": "Your session has expired. Please sign in again.",
+    "sessionExpired": "Session expired. Sign in to continue.",
     "signingIn": "Signing in...",
     "signingIn.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "signingInWith": "{{login.loggingInWith}}",
@@ -1649,7 +1649,7 @@
     "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, the operator will comply with applicable legal obligations.",
     "complianceTitle": "Legal compliance",
     "contactContent": {
-      "part1": "If you have any questions about this privacy policy, please feel free to contact the operator of this web site via the contact information on the.",
+      "part1": "For questions about this privacy policy, contact the operator via the information on the.",
       "part2": " Page"
     },
     "contactTitle": "Contact US",
@@ -1659,7 +1659,7 @@
     "dataSharingContent1": "The operator does not share your personal information with any third parties, except in the following limited circumstances:",
     "dataSharingContent1.lint-skip": "Sentence introducing a list; correctly ends with colon, not period",
     "dataSharingContent2": "Beyond these exceptions, the operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
-    "dataSharingList1": "Service providers: your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, google cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes the operator specifies.",
+    "dataSharingList1": "Service providers: your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes the operator specifies.",
     "dataSharingList2": "Extensibility features: the application supports optional extensibility features (such as websockets and addons) that may extend functionality by passing selected information to third-party services for processing. Data is shared with these services only when you actively use a feature that requires such transmission, and only the specific information necessary for the requested functionality is transmitted.",
     "dataSharingList2a": "AI processing features: when you actively request features powered by large language models (LLMs) or similar AI services, selected data may be transmitted to third-party AI providers (such as OpenAI, Anthropic, or equivalent services) for processing and response generation. Only the specific information necessary for the requested functionality is shared, and such sharing occurs solely at your direction. These providers are bound by contractual obligations — including data processing agreements where applicable — to use the data exclusively for providing the requested service, with restrictions on retention, training, or other uses.",
     "dataSharingList2a.lint-skip": "Contains 'LLMs' (plural acronym); validator's upper() comparison doesn't match mixed-case acronyms.",
@@ -2389,7 +2389,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "If you have any questions about these terms, please feel free to contact the operator of this web site via the contact information on the.",
+      "part1": "For questions about these terms, contact the operator via the information on the.",
       "part2": " Page"
     },
     "intro": {
@@ -2400,7 +2400,7 @@
     "lastUpdatedDate.comment": "This is a date value and should not be translated.",
     "lastUpdatedDate.lint-skip": "ISO date string, not a sentence.",
     "section1": {
-      "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
+      "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, do not use this web site.",
       "title": "1. Acceptance of terms",
       "title.lint-skip": "Section heading starting with numeric index, not a standard capitalized sentence."
     },

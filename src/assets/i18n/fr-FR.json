@@ -7,7 +7,7 @@
     "contactoperatordetails": "Contact de l'opérateur",
     "contacttitle": "Exploité par",
     "description1": "TMI (Threat Modeling Improved) est une plateforme collaborative pour gerer le processus de revue de securite d'une organisation, y compris la modelisation des menaces. Notre mission est de reduire les taches fastidieuses des revues de securite et de rendre la modelisation des menaces accessible, efficace et integree au cycle de developpement logiciel.",
-    "description2": "La plateforme propose l'organisation et la gestion d'etat des revues de securite, la creation interactive de diagrammes de flux de donnees avec collaboration en temps reel, et des capacites completes de documentation des menaces. Construit avec des technologies web modernes, TMI aide les equipes a gerer le processus de revue de securite et a identifier, analyser et attenuer les menaces de securite grace a la modelisation collaborative.",
+    "description2": "La plateforme propose l'organisation et la gestion d'état des revues de sécurité, la création interactive de diagrammes de flux de données avec collaboration en temps réel, et des capacités complètes de documentation des menaces. TMI aide les équipes à gérer le processus de revue de sécurité et à identifier, analyser et atténuer les menaces de sécurité par une modélisation collaborative.",
     "opensource": {
       "categoryInputSanitization": "Assainissement des entrées",
       "categoryNoteEditing": "Édition de notes",
@@ -327,7 +327,7 @@
       "filterPlaceholder": "Rechercher par nom ou URL",
       "hmacSecretDialog": {
         "title": "{{admin.webhooks.addDialog.secret}}",
-        "warning": "C'est la seule fois ou vous pourrez voir ce secret. Veuillez le copier. Si vous le perdez ou l'oubliez, vous devrez supprimer et recreer le webhook."
+        "warning": "C'est la seule fois où le secret sera affiché. Copiez-le dès maintenant. En cas de perte, le webhook devra être supprimé puis recréé."
       },
       "listTitle": "Abonnements aux webhooks",
       "noWebhooks": "Aucun webhook trouvé.",
@@ -803,8 +803,8 @@
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
     "uri": "URI",
     "validation": {
-      "email": "Veuillez saisir une adresse e-mail valide.",
-      "invalidUrl": "Veuillez entrer une URL valide",
+      "email": "L'adresse e-mail doit être valide.",
+      "invalidUrl": "L'URL doit être valide.",
       "maxLength": "La longueur maximale est de {{max}} caractères.",
       "nameRequired": "Le nom est requis.",
       "required": "Ce champ est requis."
@@ -1028,7 +1028,7 @@
     }
   },
   "documentAccess": {
-    "copiedEmail": "E-mail copié",
+    "copiedEmail": "E-mail copié dans le presse-papiers.",
     "copyEmail": "Copier l'e-mail",
     "reason": {
       "fallback": "{{documentAccess.reason.other}}",
@@ -1078,7 +1078,7 @@
     },
     "source": {
       "finalizing": "Octroi de l'accès…",
-      "googleDrive": "Sélectionner depuis Google Drive",
+      "googleDrive": "Choisir depuis Google Drive",
       "label": "Comment souhaitez-vous joindre ce document ?",
       "linkAction": "Relier la source",
       "linkPrompt": "Reliez votre compte pour sélectionner des fichiers depuis cette source.",
@@ -1105,7 +1105,7 @@
       "status": "{{common.status}}"
     },
     "empty": {
-      "description": "Liez un compte de stockage cloud pour joindre des documents depuis Google Drive et d'autres services à mesure qu'ils deviennent disponibles.",
+      "description": "Liez un compte de stockage cloud pour joindre des documents depuis Google Drive et d'autres services à mesure qu'ils deviendront disponibles.",
       "title": "Aucune source de documents connectée."
     },
     "googleDrive": {
@@ -1194,7 +1194,7 @@
     "support": "Assistance"
   },
   "getStarted": "Commencer",
-  "homeDescription": "TMI est un outil qui rationalise les processus d'examen de sécurité et de modélisation des menaces de votre organisation. Il pilote les workflows d'examen, organise les informations clés et permet aux équipes de construire collaborativement des diagrammes de flux de données. Il se connecte également à l'automatisation, aidant à réduire les tâches manuelles et à identifier plus efficacement les menaces de sécurité.",
+  "homeDescription": "TMI est conçu par des examinateurs en sécurité qui savent de première main à quel point une revue de sécurité peut être laborieuse. Il exécute les flux de travail de revue, organise les informations de référence et permet aux équipes de collaborer sur les diagrammes de flux de données. Il est également conçu pour que les agents d'IA s'y connectent et travaillent aux côtés des examinateurs humains.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
@@ -1207,7 +1207,7 @@
   },
   "login": {
     "chooseMethod": "Choisissez votre methode de connexion :",
-    "explanation": "Connectez-vous avec votre compte existant auprès d'un fournisseur d'identité de confiance. Cela élimine le besoin d'un mot de passe séparé, simplifiant votre expérience tout en vous gardant en sécurité. Nous ne stockons ni ne gérons jamais les mots de passe — vos identifiants restent chez votre fournisseur et ne peuvent pas être compromis par notre intermédiaire.",
+    "explanation": "Connectez-vous avec votre compte existant auprès d'un fournisseur d'identité de confiance. Votre mot de passe reste chez le fournisseur — TMI ne le stocke ni ne le gère jamais.",
     "loadingProviders": "Chargement des fournisseurs d'authentification...",
     "local": {
       "title": "Connexion pour le développement local"
@@ -1218,7 +1218,7 @@
     "oauthFailed": "L'authentification OAuth a échoué.",
     "oauthProvidersTitle": "Fournisseurs de connexion OAuth",
     "samlProvidersTitle": "Fournisseurs de connexion SAML",
-    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "sessionExpired": "Session expirée. Connectez-vous pour continuer.",
     "signingIn": "Connexion en cours...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Se connecter à TMI",
@@ -1369,7 +1369,7 @@
     "complianceContent": "Nous ne divulguerons des informations que si la loi l'exige, par exemple en réponse à une ordonnance gouvernementale ou à une assignation valide. Dans de tels cas, l'opérateur se conformera aux obligations légales applicables.",
     "complianceTitle": "Conformité légale",
     "contactContent": {
-      "part1": "Si vous avez des questions concernant cette politique de confidentialité, n'hésitez pas à contacter l'opérateur de ce site web via les coordonnées figurant sur la.",
+      "part1": "Pour toute question concernant cette politique de confidentialité, contactez l'opérateur via les informations indiquées sur la page",
       "part2": " Page"
     },
     "contactTitle": "Nous contacter",
@@ -1378,7 +1378,7 @@
     "dataSecurityTitle": "Sécurité des données",
     "dataSharingContent1": "L'opérateur ne partage pas vos informations personnelles avec des tiers, sauf dans les circonstances limitées suivantes :",
     "dataSharingContent2": "Au-delà de ces exceptions, l'opérateur ne vend, ne loue ni ne partage vos données avec d'autres entités à des fins de marketing, de publicité ou à toute autre fin.",
-    "dataSharingList1": "Prestataires de services : vos données peuvent être stockées et traitées sur une infrastructure cloud tierce sécurisée (telle qu'AWS, Google Cloud ou des fournisseurs similaires) uniquement pour exploiter et maintenir l'application. Ces fournisseurs sont contractuellement tenus de protéger vos données et de ne les utiliser qu'aux fins spécifiées par l'opérateur.",
+    "dataSharingList1": "Prestataires de services : vos données peuvent être stockées et traitées sur une infrastructure cloud tierce sécurisée (comme AWS, Google Cloud ou des prestataires similaires) uniquement pour exploiter et maintenir l'application. Ces prestataires sont contractuellement tenus de protéger vos données et de ne les utiliser qu'aux fins spécifiées par l'opérateur.",
     "dataSharingList2": "Fonctionnalités d'extensibilité : l'application prend en charge des fonctionnalités d'extensibilité optionnelles (telles que les websockets et les addons) qui peuvent étendre les fonctionnalités en transmettant des informations sélectionnées à des services tiers pour traitement. Les données ne sont partagées avec ces services que lorsque vous utilisez activement une fonctionnalité nécessitant une telle transmission, et seules les informations spécifiques nécessaires à la fonctionnalité demandée sont transmises.",
     "dataSharingList2a": "Fonctionnalités de traitement par IA : lorsque vous demandez activement des fonctionnalités alimentées par des grands modèles de langage (LLM) ou des services d'IA similaires, des données sélectionnées peuvent être transmises à des fournisseurs d'IA tiers (tels qu'OpenAI, Anthropic ou des services équivalents) pour traitement et génération de réponses. Seules les informations spécifiques nécessaires à la fonctionnalité demandée sont partagées, et ce partage n'a lieu qu'à votre demande. Ces fournisseurs sont liés par des obligations contractuelles — y compris des accords de traitement des données le cas échéant — pour utiliser les données exclusivement afin de fournir le service demandé, avec des restrictions sur la rétention, l'entraînement ou d'autres utilisations.",
     "dataSharingList3": "Conformité légale : l'opérateur peut divulguer des informations si la loi l'exige, par exemple en réponse à une ordonnance judiciaire, une assignation ou une demande gouvernementale valide.",
@@ -1982,7 +1982,7 @@
   },
   "tos": {
     "contactInfo": {
-      "part1": "Si vous avez des questions concernant ces conditions, n'hésitez pas à contacter l'opérateur de ce site web via les coordonnées figurant sur la.",
+      "part1": "Pour toute question concernant ces conditions, contactez l'opérateur via les informations indiquées sur la page",
       "part2": " Page"
     },
     "intro": {
@@ -1991,7 +1991,7 @@
     },
     "lastUpdatedDate": "2025-10-10",
     "section1": {
-      "content": "En accedant et en utilisant ce site web, vous acceptez d'etre lie par les termes et dispositions de cet accord. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser ce site web.",
+      "content": "En accédant à ce site web et en l'utilisant, vous acceptez les conditions et dispositions de cet accord et vous engagez à y être lié. Si vous n'acceptez pas ces conditions, n'utilisez pas ce site web.",
       "title": "1. Acceptation des conditions"
     },
     "section2": {

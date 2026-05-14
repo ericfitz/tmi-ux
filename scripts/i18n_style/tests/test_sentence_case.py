@@ -89,6 +89,21 @@ class TestSentenceCase(unittest.TestCase):
         errors = validate_sentence_case("Yes/no", _lists())
         self.assertTrue(errors)
 
+    def test_multiword_proper_noun_canonical_mid_sentence(self):
+        # "Google Drive" (canonical) mid-sentence must not be flagged. Before
+        # the multi-word masking pass was added, the walker incorrectly flagged
+        # 'Drive' as "should be lowercase mid-sentence".
+        self.assertEqual(
+            validate_sentence_case("Pick from Google Drive", _lists()), []
+        )
+
+    def test_multiword_proper_noun_partial_case_mid_sentence_fails(self):
+        # "Google drive" mid-sentence (canonical first word, lower second word)
+        # is not the canonical multi-word form, so the mask doesn't fire and
+        # 'Google' is flagged as a mid-sentence capital.
+        errors = validate_sentence_case("Pick from Google drive", _lists())
+        self.assertTrue(errors)
+
 
 if __name__ == "__main__":
     unittest.main()

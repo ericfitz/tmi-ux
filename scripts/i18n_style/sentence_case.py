@@ -1,7 +1,7 @@
 """Sentence-case validator for en-US strings."""
 
 import re
-from typing import List
+from typing import List, Set
 
 from scripts.i18n_style.config import StyleLists
 
@@ -47,7 +47,7 @@ def _matches_acronym_case_insensitive(word: str, acronyms: set) -> bool:
     return stripped in acronyms
 
 
-def _is_domain_noun_capitalized(value: str, domain_nouns: set) -> List[str]:
+def _is_domain_noun_capitalized(value: str, domain_nouns: Set[str]) -> List[str]:
     """Return list of domain-noun violations (Title-Case usage mid-sentence)."""
     errors = []
     # Split into sentences (rough): on . ! ?
@@ -71,6 +71,34 @@ def _is_domain_noun_capitalized(value: str, domain_nouns: set) -> List[str]:
     return errors
 
 
+_PROPER_NOUN_MASK_TOKEN = "{{__pn__}}"
+
+
+def _mask_multiword_proper_nouns(value: str, proper_nouns: Set[str]) -> str:
+    """Replace canonical multi-word proper nouns in `value` with a reserved mask
+    token so the word-by-word walker does not flag their later words ('Drive',
+    'Cloud', 'Workspace') as mid-sentence-capitalized violations.
+
+    Reserved token: `_PROPER_NOUN_MASK_TOKEN` (`{{__pn__}}`). The leading
+    underscores in `__pn__` make it unmatchable by `_PURE_DELEGATION_RE` (which
+    requires a leading letter), so it cannot collide with a real translation
+    placeholder by accident. Do not introduce a placeholder named `__pn__` in
+    en-US.json or any locale file.
+
+    Single-word proper nouns are handled by the per-word path and don't need
+    masking. Match is case-sensitive: a non-canonical casing (e.g. 'google
+    drive' or 'Google drive') is left untouched so the proper-noun rule can
+    flag the first word.
+    """
+    masked = value
+    multiword_strs: List[str] = [str(p) for p in proper_nouns if " " in str(p)]
+    multiword_strs.sort(key=len, reverse=True)
+    for noun in multiword_strs:
+        pattern = re.compile(rf"\b{re.escape(noun)}\b")
+        masked = pattern.sub(_PROPER_NOUN_MASK_TOKEN, masked)
+    return masked
+
+
 def validate_sentence_case(value: str, lists: StyleLists) -> List[str]:
     """Return a list of human-readable error messages for sentence-case violations.
 
@@ -87,8 +115,15 @@ def validate_sentence_case(value: str, lists: StyleLists) -> List[str]:
     if not stripped_value:
         return []
 
-    # Pre-pass: domain-noun Title Case mid-sentence.
+    # Pre-pass: domain-noun Title Case mid-sentence. Runs on the *unmasked*
+    # value because domain nouns are an independent list from proper nouns;
+    # there is no overlap.
     errors.extend(_is_domain_noun_capitalized(value, lists.domain_nouns))
+
+    # Collapse canonical multi-word proper nouns to a reserved mask token so
+    # the word-walker doesn't flag the subsequent words ('Drive', 'Cloud') as
+    # capitalized mid-sentence.
+    stripped_value = _mask_multiword_proper_nouns(stripped_value, lists.proper_nouns)
 
     # Walk words, tracking whether the next word starts a new sentence.
     words = re.findall(r"\S+", stripped_value)
