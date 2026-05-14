@@ -1729,6 +1729,8 @@
     "frameworkMappings": "위협 모델 프레임워크 매핑.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "이 다이어그램에 셀이 없습니다.",
+    "noDiagramsInThreatModel": "이 위협 모델에 다이어그램이 없습니다.",
     "notAssociatedWithAsset": "자산과 연결되지 않음.",
     "notAssociatedWithCell": "셀과 연결되지 않음.",
     "notAssociatedWithDiagram": "다이어그램과 연결되지 않음.",
@@ -1739,6 +1741,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "추적"
     },
+    "selectDiagramFirst": "다이어그램을 먼저 선택하세요",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

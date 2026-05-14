@@ -1750,6 +1750,8 @@
     "frameworkMappings": "脅威モデルフレームワークマッピング。",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "このダイアグラムにはセルがありません。",
+    "noDiagramsInThreatModel": "この脅威モデルにはダイアグラムがありません。",
     "notAssociatedWithAsset": "アセットに関連付けられていません。",
     "notAssociatedWithCell": "セルに関連付けられていません。",
     "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません。",
@@ -1760,6 +1762,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "追跡"
     },
+    "selectDiagramFirst": "最初にダイアグラムを選択してください",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

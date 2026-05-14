@@ -1739,6 +1739,8 @@
     "frameworkMappings": "威胁模型框架映射。",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "此图表没有单元格。",
+    "noDiagramsInThreatModel": "此威胁模型没有图表。",
     "notAssociatedWithAsset": "未关联资产。",
     "notAssociatedWithCell": "未关联单元格。",
     "notAssociatedWithDiagram": "未关联图表。",
@@ -1749,6 +1751,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "跟踪"
     },
+    "selectDiagramFirst": "请先选择一个图表",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

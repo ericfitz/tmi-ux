@@ -1739,6 +1739,8 @@
     "frameworkMappings": "Сопоставления фреймворка модели угроз.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "На этой диаграмме нет ячеек.",
+    "noDiagramsInThreatModel": "В этой модели угроз нет диаграмм.",
     "notAssociatedWithAsset": "Не связано с активом.",
     "notAssociatedWithCell": "Не связано с ячейкой.",
     "notAssociatedWithDiagram": "Не связано с диаграммой.",
@@ -1749,6 +1751,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "Отслеживание"
     },
+    "selectDiagramFirst": "Сначала выберите диаграмму",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

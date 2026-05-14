@@ -1734,6 +1734,8 @@
     "frameworkMappings": "การแมปกรอบงาน Threat Model",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "แผนภาพนี้ไม่มีเซลล์",
+    "noDiagramsInThreatModel": "Threat Model นี้ไม่มีแผนภาพ",
     "notAssociatedWithAsset": "ไม่เกี่ยวข้องกับทรัพย์สิน",
     "notAssociatedWithCell": "ไม่เกี่ยวข้องกับเซลล์",
     "notAssociatedWithDiagram": "ไม่เกี่ยวข้องกับแผนภาพ",
@@ -1744,6 +1746,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "การติดตาม"
     },
+    "selectDiagramFirst": "เลือกแผนภาพก่อน",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

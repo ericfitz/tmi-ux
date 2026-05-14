@@ -1739,6 +1739,8 @@
     "frameworkMappings": "تھریٹ ماڈل فریم ورک میپنگز۔",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "اس خاکے میں کوئی سیل نہیں ہے۔",
+    "noDiagramsInThreatModel": "اس تھریٹ ماڈل میں کوئی خاکے نہیں ہیں۔",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں۔",
     "notAssociatedWithCell": "کسی سیل سے منسلک نہیں۔",
     "notAssociatedWithDiagram": "کسی خاکے سے منسلک نہیں۔",
@@ -1749,6 +1751,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "نگرانی"
     },
+    "selectDiagramFirst": "پہلے ایک خاکہ منتخب کریں",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

@@ -1739,6 +1739,8 @@
     "frameworkMappings": "Pemetaan Kerangka Model Ancaman.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "Diagram ini tidak memiliki sel.",
+    "noDiagramsInThreatModel": "Model ancaman ini tidak memiliki diagram.",
     "notAssociatedWithAsset": "Tidak terkait dengan aset.",
     "notAssociatedWithCell": "Tidak Terkait dengan Sel.",
     "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram.",
@@ -1749,6 +1751,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "Pelacakan"
     },
+    "selectDiagramFirst": "Pilih diagram terlebih dahulu",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

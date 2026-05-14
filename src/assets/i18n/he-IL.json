@@ -1729,6 +1729,8 @@
     "frameworkMappings": "מיפויי מסגרת מודל איומים.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "לדיאגרמה זו אין תאים.",
+    "noDiagramsInThreatModel": "למודל איומים זה אין דיאגרמות.",
     "notAssociatedWithAsset": "לא משויך לנכס.",
     "notAssociatedWithCell": "לא משויך לתא.",
     "notAssociatedWithDiagram": "לא משויך לדיאגרמה.",
@@ -1739,6 +1741,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "מעקב"
     },
+    "selectDiagramFirst": "בחר תחילה דיאגרמה",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

@@ -1777,6 +1777,8 @@
     "frameworkMappings": "Mapeamentos de framework do modelo de ameaças.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "Este diagrama não possui células.",
+    "noDiagramsInThreatModel": "Este modelo de ameaças não possui diagramas.",
     "notAssociatedWithAsset": "Não associado a um ativo.",
     "notAssociatedWithCell": "Não associado a uma célula.",
     "notAssociatedWithDiagram": "Não associado a um diagrama.",
@@ -1787,6 +1789,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "Rastreamento"
     },
+    "selectDiagramFirst": "Selecione um diagrama primeiro",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

@@ -25,6 +25,7 @@ import { ThreatModelAuthorizationService } from '../../services/threat-model-aut
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { CVSSScore, SSVCScore, Threat, ThreatModel } from '../../models/threat-model.model';
+import { Diagram } from '../../models/diagram.model';
 import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import { FrameworkModel, ThreatTypeModel } from '../../../../shared/models/framework.model';
 import {
@@ -141,8 +142,16 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   statusOptions: FieldOption[] = [];
   priorityOptions: FieldOption[] = [];
 
-  // Complete cell data (all cells from all diagrams) for filtering
-  private allCellOptions: CellOption[] = [];
+  // True when the threat model has no diagrams at all.
+  hasNoDiagramsInThreatModel = false;
+  // True when a diagram is selected but it has no cells.
+  selectedDiagramHasNoCells = false;
+  // True while cells for the selected diagram are being fetched.
+  isLoadingCells = false;
+  // The most recently loaded full diagram (with cells). Used by
+  // _getSelectedCellType to look up a cell's shape for the framework-mapping
+  // picker; the threat-model response does not include cells inline.
+  private loadedDiagram: Diagram | null = null;
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
@@ -342,41 +351,43 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    */
   private reinitializeDropdownOptions(): void {
     this.initializeDiagramOptions();
-    this.initializeCellOptions();
     this.initializeAssetOptions();
     this.initializeThreatTypeOptions();
     this.initializeFieldOptions();
+    // Reload cells for the currently-selected diagram so their "not associated"
+    // entry picks up the new locale.
+    const currentDiagramId = this.threatForm.get('diagram_id')?.value as string;
+    this.loadCellsForDiagram(currentDiagramId);
   }
 
   /**
    * Initialize diagram options for the dropdown
    */
   private initializeDiagramOptions(): void {
+    const diagrams = this.threatModel?.diagrams ?? [];
+    this.hasNoDiagramsInThreatModel = diagrams.length === 0;
+
     this.diagramOptions = [
       {
         id: this.NOT_ASSOCIATED_VALUE,
         name: this.translocoService.translate('threatEditor.notAssociatedWithDiagram'),
       },
+      ...diagrams.map(d => ({ id: d.id, name: d.name })),
     ];
-
-    if (this.threatModel?.diagrams) {
-      const diagrams = this.threatModel.diagrams.map(d => ({
-        id: d.id,
-        name: d.name,
-      }));
-      this.diagramOptions = [...this.diagramOptions, ...diagrams];
-    }
   }
 
   /**
-   * Initialize cell options for the dropdown
+   * Initialize cell options. Cells are loaded per-selected-diagram (see
+   * loadCellsForDiagram); on init we just show the "not associated" entry
+   * and let populateForm() trigger the actual fetch.
    */
   private initializeCellOptions(): void {
-    if (this.threatModel) {
-      const cellData = this.cellDataExtractionService.extractFromThreatModel(this.threatModel);
-      this.allCellOptions = cellData.cells;
-    }
-    this.filterCellOptions();
+    this.cellOptions = [
+      {
+        id: this.NOT_ASSOCIATED_VALUE,
+        label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
+      },
+    ];
   }
 
   /**
@@ -424,22 +435,14 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the shape of the currently selected cell from the threat model diagrams.
+   * Get the shape of the currently selected cell from the loaded diagram.
    */
   private _getSelectedCellType(): string | null {
     const cellId = this.threatForm.get('cell_id')?.value as string;
     if (!cellId || cellId === this.NOT_ASSOCIATED_VALUE) return null;
 
-    if (this.threatModel?.diagrams) {
-      for (const diagram of this.threatModel.diagrams) {
-        const cells = diagram.cells;
-        if (cells) {
-          const cell = cells.find(c => c.id === cellId);
-          if (cell?.shape) return cell.shape;
-        }
-      }
-    }
-    return null;
+    const cell = this.loadedDiagram?.cells?.find(c => c.id === cellId);
+    return cell?.shape ?? null;
   }
 
   /**
@@ -452,32 +455,74 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Filter cell options based on the currently selected diagram
+   * Load cells for the given diagram and refresh the cell dropdown.
+   * - "not associated" / empty: drop cells back to just "not associated".
+   * - Real diagram: fetch the full diagram (cells are not included inline
+   *   on the threat-model response) and extract its cells.
+   *
+   * If the currently-selected cell_id is not in the loaded set, it is reset
+   * to "not associated" so the dropdown never shows a stale selection.
    */
-  private filterCellOptions(selectedDiagramId?: string): void {
-    const diagramId =
-      selectedDiagramId ||
-      (this.threatForm?.get('diagram_id')?.value as string) ||
-      this.threat?.diagram_id;
-
+  private loadCellsForDiagram(diagramId: string | null | undefined): void {
     const notAssociatedOption: CellOption = {
       id: this.NOT_ASSOCIATED_VALUE,
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[];
-
-    if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
-      filteredCells = this.allCellOptions.filter(cell => cell.diagramId === diagramId);
-    } else {
-      filteredCells = [...this.allCellOptions];
+    if (!diagramId || diagramId === this.NOT_ASSOCIATED_VALUE) {
+      this.cellOptions = [notAssociatedOption];
+      this.selectedDiagramHasNoCells = false;
+      this.isLoadingCells = false;
+      this.loadedDiagram = null;
+      this.resetCellIfStale();
+      return;
     }
 
-    this.cellOptions = [notAssociatedOption, ...filteredCells];
+    this.isLoadingCells = true;
+    this.selectedDiagramHasNoCells = false;
+
+    this.threatModelService
+      .getDiagramById(this.threatModelId, diagramId)
+      .pipe(this.untilDestroyed())
+      .subscribe({
+        next: (diagram: Diagram | undefined) => {
+          this.isLoadingCells = false;
+          this.loadedDiagram = diagram ?? null;
+          const diagramForExtract: ThreatModel = {
+            ...(this.threatModel as ThreatModel),
+            diagrams: diagram ? [diagram] : [],
+          };
+          const cellData = diagram
+            ? this.cellDataExtractionService.extractFromThreatModel(diagramForExtract, diagram.id)
+            : { diagrams: [], cells: [] };
+          this.cellOptions = [notAssociatedOption, ...cellData.cells];
+          this.selectedDiagramHasNoCells = cellData.cells.length === 0;
+          this.resetCellIfStale();
+        },
+        error: (err: unknown) => {
+          this.isLoadingCells = false;
+          this.logger.error('Failed to load diagram cells', err);
+          this.loadedDiagram = null;
+          this.cellOptions = [notAssociatedOption];
+          this.selectedDiagramHasNoCells = false;
+          this.resetCellIfStale();
+        },
+      });
+  }
+
+  /** Reset the cell_id form control if the selected value is not in cellOptions. */
+  private resetCellIfStale(): void {
+    const currentCellId = this.threatForm.get('cell_id')?.value as string;
+    if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
+      const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
+      if (!cellExists) {
+        this.threatForm.patchValue({ cell_id: this.NOT_ASSOCIATED_VALUE }, { emitEvent: false });
+      }
+    }
   }
 
   /**
-   * Set up reactive subscription to filter cell options when diagram selection changes
+   * Set up reactive subscription to reload cell options when diagram selection changes.
    */
   private setupDiagramChangeFiltering(): void {
     const diagramControl = this.threatForm.get('diagram_id');
@@ -485,21 +530,25 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       this.diagramChangeSubscription = diagramControl.valueChanges
         .pipe(this.untilDestroyed())
         .subscribe((diagramId: string) => {
-          this.filterCellOptions(diagramId);
-
-          // Reset cell_id if it doesn't exist in the new filtered list
-          const currentCellId = this.threatForm.get('cell_id')?.value as string;
-          if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
-            const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
-            if (!cellExists) {
-              this.threatForm.patchValue(
-                { cell_id: this.NOT_ASSOCIATED_VALUE },
-                { emitEvent: false },
-              );
-            }
-          }
+          this.loadCellsForDiagram(diagramId);
         });
     }
+  }
+
+  /** Resolve asset_id to its threat-model value or "not associated" if missing. */
+  private resolveAssetIdValue(): string {
+    const id = this.threat?.asset_id;
+    if (!id) return this.NOT_ASSOCIATED_VALUE;
+    const exists = this.threatModel?.assets?.some(a => a.id === id);
+    return exists ? id : this.NOT_ASSOCIATED_VALUE;
+  }
+
+  /** Resolve diagram_id to its threat-model value or "not associated" if missing. */
+  private resolveDiagramIdValue(): string {
+    const id = this.threat?.diagram_id;
+    if (!id) return this.NOT_ASSOCIATED_VALUE;
+    const exists = this.threatModel?.diagrams?.some(d => d.id === id);
+    return exists ? id : this.NOT_ASSOCIATED_VALUE;
   }
 
   /**
@@ -525,16 +574,12 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       this.translocoService,
     );
 
-    // Determine asset_id value
-    let assetIdValue = this.NOT_ASSOCIATED_VALUE;
-    if (this.threat.asset_id) {
-      const assetExists = this.threatModel?.assets?.some(
-        asset => asset.id === this.threat!.asset_id,
-      );
-      if (assetExists) {
-        assetIdValue = this.threat.asset_id;
-      }
-    }
+    const assetIdValue = this.resolveAssetIdValue();
+    const diagramIdValue = this.resolveDiagramIdValue();
+    const cellIdValue: string =
+      diagramIdValue !== this.NOT_ASSOCIATED_VALUE && this.threat.cell_id
+        ? this.threat.cell_id
+        : this.NOT_ASSOCIATED_VALUE;
 
     this.threatForm.patchValue({
       name: this.threat.name,
@@ -542,8 +587,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       description: this.threat.description || '',
       severity: migratedSeverity,
       threat_type: this.threat.threat_type || [],
-      diagram_id: this.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
-      cell_id: this.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
+      diagram_id: diagramIdValue,
+      cell_id: cellIdValue,
       score: this.threat.score ?? null,
       priority: migratedPriority,
       mitigated: this.threat.mitigated || false,
@@ -556,6 +601,10 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       cvss: this.threat.cvss || [],
       ssvc: this.threat.ssvc ?? null,
     });
+
+    // populateForm runs before setupDiagramChangeFiltering wires up the
+    // valueChanges subscription, so trigger the initial cells load manually.
+    this.loadCellsForDiagram(diagramIdValue);
 
     // Mark form as pristine after initial population
     this.threatForm.markAsPristine();

@@ -481,6 +481,9 @@
                   {{ diagram.name || diagram.id }}
                 </mat-option>
               </mat-select>
+              @if (hasNoDiagramsInThreatModel) {
+                <mat-hint>{{ 'threatEditor.noDiagramsInThreatModel' | transloco }}</mat-hint>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width" floatLabel="always">
@@ -490,6 +493,14 @@
                   {{ cell.label || cell.id }}
                 </mat-option>
               </mat-select>
+              @if (
+                !threatForm.get('diagram_id')?.value ||
+                threatForm.get('diagram_id')?.value === NOT_ASSOCIATED_VALUE
+              ) {
+                <mat-hint>{{ 'threatEditor.selectDiagramFirst' | transloco }}</mat-hint>
+              } @else if (selectedDiagramHasNoCells && !isLoadingCells) {
+                <mat-hint>{{ 'threatEditor.noCellsInDiagram' | transloco }}</mat-hint>
+              }
             </mat-form-field>
           </div>
         </div>

@@ -2279,9 +2279,12 @@
     "frameworkMappings": "হুমকি মডেল ফ্রেমওয়ার্ক ম্যাপিং",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "এই ডায়াগ্রামে কোনো সেল নেই।",
+    "noDiagramsInThreatModel": "এই হুমকি মডেলে কোনো ডায়াগ্রাম নেই।",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
     "notAssociatedWithCell": "কোনো সেলের সাথে সম্পর্কিত নয়",
     "notAssociatedWithDiagram": "কোনো ডায়াগ্রামের সাথে সম্পর্কিত নয়",
+    "selectDiagramFirst": "প্রথমে একটি ডায়াগ্রাম নির্বাচন করুন",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",

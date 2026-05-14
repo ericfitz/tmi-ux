@@ -1750,6 +1750,8 @@
     "frameworkMappings": "تعيينات إطار عمل نمذجة التهديدات.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "لا يحتوي هذا المخطط على أي خلايا.",
+    "noDiagramsInThreatModel": "لا يحتوي نموذج التهديد هذا على أي مخططات.",
     "notAssociatedWithAsset": "غير مرتبط بأصل.",
     "notAssociatedWithCell": "غير مرتبط بخلية.",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط.",
@@ -1760,6 +1762,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "التتبع"
     },
+    "selectDiagramFirst": "اختر مخططاً أولاً",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",

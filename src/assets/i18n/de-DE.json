@@ -1739,6 +1739,8 @@
     "frameworkMappings": "Bedrohungsmodell-Framework-Zuordnungen.",
     "issueUriHint": "{{threatEditor.issueUriHint}}",
     "issueUriPlaceholder": "{{threatEditor.issueUriPlaceholder}}",
+    "noCellsInDiagram": "Dieses Diagramm enthält keine Zellen.",
+    "noDiagramsInThreatModel": "Dieses Bedrohungsmodell enthält keine Diagramme.",
     "notAssociatedWithAsset": "Nicht mit einem Asset verknüpft.",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft.",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft.",
@@ -1749,6 +1751,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "Verfolgung"
     },
+    "selectDiagramFirst": "Zuerst ein Diagramm auswählen",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
