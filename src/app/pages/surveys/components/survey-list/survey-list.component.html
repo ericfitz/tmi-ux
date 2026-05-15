@@ -1,11 +1,7 @@
 <div class="survey-list-container">
   <div class="page-header">
     <h1 class="page-title">{{ 'surveys.list.pageTitle' | transloco }}</h1>
-    <button
-      mat-stroked-button
-      (click)="viewMyResponses()"
-      data-testid="survey-list-my-responses-button"
-    >
+    <button mat-button (click)="viewMyResponses()" data-testid="survey-list-my-responses-button">
       <mat-icon>history</mat-icon>
       {{ 'surveys.myResponses' | transloco }}
     </button>
@@ -22,7 +18,7 @@
     <div class="error-container">
       <mat-icon color="warn">error</mat-icon>
       <p>{{ error }}</p>
-      <button mat-stroked-button (click)="loadData()">
+      <button mat-button (click)="loadData()">
         <mat-icon>refresh</mat-icon>
         {{ 'common.retry' | transloco }}
       </button>
@@ -110,7 +106,7 @@
           <mat-card-actions align="end">
             @if (getDrafts(survey.id).length > 0) {
               <button
-                mat-stroked-button
+                mat-button
                 (click)="continueDraft(getDrafts(survey.id)[0])"
                 data-testid="survey-list-draft-continue-button"
               >

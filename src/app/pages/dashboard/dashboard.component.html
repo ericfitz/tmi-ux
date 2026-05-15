@@ -125,7 +125,7 @@
     <!-- Clear All Filters button -->
     @if (hasActiveFilters || searchText) {
       <button
-        mat-stroked-button
+        mat-button
         data-testid="dashboard-clear-filters-button"
         (click)="clearAllFilters()"
         class="clear-filters-button"
@@ -380,7 +380,7 @@
                           }}
                         </p>
                         <button
-                          mat-stroked-button
+                          mat-flat-button
                           color="primary"
                           class="join-session-button"
                           (click)="openCollaborationSession(session.diagramId)"
@@ -598,7 +598,7 @@
                         }}
                       </p>
                       <button
-                        mat-stroked-button
+                        mat-flat-button
                         color="primary"
                         class="join-session-button"
                         (click)="
@@ -643,7 +643,7 @@
       <div class="no-threat-models">
         <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
         <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
-        <button mat-raised-button color="primary" (click)="createThreatModel()">
+        <button mat-flat-button color="primary" (click)="createThreatModel()">
           <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
         </button>
       </div>

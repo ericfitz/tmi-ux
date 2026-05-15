@@ -1657,7 +1657,7 @@
                 </mat-form-field>
 
                 <button
-                  mat-stroked-button
+                  mat-button
                   class="threat-mitigated-filter"
                   (click)="toggleMitigatedFilter()"
                   [matTooltip]="'threats.filters.mitigatedTooltip' | transloco"
@@ -1693,7 +1693,7 @@
 
                 @if (hasActiveThreatFilters) {
                   <button
-                    mat-stroked-button
+                    mat-button
                     class="clear-threat-filters-button"
                     (click)="clearAllThreatFilters()"
                   >

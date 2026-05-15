@@ -34,8 +34,9 @@ import {
         <span [transloco]="'surveys.confidentialDialog.no'">No</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onYes()"
         data-testid="confidential-yes-button"
       >

@@ -93,7 +93,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         data-testid="create-tm-submit"
         (click)="onCreate()"

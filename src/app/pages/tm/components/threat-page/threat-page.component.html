@@ -305,7 +305,7 @@
               </mat-chip-set>
             } @else if (canEdit) {
               <button
-                mat-stroked-button
+                mat-flat-button
                 color="primary"
                 (click)="openSsvcCalculator()"
                 class="ssvc-calculator-button"
@@ -340,7 +340,7 @@
                 </mat-chip-set>
                 @if (canEdit) {
                   <button
-                    mat-stroked-button
+                    mat-flat-button
                     color="primary"
                     (click)="openFrameworkMappingPicker()"
                     class="mapping-add-button"
@@ -376,7 +376,7 @@
                 </mat-chip-set>
                 @if (canEdit) {
                   <button
-                    mat-stroked-button
+                    mat-flat-button
                     color="primary"
                     (click)="openCwePicker()"
                     class="mapping-add-button"
@@ -420,7 +420,7 @@
                 </mat-chip-set>
                 @if (canEdit) {
                   <button
-                    mat-stroked-button
+                    mat-flat-button
                     color="primary"
                     (click)="openCvssCalculator()"
                     [disabled]="!canAddCvss"

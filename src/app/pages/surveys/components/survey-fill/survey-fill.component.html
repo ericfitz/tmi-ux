@@ -8,7 +8,7 @@
     <div class="error-container">
       <mat-icon color="warn">error</mat-icon>
       <p>{{ error }}</p>
-      <button mat-stroked-button (click)="goBack()">
+      <button mat-button (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
         Back to Surveys
       </button>
@@ -19,11 +19,7 @@
       <h2>Survey Submitted!</h2>
       <p>Thank you for completing this survey. Your response has been recorded.</p>
       <div class="success-actions">
-        <button
-          mat-stroked-button
-          (click)="viewResponse()"
-          data-testid="survey-fill-view-response-button"
-        >
+        <button mat-button (click)="viewResponse()" data-testid="survey-fill-view-response-button">
           <mat-icon>visibility</mat-icon>
           View Response
         </button>
@@ -131,7 +127,7 @@
 
     <!-- Footer with save button -->
     <div class="survey-footer">
-      <button mat-stroked-button (click)="saveAndExit()" data-testid="survey-fill-save-exit-button">
+      <button mat-button (click)="saveAndExit()" data-testid="survey-fill-save-exit-button">
         <mat-icon>save</mat-icon>
         Save &amp; Exit
       </button>
