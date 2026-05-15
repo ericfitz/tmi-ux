@@ -9,7 +9,7 @@
       <mat-icon>error_outline</mat-icon>
       <h2>Error</h2>
       <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="goBack()">Back to Triage</button>
+      <button mat-flat-button color="primary" (click)="goBack()">Back to Triage</button>
     </div>
   } @else if (response) {
     <!-- Header -->
@@ -23,7 +23,8 @@
       <div class="header-actions">
         @if (response.status === 'submitted') {
           <button
-            mat-stroked-button
+            mat-flat-button
+            color="primary"
             (click)="approveResponse()"
             [disabled]="isUpdatingStatus"
             data-testid="triage-detail-approve-button"
@@ -34,7 +35,7 @@
         }
         @if (response.status === 'submitted' || response.status === 'ready_for_review') {
           <button
-            mat-stroked-button
+            mat-button
             (click)="openRevisionDialog()"
             [disabled]="isUpdatingStatus"
             data-testid="triage-detail-revision-button"
@@ -45,7 +46,7 @@
         }
         @if (response.status === 'ready_for_review') {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="createThreatModel()"
             [disabled]="isUpdatingStatus"
@@ -60,6 +61,7 @@
         mat-icon-button
         class="close-button"
         (click)="goBack()"
+        [matTooltip]="'common.close' | transloco"
         [attr.aria-label]="'common.close' | transloco"
         data-testid="triage-detail-close-button"
       >

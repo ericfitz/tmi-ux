@@ -12,7 +12,13 @@
       data-testid="reviewer-assignment-search-input"
     />
     @if (filters.searchTerm) {
-      <button matSuffix mat-icon-button (click)="filters.searchTerm = ''; onFilterChange()">
+      <button
+        matSuffix
+        mat-icon-button
+        (click)="filters.searchTerm = ''; onFilterChange()"
+        [matTooltip]="'common.clearSearch' | transloco"
+        [attr.aria-label]="'common.clearSearch' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     }
@@ -72,7 +78,7 @@
   <!-- Clear Filters button -->
   @if (hasActiveFilters) {
     <button
-      mat-stroked-button
+      mat-button
       (click)="clearFilters()"
       class="clear-filters-button"
       data-testid="reviewer-assignment-clear-filters-button"
@@ -163,7 +169,7 @@
     <mat-icon>error_outline</mat-icon>
     <h2>{{ 'common.error' | transloco }}</h2>
     <p>{{ error }}</p>
-    <button mat-raised-button color="primary" (click)="loadThreatModels()">
+    <button mat-flat-button color="primary" (click)="loadThreatModels()">
       {{ 'common.retry' | transloco }}
     </button>
   </div>
@@ -172,7 +178,7 @@
     <mat-icon>assignment_turned_in</mat-icon>
     @if (hasActiveFilters) {
       <h2>{{ 'triage.reviewerAssignment.noUnassignedFiltered' | transloco }}</h2>
-      <button mat-raised-button color="primary" (click)="clearFilters()">
+      <button mat-flat-button color="primary" (click)="clearFilters()">
         {{ 'triage.filters.clearFilters' | transloco }}
       </button>
     } @else {
@@ -275,7 +281,7 @@
           <div class="row-actions">
             @if (selectedReviewers.get(row.id)) {
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 [disabled]="isAssigning.has(row.id)"
                 (click)="
@@ -291,7 +297,8 @@
               </button>
             } @else {
               <button
-                mat-raised-button
+                mat-flat-button
+                color="primary"
                 [disabled]="isAssigning.has(row.id)"
                 (click)="assignToMe(row.id); $event.stopPropagation()"
                 data-testid="reviewer-assignment-assign-me-button"

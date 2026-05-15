@@ -144,8 +144,9 @@
   </button>
   @if (!isReadOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       [disabled]="noteForm.invalid"
       (click)="onSave()"
       data-testid="triage-note-save-button"

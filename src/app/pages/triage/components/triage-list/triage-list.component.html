@@ -36,7 +36,13 @@
             data-testid="triage-search-input"
           />
           @if (filters.searchTerm) {
-            <button matSuffix mat-icon-button (click)="filters.searchTerm = ''; onFilterChange()">
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="filters.searchTerm = ''; onFilterChange()"
+              [matTooltip]="'common.clearSearch' | transloco"
+              [attr.aria-label]="'common.clearSearch' | transloco"
+            >
               <mat-icon>close</mat-icon>
             </button>
           }
@@ -86,11 +92,7 @@
         }
 
         @if (hasActiveFilters) {
-          <button
-            mat-stroked-button
-            (click)="clearFilters()"
-            data-testid="triage-clear-filters-button"
-          >
+          <button mat-button (click)="clearFilters()" data-testid="triage-clear-filters-button">
             <mat-icon>filter_list_off</mat-icon>
             {{ 'triage.filters.clearFilters' | transloco }}
           </button>
@@ -108,7 +110,7 @@
           <h2>{{ 'common.error' | transloco }}</h2>
           <p>{{ error }}</p>
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="loadResponses()"
             data-testid="triage-error-retry-button"
@@ -122,7 +124,7 @@
           <h2>{{ 'triage.list.noResponsesTitle' | transloco }}</h2>
           @if (hasActiveFilters) {
             <p>{{ 'triage.list.noResponsesFiltered' | transloco }}</p>
-            <button mat-raised-button color="primary" (click)="clearFilters()">
+            <button mat-flat-button color="primary" (click)="clearFilters()">
               {{ 'triage.filters.clearFilters' | transloco }}
             </button>
           } @else {
