@@ -325,6 +325,12 @@ export class ChatPageComponent implements OnInit {
       }
       case 'ready': {
         const data = JSON.parse(event.data) as ReadyEvent;
+        // The "Ready!" bubble persists across the handoff to the message
+        // stream. The next preparationStatus mutation — a `status` event
+        // (mode: 'message-status'), or `message_start` clearing it to null —
+        // replaces it. A previous setTimeout cleared it after 2s, which
+        // produced a bare loading spinner for the rest of the LLM wait when
+        // status events were delayed (see issue #690).
         this.preparationStatus = {
           phase: '',
           entityName: '',
@@ -338,10 +344,6 @@ export class ChatPageComponent implements OnInit {
             chunks_embedded: data.chunks_embedded ?? this.progressCounter,
           },
         };
-        setTimeout(() => {
-          this.preparationStatus = null;
-          this.cdr.markForCheck();
-        }, 2000);
         break;
       }
       case 'error': {
