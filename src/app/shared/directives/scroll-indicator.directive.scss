@@ -14,11 +14,18 @@ mat-dialog-content[appScrollIndicator] {
   position: relative;
 }
 
+/**
+ * The indicator is a sticky child at the end of the scrollable content.
+ * Sticky positioning pins it to bottom: 0 of the visible viewport while
+ * the user scrolls; absolute positioning would have caused the indicator
+ * to translate with the scroll layer.
+ */
 .scroll-indicator {
-  position: absolute;
+  position: sticky;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  width: max-content;
+  margin: 0 auto;
   padding: 8px 16px;
   font-size: 20px;
   color: rgb(0 0 0 / 50%);
@@ -39,15 +46,15 @@ mat-dialog-content[appScrollIndicator] {
  */
 @keyframes pulse {
   0% {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 
   50% {
-    transform: translateX(-50%) translateY(4px);
+    transform: translateY(4px);
   }
 
   100% {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 }
 
