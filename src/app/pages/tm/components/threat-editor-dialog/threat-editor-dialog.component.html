@@ -153,8 +153,9 @@
   </button>
   @if (!isViewOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       [disabled]="threatForm.invalid"
       (click)="onSubmit()"
       tabindex="17"
@@ -167,8 +168,9 @@
 
   @if (isViewOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       (click)="onCancel()"
       tabindex="16"
       [attr.aria-label]="'common.close' | transloco"

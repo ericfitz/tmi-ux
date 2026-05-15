@@ -111,7 +111,7 @@
             <div class="picker-area">
               @if (!pickedFile) {
                 <button
-                  mat-stroked-button
+                  mat-button
                   type="button"
                   (click)="onPickFile()"
                   data-testid="document-service-pick-button"
@@ -126,7 +126,7 @@
                   }}
                 </p>
                 <button
-                  mat-stroked-button
+                  mat-button
                   type="button"
                   (click)="onPickFile()"
                   data-testid="document-service-repick-button"
@@ -154,7 +154,7 @@
             } @else if (hasLinkedToken(selectedSource)) {
               @if (!pickedFile) {
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   type="button"
                   (click)="onPickFile()"
@@ -170,7 +170,7 @@
                   }}
                 </p>
                 <button
-                  mat-stroked-button
+                  mat-button
                   type="button"
                   (click)="onPickFile()"
                   data-testid="document-repick-button"
@@ -183,7 +183,7 @@
                 Link your account to pick files from this source.
               </p>
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 type="button"
                 (click)="onLinkSource()"
@@ -202,7 +202,7 @@
                 </span>
                 @if (pickerError.showLinkAccountCta) {
                   <button
-                    mat-stroked-button
+                    mat-button
                     type="button"
                     (click)="onLinkSource()"
                     data-testid="document-picker-error-link-cta"
@@ -272,8 +272,9 @@
 <mat-dialog-actions align="end">
   @if (phase === 'post-create') {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       data-testid="document-post-create-done-button"
       (click)="onPostCreateDone()"
       [transloco]="'common.done'"
@@ -293,8 +294,9 @@
     </button>
     @if (!isReadOnly) {
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         data-testid="document-save-button"
         [disabled]="isSubmitDisabled()"
         (click)="onSubmit()"

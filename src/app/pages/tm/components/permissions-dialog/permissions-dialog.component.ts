@@ -314,7 +314,6 @@ export interface PermissionsDialogData {
         @if (!data.isReadOnly) {
           <button
             mat-button
-            color="primary"
             data-testid="permissions-add-button"
             (click)="addPermission()"
             [attr.tabindex]="getAddPermissionButtonTabIndex()"
@@ -335,8 +334,9 @@ export interface PermissionsDialogData {
         </button>
         @if (!data.isReadOnly) {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
+            cdkFocusInitial
             data-testid="permissions-save-button"
             (click)="save()"
             [attr.tabindex]="getSaveButtonTabIndex()"

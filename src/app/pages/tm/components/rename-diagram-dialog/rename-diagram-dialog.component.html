@@ -47,8 +47,9 @@
   </button>
   @if (!isReadOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       [disabled]="diagramForm.invalid"
       (click)="onSubmit()"
       tabindex="3"

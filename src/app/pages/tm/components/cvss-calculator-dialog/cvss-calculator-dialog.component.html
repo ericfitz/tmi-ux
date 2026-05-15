@@ -117,8 +117,9 @@
         {{ 'common.cancel' | transloco }}
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="apply()"
         [disabled]="!isValid"
         data-testid="cvss-apply-button"

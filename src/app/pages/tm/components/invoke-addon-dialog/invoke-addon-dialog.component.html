@@ -191,7 +191,13 @@
   <button mat-button (click)="onCancel()">
     <span [transloco]="'common.cancel'">Cancel</span>
   </button>
-  <button mat-raised-button color="primary" (click)="onInvoke()" [disabled]="!canInvoke">
+  <button
+    mat-flat-button
+    color="primary"
+    cdkFocusInitial
+    (click)="onInvoke()"
+    [disabled]="!canInvoke"
+  >
     @if (invoking) {
       <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
     }

@@ -95,7 +95,6 @@
   <mat-dialog-actions align="end" class="dialog-actions">
     <button
       mat-button
-      color="primary"
       data-testid="metadata-add-button"
       (click)="addItem()"
       [disabled]="data.isReadOnly"
@@ -115,8 +114,9 @@
       {{ 'common.cancel' | transloco }}
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       data-testid="metadata-save-button"
       (click)="save()"
       [disabled]="data.isReadOnly"

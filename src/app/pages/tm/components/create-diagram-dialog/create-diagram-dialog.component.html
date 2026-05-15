@@ -40,8 +40,9 @@
     {{ 'common.cancel' | transloco }}
   </button>
   <button
-    mat-raised-button
+    mat-flat-button
     color="primary"
+    cdkFocusInitial
     type="submit"
     data-testid="create-diagram-submit"
     [disabled]="diagramForm.invalid"

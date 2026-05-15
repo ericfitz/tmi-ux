@@ -30,8 +30,7 @@
 
 <mat-dialog-actions align="end">
   <button
-    mat-raised-button
-    color="primary"
+    mat-button
     data-testid="export-cancel-button"
     (click)="onCancel()"
     tabindex="1"
@@ -43,7 +42,6 @@
   @if (state === 'error') {
     <button
       mat-button
-      color="primary"
       data-testid="export-retry-button"
       (click)="fetchData()"
       tabindex="2"
@@ -55,7 +53,7 @@
 
   @if (state === 'ready') {
     <button
-      mat-button
+      mat-flat-button
       color="primary"
       data-testid="export-save-button"
       (click)="onSave()"

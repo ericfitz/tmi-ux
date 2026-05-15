@@ -58,8 +58,9 @@
       {{ 'common.cancel' | transloco }}
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       (click)="addCwe()"
       [disabled]="!selectedCwe"
       data-testid="cwe-picker-add-button"

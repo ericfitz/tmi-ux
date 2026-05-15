@@ -178,8 +178,9 @@
   </button>
   @if (!isReadOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       data-testid="repository-save-button"
       [disabled]="repositoryForm.invalid"
       (click)="onSubmit()"

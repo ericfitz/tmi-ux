@@ -78,7 +78,6 @@
   <mat-dialog-actions align="end" class="dialog-actions">
     <button
       mat-button
-      color="primary"
       (click)="addThreat()"
       [disabled]="data.isReadOnly"
       [attr.tabindex]="getAddButtonTabIndex()"
@@ -88,8 +87,9 @@
       Add {{ 'common.objectTypes.threats' | transloco }}
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       (click)="close()"
       [attr.tabindex]="getCloseButtonTabIndex()"
       [attr.aria-label]="'common.close' | transloco"
