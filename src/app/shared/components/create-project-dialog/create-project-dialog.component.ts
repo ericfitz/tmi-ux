@@ -129,7 +129,6 @@ export interface CreateProjectDialogResult {
       <button
         mat-flat-button
         color="primary"
-        cdkFocusInitial
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
         data-testid="create-project-submit-button"

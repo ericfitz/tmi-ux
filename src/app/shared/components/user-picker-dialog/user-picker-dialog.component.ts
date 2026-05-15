@@ -110,7 +110,6 @@ export interface UserPickerDialogResult {
       <button
         mat-flat-button
         color="primary"
-        cdkFocusInitial
         data-testid="user-picker-confirm"
         (click)="onConfirm()"
         [disabled]="!selectedUser || (data.showRoleSelector && !selectedRole)"

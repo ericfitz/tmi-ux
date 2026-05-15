@@ -110,7 +110,6 @@ export interface CreateTeamDialogResult {
       <button
         mat-flat-button
         color="primary"
-        cdkFocusInitial
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
         data-testid="create-team-submit-button"
