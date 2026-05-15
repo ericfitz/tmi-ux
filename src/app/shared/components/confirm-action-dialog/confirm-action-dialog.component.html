@@ -18,7 +18,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    cdkFocusInitial
+    [attr.cdkFocusInitial]="isDestructive ? '' : null"
     tabindex="1"
     [attr.aria-label]="cancelLabel | transloco"
   >
@@ -28,6 +28,7 @@
     mat-flat-button
     [color]="isDestructive ? 'warn' : 'primary'"
     (click)="onConfirm()"
+    [attr.cdkFocusInitial]="!isDestructive ? '' : null"
     tabindex="2"
     [attr.aria-label]="confirmLabel | transloco"
   >
