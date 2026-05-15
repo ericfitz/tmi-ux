@@ -84,7 +84,7 @@
 
         @if (hasActiveFilters()) {
           <button
-            mat-stroked-button
+            mat-button
             data-testid="projects-clear-filters-button"
             class="clear-filters-btn"
             (click)="clearFilters()"
@@ -102,7 +102,7 @@
       <mat-card-title [transloco]="'projects.listTitle'">Projects</mat-card-title>
       <div class="action-buttons">
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           data-testid="projects-add-button"
           (click)="onAddProject()"

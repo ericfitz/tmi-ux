@@ -67,7 +67,7 @@ export interface CreateSurveyDialogResult {
         {{ 'common.cancel' | transloco }}
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         (click)="onCreate()"
         [disabled]="!form.valid"

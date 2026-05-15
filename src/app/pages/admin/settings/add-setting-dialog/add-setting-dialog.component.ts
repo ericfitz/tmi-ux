@@ -150,8 +150,9 @@ import { SettingType } from '@app/types/settings.types';
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         data-testid="add-setting-submit-button"
         (click)="onSave()"
         [disabled]="!isFormValid() || saving"

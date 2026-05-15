@@ -150,8 +150,9 @@ import { LoggerService } from '@app/core/services/logger.service';
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         data-testid="add-webhook-submit-button"
         (click)="onSave()"
         [disabled]="!form.valid || saving"

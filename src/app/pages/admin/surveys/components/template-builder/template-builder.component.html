@@ -64,7 +64,7 @@
       <mat-icon>error_outline</mat-icon>
       <h2>{{ 'common.error' | transloco }}</h2>
       <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="goBack()">
+      <button mat-flat-button color="primary" (click)="goBack()">
         {{ 'adminSurveys.templateBuilder.backToTemplates' | transloco }}
       </button>
     </div>
@@ -138,7 +138,7 @@
             <div class="question-palette">
               @for (qType of questionTypes; track qType.type) {
                 <button
-                  mat-stroked-button
+                  mat-button
                   class="palette-item"
                   (click)="addQuestion(qType.type)"
                   [matTooltip]="qType.description | transloco"
@@ -516,7 +516,7 @@
 
                 <div class="editor-actions">
                   <button
-                    mat-raised-button
+                    mat-flat-button
                     color="warn"
                     (click)="deleteSelectedQuestion()"
                     data-testid="builder-question-delete"

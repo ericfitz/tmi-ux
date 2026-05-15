@@ -133,8 +133,9 @@
     <span [transloco]="'common.cancel'">Cancel</span>
   </button>
   <button
-    mat-raised-button
+    mat-flat-button
     color="primary"
+    cdkFocusInitial
     (click)="onSave()"
     [disabled]="!selectedUser || quotaForm.invalid || saving"
     data-testid="add-quota-submit-button"
