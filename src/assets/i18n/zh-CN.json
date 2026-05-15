@@ -659,6 +659,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "分类",
     "clear": "清除",
+    "clearSearch": "清除搜索",
     "clone": "克隆",
     "close": "关闭",
     "confirm": "确认",
@@ -890,7 +891,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "清除搜索",
     "createdAfter": "创建于之后",
     "createdBefore": "创建于之前",
     "descriptionFilter": "{{common.description}}",

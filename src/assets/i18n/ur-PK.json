@@ -659,6 +659,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "درجہ بندی",
     "clear": "صاف کریں",
+    "clearSearch": "تلاش صاف کریں",
     "clone": "نقل کریں",
     "close": "بند کریں",
     "confirm": "تصدیق کریں",
@@ -890,7 +891,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "تلاش صاف کریں",
     "createdAfter": "اس تاریخ کے بعد بنائے گئے",
     "createdBefore": "اس تاریخ سے پہلے بنائے گئے",
     "descriptionFilter": "{{common.description}}",

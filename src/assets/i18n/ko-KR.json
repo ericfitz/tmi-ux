@@ -659,6 +659,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "분류",
     "clear": "지우기",
+    "clearSearch": "검색 지우기",
     "clone": "복제",
     "close": "닫기",
     "confirm": "확인",
@@ -886,7 +887,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "검색 지우기",
     "createdAfter": "생성일 이후",
     "createdBefore": "생성일 이전",
     "descriptionFilter": "{{common.description}}",

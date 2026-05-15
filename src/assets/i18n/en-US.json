@@ -763,6 +763,8 @@
     "classification": "Classification",
     "classification.comment": "Used in the sense of the category that something is placed in.",
     "clear": "Clear",
+    "clearSearch": "Clear search",
+    "clearSearch.comment": "Action description on a tooltip (typically for an icon button): 'Clear search'.",
     "clone": "Clone",
     "close": "Close",
     "close.comment": "Verb (imperative). Used on a button that initiates the action: 'Close'.",
@@ -1104,8 +1106,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "Clear search",
-    "clearSearch.comment": "Action description on a tooltip (typically for an icon button): 'Clear search'.",
     "createdAfter": "Created after",
     "createdBefore": "Created before",
     "descriptionFilter": "{{common.description}}",

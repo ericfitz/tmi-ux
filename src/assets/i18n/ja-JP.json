@@ -659,6 +659,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "分類",
     "clear": "クリア",
+    "clearSearch": "検索をクリア",
     "clone": "複製",
     "close": "閉じる",
     "confirm": "確認",
@@ -890,7 +891,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "検索をクリア",
     "createdAfter": "作成日（以降）",
     "createdBefore": "作成日（以前）",
     "descriptionFilter": "{{common.description}}",

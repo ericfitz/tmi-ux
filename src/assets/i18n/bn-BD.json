@@ -864,6 +864,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "শ্রেণীবিভাগ",
     "clear": "পরিষ্কার",
+    "clearSearch": "অনুসন্ধান সাফ করুন",
     "clone": "ক্লোন",
     "close": "বন্ধ করুন",
     "confirm": "নিশ্চিত করুন",
@@ -1157,7 +1158,6 @@
   "cwePicker.matchingWeaknesses": "মিলসম্পন্ন দুর্বলতাসমূহ",
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "অনুসন্ধান সাফ করুন",
     "createdAfter": "এর পরে তৈরি",
     "createdBefore": "এর আগে তৈরি",
     "descriptionFilter": "{{common.description}}",
@@ -1192,7 +1192,7 @@
     "viewAsCards": "কার্ড হিসেবে দেখুন",
     "viewAsList": "তালিকা হিসেবে দেখুন"
   },
-  "dashboard.clearSearch": "অনুসন্ধান সাফ করুন",
+  "common.clearSearch": "অনুসন্ধান সাফ করুন",
   "dashboard.createdAfter": "তৈরির তারিখের পরে",
   "dashboard.createdBefore": "তৈরির তারিখের আগে",
   "dashboard.lessFilters": "কম ফিল্টার",

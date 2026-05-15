@@ -11265,6 +11265,40 @@
       }
     ]
   },
+  "common.clearSearch": {
+    "ambiguous_word": false,
+    "confidence": "high",
+    "ellipsis_candidate": false,
+    "found_by": "fully-qualified",
+    "needs_translator_comment": false,
+    "surfaces": ["tooltip"],
+    "uses": [
+      {
+        "classes": [],
+        "context": "[matTooltip]=\"'common.clearSearch' | transloco\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dashboard/dashboard.component.html",
+        "line": 61
+      },
+      {
+        "classes": [],
+        "context": "[matTooltip]=\"'common.clearSearch' | transloco\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/surveys/admin-surveys.component.html",
+        "line": 27
+      },
+      {
+        "classes": [],
+        "context": "[matTooltip]=\"'common.clearSearch' | transloco\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/triage/components/triage-list/triage-list.component.html",
+        "line": 43
+      },
+      {
+        "classes": [],
+        "context": "[matTooltip]=\"'common.clearSearch' | transloco\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/triage/components/reviewer-assignment-list/reviewer-assignment-list.component.html",
+        "line": 19
+      }
+    ]
+  },
   "common.clone": {
     "ambiguous_word": false,
     "confidence": "high",
@@ -21411,28 +21445,6 @@
       }
     ]
   },
-  "dashboard.clearSearch": {
-    "ambiguous_word": true,
-    "confidence": "high",
-    "ellipsis_candidate": false,
-    "found_by": "fully-qualified",
-    "needs_translator_comment": false,
-    "surfaces": ["tooltip"],
-    "uses": [
-      {
-        "classes": [],
-        "context": "[matTooltip]=\"'dashboard.clearSearch' | transloco\"",
-        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dashboard/dashboard.component.html",
-        "line": 61
-      },
-      {
-        "classes": [],
-        "context": "[matTooltip]=\"'dashboard.clearSearch' | transloco\"",
-        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/surveys/admin-surveys.component.html",
-        "line": 27
-      }
-    ]
-  },
   "dashboard.createdAfter": {
     "ambiguous_word": false,
     "confidence": "high",
@@ -21939,7 +21951,7 @@
       },
       {
         "classes": [],
-        "context": "[matTooltip]=\"'dashboard.clearSearch' | transloco\"",
+        "context": "[matTooltip]=\"'common.clearSearch' | transloco\"",
         "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/surveys/admin-surveys.component.html",
         "line": 27,
         "partial_match": "medium"

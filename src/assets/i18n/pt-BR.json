@@ -659,6 +659,7 @@
     "cellId": "{{common.objectTypes.cell}}",
     "classification": "Classificação",
     "clear": "Limpar",
+    "clearSearch": "Limpar pesquisa",
     "clone": "Clonar",
     "close": "Fechar",
     "confirm": "Confirmar",
@@ -890,7 +891,6 @@
   },
   "dashboard": {
     "clearAllFilters": "{{threats.filters.clearAll}}",
-    "clearSearch": "Limpar pesquisa",
     "createdAfter": "Criado após",
     "createdBefore": "Criado antes",
     "descriptionFilter": "{{common.description}}",
