@@ -25,24 +25,6 @@ mat-toolbar,
 // BUTTON STYLING
 // =============================================================================
 
-// Increase border radius for all buttons (design preference)
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-stroked-button,
-.mat-mdc-flat-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-outlined-button,
-.mat-mdc-icon-button,
-.mat-mdc-fab,
-.mat-mdc-mini-fab {
-  border-radius: 8px;
-
-  .mdc-button,
-  .mdc-fab {
-    border-radius: 8px;
-  }
-}
-
 // Icon button centering — ensures icons are consistently centered in all icon-only buttons
 .mat-mdc-icon-button {
   display: inline-flex;
