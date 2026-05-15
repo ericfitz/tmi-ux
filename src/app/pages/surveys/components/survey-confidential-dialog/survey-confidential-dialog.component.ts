@@ -30,13 +30,12 @@ import {
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onNo()" data-testid="confidential-no-button">
+      <button mat-button cdkFocusInitial (click)="onNo()" data-testid="confidential-no-button">
         <span [transloco]="'surveys.confidentialDialog.no'">No</span>
       </button>
       <button
         mat-flat-button
         color="primary"
-        cdkFocusInitial
         (click)="onYes()"
         data-testid="confidential-yes-button"
       >
