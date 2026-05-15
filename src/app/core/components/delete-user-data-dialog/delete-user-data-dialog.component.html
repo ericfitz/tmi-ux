@@ -115,8 +115,7 @@
   @if (currentStage === DeleteStage.EXPLANATION) {
     <ng-container>
       <button
-        mat-raised-button
-        color="primary"
+        mat-button
         (click)="onCancel()"
         cdkFocusInitial
         tabindex="2"
@@ -125,7 +124,7 @@
         {{ 'common.cancel' | transloco }}
       </button>
       <button
-        mat-button
+        mat-flat-button
         color="warn"
         (click)="onContinue()"
         tabindex="3"
@@ -141,8 +140,7 @@
   @if (currentStage === DeleteStage.EMAIL_VERIFICATION) {
     <ng-container>
       <button
-        mat-raised-button
-        color="primary"
+        mat-button
         (click)="onCancel()"
         tabindex="2"
         [attr.aria-label]="'common.cancel' | transloco"
@@ -150,7 +148,7 @@
         {{ 'common.cancel' | transloco }}
       </button>
       <button
-        mat-button
+        mat-flat-button
         color="warn"
         (click)="onConfirmDelete()"
         [disabled]="!isEmailValid"

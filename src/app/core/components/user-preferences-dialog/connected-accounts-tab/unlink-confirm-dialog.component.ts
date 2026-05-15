@@ -22,6 +22,7 @@ export interface UnlinkConfirmDialogData {
     <mat-dialog-actions align="end">
       <button
         mat-button
+        cdkFocusInitial
         (click)="ref.close(false)"
         [transloco]="'common.cancel'"
         data-testid="unlink-cancel-button"
@@ -29,7 +30,7 @@ export interface UnlinkConfirmDialogData {
         Cancel
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="warn"
         (click)="ref.close(true)"
         [transloco]="'documentSources.unlink'"

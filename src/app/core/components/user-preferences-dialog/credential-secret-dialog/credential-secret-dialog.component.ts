@@ -72,8 +72,9 @@ export interface CredentialSecretDialogData {
     <mat-dialog-actions align="end">
       <button mat-button (click)="onDownload()" [transloco]="'common.download'">Download</button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onClose()"
         [transloco]="'common.done'"
         data-testid="credential-secret-done"

@@ -20,7 +20,6 @@
 <mat-dialog-actions align="end" class="session-expiry-actions">
   <button
     mat-button
-    color="warn"
     (click)="onLogout()"
     class="logout-button"
     [disabled]="isExtending"
@@ -31,8 +30,9 @@
   </button>
 
   <button
-    mat-raised-button
+    mat-flat-button
     color="primary"
+    cdkFocusInitial
     (click)="onExtendSession()"
     class="extend-button"
     [disabled]="isExtending"

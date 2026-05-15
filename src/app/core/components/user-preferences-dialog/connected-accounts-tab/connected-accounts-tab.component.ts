@@ -98,7 +98,7 @@ import {
             <td mat-cell *matCellDef="let token">
               @if (token.status !== 'active') {
                 <button
-                  mat-stroked-button
+                  mat-flat-button
                   color="primary"
                   (click)="onConnect(token.provider_id)"
                   [attr.data-testid]="'document-sources-relink-' + token.provider_id"
@@ -125,7 +125,7 @@ import {
       <div class="document-sources-actions">
         @if (connectableProviders.length === 1) {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             (click)="onConnect(connectableProviders[0].id)"
             [attr.data-testid]="'document-sources-connect-' + connectableProviders[0].id"
@@ -135,7 +135,7 @@ import {
           </button>
         } @else {
           <button
-            mat-raised-button
+            mat-flat-button
             color="primary"
             [matMenuTriggerFor]="availableProvidersMenu"
             [disabled]="connectableProviders.length === 0"

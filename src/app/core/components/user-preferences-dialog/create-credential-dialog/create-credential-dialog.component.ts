@@ -124,8 +124,9 @@ export interface CreateCredentialDialogData {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onSave()"
         [disabled]="!form.valid || saving"
         data-testid="create-credential-submit"

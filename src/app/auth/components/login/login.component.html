@@ -36,7 +36,7 @@
               <h3 class="provider-section-title">{{ 'login.oauthProvidersTitle' | transloco }}</h3>
               <div class="provider-buttons">
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   *ngFor="let provider of oauthProviders"
                   (click)="loginWithOAuth(provider.id)"
@@ -65,7 +65,7 @@
               <h3 class="provider-section-title">{{ 'login.samlProvidersTitle' | transloco }}</h3>
               <div class="provider-buttons">
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   color="primary"
                   *ngFor="let provider of samlProviders"
                   (click)="loginWithSAML(provider.id)"

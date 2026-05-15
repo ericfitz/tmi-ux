@@ -167,7 +167,7 @@ interface CheckboxChangeEvent {
               <div class="profile-actions">
                 <div class="profile-actions-content">
                   <button
-                    mat-raised-button
+                    mat-flat-button
                     color="primary"
                     (click)="onExportLog()"
                     class="download-log-button"
@@ -179,7 +179,7 @@ interface CheckboxChangeEvent {
                     Downloads the most recent application log entries as a JSONL file for
                     troubleshooting.
                   </p>
-                  <button mat-stroked-button (click)="onSignOut()" class="sign-out-button">
+                  <button mat-button (click)="onSignOut()" class="sign-out-button">
                     <mat-icon>logout</mat-icon>
                     <span [transloco]="'navbar.menu.logout'">Sign Out</span>
                   </button>
@@ -554,7 +554,7 @@ interface CheckboxChangeEvent {
               }
 
               <div class="credentials-actions">
-                <button mat-raised-button color="primary" (click)="onAddCredential()">
+                <button mat-flat-button color="primary" (click)="onAddCredential()">
                   <mat-icon>add</mat-icon>
                   <span [transloco]="'userPreferences.credentials.add'">Add</span>
                 </button>
@@ -568,7 +568,7 @@ interface CheckboxChangeEvent {
           <div class="tab-content danger-tab">
             <div class="preference-item">
               <button
-                mat-raised-button
+                mat-flat-button
                 color="warn"
                 (click)="onTransferData()"
                 class="transfer-button"
@@ -585,12 +585,7 @@ interface CheckboxChangeEvent {
             </div>
             <mat-divider></mat-divider>
             <div class="preference-item">
-              <button
-                mat-raised-button
-                color="error"
-                (click)="onDeleteData()"
-                class="delete-button"
-              >
+              <button mat-flat-button color="warn" (click)="onDeleteData()" class="delete-button">
                 <mat-icon>delete_forever</mat-icon>
                 <span [transloco]="'userPreferences.deleteMyData.title'">Delete All My Data</span>
               </button>
