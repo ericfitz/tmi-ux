@@ -7,21 +7,21 @@
         <p>{{ t('chat.emptyState.description') }}</p>
         <div class="suggested-prompts">
           <button
-            mat-stroked-button
+            mat-button
             [disabled]="isInputDisabled"
             (click)="messageText = t('chat.suggestedPrompts.summary'); onSend()"
           >
             {{ t('chat.suggestedPrompts.summary') }}
           </button>
           <button
-            mat-stroked-button
+            mat-button
             [disabled]="isInputDisabled"
             (click)="messageText = t('chat.suggestedPrompts.threats'); onSend()"
           >
             {{ t('chat.suggestedPrompts.threats') }}
           </button>
           <button
-            mat-stroked-button
+            mat-button
             [disabled]="isInputDisabled"
             (click)="messageText = t('chat.suggestedPrompts.assets'); onSend()"
           >

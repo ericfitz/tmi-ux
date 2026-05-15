@@ -24,7 +24,7 @@
       {{ 'common.cancel' | transloco }}
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
       (click)="onSave()"
       tabindex="3"
@@ -36,8 +36,7 @@
 
   @if (data.isReadOnly) {
     <button
-      mat-raised-button
-      color="primary"
+      mat-button
       (click)="onCancel()"
       tabindex="2"
       [attr.aria-label]="'common.close' | transloco"
