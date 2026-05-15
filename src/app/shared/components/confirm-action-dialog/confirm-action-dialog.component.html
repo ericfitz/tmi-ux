@@ -16,8 +16,7 @@
 
 <mat-dialog-actions align="end">
   <button
-    mat-raised-button
-    color="primary"
+    mat-button
     (click)="onCancel()"
     cdkFocusInitial
     tabindex="1"
@@ -26,7 +25,7 @@
     {{ cancelLabel | transloco }}
   </button>
   <button
-    mat-button
+    mat-flat-button
     [color]="isDestructive ? 'warn' : 'primary'"
     (click)="onConfirm()"
     tabindex="2"

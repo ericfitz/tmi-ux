@@ -134,7 +134,7 @@
           </button>
           <span class="toolbar-divider"></span>
           <button
-            mat-raised-button
+            mat-flat-button
             type="button"
             color="accent"
             [disabled]="!hasUnsavedChanges()"
@@ -202,8 +202,9 @@
   </button>
   @if (!isReadOnly) {
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
+      cdkFocusInitial
       [disabled]="noteForm.invalid"
       (click)="onSaveAndClose()"
     >
