@@ -37,11 +37,12 @@
   padding: 8px !important;
 
   &:hover {
-    background: var(--color-background-hover, rgb(0 0 0 / 4%));
+    background: var(--color-hover-background, rgb(0 0 0 / 4%));
   }
 
   &.active {
-    background: var(--color-primary-light, #e3f2fd);
+    background: var(--color-chat-bubble-user-bg);
+    color: var(--color-chat-bubble-user-text);
   }
 
   .delete-btn {

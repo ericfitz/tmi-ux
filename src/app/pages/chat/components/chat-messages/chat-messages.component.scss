@@ -61,7 +61,8 @@
     flex-direction: row-reverse;
 
     .message-content {
-      background: var(--color-primary-light, #e3f2fd);
+      background: var(--color-chat-bubble-user-bg);
+      color: var(--color-chat-bubble-user-text);
       border-radius: 16px 16px 4px;
     }
   }
@@ -70,7 +71,8 @@
     align-self: flex-start;
 
     .message-content {
-      background: var(--color-background-card, #f5f5f5);
+      background: var(--color-chat-bubble-assistant-bg);
+      color: var(--color-chat-bubble-assistant-text);
       border-radius: 16px 16px 16px 4px;
     }
   }
@@ -82,7 +84,8 @@
   }
 
   &.streaming .message-content {
-    background: var(--color-background-card, #f5f5f5);
+    background: var(--color-chat-bubble-assistant-bg);
+    color: var(--color-chat-bubble-assistant-text);
   }
 }
 
@@ -94,7 +97,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-background-card, #f5f5f5);
+  background: var(--color-chat-bubble-assistant-bg);
+  color: var(--color-chat-bubble-assistant-text);
 
   mat-icon {
     font-size: 20px;
@@ -136,14 +140,14 @@
       }
 
       code {
-        background: rgb(0 0 0 / 6%);
+        background: var(--color-chat-code-bg);
         padding: 2px 6px;
         border-radius: 4px;
         font-size: 0.9em;
       }
 
       pre {
-        background: rgb(0 0 0 / 6%);
+        background: var(--color-chat-code-bg);
         padding: 12px;
         border-radius: 8px;
         overflow-x: auto;
