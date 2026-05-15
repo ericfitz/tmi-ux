@@ -388,6 +388,8 @@
       "mapsToTmField": "Wird zugeordnet zu Bedrohungsmodell-Feld",
       "metadataKey": "Metadatenschlüssel",
       "metadataKeyHint": "Schlüsselname für den Metadateneintrag",
+      "moveQuestionDown": "Frage nach unten verschieben",
+      "moveQuestionUp": "Frage nach oben verschieben",
       "nameId": "Name (ID)",
       "nameIdHint": "Eindeutige Kennung für diese Frage",
       "nextPage": "{{pagination.nextPage}}",

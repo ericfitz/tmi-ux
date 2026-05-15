@@ -388,6 +388,8 @@
       "mapsToTmField": "TM 필드에 매핑",
       "metadataKey": "메타데이터 키",
       "metadataKeyHint": "메타데이터 항목의 키 이름",
+      "moveQuestionDown": "질문을 아래로 이동",
+      "moveQuestionUp": "질문을 위로 이동",
       "nameId": "이름 (ID)",
       "nameIdHint": "이 질문의 고유 식별자",
       "nextPage": "{{pagination.nextPage}}",

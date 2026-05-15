@@ -388,6 +388,8 @@
       "mapsToTmField": "يُربط بحقل نموذج التهديد",
       "metadataKey": "مفتاح البيانات الوصفية",
       "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
+      "moveQuestionDown": "نقل السؤال للأسفل",
+      "moveQuestionUp": "نقل السؤال للأعلى",
       "nameId": "الاسم (ID)",
       "nameIdHint": "معرف فريد لهذا السؤال",
       "nextPage": "{{pagination.nextPage}}",

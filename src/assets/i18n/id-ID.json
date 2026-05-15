@@ -388,6 +388,8 @@
       "mapsToTmField": "Dipetakan ke bidang TM",
       "metadataKey": "Kunci Metadata",
       "metadataKeyHint": "Nama kunci untuk entri metadata",
+      "moveQuestionDown": "Pindahkan pertanyaan ke bawah",
+      "moveQuestionUp": "Pindahkan pertanyaan ke atas",
       "nameId": "Nama (ID)",
       "nameIdHint": "Pengenal unik untuk pertanyaan ini",
       "nextPage": "{{pagination.nextPage}}",

@@ -388,6 +388,8 @@
       "mapsToTmField": "Mapea a campo TM",
       "metadataKey": "Clave de metadatos",
       "metadataKeyHint": "Nombre de clave para la entrada de metadatos",
+      "moveQuestionDown": "Mover pregunta hacia abajo",
+      "moveQuestionUp": "Mover pregunta hacia arriba",
       "nameId": "Nombre (ID)",
       "nameIdHint": "Identificador único para esta pregunta",
       "nextPage": "{{pagination.nextPage}}",

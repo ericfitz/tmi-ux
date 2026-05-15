@@ -388,6 +388,8 @@
       "mapsToTmField": "ממופה לשדה מודל איומים",
       "metadataKey": "מפתח מטא-נתונים",
       "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
+      "moveQuestionDown": "הזז שאלה למטה",
+      "moveQuestionUp": "הזז שאלה למעלה",
       "nameId": "שם (ID)",
       "nameIdHint": "מזהה ייחודי לשאלה זו",
       "nextPage": "{{pagination.nextPage}}",

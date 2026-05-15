@@ -388,6 +388,8 @@
       "mapsToTmField": "TMフィールドへのマッピング",
       "metadataKey": "メタデータキー",
       "metadataKeyHint": "メタデータエントリのキー名",
+      "moveQuestionDown": "質問を下に移動",
+      "moveQuestionUp": "質問を上に移動",
       "nameId": "名前（ID）",
       "nameIdHint": "この質問の一意の識別子",
       "nextPage": "{{pagination.nextPage}}",

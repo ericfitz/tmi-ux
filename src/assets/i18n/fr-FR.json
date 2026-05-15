@@ -388,6 +388,8 @@
       "mapsToTmField": "Correspond au champ tm",
       "metadataKey": "Clé de métadonnées",
       "metadataKeyHint": "Nom de clé pour l'entrée de métadonnée",
+      "moveQuestionDown": "Déplacer la question vers le bas",
+      "moveQuestionUp": "Déplacer la question vers le haut",
       "nameId": "Nom (ID)",
       "nameIdHint": "Identifiant unique pour cette question",
       "nextPage": "{{pagination.nextPage}}",

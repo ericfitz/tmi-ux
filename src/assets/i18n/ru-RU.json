@@ -388,6 +388,8 @@
       "mapsToTmField": "Сопоставляется с полем модели угроз",
       "metadataKey": "Ключ метаданных",
       "metadataKeyHint": "Имя ключа для записи метаданных",
+      "moveQuestionDown": "Переместить вопрос вниз",
+      "moveQuestionUp": "Переместить вопрос вверх",
       "nameId": "Название (ID)",
       "nameIdHint": "Уникальный идентификатор для этого вопроса",
       "nextPage": "{{pagination.nextPage}}",

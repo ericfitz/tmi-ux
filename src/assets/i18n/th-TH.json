@@ -385,6 +385,8 @@
       "mapsToTmField": "แมปกับฟิลด์ TM",
       "metadataKey": "คีย์เมตาดาต้า",
       "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
+      "moveQuestionDown": "ย้ายคำถามลง",
+      "moveQuestionUp": "ย้ายคำถามขึ้น",
       "nameId": "ชื่อ (ID)",
       "nameIdHint": "ตัวระบุเฉพาะสำหรับคำถามนี้",
       "nextPage": "{{pagination.nextPage}}",

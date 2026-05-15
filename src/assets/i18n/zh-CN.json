@@ -388,6 +388,8 @@
       "mapsToTmField": "映射到 TM 字段",
       "metadataKey": "元数据键",
       "metadataKeyHint": "元数据条目的键名称",
+      "moveQuestionDown": "向下移动问题",
+      "moveQuestionUp": "向上移动问题",
       "nameId": "名称（ID）",
       "nameIdHint": "此问题的唯一标识符",
       "nextPage": "{{pagination.nextPage}}",

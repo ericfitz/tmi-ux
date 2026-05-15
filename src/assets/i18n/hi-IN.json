@@ -388,6 +388,8 @@
       "mapsToTmField": "TM फ़ील्ड से मैप करें",
       "metadataKey": "मेटाडेटा कुंजी",
       "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
+      "moveQuestionDown": "प्रश्न नीचे ले जाएं",
+      "moveQuestionUp": "प्रश्न ऊपर ले जाएं",
       "nameId": "नाम (ID)",
       "nameIdHint": "इस प्रश्न के लिए अद्वितीय पहचानकर्ता",
       "nextPage": "{{pagination.nextPage}}",

@@ -234,6 +234,7 @@
                         mat-icon-button
                         (click)="moveQuestionUp(); $event.stopPropagation()"
                         [disabled]="i === 0"
+                        [matTooltip]="'adminSurveys.templateBuilder.moveQuestionUp' | transloco"
                         data-testid="builder-question-move-up"
                       >
                         <mat-icon>arrow_upward</mat-icon>
@@ -242,6 +243,7 @@
                         mat-icon-button
                         (click)="moveQuestionDown(); $event.stopPropagation()"
                         [disabled]="i === currentPageElements.length - 1"
+                        [matTooltip]="'adminSurveys.templateBuilder.moveQuestionDown' | transloco"
                       >
                         <mat-icon>arrow_downward</mat-icon>
                       </button>
@@ -272,6 +274,9 @@
                                 $event.stopPropagation()
                               "
                               [disabled]="j === 0"
+                              [matTooltip]="
+                                'adminSurveys.templateBuilder.moveQuestionUp' | transloco
+                              "
                             >
                               <mat-icon>arrow_upward</mat-icon>
                             </button>
@@ -283,6 +288,9 @@
                                 $event.stopPropagation()
                               "
                               [disabled]="j === question.elements!.length - 1"
+                              [matTooltip]="
+                                'adminSurveys.templateBuilder.moveQuestionDown' | transloco
+                              "
                             >
                               <mat-icon>arrow_downward</mat-icon>
                             </button>
@@ -315,6 +323,9 @@
                                 $event.stopPropagation()
                               "
                               [disabled]="j === 0"
+                              [matTooltip]="
+                                'adminSurveys.templateBuilder.moveQuestionUp' | transloco
+                              "
                             >
                               <mat-icon>arrow_upward</mat-icon>
                             </button>
@@ -326,6 +337,9 @@
                                 $event.stopPropagation()
                               "
                               [disabled]="j === question.templateElements!.length - 1"
+                              [matTooltip]="
+                                'adminSurveys.templateBuilder.moveQuestionDown' | transloco
+                              "
                             >
                               <mat-icon>arrow_downward</mat-icon>
                             </button>

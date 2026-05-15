@@ -580,6 +580,8 @@
   "adminSurveys.templateBuilder.failedToSaveTemplate": "জরিপ সংরক্ষণ করতে ব্যর্থ হয়েছে।",
   "adminSurveys.templateBuilder.mapsToTmField": "tm ফিল্ডে ম্যাপ করে",
   "adminSurveys.templateBuilder.metadataKey": "মেটাডেটা কী",
+  "adminSurveys.templateBuilder.moveQuestionDown": "প্রশ্ন নিচে সরান",
+  "adminSurveys.templateBuilder.moveQuestionUp": "প্রশ্ন উপরে সরান",
   "adminSurveys.templateBuilder.noQuestionsYet": "এখনো কোনো প্রশ্ন নেই।",
   "adminSurveys.templateBuilder.questionProperties": "প্রশ্নের বৈশিষ্ট্য",
   "adminSurveys.templateBuilder.questionTypeDescriptions.panel": "একটি প্যানেলে প্রশ্ন গ্রুপ করুন।",

@@ -388,6 +388,8 @@
       "mapsToTmField": "TM فیلڈ سے منسلک",
       "metadataKey": "میٹا ڈیٹا کلید",
       "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
+      "moveQuestionDown": "سوال نیچے منتقل کریں",
+      "moveQuestionUp": "سوال اوپر منتقل کریں",
       "nameId": "نام (ID)",
       "nameIdHint": "اس سوال کے لیے منفرد شناخت کنندہ",
       "nextPage": "{{pagination.nextPage}}",
