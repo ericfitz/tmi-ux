@@ -153,7 +153,7 @@ export interface EditProjectDialogData {
           <div class="tab-content">
             <div class="notes-header">
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 data-testid="edit-project-add-note-button"
                 (click)="addNote()"
@@ -232,8 +232,9 @@ export interface EditProjectDialogData {
           <span [transloco]="'common.cancel'">Cancel</span>
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
+          cdkFocusInitial
           data-testid="edit-project-save-button"
           (click)="onSave()"
           [disabled]="!form.valid || !form.dirty || saving"

@@ -108,8 +108,9 @@ export interface CreateTeamDialogResult {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
         data-testid="create-team-submit-button"

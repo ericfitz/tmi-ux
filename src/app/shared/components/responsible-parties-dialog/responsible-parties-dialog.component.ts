@@ -71,11 +71,7 @@ export interface ResponsiblePartiesDialogData {
         }
       </div>
       <div class="add-button">
-        <button
-          mat-stroked-button
-          (click)="addParty()"
-          data-testid="responsible-parties-add-button"
-        >
+        <button mat-button (click)="addParty()" data-testid="responsible-parties-add-button">
           <mat-icon>person_add</mat-icon>
           <span [transloco]="i18nPrefix + '.responsiblePartiesDialog.addParty'">
             Add Responsible Party
@@ -91,8 +87,9 @@ export interface ResponsiblePartiesDialogData {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onSave()"
         [disabled]="!dirty || saving"
         data-testid="responsible-parties-save-button"

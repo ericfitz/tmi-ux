@@ -87,7 +87,7 @@ const REMEDIATION_KEYS: Record<string, string> = {
                   ></app-share-with-application-remediation>
                 } @else {
                   <button
-                    mat-stroked-button
+                    mat-button
                     [attr.data-testid]="'remediation-' + rem.action"
                     (click)="handleRemediation(rem)"
                   >
@@ -115,7 +115,12 @@ const REMEDIATION_KEYS: Record<string, string> = {
             </div>
             @if (showCheckNow) {
               <div class="diagnostics-check-now">
-                <button mat-stroked-button data-testid="check-now-btn" (click)="onCheckNow()">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  data-testid="check-now-btn"
+                  (click)="onCheckNow()"
+                >
                   <mat-icon>refresh</mat-icon>
                   {{ 'documentAccess.checkNow.button' | transloco }}
                 </button>

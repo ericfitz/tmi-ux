@@ -108,8 +108,9 @@ export interface UserPickerDialogResult {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         data-testid="user-picker-confirm"
         (click)="onConfirm()"
         [disabled]="!selectedUser || (data.showRoleSelector && !selectedRole)"

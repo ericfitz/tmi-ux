@@ -127,8 +127,9 @@ export interface CreateProjectDialogResult {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onCreate()"
         [disabled]="form.invalid || !form.dirty"
         data-testid="create-project-submit-button"

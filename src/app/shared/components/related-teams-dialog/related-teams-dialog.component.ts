@@ -72,11 +72,7 @@ export interface RelatedTeamsDialogData {
 
       @if (!showAddForm) {
         <div class="add-button">
-          <button
-            mat-stroked-button
-            (click)="showAddForm = true"
-            data-testid="related-teams-add-button"
-          >
+          <button mat-button (click)="showAddForm = true" data-testid="related-teams-add-button">
             <mat-icon>group_add</mat-icon>
             <span [transloco]="'teams.relatedTeamsDialog.addRelated'">Add Related Team</span>
           </button>
@@ -142,7 +138,7 @@ export interface RelatedTeamsDialogData {
               <span [transloco]="'common.cancel'">Cancel</span>
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               (click)="addRelated()"
               [disabled]="!selectedTeam || !addForm.get('relationship')?.value"
@@ -163,8 +159,9 @@ export interface RelatedTeamsDialogData {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onSave()"
         [disabled]="!dirty || saving"
         data-testid="related-teams-save-button"

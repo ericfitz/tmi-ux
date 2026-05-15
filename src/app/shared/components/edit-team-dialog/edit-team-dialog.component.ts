@@ -149,7 +149,7 @@ export interface EditTeamDialogData {
           <div class="tab-content">
             <div class="notes-header">
               <button
-                mat-raised-button
+                mat-flat-button
                 color="primary"
                 (click)="addNote()"
                 data-testid="edit-team-add-note-button"
@@ -230,8 +230,9 @@ export interface EditTeamDialogData {
           <span [transloco]="'common.cancel'">Cancel</span>
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
+          cdkFocusInitial
           (click)="onSave()"
           [disabled]="!form.valid || !form.dirty || saving"
           data-testid="edit-team-save-button"

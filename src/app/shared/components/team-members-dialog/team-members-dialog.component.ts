@@ -64,7 +64,7 @@ export interface TeamMembersDialogData {
         }
       </div>
       <div class="add-button">
-        <button mat-stroked-button (click)="addMember()" data-testid="team-members-add-button">
+        <button mat-button (click)="addMember()" data-testid="team-members-add-button">
           <mat-icon>person_add</mat-icon>
           <span [transloco]="'teams.membersDialog.addMember'">Add Member</span>
         </button>
@@ -78,8 +78,9 @@ export interface TeamMembersDialogData {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         (click)="onSave()"
         [disabled]="!dirty || saving"
         data-testid="team-members-save-button"

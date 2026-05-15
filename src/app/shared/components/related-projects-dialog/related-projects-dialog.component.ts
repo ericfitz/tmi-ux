@@ -69,11 +69,7 @@ export interface RelatedProjectsDialogData {
 
       @if (!showAddForm) {
         <div class="add-button">
-          <button
-            mat-stroked-button
-            data-testid="related-projects-add-button"
-            (click)="showAddForm = true"
-          >
+          <button mat-button data-testid="related-projects-add-button" (click)="showAddForm = true">
             <mat-icon>group_add</mat-icon>
             <span [transloco]="'projects.relatedProjectsDialog.addRelated'">
               Add Related Project
@@ -143,7 +139,7 @@ export interface RelatedProjectsDialogData {
               <span [transloco]="'common.cancel'">Cancel</span>
             </button>
             <button
-              mat-raised-button
+              mat-flat-button
               color="primary"
               data-testid="related-projects-confirm-add-button"
               (click)="addRelated()"
@@ -164,8 +160,9 @@ export interface RelatedProjectsDialogData {
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
+        cdkFocusInitial
         data-testid="related-projects-save-button"
         (click)="onSave()"
         [disabled]="!dirty || saving"
