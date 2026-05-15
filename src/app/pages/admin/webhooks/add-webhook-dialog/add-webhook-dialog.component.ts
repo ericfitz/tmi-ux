@@ -43,6 +43,7 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-label [transloco]="'admin.webhooks.addDialog.name'">Name</mat-label>
           <input
             matInput
+            cdkFocusInitial
             data-testid="add-webhook-name-input"
             formControlName="name"
             [placeholder]="'admin.webhooks.addDialog.namePlaceholder' | transloco"
@@ -152,7 +153,6 @@ import { LoggerService } from '@app/core/services/logger.service';
       <button
         mat-flat-button
         color="primary"
-        cdkFocusInitial
         data-testid="add-webhook-submit-button"
         (click)="onSave()"
         [disabled]="!form.valid || saving"

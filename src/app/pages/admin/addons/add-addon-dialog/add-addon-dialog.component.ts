@@ -85,6 +85,7 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
           <mat-label [transloco]="'admin.addons.addDialog.name'">Name</mat-label>
           <input
             matInput
+            cdkFocusInitial
             formControlName="name"
             [placeholder]="'admin.addons.addDialog.namePlaceholder' | transloco"
             required
@@ -193,13 +194,7 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
       <button mat-button (click)="onCancel()">
         <span [transloco]="'common.cancel'">Cancel</span>
       </button>
-      <button
-        mat-flat-button
-        color="primary"
-        cdkFocusInitial
-        (click)="onSave()"
-        [disabled]="!form.valid || saving"
-      >
+      <button mat-flat-button color="primary" (click)="onSave()" [disabled]="!form.valid || saving">
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
