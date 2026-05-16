@@ -585,8 +585,8 @@
     "noSessions": "Нет сеансов чата. Начните разговор.",
     "preparation": {
       "error": "Подготовка не удалась: {{message}}.",
-      "processing": "Обработка источника {{current}} из {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "Готово! {{sourcesLoaded}} источников загружено, {{chunksEmbedded}} фрагментов проиндексировано."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "Готово! Тимми завершил подготовку ваших источников."
     },
     "saveAsNoteError": "Не удалось сохранить как заметку.",
     "saveMessageAsNote": "Сохранить сообщение как заметку",

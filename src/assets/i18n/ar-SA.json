@@ -585,8 +585,8 @@
     "noSessions": "لا توجد جلسات دردشة بعد. ابدأ محادثة.",
     "preparation": {
       "error": "فشل التحضير: {{message}}.",
-      "processing": "معالجة المصدر {{current}} من {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "جاهز! تم تحميل {{sourcesLoaded}} مصدر، وفهرسة {{chunksEmbedded}} مقطع."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "جاهز! انتهى تيمي من تحضير مصادرك."
     },
     "saveAsNoteError": "تعذّر الحفظ كملاحظة.",
     "saveMessageAsNote": "حفظ الرسالة كملاحظة",

@@ -585,8 +585,8 @@
     "noSessions": "还没有聊天会话。开始对话吧。",
     "preparation": {
       "error": "准备失败：{{message}}。",
-      "processing": "处理源 {{current}} / {{total}} — {{entityType}}：{{entityName}} — {{phase}} {{progress}}%。",
-      "ready": "就绪！已加载 {{sourcesLoaded}} 个源，已索引 {{chunksEmbedded}} 个块。"
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "就绪！Timmy 已完成源的准备。"
     },
     "saveAsNoteError": "无法保存为笔记。",
     "saveMessageAsNote": "将消息保存为笔记",

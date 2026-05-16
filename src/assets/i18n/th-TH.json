@@ -582,8 +582,8 @@
     "noSessions": "ยังไม่มีเซสชันแชท เริ่มการสนทนาได้เลย",
     "preparation": {
       "error": "การเตรียมการล้มเหลว: {{message}}",
-      "processing": "กำลังประมวลผลแหล่งที่มา {{current}} จาก {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%",
-      "ready": "พร้อมแล้ว! โหลด {{sourcesLoaded}} แหล่งที่มา จัดทำดัชนี {{chunksEmbedded}} ชิ้น"
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "พร้อมแล้ว! Timmy เตรียมแหล่งที่มาของคุณเสร็จแล้ว"
     },
     "saveAsNoteError": "ไม่สามารถบันทึกเป็นบันทึกได้",
     "saveMessageAsNote": "บันทึกข้อความเป็นบันทึกย่อ",

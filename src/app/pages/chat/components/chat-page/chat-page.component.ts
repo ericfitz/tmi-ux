@@ -31,7 +31,6 @@ import {
   SourceSnapshotEntry,
   SessionCreatedEvent,
   ProgressEvent,
-  ReadyEvent,
   MessageStartEvent,
   MessageStatusEvent,
   TokenEvent,
@@ -70,9 +69,6 @@ export class ChatPageComponent implements OnInit {
   streamingMessageId: string | null = null;
   preparationStatus: PreparationStatus | null = null;
   savingNote = false;
-
-  private sessionSourceCount = 0;
-  private progressCounter = 0;
 
   @ViewChild(ChatMessagesComponent) chatMessages?: ChatMessagesComponent;
 
@@ -242,8 +238,6 @@ export class ChatPageComponent implements OnInit {
 
     let sessionId = '';
     let messageSent = false;
-    this.sessionSourceCount = 0;
-    this.progressCounter = 0;
 
     const sendQueuedMessage = (): void => {
       if (!sessionId || messageSent) return;
@@ -279,8 +273,6 @@ export class ChatPageComponent implements OnInit {
             phase: '',
             entityName: '',
             progress: 0,
-            current: 0,
-            total: 0,
             error: this.sessionCreationErrorMessage(err),
           };
           this.cdr.markForCheck();
@@ -298,33 +290,27 @@ export class ChatPageComponent implements OnInit {
       case 'session_created': {
         const data = JSON.parse(event.data) as SessionCreatedEvent;
         onSessionId(data.id);
-        this.sessionSourceCount = data.source_snapshot?.length ?? 0;
         this.activeSourceSnapshot = data.source_snapshot ?? [];
         this.preparationStatus = {
           phase: 'loading',
           entityName: '',
           progress: 0,
-          current: 0,
-          total: this.sessionSourceCount,
         };
         break;
       }
       case 'progress': {
         const data = JSON.parse(event.data) as ProgressEvent;
-        if (data.progress === 100) {
-          this.progressCounter++;
-        }
+        // The server emits `progress` as a single 0–100 percentage per
+        // phase (see the Timmy backend design doc). It is not part of an
+        // m/n counter — render the percentage directly.
         this.preparationStatus = {
           phase: data.phase,
           entityName: data.entity_name,
           progress: data.progress,
-          current: this.progressCounter,
-          total: this.sessionSourceCount,
         };
         break;
       }
       case 'ready': {
-        const data = JSON.parse(event.data) as ReadyEvent;
         // The "Ready!" bubble persists across the handoff to the message
         // stream. The next preparationStatus mutation — a `status` event
         // (mode: 'message-status'), or `message_start` clearing it to null —
@@ -335,14 +321,7 @@ export class ChatPageComponent implements OnInit {
           phase: '',
           entityName: '',
           progress: 100,
-          current: this.sessionSourceCount,
-          total: this.sessionSourceCount,
           ready: true,
-          readyStats: {
-            status: data.status,
-            sources_loaded: data.sources_loaded ?? this.sessionSourceCount,
-            chunks_embedded: data.chunks_embedded ?? this.progressCounter,
-          },
         };
         break;
       }
@@ -352,8 +331,6 @@ export class ChatPageComponent implements OnInit {
           phase: '',
           entityName: '',
           progress: 0,
-          current: 0,
-          total: 0,
           error: data.message,
         };
         break;
@@ -384,8 +361,6 @@ export class ChatPageComponent implements OnInit {
                 phase: data.phase,
                 entityName: data.entity_name ?? '',
                 progress: 0,
-                current: 0,
-                total: 0,
                 mode: 'message-status',
               };
               this.loading = false;

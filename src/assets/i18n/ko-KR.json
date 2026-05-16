@@ -585,8 +585,8 @@
     "noSessions": "아직 채팅 세션이 없습니다. 대화를 시작하세요.",
     "preparation": {
       "error": "준비 실패: {{message}}.",
-      "processing": "소스 {{current}}/{{total}} 처리 중 — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "준비 완료! {{sourcesLoaded}}개 소스 로드됨, {{chunksEmbedded}}개 청크 인덱싱됨."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "준비 완료! Timmy가 소스 준비를 마쳤습니다."
     },
     "saveAsNoteError": "메모로 저장할 수 없습니다.",
     "saveMessageAsNote": "메시지를 메모로 저장",

@@ -770,8 +770,6 @@ describe('ChatPageComponent', () => {
         phase: 'querying_embeddings',
         entityName: 'Auth Spec',
         progress: 0,
-        current: 0,
-        total: 0,
         mode: 'message-status',
       });
       expect(component.loading).toBe(false);

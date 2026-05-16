@@ -585,8 +585,8 @@
     "noSessions": "אין שיחות צ'אט עדיין. התחל שיחה.",
     "preparation": {
       "error": "ההכנה נכשלה: {{message}}.",
-      "processing": "מעבד מקור {{current}} מתוך {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "מוכן! {{sourcesLoaded}} מקורות נטענו, {{chunksEmbedded}} נתחים אונדקסו."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "מוכן! טימי סיים להכין את המקורות שלך."
     },
     "saveAsNoteError": "לא ניתן היה לשמור כהערה.",
     "saveMessageAsNote": "שמור הודעה כהערה",

@@ -585,8 +585,8 @@
     "noSessions": "チャットセッションがありません。会話を開始してください。",
     "preparation": {
       "error": "準備に失敗しました: {{message}}。",
-      "processing": "ソース{{current}}/{{total}}を処理中 — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%。",
-      "ready": "準備完了！{{sourcesLoaded}}件のソースが読み込まれ、{{chunksEmbedded}}件のチャンクがインデックス化されました。"
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "準備完了！Timmy がソースの準備を完了しました。"
     },
     "saveAsNoteError": "ノートとして保存できませんでした。",
     "saveMessageAsNote": "メッセージをメモとして保存",

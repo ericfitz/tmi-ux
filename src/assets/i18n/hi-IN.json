@@ -585,8 +585,8 @@
     "noSessions": "अभी तक कोई चैट सत्र नहीं। एक वार्तालाप शुरू करें।",
     "preparation": {
       "error": "तैयारी विफल: {{message}}।",
-      "processing": "स्रोत {{current}}/{{total}} प्रोसेस हो रहा है — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%।",
-      "ready": "तैयार! {{sourcesLoaded}} स्रोत लोड हुए, {{chunksEmbedded}} खंड अनुक्रमित।"
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "तैयार! Timmy ने आपके स्रोत तैयार करना पूरा कर लिया।"
     },
     "saveAsNoteError": "नोट के रूप में सहेजा नहीं जा सका।",
     "saveMessageAsNote": "संदेश को नोट के रूप में सहेजें",

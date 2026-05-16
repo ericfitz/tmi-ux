@@ -585,8 +585,8 @@
     "noSessions": "Noch keine Chat-Sitzungen. Starten Sie ein Gespräch.",
     "preparation": {
       "error": "Vorbereitung fehlgeschlagen: {{message}}.",
-      "processing": "Verarbeite Quelle {{current}} von {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "Bereit! {{sourcesLoaded}} Quellen geladen, {{chunksEmbedded}} Abschnitte indexiert."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "Bereit! Timmy hat die Vorbereitung deiner Quellen abgeschlossen."
     },
     "saveAsNoteError": "Speichern als Notiz nicht möglich.",
     "saveMessageAsNote": "Nachricht als Notiz speichern",

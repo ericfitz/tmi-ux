@@ -585,8 +585,8 @@
     "noSessions": "Sin sesiones de chat aún. Comience una conversación.",
     "preparation": {
       "error": "Preparación fallida: {{message}}.",
-      "processing": "Procesando fuente {{current}} de {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "¡Listo! {{sourcesLoaded}} fuentes cargadas, {{chunksEmbedded}} fragmentos indexados."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "¡Listo! Timmy ha terminado de preparar tus fuentes."
     },
     "saveAsNoteError": "No se pudo guardar como nota.",
     "saveMessageAsNote": "Guardar mensaje como nota",

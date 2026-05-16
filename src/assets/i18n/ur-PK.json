@@ -585,8 +585,8 @@
     "noSessions": "ابھی کوئی چیٹ سیشن نہیں۔ کوئی بات شروع کریں۔",
     "preparation": {
       "error": "تیاری ناکام: {{message}}۔",
-      "processing": "ذریعہ {{current}} / {{total}} پر کام ہو رہا ہے — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%۔",
-      "ready": "تیار! {{sourcesLoaded}} ذرائع لوڈ ہو گئے، {{chunksEmbedded}} حصے انڈیکس ہو گئے۔"
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "تیار! ٹمی نے آپ کے ذرائع تیار کرنا مکمل کر لیا۔"
     },
     "saveAsNoteError": "نوٹ کے طور پر محفوظ نہیں کیا جا سکا۔",
     "saveMessageAsNote": "پیغام کو نوٹ کے طور پر محفوظ کریں",

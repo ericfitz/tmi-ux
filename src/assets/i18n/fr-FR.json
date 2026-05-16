@@ -585,8 +585,8 @@
     "noSessions": "Aucune session de discussion. Démarrez une conversation.",
     "preparation": {
       "error": "La préparation a échoué : {{message}}.",
-      "processing": "Traitement de la source {{current}} sur {{total}} — {{entityType}} : {{entityName}} — {{phase}} {{progress}} %.",
-      "ready": "Prêt ! {{sourcesLoaded}} sources chargées, {{chunksEmbedded}} fragments indexés."
+      "processing": "{{phase}} — {{entityName}} — {{progress}} %",
+      "ready": "Prêt ! Timmy a terminé la préparation de vos sources."
     },
     "saveAsNoteError": "Impossible d'enregistrer en tant que note.",
     "saveMessageAsNote": "Enregistrer le message comme note",

@@ -681,8 +681,8 @@
     "noSessions": "No chat sessions yet. Start a conversation.",
     "preparation": {
       "error": "Preparation failed: {{message}}.",
-      "processing": "Processing source {{current}} of {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "Ready! {{sourcesLoaded}} sources loaded, {{chunksEmbedded}} chunks indexed."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "Ready! Timmy has finished preparing your sources."
     },
     "saveAsNoteError": "Could not save as note.",
     "saveMessageAsNote": "Save message as note",

@@ -585,8 +585,8 @@
     "noSessions": "Belum ada sesi chat. Mulai percakapan.",
     "preparation": {
       "error": "Persiapan gagal: {{message}}.",
-      "processing": "Memproses sumber {{current}} dari {{total}} — {{entityType}}: {{entityName}} — {{phase}} {{progress}}%.",
-      "ready": "Siap! {{sourcesLoaded}} sumber dimuat, {{chunksEmbedded}} potongan diindeks."
+      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
+      "ready": "Siap! Timmy telah selesai menyiapkan sumber Anda."
     },
     "saveAsNoteError": "Tidak dapat disimpan sebagai catatan.",
     "saveMessageAsNote": "Simpan pesan sebagai catatan",

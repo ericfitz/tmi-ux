@@ -81,12 +81,7 @@
             } @else {
               <mat-icon class="status-icon ready">check_circle</mat-icon>
             }
-            <span>{{
-              t('chat.preparation.ready', {
-                sourcesLoaded: preparationStatus.readyStats?.sources_loaded ?? 0,
-                chunksEmbedded: preparationStatus.readyStats?.chunks_embedded ?? 0,
-              })
-            }}</span>
+            <span>{{ t('chat.preparation.ready') }}</span>
           } @else if (preparationStatus.error) {
             <mat-icon class="status-icon error">error</mat-icon>
             <span>{{ t('chat.preparation.error', { message: preparationStatus.error }) }}</span>
@@ -99,9 +94,6 @@
             <mat-spinner diameter="18" class="status-spinner"></mat-spinner>
             <span>{{
               t('chat.preparation.processing', {
-                current: preparationStatus.current,
-                total: preparationStatus.total,
-                entityType: preparationStatus.entityName ? '' : '',
                 entityName: preparationStatus.entityName,
                 phase: preparationStatus.phase,
                 progress: preparationStatus.progress,

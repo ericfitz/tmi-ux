@@ -127,10 +127,7 @@ export interface PreparationStatus {
   phase: string;
   entityName: string;
   progress: number;
-  current: number;
-  total: number;
   ready?: boolean;
-  readyStats?: ReadyEvent;
   error?: string;
   /**
    * Distinguishes session-creation progress (counted/percent-bar style)
