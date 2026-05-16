@@ -93,9 +93,9 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   private originalContent = '';
   private originalName = '';
   private originalDescription = '';
-  private originalIncludeInReport: boolean | undefined = true;
+  private originalIncludeInReport: boolean | null | undefined = true;
   private originalTimmyEnabled: boolean | undefined = true;
-  private originalSharable: boolean | undefined = true;
+  private originalSharable: boolean | null | undefined = true;
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -148,9 +148,13 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     this.originalName = initialName;
     this.originalContent = initialContent;
     this.originalDescription = initialDescription;
-    this.originalIncludeInReport = initialIncludeInReport;
+    // The reactive form coerces an `undefined` initial value to `null`, so the
+    // stored originals must be normalized the same way — otherwise
+    // hasUnsavedChanges() compares the control's `null` against a raw
+    // `undefined` and reports a spurious change for an untouched note.
+    this.originalIncludeInReport = initialIncludeInReport ?? null;
     this.originalTimmyEnabled = initialTimmyEnabled;
-    this.originalSharable = initialSharable;
+    this.originalSharable = initialSharable ?? null;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
@@ -341,9 +345,12 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     this.originalName = formValue.name;
     this.originalContent = formValue.content;
     this.originalDescription = formValue.description || '';
-    this.originalIncludeInReport = formValue.include_in_report;
+    // getFormValue only carries the field relevant to the entity type, so the
+    // other is undefined here. Normalize to null to match the form control —
+    // see the same `?? null` handling in ngOnInit.
+    this.originalIncludeInReport = formValue.include_in_report ?? null;
     this.originalTimmyEnabled = formValue.timmy_enabled;
-    this.originalSharable = formValue.sharable;
+    this.originalSharable = formValue.sharable ?? null;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }
