@@ -30,7 +30,6 @@ export default defineConfig({
       // Integration tests have transitive Angular Material dependencies that
       // can't compile in vitest/JSDOM. Keep excluded until migrated to Playwright.
       'src/app/pages/dfd/integration/**',
-      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts',
     ],
     setupFiles: ['src/test-setup.ts'],
     server: {
@@ -49,6 +48,16 @@ export default defineConfig({
         '**/environments/**',
         'unused/**',
       ],
+      // Global coverage floor. Set just below the measured baseline
+      // (stmt 73.8% / branch 64.8% / func 71.7% / line 74.6% as of 2026-05)
+      // so `pnpm run test:coverage` fails on a regression but tolerates
+      // minor run-to-run variance. Raise these as coverage improves.
+      thresholds: {
+        statements: 70,
+        branches: 60,
+        functions: 68,
+        lines: 70,
+      },
     },
     // Use 'forks' pool for Zone.js compatibility
     isolate: true,
