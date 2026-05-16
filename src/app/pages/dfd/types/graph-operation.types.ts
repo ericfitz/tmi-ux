@@ -5,6 +5,10 @@
 import { Graph } from '@antv/x6';
 import { Observable } from 'rxjs';
 import { EdgeInfo } from '../domain/value-objects/edge-info';
+import { EdgeLabel } from '../domain/value-objects/edge-label';
+import { EdgeTerminal } from '../domain/value-objects/edge-terminal';
+import { EdgeAttrs } from '../domain/value-objects/edge-attrs';
+import { Point } from '../domain/value-objects/point';
 
 /**
  * Types of operations that can be performed on the graph
@@ -103,12 +107,63 @@ export interface CreateEdgeOperation extends GraphOperation {
 }
 
 /**
+ * Update payload accepted by an {@link UpdateEdgeOperation}.
+ *
+ * This is intentionally NOT `Partial<EdgeInfo>`. The real contract is a flat,
+ * facade-shaped payload spanning three consumers:
+ *
+ *  - `EdgeOperationExecutor._applyEdgeUpdates` applies `label`, `labels`,
+ *    `style`, `sourceNodeId`/`sourcePort`, `targetNodeId`/`targetPort`, and
+ *    `properties` to the live X6 edge.
+ *  - `EdgeOperationValidator.validateUpdateEdge` validates `source`, `target`,
+ *    `labels`, and `attrs`.
+ *  - `AppDfdOrchestratorService` inspects `labels`, `vertices`, `source`, and
+ *    `target` to derive a history description / operation type.
+ *
+ * Note the executor does NOT currently act on `vertices`/`source`/`target`/
+ * `attrs` — those updates are silently dropped at apply time. Tracked
+ * separately in #707.
+ */
+export interface EdgeUpdates {
+  /** Singular label string (facade label changes). Replaces all edge labels. */
+  readonly label?: string;
+  /** Labels array (remote operations / history replay). */
+  readonly labels?: EdgeLabel[];
+  /** Line styling applied via `setAttrByPath`. */
+  readonly style?: {
+    readonly stroke?: string;
+    readonly strokeWidth?: number;
+    readonly strokeDasharray?: string;
+  };
+  /** New source node id (endpoint reassignment). */
+  readonly sourceNodeId?: string;
+  /** New source port id; falls back to the edge's current source port. */
+  readonly sourcePort?: string;
+  /** New target node id (endpoint reassignment). */
+  readonly targetNodeId?: string;
+  /** New target port id; falls back to the edge's current target port. */
+  readonly targetPort?: string;
+  /** Edge `data` properties to shallow-merge onto the existing data. */
+  readonly properties?: Record<string, unknown>;
+  /** New edge path vertices. Read by the orchestrator; not applied by the executor — see #707. */
+  readonly vertices?: Array<Point | { x: number; y: number }>;
+  /** Source terminal (`EdgeInfo`-shaped reassignment). Read by validator/orchestrator; see #707. */
+  readonly source?: EdgeTerminal;
+  /** Target terminal (`EdgeInfo`-shaped reassignment). Read by validator/orchestrator; see #707. */
+  readonly target?: EdgeTerminal;
+  /** Edge attributes (X6 native). Read by the validator; not applied by the executor — see #707. */
+  readonly attrs?: EdgeAttrs;
+}
+
+/**
  * Edge update operation
  */
 export interface UpdateEdgeOperation extends GraphOperation {
   readonly type: 'update-edge';
   readonly edgeId: string;
-  readonly updates: Partial<EdgeInfo>;
+  readonly updates: EdgeUpdates;
+  // NOTE: `previousState` is not consumed by EdgeOperationExecutor (it captures
+  // previous state from the live graph). Left as `Partial<EdgeInfo>` — see #707.
   readonly previousState?: Partial<EdgeInfo>;
 }
 

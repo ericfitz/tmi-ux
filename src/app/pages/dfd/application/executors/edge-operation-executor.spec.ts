@@ -327,7 +327,7 @@ describe('EdgeOperationExecutor', () => {
 
     it('applies style updates via setAttrByPath', () =>
       new Promise<void>((resolve, reject) => {
-        const op = makeUpdateOp({ style: { stroke: '#ff0000', strokeWidth: 3 } } as never);
+        const op = makeUpdateOp({ style: { stroke: '#ff0000', strokeWidth: 3 } });
 
         executor.execute(op, context).subscribe({
           next: result => {
@@ -351,7 +351,7 @@ describe('EdgeOperationExecutor', () => {
     it('reassigns the source endpoint to another existing node', () =>
       new Promise<void>((resolve, reject) => {
         cells.set('n3', createMockNode('n3'));
-        const op = makeUpdateOp({ sourceNodeId: 'n3' } as never);
+        const op = makeUpdateOp({ sourceNodeId: 'n3' });
 
         executor.execute(op, context).subscribe({
           next: result => {
@@ -373,7 +373,7 @@ describe('EdgeOperationExecutor', () => {
 
     it('fails when the new source node does not exist', () =>
       new Promise<void>((resolve, reject) => {
-        const op = makeUpdateOp({ sourceNodeId: 'missing' } as never);
+        const op = makeUpdateOp({ sourceNodeId: 'missing' });
 
         executor.execute(op, context).subscribe({
           next: result => {
@@ -391,7 +391,7 @@ describe('EdgeOperationExecutor', () => {
 
     it('merges data property updates onto the edge', () =>
       new Promise<void>((resolve, reject) => {
-        const op = makeUpdateOp({ properties: { edgeType: 'control-flow' } } as never);
+        const op = makeUpdateOp({ properties: { edgeType: 'control-flow' } });
 
         executor.execute(op, context).subscribe({
           next: result => {

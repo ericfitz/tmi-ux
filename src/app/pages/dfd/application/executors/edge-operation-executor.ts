@@ -17,6 +17,7 @@ import {
   OperationContext,
   CreateEdgeOperation,
   UpdateEdgeOperation,
+  EdgeUpdates,
   DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
@@ -274,7 +275,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
   private _applyEdgeUpdates(
     graph: Graph,
     edge: any,
-    updates: any,
+    updates: EdgeUpdates,
     operation: UpdateEdgeOperation,
   ): OperationResult | null {
     // Handle singular label string (from facade label changes)
@@ -355,7 +356,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
   /**
    * Collect names of changed properties from an updates object.
    */
-  private _collectChangedProperties(updates: any): string[] {
+  private _collectChangedProperties(updates: EdgeUpdates): string[] {
     const changed: string[] = [];
 
     if (updates.label !== undefined || updates.labels !== undefined) changed.push('label');
