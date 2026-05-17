@@ -10,7 +10,11 @@ describe('TmEditFormattingService', () => {
   beforeEach(() => {
     service = new TmEditFormattingService(
       { warn: () => {}, debugComponent: () => {} } as never,
-      { translate: (k: string) => k } as never,
+      {
+        translate: (k: string) => k,
+        getAvailableLangs: () => [],
+        getTranslation: () => ({}),
+      } as never,
     );
   });
 
@@ -159,6 +163,12 @@ describe('TmEditFormattingService', () => {
     it('prefixes a camelCase key with severity-', () => {
       expect(service.getThreatSeverityClass('high')).toBe('severity-high');
     });
+    it('migrates a numeric-key severity through migrateFieldValue', () => {
+      expect(service.getThreatSeverityClass('0')).toBe('severity-critical');
+    });
+    it('returns severity-unknown for an unmapped value', () => {
+      expect(service.getThreatSeverityClass('bogus')).toBe('severity-unknown');
+    });
   });
 
   describe('migrateThreatFieldValues', () => {
@@ -186,6 +196,22 @@ describe('TmEditFormattingService', () => {
       const input = { severity: '0' };
       service.migrateThreatFieldValues(input as never);
       expect(input.severity).toBe('0');
+    });
+    it('migrates legacy English status strings', () => {
+      const result = service.migrateThreatFieldValues({ status: 'Mitigation Planned' } as never);
+      expect(result.status).toBe('mitigation_planned');
+    });
+    it('migrates legacy English priority strings', () => {
+      const result = service.migrateThreatFieldValues({ priority: 'Immediate (P0)' } as never);
+      expect(result.priority).toBe('immediate');
+    });
+    it('leaves an already-valid priority key unchanged', () => {
+      const result = service.migrateThreatFieldValues({ priority: 'immediate' } as never);
+      expect(result.priority).toBe('immediate');
+    });
+    it('leaves an unmapped severity value as-is', () => {
+      const result = service.migrateThreatFieldValues({ severity: 'bogus' } as never);
+      expect(result.severity).toBe('bogus');
     });
   });
 });
