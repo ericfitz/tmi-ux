@@ -108,6 +108,7 @@ import {
 } from './models/threat-filter.model';
 import { ThreatModelReportService } from './services/report/threat-model-report.service';
 import { TmEditFormattingService } from './services/tm-edit-formatting.service';
+import { TmEditAutoSaveService, ThreatModelFormValues } from './services/tm-edit-auto-save.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -127,15 +128,6 @@ import { AdminUser } from '@app/types/user.types';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';
 import { environment } from '../../../environments/environment';
-
-// Define form value interface
-interface ThreatModelFormValues {
-  name: string;
-  description: string;
-  threat_model_framework: string;
-  issue_uri?: string;
-  status?: string | null;
-}
 
 // Define repository form result interface
 interface RepositoryFormResult {
@@ -358,6 +350,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private projectService: ProjectService,
     private threatFilterStateService: ThreatFilterStateService,
     private formattingService: TmEditFormattingService,
+    private autoSaveService: TmEditAutoSaveService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -715,18 +708,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Check if form values have changed from original
    */
   private hasFormChanged(formValue: ThreatModelFormValues): boolean {
-    if (!this._originalFormValues) return false;
-
-    // Compare status values (single string or null, not an array)
-    const statusChanged = (formValue.status ?? null) !== (this._originalFormValues.status ?? null);
-
-    return (
-      formValue.name !== this._originalFormValues.name ||
-      formValue.description !== this._originalFormValues.description ||
-      formValue.threat_model_framework !== this._originalFormValues.threat_model_framework ||
-      formValue.issue_uri !== this._originalFormValues.issue_uri ||
-      statusChanged
-    );
+    return this.autoSaveService.hasFormChanged(formValue, this._originalFormValues);
   }
 
   /**
@@ -2713,44 +2695,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Create updates object with only changed form fields
-    // Note: This object should NEVER contain authorization/owner - those are managed separately
-    const updates: Partial<
-      Pick<ThreatModel, 'name' | 'description' | 'threat_model_framework' | 'issue_uri' | 'status'>
-    > = {};
-
-    if (formValues.name !== this._originalFormValues!.name) {
-      updates.name = formValues.name;
-    }
-    if (formValues.description !== this._originalFormValues!.description) {
-      updates.description = formValues.description;
-    }
-    if (formValues.threat_model_framework !== this._originalFormValues!.threat_model_framework) {
-      updates.threat_model_framework = formValues.threat_model_framework;
-    }
-    if (formValues.issue_uri !== this._originalFormValues!.issue_uri) {
-      updates.issue_uri = formValues.issue_uri;
-    }
-    // Compare status values (single string or null, not an array)
-    if ((formValues.status ?? null) !== (this._originalFormValues!.status ?? null)) {
-      updates.status = formValues.status;
-    }
-
-    // Runtime safety: Remove authorization/owner if somehow present (should not happen due to type constraint)
-    // This is a defensive measure against runtime object mutations
+    // Build a partial update containing only changed fields. The service
+    // also strips authorization/owner defensively.
+    const updates = this.autoSaveService.buildUpdates(formValues, this._originalFormValues!);
     const safeUpdates = updates as Record<string, unknown>;
-    if ('authorization' in safeUpdates) {
-      this.logger.warn('Unexpected authorization field in form auto-save updates - removing it', {
-        updateKeys: Object.keys(safeUpdates),
-      });
-      delete safeUpdates['authorization'];
-    }
-    if ('owner' in safeUpdates) {
-      this.logger.warn('Unexpected owner field in form auto-save updates - removing it', {
-        updateKeys: Object.keys(safeUpdates),
-      });
-      delete safeUpdates['owner'];
-    }
 
     // Log what fields are being updated (INFO level for Heroku debugging)
     this.logger.info('Auto-save PATCH request', {
