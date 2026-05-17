@@ -29,17 +29,6 @@ describe('TmDocumentCrudService', () => {
     service = new TmDocumentCrudService(threatModelService as never);
   });
 
-  describe('getDocumentTooltip', () => {
-    it('returns just the uri when there is no description', () => {
-      expect(service.getDocumentTooltip({ uri: 'http://x' } as Document)).toBe('http://x');
-    });
-    it('appends the description after a blank line', () => {
-      expect(service.getDocumentTooltip({ uri: 'http://x', description: 'desc' } as Document)).toBe(
-        'http://x\n\ndesc',
-      );
-    });
-  });
-
   describe('buildDocumentData', () => {
     it('maps editor values and coerces empty description to undefined', () => {
       const data = service.buildDocumentData({

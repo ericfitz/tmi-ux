@@ -1427,15 +1427,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Generates tooltip text for document list items
-   * @param document The document to generate tooltip for
-   * @returns Formatted tooltip text with URL and description
-   */
-  getDocumentTooltip(document: Document): string {
-    return this.documentCrud.getDocumentTooltip(document);
-  }
-
-  /**
    * Opens a dialog to create a new source code repository reference
    * If the user confirms, adds the new source code to the threat model
    */

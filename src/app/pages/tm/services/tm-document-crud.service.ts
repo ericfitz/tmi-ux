@@ -25,17 +25,6 @@ export class TmDocumentCrudService {
   constructor(private threatModelService: ThreatModelService) {}
 
   /**
-   * Tooltip text for a document list item: uri plus optional description.
-   */
-  getDocumentTooltip(document: Document): string {
-    let tooltip = document.uri;
-    if (document.description) {
-      tooltip += `\n\n${document.description}`;
-    }
-    return tooltip;
-  }
-
-  /**
    * Map document editor form values to a Partial<ApiDocumentInput> for the API.
    */
   buildDocumentData(values: DocumentEditorDialogResult['values']): Partial<ApiDocumentInput> {
