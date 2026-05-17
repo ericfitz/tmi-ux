@@ -168,7 +168,11 @@ export class TmEditFormattingService {
     return filename;
   }
 
-  /** Validate that a base64 string decodes to well-formed SVG markup. */
+  /**
+   * Validate that a base64 string decodes to well-formed SVG markup.
+   * @param base64Svg Base64-encoded SVG string.
+   * @returns True if the decoded content is well-formed SVG, false otherwise.
+   */
   isValidBase64Svg(base64Svg: string): boolean {
     try {
       if (!base64Svg || base64Svg.length === 0) {
@@ -197,7 +201,11 @@ export class TmEditFormattingService {
     }
   }
 
-  /** Extract the viewBox attribute from a diagram's base64-encoded SVG, or null. */
+  /**
+   * Extract the viewBox attribute from a diagram's base64-encoded SVG.
+   * @param diagram The diagram whose SVG image to inspect.
+   * @returns The viewBox attribute value, or null if absent or unparseable.
+   */
   extractViewBoxFromSvg(diagram: Diagram): string | null {
     if (!diagram.image?.svg) {
       return null;

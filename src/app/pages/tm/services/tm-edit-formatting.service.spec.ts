@@ -123,6 +123,12 @@ describe('TmEditFormattingService', () => {
     it('returns false when the closing </svg> tag is missing', () => {
       expect(service.isValidBase64Svg(toB64('<svg><rect/>'))).toBe(false);
     });
+    it('returns false for invalid base64 input', () => {
+      expect(service.isValidBase64Svg('not valid base64 !!!')).toBe(false);
+    });
+    it('returns false when an xml-declared document lacks an <svg> tag', () => {
+      expect(service.isValidBase64Svg(toB64('<?xml version="1.0"?><root></root>'))).toBe(false);
+    });
   });
 
   describe('extractViewBoxFromSvg', () => {
@@ -137,6 +143,10 @@ describe('TmEditFormattingService', () => {
     });
     it('returns null when the SVG has no viewBox attribute', () => {
       const svg = toB64('<svg></svg>');
+      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
+    });
+    it('returns null for malformed SVG content', () => {
+      const svg = toB64('<svg><unclosed');
       expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
     });
   });
