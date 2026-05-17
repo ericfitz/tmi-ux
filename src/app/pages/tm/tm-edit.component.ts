@@ -43,7 +43,6 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
   UrlDropZoneDirective,
 } from '@app/shared/imports';
-import { CreateDiagramDialogComponent } from './components/create-diagram-dialog/create-diagram-dialog.component';
 import { DocumentEditorDialogData } from './components/document-editor-dialog/document-editor-dialog.component';
 import {
   RepositoryEditorDialogComponent,
@@ -107,6 +106,7 @@ import { TmEditFormattingService } from './services/tm-edit-formatting.service';
 import { TmEditAutoSaveService, ThreatModelFormValues } from './services/tm-edit-auto-save.service';
 import { TmDialogService } from './services/tm-dialog.service';
 import { TmDocumentCrudService } from './services/tm-document-crud.service';
+import { TmDiagramCrudService } from './services/tm-diagram-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -351,6 +351,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private autoSaveService: TmEditAutoSaveService,
     private dialogService: TmDialogService,
     private documentCrud: TmDocumentCrudService,
+    private diagramCrud: TmDiagramCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1194,38 +1195,22 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.logger.warn('Cannot add diagram - insufficient permissions');
       return;
     }
-    const dialogRef = this.dialog.open(CreateDiagramDialogComponent, {
-      width: '400px',
-      data: {
-        threatModelName: this.threatModel?.name || '',
-      },
-    });
-
     this._subscriptions.add(
-      dialogRef
-        .afterClosed()
-        .subscribe((diagramData: { name: string; type: string } | undefined) => {
-          if (diagramData && this.threatModel) {
-            // Create a new diagram via API
-            const newDiagramData: Partial<Diagram> = {
-              name: diagramData.name,
-              type: diagramData.type as Diagram['type'],
-            };
-
-            this._subscriptions.add(
-              this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe({
-                next: created => {
-                  if (!this.threatModel) return;
-                  this.diagrams = [...this.diagrams, created];
-                  this.totalDiagrams = this.totalDiagrams + 1;
-                  this.threatModel.diagrams = [...(this.threatModel.diagrams ?? []), created];
-                },
-                error: error => {
-                  this.logger.error('Failed to create diagram', error);
-                },
-              }),
-            );
-          }
+      this.dialogService
+        .openDiagramCreate({ threatModelName: this.threatModel?.name || '' })
+        .subscribe(diagramData => {
+          if (!diagramData || !this.threatModel) return;
+          this._subscriptions.add(
+            this.diagramCrud.createDiagram(this.threatModel.id, diagramData).subscribe({
+              next: created => {
+                if (!this.threatModel) return;
+                this.diagrams = [...this.diagrams, created];
+                this.totalDiagrams = this.totalDiagrams + 1;
+                this.threatModel.diagrams = [...(this.threatModel.diagrams ?? []), created];
+              },
+              error: error => this.logger.error('Failed to create diagram', error),
+            }),
+          );
         }),
     );
   }
@@ -1255,19 +1240,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectType: 'diagram',
     };
 
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
-        // Delete the diagram via API
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel) return;
         this._subscriptions.add(
-          this.threatModelService
-            .deleteDiagram(this.threatModel!.id, diagram.id)
-            .subscribe(success => {
+          this.diagramCrud.deleteDiagram(this.threatModel.id, diagram.id).subscribe({
+            next: success => {
               if (success && this.threatModel && this.threatModel.diagrams) {
                 // Remove the diagram from local state using filter (immutable)
                 this.threatModel.diagrams = this.threatModel.diagrams.filter(
@@ -1281,10 +1259,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                 // Remove from DIAGRAMS_BY_ID map
                 DIAGRAMS_BY_ID.delete(diagram.id);
               }
-            }),
+            },
+            error: error => this.logger.error('Failed to delete diagram', error),
+          }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -1862,7 +1842,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._subscriptions.add(
-      this.threatModelService.getDiagramModel(this.threatModel.id, diagram.id, format).subscribe({
+      this.diagramCrud.getDiagramModel(this.threatModel.id, diagram.id, format).subscribe({
         next: content => {
           const mimeType = this.formattingService.getMimeTypeForFormat(format);
           const extension = this.formattingService.getExtensionForFormat(format);
@@ -2214,43 +2194,37 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Fetch metadata from API since list endpoint doesn't include it
     this._subscriptions.add(
-      this.threatModelService
-        .getDiagramMetadata(this.threatModel.id, diagram.id)
-        .subscribe(metadata => {
+      this.diagramCrud.getDiagramMetadata(this.threatModel.id, diagram.id).subscribe({
+        next: metadata => {
           const dialogData: MetadataDialogData = {
             metadata: metadata || [],
             isReadOnly: !this.canEdit,
             objectType: 'Diagram',
             objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
           };
-
-          const dialogRef = this.dialog.open(MetadataDialogComponent, {
-            width: '90vw',
-            maxWidth: '800px',
-            minWidth: '500px',
-            maxHeight: '80vh',
-            data: dialogData,
-          });
-
           this._subscriptions.add(
-            dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-              if (result && this.threatModel) {
-                this._subscriptions.add(
-                  this.threatModelService
-                    .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
-                    .subscribe(updatedMetadata => {
+            this.dialogService.openMetadata(dialogData).subscribe(result => {
+              if (!result || !this.threatModel) return;
+              this._subscriptions.add(
+                this.diagramCrud
+                  .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
+                  .subscribe({
+                    next: updatedMetadata => {
                       if (updatedMetadata) {
                         this.logger.info('Updated diagram metadata via API', {
                           diagramId: diagram.id,
                           metadata: updatedMetadata,
                         });
                       }
-                    }),
-                );
-              }
+                    },
+                    error: error => this.logger.error('Failed to update diagram metadata', error),
+                  }),
+              );
             }),
           );
-        }),
+        },
+        error: error => this.logger.error('Failed to fetch diagram metadata', error),
+      }),
     );
   }
 
@@ -2703,25 +2677,23 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Always uses API call for server-side pagination
    */
   private loadDiagrams(threatModelId: string): void {
-    const offset = calculateOffset(this.diagramsPageIndex, this.diagramsPageSize);
-
     this._subscriptions.add(
-      this.threatModelService
-        .getDiagramsForThreatModel(threatModelId, this.diagramsPageSize, offset)
-        .subscribe(response => {
-          const diagrams = response.diagrams ?? [];
-          this.diagrams = diagrams;
-          this.totalDiagrams = response.total ?? 0;
+      this.diagramCrud
+        .loadDiagrams(threatModelId, this.diagramsPageIndex, this.diagramsPageSize)
+        .subscribe({
+          next: page => {
+            this.diagrams = page.diagrams;
+            this.totalDiagrams = page.total;
 
-          // Update DIAGRAMS_BY_ID map with real diagram data
-          diagrams.forEach(diagram => {
-            DIAGRAMS_BY_ID.set(diagram.id, diagram);
-          });
+            // Update DIAGRAMS_BY_ID map with real diagram data
+            page.diagrams.forEach(diagram => DIAGRAMS_BY_ID.set(diagram.id, diagram));
 
-          // Update threat model diagrams property for consistency
-          if (this.threatModel) {
-            this.threatModel.diagrams = diagrams;
-          }
+            // Update threat model diagrams property for consistency
+            if (this.threatModel) {
+              this.threatModel.diagrams = page.diagrams;
+            }
+          },
+          error: error => this.logger.error('Failed to load diagrams', error),
         }),
     );
   }
