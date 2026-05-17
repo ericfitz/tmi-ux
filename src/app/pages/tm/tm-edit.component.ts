@@ -44,11 +44,7 @@ import {
   UrlDropZoneDirective,
 } from '@app/shared/imports';
 import { CreateDiagramDialogComponent } from './components/create-diagram-dialog/create-diagram-dialog.component';
-import {
-  DocumentEditorDialogComponent,
-  DocumentEditorDialogData,
-  DocumentEditorDialogResult,
-} from './components/document-editor-dialog/document-editor-dialog.component';
+import { DocumentEditorDialogData } from './components/document-editor-dialog/document-editor-dialog.component';
 import {
   RepositoryEditorDialogComponent,
   RepositoryEditorDialogData,
@@ -109,6 +105,8 @@ import {
 import { ThreatModelReportService } from './services/report/threat-model-report.service';
 import { TmEditFormattingService } from './services/tm-edit-formatting.service';
 import { TmEditAutoSaveService, ThreatModelFormValues } from './services/tm-edit-auto-save.service';
+import { TmDialogService } from './services/tm-dialog.service';
+import { TmDocumentCrudService } from './services/tm-document-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -351,6 +349,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private threatFilterStateService: ThreatFilterStateService,
     private formattingService: TmEditFormattingService,
     private autoSaveService: TmEditAutoSaveService,
+    private dialogService: TmDialogService,
+    private documentCrud: TmDocumentCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1303,47 +1303,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       ...(uri ? { document: { uri } as Document } : {}),
     };
 
-    const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
-      width: '600px',
-      data: dialogData,
-      // Backdrop clicks must not dismiss the dialog — when the user invokes
-      // the Google Picker, focus shifts to the picker iframe and stray clicks
-      // outside the dialog (which becomes the picker overlay region) would
-      // otherwise destroy the form state mid-pick.
-      disableClose: true,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: DocumentEditorDialogResult | undefined) => {
+      this.dialogService.openDocumentEditor(dialogData).subscribe(result => {
         if (!result || !this.threatModel) return;
 
-        // Service-mode: dialog already created the document in-place; just reload the list.
-        if (result.createdDocument && this.threatModel) {
+        // Service-mode: the dialog already created the document in-place.
+        if (result.createdDocument) {
           this.loadDocuments(this.threatModel.id);
           return;
         }
 
-        const values = result.values;
-        const newDocumentData: Partial<Document> = {
-          name: values.name,
-          uri: values.uri,
-          description: values.description || undefined,
-          include_in_report: values.include_in_report,
-          ...(values.picker_registration
-            ? { picker_registration: values.picker_registration }
-            : {}),
-        };
-
         this._subscriptions.add(
-          this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe({
+          this.documentCrud.createDocument(this.threatModel.id, result.values).subscribe({
             next: () => {
               if (this.threatModel) {
                 this.loadDocuments(this.threatModel.id);
               }
             },
-            error: error => {
-              this.logger.error('Failed to create document', error);
-            },
+            error: error => this.logger.error('Failed to create document', error),
           }),
         );
       }),
@@ -1366,9 +1343,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param event The click event
    */
   editDocument(document: Document, event: Event): void {
-    // Prevent event propagation
     event.stopPropagation();
-    // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
     if (!this.threatModel) {
@@ -1382,35 +1357,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       threatModelId: this.threatModel.id,
     };
 
-    const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
-      width: '600px',
-      data: dialogData,
-      disableClose: true,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: DocumentEditorDialogResult | undefined) => {
+      this.dialogService.openDocumentEditor(dialogData).subscribe(result => {
         if (!result || !this.threatModel) return;
 
-        const values = result.values;
-        const updatedDocumentData: Partial<Document> = {
-          name: values.name,
-          uri: values.uri,
-          description: values.description || undefined,
-          include_in_report: values.include_in_report,
-        };
-
         this._subscriptions.add(
-          this.threatModelService
-            .updateDocument(this.threatModel.id, document.id, updatedDocumentData)
-            .subscribe(updatedDocument => {
-              if (this.threatModel && this.threatModel.documents) {
-                const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-                if (index !== -1) {
-                  this.threatModel.documents[index] = updatedDocument;
+          this.documentCrud
+            .updateDocument(this.threatModel.id, document.id, result.values)
+            .subscribe({
+              next: updatedDocument => {
+                if (this.threatModel && this.threatModel.documents) {
+                  const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+                  if (index !== -1) {
+                    this.threatModel.documents[index] = updatedDocument;
+                  }
+                  this.documentsDataSource.data = this.threatModel.documents;
                 }
-                this.documentsDataSource.data = this.threatModel.documents;
-              }
+              },
+              error: error => this.logger.error('Failed to update document', error),
             }),
         );
       }),
@@ -1423,9 +1387,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param event The click event
    */
   deleteDocument(document: Document, event: Event): void {
-    // Prevent event propagation
     event.stopPropagation();
-    // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
     if (!this.canEdit) {
@@ -1437,38 +1399,31 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Show confirmation dialog (no typed confirmation for documents - reference only)
     const dialogData: DeleteConfirmationDialogData = {
       id: document.id,
       name: document.name,
       objectType: 'document',
     };
 
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel) return;
 
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
-        // Delete the document via API
         this._subscriptions.add(
-          this.threatModelService
-            .deleteDocument(this.threatModel!.id, document.id)
-            .subscribe(success => {
+          this.documentCrud.deleteDocument(this.threatModel.id, document.id).subscribe({
+            next: success => {
               if (success && this.threatModel && this.threatModel.documents) {
-                // Remove the document from local state using filter (immutable)
-                // and update data source for immediate UI refresh
                 this.threatModel.documents = this.threatModel.documents.filter(
                   d => d.id !== document.id,
                 );
                 this.documentsDataSource.data = this.threatModel.documents;
               }
-            }),
+            },
+            error: error => this.logger.error('Failed to delete document', error),
+          }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -1477,11 +1432,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns Formatted tooltip text with URL and description
    */
   getDocumentTooltip(document: Document): string {
-    let tooltip = document.uri;
-    if (document.description) {
-      tooltip += `\n\n${document.description}`;
-    }
-    return tooltip;
+    return this.documentCrud.getDocumentTooltip(document);
   }
 
   /**
@@ -2073,7 +2024,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   openDocumentMetadataDialog(document: Document, event: Event): void {
     event.stopPropagation();
-    // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
@@ -2083,21 +2033,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectName: `${this.transloco.translate('common.objectTypes.document')}: ${document.name} (${document.id})`,
     };
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateDocumentMetadata(this.threatModel.id, document.id, result)
-              .subscribe(updatedMetadata => {
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+
+        this._subscriptions.add(
+          this.documentCrud
+            .updateDocumentMetadata(this.threatModel.id, document.id, result)
+            .subscribe({
+              next: updatedMetadata => {
                 if (updatedMetadata && this.threatModel && this.threatModel.documents) {
                   const documentIndex = this.threatModel.documents.findIndex(
                     d => d.id === document.id,
@@ -2110,9 +2054,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                     metadata: updatedMetadata,
                   });
                 }
-              }),
-          );
-        }
+              },
+              error: error => this.logger.error('Failed to update document metadata', error),
+            }),
+        );
       }),
     );
   }
@@ -2805,18 +2750,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Load documents for the threat model using separate API call with pagination
    */
   private loadDocuments(threatModelId: string): void {
-    const offset = calculateOffset(this.documentsPageIndex, this.documentsPageSize);
-
     this._subscriptions.add(
-      this.threatModelService
-        .getDocumentsForThreatModel(threatModelId, this.documentsPageSize, offset)
-        .subscribe(response => {
-          if (this.threatModel) {
-            const documents = response.documents ?? [];
-            this.threatModel.documents = documents;
-            this.documentsDataSource.data = documents;
-            this.totalDocuments = response.total ?? 0;
-          }
+      this.documentCrud
+        .loadDocuments(threatModelId, this.documentsPageIndex, this.documentsPageSize)
+        .subscribe({
+          next: page => {
+            if (this.threatModel) {
+              this.threatModel.documents = page.documents;
+              this.documentsDataSource.data = page.documents;
+              this.totalDocuments = page.total;
+            }
+          },
+          error: error => this.logger.error('Failed to load documents', error),
         }),
     );
   }
