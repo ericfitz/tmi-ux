@@ -107,15 +107,14 @@ import {
   hasAnyThreatFilters,
 } from './models/threat-filter.model';
 import { ThreatModelReportService } from './services/report/threat-model-report.service';
+import { TmEditFormattingService } from './services/tm-edit-formatting.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
 import {
   FieldOption,
-  getFieldKeysForFieldType,
   getFieldLabel,
   getFieldOptions,
-  migrateFieldValue,
 } from '../../shared/utils/field-value-helpers';
 import {
   DeleteConfirmationDialogComponent,
@@ -358,6 +357,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private securityReviewerService: SecurityReviewerService,
     private projectService: ProjectService,
     private threatFilterStateService: ThreatFilterStateService,
+    private formattingService: TmEditFormattingService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -394,109 +394,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.threatModel?.id) {
       this.copyToClipboard(this.threatModel.id);
     }
-  }
-
-  /**
-   * Hardcoded mapping from old values (numeric keys and English strings) to camelCase keys.
-   * Used for migrating legacy data synchronously before Transloco translations are loaded.
-   */
-  private readonly severityMap: Record<string, string> = {
-    '0': 'critical',
-    '1': 'high',
-    '2': 'medium',
-    '3': 'low',
-    '4': 'informational',
-    '5': 'unknown',
-    Critical: 'critical',
-    High: 'high',
-    Medium: 'medium',
-    Low: 'low',
-    Informational: 'informational',
-    Info: 'informational',
-    Unknown: 'unknown',
-    None: 'unknown',
-  };
-
-  private readonly statusMap: Record<string, string> = {
-    '0': 'open',
-    '1': 'confirmed',
-    '2': 'mitigation_planned',
-    '3': 'mitigation_in_progress',
-    '4': 'verification_pending',
-    '5': 'resolved',
-    '6': 'accepted',
-    '7': 'false_positive',
-    '8': 'deferred',
-    '9': 'closed',
-    Open: 'open',
-    Confirmed: 'confirmed',
-    'Mitigation Planned': 'mitigation_planned',
-    'Mitigation In Progress': 'mitigation_in_progress',
-    'Verification Pending': 'verification_pending',
-    Resolved: 'resolved',
-    Accepted: 'accepted',
-    'False Positive': 'false_positive',
-    Deferred: 'deferred',
-    Closed: 'closed',
-  };
-
-  private readonly priorityMap: Record<string, string> = {
-    '0': 'immediate',
-    '1': 'high',
-    '2': 'medium',
-    '3': 'low',
-    '4': 'deferred',
-    'Immediate (P0)': 'immediate',
-    'High (P1)': 'high',
-    'Medium (P2)': 'medium',
-    'Low (P3)': 'low',
-    'Deferred (P4)': 'deferred',
-    Immediate: 'immediate',
-    High: 'high',
-    Medium: 'medium',
-    Low: 'low',
-  };
-
-  private readonly severityKeys = getFieldKeysForFieldType('threatEditor.threatSeverity');
-  private readonly threatStatusKeys = getFieldKeysForFieldType('threatEditor.threatStatus');
-
-  /**
-   * Migrates old field values (numeric keys or English strings) to camelCase keys
-   * @param threat The threat to migrate
-   * @returns Migrated threat
-   */
-  private migrateThreatFieldValues(threat: Threat): Threat {
-    const migratedThreat = { ...threat };
-
-    // Migrate severity
-    if (
-      migratedThreat.severity &&
-      !this.severityKeys.includes(migratedThreat.severity) &&
-      this.severityMap[migratedThreat.severity]
-    ) {
-      migratedThreat.severity = this.severityMap[migratedThreat.severity];
-    }
-
-    // Migrate status
-    if (
-      migratedThreat.status &&
-      !this.threatStatusKeys.includes(migratedThreat.status) &&
-      this.statusMap[migratedThreat.status]
-    ) {
-      migratedThreat.status = this.statusMap[migratedThreat.status];
-    }
-
-    // Migrate priority
-    const priorityKeys = getFieldKeysForFieldType('threatEditor.threatPriority');
-    if (
-      migratedThreat.priority &&
-      !priorityKeys.includes(migratedThreat.priority) &&
-      this.priorityMap[migratedThreat.priority]
-    ) {
-      migratedThreat.priority = this.priorityMap[migratedThreat.priority];
-    }
-
-    return migratedThreat;
   }
 
   /**
@@ -554,10 +451,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Gets the CSS class for a threat severity value, handling legacy numeric values. */
   getThreatSeverityClass(severity: string | null | undefined): string {
-    const key = severity
-      ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'unknown')
-      : 'unknown';
-    return 'severity-' + key;
+    return this.formattingService.getThreatSeverityClass(severity);
   }
 
   ngOnInit(): void {
@@ -2046,9 +1940,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this._subscriptions.add(
       this.threatModelService.getDiagramModel(this.threatModel.id, diagram.id, format).subscribe({
         next: content => {
-          const mimeType = this.getMimeTypeForFormat(format);
-          const extension = this.getExtensionForFormat(format);
-          const filename = this.generateDiagramModelFilename(diagram.name, extension);
+          const mimeType = this.formattingService.getMimeTypeForFormat(format);
+          const extension = this.formattingService.getExtensionForFormat(format);
+          const filename = this.formattingService.generateDiagramModelFilename(
+            this.threatModel?.name,
+            diagram.name,
+            extension,
+          );
           const blob = new Blob([content], { type: mimeType });
 
           this.handleDiagramModelExport(blob, filename, format).catch(error => {
@@ -2060,69 +1958,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         },
       }),
     );
-  }
-
-  /**
-   * Get the MIME type for a diagram model format
-   */
-  private getMimeTypeForFormat(format: 'json' | 'yaml' | 'graphml'): string {
-    switch (format) {
-      case 'json':
-        return 'application/json';
-      case 'yaml':
-        return 'application/x-yaml';
-      case 'graphml':
-        return 'application/xml';
-      default:
-        return 'application/octet-stream';
-    }
-  }
-
-  /**
-   * Get the file extension for a diagram model format
-   */
-  private getExtensionForFormat(format: 'json' | 'yaml' | 'graphml'): string {
-    switch (format) {
-      case 'json':
-        return '.json';
-      case 'yaml':
-        return '.yaml';
-      case 'graphml':
-        return '.graphml';
-      default:
-        return '';
-    }
-  }
-
-  /**
-   * Generate filename for diagram model download
-   * Format: "{threatModelName}-{diagramName}-model{extension}"
-   */
-  private generateDiagramModelFilename(diagramName: string, extension: string): string {
-    const sanitizeAndTruncate = (name: string, maxLength: number): string => {
-      const sanitized = name
-        .replace(/[<>:"/\\|?*]/g, '-')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
-    };
-
-    const threatModelPart = sanitizeAndTruncate(
-      this.threatModel?.name?.trim() || 'ThreatModel',
-      40,
-    );
-    const diagramPart = sanitizeAndTruncate(diagramName.trim(), 40);
-
-    const filename = `${threatModelPart}-${diagramPart}-model${extension}`;
-
-    this.logger.debugComponent('TmEdit', 'Generated diagram model filename', {
-      threatModelName: this.threatModel?.name,
-      diagramName,
-      filename,
-    });
-
-    return filename;
   }
 
   /**
@@ -2710,35 +2545,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * Get the appropriate Material icon for a diagram based on its type
-   * @param diagram The diagram object
-   * @returns The Material icon name to use
-   */
+  /** Gets the appropriate Material icon for a diagram based on its type. */
   getDiagramIcon(diagram: Diagram): string {
-    if (!diagram.type) {
-      return 'indeterminate_question_box'; // Default icon for unknown type
-    }
-
-    // Extract the type prefix (everything before the first hyphen)
-    const typePrefix = diagram.type.split('-')[0].toUpperCase();
-
-    switch (typePrefix) {
-      case 'DFD':
-        return 'graph_3';
-      // Future diagram types can be added here
-      default:
-        return 'indeterminate_question_box'; // Default fallback for unrecognized types
-    }
+    return this.formattingService.getDiagramIcon(diagram);
   }
 
-  /**
-   * Get tooltip text for a diagram icon showing the diagram type
-   * @param diagram The diagram object
-   * @returns The tooltip text
-   */
+  /** Gets tooltip text for a diagram icon showing the diagram type. */
   getDiagramTooltip(diagram: Diagram): string {
-    return diagram.type || 'Unknown Type';
+    return this.formattingService.getDiagramTooltip(diagram);
   }
 
   /**
@@ -2758,7 +2572,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.svgCacheService.hasValidationCache(cacheKey)) {
           isValid = this.svgCacheService.getValidationCache(cacheKey)!;
         } else {
-          isValid = this.isValidBase64Svg(diagram.image.svg);
+          isValid = this.formattingService.isValidBase64Svg(diagram.image.svg);
           this.svgCacheService.setValidationCache(cacheKey, isValid);
         }
         this.diagramSvgValidation.set(diagram.id, isValid);
@@ -2798,95 +2612,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.diagramSvgDataUrls.get(diagram.id) || '';
   }
 
-  /**
-   * Get SVG viewBox attribute from diagram
-   * @param diagram The diagram object
-   * @returns SVG viewBox attribute or null
-   */
+  /** Gets the SVG viewBox attribute from a diagram. */
   getSvgViewBox(diagram: Diagram): string | null {
-    // Extract viewBox from the SVG content - the DFD export service now handles optimal viewBox calculation
-    return this.extractViewBoxFromSvg(diagram);
-  }
-
-  /**
-   * Fallback method to extract viewBox from SVG content
-   * @param diagram The diagram object
-   * @returns SVG viewBox attribute or null
-   */
-  private extractViewBoxFromSvg(diagram: Diagram): string | null {
-    if (!diagram.image?.svg) {
-      return null;
-    }
-
-    try {
-      // Decode the base64 SVG
-      const svgContent = atob(diagram.image.svg);
-
-      // Create a temporary DOM element to parse the SVG
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return null;
-      }
-
-      return svgElement.getAttribute('viewBox');
-    } catch (error) {
-      this.logger.warn('Failed to extract viewBox from SVG', { error });
-      return null;
-    }
-  }
-
-  /**
-   * Validate if a base64 string contains well-formed SVG
-   * @param base64Svg Base64 encoded SVG string
-   * @returns True if valid SVG
-   */
-  private isValidBase64Svg(base64Svg: string): boolean {
-    try {
-      // Basic validation - check if it's valid base64
-      if (!base64Svg || base64Svg.length === 0) {
-        return false;
-      }
-
-      // Decode base64
-      const svgText = atob(base64Svg);
-
-      // Log for debugging
-      this.logger.debugComponent('TmEditComponent', 'Validating SVG', {
-        base64Length: base64Svg.length,
-        decodedLength: svgText.length,
-        preview: svgText.substring(0, 100),
-      });
-
-      // Basic SVG validation - check if it starts with SVG tag or XML declaration
-      const trimmed = svgText.trim();
-      if (!trimmed.startsWith('<svg') && !trimmed.startsWith('<?xml')) {
-        this.logger.warn('SVG validation failed: does not start with <svg or <?xml', {
-          actualStart: trimmed.substring(0, 20),
-        });
-        return false;
-      }
-
-      // Check if it contains svg tag
-      if (!trimmed.includes('<svg')) {
-        this.logger.warn('SVG validation failed: does not contain <svg tag');
-        return false;
-      }
-
-      // Very basic check for closing tag
-      if (!trimmed.includes('</svg>')) {
-        this.logger.warn('SVG validation failed: does not contain </svg> closing tag');
-        return false;
-      }
-
-      this.logger.debugComponent('TmEditComponent', 'SVG validation passed');
-      return true;
-    } catch (error) {
-      this.logger.warn('SVG validation failed with error', { error });
-      return false;
-    }
+    return this.formattingService.extractViewBoxFromSvg(diagram);
   }
 
   /**
@@ -2913,26 +2641,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         },
       );
     }
-  }
-
-  /**
-   * Truncate a URL for display in the threats list
-   * @param url The full URL
-   * @returns Truncated URL for display
-   */
-  getTruncatedUrl(url: string): string {
-    if (!url) return '';
-
-    // Remove protocol and www prefix for cleaner display
-    let displayUrl = url.replace(/^https?:\/\/(www\.)?/, '');
-
-    // Truncate if too long
-    const maxLength = 40;
-    if (displayUrl.length > maxLength) {
-      displayUrl = displayUrl.substring(0, maxLength - 3) + '...';
-    }
-
-    return displayUrl;
   }
 
   /**
@@ -3212,26 +2920,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * Get the appropriate Material icon for an asset type
-   * @param type The asset type
-   * @returns The Material icon name to use
-   */
+  /** Gets the appropriate Material icon for an asset type. */
   getAssetTypeIcon(type?: string): string {
-    if (!type) {
-      return 'diamond'; // Default icon
-    }
-
-    const iconMap: Record<string, string> = {
-      data: 'database',
-      software: 'deployed_code',
-      hardware: 'host',
-      infrastructure: 'factory',
-      service: 'cloud_circle',
-      personnel: 'person',
-    };
-
-    return iconMap[type] || 'diamond';
+    return this.formattingService.getAssetTypeIcon(type);
   }
 
   /**
@@ -3309,7 +3000,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModelService.getThreatsForThreatModel(threatModelId, params).subscribe({
         next: response => {
           if (this.threatModel) {
-            const threats = (response.threats ?? []).map(t => this.migrateThreatFieldValues(t));
+            const threats = (response.threats ?? []).map(t =>
+              this.formattingService.migrateThreatFieldValues(t),
+            );
             this.threatModel.threats = threats;
             this.threatsDataSource.data = threats;
             this.totalThreats = response.total ?? 0;
