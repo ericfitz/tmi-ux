@@ -315,39 +315,78 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       }
     }
 
-    // Handle endpoint updates (may fail if nodes not found)
-    if (updates.sourceNodeId) {
-      if (!this.getNode(graph, updates.sourceNodeId)) {
-        return this.createFailureResult(
-          operation,
-          `New source node not found: ${updates.sourceNodeId}`,
-        );
-      }
-      const source = edge.getSource();
-      edge.setSource({
-        cell: updates.sourceNodeId,
-        port: updates.sourcePort || source.port,
-      });
+    // Handle vertices (edge path) updates
+    if (updates.vertices !== undefined) {
+      edge.setVertices(updates.vertices);
     }
 
-    if (updates.targetNodeId) {
-      if (!this.getNode(graph, updates.targetNodeId)) {
-        return this.createFailureResult(
-          operation,
-          `New target node not found: ${updates.targetNodeId}`,
-        );
-      }
-      const target = edge.getTarget();
-      edge.setTarget({
-        cell: updates.targetNodeId,
-        port: updates.targetPort || target.port,
-      });
+    // Handle attrs updates (X6-native attributes).
+    // X6's setAttrs deep-merges onto the edge's existing attrs by default.
+    if (updates.attrs) {
+      edge.setAttrs(updates.attrs);
+    }
+
+    // Handle endpoint updates (may fail if a referenced node is not found)
+    const sourceError = this._applyEndpointUpdate(graph, edge, operation, 'source', updates);
+    if (sourceError) {
+      return sourceError;
+    }
+    const targetError = this._applyEndpointUpdate(graph, edge, operation, 'target', updates);
+    if (targetError) {
+      return targetError;
     }
 
     // Handle data properties
     if (updates.properties) {
       const currentData = edge.getData() || {};
       edge.setData({ ...currentData, ...updates.properties });
+    }
+
+    return null;
+  }
+
+  /**
+   * Apply a single endpoint (source or target) reassignment to an edge.
+   *
+   * Accepts two mutually-exclusive forms: the flat `<endpoint>NodeId` /
+   * `<endpoint>Port` facade form, which takes precedence, and the
+   * `EdgeInfo`-shaped terminal form (`{ cell, port }`). Returns a failure
+   * result if the referenced node is not found, or null otherwise (including
+   * when the endpoint is not being updated).
+   */
+  private _applyEndpointUpdate(
+    graph: Graph,
+    edge: any,
+    operation: UpdateEdgeOperation,
+    endpoint: 'source' | 'target',
+    updates: EdgeUpdates,
+  ): OperationResult | null {
+    const flatNodeId = endpoint === 'source' ? updates.sourceNodeId : updates.targetNodeId;
+    const flatPort = endpoint === 'source' ? updates.sourcePort : updates.targetPort;
+    const terminal = endpoint === 'source' ? updates.source : updates.target;
+
+    let cell: string;
+    let port: string | undefined;
+    if (flatNodeId) {
+      cell = flatNodeId;
+      port = flatPort;
+    } else if (terminal) {
+      cell = terminal.cell;
+      port = terminal.port;
+    } else {
+      return null;
+    }
+
+    if (!this.getNode(graph, cell)) {
+      return this.createFailureResult(operation, `New ${endpoint} node not found: ${cell}`);
+    }
+
+    const current = endpoint === 'source' ? edge.getSource() : edge.getTarget();
+    const newTerminal = { cell, port: port ?? current.port };
+    if (endpoint === 'source') {
+      edge.setSource(newTerminal);
+    } else {
+      edge.setTarget(newTerminal);
     }
 
     return null;
@@ -363,8 +402,10 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     if (updates.style?.stroke) changed.push('stroke');
     if (updates.style?.strokeWidth !== undefined) changed.push('strokeWidth');
     if (updates.style?.strokeDasharray !== undefined) changed.push('strokeDasharray');
-    if (updates.sourceNodeId) changed.push('source');
-    if (updates.targetNodeId) changed.push('target');
+    if (updates.vertices !== undefined) changed.push('vertices');
+    if (updates.attrs) changed.push('attrs');
+    if (updates.sourceNodeId || updates.source) changed.push('source');
+    if (updates.targetNodeId || updates.target) changed.push('target');
     if (updates.properties) changed.push('properties');
 
     return changed;

@@ -24,12 +24,44 @@ function createMockNode(id: string): Record<string, unknown> {
   return { id, isNode: () => true, isEdge: () => false };
 }
 
+/**
+ * Recursive merge mirroring X6's `setAttrs` default (deep) merge behavior, so
+ * the mock edge's attrs handling matches what the executor relies on.
+ */
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    const existing = result[key];
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      existing &&
+      typeof existing === 'object' &&
+      !Array.isArray(existing)
+    ) {
+      result[key] = deepMerge(
+        existing as Record<string, unknown>,
+        value as Record<string, unknown>,
+      );
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 /** A mock X6 edge exposing the getters/setters the executor touches. */
 function createMockEdge(id: string): Record<string, unknown> {
   let source: unknown = { cell: 'n1' };
   let target: unknown = { cell: 'n2' };
   let data: Record<string, unknown> = {};
   let labels: unknown[] = [];
+  let attrs: Record<string, unknown> = {};
+  let vertices: unknown[] = [];
   return {
     id,
     shape: 'flow',
@@ -47,13 +79,20 @@ function createMockEdge(id: string): Record<string, unknown> {
     setData: vi.fn((d: Record<string, unknown>) => {
       data = d;
     }),
-    getAttrs: vi.fn(() => ({})),
+    getAttrs: vi.fn(() => attrs),
+    // Mirrors X6's default deep-merge `setAttrs` semantics.
+    setAttrs: vi.fn((a: Record<string, unknown>) => {
+      attrs = deepMerge(attrs, a);
+    }),
     setAttrByPath: vi.fn(),
     getLabels: vi.fn(() => labels),
     setLabels: vi.fn((l: unknown[]) => {
       labels = l;
     }),
-    getVertices: vi.fn(() => []),
+    getVertices: vi.fn(() => vertices),
+    setVertices: vi.fn((v: unknown[]) => {
+      vertices = v;
+    }),
     getZIndex: vi.fn(() => 1),
   };
 }
@@ -402,6 +441,119 @@ describe('EdgeOperationExecutor', () => {
                 expect.objectContaining({ edgeType: 'control-flow' }),
               );
               expect(result.metadata?.['changedProperties']).toContain('properties');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      }));
+
+    it('applies vertices updates to the edge path', () =>
+      new Promise<void>((resolve, reject) => {
+        const newVertices = [
+          { x: 10, y: 20 },
+          { x: 30, y: 40 },
+        ];
+        const op = makeUpdateOp({ vertices: newVertices });
+
+        executor.execute(op, context).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              const edge = cells.get('e1') as Record<string, ReturnType<typeof vi.fn>>;
+              expect(edge['setVertices']).toHaveBeenCalledWith(newVertices);
+              expect(result.metadata?.['changedProperties']).toContain('vertices');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      }));
+
+    it('merges attrs updates onto the existing edge attrs, preserving nested keys', () =>
+      new Promise<void>((resolve, reject) => {
+        // Seed a pre-existing nested attr that the update does not touch.
+        const edge = cells.get('e1') as Record<string, ReturnType<typeof vi.fn>>;
+        edge['setAttrs']({ line: { strokeWidth: 2 } });
+
+        const op = makeUpdateOp({ attrs: { line: { stroke: '#00ff00' } } });
+
+        executor.execute(op, context).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              // X6's setAttrs deep-merges, so the new stroke is applied while
+              // the pre-existing strokeWidth survives.
+              expect(edge['getAttrs']()).toEqual({
+                line: { strokeWidth: 2, stroke: '#00ff00' },
+              });
+              expect(result.metadata?.['changedProperties']).toContain('attrs');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      }));
+
+    it('reassigns the source endpoint via the EdgeInfo-shaped source terminal', () =>
+      new Promise<void>((resolve, reject) => {
+        cells.set('n3', createMockNode('n3'));
+        const op = makeUpdateOp({ source: { cell: 'n3', port: 'right' } });
+
+        executor.execute(op, context).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              const edge = cells.get('e1') as Record<string, ReturnType<typeof vi.fn>>;
+              expect(edge['setSource']).toHaveBeenCalledWith({ cell: 'n3', port: 'right' });
+              expect(result.metadata?.['changedProperties']).toContain('source');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      }));
+
+    it('fails when the source terminal points at a missing node', () =>
+      new Promise<void>((resolve, reject) => {
+        const op = makeUpdateOp({ source: { cell: 'missing' } });
+
+        executor.execute(op, context).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(false);
+              expect(result.error).toContain('New source node not found');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      }));
+
+    it('reassigns the target endpoint via the EdgeInfo-shaped target terminal', () =>
+      new Promise<void>((resolve, reject) => {
+        cells.set('n4', createMockNode('n4'));
+        const op = makeUpdateOp({ target: { cell: 'n4' } });
+
+        executor.execute(op, context).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              const edge = cells.get('e1') as Record<string, ReturnType<typeof vi.fn>>;
+              expect(edge['setTarget']).toHaveBeenCalledWith(
+                expect.objectContaining({ cell: 'n4' }),
+              );
+              expect(result.metadata?.['changedProperties']).toContain('target');
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));

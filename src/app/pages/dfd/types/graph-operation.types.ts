@@ -112,17 +112,17 @@ export interface CreateEdgeOperation extends GraphOperation {
  * This is intentionally NOT `Partial<EdgeInfo>`. The real contract is a flat,
  * facade-shaped payload spanning three consumers:
  *
- *  - `EdgeOperationExecutor._applyEdgeUpdates` applies `label`, `labels`,
- *    `style`, `sourceNodeId`/`sourcePort`, `targetNodeId`/`targetPort`, and
- *    `properties` to the live X6 edge.
+ *  - `EdgeOperationExecutor._applyEdgeUpdates` applies every field below to
+ *    the live X6 edge.
  *  - `EdgeOperationValidator.validateUpdateEdge` validates `source`, `target`,
  *    `labels`, and `attrs`.
  *  - `AppDfdOrchestratorService` inspects `labels`, `vertices`, `source`, and
  *    `target` to derive a history description / operation type.
  *
- * Note the executor does NOT currently act on `vertices`/`source`/`target`/
- * `attrs` — those updates are silently dropped at apply time. Tracked
- * separately in #707.
+ * Endpoint reassignment accepts two mutually-exclusive forms: the flat
+ * `sourceNodeId`/`sourcePort` (+ `targetNodeId`/`targetPort`) facade form, and
+ * the `EdgeInfo`-shaped `source`/`target` terminal form. When both are present
+ * the flat form wins.
  */
 export interface EdgeUpdates {
   /** Singular label string (facade label changes). Replaces all edge labels. */
@@ -135,23 +135,23 @@ export interface EdgeUpdates {
     readonly strokeWidth?: number;
     readonly strokeDasharray?: string;
   };
-  /** New source node id (endpoint reassignment). */
+  /** New source node id (flat endpoint reassignment). */
   readonly sourceNodeId?: string;
   /** New source port id; falls back to the edge's current source port. */
   readonly sourcePort?: string;
-  /** New target node id (endpoint reassignment). */
+  /** New target node id (flat endpoint reassignment). */
   readonly targetNodeId?: string;
   /** New target port id; falls back to the edge's current target port. */
   readonly targetPort?: string;
   /** Edge `data` properties to shallow-merge onto the existing data. */
   readonly properties?: Record<string, unknown>;
-  /** New edge path vertices. Read by the orchestrator; not applied by the executor — see #707. */
+  /** New edge path vertices, applied via `setVertices`. */
   readonly vertices?: Array<Point | { x: number; y: number }>;
-  /** Source terminal (`EdgeInfo`-shaped reassignment). Read by validator/orchestrator; see #707. */
+  /** Source terminal (`EdgeInfo`-shaped endpoint reassignment). */
   readonly source?: EdgeTerminal;
-  /** Target terminal (`EdgeInfo`-shaped reassignment). Read by validator/orchestrator; see #707. */
+  /** Target terminal (`EdgeInfo`-shaped endpoint reassignment). */
   readonly target?: EdgeTerminal;
-  /** Edge attributes (X6 native). Read by the validator; not applied by the executor — see #707. */
+  /** Edge attributes (X6 native), shallow-merged onto the existing attrs. */
   readonly attrs?: EdgeAttrs;
 }
 
