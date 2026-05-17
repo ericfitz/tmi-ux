@@ -58,6 +58,7 @@ export interface RepositoryFormResult {
     subPath?: string;
   };
   include_in_report?: boolean;
+  timmy_enabled?: boolean;
 }
 
 /**
