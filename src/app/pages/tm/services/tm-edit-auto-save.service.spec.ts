@@ -67,7 +67,7 @@ describe('TmEditAutoSaveService', () => {
         status: 'active',
       });
     });
-    it('strips an authorization field if one is somehow present', () => {
+    it('does not propagate a non-form authorization key from formValue into updates', () => {
       const current = { ...baseline, name: 'New' } as ThreatModelFormValues &
         Record<string, unknown>;
       current['authorization'] = [{}];
@@ -75,7 +75,7 @@ describe('TmEditAutoSaveService', () => {
       expect('authorization' in updates).toBe(false);
       expect(updates['name']).toBe('New');
     });
-    it('strips an owner field if one is somehow present', () => {
+    it('does not propagate a non-form owner key from formValue into updates', () => {
       const current = { ...baseline, name: 'New' } as ThreatModelFormValues &
         Record<string, unknown>;
       current['owner'] = 'someone';
