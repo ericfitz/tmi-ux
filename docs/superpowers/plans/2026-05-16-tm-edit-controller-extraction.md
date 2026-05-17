@@ -1086,3 +1086,735 @@ Then **STOP**. Present the comparison and ask the user to choose the seam and wh
 **Placeholder scan:** No TBD/TODO; all code steps show full code. Task 7 is explicitly a spike with no placeholder implementation. ✓
 
 **Type consistency:** `ThreatModelFormValues` is defined once in `tm-edit-auto-save.service.ts` (Task 5); Task 6 Step 1 deletes the component's identical local interface and imports the service's type, so there is a single definition. `TmEditFormattingService` method names (`getMimeTypeForFormat`, `isValidBase64Svg`, `migrateThreatFieldValues`, etc.) are consistent between Tasks 1–3 definitions and Task 4 call sites. ✓
+
+---
+
+## Phase 4 (3a) — Documents CRUD extraction
+
+> Added 2026-05-17 after the Task 7 spike. The user chose: **documents only, then re-decide** (not all six entity groups), and **fix the missing error handlers during extraction**. The seam is the spike's recommendation — an injectable `TmDialogService` wrapper plus a per-entity `TmDocumentCrudService`.
+
+**Decisions locked in from the spike:**
+- Per-entity services (`TmDocumentCrudService`), not a monolithic `TmEntityCrudService`.
+- A shared `TmDialogService` wraps `MatDialog.open(...).afterClosed()` per dialog type.
+- **View state stays in the component.** `documentsDataSource` (`MatTableDataSource`), `documentsPageIndex/Size`, `totalDocuments` are view infrastructure — the CRUD service must not touch them. The service returns data/Observables; the component subscribes and assigns view state.
+- **Error-handler fix is in scope.** `editDocument`, `deleteDocument`, `openDocumentMetadataDialog` currently subscribe with no `error` callback to service methods that `throw`. The extracted component subscriptions must add an `error` callback that calls `logger.error` — matching the pattern `addDocument` already uses. This is an intentional, user-approved behavior change.
+- Three mutation styles (`editDocument` in-place replace, `deleteDocument` immutable filter, `openDocumentMetadataDialog` nested-field write) are preserved as-is — not unified.
+
+### File Structure (Phase 4)
+
+| File | Responsibility |
+|------|----------------|
+| `src/app/pages/tm/services/tm-dialog.service.ts` | NEW — thin wrapper over `MatDialog.open(...).afterClosed()` for the document editor, delete-confirmation, and metadata dialogs |
+| `src/app/pages/tm/services/tm-dialog.service.spec.ts` | NEW — unit specs (mock `MatDialog`) |
+| `src/app/pages/tm/services/tm-document-crud.service.ts` | NEW — document CRUD orchestration: dialog → API → return result |
+| `src/app/pages/tm/services/tm-document-crud.service.spec.ts` | NEW — unit specs (mock `TmDialogService` + `ThreatModelService`) |
+| `src/app/pages/tm/tm-edit.component.ts` | MODIFY — inject both services, delegate the 8 document methods to thin glue |
+
+---
+
+### Task 8: Create `TmDialogService` (dialog wrapper)
+
+**Files:**
+- Create: `src/app/pages/tm/services/tm-dialog.service.ts`
+- Test: `src/app/pages/tm/services/tm-dialog.service.spec.ts`
+
+- [ ] **Step 1: Write the failing test**
+
+Create `src/app/pages/tm/services/tm-dialog.service.spec.ts`:
+
+```typescript
+import '@angular/compiler';
+
+import { of } from 'rxjs';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+
+import { TmDialogService } from './tm-dialog.service';
+
+describe('TmDialogService', () => {
+  let service: TmDialogService;
+  let afterClosed: ReturnType<typeof vi.fn>;
+  let open: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    afterClosed = vi.fn().mockReturnValue(of('RESULT'));
+    open = vi.fn().mockReturnValue({ afterClosed });
+    service = new TmDialogService({ open } as never);
+  });
+
+  it('openDocumentEditor opens DocumentEditorDialogComponent with width 600px and disableClose', () => {
+    const data = { mode: 'create' } as never;
+    service.openDocumentEditor(data).subscribe();
+    expect(open).toHaveBeenCalledTimes(1);
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('600px');
+    expect(config.disableClose).toBe(true);
+    expect(config.data).toBe(data);
+    expect(afterClosed).toHaveBeenCalled();
+  });
+
+  it('openDeleteConfirmation opens DeleteConfirmationDialogComponent with width 700px and disableClose', () => {
+    const data = { id: 'd1', name: 'Doc', objectType: 'document' } as never;
+    service.openDeleteConfirmation(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('700px');
+    expect(config.disableClose).toBe(true);
+    expect(config.data).toBe(data);
+  });
+
+  it('openMetadata opens MetadataDialogComponent with the documented sizing', () => {
+    const data = { metadata: [], isReadOnly: false, objectType: 'Document', objectName: 'x' } as never;
+    service.openMetadata(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('90vw');
+    expect(config.maxWidth).toBe('800px');
+    expect(config.minWidth).toBe('500px');
+    expect(config.maxHeight).toBe('80vh');
+    expect(config.data).toBe(data);
+  });
+
+  it('forwards the afterClosed() observable result', () => {
+    let received: unknown;
+    service.openDocumentEditor({} as never).subscribe(r => (received = r));
+    expect(received).toBe('RESULT');
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `pnpm test -- src/app/pages/tm/services/tm-dialog.service.spec.ts`
+Expected: FAIL — cannot find module.
+
+- [ ] **Step 3: Write minimal implementation**
+
+Create `src/app/pages/tm/services/tm-dialog.service.ts`. Import the three dialog components and their data/result types from the same paths `tm-edit.component.ts` uses (verify the exact import paths by reading the component's import block — `DocumentEditorDialogComponent` and `DeleteConfirmationDialogComponent` and `MetadataDialogComponent` with their `*DialogData` / `*DialogResult` types):
+
+```typescript
+import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+
+import {
+  DocumentEditorDialogComponent,
+  DocumentEditorDialogData,
+  DocumentEditorDialogResult,
+} from '../components/document-editor-dialog/document-editor-dialog.component';
+import {
+  DeleteConfirmationDialogComponent,
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import {
+  MetadataDialogComponent,
+  MetadataDialogData,
+} from '../components/metadata-dialog/metadata-dialog.component';
+import { Metadata } from '../models/threat-model.model';
+
+/**
+ * Thin wrapper over MatDialog for the tm-edit entity dialogs. Each method
+ * opens one dialog type and returns the typed afterClosed() observable, so
+ * CRUD services can depend on this seam instead of MatDialog directly and
+ * stay unit-testable without rendering real dialogs.
+ */
+@Injectable({ providedIn: 'root' })
+export class TmDialogService {
+  constructor(private dialog: MatDialog) {}
+
+  /** Open the document editor dialog (create or edit mode). */
+  openDocumentEditor(
+    data: DocumentEditorDialogData,
+  ): Observable<DocumentEditorDialogResult | undefined> {
+    return this.dialog
+      .open(DocumentEditorDialogComponent, { width: '600px', data, disableClose: true })
+      .afterClosed();
+  }
+
+  /** Open the delete-confirmation dialog. */
+  openDeleteConfirmation(
+    data: DeleteConfirmationDialogData,
+  ): Observable<DeleteConfirmationDialogResult | undefined> {
+    return this.dialog
+      .open(DeleteConfirmationDialogComponent, { width: '700px', data, disableClose: true })
+      .afterClosed();
+  }
+
+  /** Open the shared metadata dialog. */
+  openMetadata(data: MetadataDialogData): Observable<Metadata[] | undefined> {
+    return this.dialog
+      .open(MetadataDialogComponent, {
+        width: '90vw',
+        maxWidth: '800px',
+        minWidth: '500px',
+        maxHeight: '80vh',
+        data,
+      })
+      .afterClosed();
+  }
+}
+```
+
+NOTE: `disableClose: true` is intentionally set on the document editor (the original component comment explains: the Google Picker iframe steals focus and stray backdrop clicks would destroy form state). Preserve it. The metadata dialog has NO `disableClose` in the original — do not add one.
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pnpm test -- src/app/pages/tm/services/tm-dialog.service.spec.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/app/pages/tm/services/tm-dialog.service.ts src/app/pages/tm/services/tm-dialog.service.spec.ts
+git commit -m "refactor: add TmDialogService wrapper for tm-edit entity dialogs (#695)"
+```
+
+---
+
+### Task 9: Create `TmDocumentCrudService`
+
+**Files:**
+- Create: `src/app/pages/tm/services/tm-document-crud.service.ts`
+- Test: `src/app/pages/tm/services/tm-document-crud.service.spec.ts`
+
+The service owns the dialog → API orchestration for documents. It does NOT touch `MatTableDataSource` or pagination state — it returns data, the component assigns view state. Each method returns an `Observable`; the component subscribes (with an `error` callback) and applies the mutation.
+
+Verified original behavior from `tm-edit.component.ts`:
+- `getDocumentTooltip(document)`: returns `document.uri`, plus `\n\n${description}` if a description exists. Pure.
+- `loadDocuments(threatModelId)`: `calculateOffset(pageIndex, pageSize)` → `threatModelService.getDocumentsForThreatModel(threatModelId, pageSize, offset)` → response has `{ documents?, total? }`.
+- `addDocument`: builds `Partial<Document>` from `result.values` (`name`, `uri`, `description || undefined`, `include_in_report`, conditional `picker_registration`); the `result.createdDocument` "service-mode" branch means the dialog already created it.
+- `editDocument`: builds `Partial<Document>` (`name`, `uri`, `description || undefined`, `include_in_report`) → `updateDocument(tmId, docId, data)` → returns the updated `Document`.
+- `deleteDocument`: `deleteDocument(tmId, docId)` → returns a `success` boolean.
+- `openDocumentMetadataDialog`: `updateDocumentMetadata(tmId, docId, metadata)` → returns the updated `Metadata[]`.
+
+- [ ] **Step 1: Write the failing test**
+
+Create `src/app/pages/tm/services/tm-document-crud.service.spec.ts`:
+
+```typescript
+import '@angular/compiler';
+
+import { of } from 'rxjs';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+
+import { TmDocumentCrudService } from './tm-document-crud.service';
+import type { Document } from '../models/threat-model.model';
+
+describe('TmDocumentCrudService', () => {
+  let service: TmDocumentCrudService;
+  let threatModelService: {
+    createDocument: ReturnType<typeof vi.fn>;
+    updateDocument: ReturnType<typeof vi.fn>;
+    deleteDocument: ReturnType<typeof vi.fn>;
+    updateDocumentMetadata: ReturnType<typeof vi.fn>;
+    getDocumentsForThreatModel: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(() => {
+    threatModelService = {
+      createDocument: vi.fn().mockReturnValue(of({ id: 'd9' })),
+      updateDocument: vi.fn().mockReturnValue(of({ id: 'd1', name: 'New' })),
+      deleteDocument: vi.fn().mockReturnValue(of(true)),
+      updateDocumentMetadata: vi.fn().mockReturnValue(of([{ key: 'k', value: 'v' }])),
+      getDocumentsForThreatModel: vi
+        .fn()
+        .mockReturnValue(of({ documents: [{ id: 'd1' }], total: 1 })),
+    };
+    service = new TmDocumentCrudService(threatModelService as never);
+  });
+
+  describe('getDocumentTooltip', () => {
+    it('returns just the uri when there is no description', () => {
+      expect(service.getDocumentTooltip({ uri: 'http://x' } as Document)).toBe('http://x');
+    });
+    it('appends the description after a blank line', () => {
+      expect(
+        service.getDocumentTooltip({ uri: 'http://x', description: 'desc' } as Document),
+      ).toBe('http://x\n\ndesc');
+    });
+  });
+
+  describe('buildDocumentData', () => {
+    it('maps editor values and coerces empty description to undefined', () => {
+      const data = service.buildDocumentData({
+        name: 'N',
+        uri: 'U',
+        description: '',
+        include_in_report: true,
+      } as never);
+      expect(data).toEqual({
+        name: 'N',
+        uri: 'U',
+        description: undefined,
+        include_in_report: true,
+      });
+    });
+    it('includes picker_registration when present', () => {
+      const data = service.buildDocumentData({
+        name: 'N',
+        uri: 'U',
+        description: 'd',
+        include_in_report: false,
+        picker_registration: { provider: 'google' },
+      } as never);
+      expect(data).toMatchObject({ picker_registration: { provider: 'google' } });
+    });
+  });
+
+  describe('loadDocuments', () => {
+    it('calls getDocumentsForThreatModel with the computed offset', () => {
+      service.loadDocuments('tm1', 2, 10).subscribe();
+      expect(threatModelService.getDocumentsForThreatModel).toHaveBeenCalledWith('tm1', 10, 20);
+    });
+    it('emits documents and total from the response', () => {
+      let result: { documents: Document[]; total: number } | undefined;
+      service.loadDocuments('tm1', 0, 20).subscribe(r => (result = r));
+      expect(result).toEqual({ documents: [{ id: 'd1' }], total: 1 });
+    });
+    it('defaults documents to [] and total to 0 when the response omits them', () => {
+      threatModelService.getDocumentsForThreatModel.mockReturnValue(of({}));
+      let result: { documents: Document[]; total: number } | undefined;
+      service.loadDocuments('tm1', 0, 20).subscribe(r => (result = r));
+      expect(result).toEqual({ documents: [], total: 0 });
+    });
+  });
+
+  describe('createDocument', () => {
+    it('calls createDocument with the built data', () => {
+      service
+        .createDocument('tm1', { name: 'N', uri: 'U', description: '', include_in_report: true } as never)
+        .subscribe();
+      expect(threatModelService.createDocument).toHaveBeenCalledWith('tm1', {
+        name: 'N',
+        uri: 'U',
+        description: undefined,
+        include_in_report: true,
+      });
+    });
+  });
+
+  describe('updateDocument', () => {
+    it('calls updateDocument with id and built data, emits the updated document', () => {
+      let updated: Document | undefined;
+      service
+        .updateDocument('tm1', 'd1', { name: 'New', uri: 'U', description: 'd', include_in_report: true } as never)
+        .subscribe(d => (updated = d));
+      expect(threatModelService.updateDocument).toHaveBeenCalledWith('tm1', 'd1', {
+        name: 'New',
+        uri: 'U',
+        description: 'd',
+        include_in_report: true,
+      });
+      expect(updated).toEqual({ id: 'd1', name: 'New' });
+    });
+  });
+
+  describe('deleteDocument', () => {
+    it('calls deleteDocument and emits the success boolean', () => {
+      let ok: boolean | undefined;
+      service.deleteDocument('tm1', 'd1').subscribe(v => (ok = v));
+      expect(threatModelService.deleteDocument).toHaveBeenCalledWith('tm1', 'd1');
+      expect(ok).toBe(true);
+    });
+  });
+
+  describe('updateDocumentMetadata', () => {
+    it('calls updateDocumentMetadata and emits the updated metadata', () => {
+      let meta: unknown;
+      service.updateDocumentMetadata('tm1', 'd1', []).subscribe(m => (meta = m));
+      expect(threatModelService.updateDocumentMetadata).toHaveBeenCalledWith('tm1', 'd1', []);
+      expect(meta).toEqual([{ key: 'k', value: 'v' }]);
+    });
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `pnpm test -- src/app/pages/tm/services/tm-document-crud.service.spec.ts`
+Expected: FAIL — cannot find module.
+
+- [ ] **Step 3: Write minimal implementation**
+
+Create `src/app/pages/tm/services/tm-document-crud.service.ts`. Read `tm-edit.component.ts`'s import block and `threat-model.service.ts` to confirm the exact type names — `DocumentEditorDialogResult['values']` is the editor form-value shape; `Document`, `Metadata` are in `threat-model.model`. Use `calculateOffset` from `@app/shared/utils/pagination.util` (the path the component uses).
+
+```typescript
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { calculateOffset } from '@app/shared/utils/pagination.util';
+import { ThreatModelService } from './threat-model.service';
+import { Document, Metadata } from '../models/threat-model.model';
+import { DocumentEditorDialogResult } from '../components/document-editor-dialog/document-editor-dialog.component';
+
+/** Documents loaded for one page of the documents sub-table. */
+export interface DocumentsPage {
+  documents: Document[];
+  total: number;
+}
+
+/**
+ * Document CRUD orchestration extracted from TmEditComponent. Owns the
+ * editor-form-value mapping and the ThreatModelService calls. Does NOT touch
+ * MatTableDataSource or pagination view state — methods return data/Observables
+ * and the component applies them.
+ */
+@Injectable({ providedIn: 'root' })
+export class TmDocumentCrudService {
+  constructor(private threatModelService: ThreatModelService) {}
+
+  /** Tooltip text for a document list item: uri plus optional description. */
+  getDocumentTooltip(document: Document): string {
+    let tooltip = document.uri;
+    if (document.description) {
+      tooltip += `\n\n${document.description}`;
+    }
+    return tooltip;
+  }
+
+  /** Map document editor form values to a Partial<Document> for the API. */
+  buildDocumentData(values: DocumentEditorDialogResult['values']): Partial<Document> {
+    return {
+      name: values.name,
+      uri: values.uri,
+      description: values.description || undefined,
+      include_in_report: values.include_in_report,
+      ...(values.picker_registration
+        ? { picker_registration: values.picker_registration }
+        : {}),
+    };
+  }
+
+  /** Load one page of documents for a threat model. */
+  loadDocuments(
+    threatModelId: string,
+    pageIndex: number,
+    pageSize: number,
+  ): Observable<DocumentsPage> {
+    const offset = calculateOffset(pageIndex, pageSize);
+    return this.threatModelService
+      .getDocumentsForThreatModel(threatModelId, pageSize, offset)
+      .pipe(
+        map(response => ({
+          documents: response.documents ?? [],
+          total: response.total ?? 0,
+        })),
+      );
+  }
+
+  /** Create a document from editor form values. */
+  createDocument(
+    threatModelId: string,
+    values: DocumentEditorDialogResult['values'],
+  ): Observable<Document> {
+    return this.threatModelService.createDocument(threatModelId, this.buildDocumentData(values));
+  }
+
+  /** Update a document from editor form values; emits the updated document. */
+  updateDocument(
+    threatModelId: string,
+    documentId: string,
+    values: DocumentEditorDialogResult['values'],
+  ): Observable<Document> {
+    return this.threatModelService.updateDocument(
+      threatModelId,
+      documentId,
+      this.buildDocumentData(values),
+    );
+  }
+
+  /** Delete a document; emits the success boolean. */
+  deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
+    return this.threatModelService.deleteDocument(threatModelId, documentId);
+  }
+
+  /** Update a document's metadata; emits the updated metadata array. */
+  updateDocumentMetadata(
+    threatModelId: string,
+    documentId: string,
+    metadata: Metadata[],
+  ): Observable<Metadata[]> {
+    return this.threatModelService.updateDocumentMetadata(threatModelId, documentId, metadata);
+  }
+}
+```
+
+NOTE: `createDocument` returns `Observable<Document>` — confirm the real `ThreatModelService.createDocument` return type. If it returns something else (e.g. `Observable<void>` or the created doc), match the real signature; the test's mock returns `of({ id: 'd9' })`, adjust the mock and the declared return type to whatever the real method actually emits. The component's `addDocument` ignores `createDocument`'s emitted value (it just calls `loadDocuments` on `next`), so the exact emitted type is not load-bearing for the component — but the declared type must match the real service.
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pnpm test -- src/app/pages/tm/services/tm-document-crud.service.spec.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/app/pages/tm/services/tm-document-crud.service.ts src/app/pages/tm/services/tm-document-crud.service.spec.ts
+git commit -m "refactor: add TmDocumentCrudService for document CRUD orchestration (#695)"
+```
+
+---
+
+### Task 10: Wire TmEditComponent to the document services
+
+**Files:**
+- Modify: `src/app/pages/tm/tm-edit.component.ts`
+
+Rewrite the 8 document methods as thin glue: open dialog via `TmDialogService`, on result call `TmDocumentCrudService`, on success apply the view-state mutation, on error call `logger.error`. The dialog-`open`/`afterClosed` plumbing moves into `TmDialogService`; the result-mapping/API calls move into `TmDocumentCrudService`; only the view-state writes and permission guards stay.
+
+- [ ] **Step 1: Inject the two services**
+
+Add imports near the other `./services/...` imports:
+```typescript
+import { TmDialogService } from './services/tm-dialog.service';
+import { TmDocumentCrudService } from './services/tm-document-crud.service';
+```
+Add to the constructor parameter list (after `private autoSaveService: TmEditAutoSaveService,`):
+```typescript
+    private dialogService: TmDialogService,
+    private documentCrud: TmDocumentCrudService,
+```
+
+- [ ] **Step 2: Rewrite `loadDocuments`, `onDocumentsPageChange`, `getDocumentTooltip`**
+
+```typescript
+  private loadDocuments(threatModelId: string): void {
+    this._subscriptions.add(
+      this.documentCrud
+        .loadDocuments(threatModelId, this.documentsPageIndex, this.documentsPageSize)
+        .subscribe({
+          next: page => {
+            if (this.threatModel) {
+              this.threatModel.documents = page.documents;
+              this.documentsDataSource.data = page.documents;
+              this.totalDocuments = page.total;
+            }
+          },
+          error: error => this.logger.error('Failed to load documents', error),
+        }),
+    );
+  }
+```
+`onDocumentsPageChange` is unchanged (it sets the page fields and calls `loadDocuments`). `getDocumentTooltip` delegates:
+```typescript
+  getDocumentTooltip(document: Document): string {
+    return this.documentCrud.getDocumentTooltip(document);
+  }
+```
+
+- [ ] **Step 3: Rewrite `addDocument` and `onDocumentUrlDropped`**
+
+```typescript
+  addDocument(uri?: string): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot add document - insufficient permissions');
+      return;
+    }
+    const dialogData: DocumentEditorDialogData = {
+      mode: 'create',
+      isReadOnly: !this.canEdit,
+      threatModelId: this.threatModel?.id,
+      ...(uri ? { document: { uri } as Document } : {}),
+    };
+
+    this._subscriptions.add(
+      this.dialogService.openDocumentEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+
+        // Service-mode: the dialog already created the document in-place.
+        if (result.createdDocument) {
+          this.loadDocuments(this.threatModel.id);
+          return;
+        }
+
+        this._subscriptions.add(
+          this.documentCrud.createDocument(this.threatModel.id, result.values).subscribe({
+            next: () => {
+              if (this.threatModel) {
+                this.loadDocuments(this.threatModel.id);
+              }
+            },
+            error: error => this.logger.error('Failed to create document', error),
+          }),
+        );
+      }),
+    );
+  }
+```
+`onDocumentUrlDropped` is unchanged (guards on `canEdit`/`dialog.openDialogs.length`, calls `addDocument(url)`). The `this.dialog.openDialogs` reference in `onDocumentUrlDropped` still uses the component's `MatDialog` — that is fine; `TmDialogService` does not need to expose `openDialogs`.
+
+- [ ] **Step 4: Rewrite `editDocument` (adds the error handler — behavior fix)**
+
+```typescript
+  editDocument(document: Document, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    if (!this.threatModel) {
+      return;
+    }
+
+    const dialogData: DocumentEditorDialogData = {
+      document,
+      mode: 'edit',
+      isReadOnly: !this.canEdit,
+      threatModelId: this.threatModel.id,
+    };
+
+    this._subscriptions.add(
+      this.dialogService.openDocumentEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+
+        this._subscriptions.add(
+          this.documentCrud
+            .updateDocument(this.threatModel.id, document.id, result.values)
+            .subscribe({
+              next: updatedDocument => {
+                if (this.threatModel && this.threatModel.documents) {
+                  const index = this.threatModel.documents.findIndex(d => d.id === document.id);
+                  if (index !== -1) {
+                    this.threatModel.documents[index] = updatedDocument;
+                  }
+                  this.documentsDataSource.data = this.threatModel.documents;
+                }
+              },
+              error: error => this.logger.error('Failed to update document', error),
+            }),
+        );
+      }),
+    );
+  }
+```
+
+- [ ] **Step 5: Rewrite `deleteDocument` (adds the error handler — behavior fix)**
+
+```typescript
+  deleteDocument(document: Document, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    if (!this.canEdit) {
+      this.logger.warn('Cannot delete document - insufficient permissions');
+      return;
+    }
+
+    if (!this.threatModel || !this.threatModel.documents) {
+      return;
+    }
+
+    const dialogData: DeleteConfirmationDialogData = {
+      id: document.id,
+      name: document.name,
+      objectType: 'document',
+    };
+
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel) return;
+
+        this._subscriptions.add(
+          this.documentCrud.deleteDocument(this.threatModel.id, document.id).subscribe({
+            next: success => {
+              if (success && this.threatModel && this.threatModel.documents) {
+                this.threatModel.documents = this.threatModel.documents.filter(
+                  d => d.id !== document.id,
+                );
+                this.documentsDataSource.data = this.threatModel.documents;
+              }
+            },
+            error: error => this.logger.error('Failed to delete document', error),
+          }),
+        );
+      }),
+    );
+  }
+```
+
+- [ ] **Step 6: Rewrite `openDocumentMetadataDialog` (adds the error handler — behavior fix)**
+
+```typescript
+  openDocumentMetadataDialog(document: Document, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const dialogData: MetadataDialogData = {
+      metadata: document.metadata || [],
+      isReadOnly: !this.canEdit,
+      objectType: 'Document',
+      objectName: `${this.transloco.translate('common.objectTypes.document')}: ${document.name} (${document.id})`,
+    };
+
+    this._subscriptions.add(
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+
+        this._subscriptions.add(
+          this.documentCrud
+            .updateDocumentMetadata(this.threatModel.id, document.id, result)
+            .subscribe({
+              next: updatedMetadata => {
+                if (updatedMetadata && this.threatModel && this.threatModel.documents) {
+                  const documentIndex = this.threatModel.documents.findIndex(
+                    d => d.id === document.id,
+                  );
+                  if (documentIndex !== -1) {
+                    this.threatModel.documents[documentIndex].metadata = updatedMetadata;
+                  }
+                  this.logger.info('Updated document metadata via API', {
+                    documentId: document.id,
+                    metadata: updatedMetadata,
+                  });
+                }
+              },
+              error: error => this.logger.error('Failed to update document metadata', error),
+            }),
+        );
+      }),
+    );
+  }
+```
+
+- [ ] **Step 7: Remove now-unused imports**
+
+After the rewrites, the component may no longer directly reference `DocumentEditorDialogComponent`, `DeleteConfirmationDialogComponent`, `DocumentEditorDialogResult` (the result type is now consumed by the services). It DOES still reference `DocumentEditorDialogData`, `DeleteConfirmationDialogData`, `MetadataDialogData` (the component still builds the dialog-data objects). `MetadataDialogComponent` may still be used by OTHER entity metadata dialogs that are not part of this task — do NOT remove an import another method still uses. Verify each with `rg -n '<Name>' src/app/pages/tm/tm-edit.component.ts` and remove only genuinely-unused ones.
+
+- [ ] **Step 8: Build, test, lint**
+
+Run: `pnpm run build` — must succeed.
+Run: `pnpm test` — full suite (`vitest run`) must pass.
+Run: `pnpm run lint:all` — zero errors.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add src/app/pages/tm/tm-edit.component.ts
+git commit -m "refactor: delegate tm-edit document CRUD to TmDocumentCrudService (#695)
+
+Also adds missing error handlers to the document edit/delete/metadata
+flows, whose underlying service calls throw on API failure."
+```
+
+---
+
+### Task 11: Phase 4 verification + decision gate
+
+- [ ] **Step 1: Measure the result**
+
+Report: `tm-edit.component.ts` line count before/after Phase 4; new unit-test count added by `TmDialogService` + `TmDocumentCrudService` specs; whether the three mutation styles or view-state ownership caused any friction during Task 10.
+
+- [ ] **Step 2: Confirm the error-handler fix landed**
+
+Confirm `editDocument`, `deleteDocument`, `openDocumentMetadataDialog` each now have an `error` callback in their innermost subscribe. This is the user-approved behavior change.
+
+- [ ] **Step 3: Re-scope decision (STOP)**
+
+Present to the user: the actual component reduction from documents-only, and a re-estimate for the remaining five entity groups (threats, diagrams, repositories, notes, assets) based on real data. Recommend whether to continue (and in what order — the spike suggests threats second, as the likely-messiest group) or stop. Do NOT start any further entity extraction without approval.
+
+## Phase 4 Self-Review
+
+**Spec coverage:** Documents-only extraction (user's choice) — Tasks 8–10. Error-handler fix (user's choice) — folded into Task 10 Steps 4–6 and verified in Task 11 Step 2. Decision gate — Task 11 Step 3. ✓
+
+**Placeholder scan:** All code steps show full code. Two NOTE blocks flag real verification points (exact dialog import paths, `createDocument` return type) — these are "verify against the real source" instructions, not placeholders. ✓
+
+**Type consistency:** `DocumentsPage` defined in `tm-document-crud.service.ts` (Task 9), not re-exported elsewhere. `TmDialogService` method names (`openDocumentEditor`, `openDeleteConfirmation`, `openMetadata`) consistent between Task 8 definition and Task 10 call sites. `TmDocumentCrudService` method names (`loadDocuments`, `createDocument`, `updateDocument`, `deleteDocument`, `updateDocumentMetadata`, `getDocumentTooltip`, `buildDocumentData`) consistent between Task 9 and Task 10. ✓
+
+**View-state boundary:** Verified — no Task-9 service method touches `documentsDataSource`, `documentsPageIndex/Size`, or `totalDocuments`; all such writes are in Task 10's component code. ✓
