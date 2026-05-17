@@ -50,6 +50,7 @@ describe('TmDialogService', () => {
     expect(config.minWidth).toBe('500px');
     expect(config.maxHeight).toBe('80vh');
     expect(config.data).toBe(data);
+    expect(config.disableClose).toBeUndefined();
   });
 
   it('forwards the afterClosed() observable result', () => {
