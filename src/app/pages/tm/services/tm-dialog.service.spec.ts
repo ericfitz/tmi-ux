@@ -58,4 +58,52 @@ describe('TmDialogService', () => {
     service.openDocumentEditor({} as never).subscribe(r => (received = r));
     expect(received).toBe('RESULT');
   });
+
+  it('openDiagramCreate opens CreateDiagramDialogComponent with width 400px', () => {
+    const data = { threatModelName: 'TM' } as never;
+    service.openDiagramCreate(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('400px');
+    expect(config.data).toBe(data);
+    expect(config.disableClose).toBeUndefined();
+  });
+
+  it('openThreatEditor opens ThreatEditorDialogComponent with width 650px and the documented panelClass', () => {
+    const data = { mode: 'create' } as never;
+    service.openThreatEditor(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('650px');
+    expect(config.maxHeight).toBe('90vh');
+    expect(config.panelClass).toBe('threat-editor-dialog-650');
+    expect(config.data).toBe(data);
+  });
+
+  it('openRepositoryEditor opens RepositoryEditorDialogComponent with width 700px', () => {
+    const data = { mode: 'create' } as never;
+    service.openRepositoryEditor(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('700px');
+    expect(config.data).toBe(data);
+  });
+
+  it('openNoteEditor opens NoteEditorDialogComponent with the documented sizing', () => {
+    const data = { mode: 'create', entityType: 'threat_model' } as never;
+    const dialogRef = service.openNoteEditor(data);
+    dialogRef.afterClosed().subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('90vw');
+    expect(config.maxWidth).toBe('900px');
+    expect(config.minWidth).toBe('600px');
+    expect(config.maxHeight).toBe('90vh');
+    expect(config.data).toBe(data);
+  });
+
+  it('openAssetEditor opens AssetEditorDialogComponent with width 600px and maxHeight 90vh', () => {
+    const data = { mode: 'create' } as never;
+    service.openAssetEditor(data).subscribe();
+    const [, config] = open.mock.calls[0];
+    expect(config.width).toBe('600px');
+    expect(config.maxHeight).toBe('90vh');
+    expect(config.data).toBe(data);
+  });
 });
