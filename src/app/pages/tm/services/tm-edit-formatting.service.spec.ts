@@ -104,4 +104,40 @@ describe('TmEditFormattingService', () => {
       expect(result).toBe('a'.repeat(40) + '-' + 'b'.repeat(40) + '-model.json');
     });
   });
+
+  describe('isValidBase64Svg', () => {
+    const toB64 = (s: string): string => Buffer.from(s, 'utf-8').toString('base64');
+
+    it('returns false for empty input', () => {
+      expect(service.isValidBase64Svg('')).toBe(false);
+    });
+    it('returns true for a well-formed base64 SVG', () => {
+      expect(service.isValidBase64Svg(toB64('<svg><rect/></svg>'))).toBe(true);
+    });
+    it('returns true when content starts with an XML declaration', () => {
+      expect(service.isValidBase64Svg(toB64('<?xml version="1.0"?><svg></svg>'))).toBe(true);
+    });
+    it('returns false when content does not start with <svg or <?xml', () => {
+      expect(service.isValidBase64Svg(toB64('<div><svg></svg></div>'))).toBe(false);
+    });
+    it('returns false when the closing </svg> tag is missing', () => {
+      expect(service.isValidBase64Svg(toB64('<svg><rect/>'))).toBe(false);
+    });
+  });
+
+  describe('extractViewBoxFromSvg', () => {
+    const toB64 = (s: string): string => Buffer.from(s, 'utf-8').toString('base64');
+
+    it('returns null when the diagram has no SVG', () => {
+      expect(service.extractViewBoxFromSvg({} as never)).toBeNull();
+    });
+    it('returns the viewBox attribute when present', () => {
+      const svg = toB64('<svg viewBox="0 0 100 50"></svg>');
+      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBe('0 0 100 50');
+    });
+    it('returns null when the SVG has no viewBox attribute', () => {
+      const svg = toB64('<svg></svg>');
+      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
+    });
+  });
 });

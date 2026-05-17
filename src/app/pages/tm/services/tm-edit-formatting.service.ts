@@ -167,4 +167,53 @@ export class TmEditFormattingService {
 
     return filename;
   }
+
+  /** Validate that a base64 string decodes to well-formed SVG markup. */
+  isValidBase64Svg(base64Svg: string): boolean {
+    try {
+      if (!base64Svg || base64Svg.length === 0) {
+        return false;
+      }
+      const svgText = atob(base64Svg);
+      const trimmed = svgText.trim();
+      if (!trimmed.startsWith('<svg') && !trimmed.startsWith('<?xml')) {
+        this.logger.warn('SVG validation failed: does not start with <svg or <?xml', {
+          actualStart: trimmed.substring(0, 20),
+        });
+        return false;
+      }
+      if (!trimmed.includes('<svg')) {
+        this.logger.warn('SVG validation failed: does not contain <svg tag');
+        return false;
+      }
+      if (!trimmed.includes('</svg>')) {
+        this.logger.warn('SVG validation failed: does not contain </svg> closing tag');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      this.logger.warn('SVG validation failed with error', { error });
+      return false;
+    }
+  }
+
+  /** Extract the viewBox attribute from a diagram's base64-encoded SVG, or null. */
+  extractViewBoxFromSvg(diagram: Diagram): string | null {
+    if (!diagram.image?.svg) {
+      return null;
+    }
+    try {
+      const svgContent = atob(diagram.image.svg);
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+      if (!svgElement) {
+        return null;
+      }
+      return svgElement.getAttribute('viewBox');
+    } catch (error) {
+      this.logger.warn('Failed to extract viewBox from SVG', { error });
+      return null;
+    }
+  }
 }
