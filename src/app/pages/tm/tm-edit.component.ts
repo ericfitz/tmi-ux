@@ -2612,11 +2612,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.diagramSvgDataUrls.get(diagram.id) || '';
   }
 
-  /** Gets the SVG viewBox attribute from a diagram. */
-  getSvgViewBox(diagram: Diagram): string | null {
-    return this.formattingService.extractViewBoxFromSvg(diagram);
-  }
-
   /**
    * Handle framework change - log the change for debugging purposes
    * @param oldFramework The previous framework name
