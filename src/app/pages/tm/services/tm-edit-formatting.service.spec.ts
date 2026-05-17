@@ -150,4 +150,42 @@ describe('TmEditFormattingService', () => {
       expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
     });
   });
+
+  describe('getThreatSeverityClass', () => {
+    it('returns severity-unknown for null/undefined', () => {
+      expect(service.getThreatSeverityClass(null)).toBe('severity-unknown');
+      expect(service.getThreatSeverityClass(undefined)).toBe('severity-unknown');
+    });
+    it('prefixes a camelCase key with severity-', () => {
+      expect(service.getThreatSeverityClass('high')).toBe('severity-high');
+    });
+  });
+
+  describe('migrateThreatFieldValues', () => {
+    it('migrates numeric-key severity to camelCase key', () => {
+      const result = service.migrateThreatFieldValues({ severity: '0' } as never);
+      expect(result.severity).toBe('critical');
+    });
+    it('migrates legacy English severity strings', () => {
+      const result = service.migrateThreatFieldValues({ severity: 'High' } as never);
+      expect(result.severity).toBe('high');
+    });
+    it('migrates numeric-key status to camelCase key', () => {
+      const result = service.migrateThreatFieldValues({ status: '2' } as never);
+      expect(result.status).toBe('mitigation_planned');
+    });
+    it('migrates numeric-key priority to camelCase key', () => {
+      const result = service.migrateThreatFieldValues({ priority: '0' } as never);
+      expect(result.priority).toBe('immediate');
+    });
+    it('leaves an already-migrated value unchanged', () => {
+      const result = service.migrateThreatFieldValues({ severity: 'low' } as never);
+      expect(result.severity).toBe('low');
+    });
+    it('does not mutate the input threat object', () => {
+      const input = { severity: '0' };
+      service.migrateThreatFieldValues(input as never);
+      expect(input.severity).toBe('0');
+    });
+  });
 });
