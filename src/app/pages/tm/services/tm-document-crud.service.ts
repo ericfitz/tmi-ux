@@ -6,6 +6,7 @@ import { calculateOffset } from '@app/shared/utils/pagination.util';
 import { ThreatModelService } from './threat-model.service';
 import { Document, Metadata } from '../models/threat-model.model';
 import { DocumentEditorDialogResult } from '../components/document-editor-dialog/document-editor-dialog.component';
+import type { ApiDocumentInput } from '@app/generated/api-type-helpers';
 
 /** Documents loaded for one page of the documents sub-table. */
 export interface DocumentsPage {
@@ -35,9 +36,9 @@ export class TmDocumentCrudService {
   }
 
   /**
-   * Map document editor form values to a Partial<Document> for the API.
+   * Map document editor form values to a Partial<ApiDocumentInput> for the API.
    */
-  buildDocumentData(values: DocumentEditorDialogResult['values']): Partial<Document> {
+  buildDocumentData(values: DocumentEditorDialogResult['values']): Partial<ApiDocumentInput> {
     return {
       name: values.name,
       uri: values.uri,
