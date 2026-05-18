@@ -139,11 +139,9 @@ describe('TmThreatCrudService', () => {
     it('falls back to the existing threat severity/threat_type and emits the updated threat', () => {
       let updated: Threat | undefined;
       service
-        .updateThreat(
-          'tm1',
-          { id: 't1', severity: 'low', threat_type: ['Spoofing'] } as never,
-          { name: 'New' },
-        )
+        .updateThreat('tm1', { id: 't1', severity: 'low', threat_type: ['Spoofing'] } as never, {
+          name: 'New',
+        })
         .subscribe(t => (updated = t));
       expect(threatModelService.updateThreat).toHaveBeenCalledWith('tm1', 't1', {
         name: 'New',
