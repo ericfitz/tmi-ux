@@ -44,10 +44,7 @@ import {
   UrlDropZoneDirective,
 } from '@app/shared/imports';
 import { DocumentEditorDialogData } from './components/document-editor-dialog/document-editor-dialog.component';
-import {
-  RepositoryEditorDialogComponent,
-  RepositoryEditorDialogData,
-} from './components/repository-editor-dialog/repository-editor-dialog.component';
+import { RepositoryEditorDialogData } from './components/repository-editor-dialog/repository-editor-dialog.component';
 import {
   NoteEditorDialogComponent,
   NoteEditorDialogData,
@@ -104,6 +101,7 @@ import { TmDialogService } from './services/tm-dialog.service';
 import { TmDocumentCrudService } from './services/tm-document-crud.service';
 import { TmDiagramCrudService } from './services/tm-diagram-crud.service';
 import { TmThreatCrudService, ThreatQueryState } from './services/tm-threat-crud.service';
+import { TmRepositoryCrudService } from './services/tm-repository-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -123,20 +121,6 @@ import { AdminUser } from '@app/types/user.types';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';
 import { environment } from '../../../environments/environment';
-
-// Define repository form result interface
-interface RepositoryFormResult {
-  name: string;
-  description?: string;
-  type: 'git' | 'svn' | 'mercurial' | 'other';
-  uri: string;
-  parameters?: {
-    refType: 'branch' | 'tag' | 'commit';
-    refValue: string;
-    subPath?: string;
-  };
-  include_in_report?: boolean;
-}
 
 @Component({
   selector: 'app-tm-edit',
@@ -350,6 +334,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private documentCrud: TmDocumentCrudService,
     private diagramCrud: TmDiagramCrudService,
     private threatCrud: TmThreatCrudService,
+    private repositoryCrud: TmRepositoryCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1351,39 +1336,19 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       ...(uri ? { repository: { uri } as Repository } : {}),
     };
 
-    const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
-      width: '700px',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: RepositoryFormResult | undefined) => {
-        if (result && this.threatModel) {
-          // Create a new repository via API
-          const newRepositoryData: Partial<Repository> = {
-            name: result.name,
-            description: result.description || undefined,
-            type: result.type,
-            uri: result.uri,
-            parameters: result.parameters,
-            include_in_report: result.include_in_report,
-          };
-
-          this._subscriptions.add(
-            this.threatModelService
-              .createRepository(this.threatModel.id, newRepositoryData)
-              .subscribe({
-                next: () => {
-                  if (this.threatModel) {
-                    this.loadRepositories(this.threatModel.id);
-                  }
-                },
-                error: error => {
-                  this.logger.error('Failed to create repository', error);
-                },
-              }),
-          );
-        }
+      this.dialogService.openRepositoryEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+        this._subscriptions.add(
+          this.repositoryCrud.createRepository(this.threatModel.id, result).subscribe({
+            next: () => {
+              if (this.threatModel) {
+                this.loadRepositories(this.threatModel.id);
+              }
+            },
+            error: error => this.logger.error('Failed to create repository', error),
+          }),
+        );
       }),
     );
   }
@@ -1419,29 +1384,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       isReadOnly: !this.canEdit,
     };
 
-    const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
-      width: '700px',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: RepositoryFormResult | undefined) => {
-        if (result && this.threatModel) {
-          // Update the repository via API
-          const updatedRepositoryData: Partial<Repository> = {
-            name: result.name,
-            description: result.description || undefined,
-            type: result.type,
-            uri: result.uri,
-            parameters: result.parameters,
-            include_in_report: result.include_in_report,
-          };
-
-          this._subscriptions.add(
-            this.threatModelService
-              .updateRepository(this.threatModel.id, repository.id, updatedRepositoryData)
-              .subscribe(updatedRepository => {
-                // Update the repository in local state
+      this.dialogService.openRepositoryEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+        this._subscriptions.add(
+          this.repositoryCrud
+            .updateRepository(this.threatModel.id, repository.id, result)
+            .subscribe({
+              next: updatedRepository => {
                 if (this.threatModel && this.threatModel.repositories) {
                   const index = this.threatModel.repositories.findIndex(
                     r => r.id === repository.id,
@@ -1451,9 +1401,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   }
                   this.repositoriesDataSource.data = this.threatModel.repositories;
                 }
-              }),
-          );
-        }
+              },
+              error: error => this.logger.error('Failed to update repository', error),
+            }),
+        );
       }),
     );
   }
@@ -1485,19 +1436,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectType: 'repository',
     };
 
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
-        // Delete the repository via API
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel || !this.threatModel.repositories) return;
         this._subscriptions.add(
-          this.threatModelService
-            .deleteRepository(this.threatModel!.id, repository.id)
-            .subscribe(success => {
+          this.repositoryCrud.deleteRepository(this.threatModel.id, repository.id).subscribe({
+            next: success => {
               if (success && this.threatModel && this.threatModel.repositories) {
                 // Remove the repository from local state using filter (immutable)
                 // and update data source for immediate UI refresh
@@ -1506,10 +1450,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                 );
                 this.repositoriesDataSource.data = this.threatModel.repositories;
               }
-            }),
+            },
+            error: error => this.logger.error('Failed to delete repository', error),
+          }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -1518,17 +1464,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns Formatted tooltip text with URI and description
    */
   getRepositoryTooltip(repository: Repository): string {
-    let tooltip = repository.uri;
-    if (repository.description) {
-      tooltip += `\n\n${repository.description}`;
-    }
-    if (repository.parameters) {
-      tooltip += `\n\n${repository.parameters.refType}: ${repository.parameters.refValue}`;
-      if (repository.parameters.subPath) {
-        tooltip += `\nPath: ${repository.parameters.subPath}`;
-      }
-    }
-    return tooltip;
+    return this.repositoryCrud.getRepositoryTooltip(repository);
   }
 
   /**
@@ -1546,21 +1482,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectName: `${this.transloco.translate('common.objectTypes.repository')}: ${repository.name} (${repository.id})`,
     };
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateRepositoryMetadata(this.threatModel.id, repository.id, result)
-              .subscribe(updatedMetadata => {
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+        this._subscriptions.add(
+          this.repositoryCrud
+            .updateRepositoryMetadata(this.threatModel.id, repository.id, result)
+            .subscribe({
+              next: updatedMetadata => {
                 if (updatedMetadata && this.threatModel && this.threatModel.repositories) {
                   const repositoryIndex = this.threatModel.repositories.findIndex(
                     r => r.id === repository.id,
@@ -1573,9 +1502,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                     metadata: updatedMetadata,
                   });
                 }
-              }),
-          );
-        }
+              },
+              error: error => this.logger.error('Failed to update repository metadata', error),
+            }),
+        );
       }),
     );
   }
@@ -2666,18 +2596,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Load repositories for the threat model using separate API call with pagination
    */
   private loadRepositories(threatModelId: string): void {
-    const offset = calculateOffset(this.repositoriesPageIndex, this.repositoriesPageSize);
-
     this._subscriptions.add(
-      this.threatModelService
-        .getRepositoriesForThreatModel(threatModelId, this.repositoriesPageSize, offset)
-        .subscribe(response => {
-          if (this.threatModel) {
-            const repositories = response.repositories ?? [];
-            this.threatModel.repositories = repositories;
-            this.repositoriesDataSource.data = repositories;
-            this.totalRepositories = response.total ?? 0;
-          }
+      this.repositoryCrud
+        .loadRepositories(threatModelId, this.repositoriesPageIndex, this.repositoriesPageSize)
+        .subscribe({
+          next: page => {
+            if (this.threatModel) {
+              this.threatModel.repositories = page.repositories;
+              this.repositoriesDataSource.data = page.repositories;
+              this.totalRepositories = page.total;
+            }
+          },
+          error: error => this.logger.error('Failed to load repositories', error),
         }),
     );
   }
