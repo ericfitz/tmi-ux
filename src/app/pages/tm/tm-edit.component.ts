@@ -53,10 +53,7 @@ import {
   PermissionsDialogComponent,
   PermissionsDialogData,
 } from './components/permissions-dialog/permissions-dialog.component';
-import {
-  MetadataDialogComponent,
-  MetadataDialogData,
-} from './components/metadata-dialog/metadata-dialog.component';
+import { MetadataDialogData } from './components/metadata-dialog/metadata-dialog.component';
 import { ThreatEditorDialogData } from './components/threat-editor-dialog/threat-editor-dialog.component';
 import {
   InvokeAddonDialogComponent,
@@ -1454,15 +1451,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Generates tooltip text for repository list items
-   * @param repository The repository to generate tooltip for
-   * @returns Formatted tooltip text with URI and description
-   */
-  getRepositoryTooltip(repository: Repository): string {
-    return this.repositoryCrud.getRepositoryTooltip(repository);
-  }
-
-  /**
    * Opens the metadata dialog for a specific repository
    */
   openRepositoryMetadataDialog(repository: Repository, event: Event): void {
@@ -1988,25 +1976,21 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           objectName: `${this.transloco.translate('common.objectTypes.threatModel')}: ${this.threatModel.name} (${this.threatModel.id})`,
         };
 
-        const dialogRef = this.dialog.open(MetadataDialogComponent, {
-          width: '90vw',
-          maxWidth: '800px',
-          minWidth: '500px',
-          maxHeight: '80vh',
-          data: dialogData,
-        });
-
         this._subscriptions.add(
-          dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+          this.dialogService.openMetadata(dialogData).subscribe(result => {
             if (result && this.threatModel) {
               this._subscriptions.add(
                 this.threatModelService
                   .updateThreatModelMetadata(this.threatModel.id, result)
-                  .subscribe(updatedMetadata => {
-                    if (updatedMetadata && this.threatModel) {
-                      this.threatModel.metadata = updatedMetadata;
-                      this.threatModel.modified_at = new Date().toISOString();
-                    }
+                  .subscribe({
+                    next: updatedMetadata => {
+                      if (updatedMetadata && this.threatModel) {
+                        this.threatModel.metadata = updatedMetadata;
+                        this.threatModel.modified_at = new Date().toISOString();
+                      }
+                    },
+                    error: error =>
+                      this.logger.error('Failed to update threat model metadata', error),
                   }),
               );
             }

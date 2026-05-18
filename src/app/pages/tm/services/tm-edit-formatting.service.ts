@@ -4,7 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { getFieldKeysForFieldType, migrateFieldValue } from '@app/shared/utils/field-value-helpers';
 import { Diagram } from '../models/diagram.model';
-import { Threat } from '../models/threat-model.model';
+import { Repository, Threat } from '../models/threat-model.model';
 
 /** Supported diagram model export formats. */
 export type DiagramModelFormat = 'json' | 'yaml' | 'graphml';
@@ -124,23 +124,6 @@ export class TmEditFormattingService {
   }
 
   /**
-   * Strips the protocol and optional www prefix from a URL and truncates it
-   * to 40 characters for compact display. Appends '...' when truncated.
-   *
-   * @param url - The full URL string to display
-   * @returns Shortened display string, or empty string for empty input
-   */
-  getTruncatedUrl(url: string): string {
-    if (!url) return '';
-    let displayUrl = url.replace(/^https?:\/\/(www\.)?/, '');
-    const maxLength = 40;
-    if (displayUrl.length > maxLength) {
-      displayUrl = displayUrl.substring(0, maxLength - 3) + '...';
-    }
-    return displayUrl;
-  }
-
-  /**
    * Returns the Material icon name appropriate for a diagram, derived from its
    * type prefix (e.g. 'DFD-1.0.0' → 'DFD' → 'graph_3').
    *
@@ -168,6 +151,26 @@ export class TmEditFormattingService {
    */
   getDiagramTooltip(diagram: Diagram): string {
     return diagram.type || 'Unknown Type';
+  }
+
+  /**
+   * Tooltip text for a repository list item: uri, optional description, optional parameters.
+   *
+   * @param repository - The repository to generate tooltip for
+   * @returns Formatted tooltip text with URI, description, and ref parameters
+   */
+  getRepositoryTooltip(repository: Repository): string {
+    let tooltip = repository.uri;
+    if (repository.description) {
+      tooltip += `\n\n${repository.description}`;
+    }
+    if (repository.parameters) {
+      tooltip += `\n\n${repository.parameters.refType}: ${repository.parameters.refValue}`;
+      if (repository.parameters.subPath) {
+        tooltip += `\nPath: ${repository.parameters.subPath}`;
+      }
+    }
+    return tooltip;
   }
 
   /**
@@ -261,30 +264,6 @@ export class TmEditFormattingService {
     } catch (error) {
       this.logger.warn('SVG validation failed with error', { error });
       return false;
-    }
-  }
-
-  /**
-   * Extract the viewBox attribute from a diagram's base64-encoded SVG.
-   * @param diagram The diagram whose SVG image to inspect.
-   * @returns The viewBox attribute value, or null if absent or unparseable.
-   */
-  extractViewBoxFromSvg(diagram: Diagram): string | null {
-    if (!diagram.image?.svg) {
-      return null;
-    }
-    try {
-      const svgContent = atob(diagram.image.svg);
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-      if (!svgElement) {
-        return null;
-      }
-      return svgElement.getAttribute('viewBox');
-    } catch (error) {
-      this.logger.warn('Failed to extract viewBox from SVG', { error });
-      return null;
     }
   }
 

@@ -29,20 +29,6 @@ describe('TmRepositoryCrudService', () => {
     service = new TmRepositoryCrudService(threatModelService as never);
   });
 
-  describe('getRepositoryTooltip', () => {
-    it('returns just the uri when there is no description or parameters', () => {
-      expect(service.getRepositoryTooltip({ uri: 'http://x' } as Repository)).toBe('http://x');
-    });
-    it('appends description and parameters', () => {
-      const tip = service.getRepositoryTooltip({
-        uri: 'http://x',
-        description: 'desc',
-        parameters: { refType: 'branch', refValue: 'main', subPath: 'src' },
-      } as Repository);
-      expect(tip).toBe('http://x\n\ndesc\n\nbranch: main\nPath: src');
-    });
-  });
-
   describe('buildRepositoryData', () => {
     it('maps form values and coerces empty description to undefined', () => {
       const data = service.buildRepositoryData({

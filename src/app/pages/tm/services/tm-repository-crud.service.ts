@@ -24,21 +24,6 @@ export interface RepositoriesPage {
 export class TmRepositoryCrudService {
   constructor(private threatModelService: ThreatModelService) {}
 
-  /** Tooltip text for a repository list item: uri, optional description, optional parameters. */
-  getRepositoryTooltip(repository: Repository): string {
-    let tooltip = repository.uri;
-    if (repository.description) {
-      tooltip += `\n\n${repository.description}`;
-    }
-    if (repository.parameters) {
-      tooltip += `\n\n${repository.parameters.refType}: ${repository.parameters.refValue}`;
-      if (repository.parameters.subPath) {
-        tooltip += `\nPath: ${repository.parameters.subPath}`;
-      }
-    }
-    return tooltip;
-  }
-
   /** Map repository editor form values to a Partial<ApiRepositoryInput>. */
   buildRepositoryData(values: RepositoryFormResult): Partial<ApiRepositoryInput> {
     return {

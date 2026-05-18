@@ -42,21 +42,6 @@ describe('TmEditFormattingService', () => {
     });
   });
 
-  describe('getTruncatedUrl', () => {
-    it('returns empty string for empty input', () => {
-      expect(service.getTruncatedUrl('')).toBe('');
-    });
-    it('strips protocol and www prefix', () => {
-      expect(service.getTruncatedUrl('https://www.example.com/x')).toBe('example.com/x');
-    });
-    it('truncates URLs longer than 40 chars with ellipsis', () => {
-      const long = 'https://example.com/' + 'a'.repeat(60);
-      const result = service.getTruncatedUrl(long);
-      expect(result.length).toBe(40);
-      expect(result.endsWith('...')).toBe(true);
-    });
-  });
-
   describe('getDiagramIcon', () => {
     it('returns graph_3 for a DFD diagram type', () => {
       expect(service.getDiagramIcon({ type: 'DFD-1.0' } as never)).toBe('graph_3');
@@ -75,6 +60,20 @@ describe('TmEditFormattingService', () => {
     });
     it('returns Unknown Type when type is missing', () => {
       expect(service.getDiagramTooltip({} as never)).toBe('Unknown Type');
+    });
+  });
+
+  describe('getRepositoryTooltip', () => {
+    it('returns just the uri when there is no description or parameters', () => {
+      expect(service.getRepositoryTooltip({ uri: 'http://x' } as never)).toBe('http://x');
+    });
+    it('appends description and parameters', () => {
+      const tip = service.getRepositoryTooltip({
+        uri: 'http://x',
+        description: 'desc',
+        parameters: { refType: 'branch', refValue: 'main', subPath: 'src' },
+      } as never);
+      expect(tip).toBe('http://x\n\ndesc\n\nbranch: main\nPath: src');
     });
   });
 
@@ -132,26 +131,6 @@ describe('TmEditFormattingService', () => {
     });
     it('returns false when an xml-declared document lacks an <svg> tag', () => {
       expect(service.isValidBase64Svg(toB64('<?xml version="1.0"?><root></root>'))).toBe(false);
-    });
-  });
-
-  describe('extractViewBoxFromSvg', () => {
-    const toB64 = (s: string): string => Buffer.from(s, 'utf-8').toString('base64');
-
-    it('returns null when the diagram has no SVG', () => {
-      expect(service.extractViewBoxFromSvg({} as never)).toBeNull();
-    });
-    it('returns the viewBox attribute when present', () => {
-      const svg = toB64('<svg viewBox="0 0 100 50"></svg>');
-      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBe('0 0 100 50');
-    });
-    it('returns null when the SVG has no viewBox attribute', () => {
-      const svg = toB64('<svg></svg>');
-      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
-    });
-    it('returns null for malformed SVG content', () => {
-      const svg = toB64('<svg><unclosed');
-      expect(service.extractViewBoxFromSvg({ image: { svg } } as never)).toBeNull();
     });
   });
 
