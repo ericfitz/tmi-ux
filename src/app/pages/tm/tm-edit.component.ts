@@ -46,7 +46,6 @@ import {
 import { DocumentEditorDialogData } from './components/document-editor-dialog/document-editor-dialog.component';
 import { RepositoryEditorDialogData } from './components/repository-editor-dialog/repository-editor-dialog.component';
 import {
-  NoteEditorDialogComponent,
   NoteEditorDialogData,
   NoteEditorResult,
 } from '@app/shared/components/note-editor-dialog/note-editor-dialog.component';
@@ -102,6 +101,7 @@ import { TmDocumentCrudService } from './services/tm-document-crud.service';
 import { TmDiagramCrudService } from './services/tm-diagram-crud.service';
 import { TmThreatCrudService, ThreatQueryState } from './services/tm-threat-crud.service';
 import { TmRepositoryCrudService } from './services/tm-repository-crud.service';
+import { TmNoteCrudService } from './services/tm-note-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -335,6 +335,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private diagramCrud: TmDiagramCrudService,
     private threatCrud: TmThreatCrudService,
     private repositoryCrud: TmRepositoryCrudService,
+    private noteCrud: TmNoteCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1524,14 +1525,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       entityType: 'threat_model',
       isReadOnly: !this.canEdit,
     };
-
-    const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
-      width: '90vw',
-      maxWidth: '900px',
-      minWidth: '600px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
+    const dialogRef = this.dialogService.openNoteEditor(dialogData);
 
     // Subscribe to save events from the dialog
     const saveSubscription = dialogRef.componentInstance.saveEvent.subscribe(noteResult => {
@@ -1539,7 +1533,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this._subscriptions.add(
-        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe({
+        this.noteCrud.createNote(this.threatModel.id, noteResult).subscribe({
           next: createdNote => {
             if (this.threatModel) {
               this.loadNotes(this.threatModel.id);
@@ -1547,9 +1541,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               dialogRef.componentInstance.setCreatedNoteId(createdNote.id);
             }
           },
-          error: error => {
-            this.logger.error('Failed to create note', error);
-          },
+          error: error => this.logger.error('Failed to create note', error),
         }),
       );
     });
@@ -1558,44 +1550,41 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe((result: NoteEditorResult | undefined) => {
-        if (result && this.threatModel) {
-          // Check if the note was already created via the save button
-          if (result.wasCreated && result.noteId) {
-            // Note was already created, update it if there are changes
-            this._subscriptions.add(
-              this.threatModelService
-                .updateNote(this.threatModel.id, result.noteId, result.formValue)
-                .subscribe(
-                  updatedNote => {
-                    if (this.threatModel && this.threatModel.notes) {
-                      const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
-                      if (index !== -1) {
-                        this.threatModel.notes[index] = updatedNote;
-                      }
-                      this.notesDataSource.data = this.threatModel.notes;
-                      this.logger.info('Updated note via API', { note: updatedNote });
+        if (!result || !this.threatModel) {
+          return;
+        }
+        // Check if the note was already created via the save button
+        if (result.wasCreated && result.noteId) {
+          // Note was already created, update it if there are changes
+          this._subscriptions.add(
+            this.noteCrud
+              .updateNote(this.threatModel.id, result.noteId, result.formValue)
+              .subscribe({
+                next: updatedNote => {
+                  if (this.threatModel && this.threatModel.notes) {
+                    const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
+                    if (index !== -1) {
+                      this.threatModel.notes[index] = updatedNote;
                     }
-                  },
-                  error => {
-                    this.logger.error('Failed to update note', error);
-                  },
-                ),
-            );
-          } else {
-            // Note was not created yet, create it now
-            this._subscriptions.add(
-              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe({
-                next: () => {
-                  if (this.threatModel) {
-                    this.loadNotes(this.threatModel.id);
+                    this.notesDataSource.data = this.threatModel.notes;
+                    this.logger.info('Updated note via API', { note: updatedNote });
                   }
                 },
-                error: error => {
-                  this.logger.error('Failed to create note', error);
-                },
+                error: error => this.logger.error('Failed to update note', error),
               }),
-            );
-          }
+          );
+        } else {
+          // Note was not created yet, create it now
+          this._subscriptions.add(
+            this.noteCrud.createNote(this.threatModel.id, result.formValue).subscribe({
+              next: () => {
+                if (this.threatModel) {
+                  this.loadNotes(this.threatModel.id);
+                }
+              },
+              error: error => this.logger.error('Failed to create note', error),
+            }),
+          );
         }
       }),
     );
@@ -1639,28 +1628,27 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       name: note.name,
       objectType: 'note',
     };
-
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel || !this.threatModel.notes) {
+          return;
+        }
         this._subscriptions.add(
-          this.threatModelService.deleteNote(this.threatModel!.id, note.id).subscribe(success => {
-            if (success && this.threatModel && this.threatModel.notes) {
-              // Remove the note from local state using filter (immutable)
-              // and update data source for immediate UI refresh
-              this.threatModel.notes = this.threatModel.notes.filter(n => n.id !== note.id);
-              this.notesDataSource.data = this.threatModel.notes;
-              this.logger.info('Deleted note', { noteId: note.id });
-            }
+          this.noteCrud.deleteNote(this.threatModel.id, note.id).subscribe({
+            next: success => {
+              if (success && this.threatModel && this.threatModel.notes) {
+                // Remove the note from local state using filter (immutable)
+                // and update data source for immediate UI refresh
+                this.threatModel.notes = this.threatModel.notes.filter(n => n.id !== note.id);
+                this.notesDataSource.data = this.threatModel.notes;
+                this.logger.info('Deleted note', { noteId: note.id });
+              }
+            },
+            error: error => this.logger.error('Failed to delete note', error),
           }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -1816,35 +1804,28 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectType: 'Note',
       objectName: `${this.transloco.translate('common.objectTypes.note')}: ${note.name} (${note.id})`,
     };
-
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel && this.canEdit) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateNoteMetadata(this.threatModel.id, note.id, result)
-              .subscribe(updatedMetadata => {
-                if (updatedMetadata && this.threatModel && this.threatModel.notes) {
-                  const noteIndex = this.threatModel.notes.findIndex(n => n.id === note.id);
-                  if (noteIndex !== -1) {
-                    this.threatModel.notes[noteIndex].metadata = updatedMetadata;
-                  }
-                  this.logger.info('Updated note metadata via API', {
-                    noteId: note.id,
-                    metadata: updatedMetadata,
-                  });
-                }
-              }),
-          );
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
+        if (!result || !this.threatModel || !this.canEdit) {
+          return;
         }
+        this._subscriptions.add(
+          this.noteCrud.updateNoteMetadata(this.threatModel.id, note.id, result).subscribe({
+            next: updatedMetadata => {
+              if (updatedMetadata && this.threatModel && this.threatModel.notes) {
+                const noteIndex = this.threatModel.notes.findIndex(n => n.id === note.id);
+                if (noteIndex !== -1) {
+                  this.threatModel.notes[noteIndex].metadata = updatedMetadata;
+                }
+                this.logger.info('Updated note metadata via API', {
+                  noteId: note.id,
+                  metadata: updatedMetadata,
+                });
+              }
+            },
+            error: error => this.logger.error('Failed to update note metadata', error),
+          }),
+        );
       }),
     );
   }
@@ -3040,30 +3021,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.threatModel) {
       this.threatModel.notes = [];
     }
-
-    const offset = calculateOffset(this.notesPageIndex, this.notesPageSize);
-
     this._subscriptions.add(
-      this.threatModelService
-        .getNotesForThreatModel(threatModelId, this.notesPageSize, offset)
-        .subscribe({
-          next: response => {
-            if (this.threatModel) {
-              const notes = response.notes ?? [];
-              this.threatModel.notes = notes;
-              this.notesDataSource.data = notes;
-              this.totalNotes = response.total ?? 0;
-            }
-          },
-          error: error => {
-            this.logger.error('Failed to load notes', error);
-            if (this.threatModel) {
-              this.threatModel.notes = [];
-              this.notesDataSource.data = [];
-              this.totalNotes = 0;
-            }
-          },
-        }),
+      this.noteCrud.loadNotes(threatModelId, this.notesPageIndex, this.notesPageSize).subscribe({
+        next: page => {
+          if (this.threatModel) {
+            this.threatModel.notes = page.notes;
+            this.notesDataSource.data = page.notes;
+            this.totalNotes = page.total;
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to load notes', error);
+          if (this.threatModel) {
+            this.threatModel.notes = [];
+            this.notesDataSource.data = [];
+            this.totalNotes = 0;
+          }
+        },
+      }),
     );
   }
 
