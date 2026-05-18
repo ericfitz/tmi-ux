@@ -18,7 +18,6 @@ import {
   DEFAULT_SUBTABLE_PAGE_SIZE,
   SUBTABLE_PAGE_SIZE_OPTIONS,
 } from '@app/types/pagination.types';
-import { calculateOffset } from '@app/shared/utils/pagination.util';
 import { isValidUrl } from '@app/shared/utils/url.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
@@ -49,10 +48,7 @@ import {
   NoteEditorDialogData,
   NoteEditorResult,
 } from '@app/shared/components/note-editor-dialog/note-editor-dialog.component';
-import {
-  AssetEditorDialogComponent,
-  AssetEditorDialogData,
-} from './components/asset-editor-dialog/asset-editor-dialog.component';
+import { AssetEditorDialogData } from './components/asset-editor-dialog/asset-editor-dialog.component';
 import {
   PermissionsDialogComponent,
   PermissionsDialogData,
@@ -102,6 +98,7 @@ import { TmDiagramCrudService } from './services/tm-diagram-crud.service';
 import { TmThreatCrudService, ThreatQueryState } from './services/tm-threat-crud.service';
 import { TmRepositoryCrudService } from './services/tm-repository-crud.service';
 import { TmNoteCrudService } from './services/tm-note-crud.service';
+import { TmAssetCrudService } from './services/tm-asset-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -110,11 +107,7 @@ import {
   getFieldLabel,
   getFieldOptions,
 } from '../../shared/utils/field-value-helpers';
-import {
-  DeleteConfirmationDialogComponent,
-  DeleteConfirmationDialogData,
-  DeleteConfirmationDialogResult,
-} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { DeleteConfirmationDialogData } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { AdminUser } from '@app/types/user.types';
@@ -336,6 +329,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private threatCrud: TmThreatCrudService,
     private repositoryCrud: TmRepositoryCrudService,
     private noteCrud: TmNoteCrudService,
+    private assetCrud: TmAssetCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -2618,18 +2612,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModel.assets = [];
     }
 
-    const offset = calculateOffset(this.assetsPageIndex, this.assetsPageSize);
-
     this._subscriptions.add(
-      this.threatModelService
-        .getAssetsForThreatModel(threatModelId, this.assetsPageSize, offset)
+      this.assetCrud
+        .loadAssets(threatModelId, this.assetsPageIndex, this.assetsPageSize)
         .subscribe({
-          next: response => {
+          next: page => {
             if (this.threatModel) {
-              const assets = response.assets ?? [];
-              this.threatModel.assets = assets;
-              this.assetsDataSource.data = assets;
-              this.totalAssets = response.total ?? 0;
+              this.threatModel.assets = page.assets;
+              this.assetsDataSource.data = page.assets;
+              this.totalAssets = page.total;
             }
           },
           error: error => {
@@ -2807,28 +2798,19 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       isReadOnly: !this.canEdit,
     };
 
-    const dialogRef = this.dialog.open(AssetEditorDialogComponent, {
-      width: '600px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
-        if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService.createAsset(this.threatModel.id, result).subscribe({
-              next: () => {
-                if (this.threatModel) {
-                  this.loadAssets(this.threatModel.id);
-                }
-              },
-              error: error => {
-                this.logger.error('Failed to create asset', error);
-              },
-            }),
-          );
-        }
+      this.dialogService.openAssetEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+        this._subscriptions.add(
+          this.assetCrud.createAsset(this.threatModel.id, result).subscribe({
+            next: () => {
+              if (this.threatModel) {
+                this.loadAssets(this.threatModel.id);
+              }
+            },
+            error: error => this.logger.error('Failed to create asset', error),
+          }),
+        );
       }),
     );
   }
@@ -2894,33 +2876,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       isReadOnly: !this.canEdit,
     };
 
-    const dialogRef = this.dialog.open(AssetEditorDialogComponent, {
-      width: '600px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
-        if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService.updateAsset(this.threatModel.id, asset.id, result).subscribe(
-              updatedAsset => {
-                if (this.threatModel && this.threatModel.assets) {
-                  const index = this.threatModel.assets.findIndex(a => a.id === asset.id);
-                  if (index !== -1) {
-                    this.threatModel.assets[index] = updatedAsset;
-                  }
-                  this.assetsDataSource.data = this.threatModel.assets;
-                  this.logger.info('Updated asset via API', { asset: updatedAsset });
+      this.dialogService.openAssetEditor(dialogData).subscribe(result => {
+        if (!result || !this.threatModel) return;
+        this._subscriptions.add(
+          this.assetCrud.updateAsset(this.threatModel.id, asset.id, result).subscribe({
+            next: updatedAsset => {
+              if (this.threatModel && this.threatModel.assets) {
+                const index = this.threatModel.assets.findIndex(a => a.id === asset.id);
+                if (index !== -1) {
+                  this.threatModel.assets[index] = updatedAsset;
                 }
-              },
-              error => {
-                this.logger.error('Failed to update asset', error);
-              },
-            ),
-          );
-        }
+                this.assetsDataSource.data = this.threatModel.assets;
+                this.logger.info('Updated asset via API', { asset: updatedAsset });
+              }
+            },
+            error: error => this.logger.error('Failed to update asset', error),
+          }),
+        );
       }),
     );
   }
@@ -2944,27 +2917,25 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectType: 'asset',
     };
 
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel || !this.threatModel.assets) return;
         this._subscriptions.add(
-          this.threatModelService.deleteAsset(this.threatModel!.id, asset.id).subscribe(success => {
-            if (success && this.threatModel && this.threatModel.assets) {
-              // Remove the asset from local state using filter (immutable)
-              // and update data source for immediate UI refresh
-              this.threatModel.assets = this.threatModel.assets.filter(a => a.id !== asset.id);
-              this.assetsDataSource.data = this.threatModel.assets;
-              this.logger.info('Deleted asset', { assetId: asset.id });
-            }
+          this.assetCrud.deleteAsset(this.threatModel.id, asset.id).subscribe({
+            next: success => {
+              if (success && this.threatModel && this.threatModel.assets) {
+                // Remove the asset from local state using filter (immutable)
+                // and update data source for immediate UI refresh
+                this.threatModel.assets = this.threatModel.assets.filter(a => a.id !== asset.id);
+                this.assetsDataSource.data = this.threatModel.assets;
+                this.logger.info('Deleted asset', { assetId: asset.id });
+              }
+            },
+            error: error => this.logger.error('Failed to delete asset', error),
           }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -2981,34 +2952,26 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectName: `${this.transloco.translate('common.objectTypes.asset')}: ${asset.name} (${asset.id})`,
     };
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel && this.canEdit) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateAssetMetadata(this.threatModel.id, asset.id, result)
-              .subscribe(updatedMetadata => {
-                if (updatedMetadata && this.threatModel && this.threatModel.assets) {
-                  const assetIndex = this.threatModel.assets.findIndex(a => a.id === asset.id);
-                  if (assetIndex !== -1) {
-                    this.threatModel.assets[assetIndex].metadata = updatedMetadata;
-                  }
-                  this.logger.info('Updated asset metadata via API', {
-                    assetId: asset.id,
-                    metadata: updatedMetadata,
-                  });
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
+        if (!result || !this.threatModel || !this.canEdit) return;
+        this._subscriptions.add(
+          this.assetCrud.updateAssetMetadata(this.threatModel.id, asset.id, result).subscribe({
+            next: updatedMetadata => {
+              if (updatedMetadata && this.threatModel && this.threatModel.assets) {
+                const assetIndex = this.threatModel.assets.findIndex(a => a.id === asset.id);
+                if (assetIndex !== -1) {
+                  this.threatModel.assets[assetIndex].metadata = updatedMetadata;
                 }
-              }),
-          );
-        }
+                this.logger.info('Updated asset metadata via API', {
+                  assetId: asset.id,
+                  metadata: updatedMetadata,
+                });
+              }
+            },
+            error: error => this.logger.error('Failed to update asset metadata', error),
+          }),
+        );
       }),
     );
   }
