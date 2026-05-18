@@ -65,10 +65,7 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from './components/metadata-dialog/metadata-dialog.component';
-import {
-  ThreatEditorDialogComponent,
-  ThreatEditorDialogData,
-} from './components/threat-editor-dialog/threat-editor-dialog.component';
+import { ThreatEditorDialogData } from './components/threat-editor-dialog/threat-editor-dialog.component';
 import {
   InvokeAddonDialogComponent,
   InvokeAddonDialogData,
@@ -92,8 +89,7 @@ import {
   ThreatModel,
   User,
 } from './models/threat-model.model';
-import type { ApiThreatInput } from '@app/generated/api-type-helpers';
-import { ThreatModelService, ThreatListParams } from './services/threat-model.service';
+import { ThreatModelService } from './services/threat-model.service';
 import { ThreatFilterStateService } from './services/threat-filter-state.service';
 import {
   ThreatFilters,
@@ -107,6 +103,7 @@ import { TmEditAutoSaveService, ThreatModelFormValues } from './services/tm-edit
 import { TmDialogService } from './services/tm-dialog.service';
 import { TmDocumentCrudService } from './services/tm-document-crud.service';
 import { TmDiagramCrudService } from './services/tm-diagram-crud.service';
+import { TmThreatCrudService, ThreatQueryState } from './services/tm-threat-crud.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
@@ -352,6 +349,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private dialogService: TmDialogService,
     private documentCrud: TmDocumentCrudService,
     private diagramCrud: TmDiagramCrudService,
+    private threatCrud: TmThreatCrudService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1021,111 +1019,49 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       shapeType,
     };
 
-    const dialogRef = this.dialog.open<
-      ThreatEditorDialogComponent,
-      ThreatEditorDialogData,
-      Partial<Threat>
-    >(ThreatEditorDialogComponent, {
-      width: '650px',
-      maxHeight: '90vh',
-      panelClass: 'threat-editor-dialog-650',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe(result => {
+      this.dialogService.openThreatEditor(dialogData).subscribe(result => {
         if (!result || !this.threatModel) return;
 
-        if (mode === 'create') {
+        if (dialogMode === 'create') {
           this._handleCreateThreatResult(result);
-        } else if (mode === 'edit' && threat) {
+        } else if (dialogMode === 'edit' && threat) {
           this._handleEditThreatResult(result, threat);
         }
       }),
     );
   }
 
-  /** Build threat data from form result, copying only defined optional fields. */
-  private _copyDefinedFields<S, T>(
-    source: Partial<S>,
-    target: Partial<T>,
-    fields: (keyof S & keyof T)[],
-  ): void {
-    for (const field of fields) {
-      if (source[field] !== undefined) {
-        Object.assign(target, { [field]: source[field] });
-      }
-    }
-  }
-
   /** Handle creating a new threat from dialog result. */
   private _handleCreateThreatResult(result: Partial<Threat>): void {
-    const newThreatData: Partial<ApiThreatInput> = {
-      name: result.name,
-      description: result.description,
-      severity: result.severity || 'high',
-      threat_type: result.threat_type || [],
-      mitigated: result.mitigated || false,
-      status: result.status || 'open',
-      metadata: [],
-    };
-
-    this._copyDefinedFields(result, newThreatData, [
-      'asset_id',
-      'diagram_id',
-      'cell_id',
-      'score',
-      'priority',
-      'issue_uri',
-      'include_in_report',
-    ]);
-
+    if (!this.threatModel) return;
     this._subscriptions.add(
-      this.threatModelService.createThreat(this.threatModel!.id, newThreatData).subscribe({
+      this.threatCrud.createThreat(this.threatModel.id, result).subscribe({
         next: () => {
           if (this.threatModel) {
             this.loadThreats(this.threatModel.id);
           }
           this.updateFrameworkControlState();
         },
-        error: error => {
-          this.logger.error('Failed to create threat', error);
-        },
+        error: error => this.logger.error('Failed to create threat', error),
       }),
     );
   }
 
   /** Handle updating an existing threat from dialog result. */
   private _handleEditThreatResult(result: Partial<Threat>, threat: Threat): void {
-    const updatedThreatData: Partial<ApiThreatInput> = {
-      name: result.name,
-      description: result.description,
-      severity: result.severity ?? threat.severity,
-      threat_type: result.threat_type ?? threat.threat_type ?? [],
-    };
-
-    this._copyDefinedFields(result, updatedThreatData, [
-      'asset_id',
-      'diagram_id',
-      'cell_id',
-      'score',
-      'priority',
-      'mitigated',
-      'status',
-      'issue_uri',
-      'include_in_report',
-    ]);
-
+    if (!this.threatModel) return;
     this._subscriptions.add(
-      this.threatModelService
-        .updateThreat(this.threatModel!.id, threat.id, updatedThreatData)
-        .subscribe(updatedThreat => {
+      this.threatCrud.updateThreat(this.threatModel.id, threat, result).subscribe({
+        next: updatedThreat => {
           const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
           if (index !== -1 && this.threatModel?.threats) {
             this.threatModel.threats[index] = updatedThreat;
             this.threatsDataSource.data = this.threatModel.threats;
           }
-        }),
+        },
+        error: error => this.logger.error('Failed to update threat', error),
+      }),
     );
   }
 
@@ -1156,34 +1092,27 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectType: 'threat',
     };
 
-    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '700px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
-        // Delete the threat via API
+    this._subscriptions.add(
+      this.dialogService.openDeleteConfirmation(dialogData).subscribe(result => {
+        if (!result?.confirmed || !this.threatModel || !this.threatModel.threats) return;
         this._subscriptions.add(
-          this.threatModelService
-            .deleteThreat(this.threatModel!.id, threat.id)
-            .subscribe(success => {
-              if (success) {
+          this.threatCrud.deleteThreat(this.threatModel.id, threat.id).subscribe({
+            next: success => {
+              if (success && this.threatModel && this.threatModel.threats) {
                 // Remove the threat from local state using filter (immutable)
                 // and update data source for immediate UI refresh
-                this.threatModel!.threats = this.threatModel!.threats!.filter(
-                  t => t.id !== threat.id,
-                );
-                this.threatsDataSource.data = this.threatModel!.threats;
+                this.threatModel.threats = this.threatModel.threats.filter(t => t.id !== threat.id);
+                this.threatsDataSource.data = this.threatModel.threats;
 
                 // Update framework control state since we removed a threat
                 this.updateFrameworkControlState();
               }
-            }),
+            },
+            error: error => this.logger.error('Failed to delete threat', error),
+          }),
         );
-      }
-    });
+      }),
+    );
   }
 
   /**
@@ -2243,21 +2172,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       objectName: `${this.transloco.translate('common.objectTypes.threat')}: ${threat.name} (${threat.id})`,
     };
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+      this.dialogService.openMetadata(dialogData).subscribe(result => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService
-              .updateThreatMetadata(this.threatModel.id, threat.id, result)
-              .subscribe(updatedMetadata => {
+            this.threatCrud.updateThreatMetadata(this.threatModel.id, threat.id, result).subscribe({
+              next: updatedMetadata => {
                 if (updatedMetadata && this.threatModel) {
                   const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
                   if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
@@ -2270,7 +2190,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                     metadata: updatedMetadata,
                   });
                 }
-              }),
+              },
+              error: error => this.logger.error('Failed to update threat metadata', error),
+            }),
           );
         }
       }),
@@ -2822,41 +2744,31 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /** Snapshot the component's current threat query state (page + sort + filters). */
+  private buildThreatQueryState(): ThreatQueryState {
+    return {
+      pageIndex: this.threatsPageIndex,
+      pageSize: this.threatsPageSize,
+      sortActive: this.threatSortActive,
+      sortDirection: this.threatSortDirection,
+      filters: this.threatFilters,
+    };
+  }
+
   /**
    * Load threats for the threat model using API with filters, sorting, and pagination
    */
   private loadThreats(threatModelId: string): void {
-    const offset = calculateOffset(this.threatsPageIndex, this.threatsPageSize);
-    const filters = this.threatFilters;
-
-    const params: ThreatListParams = {
-      limit: this.threatsPageSize,
-      offset,
-    };
-
-    // Server-side sort
-    if (this.threatSortActive && this.threatSortDirection) {
-      params.sort = `${this.threatSortActive}:${this.threatSortDirection}`;
-    }
-
-    // Filters
-    if (filters.name.trim()) params.name = filters.name.trim();
-    if (filters.severities.length > 0) params.severity = filters.severities;
-    if (filters.statuses.length > 0) params.status = filters.statuses;
-    if (filters.priorities.length > 0) params.priority = filters.priorities;
-    if (filters.threatTypes.length > 0) params.threat_type = filters.threatTypes;
-    if (filters.mitigated !== null) params.mitigated = filters.mitigated;
-
     this._subscriptions.add(
-      this.threatModelService.getThreatsForThreatModel(threatModelId, params).subscribe({
-        next: response => {
+      this.threatCrud.loadThreats(threatModelId, this.buildThreatQueryState()).subscribe({
+        next: page => {
           if (this.threatModel) {
-            const threats = (response.threats ?? []).map(t =>
+            const threats = page.threats.map(t =>
               this.formattingService.migrateThreatFieldValues(t),
             );
             this.threatModel.threats = threats;
             this.threatsDataSource.data = threats;
-            this.totalThreats = response.total ?? 0;
+            this.totalThreats = page.total;
           }
         },
         error: error => {
