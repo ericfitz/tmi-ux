@@ -111,14 +111,14 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
       marked:
-        specifier: ^17.0.6
-        version: 17.0.6
+        specifier: ^18.0.4
+        version: 18.0.4
       mermaid:
         specifier: ^11.15.0
         version: 11.15.0
       ngx-markdown:
         specifier: ^21.3.0
-        version: 21.3.0(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@21.2.13(@angular/animations@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(clipboard@2.0.11)(emoji-toolkit@10.0.0)(katex@0.16.47)(marked@17.0.6)(mermaid@11.15.0)(prismjs@1.30.0)(rxjs@7.8.2)(zone.js@0.16.2)
+        version: 21.3.0(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@21.2.13(@angular/animations@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(clipboard@2.0.11)(emoji-toolkit@10.0.0)(katex@0.16.47)(marked@18.0.4)(mermaid@11.15.0)(prismjs@1.30.0)(rxjs@7.8.2)(zone.js@0.16.2)
       pdf-lib:
         specifier: ^1.17.1
         version: 1.17.1
@@ -4913,8 +4913,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marked@17.0.6:
-    resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+  marked@18.0.4:
+    resolution: {integrity: sha512-c/BTaKzg0G6ezQx97DAkYU7k0HM6ys0FqYeKBL6hlBByZwy+ycA1+f0vDdjMHKKeEjdgkx0GOv9Il6D+85cOqA==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -11470,7 +11470,7 @@ snapshots:
 
   marked@16.4.2: {}
 
-  marked@17.0.6: {}
+  marked@18.0.4: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -11662,12 +11662,12 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  ngx-markdown@21.3.0(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@21.2.13(@angular/animations@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(clipboard@2.0.11)(emoji-toolkit@10.0.0)(katex@0.16.47)(marked@17.0.6)(mermaid@11.15.0)(prismjs@1.30.0)(rxjs@7.8.2)(zone.js@0.16.2):
+  ngx-markdown@21.3.0(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@21.2.13(@angular/animations@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(clipboard@2.0.11)(emoji-toolkit@10.0.0)(katex@0.16.47)(marked@18.0.4)(mermaid@11.15.0)(prismjs@1.30.0)(rxjs@7.8.2)(zone.js@0.16.2):
     dependencies:
       '@angular/common': 21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)
       '@angular/platform-browser': 21.2.13(@angular/animations@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@21.2.13(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.13(@angular/compiler@21.2.13)(rxjs@7.8.2)(zone.js@0.16.2))
-      marked: 17.0.6
+      marked: 18.0.4
       rxjs: 7.8.2
       tslib: 2.8.1
       zone.js: 0.16.2
