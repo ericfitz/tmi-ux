@@ -88,7 +88,6 @@ import { InfraDfdValidationService } from '../../infrastructure/services/infra-d
 
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
-import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { ColorPaletteEntry } from '../../types/color-palette.types';
 import { DfdCollaborationComponent } from './collaboration/collaboration.component';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
@@ -121,7 +120,6 @@ import {
   DEFAULT_PORT_LABEL_POSITION,
   PortLabelPosition,
 } from './port-label-popover/port-label-popover.component';
-import { getLabelPositionFromAttrs, LABEL_POSITION_ATTRS } from '../../types/label-position.types';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -134,6 +132,8 @@ import { DfdDialogService } from '../services/dfd-dialog.service';
 import { DfdCommandService } from '../services/dfd-command.service';
 import { DfdLayoutService } from '../services/dfd-layout.service';
 import { DfdIconService } from '../services/dfd-icon.service';
+import { DfdStylingService } from '../services/dfd-styling.service';
+import { GraphOperation } from '../../types/graph-operation.types';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -298,6 +298,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dfdCommand: DfdCommandService,
     private dfdLayout: DfdLayoutService,
     private dfdIcon: DfdIconService,
+    private dfdStyling: DfdStylingService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -2712,50 +2713,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stylePanelCells = [];
       return;
     }
-
-    this.stylePanelCells = selectedCellIds
-      .map(id => graph.getCellById(id))
-      .filter(Boolean)
-      .map(cell => {
-        const isNode = cell.isNode();
-        const isEdge = cell.isEdge();
-        const data = cell.getData() || {};
-        const nodeType = data.nodeType || cell.shape || null;
-        const attrs = cell.getAttrs() || {};
-
-        let strokeColor: string | null = null;
-        let fillColor: string | null = null;
-        let fillOpacity: number | null = null;
-
-        if (isNode) {
-          const body = attrs['body'] || {};
-          strokeColor = ((body as Record<string, any>)['stroke'] as string) || null;
-          fillColor = ((body as Record<string, any>)['fill'] as string) || null;
-          fillOpacity = ((body as Record<string, any>)['fillOpacity'] as number) ?? 1;
-        } else if (isEdge) {
-          const line = attrs['line'] || {};
-          strokeColor = ((line as Record<string, any>)['stroke'] as string) || null;
-        }
-
-        let labelPosition = null;
-        if (isNode && nodeType !== 'text-box') {
-          const textAttrs = (attrs['text'] || {}) as Record<string, unknown>;
-          labelPosition = getLabelPositionFromAttrs(textAttrs);
-        }
-
-        return {
-          cellId: cell.id,
-          isNode,
-          isEdge,
-          nodeType: isNode ? nodeType : null,
-          strokeColor,
-          fillColor,
-          fillOpacity,
-          hasCustomStyles: !!data.customStyles,
-          labelPosition,
-          hasArchIcon: !!data._arch,
-        };
-      });
+    this.stylePanelCells = this.dfdStyling.buildStylePanelCells(graph, selectedCellIds);
   }
 
   // Icon picker panel methods
@@ -2776,14 +2734,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.iconPickerCells = [];
       return;
     }
-    this.iconPickerCells = selectedCellIds
-      .map(id => graph.getCellById(id))
-      .filter(cell => cell?.isNode())
-      .map(cell => ({
-        cellId: cell!.id,
-        nodeType: cell!.shape,
-        arch: (cell!.getData()?._arch as ArchIconData) ?? null,
-      }));
+    this.iconPickerCells = this.dfdStyling.buildIconPickerCells(graph, selectedCellIds);
   }
 
   onIconSelected(event: IconSelectedEvent): void {
@@ -3016,169 +2967,42 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const cell = graph.getCellById(cellId);
       if (!cell) continue;
 
+      let operation: GraphOperation | null = null;
       if (cell.isNode()) {
-        this.applyNodeStyleChange(cell, event);
+        operation = this.dfdStyling.applyNodeStyleChange(cell, event);
       } else if (cell.isEdge() && event.property === 'strokeColor') {
-        this.applyEdgeStyleChange(cell, event);
+        operation = this.dfdStyling.applyEdgeStyleChange(cell, event);
       }
+
+      if (!operation) {
+        // A node label-position change with an unrecognized position key:
+        // the service performs no mutation and returns null.
+        if (cell.isNode() && event.property === 'labelPosition') {
+          this.logger.error('Unknown label position key', { positionKey: event.value });
+        }
+        continue;
+      }
+
+      const failureMessage =
+        operation.type === 'update-edge'
+          ? 'Edge style change failed'
+          : 'Style change operation failed';
+
+      this.appDfdOrchestrator.executeOperation(operation).subscribe({
+        next: result => {
+          if (!result.success) {
+            this.logger.error(failureMessage, { error: result.error });
+          }
+        },
+        error: error => {
+          this.logger.error('Error applying style change', { error });
+        },
+      });
     }
 
     this.updateStylePanelCells();
     this.updateIconPickerCells();
     this.cdr.detectChanges();
-  }
-
-  private applyNodeStyleChange(cell: Cell, event: StyleChangeEvent): void {
-    const previousAttrs = cell.getAttrs() || {};
-    const previousBody = previousAttrs['body'] || {};
-    const previousText = previousAttrs['text'] || {};
-    const previousData = cell.getData() || {};
-
-    // Handle label position changes separately
-    if (event.property === 'labelPosition') {
-      this.applyLabelPositionChange(cell, event, previousText, previousData);
-      return;
-    }
-
-    const attrPathMap: Record<string, string> = {
-      strokeColor: 'body/stroke',
-      fillColor: 'body/fill',
-      fillOpacity: 'body/fillOpacity',
-    };
-    const styleKeyMap: Record<string, string> = {
-      strokeColor: 'stroke',
-      fillColor: 'fill',
-      fillOpacity: 'fillOpacity',
-    };
-
-    cell.setAttrByPath(attrPathMap[event.property], event.value);
-    cell.setData({ ...previousData, customStyles: true }, { silent: true });
-
-    const operation = {
-      id: `style-change-${Date.now()}-${cell.id}`,
-      type: 'update-node' as const,
-      source: 'user-interaction' as const,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-      nodeId: cell.id,
-      updates: {
-        style: { [styleKeyMap[event.property]]: event.value },
-        properties: { customStyles: true },
-      },
-      previousState: {
-        style: {
-          stroke: previousBody['stroke'],
-          fill: previousBody['fill'],
-          fillOpacity: previousBody['fillOpacity'] ?? 1,
-        },
-        properties: { customStyles: previousData['customStyles'] || false },
-      },
-      includeInHistory: true,
-    };
-
-    this.appDfdOrchestrator.executeOperation(operation).subscribe({
-      next: result => {
-        if (!result.success) {
-          this.logger.error('Style change operation failed', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error applying style change', { error });
-      },
-    });
-  }
-
-  private applyLabelPositionChange(
-    cell: Cell,
-    event: StyleChangeEvent,
-    previousText: Record<string, any>,
-    previousData: Record<string, any>,
-  ): void {
-    const positionKey = event.value as string;
-    const posAttrs = LABEL_POSITION_ATTRS[positionKey];
-    if (!posAttrs) {
-      this.logger.error('Unknown label position key', { positionKey });
-      return;
-    }
-
-    cell.setAttrByPath('text/refX', posAttrs.refX);
-    cell.setAttrByPath('text/refY', posAttrs.refY);
-    cell.setAttrByPath('text/textAnchor', posAttrs.textAnchor);
-    cell.setAttrByPath('text/textVerticalAnchor', posAttrs.textVerticalAnchor);
-    cell.setData({ ...previousData, customStyles: true }, { silent: true });
-
-    const operation = {
-      id: `label-position-${Date.now()}-${cell.id}`,
-      type: 'update-node' as const,
-      source: 'user-interaction' as const,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-      nodeId: cell.id,
-      updates: {
-        style: {
-          refX: posAttrs.refX,
-          refY: posAttrs.refY,
-          textAnchor: posAttrs.textAnchor,
-          textVerticalAnchor: posAttrs.textVerticalAnchor,
-        },
-        properties: { customStyles: true },
-      },
-      previousState: {
-        style: {
-          refX: previousText['refX'] ?? '50%',
-          refY: previousText['refY'] ?? '50%',
-          textAnchor: previousText['textAnchor'] ?? 'middle',
-          textVerticalAnchor: previousText['textVerticalAnchor'] ?? 'middle',
-        },
-        properties: { customStyles: previousData['customStyles'] || false },
-      },
-      includeInHistory: true,
-    };
-
-    this.appDfdOrchestrator.executeOperation(operation).subscribe({
-      next: result => {
-        if (!result.success) {
-          this.logger.error('Label position change failed', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error applying label position change', { error });
-      },
-    });
-  }
-
-  private applyEdgeStyleChange(cell: Cell, event: StyleChangeEvent): void {
-    const previousAttrs = cell.getAttrs() || {};
-    const previousLine = previousAttrs['line'] || {};
-
-    cell.setAttrByPath('line/stroke', event.value);
-
-    const operation = {
-      id: `style-change-${Date.now()}-${cell.id}`,
-      type: 'update-edge' as const,
-      source: 'user-interaction' as const,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-      edgeId: cell.id,
-      updates: {
-        style: { stroke: event.value },
-      },
-      previousState: {
-        style: { stroke: previousLine['stroke'] },
-      },
-      includeInHistory: true,
-    };
-
-    this.appDfdOrchestrator.executeOperation(operation).subscribe({
-      next: result => {
-        if (!result.success) {
-          this.logger.error('Edge style change failed', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error applying edge style change', { error });
-      },
-    });
   }
 
   onClearCustomFormatting(cellIds: string[]): void {
@@ -3190,73 +3014,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const cell = graph.getCellById(cellId);
       if (!cell) continue;
 
-      if (cell.isNode()) {
-        const data = cell.getData() || {};
-        const nodeType = data.nodeType || cell.shape || 'process';
-        const defaultFill = DFD_STYLING_HELPERS.getDefaultFill(nodeType as NodeType);
-        const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
+      const operation = this.dfdStyling.clearCustomFormatting(cell);
+      if (!operation) continue;
 
-        cell.setAttrByPath('body/fill', defaultFill);
-        cell.setAttrByPath('body/stroke', defaultStroke);
-        cell.setAttrByPath('body/fillOpacity', 1);
-        // Reset label position to shape-specific defaults
-        const defaultRefY = nodeType === 'store' ? '55%' : '50%';
-        cell.setAttrByPath('text/refX', '50%');
-        cell.setAttrByPath('text/refY', defaultRefY);
-        cell.setAttrByPath('text/textAnchor', 'middle');
-        cell.setAttrByPath('text/textVerticalAnchor', 'middle');
-        cell.setData({ ...data, customStyles: undefined }, { silent: true });
-
-        const operation = {
-          id: `clear-style-${Date.now()}-${cellId}`,
-          type: 'update-node' as const,
-          source: 'user-interaction' as const,
-          priority: 'normal' as const,
-          timestamp: Date.now(),
-          nodeId: cellId,
-          updates: {
-            style: {
-              fill: defaultFill,
-              stroke: defaultStroke,
-              fillOpacity: 1,
-              refX: '50%',
-              refY: defaultRefY,
-              textAnchor: 'middle',
-              textVerticalAnchor: 'middle',
-            },
-            properties: { customStyles: undefined },
-          },
-          includeInHistory: true,
-        };
-
-        this.appDfdOrchestrator.executeOperation(operation).subscribe({
-          error: error => {
-            this.logger.error('Error clearing custom formatting', { error });
-          },
-        });
-      } else if (cell.isEdge()) {
-        const defaultStroke = DFD_STYLING.EDGES.DEFAULT_STROKE;
-        cell.setAttrByPath('line/stroke', defaultStroke);
-
-        const operation = {
-          id: `clear-style-${Date.now()}-${cellId}`,
-          type: 'update-edge' as const,
-          source: 'user-interaction' as const,
-          priority: 'normal' as const,
-          timestamp: Date.now(),
-          edgeId: cellId,
-          updates: {
-            style: { stroke: defaultStroke },
-          },
-          includeInHistory: true,
-        };
-
-        this.appDfdOrchestrator.executeOperation(operation).subscribe({
-          error: error => {
-            this.logger.error('Error clearing edge custom formatting', { error });
-          },
-        });
-      }
+      const isEdge = operation.type === 'update-edge';
+      this.appDfdOrchestrator.executeOperation(operation).subscribe({
+        error: error => {
+          this.logger.error(
+            isEdge ? 'Error clearing edge custom formatting' : 'Error clearing custom formatting',
+            { error },
+          );
+        },
+      });
     }
 
     this.updateStylePanelCells();
