@@ -842,11 +842,23 @@ following methods from the component **verbatim**, retyping the cell/graph
 parameters from `any` to `LayoutCell` / `LayoutGraph`:
 
 `applyAutoLayout`, `applyContainerFit`, `applyIconOnlyFit`, `cascadeContainerLayout`,
-`_runLayoutCycle` (→ `runLayoutCycle`), `revertAutoFit`, `applyAutoLayoutToAllEligibleCells`,
-`revertAutoFitOnAllAutoFitCells`, `_buildChildBox` (→ `buildChildBox`),
+`applyAutoLayoutToAllEligibleCells`, `_buildChildBox` (→ `buildChildBox`),
 `_resolveLayoutOrientation` (→ `resolveLayoutOrientation`),
 `_clearVerticesOfConnectedEdges` (→ `clearVerticesOfConnectedEdges`),
-`_setAbsoluteIconAttrs` (→ `setAbsoluteIconAttrs`), `_setAbsoluteLabelAttrs` (→ `setAbsoluteLabelAttrs`).
+`_setAbsoluteIconAttrs` (→ `setAbsoluteIconAttrs`), `_setAbsoluteLabelAttrs` (→ `setAbsoluteLabelAttrs`),
+`_buildIconColumn` (private helper of `applyContainerFit`).
+
+> **Plan adjustment (made during Task 6 execution).** Two methods originally
+> listed here were moved to Task 7:
+> - **`_runLayoutCycle` stays in the component** as a thin private orchestrator.
+>   It contains two `executeOperation` dispatches plus the `_inLayoutCycle` flag
+>   and `previousStates` history capture — none of which may leave the component
+>   per the governing principle. It calls `this.dfdLayout.applyAutoLayout()` /
+>   `cascadeContainerLayout()` for the pure steps. Not renamed.
+> - **`revertAutoFit` / `revertAutoFitOnAllAutoFitCells` move in Task 7**, not
+>   here — they call `applyIconToCell`, which depends on `ArchitectureIconService`
+>   and belongs to `DfdIconService`. Injecting that service into
+>   `DfdLayoutService` would duplicate icon logic across two services.
 
 Keep the existing imports from `../../utils/auto-layout.util`, `../../constants/styling-constants`, `../../utils/layout-lock.util`, `../../types/icon-placement.types`. Replace `this.userPreferencesService` with `this.userPreferences`. Rename private (`_`-prefixed) methods by dropping the prefix when they become public service methods; keep methods that stay internal as `private`.
 
@@ -982,12 +994,22 @@ Expected: FAIL — cannot resolve `./dfd-icon.service`.
 
 - [ ] **Step 3: Write the service**
 
-Create `dfd-icon.service.ts`. Inject `UserPreferencesService` and `ArchitectureIconService`. Move verbatim, retyping `any` cell params to `LayoutCell`:
+Create `dfd-icon.service.ts`. Inject `UserPreferencesService`, `ArchitectureIconService`, and `DfdLayoutService`. Move verbatim, retyping `any` cell params to `LayoutCell`:
 
 `_captureCellStateForHistory` (→ `captureCellStateForHistory`), `applyIconToCell`,
 `restoreLabelDefaults`, `restoreBorder`, `applyBorderPreference`, `applyIconsOnLoad`
 (takes a `LayoutGraph`), `applyLockBadge`, `reapplyBorderPreferenceToAllIconnedCells`
 (takes a `LayoutGraph` + `boolean`).
+
+> **Plan adjustment (carried over from Task 6).** `revertAutoFit` and
+> `revertAutoFitOnAllAutoFitCells` move here too — they were deferred from Task 6
+> because they call `applyIconToCell` (an icon method that belongs in this
+> service). Move both verbatim into `DfdIconService`. `revertAutoFit` reads shape
+> config / arch data and calls `applyIconToCell`; `revertAutoFitOnAllAutoFitCells`
+> iterates graph nodes and calls `revertAutoFit`. They also call layout helpers
+> (`applyIconOnlyFit` / `applyContainerFit` are NOT among them — verify) — if
+> `revertAutoFit` needs a `DfdLayoutService` method, that is why `DfdLayoutService`
+> is injected here. Delegate component callers of both to `this.dfdIcon.*`.
 
 Keep imports from `../../types/arch-icon.types`, `../../types/icon-placement.types`, `../../utils/layout-lock.util`, `../../constants/styling-constants`.
 
