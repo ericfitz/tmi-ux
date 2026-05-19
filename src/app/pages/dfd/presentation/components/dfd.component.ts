@@ -112,21 +112,8 @@ import {
   IconRemovedEvent,
   PlacementChangedEvent,
 } from './icon-picker-panel/icon-picker-panel.component';
-import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
-import {
-  ArchIconData,
-  ICON_ELIGIBLE_SHAPES,
-  ICON_HIDEABLE_BORDER_SHAPES,
-  ICON_HIDEABLE_BORDER_SELECTORS,
-} from '../../types/arch-icon.types';
-import {
-  ICON_PLACEMENT_ATTRS,
-  ICON_SIZE,
-  DEFAULT_LABEL_ATTRS_BY_SHAPE,
-  getIconPlacementKey,
-  getLabelAttrsForIconPlacement,
-} from '../../types/icon-placement.types';
-import { isCellLayoutLocked, LOCK_BADGE_ICON_HREF } from '../../utils/layout-lock.util';
+import { ArchIconData, ICON_ELIGIBLE_SHAPES } from '../../types/arch-icon.types';
+import { isCellLayoutLocked } from '../../utils/layout-lock.util';
 import {
   PortLabelPopoverComponent,
   PortLabelData,
@@ -146,6 +133,7 @@ import { environment } from '../../../../../environments/environment';
 import { DfdDialogService } from '../services/dfd-dialog.service';
 import { DfdCommandService } from '../services/dfd-command.service';
 import { DfdLayoutService } from '../services/dfd-layout.service';
+import { DfdIconService } from '../services/dfd-icon.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -305,11 +293,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
     private authService: AuthService,
     private userPreferencesService: UserPreferencesService,
-    private architectureIconService: ArchitectureIconService,
     private dfdNodeType: DfdNodeTypeService,
     private dfdDialog: DfdDialogService,
     private dfdCommand: DfdCommandService,
     private dfdLayout: DfdLayoutService,
+    private dfdIcon: DfdIconService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -700,7 +688,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             'DFD orchestrator just became initialized - setting up edge handlers',
           );
           this.setupEdgeObservableSubscriptions();
-          this.applyIconsOnLoad();
+          const graph = this.appDfdOrchestrator.getGraph;
+          if (graph) this.dfdIcon.applyIconsOnLoad(graph);
         }
 
         this.isSystemInitialized = state.initialized;
@@ -1007,7 +996,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Apply architecture icons to nodes that have icon data
-          this.applyIconsOnLoad();
+          const graph = this.appDfdOrchestrator.getGraph;
+          if (graph) this.dfdIcon.applyIconsOnLoad(graph);
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
@@ -1807,11 +1797,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!wasLocked) {
       // Lock applied: data change only, single history op.
-      const previousState = this._captureCellStateForHistory(cell);
+      const previousState = this.dfdIcon.captureCellStateForHistory(cell);
       const next = { ...cell.getData() };
       next._layoutLocked = true;
       cell.setData(next, { silent: true, overwrite: true });
-      this.applyLockBadge(cell);
+      this.dfdIcon.applyLockBadge(cell);
 
       const ts = Date.now();
       const op = {
@@ -1837,7 +1827,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const captureCell = (c: any): void => {
       if (!c?.id || previousStates.has(c.id)) return;
       if (!c.isNode?.()) return;
-      previousStates.set(c.id, this._captureCellStateForHistory(c));
+      previousStates.set(c.id, this.dfdIcon.captureCellStateForHistory(c));
     };
 
     captureCell(cell);
@@ -1864,7 +1854,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const next = { ...cell.getData() };
     delete next._layoutLocked;
     cell.setData(next, { silent: true, overwrite: true });
-    this.applyLockBadge(cell);
+    this.dfdIcon.applyLockBadge(cell);
 
     // Run a layout cycle on the now-unlocked cell. Re-uses the existing
     // applyAutoLayout + cascadeContainerLayout path.
@@ -2261,7 +2251,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         if (remainingLayoutChildren.length > 0) {
           this._runLayoutCycle(oldParent, 'ports');
         } else if (oldData._archAutoFit) {
-          this.revertAutoFit(oldParent);
+          this.dfdIcon.revertAutoFit(oldParent);
         }
       }
     };
@@ -2622,11 +2612,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           const graph = this.appDfdOrchestrator.getGraph;
           if (graph) this.dfdLayout.applyAutoLayoutToAllEligibleCells(graph);
         } else {
-          this.revertAutoFitOnAllAutoFitCells();
-          // When borders flip back ON, re-apply the existing border-pref logic
-          // (existing applyBorderPreference / restoreBorder per-cell run only at
-          // icon-set time, so we need to walk all iconned cells here).
-          this.reapplyBorderPreferenceToAllIconnedCells(prefs.showShapeBordersWithIcons);
+          const graph = this.appDfdOrchestrator.getGraph;
+          if (graph) {
+            this.dfdIcon.revertAutoFitOnAllAutoFitCells(graph);
+            // When borders flip back ON, re-apply the existing border-pref logic
+            // (existing applyBorderPreference / restoreBorder per-cell run only at
+            // icon-set time, so we need to walk all iconned cells here).
+            this.dfdIcon.reapplyBorderPreferenceToAllIconnedCells(
+              graph,
+              prefs.showShapeBordersWithIcons,
+            );
+          }
         }
       } else if (orientationChanged && prefs.autoLayoutEnabled) {
         // Container layout reads orientation; icon-only fit doesn't depend on it.
@@ -2639,20 +2635,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       lastEnabled = prefs.autoLayoutEnabled;
       lastOrientation = prefs.autoLayoutOrientation;
     });
-  }
-
-  private reapplyBorderPreferenceToAllIconnedCells(showBorders: boolean): void {
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) return;
-    for (const node of graph.getNodes()) {
-      const data = node.getData();
-      if (!data?._arch) continue;
-      if (showBorders) {
-        this.restoreBorder(node);
-      } else {
-        this.applyBorderPreference(node);
-      }
-    }
   }
 
   private updateSelectionState(): void {
@@ -2817,12 +2799,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       // and the executor captures previousState AFTER the handler runs, so
       // history would otherwise see no diff. metadata.previousCellState
       // overrides the executor's capture.
-      const previousCellState = this._captureCellStateForHistory(cell);
+      const previousCellState = this.dfdIcon.captureCellStateForHistory(cell);
 
       const previousData = cell.getData() ?? {};
       cell.setData({ ...previousData, _arch: event.arch }, { silent: true });
-      this.applyIconToCell(cell, event.arch);
-      this.applyBorderPreference(cell);
+      this.dfdIcon.applyIconToCell(cell, event.arch);
+      this.dfdIcon.applyBorderPreference(cell);
       this.dfdLayout.applyAutoLayout(cell, graph);
 
       const operation = {
@@ -2852,7 +2834,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const cell = graph.getCellById(cellId);
       if (!cell || !cell.isNode()) continue;
 
-      const previousCellState = this._captureCellStateForHistory(cell);
+      const previousCellState = this.dfdIcon.captureCellStateForHistory(cell);
 
       const previousData = cell.getData() ?? {};
       const restData: Record<string, unknown> = { ...previousData };
@@ -2860,9 +2842,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cell.setData(restData, { silent: true, overwrite: true });
       cell.setAttrByPath('icon/href', null);
 
-      this.restoreLabelDefaults(cell);
-      this.restoreBorder(cell);
-      this.revertAutoFit(cell);
+      this.dfdIcon.restoreLabelDefaults(cell);
+      this.dfdIcon.restoreBorder(cell);
+      this.dfdIcon.revertAutoFit(cell);
 
       const operation = {
         id: `icon-remove-${Date.now()}-${cellId}`,
@@ -2895,14 +2877,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const previousArch = previousData._arch as ArchIconData | undefined;
       if (!previousArch) continue;
 
-      const previousCellState = this._captureCellStateForHistory(cell);
+      const previousCellState = this.dfdIcon.captureCellStateForHistory(cell);
 
       const newArch: ArchIconData = {
         ...previousArch,
         placement: event.placement as any,
       };
       cell.setData({ ...previousData, _arch: newArch }, { silent: true });
-      this.applyIconToCell(cell, newArch);
+      this.dfdIcon.applyIconToCell(cell, newArch);
 
       const operation = {
         id: `icon-placement-${Date.now()}-${cellId}`,
@@ -2920,113 +2902,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.updateIconPickerCells();
     this.cdr.detectChanges();
-  }
-
-  /**
-   * Deep-clone a cell snapshot for history tracking. Used by handlers that
-   * mutate cell.data/attrs before calling executeOperation — the executor's
-   * own previousState capture runs after the mutation, so it would record
-   * the post-mutation state. metadata.previousCellState overrides that.
-   */
-  private _captureCellStateForHistory(cell: any): unknown {
-    const parent = cell.getParent?.();
-    return JSON.parse(
-      JSON.stringify({
-        id: cell.id,
-        shape: cell.shape,
-        position: cell.getPosition(),
-        size: cell.getSize(),
-        attrs: cell.getAttrs(),
-        ports: cell.getPorts?.(),
-        data: cell.getData(),
-        visible: cell.isVisible?.(),
-        zIndex: cell.getZIndex(),
-        parent: parent?.isNode?.() ? parent.id : undefined,
-      }),
-    );
-  }
-
-  private applyIconToCell(cell: any, arch: ArchIconData): void {
-    const iconPath = this.architectureIconService.getIconPath(arch);
-    const placementKey = getIconPlacementKey(arch.placement);
-    const placementAttrs = ICON_PLACEMENT_ATTRS[placementKey];
-
-    cell.setAttrByPath('icon/href', iconPath);
-    cell.setAttrByPath('icon/width', ICON_SIZE);
-    cell.setAttrByPath('icon/height', ICON_SIZE);
-    cell.setAttrByPath('icon/refX', placementAttrs.refX);
-    cell.setAttrByPath('icon/refY', placementAttrs.refY);
-    cell.setAttrByPath('icon/refX2', -ICON_SIZE / 2);
-    cell.setAttrByPath('icon/refY2', -ICON_SIZE / 2);
-
-    // Label is locked to the icon: horizontally centered on it, below with padding,
-    // for every placement and every eligible shape (including security-boundary).
-    const labelAttrs = getLabelAttrsForIconPlacement(arch.placement);
-    cell.setAttrByPath('text/refX', labelAttrs.refX);
-    cell.setAttrByPath('text/refY', labelAttrs.refY);
-    cell.setAttrByPath('text/refX2', labelAttrs.refX2);
-    cell.setAttrByPath('text/refY2', labelAttrs.refY2);
-    cell.setAttrByPath('text/textAnchor', labelAttrs.textAnchor);
-    cell.setAttrByPath('text/textVerticalAnchor', labelAttrs.textVerticalAnchor);
-  }
-
-  private restoreLabelDefaults(cell: any): void {
-    const defaults = DEFAULT_LABEL_ATTRS_BY_SHAPE[cell.shape];
-    if (!defaults) return;
-    cell.setAttrByPath('text/refX', defaults.refX);
-    cell.setAttrByPath('text/refY', defaults.refY);
-    cell.setAttrByPath('text/refX2', 0);
-    cell.setAttrByPath('text/refY2', 0);
-    cell.setAttrByPath('text/textAnchor', 'middle');
-    cell.setAttrByPath('text/textVerticalAnchor', 'middle');
-  }
-
-  private applyBorderPreference(cell: any): void {
-    const prefs = this.userPreferencesService.getPreferences();
-    if (
-      !prefs.showShapeBordersWithIcons &&
-      (ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(cell.shape)
-    ) {
-      const selectors = ICON_HIDEABLE_BORDER_SELECTORS[cell.shape] ?? ['body'];
-      for (const sel of selectors) {
-        cell.setAttrByPath(`${sel}/stroke`, 'transparent');
-        cell.setAttrByPath(`${sel}/fill`, 'transparent');
-      }
-    }
-  }
-
-  private restoreBorder(cell: any): void {
-    const shape = cell.shape;
-    const nodeStyles = DFD_STYLING.NODES as Record<string, any>;
-    const shapeKey = shape.toUpperCase().replace(/-/g, '_');
-    const config = nodeStyles[shapeKey];
-    if (!config) return;
-    const stroke = config.STROKE ?? DFD_STYLING.DEFAULT_STROKE;
-    const fill = config.FILL ?? DFD_STYLING.DEFAULT_FILL;
-    const selectors = ICON_HIDEABLE_BORDER_SELECTORS[shape] ?? ['body'];
-    for (const sel of selectors) {
-      cell.setAttrByPath(`${sel}/stroke`, stroke);
-      cell.setAttrByPath(`${sel}/fill`, fill);
-    }
-  }
-
-  private applyIconsOnLoad(): void {
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) return;
-
-    for (const node of graph.getNodes()) {
-      const data = node.getData();
-      const arch = data?._arch as ArchIconData | undefined;
-      if (arch) {
-        this.applyIconToCell(node, arch);
-        this.applyBorderPreference(node);
-      }
-      // Auto-layout pass for both iconned cells and security boundaries with
-      // embedded children. applyAutoLayout no-ops anything that isn't eligible.
-      this.dfdLayout.applyAutoLayout(node, graph);
-      // Sync lock badge visibility from persisted _layoutLocked.
-      this.applyLockBadge(node);
-    }
   }
 
   // -------- Auto-layout (#638, #642) --------
@@ -3068,7 +2943,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       const captureCell = (c: any): void => {
         if (!c?.id || previousStates.has(c.id)) return;
         if (!c.isNode?.()) return;
-        previousStates.set(c.id, this._captureCellStateForHistory(c));
+        previousStates.set(c.id, this.dfdIcon.captureCellStateForHistory(c));
       };
 
       captureCell(triggerCell);
@@ -3129,76 +3004,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return changed;
     } finally {
       this._inLayoutCycle = false;
-    }
-  }
-
-  /**
-   * Reverse a prior auto-fit (icon-only or container). Only acts on cells
-   * whose current size still matches the dimensions we recorded — if the
-   * user has resized the cell since, leave size alone and just clear the
-   * flag.
-   */
-  private revertAutoFit(cell: any): boolean {
-    const data = cell.getData() ?? {};
-    const previousAutoFit = data._archAutoFit as
-      | { kind: 'icon-only' | 'container'; width: number; height: number }
-      | undefined;
-    if (!previousAutoFit) return false;
-
-    const { width, height } = cell.getSize();
-    const stillAtAutoFitSize = width === previousAutoFit.width && height === previousAutoFit.height;
-
-    if (stillAtAutoFitSize) {
-      const shapeKey = cell.shape.toUpperCase().replace(/-/g, '_');
-      const shapeConfig = (DFD_STYLING.NODES as Record<string, any>)[shapeKey];
-      if (shapeConfig) {
-        cell.resize(shapeConfig.DEFAULT_WIDTH as number, shapeConfig.DEFAULT_HEIGHT as number);
-      }
-      // Restore icon and label to user-chosen placement.
-      const arch = data._arch as ArchIconData | undefined;
-      if (arch) {
-        this.applyIconToCell(cell, arch);
-      }
-    }
-
-    const next = { ...cell.getData() };
-    delete next._archAutoFit;
-    cell.setData(next, { silent: true, overwrite: true });
-    return true;
-  }
-
-  /**
-   * Revert auto-fit on every cell that has an `_archAutoFit` tag.
-   * Used when a global preference flips the auto-layout system off.
-   */
-  private revertAutoFitOnAllAutoFitCells(): void {
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) return;
-    for (const node of graph.getNodes()) {
-      if (isCellLayoutLocked(node)) continue;
-      const data = node.getData();
-      if (data?._archAutoFit) this.revertAutoFit(node);
-    }
-  }
-
-  /**
-   * Sync the lock-badge markup on a cell to its `_layoutLocked` data flag.
-   *
-   * - When locked: sets the badge's `href` and shows it (display: 'block').
-   * - When unlocked: hides the badge (display: 'none').
-   *
-   * Early-returns on non-lock-eligible shapes so we don't write `lockBadge`
-   * attrs to cells whose markup doesn't have that selector — those writes
-   * would still land in the cell's attrs data and bloat patch payloads.
-   */
-  private applyLockBadge(cell: any): void {
-    if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return;
-    const locked = isCellLayoutLocked(cell);
-    if (locked) {
-      cell.setAttrByPath('lockBadge/href', LOCK_BADGE_ICON_HREF);
-      cell.setAttrByPath('lockBadge/display', 'block');
-    } else {
-      cell.setAttrByPath('lockBadge/display', 'none');
     }
   }
 
