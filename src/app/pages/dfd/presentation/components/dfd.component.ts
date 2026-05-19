@@ -33,7 +33,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of, Subject, Subscription } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
@@ -95,28 +95,11 @@ import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { ThreatModelAuthorizationService } from '../../../tm/services/threat-model-authorization.service';
-import {
-  MetadataDialogComponent,
-  MetadataDialogData,
-} from '../../../tm/components/metadata-dialog/metadata-dialog.component';
-import {
-  CellPropertiesDialogComponent,
-  CellPropertiesDialogData,
-} from './cell-properties-dialog/cell-properties-dialog.component';
-import {
-  HistoryDialogComponent,
-  HistoryDialogData,
-} from './history-dialog/history-dialog.component';
-import {
-  GraphDataDialogComponent,
-  GraphDataDialogData,
-} from './graph-data-dialog/graph-data-dialog.component';
-import {
-  ClipboardDialogComponent,
-  ClipboardDialogData,
-} from './clipboard-dialog/clipboard-dialog.component';
-
-import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import { MetadataDialogData } from '../../../tm/components/metadata-dialog/metadata-dialog.component';
+import { CellPropertiesDialogData } from './cell-properties-dialog/cell-properties-dialog.component';
+import { HistoryDialogData } from './history-dialog/history-dialog.component';
+import { GraphDataDialogData } from './graph-data-dialog/graph-data-dialog.component';
+import { ClipboardDialogData } from './clipboard-dialog/clipboard-dialog.component';
 import {
   StylePanelComponent,
   CellStyleInfo,
@@ -166,23 +149,15 @@ import {
 } from './port-label-popover/port-label-popover.component';
 import { getLabelPositionFromAttrs, LABEL_POSITION_ATTRS } from '../../types/label-position.types';
 
-import {
-  ConfirmActionDialogComponent,
-  ConfirmActionDialogResult,
-} from '../../../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { InlineEditComponent } from '../../../../shared/components/inline-edit/inline-edit.component';
-import {
-  ThreatEditorDialogComponent,
-  ThreatEditorDialogData,
-} from '../../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
-import {
-  ThreatsDialogComponent,
-  ThreatsDialogData,
-} from '../../../tm/components/threats-dialog/threats-dialog.component';
+import { ThreatEditorDialogData } from '../../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
+import { ThreatsDialogData } from '../../../tm/components/threats-dialog/threats-dialog.component';
 import { environment } from '../../../../../environments/environment';
+import { DfdDialogService } from '../services/dfd-dialog.service';
+import { DfdCommandService } from '../services/dfd-command.service';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -344,6 +319,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private userPreferencesService: UserPreferencesService,
     private architectureIconService: ArchitectureIconService,
     private dfdNodeType: DfdNodeTypeService,
+    private dfdDialog: DfdDialogService,
+    private dfdCommand: DfdCommandService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -1078,11 +1055,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       historyService: this.appDfdOrchestrator.getHistoryService(),
     };
 
-    this.dialog.open(HistoryDialogComponent, {
-      width: '800px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
+    this.dfdDialog.openHistory(dialogData);
 
     this.logger.info('Opened history dialog');
   }
@@ -1099,21 +1072,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       graph: graph,
     };
 
-    this.dialog.open(GraphDataDialogComponent, {
-      width: '800px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
+    this.dfdDialog.openGraphData(dialogData);
 
     this.logger.info('Opened graph data dialog');
   }
 
   showHelp(): void {
-    this.dialog.open(HelpDialogComponent, {
-      width: '800px',
-      maxWidth: '90vw',
-      maxHeight: '90vh',
-    });
+    this.dfdDialog.openHelp();
 
     this.logger.info('Opened help dialog');
   }
@@ -1130,11 +1095,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       graph: graph,
     };
 
-    this.dialog.open(ClipboardDialogComponent, {
-      width: '800px',
-      maxHeight: '90vh',
-      data: dialogData,
-    });
+    this.dfdDialog.openClipboard(dialogData);
 
     this.logger.info('Opened clipboard dialog');
   }
@@ -1576,17 +1537,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                   shapeType: shapeType,
                 };
 
-                const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
-                  width: '650px',
-                  maxHeight: '90vh',
-                  panelClass: 'threat-editor-dialog-650',
-                  data: dialogData,
-                });
+                const dialogRef = this.dfdDialog.openThreatEditor(dialogData);
 
                 dialogRef.afterClosed().subscribe(result => {
                   if (result) {
                     this.logger.info('Threat editor closed with result, creating threat');
-                    this._createThreat(result);
+                    this.dfdCommand.createThreat(this.threatModelId!, result);
                   }
                 });
               },
@@ -1672,11 +1628,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             cells: cellData.cells,
           };
 
-          this.dialog.open(ThreatsDialogComponent, {
-            width: '800px',
-            maxHeight: '90vh',
-            data: dialogData,
-          });
+          this.dfdDialog.openThreats(dialogData);
         },
         error: error => {
           this.logger.error('Failed to load threat model', error);
@@ -1712,7 +1664,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
           // Navigate away immediately after starting the save request
           this.logger.info('Save request initiated, navigating away');
-          this._navigateAway();
+          this.dfdCommand.navigateAway(this.threatModelId);
         })
         .catch((error: unknown) => {
           this.logger.error('Error capturing SVG thumbnail, saving without image', error);
@@ -1720,7 +1672,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this._fallbackSaveAndNavigate();
         });
     } else {
-      this._navigateAway();
+      this.dfdCommand.navigateAway(this.threatModelId);
     }
   }
 
@@ -1740,81 +1692,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Navigate away immediately after starting the save request
     this.logger.info('Save request initiated (no thumbnail), navigating away');
-    this._navigateAway();
+    this.dfdCommand.navigateAway(this.threatModelId);
   }
 
   /**
-   * Capture SVG from the current graph and return as base64 encoded string (for thumbnails)
+   * Capture an SVG thumbnail of the current graph via DfdCommandService,
+   * supplying the live graph adapter, export service, and a selection-clearing
+   * callback so the command service stays graph-agnostic.
    */
   private _captureDiagramSvgThumbnail(): Promise<string | null> {
-    return new Promise(resolve => {
-      const graphAdapter = this.dfdInfrastructure.graphAdapter;
-      if (!graphAdapter || !graphAdapter.isInitialized()) {
-        this.logger.warn('Cannot capture SVG - graph not initialized');
-        resolve(null);
-        return;
-      }
-
-      const graph = graphAdapter.getGraph();
-      if (!graph) {
-        this.logger.warn('Cannot capture SVG - graph is null');
-        resolve(null);
-        return;
-      }
-
-      // Get export service from infrastructure
-      const exportService = this.dfdInfrastructure.exportService;
-      if (!exportService) {
-        this.logger.warn('Cannot capture SVG - export service not available');
-        resolve(null);
-        return;
-      }
-
-      const exportPrep = exportService.prepareImageExport(graph);
-      if (!exportPrep) {
-        resolve(null);
-        return; // prepareImageExport handles logging
-      }
-
-      // Clear selection before capturing thumbnail to avoid highlighting selected cells
-      this.appDfdOrchestrator.clearSelection();
-
-      // Cast graph to access export methods added by the X6 export plugin
-      const exportGraph = graph as {
-        toSVG: (
-          callback: (svgString: string) => void,
-          options?: {
-            padding?: number;
-            viewBox?: string;
-            preserveAspectRatio?: string;
-            copyStyles?: boolean;
-          },
-        ) => void;
-      };
-
-      try {
-        exportGraph.toSVG((svgString: string) => {
-          try {
-            const base64Svg = exportService.processSvg(svgString, true, exportPrep.viewBox);
-            this.logger.debugComponent(
-              'DfdComponent',
-              'Successfully captured and cleaned diagram SVG thumbnail',
-              {
-                originalLength: svgString.length,
-                base64Length: base64Svg.length,
-              },
-            );
-            resolve(base64Svg);
-          } catch (error: unknown) {
-            this.logger.error('Error encoding SVG to base64', error);
-            resolve(null);
-          }
-        }, exportPrep.exportOptions);
-      } catch (error: unknown) {
-        this.logger.error('Error capturing SVG', error);
-        resolve(null);
-      }
-    });
+    return this.dfdCommand.captureDiagramSvgThumbnail(
+      this.dfdInfrastructure.graphAdapter,
+      this.dfdInfrastructure.exportService,
+      () => this.appDfdOrchestrator.clearSelection(),
+    );
   }
 
   editCellText(): void {
@@ -2255,13 +2146,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       cell: targetCell,
     };
 
-    this.dialog.open(CellPropertiesDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
+    this.dfdDialog.openCellProperties(dialogData);
   }
 
   // Edge Observable Subscriptions
@@ -2644,15 +2529,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const cell = graph.getCellById(selectedCellIds[0]);
     if (!cell) return;
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '600px',
-      data: {
-        threatModelId: this.threatModelId,
-        cellId: cell.id,
-        // Get metadata from the data._metadata field (where it's stored as an array)
-        metadata: cell.getData()?._metadata || [],
-      } as MetadataDialogData,
-    });
+    const dialogRef = this.dfdDialog.openMetadata({
+      threatModelId: this.threatModelId,
+      cellId: cell.id,
+      // Get metadata from the data._metadata field (where it's stored as an array)
+      metadata: cell.getData()?._metadata || [],
+    } as MetadataDialogData);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -3927,77 +3809,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return of(true);
     }
 
-    const dialogRef = this.dialog.open(ConfirmActionDialogComponent, {
-      width: '450px',
-      data: {
-        title: 'editor.deleteMetadataWarning.title',
-        message: 'editor.deleteMetadataWarning.message',
-        confirmLabel: 'editor.deleteMetadataWarning.confirm',
-        confirmIsDestructive: true,
-      },
-      disableClose: true,
-    });
-
-    return dialogRef
-      .afterClosed()
-      .pipe(map((result: ConfirmActionDialogResult | undefined) => result?.confirmed ?? false));
-  }
-
-  private _navigateAway(): void {
-    if (this.threatModelId) {
-      this.logger.info('Navigating back to threat model', { threatModelId: this.threatModelId });
-      this.router
-        .navigate(['/tm', this.threatModelId], { queryParams: { refresh: 'true' } })
-        .catch(error => {
-          this.logger.error('Failed to navigate back to threat model', { error });
-          // Fallback: navigate to TM list
-          this.router.navigate(['/dashboard']).catch(fallbackError => {
-            this.logger.error('Failed to navigate to TM list as fallback', { fallbackError });
-          });
-        });
-    } else {
-      this.logger.warn('Cannot navigate: No threat model ID available, navigating to TM list');
-      this.router.navigate(['/dashboard']).catch(error => {
-        this.logger.error('Failed to navigate to TM list', { error });
-      });
-    }
-  }
-
-  /**
-   * Helper method to create a new threat in the threat model
-   */
-  private _createThreat(threatData: any): void {
-    if (!this.threatModelId) {
-      this.logger.error('Cannot create threat: No threat model ID available');
-      return;
-    }
-
-    // Build the threat data for the API (server assigns id, timestamps)
-    const newThreatData = {
-      name: threatData.name,
-      description: threatData.description,
-      diagram_id: threatData.diagram_id,
-      cell_id: threatData.cell_id,
-      severity: threatData.severity,
-      score: threatData.score,
-      priority: threatData.priority,
-      mitigated: threatData.mitigated,
-      status: threatData.status,
-      threat_type: threatData.threat_type,
-      asset_id: threatData.asset_id,
-      issue_uri: threatData.issue_uri,
-    };
-
-    // Use the dedicated createThreat endpoint
-    this._subscriptions.add(
-      this.threatModelService.createThreat(this.threatModelId, newThreatData).subscribe({
-        next: newThreat => {
-          this.logger.info('Threat created successfully', { threatId: newThreat.id });
-        },
-        error: error => {
-          this.logger.error('Failed to create threat', error);
-        },
-      }),
-    );
+    return this.dfdDialog.confirmDeletion();
   }
 }
