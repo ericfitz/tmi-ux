@@ -42,6 +42,16 @@ export interface LayoutCell {
   isNode(): boolean;
   isEdge(): boolean;
   getPorts(): unknown[];
+
+  // Edge-cell members. Present only on edges; optional so node fakes need not
+  // implement them. Used by DfdLayoutService.buildChildBox to detect which
+  // cardinal port a connected edge attaches to, and by
+  // clearVerticesOfConnectedEdges to strip routing vertices.
+  getSourceCellId?(): string | undefined;
+  getTargetCellId?(): string | undefined;
+  getSourcePortId?(): string | undefined;
+  getTargetPortId?(): string | undefined;
+  setVertices?(vertices: unknown[]): void;
 }
 
 /** Structural surface of an X6 Graph used by DFD presentation services. */
@@ -49,4 +59,8 @@ export interface LayoutGraph {
   getNodes(): LayoutCell[];
   getEdges(): LayoutCell[];
   getCellById(id: string): LayoutCell | null;
+
+  // Used by DfdLayoutService.buildChildBox and clearVerticesOfConnectedEdges
+  // to find the edges attached to a given cell.
+  getConnectedEdges?(cell: LayoutCell): LayoutCell[];
 }
