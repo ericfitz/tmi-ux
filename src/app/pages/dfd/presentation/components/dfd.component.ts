@@ -75,6 +75,7 @@ import { InfraX6KeyboardAdapter } from '../../infrastructure/adapters/infra-x6-k
 import { InfraX6EventLoggerAdapter } from '../../infrastructure/adapters/infra-x6-event-logger.adapter';
 import { X6TooltipAdapter } from '../../infrastructure/adapters/infra-x6-tooltip.adapter';
 import { UiTooltipService } from '../services/ui-tooltip.service';
+import { DfdNodeTypeService } from '../services/dfd-node-type.service';
 import { InfraEdgeQueryService } from '../../infrastructure/services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
@@ -342,6 +343,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private userPreferencesService: UserPreferencesService,
     private architectureIconService: ArchitectureIconService,
+    private dfdNodeType: DfdNodeTypeService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -1054,7 +1056,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addGraphNode(nodeType: string): void {
     // Map string nodeType to NodeType enum
-    const mappedNodeType = this.mapStringToNodeType(nodeType);
+    const mappedNodeType = this.dfdNodeType.mapStringToNodeType(nodeType);
     this.onAddNode(mappedNodeType);
   }
 
@@ -2107,87 +2109,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       : this.appDfdOrchestrator.getSelectedCells();
 
     for (const cell of targetCells) {
-      const assetIds = this._getCellDataAssets(cell);
+      const assetIds = this.dfdNodeType.getCellDataAssets(cell);
       this._selectedCellDataAssets.set(cell.id, new Set(assetIds));
     }
-  }
-
-  /**
-   * Get data assets from a cell, handling both new and legacy formats
-   */
-  private _getCellDataAssets(cell: any): string[] {
-    const data = cell.getData() || {};
-
-    // New format: data_assets array
-    if (data.data_assets && Array.isArray(data.data_assets)) {
-      return data.data_assets;
-    }
-
-    // Legacy format: single dataAssetId
-    if (data.dataAssetId && typeof data.dataAssetId === 'string') {
-      return [data.dataAssetId];
-    }
-
-    return [];
-  }
-
-  /**
-   * Set data assets on a cell using the new format
-   */
-  private _setCellDataAssets(cell: any, assetIds: string[]): void {
-    const currentData = cell.getData() || {};
-    const updatedData = { ...currentData };
-
-    // Remove legacy format if present
-    delete updatedData.dataAssetId;
-
-    // Set new format (or remove if empty)
-    if (assetIds.length > 0) {
-      updatedData.data_assets = assetIds;
-    } else {
-      delete updatedData.data_assets;
-    }
-
-    cell.setData(updatedData);
   }
 
   /**
    * Check if a data asset is associated with ALL selected/right-clicked cells
    */
   isDataAssetChecked(assetId: string): boolean {
-    if (this._selectedCellDataAssets.size === 0) return false;
-
-    for (const assetSet of this._selectedCellDataAssets.values()) {
-      if (!assetSet.has(assetId)) {
-        return false;
-      }
-    }
-    return true;
+    return this.dfdNodeType.isDataAssetChecked(this._selectedCellDataAssets, assetId);
   }
 
   /**
    * Check if a data asset is associated with SOME (but not all) selected cells
    */
   isDataAssetIndeterminate(assetId: string): boolean {
-    if (this._selectedCellDataAssets.size <= 1) return false;
-
-    let hasAsset = false;
-    let missingAsset = false;
-
-    for (const assetSet of this._selectedCellDataAssets.values()) {
-      if (assetSet.has(assetId)) {
-        hasAsset = true;
-      } else {
-        missingAsset = true;
-      }
-
-      // If we found both states, it's indeterminate
-      if (hasAsset && missingAsset) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.dfdNodeType.isDataAssetIndeterminate(this._selectedCellDataAssets, assetId);
   }
 
   /**
@@ -2212,7 +2150,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       : this.appDfdOrchestrator.getSelectedCells();
 
     for (const cell of targetCells) {
-      const currentAssets = new Set(this._getCellDataAssets(cell));
+      const currentAssets = new Set(this.dfdNodeType.getCellDataAssets(cell));
 
       if (shouldAdd) {
         currentAssets.add(assetId);
@@ -3959,23 +3897,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (oldHasClipboardContent !== this.hasClipboardContent) {
       this.cdr.detectChanges();
-    }
-  }
-
-  private mapStringToNodeType(nodeType: string): NodeType {
-    switch (nodeType) {
-      case 'actor':
-        return 'actor';
-      case 'process':
-        return 'process';
-      case 'store':
-        return 'store';
-      case 'security-boundary':
-        return 'security-boundary';
-      case 'text-box':
-        return 'text-box'; // Fix: Use correct text-box node type
-      default:
-        return 'process';
     }
   }
 

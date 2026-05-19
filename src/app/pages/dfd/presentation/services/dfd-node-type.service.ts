@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NodeType } from '../../domain/value-objects/node-info';
+import type { LayoutCell } from '../../types/layout-cell.types';
 
 /**
  * Pure node-type mapping and data-asset predicates for the DFD editor.
@@ -26,5 +27,64 @@ export class DfdNodeTypeService {
       default:
         return 'process';
     }
+  }
+
+  /** Read a cell's data assets, supporting both the array and legacy single-id formats. */
+  getCellDataAssets(cell: LayoutCell): string[] {
+    const data = cell.getData() ?? {};
+    const assets = (data as { data_assets?: unknown }).data_assets;
+    if (Array.isArray(assets)) {
+      return (assets as unknown[]).filter((v): v is string => typeof v === 'string');
+    }
+    const legacy = (data as { dataAssetId?: unknown }).dataAssetId;
+    if (typeof legacy === 'string') {
+      return [legacy];
+    }
+    return [];
+  }
+
+  /** Write data assets to a cell in the array format, removing the legacy key. */
+  setCellDataAssets(cell: LayoutCell, assetIds: string[]): void {
+    const updated: Record<string, unknown> = { ...(cell.getData() ?? {}) };
+    delete updated['dataAssetId'];
+    if (assetIds.length > 0) {
+      updated['data_assets'] = assetIds;
+    } else {
+      delete updated['data_assets'];
+    }
+    cell.setData(updated);
+  }
+
+  /** True when every cell in the selection map has the given asset. */
+  isDataAssetChecked(selected: ReadonlyMap<string, Set<string>>, assetId: string): boolean {
+    if (selected.size === 0) {
+      return false;
+    }
+    for (const assetSet of selected.values()) {
+      if (!assetSet.has(assetId)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** True when some — but not all — cells in the selection map have the asset. */
+  isDataAssetIndeterminate(selected: ReadonlyMap<string, Set<string>>, assetId: string): boolean {
+    if (selected.size <= 1) {
+      return false;
+    }
+    let hasAsset = false;
+    let missingAsset = false;
+    for (const assetSet of selected.values()) {
+      if (assetSet.has(assetId)) {
+        hasAsset = true;
+      } else {
+        missingAsset = true;
+      }
+      if (hasAsset && missingAsset) {
+        return true;
+      }
+    }
+    return false;
   }
 }
