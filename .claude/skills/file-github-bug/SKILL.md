@@ -76,16 +76,102 @@ Collect from the current conversation:
 
 ### 3. Determine milestone
 
-Compare the current git branch to milestones on the target repo:
+Compare the current git branch to milestones on the target repo, in order:
+
+1. The full branch name verbatim.
+2. A trailing semver (`X.Y.Z`, optionally with a `-prerelease` suffix
+   like `-rc.1`) extracted from the end of the branch name. Handles the
+   common convention where branches are named `dev/1.4.0` or
+   `release/1.4.0-rc.1` but milestones use bare semver.
+3. If still no match, repeat steps 1–2 against the **parent branch**
+   (the nearest local branch by `merge-base` distance from HEAD,
+   excluding `main`). Handles `main → dev/1.4.0 → feature/foo` cases
+   where the feature branch itself carries no version info.
+4. If still no match, do not set a milestone.
+
+`main` is the "no milestone" sentinel — never resolve a milestone for
+it, and never walk to a parent above it.
+
+The parent lookup walks **only one level**. If the parent is itself a
+feature branch (e.g. a feature based on another feature), no further
+walk happens.
 
 ```bash
 BRANCH=$(git branch --show-current)
-[ "$BRANCH" = "main" ] || \
-  MILESTONE=$(gh api "repos/$OWNER/$REPO/milestones" \
-    --jq ".[] | select(.title == \"$BRANCH\") | .title")
+MILESTONE=""
+
+# Extract a trailing X.Y.Z[-prerelease] from a branch name, or empty string.
+extract_semver() {
+  echo "$1" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' || true
+}
+
+# Find the nearest local branch (other than $1 and main) by merge-base distance.
+# "Nearest" = the branch whose merge-base with HEAD is closest to HEAD (fewest
+# commits between merge-base and HEAD). Works even if the parent branch has
+# advanced past the fork point.
+find_parent_branch() {
+  local self="$1"
+  git for-each-ref --format='%(refname:short)' refs/heads/ \
+    | while read -r b; do
+        [ "$b" = "$self" ] && continue
+        [ "$b" = "main" ] && continue
+        local mb dist
+        mb=$(git merge-base "$b" HEAD 2>/dev/null) || continue
+        dist=$(git rev-list --count "$mb..HEAD" 2>/dev/null) || continue
+        echo "$dist $b"
+      done \
+    | sort -n \
+    | head -1 \
+    | awk '{print $2}'
+}
+
+if [ -n "$BRANCH" ] && [ "$BRANCH" != "main" ]; then
+  MILESTONES=$(gh api "repos/$OWNER/$REPO/milestones?state=open" --jq '.[].title')
+
+  # Candidates from the current branch.
+  CANDIDATES=("$BRANCH" "$(extract_semver "$BRANCH")")
+
+  # If neither matches, add candidates from the parent branch (one level up).
+  matched=""
+  for candidate in "${CANDIDATES[@]}"; do
+    [ -z "$candidate" ] && continue
+    if echo "$MILESTONES" | grep -Fxq "$candidate"; then
+      MILESTONE="$candidate"
+      matched=1
+      break
+    fi
+  done
+
+  if [ -z "$matched" ]; then
+    PARENT=$(find_parent_branch "$BRANCH")
+    if [ -n "$PARENT" ] && [ "$PARENT" != "main" ]; then
+      for candidate in "$PARENT" "$(extract_semver "$PARENT")"; do
+        [ -z "$candidate" ] && continue
+        if echo "$MILESTONES" | grep -Fxq "$candidate"; then
+          MILESTONE="$candidate"
+          break
+        fi
+      done
+    fi
+  fi
+fi
 ```
 
-If no exact match, do not set a milestone.
+Matching is exact (case preserved, no partial matches) so unrelated
+branches don't pick up a milestone by accident. The parent-branch
+heuristic uses `merge-base` against each local branch and picks the
+one whose merge-base is closest to HEAD; this works without any branch
+metadata or upstream configuration, and tolerates the parent having
+advanced past the fork point.
+
+**Parent-walk caveats:**
+- If you've based a feature branch off another feature branch
+  (e.g. `feature/b` off `feature/a` off `dev/1.4.0`), the parent
+  resolves to `feature/a`, not `dev/1.4.0`. No further walk happens.
+- If two local branches have the same tip distance, sort order picks
+  one — typically not an issue in practice.
+- On a fresh checkout with only `main` present, no parent is found
+  and no milestone is set.
 
 ### 4. Create the issue
 
@@ -222,6 +308,6 @@ Output:
 
 1. **Evidence quality matters**: include actual payloads and field values, not paraphrases.
 2. **Conventional Commit prefix**: always `fix:` for bug reports.
-3. **Branch → milestone**: exact title match; no fuzzy matching to avoid surprises.
+3. **Branch → milestone**: tried in order — full branch name, trailing semver (`X.Y.Z` with optional `-prerelease`) extracted from the branch name, then the same two candidates against the parent branch (one level up, via `merge-base` nearest-ancestor). All matches are exact against open milestone titles; no fuzzy matching beyond the explicit candidates above, to avoid picking up a milestone by accident.
 4. **Project/field IDs**: stable for a project's lifetime. If the project is rebuilt, refresh values in `.local-projects.json` with `gh project field-list <number> --owner <owner>`.
 5. **Field ID discovery**: to populate the config initially, run `gh project field-list <number> --owner <owner>`.
