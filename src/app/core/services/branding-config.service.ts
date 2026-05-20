@@ -107,6 +107,11 @@ export class BrandingConfigService {
     return this.config$.value?.ui?.user_hyperlink_provider ?? null;
   }
 
+  /** Operator info from the server's /config response. Null if the server is offline or omitted the field. */
+  get serverOperator(): { name?: string; contact?: string; jurisdiction?: string } | null {
+    return this.config$.value?.operator ?? null;
+  }
+
   /** Server-configured default theme, mapped to client ThemeMode. Null if not set or invalid. */
   get defaultTheme(): ThemeMode | null {
     const raw = this.config$.value?.ui?.default_theme;

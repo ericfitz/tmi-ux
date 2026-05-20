@@ -9,8 +9,8 @@ import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { OperatorService } from './operator.service';
+import { BrandingConfigService } from './branding-config.service';
 
-// Mock the environment module
 vi.mock('../../../environments/environment', () => ({
   environment: {
     operatorName: 'Test Operator Inc.',
@@ -21,11 +21,17 @@ vi.mock('../../../environments/environment', () => ({
 
 import { environment } from '../../../environments/environment';
 
+function createBrandingStub(
+  operator: { name?: string; contact?: string; jurisdiction?: string } | null = null,
+): BrandingConfigService {
+  return { serverOperator: operator } as unknown as BrandingConfigService;
+}
+
 describe('OperatorService', () => {
   let service: OperatorService;
 
   beforeEach(() => {
-    service = new OperatorService();
+    service = new OperatorService(createBrandingStub(null));
   });
 
   describe('Service Initialization', () => {
@@ -34,114 +40,104 @@ describe('OperatorService', () => {
     });
   });
 
-  describe('getOperatorName()', () => {
-    it('should return operator name from environment', () => {
-      const result = service.getOperatorName();
+  describe('Environment fallback (no server config)', () => {
+    it('returns operator name from environment', () => {
+      expect(service.getOperatorName()).toBe(environment.operatorName);
+    });
 
-      expect(result).toBe('Test Operator Inc.');
-      expect(result).toBe(environment.operatorName);
+    it('returns operator contact from environment', () => {
+      expect(service.getOperatorContact()).toBe(environment.operatorContact);
+    });
+
+    it('returns operator jurisdiction from environment', () => {
+      expect(service.getOperatorJurisdiction()).toBe(environment.operatorJurisdiction);
     });
   });
 
-  describe('getOperatorContact()', () => {
-    it('should return operator contact from environment', () => {
-      const result = service.getOperatorContact();
-
-      expect(result).toBe('contact@testoperator.com');
-      expect(result).toBe(environment.operatorContact);
+  describe('Server config takes precedence', () => {
+    it('uses server operator name when present', () => {
+      service = new OperatorService(createBrandingStub({ name: 'Server Operator' }));
+      expect(service.getOperatorName()).toBe('Server Operator');
     });
-  });
 
-  describe('getOperatorJurisdiction()', () => {
-    it('should return operator jurisdiction from environment', () => {
-      const result = service.getOperatorJurisdiction();
+    it('uses server operator contact when present', () => {
+      service = new OperatorService(createBrandingStub({ contact: 'ops@server.example' }));
+      expect(service.getOperatorContact()).toBe('ops@server.example');
+    });
 
-      expect(result).toBe('United States');
-      expect(result).toBe(environment.operatorJurisdiction);
+    it('uses server operator jurisdiction when present', () => {
+      service = new OperatorService(createBrandingStub({ jurisdiction: 'EU' }));
+      expect(service.getOperatorJurisdiction()).toBe('EU');
+    });
+
+    it('falls back to environment when server field is empty string', () => {
+      service = new OperatorService(
+        createBrandingStub({ name: '', contact: '', jurisdiction: '' }),
+      );
+      expect(service.getOperatorName()).toBe(environment.operatorName);
+      expect(service.getOperatorContact()).toBe(environment.operatorContact);
+      expect(service.getOperatorJurisdiction()).toBe(environment.operatorJurisdiction);
+    });
+
+    it('falls back to environment when server field is whitespace-only', () => {
+      service = new OperatorService(createBrandingStub({ name: '   ' }));
+      expect(service.getOperatorName()).toBe(environment.operatorName);
+    });
+
+    it('falls back to environment when server omits a field', () => {
+      service = new OperatorService(createBrandingStub({ name: 'Server Operator' }));
+      expect(service.getOperatorName()).toBe('Server Operator');
+      expect(service.getOperatorContact()).toBe(environment.operatorContact);
+      expect(service.getOperatorJurisdiction()).toBe(environment.operatorJurisdiction);
     });
   });
 
   describe('hasOperatorInfo()', () => {
-    it('should return true when both name and contact are configured', () => {
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(true);
+    it('returns true when both name and contact resolve (from environment)', () => {
+      expect(service.hasOperatorInfo()).toBe(true);
     });
 
-    it('should return false when operator name is empty', () => {
-      // Temporarily override environment for this test
+    it('returns true when both resolve from server', () => {
+      service = new OperatorService(
+        createBrandingStub({ name: 'Server Operator', contact: 'ops@server.example' }),
+      );
+      expect(service.hasOperatorInfo()).toBe(true);
+    });
+
+    it('returns false when environment name is empty and server provides none', () => {
       const originalName = environment.operatorName;
-      (environment as any).operatorName = '';
-
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(false);
-
-      // Restore original value
-      (environment as any).operatorName = originalName;
+      (environment as { operatorName: string }).operatorName = '';
+      try {
+        expect(service.hasOperatorInfo()).toBe(false);
+      } finally {
+        (environment as { operatorName: string }).operatorName = originalName;
+      }
     });
 
-    it('should return false when operator contact is empty', () => {
-      // Temporarily override environment for this test
+    it('returns false when environment contact is empty and server provides none', () => {
       const originalContact = environment.operatorContact;
-      (environment as any).operatorContact = '';
-
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(false);
-
-      // Restore original value
-      (environment as any).operatorContact = originalContact;
+      (environment as { operatorContact: string }).operatorContact = '';
+      try {
+        expect(service.hasOperatorInfo()).toBe(false);
+      } finally {
+        (environment as { operatorContact: string }).operatorContact = originalContact;
+      }
     });
 
-    it('should return false when both name and contact are empty', () => {
-      // Temporarily override environment for this test
+    it('returns true when environment is empty but server provides values', () => {
       const originalName = environment.operatorName;
       const originalContact = environment.operatorContact;
-      (environment as any).operatorName = '';
-      (environment as any).operatorContact = '';
-
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(false);
-
-      // Restore original values
-      (environment as any).operatorName = originalName;
-      (environment as any).operatorContact = originalContact;
-    });
-
-    it('should return false when operator name is null', () => {
-      // Temporarily override environment for this test
-      const originalName = environment.operatorName;
-      (environment as any).operatorName = null;
-
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(false);
-
-      // Restore original value
-      (environment as any).operatorName = originalName;
-    });
-
-    it('should return false when operator contact is undefined', () => {
-      // Temporarily override environment for this test
-      const originalContact = environment.operatorContact;
-      (environment as any).operatorContact = undefined;
-
-      const result = service.hasOperatorInfo();
-
-      expect(result).toBe(false);
-
-      // Restore original value
-      (environment as any).operatorContact = originalContact;
-    });
-  });
-
-  describe('Environment Integration', () => {
-    it('should use values from environment configuration', () => {
-      expect(service.getOperatorName()).toBe(environment.operatorName);
-      expect(service.getOperatorContact()).toBe(environment.operatorContact);
-      expect(service.getOperatorJurisdiction()).toBe(environment.operatorJurisdiction);
+      (environment as { operatorName: string }).operatorName = '';
+      (environment as { operatorContact: string }).operatorContact = '';
+      try {
+        service = new OperatorService(
+          createBrandingStub({ name: 'Server Operator', contact: 'ops@server.example' }),
+        );
+        expect(service.hasOperatorInfo()).toBe(true);
+      } finally {
+        (environment as { operatorName: string }).operatorName = originalName;
+        (environment as { operatorContact: string }).operatorContact = originalContact;
+      }
     });
   });
 });

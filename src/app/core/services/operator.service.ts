@@ -1,38 +1,39 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { BrandingConfigService } from './branding-config.service';
 
 /**
- * Service for accessing operator information from environment
+ * Service for accessing operator information.
+ *
+ * Resolves each field by preferring the server's GET /config response
+ * (fetched at startup by BrandingConfigService) and falling back to the
+ * build-time environment when the server did not provide a value.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class OperatorService {
-  /**
-   * Get the name of the operator/entity that hosts this TMI instance
-   */
+  constructor(private branding: BrandingConfigService) {}
+
   getOperatorName(): string {
-    return environment.operatorName;
+    return this.resolve('name') ?? environment.operatorName;
   }
 
-  /**
-   * Get the contact information for the operator of this TMI instance
-   */
   getOperatorContact(): string {
-    return environment.operatorContact;
+    return this.resolve('contact') ?? environment.operatorContact;
   }
 
-  /**
-   * Get the jurisdiction information for the operator of this TMI instance
-   */
   getOperatorJurisdiction(): string {
-    return environment.operatorJurisdiction;
+    return this.resolve('jurisdiction') ?? environment.operatorJurisdiction;
   }
 
-  /**
-   * Check if operator information is configured (non-empty)
-   */
   hasOperatorInfo(): boolean {
-    return Boolean(environment.operatorName && environment.operatorContact);
+    return Boolean(this.getOperatorName() && this.getOperatorContact());
+  }
+
+  /** Returns a non-empty server-provided value, or null if absent/empty. */
+  private resolve(field: 'name' | 'contact' | 'jurisdiction'): string | null {
+    const value = this.branding.serverOperator?.[field];
+    return value && value.trim() ? value : null;
   }
 }
