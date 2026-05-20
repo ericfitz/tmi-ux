@@ -1,59 +1,24 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { of, throwError } from 'rxjs';
-import type { Injector } from '@angular/core';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { AccessDiagnosticsPanelComponent } from './access-diagnostics-panel.component';
-import { ContentTokenService } from '../../../core/services/content-token.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { ContentTokenProviderNotConfiguredError } from '../../../core/models/content-provider.types';
 import type { Document } from '../../../pages/tm/models/threat-model.model';
 
 describe('AccessDiagnosticsPanelComponent', () => {
-  let mockClip: { copy: ReturnType<typeof vi.fn> };
-  let mockSnack: { open: ReturnType<typeof vi.fn> };
-  let mockTokens: { authorize: ReturnType<typeof vi.fn> };
-  let mockRouter: { url: string };
-  let mockTransloco: {
-    translate: ReturnType<typeof vi.fn>;
-    selectTranslate: ReturnType<typeof vi.fn>;
-  };
-  let mockInjector: { get: ReturnType<typeof vi.fn> };
-  let mockLogger: {
-    error: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-  };
+  let mockTransloco: { translate: ReturnType<typeof vi.fn> };
 
   function createComponent(doc: Document): AccessDiagnosticsPanelComponent {
     const component = new AccessDiagnosticsPanelComponent(
-      mockInjector as unknown as Injector,
       mockTransloco as unknown as TranslocoService,
-      mockClip as unknown as Clipboard,
-      mockSnack as unknown as MatSnackBar,
-      mockTokens as unknown as ContentTokenService,
-      mockRouter as unknown as Router,
-      mockLogger as unknown as LoggerService,
     );
     component.document = doc;
     return component;
   }
 
   beforeEach(() => {
-    mockClip = { copy: vi.fn(() => true) };
-    mockSnack = { open: vi.fn() };
-    mockTokens = { authorize: vi.fn().mockReturnValue(of({ authorization_url: 'https://x' })) };
-    mockRouter = { url: '/tm/abc' };
-    mockTransloco = {
-      translate: vi.fn((key: string) => key),
-      selectTranslate: vi.fn((key: string) => of(key)),
-    };
-    mockInjector = { get: vi.fn() };
-    mockLogger = { error: vi.fn(), warn: vi.fn() };
+    mockTransloco = { translate: vi.fn((key: string) => key) };
   });
 
   it('returns empty message when access_diagnostics is missing', () => {
@@ -114,30 +79,24 @@ describe('AccessDiagnosticsPanelComponent', () => {
     expect(c.message).toBe('Something specific went wrong');
   });
 
-  it('share_with_service_account remediation copies email and shows snackbar', () => {
+  it('translates the source name from a remediation provider_id when building the message', () => {
     const c = createComponent({
       id: '1',
       name: 'd',
       uri: 'u',
       created_at: '',
       modified_at: '',
-      access_status: 'pending_access',
+      access_status: 'auth_required',
       access_diagnostics: {
-        reason_code: 'no_accessible_source',
-        remediations: [
-          {
-            action: 'share_with_service_account',
-            params: { service_account_email: 'svc@x.iam.gserviceaccount.com' },
-          },
-        ],
+        reason_code: 'token_not_linked',
+        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
       },
     });
-    c.handleRemediation({
-      action: 'share_with_service_account',
-      params: { service_account_email: 'svc@x.iam.gserviceaccount.com' },
+    expect(c.message).toBe('documentAccess.reason.tokenNotLinked');
+    expect(mockTransloco.translate).toHaveBeenCalledWith('documentSources.googleDrive.name');
+    expect(mockTransloco.translate).toHaveBeenCalledWith('documentAccess.reason.tokenNotLinked', {
+      source: 'documentSources.googleDrive.name',
     });
-    expect(mockClip.copy).toHaveBeenCalledWith('svc@x.iam.gserviceaccount.com');
-    expect(mockSnack.open).toHaveBeenCalled();
   });
 
   it('showCheckNow is true only when document is pending_access', () => {
@@ -191,91 +150,5 @@ describe('AccessDiagnosticsPanelComponent', () => {
     c.recheck.subscribe(emitted);
     c.onCheckNow();
     expect(emitted).toHaveBeenCalledTimes(1);
-  });
-
-  it('link_account remediation calls authorize with current url as return_to', () => {
-    const c = createComponent({
-      id: '1',
-      name: 'd',
-      uri: 'u',
-      created_at: '',
-      modified_at: '',
-      access_status: 'auth_required',
-      access_diagnostics: {
-        reason_code: 'token_not_linked',
-        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
-      },
-    });
-    const originalLocation = window.location;
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      writable: true,
-      value: { href: '' },
-    });
-    try {
-      c.handleRemediation({
-        action: 'link_account',
-        params: { provider_id: 'google_workspace' },
-      });
-      expect(mockTokens.authorize).toHaveBeenCalledWith('google_workspace', '/tm/abc');
-    } finally {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        writable: true,
-        value: originalLocation,
-      });
-    }
-  });
-
-  it('link_account remediation surfaces notConfigured snackbar when server has no provider configured', () => {
-    mockTokens.authorize.mockReturnValue(
-      throwError(() => new ContentTokenProviderNotConfiguredError('google_workspace')),
-    );
-    const c = createComponent({
-      id: '1',
-      name: 'd',
-      uri: 'u',
-      created_at: '',
-      modified_at: '',
-      access_status: 'auth_required',
-      access_diagnostics: {
-        reason_code: 'token_not_linked',
-        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
-      },
-    });
-    c.handleRemediation({
-      action: 'link_account',
-      params: { provider_id: 'google_workspace' },
-    });
-    expect(mockSnack.open).toHaveBeenCalledWith(
-      'documentSources.callback.notConfigured',
-      undefined,
-      { duration: 6000 },
-    );
-    expect(mockLogger.error).toHaveBeenCalled();
-  });
-
-  it('link_account remediation surfaces generic snackbar for other authorize errors', () => {
-    mockTokens.authorize.mockReturnValue(throwError(() => new Error('boom')));
-    const c = createComponent({
-      id: '1',
-      name: 'd',
-      uri: 'u',
-      created_at: '',
-      modified_at: '',
-      access_status: 'auth_required',
-      access_diagnostics: {
-        reason_code: 'token_not_linked',
-        remediations: [{ action: 'link_account', params: { provider_id: 'google_workspace' } }],
-      },
-    });
-    c.handleRemediation({
-      action: 'link_account',
-      params: { provider_id: 'google_workspace' },
-    });
-    expect(mockSnack.open).toHaveBeenCalledWith('documentSources.callback.error', undefined, {
-      duration: 6000,
-    });
-    expect(mockLogger.error).toHaveBeenCalled();
   });
 });

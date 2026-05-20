@@ -1,34 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Injector,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { Observable } from 'rxjs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import {
-  ContentTokenService,
-  buildContentAuthorizeErrorMessage,
-} from '../../../core/services/content-token.service';
-import { LoggerService } from '../../../core/services/logger.service';
 import { CONTENT_PROVIDERS } from '../../../core/services/content-provider-registry';
 import type {
-  AccessRemediation,
   ContentProviderId,
   DocumentAccessDiagnostics,
-  IContentPickerService,
 } from '../../../core/models/content-provider.types';
 import type { Document } from '../../../pages/tm/models/threat-model.model';
+import { RemediationCardComponent } from './remediation-card/remediation-card.component';
 import { ShareWithApplicationRemediationComponent } from './share-with-application-remediation/share-with-application-remediation.component';
 
 const REASON_KEYS: Record<string, string> = {
@@ -43,16 +26,6 @@ const REASON_KEYS: Record<string, string> = {
   other: 'documentAccess.reason.other',
 };
 
-const REMEDIATION_KEYS: Record<string, string> = {
-  link_account: 'documentAccess.remediation.linkAccount',
-  relink_account: 'documentAccess.remediation.relinkAccount',
-  repick_file: 'documentAccess.remediation.repickFile',
-  share_with_service_account: 'documentAccess.remediation.shareWithServiceAccount',
-  repick_after_share: 'documentAccess.remediation.repickAfterShare',
-  retry: 'documentAccess.remediation.retry',
-  contact_owner: 'documentAccess.remediation.contactOwner',
-};
-
 @Component({
   selector: 'app-access-diagnostics-panel',
   standalone: true,
@@ -62,6 +35,7 @@ const REMEDIATION_KEYS: Record<string, string> = {
     MatIconModule,
     MatTooltipModule,
     TranslocoModule,
+    RemediationCardComponent,
     ShareWithApplicationRemediationComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,30 +60,7 @@ const REMEDIATION_KEYS: Record<string, string> = {
                     [remediation]="rem"
                   ></app-share-with-application-remediation>
                 } @else {
-                  <button
-                    mat-button
-                    [attr.data-testid]="'remediation-' + rem.action"
-                    (click)="handleRemediation(rem)"
-                  >
-                    {{ remediationLabel(rem) | async }}
-                  </button>
-                  @if (
-                    rem.action === 'share_with_service_account' && getServiceAccountEmail(rem);
-                    as email
-                  ) {
-                    <span class="service-email">
-                      {{ 'documentAccess.serviceAccountEmail' | transloco }}
-                      <code>{{ email }}</code>
-                    </span>
-                    <button
-                      mat-icon-button
-                      data-testid="copy-email-btn"
-                      [matTooltip]="'documentAccess.copyEmail' | transloco"
-                      (click)="copyServiceEmail(email)"
-                    >
-                      <mat-icon>content_copy</mat-icon>
-                    </button>
-                  }
+                  <app-remediation-card [remediation]="rem"></app-remediation-card>
                 }
               }
             </div>
@@ -166,17 +117,6 @@ const REMEDIATION_KEYS: Record<string, string> = {
         align-items: center;
       }
 
-      .service-email {
-        font-size: 12px;
-      }
-
-      .service-email code {
-        font-family: monospace;
-        background: rgba(0, 0, 0, 0.05);
-        padding: 2px 4px;
-        border-radius: 2px;
-      }
-
       .diagnostics-check-now {
         margin-top: 12px;
       }
@@ -195,15 +135,7 @@ export class AccessDiagnosticsPanelComponent {
     this.recheck.emit();
   }
 
-  constructor(
-    private injector: Injector,
-    private transloco: TranslocoService,
-    private clipboard: Clipboard,
-    private snackBar: MatSnackBar,
-    private contentTokens: ContentTokenService,
-    private router: Router,
-    private logger: LoggerService,
-  ) {}
+  constructor(private transloco: TranslocoService) {}
 
   get message(): string {
     const diag = this.document?.access_diagnostics;
@@ -214,79 +146,6 @@ export class AccessDiagnosticsPanelComponent {
     const key = REASON_KEYS[diag.reason_code] ?? 'documentAccess.reason.fallback';
     const sourceParam = this._sourceName(diag);
     return this.transloco.translate(key, { source: sourceParam });
-  }
-
-  remediationLabel(rem: AccessRemediation): Observable<string> {
-    const key = REMEDIATION_KEYS[rem.action] ?? 'common.unknown';
-    return this.transloco.selectTranslate(key);
-  }
-
-  getServiceAccountEmail(rem: AccessRemediation): string | null {
-    const email = rem.params?.['service_account_email'];
-    return typeof email === 'string' ? email : null;
-  }
-
-  handleRemediation(rem: AccessRemediation): void {
-    switch (rem.action) {
-      case 'link_account':
-      case 'relink_account': {
-        const providerId = rem.params?.['provider_id'] as ContentProviderId | undefined;
-        if (providerId) {
-          this.contentTokens.authorize(providerId, this.router.url).subscribe({
-            next: res => {
-              window.location.href = res.authorization_url;
-            },
-            error: (err: unknown) => {
-              this.logger.error('Failed to initiate content token authorize', err);
-              this.snackBar.open(
-                buildContentAuthorizeErrorMessage(err, providerId, this.transloco),
-                undefined,
-                { duration: 6000 },
-              );
-            },
-          });
-        }
-        break;
-      }
-      case 'repick_file':
-      case 'repick_after_share': {
-        const providerId = rem.params?.['provider_id'] as ContentProviderId | undefined;
-        if (!providerId) break;
-        const meta = CONTENT_PROVIDERS[providerId];
-        if (!meta?.supportsPicker) break;
-        const svc = this.injector.get<IContentPickerService>(meta.pickerService);
-        svc.pick().subscribe({
-          next: file => {
-            if (file) {
-              this.snackBar.open('File re-picked. Save to apply.', undefined, { duration: 3000 });
-            }
-          },
-        });
-        break;
-      }
-      case 'share_with_service_account': {
-        const email = this.getServiceAccountEmail(rem);
-        if (email) this.copyServiceEmail(email);
-        break;
-      }
-      case 'retry':
-        this.snackBar.open(
-          this.transloco.translate('documentAccess.remediation.retry'),
-          undefined,
-          { duration: 2000 },
-        );
-        break;
-      case 'contact_owner':
-      default:
-        break;
-    }
-  }
-
-  copyServiceEmail(email: string): void {
-    this.clipboard.copy(email);
-    this.snackBar.open(this.transloco.translate('documentAccess.copiedEmail'), undefined, {
-      duration: 2000,
-    });
   }
 
   private _sourceName(diag: DocumentAccessDiagnostics): string {
