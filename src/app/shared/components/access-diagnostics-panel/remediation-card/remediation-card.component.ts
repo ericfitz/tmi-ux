@@ -37,11 +37,7 @@ const REMEDIATION_KEYS: Record<string, string> = {
   imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, TranslocoModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <button
-      mat-button
-      [attr.data-testid]="'remediation-' + remediation.action"
-      (click)="handle()"
-    >
+    <button mat-button [attr.data-testid]="'remediation-' + remediation.action" (click)="handle()">
       {{ label | async }}
     </button>
     @if (remediation.action === 'share_with_service_account' && serviceAccountEmail; as email) {

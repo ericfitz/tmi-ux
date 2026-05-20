@@ -232,11 +232,9 @@ describe('RemediationCardComponent', () => {
     it('shows the retry snackbar', () => {
       const c = createComponent({ action: 'retry', params: {} });
       c.handle();
-      expect(mockSnack.open).toHaveBeenCalledWith(
-        'documentAccess.remediation.retry',
-        undefined,
-        { duration: 2000 },
-      );
+      expect(mockSnack.open).toHaveBeenCalledWith('documentAccess.remediation.retry', undefined, {
+        duration: 2000,
+      });
     });
   });
 
