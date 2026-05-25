@@ -180,7 +180,7 @@
       "hono": ">=4.12.18",
       "fast-uri": ">=3.1.2",
       "@babel/plugin-transform-modules-systemjs": ">=7.29.4",
-      "uuid": ">=14.0.0",
+      "uuid": "$uuid",
       "postcss": ">=8.5.12",
       "ip-address": ">=10.1.1",
       "webpack-dev-server": ">=5.2.4",

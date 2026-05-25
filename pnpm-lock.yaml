@@ -24,7 +24,7 @@ overrides:
   hono: '>=4.12.18'
   fast-uri: '>=3.1.2'
   '@babel/plugin-transform-modules-systemjs': '>=7.29.4'
-  uuid: '>=14.0.0'
+  uuid: ^14.0.0
   postcss: '>=8.5.12'
   ip-address: '>=10.1.1'
   webpack-dev-server: '>=5.2.4'
@@ -144,7 +144,7 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
       uuid:
-        specifier: '>=14.0.0'
+        specifier: ^14.0.0
         version: 14.0.0
       zone.js:
         specifier: ~0.16.2
