@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.3.39",
+  "version": "1.3.40",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -103,7 +103,7 @@
     "zone.js": "~0.16.2"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "2.5.3",
+    "@analogjs/vite-plugin-angular": "^2.6.0",
     "@angular-devkit/build-angular": "^21.2.13",
     "@angular-eslint/builder": "^21.4.0",
     "@angular-eslint/eslint-plugin": "^21.4.0",
@@ -199,9 +199,6 @@
   "comments": {
     "dependencies": {
       "@antv/x6": "Pinned to v2.x - v3.x has breaking changes that require significant refactoring"
-    },
-    "devDependencies": {
-      "@analogjs/vite-plugin-angular": "Pinned to 2.4.10 - 2.5.0+ imports zone.js/dist/zone-patch-rxjs-interop, which is not exported by zone.js"
     }
   }
 }
