@@ -181,7 +181,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@oxc-project/runtime':
-        specifier: ^0.134.0
+        specifier: '>=0.119.0'
         version: 0.134.0
       '@playwright/test':
         specifier: ^1.60.0
