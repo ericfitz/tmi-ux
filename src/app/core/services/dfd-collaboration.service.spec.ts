@@ -9,10 +9,10 @@ import '@angular/compiler';
 
 import { HttpClient } from '@angular/common/http';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { DfdCollaborationService } from './dfd-collaboration.service';
+import { DfdCollaborationService, CollaborationSession } from './dfd-collaboration.service';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter, WebSocketState } from './websocket.adapter';
 import {
@@ -48,6 +48,7 @@ describe('DfdCollaborationService', () => {
     sendTMIMessage: ReturnType<typeof vi.fn>;
     getTMIMessagesOfType: ReturnType<typeof vi.fn>;
     connectionState$: BehaviorSubject<WebSocketState>;
+    errors$: ReturnType<typeof of>;
     isConnected: boolean;
   };
   let mockNotificationService: {
@@ -55,6 +56,7 @@ describe('DfdCollaborationService', () => {
     showPresenterRequestReceived: ReturnType<typeof vi.fn>;
     showPresenterEvent: ReturnType<typeof vi.fn>;
     showSessionEvent: ReturnType<typeof vi.fn>;
+    showSoloTransition: ReturnType<typeof vi.fn>;
     showOperationError: ReturnType<typeof vi.fn>;
     showWebSocketStatus: ReturnType<typeof vi.fn>;
     showWebSocketError: ReturnType<typeof vi.fn>;
@@ -103,6 +105,7 @@ describe('DfdCollaborationService', () => {
 
     mockThreatModelService = {
       getDiagramPermissions: vi.fn(),
+      endDiagramCollaborationSession: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockWebSocketAdapter = {
@@ -111,6 +114,7 @@ describe('DfdCollaborationService', () => {
       sendTMIMessage: vi.fn().mockReturnValue(of(undefined)),
       getTMIMessagesOfType: vi.fn().mockReturnValue(of()),
       connectionState$: new BehaviorSubject<WebSocketState>(WebSocketState.DISCONNECTED),
+      errors$: of(),
       isConnected: false,
     };
 
@@ -119,6 +123,7 @@ describe('DfdCollaborationService', () => {
       showPresenterRequestReceived: vi.fn().mockReturnValue(of(null)),
       showPresenterEvent: vi.fn().mockReturnValue(of(undefined)),
       showSessionEvent: vi.fn().mockReturnValue(of(undefined)),
+      showSoloTransition: vi.fn().mockReturnValue(of(undefined)),
       showOperationError: vi.fn().mockReturnValue(of(undefined)),
       showWebSocketStatus: vi.fn().mockReturnValue(of(undefined)),
       showWebSocketError: vi.fn().mockReturnValue(of(undefined)),
@@ -538,6 +543,125 @@ describe('DfdCollaborationService', () => {
       );
 
       expect(mockNotificationService.showPresenterEvent).toHaveBeenCalledWith('cleared');
+    });
+  });
+
+  describe('graceful session exit (#274) - no navigation', () => {
+    /** Minimal session fixture where the current user is a participant (not host) */
+    const makeParticipantSession = (): CollaborationSession => ({
+      session_id: 'sess-1',
+      threat_model_id: 'tm-1',
+      threat_model_name: 'Test TM',
+      diagram_id: 'dg-1',
+      diagram_name: 'Test Diagram',
+      participants: [],
+      websocket_url: 'wss://example.com/ws',
+      host: {
+        principal_type: 'user',
+        provider: 'github',
+        provider_id: 'github-999',
+        display_name: 'Host User',
+        email: 'host@example.com',
+      },
+    });
+
+    /** Minimal session fixture where the current user is the host */
+    const makeHostSession = (): CollaborationSession => ({
+      session_id: 'sess-2',
+      threat_model_id: 'tm-1',
+      threat_model_name: 'Test TM',
+      diagram_id: 'dg-1',
+      diagram_name: 'Test Diagram',
+      participants: [],
+      websocket_url: 'wss://example.com/ws',
+      host: {
+        principal_type: 'user',
+        provider: 'google',
+        provider_id: 'google-123',
+        display_name: 'Test User',
+        email: 'user@example.com',
+      },
+    });
+
+    type ServiceInternals = {
+      _currentSession: CollaborationSession;
+      _threatModelId: string;
+      _diagramId: string;
+      _collaborationState$: { next: (v: unknown) => void; value: Record<string, unknown> };
+      _setupWebSocketListeners: () => void;
+    };
+
+    /** Set up the service as if a participant has joined a session */
+    function arrangeParticipantSession(): void {
+      const svc = service as unknown as ServiceInternals;
+      svc._currentSession = makeParticipantSession();
+      svc._threatModelId = 'tm-1';
+      svc._diagramId = 'dg-1';
+      svc._collaborationState$.next({ ...svc._collaborationState$.value, isActive: true });
+      svc._setupWebSocketListeners();
+    }
+
+    /** Set up the service as if a host has joined a session */
+    function arrangeHostSession(): void {
+      const svc = service as unknown as ServiceInternals;
+      svc._currentSession = makeHostSession();
+      svc._threatModelId = 'tm-1';
+      svc._diagramId = 'dg-1';
+      svc._collaborationState$.next({ ...svc._collaborationState$.value, isActive: true });
+      svc._setupWebSocketListeners();
+    }
+
+    it('leaveSession stays on the page and shows the left message', () => {
+      arrangeParticipantSession();
+      service.leaveSession().subscribe();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('left');
+    });
+
+    it('endCollaboration stays on the page and shows the ended-by-you message', () => {
+      arrangeHostSession();
+      service.endCollaboration().subscribe();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('ended_by_you');
+    });
+
+    it('endCollaboration cleans up and messages even when the REST call fails', () => {
+      arrangeHostSession();
+      (
+        mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> }
+      ).endDiagramCollaborationSession.mockReturnValue(throwError(() => new Error('server error')));
+      let errored = false;
+      service.endCollaboration().subscribe({ error: () => (errored = true) });
+      expect(errored).toBe(true);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('ended_by_you');
+    });
+
+    it('unexpected disconnect stays on the page and shows the disconnected message', () => {
+      arrangeParticipantSession();
+      // Emit an unexpected disconnection (intentionalDisconnection flag is false)
+      mockWebSocketAdapter.connectionState$.next(WebSocketState.DISCONNECTED);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('disconnected');
+    });
+
+    it('websocket ERROR stays on the page and shows the error message', () => {
+      arrangeParticipantSession();
+      mockWebSocketAdapter.connectionState$.next(WebSocketState.ERROR);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
+    });
+
+    it('fatal websocket error stays on the page and shows the error message', () => {
+      arrangeParticipantSession();
+      // Call the private method directly with a fatal error code
+      (
+        service as unknown as {
+          _handleWebSocketError: (msg: { error: string; message: string }) => void;
+        }
+      )._handleWebSocketError({ error: 'session_not_found', message: 'Session does not exist' });
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
     });
   });
 

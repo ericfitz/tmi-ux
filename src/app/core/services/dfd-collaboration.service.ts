@@ -699,9 +699,9 @@ export class DfdCollaborationService implements OnDestroy {
     // Mark as intentional disconnection to suppress notification
     this._intentionalDisconnection = true;
 
-    // Clean up local state and redirect
+    // Clean up local state and show solo transition
     this._cleanupSessionState();
-    this._redirectToDashboard();
+    this._notificationService?.showSoloTransition('left').subscribe();
 
     return new Observable<boolean>(observer => {
       observer.next(true);
@@ -756,11 +756,8 @@ export class DfdCollaborationService implements OnDestroy {
             isPresenterModeActive: false,
           });
 
-          // Show session ended notification
-          this._notificationService?.showSessionEvent('ended').subscribe();
-
-          // Navigate back to threat model edit page (as specified in requirements)
-          this._redirectToThreatModel();
+          // Show solo transition notification
+          this._notificationService?.showSoloTransition('ended_by_you').subscribe();
         }),
         map(() => true),
         catchError((error: unknown) => {
@@ -782,11 +779,8 @@ export class DfdCollaborationService implements OnDestroy {
             isPresenterModeActive: false,
           });
 
-          // Show session ended notification even on error
-          this._notificationService?.showSessionEvent('ended').subscribe();
-
-          // Navigate back to threat model edit page even on error
-          this._redirectToThreatModel();
+          // Show solo transition notification even on error
+          this._notificationService?.showSoloTransition('ended_by_you').subscribe();
 
           return throwError(() => error);
         }),
@@ -1853,14 +1847,8 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.info('Unexpected disconnection - cleaning up collaboration state');
         this._cleanupSessionState();
 
-        // Navigate based on user role - host goes to TM editor, participant goes to dashboard
-        if (this.isCurrentUserHost()) {
-          this._logger.info('Host disconnected unexpectedly - redirecting to threat model editor');
-          this._redirectToThreatModel();
-        } else {
-          this._logger.info('Participant disconnected unexpectedly - redirecting to dashboard');
-          this._redirectToDashboard();
-        }
+        // Show solo transition notification
+        this._notificationService?.showSoloTransition('disconnected').subscribe();
 
         // Emit session ended event for unexpected disconnection
         this._sessionEndedSubject.next({ reason: 'disconnected' });
@@ -1876,14 +1864,8 @@ export class DfdCollaborationService implements OnDestroy {
           this._logger.info('WebSocket error/failed - cleaning up collaboration state');
           this._cleanupSessionState();
 
-          // Navigate based on user role - host goes to TM editor, participant goes to dashboard
-          if (this.isCurrentUserHost()) {
-            this._logger.info('Host connection error - redirecting to threat model editor');
-            this._redirectToThreatModel();
-          } else {
-            this._logger.info('Participant connection error - redirecting to dashboard');
-            this._redirectToDashboard();
-          }
+          // Show solo transition notification
+          this._notificationService?.showSoloTransition('error').subscribe();
 
           // Emit session ended event for errors
           this._sessionEndedSubject.next({ reason: 'error' });
@@ -1969,8 +1951,8 @@ export class DfdCollaborationService implements OnDestroy {
       )
       .subscribe();
 
-    // Navigate back to threat model editor (user stays in context)
-    this._redirectToThreatModel();
+    // Show solo transition notification
+    this._notificationService?.showSoloTransition('error').subscribe();
 
     // Emit session ended event
     this._sessionEndedSubject.next({ reason: 'error' });
@@ -2073,39 +2055,6 @@ export class DfdCollaborationService implements OnDestroy {
       sessionInfo: null,
       isPresenterModeActive: false,
     });
-  }
-
-  /**
-   * Redirect user to dashboard
-   */
-  private _redirectToDashboard(): void {
-    this._router
-      .navigate(['/dashboard'])
-      .then(() => {
-        this._logger.info('Redirected to dashboard');
-      })
-      .catch(error => {
-        this._logger.error('Failed to redirect to dashboard', error);
-      });
-  }
-
-  /**
-   * Redirect user to threat model edit page
-   */
-  private _redirectToThreatModel(): void {
-    if (this._threatModelId) {
-      this._router
-        .navigate(['/tm', this._threatModelId])
-        .then(() => {
-          this._logger.info('Redirected to threat model edit page');
-        })
-        .catch(error => {
-          this._logger.error('Failed to redirect to threat model edit page', error);
-        });
-    } else {
-      this._logger.warn('No threat model ID available, redirecting to dashboard instead');
-      this._redirectToDashboard();
-    }
   }
 
   /**
