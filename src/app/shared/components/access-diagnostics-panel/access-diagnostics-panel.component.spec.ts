@@ -146,7 +146,7 @@ describe('AccessDiagnosticsPanelComponent', () => {
       access_status: 'extraction_failed' as never,
       access_diagnostics: {
         reason_code: 'extraction_dead_lettered' as never,
-        remediations: [{ action: 'retry' }],
+        remediations: [{ action: 'retry', params: {} }],
       },
     });
     expect(c.message).toBe('documentAccess.reason.extractionDeadLettered');
