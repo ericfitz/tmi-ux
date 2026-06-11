@@ -136,6 +136,70 @@ describe('AccessDiagnosticsPanelComponent', () => {
     expect(accessible.showCheckNow).toBe(false);
   });
 
+  it('resolves extraction_dead_lettered to its translation key', () => {
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'extraction_failed' as never,
+      access_diagnostics: {
+        reason_code: 'extraction_dead_lettered' as never,
+        remediations: [{ action: 'retry' }],
+      },
+    });
+    expect(c.message).toBe('documentAccess.reason.extractionDeadLettered');
+  });
+
+  it('resolves extraction_malformed to its translation key', () => {
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'extraction_failed' as never,
+      access_diagnostics: {
+        reason_code: 'extraction_malformed' as never,
+        remediations: [],
+      },
+    });
+    expect(c.message).toBe('documentAccess.reason.extractionMalformed');
+  });
+
+  it('resolves extraction_unsupported to its translation key', () => {
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'extraction_failed' as never,
+      access_diagnostics: {
+        reason_code: 'extraction_unsupported' as never,
+        remediations: [],
+      },
+    });
+    expect(c.message).toBe('documentAccess.reason.extractionUnsupported');
+  });
+
+  it('resolves extraction_internal to its translation key', () => {
+    const c = createComponent({
+      id: '1',
+      name: 'd',
+      uri: 'u',
+      created_at: '',
+      modified_at: '',
+      access_status: 'extraction_failed' as never,
+      access_diagnostics: {
+        reason_code: 'extraction_internal' as never,
+        remediations: [],
+      },
+    });
+    expect(c.message).toBe('documentAccess.reason.extractionInternal');
+  });
+
   it('onCheckNow emits the recheck Output', () => {
     const c = createComponent({
       id: '1',

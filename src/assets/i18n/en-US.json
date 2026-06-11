@@ -1271,6 +1271,10 @@
     "copyEmail": "Copy email",
     "copyEmail.comment": "Action description on a tooltip (typically for an icon button): 'Copy email'.",
     "reason": {
+      "extractionDeadLettered": "Processing this document failed unexpectedly after multiple attempts. Try again later.",
+      "extractionInternal": "An internal error occurred while processing this document. Try again later.",
+      "extractionMalformed": "This document couldn't be processed because it appears to be damaged or malformed.",
+      "extractionUnsupported": "This document's format isn't supported for content processing.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "An error occurred while reading this document.",
       "microsoftNotShared": "TMI doesn't yet have access to this onedrive or sharepoint file. The file owner must grant TMI read access using the snippet below.",

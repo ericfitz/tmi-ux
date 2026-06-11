@@ -24,6 +24,10 @@ const REASON_KEYS: Record<string, string> = {
   fetch_error: 'documentAccess.reason.fetchError',
   microsoft_not_shared: 'documentAccess.reason.microsoftNotShared',
   other: 'documentAccess.reason.other',
+  extraction_malformed: 'documentAccess.reason.extractionMalformed',
+  extraction_unsupported: 'documentAccess.reason.extractionUnsupported',
+  extraction_internal: 'documentAccess.reason.extractionInternal',
+  extraction_dead_lettered: 'documentAccess.reason.extractionDeadLettered',
 };
 
 @Component({
