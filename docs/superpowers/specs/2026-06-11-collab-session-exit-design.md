@@ -25,8 +25,7 @@ All exit paths live in `src/app/core/services/dfd-collaboration.service.ts`. The
 |---|---|---|---|---|
 | 1 | Participant clicks "Leave session" | `leaveSession()` (683–710) | → `/dashboard`, silent | Stay, solo mode; snackbar "You left the collaboration session." |
 | 2 | Host ends session | `endCollaboration()` (716–794) | → `/tm/{id}`, suppressed notification | **Confirm dialog first**: "End the session for all participants?" — destructive primary (`mat-flat-button color="warn"`), `cdkFocusInitial` on Cancel per the button standard. Then stay, solo; snackbar "You ended the collaboration session." |
-| 3 | Session ended remotely (participant receives end event) | `_handleWebSocketStateChange()` clean-close branch | participant → `/dashboard` | Stay, solo; snackbar "The host ended the collaboration session — you're now working solo." |
-| 4 | Unexpected WebSocket disconnect | `_handleWebSocketStateChange()` (1834–1867) | role-based navigation + warning | Stay, solo; snackbar "Connection lost — collaboration ended. You can rejoin from the collaboration button." (The collab button already shows joinable state; no new rejoin affordance.) |
+| 3+4 | Session ended remotely OR unexpected WebSocket disconnect | `_handleWebSocketStateChange()` (1834–1867) | role-based navigation + warning | Stay, solo; snackbar "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button." **Note:** the `session_terminated` WebSocket message was removed from the AsyncAPI spec (`dfd-collaboration.service.ts:1765`), so a host-ended session and a network loss are indistinguishable to a participant — both arrive as an unintentional `DISCONNECTED`. One honest merged message covers both. |
 | 5 | WebSocket error / fatal server error | `_handleWebSocketStateChange()` (1868–1890), `_handleWebSocketError()` (1922–1977) | role-based / → `/tm/{id}` | Stay, solo; existing error notification plus the solo-mode snackbar. |
 
 ## Solo-mode transition mechanics
@@ -40,7 +39,7 @@ All exit paths live in `src/app/core/services/dfd-collaboration.service.ts`. The
 
 ## Fallback navigation (the one exception)
 
-If the session ended because the diagram or threat model no longer exists (deleted during the session — detected when the post-session state refresh returns 404):
+If the session ended because the diagram or threat model no longer exists (deleted during the session — detected via the fatal WebSocket error codes the server sends for deleted resources; no proactive post-session refresh call is added):
 
 - Diagram gone, TM exists → navigate to `/tm/{threatModelId}` with snackbar "This diagram was deleted."
 - TM gone → navigate to `/dashboard` with snackbar "This threat model was deleted."
