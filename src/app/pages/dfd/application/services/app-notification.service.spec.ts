@@ -174,13 +174,16 @@ describe('AppNotificationService', () => {
       );
     });
 
-    it('should show a snackbar for the "disconnected" reason', () => {
+    it('should show a warning-level snackbar for the "disconnected" reason', () => {
       service.showSoloTransition('disconnected').subscribe();
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button.",
         'Dismiss',
-        expect.any(Object),
+        expect.objectContaining({
+          panelClass: ['notification-warning'],
+          duration: 6000,
+        }),
       );
     });
 

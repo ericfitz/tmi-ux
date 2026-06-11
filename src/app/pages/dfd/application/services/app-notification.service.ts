@@ -713,7 +713,18 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       disconnected: 'collaboration.soloTransition.disconnected',
       error: 'collaboration.soloTransition.error',
     };
-    return this.showInfo(this._transloco.translate(keyByReason[reason]));
+    const message = this._transloco.translate(keyByReason[reason]);
+
+    if (reason === 'disconnected') {
+      // Warning level with extended duration: the message is long and the user needs
+      // time to read it before deciding whether to rejoin.
+      return this.showPreset('warning', message, { duration: 6000 });
+    }
+
+    // error: per design spec scenario 5, the existing error notification already fires
+    // on this path; this snackbar adds solo-mode context only, so info severity avoids
+    // double-error styling.
+    return this.showInfo(message);
   }
 
   ngOnDestroy(): void {
