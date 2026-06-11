@@ -1,8 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { pairwise } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import {
   PresenterCursorMessage,
   PresenterSelectionMessage,
@@ -30,7 +32,26 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     private uiPresenterCursorService: UiPresenterCursorService,
     private uiPresenterCursorDisplayService: UiPresenterCursorDisplayService,
     private uiPresenterSelectionService: UiPresenterSelectionService,
-  ) {}
+    private collaborationService: DfdCollaborationService,
+  ) {
+    // The editor stays on the diagram in solo mode when a collaboration session ends (#274),
+    // so visuals applied by a remote presenter (mirrored selection, presenter cursor styling)
+    // are no longer cleared implicitly by component destruction - clear them here when an
+    // active session transitions to inactive while someone else was presenting.
+    this._subscriptions.add(
+      this.collaborationService.collaborationState$.pipe(pairwise()).subscribe(([prev, curr]) => {
+        if (!prev.isActive || curr.isActive) {
+          return;
+        }
+        const currentUserEmail = this.collaborationService.getCurrentUserEmail();
+        const hadRemotePresenter =
+          !!prev.currentPresenterEmail && prev.currentPresenterEmail !== currentUserEmail;
+        if (hadRemotePresenter) {
+          this.cleanupPresenterDisplay();
+        }
+      }),
+    );
+  }
 
   /**
    * Initialize the presenter coordinator with graph and adapters

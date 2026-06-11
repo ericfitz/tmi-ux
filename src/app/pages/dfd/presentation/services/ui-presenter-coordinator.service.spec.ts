@@ -19,7 +19,11 @@ import type {
   PresenterCursorMessage,
   PresenterSelectionMessage,
 } from '@app/core/types/websocket-message.types';
-import { Subject } from 'rxjs';
+import type {
+  CollaborationState,
+  DfdCollaborationService,
+} from '@app/core/services/dfd-collaboration.service';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 describe('UiPresenterCoordinatorService', () => {
   let service: UiPresenterCoordinatorService;
@@ -49,8 +53,24 @@ describe('UiPresenterCoordinatorService', () => {
     isInitialized: boolean;
   };
 
+  let mockCollaborationService: {
+    collaborationState$: BehaviorSubject<CollaborationState>;
+    getCurrentUserEmail: ReturnType<typeof vi.fn>;
+  };
+
   let presenterCursorSubject: Subject<PresenterCursorMessage>;
   let presenterSelectionSubject: Subject<PresenterSelectionMessage>;
+
+  const inactiveState: CollaborationState = {
+    isActive: false,
+    users: [],
+    currentPresenterEmail: null,
+    pendingPresenterRequests: [],
+    sessionInfo: null,
+    existingSessionAvailable: null,
+    isDiagramContextReady: true,
+    isPresenterModeActive: false,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -101,6 +121,12 @@ describe('UiPresenterCoordinatorService', () => {
       isInitialized: false,
     };
 
+    // Create mock DfdCollaborationService
+    mockCollaborationService = {
+      collaborationState$: new BehaviorSubject<CollaborationState>(inactiveState),
+      getCurrentUserEmail: vi.fn().mockReturnValue('me@example.com'),
+    };
+
     // Instantiate service with mock dependencies
     service = new UiPresenterCoordinatorService(
       mockLogger as unknown as LoggerService,
@@ -108,6 +134,7 @@ describe('UiPresenterCoordinatorService', () => {
       mockUiPresenterCursorService as unknown as UiPresenterCursorService,
       mockUiPresenterCursorDisplayService as unknown as UiPresenterCursorDisplayService,
       mockUiPresenterSelectionService as unknown as UiPresenterSelectionService,
+      mockCollaborationService as unknown as DfdCollaborationService,
     );
   });
 
@@ -395,6 +422,70 @@ describe('UiPresenterCoordinatorService', () => {
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'UiPresenterCoordinator',
         'Cleaned up presenter display',
+      );
+    });
+  });
+
+  describe('Session-end presenter visual cleanup (#274)', () => {
+    const activeWithRemotePresenter: CollaborationState = {
+      ...inactiveState,
+      isActive: true,
+      currentPresenterEmail: 'presenter@example.com',
+      isPresenterModeActive: true,
+    };
+
+    it('should clean up presenter display when session ends while a remote user was presenter', () => {
+      mockCollaborationService.collaborationState$.next(activeWithRemotePresenter);
+      mockCollaborationService.collaborationState$.next(inactiveState);
+
+      expect(mockUiPresenterCursorDisplayService.forceRemovePresenterCursor).toHaveBeenCalled();
+      expect(mockUiPresenterSelectionService.clearSelectionForNonPresenters).toHaveBeenCalled();
+    });
+
+    it('should not clean up when the current user was the presenter', () => {
+      mockCollaborationService.collaborationState$.next({
+        ...activeWithRemotePresenter,
+        currentPresenterEmail: 'me@example.com',
+      });
+      mockCollaborationService.collaborationState$.next(inactiveState);
+
+      expect(mockUiPresenterCursorDisplayService.forceRemovePresenterCursor).not.toHaveBeenCalled();
+      expect(mockUiPresenterSelectionService.clearSelectionForNonPresenters).not.toHaveBeenCalled();
+    });
+
+    it('should not clean up when the session had no presenter', () => {
+      mockCollaborationService.collaborationState$.next({
+        ...activeWithRemotePresenter,
+        currentPresenterEmail: null,
+        isPresenterModeActive: false,
+      });
+      mockCollaborationService.collaborationState$.next(inactiveState);
+
+      expect(mockUiPresenterCursorDisplayService.forceRemovePresenterCursor).not.toHaveBeenCalled();
+      expect(mockUiPresenterSelectionService.clearSelectionForNonPresenters).not.toHaveBeenCalled();
+    });
+
+    it('should not clean up while the session stays active', () => {
+      mockCollaborationService.collaborationState$.next(activeWithRemotePresenter);
+      mockCollaborationService.collaborationState$.next({
+        ...activeWithRemotePresenter,
+        isPresenterModeActive: false,
+      });
+
+      expect(mockUiPresenterCursorDisplayService.forceRemovePresenterCursor).not.toHaveBeenCalled();
+      expect(mockUiPresenterSelectionService.clearSelectionForNonPresenters).not.toHaveBeenCalled();
+    });
+
+    it('should clean up only once for repeated inactive emissions', () => {
+      mockCollaborationService.collaborationState$.next(activeWithRemotePresenter);
+      mockCollaborationService.collaborationState$.next(inactiveState);
+      mockCollaborationService.collaborationState$.next(inactiveState);
+
+      expect(mockUiPresenterCursorDisplayService.forceRemovePresenterCursor).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(mockUiPresenterSelectionService.clearSelectionForNonPresenters).toHaveBeenCalledTimes(
+        1,
       );
     });
   });
