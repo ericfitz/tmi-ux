@@ -33,6 +33,95 @@ import 'prismjs/components/prism-yaml';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/components/prism-sql';
 
+/**
+ * Single source of truth for the DOMPurify tag/attribute/URI policy used when
+ * rendering markdown. Shared by renderer.html and renderer.link so that every
+ * code path that disables Angular's sanitizer (SecurityContext.NONE, see
+ * provideMarkdownConfig) routes raw HTML through the same vetted allowlist.
+ *
+ * Exported for unit testing.
+ */
+export const MARKDOWN_DOMPURIFY_CONFIG = {
+  // Allow all standard markdown HTML elements
+  ALLOWED_TAGS: [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'p',
+    'br',
+    'strong',
+    'em',
+    'del',
+    'a',
+    'img',
+    'code',
+    'pre',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'table',
+    'colgroup',
+    'col',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+    'hr',
+    'input',
+    'span',
+    'div',
+    'svg',
+    'path',
+    'g',
+    'rect',
+    'circle',
+    'line',
+    'polygon',
+    'text',
+    'tspan',
+  ],
+  ALLOWED_ATTR: [
+    'href',
+    'src',
+    'alt',
+    'title',
+    'class',
+    'id',
+    'type',
+    'checked',
+    'disabled',
+    'data-line',
+    'data-sourcepos',
+    'style',
+    'viewBox',
+    'xmlns',
+    'width',
+    'height',
+    'fill',
+    'stroke',
+    'stroke-width',
+    'd',
+    'x',
+    'y',
+    'x1',
+    'y1',
+    'x2',
+    'y2',
+    'points',
+    'transform',
+    'target',
+    'rel',
+  ],
+  ALLOWED_URI_REGEXP:
+    /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
+  KEEP_CONTENT: true,
+};
+
 // Marked configuration with security and syntax highlighting
 function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
@@ -73,93 +162,18 @@ function markedOptionsFactory(): MarkedOptions {
     }
     html += '>' + text + '</a>';
 
-    return html;
+    // Route the hand-built anchor through the shared DOMPurify policy so a
+    // javascript:/vbscript: href or an attribute-breakout (e.g. an unescaped
+    // double-quote injecting onmouseover=) is stripped before it reaches
+    // innerHTML — Angular's sanitizer is disabled (SecurityContext.NONE).
+    return DOMPurify.sanitize(html, MARKDOWN_DOMPURIFY_CONFIG);
   };
 
   // Override the renderer's html method to sanitize output
   const originalHtml = renderer.html.bind(renderer);
   renderer.html = (args): string => {
     const html = originalHtml(args);
-    return DOMPurify.sanitize(html, {
-      // Allow all standard markdown HTML elements
-      ALLOWED_TAGS: [
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'p',
-        'br',
-        'strong',
-        'em',
-        'del',
-        'a',
-        'img',
-        'code',
-        'pre',
-        'ul',
-        'ol',
-        'li',
-        'blockquote',
-        'table',
-        'colgroup',
-        'col',
-        'thead',
-        'tbody',
-        'tr',
-        'th',
-        'td',
-        'hr',
-        'input',
-        'span',
-        'div',
-        'svg',
-        'path',
-        'g',
-        'rect',
-        'circle',
-        'line',
-        'polygon',
-        'text',
-        'tspan',
-      ],
-      ALLOWED_ATTR: [
-        'href',
-        'src',
-        'alt',
-        'title',
-        'class',
-        'id',
-        'type',
-        'checked',
-        'disabled',
-        'data-line',
-        'data-sourcepos',
-        'style',
-        'viewBox',
-        'xmlns',
-        'width',
-        'height',
-        'fill',
-        'stroke',
-        'stroke-width',
-        'd',
-        'x',
-        'y',
-        'x1',
-        'y1',
-        'x2',
-        'y2',
-        'points',
-        'transform',
-        'target',
-        'rel',
-      ],
-      ALLOWED_URI_REGEXP:
-        /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
-      KEEP_CONTENT: true,
-    });
+    return DOMPurify.sanitize(html, MARKDOWN_DOMPURIFY_CONFIG);
   };
 
   return {
