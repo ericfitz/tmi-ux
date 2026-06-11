@@ -135,4 +135,63 @@ describe('AppNotificationService', () => {
 
     expect(mockSnackBar.dismiss).toHaveBeenCalled();
   });
+
+  describe('showSoloTransition', () => {
+    beforeEach(() => {
+      mockTransloco.translate.mockImplementation((key: string) => {
+        const translations: Record<string, string> = {
+          'collaboration.soloTransition.left':
+            "You left the collaboration session — you're now working solo.",
+          'collaboration.soloTransition.endedByYou':
+            "You ended the collaboration session — you're now working solo.",
+          'collaboration.soloTransition.disconnected':
+            "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button.",
+          'collaboration.soloTransition.error':
+            "The collaboration session ended due to an error — you're now working solo.",
+          'common.dismiss': 'Dismiss',
+        };
+        return translations[key] || key;
+      });
+    });
+
+    it('should show a snackbar for the "left" reason', () => {
+      service.showSoloTransition('left').subscribe();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        "You left the collaboration session — you're now working solo.",
+        'Dismiss',
+        expect.any(Object),
+      );
+    });
+
+    it('should show a snackbar for the "ended_by_you" reason', () => {
+      service.showSoloTransition('ended_by_you').subscribe();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        "You ended the collaboration session — you're now working solo.",
+        'Dismiss',
+        expect.any(Object),
+      );
+    });
+
+    it('should show a snackbar for the "disconnected" reason', () => {
+      service.showSoloTransition('disconnected').subscribe();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button.",
+        'Dismiss',
+        expect.any(Object),
+      );
+    });
+
+    it('should show a snackbar for the "error" reason', () => {
+      service.showSoloTransition('error').subscribe();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        "The collaboration session ended due to an error — you're now working solo.",
+        'Dismiss',
+        expect.any(Object),
+      );
+    });
+  });
 });

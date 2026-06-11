@@ -17,6 +17,7 @@ import {
   ICollaborationNotificationService,
   SessionEventType,
   PresenterEventType,
+  SoloTransitionReason,
 } from '../../../../core/interfaces/collaboration-notification.interface';
 import {
   PresenterRequestSnackbarComponent,
@@ -696,6 +697,23 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         },
       );
     });
+  }
+
+  /**
+   * Notify the user that the collaboration session ended and they are now
+   * working solo. Always shown (unlike showSessionEvent start/end, which the
+   * collaboration icon already indicates) because the reason is the payload.
+   * @param reason Why the session ended
+   * @returns Observable that completes when notification is shown
+   */
+  showSoloTransition(reason: SoloTransitionReason): Observable<void> {
+    const keyByReason: Record<SoloTransitionReason, string> = {
+      left: 'collaboration.soloTransition.left',
+      ended_by_you: 'collaboration.soloTransition.endedByYou',
+      disconnected: 'collaboration.soloTransition.disconnected',
+      error: 'collaboration.soloTransition.error',
+    };
+    return this.showInfo(this._transloco.translate(keyByReason[reason]));
   }
 
   ngOnDestroy(): void {

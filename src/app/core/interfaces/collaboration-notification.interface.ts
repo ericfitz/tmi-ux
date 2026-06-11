@@ -64,7 +64,19 @@ export interface ICollaborationNotificationService {
     userEmail: string,
     displayName: string,
   ): Observable<'approve' | 'deny' | null>;
+
+  /**
+   * Notify the user that the session ended and they are now working solo.
+   * Unlike showSessionEvent('ended') (suppressed by design), this is always shown:
+   * it carries the REASON, which the collaboration icon state cannot.
+   * @param reason Why the session ended
+   * @returns Observable that completes when notification is shown
+   */
+  showSoloTransition(reason: SoloTransitionReason): Observable<void>;
 }
+
+/** Why the collaboration session ended (drives the solo-transition message) */
+export type SoloTransitionReason = 'left' | 'ended_by_you' | 'disconnected' | 'error';
 
 /**
  * Types of session events that can trigger notifications

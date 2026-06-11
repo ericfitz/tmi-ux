@@ -719,6 +719,11 @@
     "copyLink.comment": "Action description on a tooltip (typically for an icon button): 'Copy link'.",
     "denyPresenterRequest": "Deny presenter request",
     "endCollaboration": "End collaboration",
+    "endConfirm": {
+      "confirm": "End session",
+      "message": "This ends the session for all participants. Everyone will continue working solo.",
+      "title": "End collaboration session?"
+    },
     "hostedBy": "Hosted by",
     "isRequestingPresenterPrivileges": "Is requesting presenter privileges.",
     "joinSession": "Join session",
@@ -732,7 +737,17 @@
     "removeFromSession": "Remove from session",
     "removeFromSession.comment": "Action description on a tooltip (typically for an icon button): 'Remove from session'.",
     "requestPresenter": "Request presenter",
+    "resourceDeleted": {
+      "diagram": "This diagram was deleted — returning to the threat model.",
+      "threatModel": "This threat model was deleted — returning to the dashboard."
+    },
     "sessionStarted": "Started",
+    "soloTransition": {
+      "disconnected": "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button.",
+      "endedByYou": "You ended the collaboration session — you're now working solo.",
+      "error": "The collaboration session ended due to an error — you're now working solo.",
+      "left": "You left the collaboration session — you're now working solo."
+    },
     "startCollaboration": "Start collaboration",
     "takeBackPresenter": "Take back presenter",
     "title": "Collaboration session participants",
