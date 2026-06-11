@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription, Subject } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { BehaviorSubject, Observable, of, throwError, Subscription, Subject } from 'rxjs';
 import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -15,6 +16,11 @@ import {
   THREAT_MODEL_SERVICE,
 } from '../interfaces';
 import { environment } from '../../../environments/environment';
+import {
+  ConfirmActionDialogComponent,
+  ConfirmActionDialogData,
+  ConfirmActionDialogResult,
+} from '../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import {
   ChangePresenterRequestMessage,
   RemoveParticipantRequestMessage,
@@ -156,6 +162,7 @@ export class DfdCollaborationService implements OnDestroy {
     private _notificationService: ICollaborationNotificationService | null,
     private _router: Router,
     private _transloco: TranslocoService,
+    private _dialog: MatDialog,
   ) {
     // this._logger.info('DfdCollaborationService initialized', {
     //   instanceId: this._instanceId,
@@ -1216,7 +1223,26 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     if (this.isCollaborating()) {
-      return this.isCurrentUserHost() ? this.endCollaboration() : this.leaveSession();
+      if (!this.isCurrentUserHost()) {
+        return this.leaveSession();
+      }
+      // Ending affects every participant - confirm first (tmi-ux#274)
+      return this._dialog
+        .open<ConfirmActionDialogComponent, ConfirmActionDialogData, ConfirmActionDialogResult>(
+          ConfirmActionDialogComponent,
+          {
+            width: '450px',
+            data: {
+              title: 'collaboration.endConfirm.title',
+              message: 'collaboration.endConfirm.message',
+              confirmLabel: 'collaboration.endConfirm.confirm',
+              confirmIsDestructive: true,
+            },
+            disableClose: true,
+          },
+        )
+        .afterClosed()
+        .pipe(switchMap(result => (result?.confirmed ? this.endCollaboration() : of(false))));
     }
 
     return this.startOrJoinCollaboration();

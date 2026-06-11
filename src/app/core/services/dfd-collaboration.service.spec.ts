@@ -8,6 +8,7 @@
 import '@angular/compiler';
 
 import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
@@ -68,6 +69,9 @@ describe('DfdCollaborationService', () => {
   };
   let mockTransloco: {
     translate: ReturnType<typeof vi.fn>;
+  };
+  let mockDialog: {
+    open: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -140,6 +144,10 @@ describe('DfdCollaborationService', () => {
       translate: vi.fn().mockImplementation((key: string) => key),
     };
 
+    mockDialog = {
+      open: vi.fn(),
+    };
+
     service = new DfdCollaborationService(
       mockHttpClient as unknown as HttpClient,
       mockLogger as unknown as LoggerService,
@@ -149,6 +157,7 @@ describe('DfdCollaborationService', () => {
       mockNotificationService as unknown as ICollaborationNotificationService,
       mockRouter as unknown as Router,
       mockTransloco as unknown as TranslocoService,
+      mockDialog as unknown as MatDialog,
     );
   });
 
@@ -366,6 +375,133 @@ describe('DfdCollaborationService', () => {
 
       expect(startSpy).toHaveBeenCalled();
       expect(result).toBe(true);
+    });
+  });
+
+  describe('host end-session confirmation (#274)', () => {
+    type ServiceInternals = {
+      _currentSession: CollaborationSession;
+      _threatModelId: string;
+      _diagramId: string;
+      _collaborationState$: { next: (v: unknown) => void; value: Record<string, unknown> };
+      _setupWebSocketListeners: () => void;
+    };
+
+    const makeHostSession = (): CollaborationSession => ({
+      session_id: 'sess-confirm',
+      threat_model_id: 'tm-1',
+      threat_model_name: 'Test TM',
+      diagram_id: 'dg-1',
+      diagram_name: 'Test Diagram',
+      participants: [],
+      websocket_url: 'wss://example.com/ws',
+      host: {
+        principal_type: 'user',
+        provider: 'google',
+        provider_id: 'google-123',
+        display_name: 'Test User',
+        email: 'user@example.com',
+      },
+    });
+
+    const makeParticipantSession = (): CollaborationSession => ({
+      session_id: 'sess-confirm-p',
+      threat_model_id: 'tm-1',
+      threat_model_name: 'Test TM',
+      diagram_id: 'dg-1',
+      diagram_name: 'Test Diagram',
+      participants: [],
+      websocket_url: 'wss://example.com/ws',
+      host: {
+        principal_type: 'user',
+        provider: 'github',
+        provider_id: 'github-999',
+        display_name: 'Host User',
+        email: 'host@example.com',
+      },
+    });
+
+    function arrangeHostSession(): void {
+      const svc = service as unknown as ServiceInternals;
+      svc._currentSession = makeHostSession();
+      svc._threatModelId = 'tm-1';
+      svc._diagramId = 'dg-1';
+      svc._collaborationState$.next({
+        ...svc._collaborationState$.value,
+        isActive: true,
+        users: [
+          {
+            provider: 'google',
+            provider_id: 'google-123',
+            name: 'Test User',
+            email: 'user@example.com',
+            permission: 'writer' as const,
+            status: 'active' as const,
+            isHost: true,
+          },
+        ],
+      });
+      svc._setupWebSocketListeners();
+    }
+
+    function arrangeParticipantSession(): void {
+      const svc = service as unknown as ServiceInternals;
+      svc._currentSession = makeParticipantSession();
+      svc._threatModelId = 'tm-1';
+      svc._diagramId = 'dg-1';
+      svc._collaborationState$.next({
+        ...svc._collaborationState$.value,
+        isActive: true,
+        users: [
+          {
+            provider: 'google',
+            provider_id: 'google-123',
+            name: 'Test User',
+            email: 'user@example.com',
+            permission: 'writer' as const,
+            status: 'active' as const,
+            isHost: false,
+          },
+        ],
+      });
+      svc._setupWebSocketListeners();
+    }
+
+    it('asks for confirmation before ending; cancel keeps the session alive', () => {
+      arrangeHostSession();
+      mockDialog.open.mockReturnValue({ afterClosed: () => of({ confirmed: false }) });
+      let result: boolean | undefined;
+      service.toggleCollaboration().subscribe(r => (result = r));
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(result).toBe(false);
+      expect(
+        (mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> })
+          .endDiagramCollaborationSession,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('confirm proceeds to end the session', () => {
+      arrangeHostSession();
+      mockDialog.open.mockReturnValue({ afterClosed: () => of({ confirmed: true }) });
+      let result: boolean | undefined;
+      service.toggleCollaboration().subscribe(r => (result = r));
+      expect(
+        (mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> })
+          .endDiagramCollaborationSession,
+      ).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('participant leave does not ask for confirmation', () => {
+      arrangeParticipantSession();
+      service.toggleCollaboration().subscribe();
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('direct endCollaboration() is not gated (programmatic callers)', () => {
+      arrangeHostSession();
+      service.endCollaboration().subscribe();
+      expect(mockDialog.open).not.toHaveBeenCalled();
     });
   });
 
