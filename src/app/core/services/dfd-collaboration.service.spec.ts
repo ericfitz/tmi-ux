@@ -472,7 +472,10 @@ describe('DfdCollaborationService', () => {
       mockDialog.open.mockReturnValue({ afterClosed: () => of({ confirmed: false }) });
       let result: boolean | undefined;
       service.toggleCollaboration().subscribe(r => (result = r));
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ disableClose: true }),
+      );
       expect(result).toBe(false);
       expect(
         (mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> })

@@ -152,7 +152,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
           if (success) {
             this._logger.info('Collaboration toggled successfully');
           } else {
-            this._logger.error('Failed to toggle collaboration');
+            this._logger.info('Collaboration toggle cancelled or unsuccessful');
           }
         },
         error: error => {
