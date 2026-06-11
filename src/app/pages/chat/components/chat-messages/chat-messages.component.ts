@@ -11,6 +11,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { MatChipsModule } from '@angular/material/chips';
 import { TranslocoModule } from '@jsverse/transloco';
 import { MarkdownModule } from 'ngx-markdown';
 
@@ -30,6 +31,7 @@ import { ChatMessage, PreparationStatus } from '../../models/chat.model';
     ...CORE_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    MatChipsModule,
     MarkdownModule,
     TextFieldModule,
     TranslocoModule,
@@ -74,6 +76,16 @@ export class ChatMessagesComponent implements AfterViewChecked, OnChanges {
 
   onSaveAsNote(messageId: string): void {
     this.messageSavedAsNote.emit(messageId);
+  }
+
+  /**
+   * Handle a suggested-prompt chip activation (click or keyboard).
+   * Sets the message text and immediately sends it, unless the input is disabled.
+   */
+  onSuggestedPrompt(prompt: string): void {
+    if (this.isInputDisabled) return;
+    this.messageText = prompt;
+    this.onSend();
   }
 
   onSend(): void {

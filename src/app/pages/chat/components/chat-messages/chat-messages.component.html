@@ -5,29 +5,39 @@
         <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="empty-icon" />
         <h3>{{ t('chat.emptyState.title') }}</h3>
         <p>{{ t('chat.emptyState.description') }}</p>
-        <div class="suggested-prompts">
-          <button
-            mat-button
+        <mat-chip-listbox
+          class="suggested-prompts"
+          [hideSingleSelectionIndicator]="true"
+          aria-label="{{ t('chat.emptyState.title') }}"
+        >
+          <mat-chip-option
+            [selectable]="false"
             [disabled]="isInputDisabled"
-            (click)="messageText = t('chat.suggestedPrompts.summary'); onSend()"
+            (click)="onSuggestedPrompt(t('chat.suggestedPrompts.summary'))"
+            (keydown.enter)="onSuggestedPrompt(t('chat.suggestedPrompts.summary'))"
+            (keydown.space)="onSuggestedPrompt(t('chat.suggestedPrompts.summary'))"
           >
             {{ t('chat.suggestedPrompts.summary') }}
-          </button>
-          <button
-            mat-button
+          </mat-chip-option>
+          <mat-chip-option
+            [selectable]="false"
             [disabled]="isInputDisabled"
-            (click)="messageText = t('chat.suggestedPrompts.threats'); onSend()"
+            (click)="onSuggestedPrompt(t('chat.suggestedPrompts.threats'))"
+            (keydown.enter)="onSuggestedPrompt(t('chat.suggestedPrompts.threats'))"
+            (keydown.space)="onSuggestedPrompt(t('chat.suggestedPrompts.threats'))"
           >
             {{ t('chat.suggestedPrompts.threats') }}
-          </button>
-          <button
-            mat-button
+          </mat-chip-option>
+          <mat-chip-option
+            [selectable]="false"
             [disabled]="isInputDisabled"
-            (click)="messageText = t('chat.suggestedPrompts.assets'); onSend()"
+            (click)="onSuggestedPrompt(t('chat.suggestedPrompts.assets'))"
+            (keydown.enter)="onSuggestedPrompt(t('chat.suggestedPrompts.assets'))"
+            (keydown.space)="onSuggestedPrompt(t('chat.suggestedPrompts.assets'))"
           >
             {{ t('chat.suggestedPrompts.assets') }}
-          </button>
-        </div>
+          </mat-chip-option>
+        </mat-chip-listbox>
       </div>
     }
 

@@ -156,6 +156,38 @@ describe('ChatMessagesComponent', () => {
     });
   });
 
+  describe('onSuggestedPrompt', () => {
+    it('sets messageText and sends it', () => {
+      let emitted: string | undefined;
+      component.messageSent.subscribe(t => (emitted = t));
+
+      component.onSuggestedPrompt('Summarize this threat model');
+
+      expect(emitted).toBe('Summarize this threat model');
+      expect(component.messageText).toBe('');
+    });
+
+    it('does nothing when the input is disabled', () => {
+      let fired = false;
+      component.messageSent.subscribe(() => (fired = true));
+      component.loading = true;
+
+      component.onSuggestedPrompt('Summarize this threat model');
+
+      expect(fired).toBe(false);
+      expect(component.messageText).toBe('');
+    });
+
+    it('trims the prompt before sending', () => {
+      let emitted: string | undefined;
+      component.messageSent.subscribe(t => (emitted = t));
+
+      component.onSuggestedPrompt('  What are the main threats?  ');
+
+      expect(emitted).toBe('What are the main threats?');
+    });
+  });
+
   describe('onSaveAsNote', () => {
     it('emits the message id', () => {
       let emitted: string | undefined;
