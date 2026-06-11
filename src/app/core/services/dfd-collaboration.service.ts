@@ -1953,8 +1953,23 @@ export class DfdCollaborationService implements OnDestroy {
       )
       .subscribe();
 
-    // Show solo transition notification
-    this._notificationService?.showSoloTransition('error').subscribe();
+    // Server does not yet emit these codes on the error channel (no published enum);
+    // codes match the server's operation_rejected naming convention (forward-compatible).
+    if (message.error === 'diagram_not_found') {
+      // The diagram no longer exists — staying on the editor is impossible.
+      this._notificationService
+        ?.showInfo(this._transloco.translate('collaboration.resourceDeleted.diagram'))
+        .subscribe();
+      void this._router.navigate(['/tm', this._threatModelId]);
+    } else if (message.error === 'threat_model_not_found') {
+      this._notificationService
+        ?.showInfo(this._transloco.translate('collaboration.resourceDeleted.threatModel'))
+        .subscribe();
+      void this._router.navigate(['/dashboard']);
+    } else {
+      // Show solo transition notification
+      this._notificationService?.showSoloTransition('error').subscribe();
+    }
 
     // Emit session ended event
     this._sessionEndedSubject.next({ reason: 'error' });

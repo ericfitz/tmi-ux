@@ -55,6 +55,13 @@ export interface ICollaborationNotificationService {
   showError(message: string): Observable<void>;
 
   /**
+   * Show a general info notification
+   * @param message The info message
+   * @returns Observable that completes when notification is shown
+   */
+  showInfo(message: string): Observable<void>;
+
+  /**
    * Show a presenter request notification with approve/deny actions
    * @param userEmail The email of the user requesting presenter privileges
    * @param displayName The display name of the user

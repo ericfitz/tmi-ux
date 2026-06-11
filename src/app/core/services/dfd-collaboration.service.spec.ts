@@ -61,6 +61,7 @@ describe('DfdCollaborationService', () => {
     showWebSocketStatus: ReturnType<typeof vi.fn>;
     showWebSocketError: ReturnType<typeof vi.fn>;
     showError: ReturnType<typeof vi.fn>;
+    showInfo: ReturnType<typeof vi.fn>;
   };
   let mockRouter: {
     navigate: ReturnType<typeof vi.fn>;
@@ -128,6 +129,7 @@ describe('DfdCollaborationService', () => {
       showWebSocketStatus: vi.fn().mockReturnValue(of(undefined)),
       showWebSocketError: vi.fn().mockReturnValue(of(undefined)),
       showError: vi.fn().mockReturnValue(of(undefined)),
+      showInfo: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockRouter = {
@@ -673,6 +675,81 @@ describe('DfdCollaborationService', () => {
           _handleWebSocketError: (msg: { error: string; message: string }) => void;
         }
       )._handleWebSocketError({ error: 'session_not_found', message: 'Session does not exist' });
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
+    });
+  });
+
+  describe('deletion fallback navigation (#274)', () => {
+    type ServiceInternals = {
+      _currentSession: CollaborationSession;
+      _threatModelId: string;
+      _diagramId: string;
+      _collaborationState$: { next: (v: unknown) => void; value: Record<string, unknown> };
+      _setupWebSocketListeners: () => void;
+      _handleWebSocketError: (msg: { error: string; message?: string }) => void;
+    };
+
+    /** Minimal session fixture */
+    const makeSession = (): CollaborationSession => ({
+      session_id: 'sess-del-1',
+      threat_model_id: 'tm-del-1',
+      threat_model_name: 'Delete Test TM',
+      diagram_id: 'dg-del-1',
+      diagram_name: 'Delete Test Diagram',
+      participants: [],
+      websocket_url: 'wss://example.com/ws',
+      host: {
+        principal_type: 'user',
+        provider: 'github',
+        provider_id: 'github-999',
+        display_name: 'Host User',
+        email: 'host@example.com',
+      },
+    });
+
+    function arrangeDeleteSession(): void {
+      const svc = service as unknown as ServiceInternals;
+      svc._currentSession = makeSession();
+      svc._threatModelId = 'tm-del-1';
+      svc._diagramId = 'dg-del-1';
+      svc._collaborationState$.next({ ...svc._collaborationState$.value, isActive: true });
+      svc._setupWebSocketListeners();
+    }
+
+    beforeEach(() => {
+      // Ensure showInfo mock is present
+      if (!mockNotificationService.showInfo) {
+        (mockNotificationService as Record<string, unknown>).showInfo = vi
+          .fn()
+          .mockReturnValue(of(undefined));
+      }
+    });
+
+    it('navigates to the threat model when the diagram was deleted', () => {
+      arrangeDeleteSession();
+      (service as unknown as ServiceInternals)._handleWebSocketError({
+        error: 'diagram_not_found',
+        message: 'Diagram does not exist',
+      });
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/tm', 'tm-del-1']);
+    });
+
+    it('navigates to the dashboard when the threat model was deleted', () => {
+      arrangeDeleteSession();
+      (service as unknown as ServiceInternals)._handleWebSocketError({
+        error: 'threat_model_not_found',
+        message: 'Threat model does not exist',
+      });
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+    });
+
+    it('other fatal errors do not navigate', () => {
+      arrangeDeleteSession();
+      (service as unknown as ServiceInternals)._handleWebSocketError({
+        error: 'session_not_found',
+        message: 'Session not found',
+      });
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
     });
