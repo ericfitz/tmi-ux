@@ -621,6 +621,11 @@
     "copyLink": "Copiar link",
     "denyPresenterRequest": "Recusar solicitação de apresentador",
     "endCollaboration": "Encerrar colaboração",
+    "endConfirm": {
+      "confirm": "Encerrar sessão",
+      "message": "Isso encerra a sessão para todos os participantes. Todos continuarão trabalhando solo.",
+      "title": "Encerrar sessão de colaboração?"
+    },
     "hostedBy": "Hospedado por",
     "isRequestingPresenterPrivileges": "Está solicitando privilégios de apresentador.",
     "joinSession": "Entrar na sessão",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "Modo apresentador solicitado",
     "removeFromSession": "Remover da sessão",
     "requestPresenter": "Solicitar apresentador",
+    "resourceDeleted": {
+      "diagram": "Este diagrama foi excluído — retornando ao modelo de ameaças.",
+      "threatModel": "Este modelo de ameaças foi excluído — retornando ao painel."
+    },
     "sessionStarted": "Iniciada",
+    "soloTransition": {
+      "disconnected": "A sessão de colaboração foi encerrada ou a conexão foi perdida — você está trabalhando solo agora. Você pode entrar novamente pelo botão de colaboração.",
+      "endedByYou": "Você encerrou a sessão de colaboração — você está trabalhando solo agora.",
+      "error": "A sessão de colaboração foi encerrada devido a um erro — você está trabalhando solo agora.",
+      "left": "Você saiu da sessão de colaboração — você está trabalhando solo agora."
+    },
     "startCollaboration": "Iniciar colaboração",
     "takeBackPresenter": "Retomar apresentador",
     "title": "Participantes da sessão de colaboração",

@@ -621,6 +621,11 @@
     "copyLink": "复制链接",
     "denyPresenterRequest": "拒绝主讲人请求",
     "endCollaboration": "结束协作",
+    "endConfirm": {
+      "confirm": "结束会话",
+      "message": "这将结束所有参与者的会话。所有人将继续独立工作。",
+      "title": "结束协作会话？"
+    },
     "hostedBy": "由以下主办",
     "isRequestingPresenterPrivileges": "正在请求主讲人权限。",
     "joinSession": "加入会话",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
     "requestPresenter": "请求主讲人",
+    "resourceDeleted": {
+      "diagram": "此图表已被删除——正在返回威胁模型。",
+      "threatModel": "此威胁模型已被删除——正在返回仪表板。"
+    },
     "sessionStarted": "开始于",
+    "soloTransition": {
+      "disconnected": "协作会话已结束或连接已断开——您现在正在独立工作。您可以通过协作按钮重新加入。",
+      "endedByYou": "您已结束协作会话——您现在正在独立工作。",
+      "error": "协作会话因错误而结束——您现在正在独立工作。",
+      "left": "您已离开协作会话——您现在正在独立工作。"
+    },
     "startCollaboration": "开始协作",
     "takeBackPresenter": "收回主讲人",
     "title": "协作会话参与者",

@@ -621,6 +621,11 @@
     "copyLink": "Copier le lien",
     "denyPresenterRequest": "Refuser la demande de présentateur",
     "endCollaboration": "Terminer la collaboration",
+    "endConfirm": {
+      "confirm": "Terminer la session",
+      "message": "Cela met fin à la session pour tous les participants. Chacun continuera à travailler individuellement.",
+      "title": "Terminer la session de collaboration ?"
+    },
     "hostedBy": "Anime par",
     "isRequestingPresenterPrivileges": "Demande des privilèges de présentateur.",
     "joinSession": "Rejoindre la session",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "Mode présentateur demandé",
     "removeFromSession": "Retirer de la session",
     "requestPresenter": "Demander le rôle de présentateur",
+    "resourceDeleted": {
+      "diagram": "Ce diagramme a été supprimé—retour au modèle de menace.",
+      "threatModel": "Ce modèle de menace a été supprimé—retour au tableau de bord."
+    },
     "sessionStarted": "Demarree",
+    "soloTransition": {
+      "disconnected": "La session de collaboration a pris fin ou la connexion a été perdue—vous travaillez maintenant individuellement. Vous pouvez rejoindre depuis le bouton de collaboration.",
+      "endedByYou": "Vous avez mis fin à la session de collaboration—vous travaillez maintenant individuellement.",
+      "error": "La session de collaboration a pris fin en raison d’une erreur—vous travaillez maintenant individuellement.",
+      "left": "Vous avez quitté la session de collaboration—vous travaillez maintenant individuellement."
+    },
     "startCollaboration": "Démarrer la collaboration",
     "takeBackPresenter": "Reprendre le rôle de présentateur",
     "title": "Participants à la session de collaboration",

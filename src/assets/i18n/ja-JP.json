@@ -621,6 +621,11 @@
     "copyLink": "リンクをコピー",
     "denyPresenterRequest": "プレゼンターリクエストを拒否",
     "endCollaboration": "コラボレーションを終了",
+    "endConfirm": {
+      "confirm": "セッションを終了",
+      "message": "すべての参加者のセッションが終了します。全員がソロ作業に移行します。",
+      "title": "コラボレーションセッションを終了しますか？"
+    },
     "hostedBy": "ホスト:",
     "isRequestingPresenterPrivileges": "プレゼンター権限をリクエストしています。",
     "joinSession": "セッションに参加",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "プレゼンターモードがリクエストされました",
     "removeFromSession": "セッションから削除",
     "requestPresenter": "プレゼンターをリクエスト",
+    "resourceDeleted": {
+      "diagram": "このダイアグラムは削除されました。脅威モデルに戻ります。",
+      "threatModel": "この脅威モデルは削除されました。ダッシュボードに戻ります。"
+    },
     "sessionStarted": "開始",
+    "soloTransition": {
+      "disconnected": "コラボレーションセッションが終了したか、接続が切断されました。現在はソロ作業中です。コラボレーションボタンから再参加できます。",
+      "endedByYou": "コラボレーションセッションを終了しました。現在はソロ作業中です。",
+      "error": "エラーによりコラボレーションセッションが終了しました。現在はソロ作業中です。",
+      "left": "コラボレーションセッションを退出しました。現在はソロ作業中です。"
+    },
     "startCollaboration": "コラボレーションを開始",
     "takeBackPresenter": "プレゼンターを取り戻す",
     "title": "コラボレーションセッション参加者",

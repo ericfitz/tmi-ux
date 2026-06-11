@@ -621,6 +621,11 @@
     "copyLink": "Link kopieren",
     "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
     "endCollaboration": "Zusammenarbeit beenden",
+    "endConfirm": {
+      "confirm": "Sitzung beenden",
+      "message": "Dadurch wird die Sitzung für alle Teilnehmer beendet. Alle werden einzeln weiterarbeiten.",
+      "title": "Zusammenarbeitssitzung beenden?"
+    },
     "hostedBy": "Gehostet von",
     "isRequestingPresenterPrivileges": "fordert Präsentatorrechte an.",
     "joinSession": "Sitzung beitreten",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",
     "requestPresenter": "Präsentator anfordern",
+    "resourceDeleted": {
+      "diagram": "Dieses Diagramm wurde gelöscht—Sie werden zum Bedrohungsmodell weitergeleitet.",
+      "threatModel": "Dieses Bedrohungsmodell wurde gelöscht—Sie werden zum Dashboard weitergeleitet."
+    },
     "sessionStarted": "Gestartet",
+    "soloTransition": {
+      "disconnected": "Die Zusammenarbeitssitzung wurde beendet oder die Verbindung unterbrochen—Sie arbeiten jetzt allein. Sie können über die Zusammenarbeitsschaltfläche wieder beitreten.",
+      "endedByYou": "Sie haben die Zusammenarbeitssitzung beendet—Sie arbeiten jetzt allein.",
+      "error": "Die Zusammenarbeitssitzung wurde aufgrund eines Fehlers beendet—Sie arbeiten jetzt allein.",
+      "left": "Sie haben die Zusammenarbeitssitzung verlassen—Sie arbeiten jetzt allein."
+    },
     "startCollaboration": "Zusammenarbeit starten",
     "takeBackPresenter": "Präsentator zurückholen",
     "title": "Teilnehmer der Zusammenarbeitssitzung",

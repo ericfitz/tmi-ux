@@ -621,6 +621,11 @@
     "copyLink": "Salin Tautan",
     "denyPresenterRequest": "Tolak Permintaan Presenter",
     "endCollaboration": "Akhiri Kolaborasi",
+    "endConfirm": {
+      "confirm": "Akhiri Sesi",
+      "message": "Ini akan mengakhiri sesi untuk semua peserta. Semua orang akan melanjutkan bekerja sendiri.",
+      "title": "Akhiri sesi kolaborasi?"
+    },
     "hostedBy": "Diselenggarakan oleh",
     "isRequestingPresenterPrivileges": "meminta hak akses presenter.",
     "joinSession": "Gabung Sesi",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "Mode Presenter Diminta",
     "removeFromSession": "Keluarkan dari Sesi",
     "requestPresenter": "Minta Presenter",
+    "resourceDeleted": {
+      "diagram": "Diagram ini telah dihapus — kembali ke threat model.",
+      "threatModel": "Threat model ini telah dihapus — kembali ke dasbor."
+    },
     "sessionStarted": "Dimulai",
+    "soloTransition": {
+      "disconnected": "Sesi kolaborasi berakhir atau koneksi terputus — Anda sekarang bekerja sendiri. Anda dapat bergabung kembali melalui tombol kolaborasi.",
+      "endedByYou": "Anda mengakhiri sesi kolaborasi — Anda sekarang bekerja sendiri.",
+      "error": "Sesi kolaborasi berakhir karena kesalahan — Anda sekarang bekerja sendiri.",
+      "left": "Anda meninggalkan sesi kolaborasi — Anda sekarang bekerja sendiri."
+    },
     "startCollaboration": "Mulai Kolaborasi",
     "takeBackPresenter": "Ambil Kembali Presenter",
     "title": "Peserta Sesi Kolaborasi",

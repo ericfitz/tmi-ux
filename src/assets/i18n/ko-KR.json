@@ -621,6 +621,11 @@
     "copyLink": "링크 복사",
     "denyPresenterRequest": "발표자 요청 거부",
     "endCollaboration": "협업 종료",
+    "endConfirm": {
+      "confirm": "세션 종료",
+      "message": "모든 참가자의 세션이 종료됩니다. 모든 참가자는 개별 작업으로 전환됩니다.",
+      "title": "협업 세션을 종료하시겠습니까?"
+    },
     "hostedBy": "호스트",
     "isRequestingPresenterPrivileges": "발표자 권한을 요청 중입니다.",
     "joinSession": "세션 참가",
@@ -633,7 +638,17 @@
     "presenterModeRequested": "발표자 모드 요청됨",
     "removeFromSession": "세션에서 제거",
     "requestPresenter": "발표자 요청",
+    "resourceDeleted": {
+      "diagram": "이 다이어그램이 삭제되었습니다 — 위협 모델로 돌아갑니다.",
+      "threatModel": "이 위협 모델이 삭제되었습니다 — 대시보드로 돌아갑니다."
+    },
     "sessionStarted": "시작됨",
+    "soloTransition": {
+      "disconnected": "협업 세션이 종료되었거나 연결이 끊겼습니다 — 현재 개별 작업 중입니다. 협업 버튼을 통해 다시 참가할 수 있습니다.",
+      "endedByYou": "협업 세션을 종료했습니다 — 현재 개별 작업 중입니다.",
+      "error": "오류로 인해 협업 세션이 종료되었습니다 — 현재 개별 작업 중입니다.",
+      "left": "협업 세션에서 나갔습니다 — 현재 개별 작업 중입니다."
+    },
     "startCollaboration": "협업 시작",
     "takeBackPresenter": "발표자 권한 회수",
     "title": "협업 세션 참가자",
