@@ -1864,16 +1864,11 @@ export class DfdCollaborationService implements OnDestroy {
           this._intentionalDisconnection = false;
           return;
         }
-        // Show notification for unexpected disconnections
-        this._notificationService
-          ?.showWebSocketStatus(state) // , () => this._retryWebSocketConnection()) // COMMENTED OUT
-          .subscribe();
-
         // Clean up collaboration state for unexpected disconnection
         this._logger.info('Unexpected disconnection - cleaning up collaboration state');
         this._cleanupSessionState();
 
-        // Show solo transition notification
+        // solo-transition message subsumes the generic disconnected status (design spec: one merged message)
         this._notificationService?.showSoloTransition('disconnected').subscribe();
 
         // Emit session ended event for unexpected disconnection

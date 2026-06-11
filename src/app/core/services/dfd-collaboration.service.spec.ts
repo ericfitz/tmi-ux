@@ -785,6 +785,10 @@ describe('DfdCollaborationService', () => {
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('disconnected');
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledTimes(1);
+      // Design spec: only one merged message — no generic disconnected status snackbar
+      expect(mockNotificationService.showWebSocketStatus).not.toHaveBeenCalledWith(
+        WebSocketState.DISCONNECTED,
+      );
     });
 
     it('websocket ERROR stays on the page and shows the error message', () => {
