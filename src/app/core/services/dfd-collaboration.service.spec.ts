@@ -717,15 +717,6 @@ describe('DfdCollaborationService', () => {
       svc._setupWebSocketListeners();
     }
 
-    beforeEach(() => {
-      // Ensure showInfo mock is present
-      if (!mockNotificationService.showInfo) {
-        (mockNotificationService as Record<string, unknown>).showInfo = vi
-          .fn()
-          .mockReturnValue(of(undefined));
-      }
-    });
-
     it('navigates to the threat model when the diagram was deleted', () => {
       arrangeDeleteSession();
       (service as unknown as ServiceInternals)._handleWebSocketError({
@@ -733,6 +724,7 @@ describe('DfdCollaborationService', () => {
         message: 'Diagram does not exist',
       });
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/tm', 'tm-del-1']);
+      expect(mockNotificationService.showOperationError).not.toHaveBeenCalled();
     });
 
     it('navigates to the dashboard when the threat model was deleted', () => {
@@ -742,6 +734,7 @@ describe('DfdCollaborationService', () => {
         message: 'Threat model does not exist',
       });
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+      expect(mockNotificationService.showOperationError).not.toHaveBeenCalled();
     });
 
     it('other fatal errors do not navigate', () => {
@@ -752,6 +745,7 @@ describe('DfdCollaborationService', () => {
       });
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
+      expect(mockNotificationService.showOperationError).toHaveBeenCalled();
     });
   });
 

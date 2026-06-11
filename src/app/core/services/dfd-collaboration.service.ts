@@ -1945,14 +1945,6 @@ export class DfdCollaborationService implements OnDestroy {
     // Clean up collaboration state
     this._cleanupSessionState();
 
-    // Show error notification to user
-    this._notificationService
-      ?.showOperationError(
-        this._transloco.translate('notifications.operations.startCollaboration'),
-        message.message || this._transloco.translate('notifications.unknownError'),
-      )
-      .subscribe();
-
     // Server does not yet emit these codes on the error channel (no published enum);
     // codes match the server's operation_rejected naming convention (forward-compatible).
     if (message.error === 'diagram_not_found') {
@@ -1960,13 +1952,22 @@ export class DfdCollaborationService implements OnDestroy {
       this._notificationService
         ?.showInfo(this._transloco.translate('collaboration.resourceDeleted.diagram'))
         .subscribe();
-      void this._router.navigate(['/tm', this._threatModelId]);
+      void this._router.navigate(
+        this._threatModelId ? ['/tm', this._threatModelId] : ['/dashboard'],
+      );
     } else if (message.error === 'threat_model_not_found') {
       this._notificationService
         ?.showInfo(this._transloco.translate('collaboration.resourceDeleted.threatModel'))
         .subscribe();
       void this._router.navigate(['/dashboard']);
     } else {
+      // Show error notification to user
+      this._notificationService
+        ?.showOperationError(
+          this._transloco.translate('notifications.operations.startCollaboration'),
+          message.message || this._transloco.translate('notifications.unknownError'),
+        )
+        .subscribe();
       // Show solo transition notification
       this._notificationService?.showSoloTransition('error').subscribe();
     }
