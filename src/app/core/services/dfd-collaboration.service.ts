@@ -1862,6 +1862,8 @@ export class DfdCollaborationService implements OnDestroy {
         // Clean up collaboration state for errors
         if (this._collaborationState$.value.isActive) {
           this._logger.info('WebSocket error/failed - cleaning up collaboration state');
+          // suppress the synthetic DISCONNECTED emitted by cleanup's disconnect (would double-message)
+          this._intentionalDisconnection = true;
           this._cleanupSessionState();
 
           // Show solo transition notification

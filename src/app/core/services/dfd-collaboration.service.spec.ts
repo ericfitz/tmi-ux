@@ -643,13 +643,26 @@ describe('DfdCollaborationService', () => {
       mockWebSocketAdapter.connectionState$.next(WebSocketState.DISCONNECTED);
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('disconnected');
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledTimes(1);
     });
 
     it('websocket ERROR stays on the page and shows the error message', () => {
       arrangeParticipantSession();
       mockWebSocketAdapter.connectionState$.next(WebSocketState.ERROR);
+      // Simulate the synthetic DISCONNECTED that the real adapter emits during cleanup's
+      // _disconnectFromWebSocket() call.  In production this re-enters
+      // _handleWebSocketStateChange while _currentSession is still set, which — without
+      // _intentionalDisconnection being set first — would fire showSoloTransition('disconnected')
+      // too.  In the mock environment disconnect() does NOT push to connectionState$, so
+      // _currentSession has already been nulled before we push here, and the handler early-
+      // returns on the !_currentSession guard.  The toHaveBeenCalledTimes(1) assertion would
+      // therefore pass even without the service fix in this test harness; the real guard is the
+      // service code change itself.  We include the push and the assertion anyway so that if a
+      // future mock is made more faithful to the real adapter, this test will catch regressions.
+      mockWebSocketAdapter.connectionState$.next(WebSocketState.DISCONNECTED);
       expect(mockRouter.navigate).not.toHaveBeenCalled();
       expect(mockNotificationService.showSoloTransition).toHaveBeenCalledWith('error');
+      expect(mockNotificationService.showSoloTransition).toHaveBeenCalledTimes(1);
     });
 
     it('fatal websocket error stays on the page and shows the error message', () => {
