@@ -13,7 +13,8 @@
       "categoryNoteEditing": "ノート編集",
       "categoryPdfProcessing": "PDF処理",
       "paragraph1": "このアプリケーションは、優れたオープンソースプロジェクトのサポートにより構築されています。インターフェースと機能を実現する能力を提供してくださったこれらのプロジェクトのコミュニティに感謝いたします。",
-      "paragraph2": "安全でユーザーフレンドリーなアプリケーションを構築するためのビジョンとアプローチを形作るインスピレーションを提供してくださったことに特別な感謝を申し上げます。"
+      "paragraph2": "安全でユーザーフレンドリーなアプリケーションを構築するためのビジョンとアプローチを形作るインスピレーションを提供してくださったことに特別な感謝を申し上げます。",
+      "paragraph3": "最後に、2000年代前半にMicrosoftのWindows Core Security/Secure Windows Initiative/Trustworthy Computingチームの皆様、特にPraerit Garg、Mike Howard、John Lambert、Adam Shostackの各氏が、学ぶ機会を与えてくださり、アプリケーションセキュリティと脅威モデリングにおける業界をリードする思考を示してくださったことに感謝申し上げます。"
     },
     "opensourcetitle": "オープンソース",
     "server": "サーバー",
@@ -678,6 +679,7 @@
     "deactivate": "無効化",
     "delete": "削除",
     "deleteConfirm": "削除の確認",
+    "deleteFailed": "削除に失敗しました",
     "deleteWarningConfirmationField": "削除の確認",
     "deleteWarningConfirmationMatch": "確認テキストが一致しました",
     "deleteWarningConfirmationMismatch": "確認テキストが一致しません",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "ドキュメントやリポジトリなどTMI外に保存されたオブジェクトの場合、そのオブジェクトへのTMI参照のみが削除されます。",
     "deleteWarningSubEntities": "ダイアグラム、脅威、ノートなど、関連するすべてのTMIエンティティも完全に削除されます。",
     "deleteWarningTypeConfirmation": "確認するには、以下のフィールドに「{{confirmValue}}」と入力してください",
+    "deletedSuccessfully": "削除しました",
     "description": "説明",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "閉じる",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "適用",
     "metricDescriptions": {
+      "AC": "このメトリクスは、機能するエクスプロイトを取得するために、攻撃者が組み込みのセキュリティ強化機能を積極的に回避または迂回するために必要な、測定可能なアクションを記録します。",
       "AR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（可用性の観点）に応じて評価をカスタマイズできます。",
+      "AT": "このメトリクスは、攻撃を可能にする脆弱なシステムの展開・実行の前提条件または変数を記録します。",
       "AU": "自動化可能性メトリクスは、「攻撃者が複数のターゲットにわたって脆弱性の悪用を自動化できるか」という問いへの回答を記録します。",
       "CR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（機密性の観点）に応じて評価をカスタマイズできます。",
+      "E": "このメトリクスは、現在のエクスプロイト技術の状態、エクスプロイトコードの入手可能性、または実際の悪用状況に基づき、脆弱性が攻撃される可能性を測定します。",
       "IR": "このメトリクスにより、コンシューマーはアナリストの組織における影響を受けるITアセットの重要度（完全性の観点）に応じて評価をカスタマイズできます。",
       "MAC": "攻撃複雑性のオーバーライド。このメトリクスは、アナリストの環境で脆弱性を悪用するために必要な、攻撃者のコントロール外の条件を反映します。",
       "MAT": "攻撃要件のオーバーライド。アナリストの環境での攻撃を可能にするシステムの展開・実行の前提条件を記録します。",
@@ -858,15 +864,28 @@
       "MVA": "脆弱なシステム可用性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの可用性への影響を測定します。",
       "MVC": "脆弱なシステム機密性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの機密性への影響を測定します。",
       "MVI": "脆弱なシステム完全性への影響のオーバーライド。アナリストの環境において、脆弱性を含むシステムの完全性への影響を測定します。",
+      "PR": "このメトリクスは、脆弱性を悪用する前に攻撃者が必要とする権限レベルを記述します。",
       "R": "回復性メトリクスは、攻撃が実行された後にシステムがサービスをパフォーマンスおよび可用性の観点から回復する際の耐性を記述します。",
       "RE": "脆弱性対応工数メトリクスは、脆弱性が判明した後にコンシューマーが対応するために必要な工数レベルを記録します。",
       "S": "安全性メトリクスは、IEC 61508のカテゴリで定義された人の安全に影響する状態を脆弱性が引き起こす可能性があるかどうかを反映します。",
+      "SA": "このメトリクスは、脆弱性を悪用されることで脆弱なシステム以外の後続システムの可用性に与える影響を測定します。",
+      "SC": "このメトリクスは、脆弱性を悪用されることで脆弱なシステム以外の後続システムの機密性に与える影響を測定します。",
+      "SI": "このメトリクスは、脆弱性を悪用されることで脆弱なシステム以外の後続システムの完全性に与える影響を測定します。",
       "U": "プロバイダー緊急度メトリクスは、脆弱性に対してサプライヤーが提供する緊急度評価（赤、橙、緑、無色）を反映します。",
-      "V": "価値密度メトリクスは、単一の悪用イベントで攻撃者が制御を得るリソースを記述します。"
+      "UI": "このメトリクスは、脆弱なシステムの侵害を成功させるために攻撃者以外の人間ユーザーの関与が必要かどうかを記録します。",
+      "V": "価値密度メトリクスは、単一の悪用イベントで攻撃者が制御を得るリソースを記述します。",
+      "VA": "このメトリクスは、脆弱性を悪用されることで脆弱なコンポーネントを含むシステムの可用性に与える影響を測定します。",
+      "VC": "このメトリクスは、脆弱性を悪用されることで脆弱なコンポーネントを含むシステムの機密性に与える影響を測定します。",
+      "VI": "このメトリクスは、脆弱性を悪用されることで脆弱なコンポーネントを含むシステムの完全性に与える影響を測定します。"
     },
     "metricGroups": {
+      "base": "基本",
+      "environmental": "環境的",
       "environmentalBase": "環境（修正ベース）。",
-      "environmentalSecurityRequirement": "環境（セキュリティ要件）"
+      "environmentalSecurityRequirement": "環境（セキュリティ要件）",
+      "supplemental": "補足的",
+      "temporal": "時間的",
+      "threat": "脅威"
     },
     "metricsConfigured": "{{count}}/{{total}}件設定済み",
     "openCalculator": "CVSSを追加",
@@ -1019,15 +1038,6 @@
         "top-left": "左上",
         "top-right": "右上"
       },
-      "labelPosition.bottom-center": "Bottom center",
-      "labelPosition.bottom-left": "Bottom left",
-      "labelPosition.bottom-right": "Bottom right",
-      "labelPosition.middle-center": "Center (default)",
-      "labelPosition.middle-left": "Middle left",
-      "labelPosition.middle-right": "Middle right",
-      "labelPosition.top-center": "Top center",
-      "labelPosition.top-left": "Top left",
-      "labelPosition.top-right": "Top right",
       "labelPositionLabel": "ラベル位置",
       "labelTab": "ラベル",
       "noSelection": "スタイルを編集するにはオブジェクトを選択してください。",
@@ -1041,9 +1051,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "今すぐ確認",
+      "failed": "ステータスを確認できませんでした。しばらくしてからもう一度お試しください。",
+      "stillPending": "ステータスを確認しました — まだ保留中です。",
+      "success": "アクセスが許可されました。ドキュメントにアクセスできるようになりました。"
+    },
     "copiedEmail": "メールをクリップボードにコピーしました。",
     "copyEmail": "メールをコピー",
     "reason": {
+      "extractionDeadLettered": "このドキュメントの処理が複数回の試行後に予期せず失敗しました。後でもう一度お試しください。",
+      "extractionInternal": "このドキュメントの処理中に内部エラーが発生しました。後でもう一度お試しください。",
+      "extractionMalformed": "このドキュメントは破損または不正な形式のため処理できませんでした。",
+      "extractionUnsupported": "このドキュメントの形式はコンテンツ処理に対応していません。",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "このドキュメントの読み取り中にエラーが発生しました。",
       "microsoftNotShared": "TMIはまだこのOneDriveまたはSharePointファイルへのアクセス権を持っていません。ファイルオーナーは以下のスニペットを使用してTMIへの読み取りアクセスを許可する必要があります。",
@@ -1063,11 +1083,15 @@
       "repickFile": "このファイルを再度選択してください。",
       "retry": "再試行",
       "shareWithApplication": {
+        "copied": "クリップボードにコピーしました。",
+        "copyButton": "コピー",
         "copyFailed": "クリップボードにコピーできませんでした",
+        "curlLabel": "curl",
         "explanation": "TMIはまだこのOneDriveまたはSharePointファイルへのアクセス権を持っていません。ファイルオーナーに以下のMicrosoft Graphコールを実行してTMIへの読み取りアクセスを許可するよう依頼してください。コールが成功したら「今すぐ確認」をクリックしてください — 許可が設定されると数分以内にステータスが更新されます。",
         "powershellLabel": "PowerShell（microsoft.graphモジュール）",
         "rawLabel": "Microsoft Graphコール",
-        "title": "TMIにこのファイルへのアクセスを許可する。"
+        "title": "TMIにこのファイルへのアクセスを許可する。",
+        "unavailable": "Microsoftの修正詳細は利用できません。サポートにお問い合わせください。"
       },
       "shareWithServiceAccount": "TMIサービスアカウントと共有"
     },
@@ -1075,7 +1099,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "ドキュメントを作成できませんでした"
+      "failed": "ドキュメントを作成できませんでした",
+      "inFlight": "ドキュメントを作成中…"
     },
     "grantError": {
       "generic": "ファイルへのアクセスを許可できませんでした。",
@@ -1100,6 +1125,7 @@
       "pickActionMicrosoft": "OneDrive/SharePointを参照",
       "pickedFile": "ファイルが選択されました: {{ filename }}。",
       "repickAction": "別のファイルを選択",
+      "serviceUrlHint": "ファイルの共有URLを貼り付けてください。保存後、サービスアカウントと共有するよう求められます。",
       "url": "URLを貼り付け"
     }
   },
@@ -1741,9 +1767,11 @@
     "addCvssEntry": "CVSSエントリを追加する。",
     "addMapping": "マッピングを追加...",
     "createNewThreat": "新しい脅威を作成",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "CVSSベクター",
     "cvssVectorPlaceholder": "例: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE IDを入力（例: CWE-79）",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "CWEマッピング",
     "frameworkMappingPicker": {
       "notApplicable": "現在のセルタイプには適用されません",
@@ -1777,10 +1805,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "延期済み（p4）",
+      "deferred.description": "文書化されたビジネス承認のもと延期済み。追跡されているがスケジュールは未定。",
       "high": "高（p1）",
+      "high.description": "速やかな解決が必要です。高リスクの露出またはリリース期限が迫っています。",
       "immediate": "即時（p0）",
+      "immediate.description": "緊急に対処する必要があります。積極的な悪用、法令違反、または重大なビジネスへの影響があります。",
       "low": "低（p3）",
-      "medium": "中（p2）"
+      "low.description": "将来のサイクルのバックログに含めます。即時のリスク露出はありません。",
+      "medium": "中（p2）",
+      "medium.description": "標準的な開発サイクル内で対処する。中程度のリスク露出。"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1794,9 +1827,7 @@
       "critical.description": "悪用可能な脆弱性がシステム全体の侵害、データ漏洩、または安全性への影響を可能にする。即時対応が必要。",
       "high": "高",
       "high.description": "重大な影響または高い可能性。主要な不正アクセス、権限昇格、またはサービス中断を可能にする。",
-      "informational": {
-        "description": "直接的な悪用可能性なし; 推奨事項、ベストプラクティスからの逸脱、または設定改善"
-      },
+      "informational": "情報提供",
       "informational.description": "直接的な悪用可能性なし。推奨事項、ベストプラクティスからの逸脱、または構成の改善。",
       "low": "低",
       "low.description": "最小限の影響または低い可能性。ビジネスへの影響は無視でき、特定の条件またはユーザーの操作が必要。",
@@ -1826,10 +1857,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "受け入れ済み",
+      "accepted.description": "脅威は認識されていますが、意図的に緩和されていません（例：ビジネス上の理由による）。正式なリスク受け入れが必要です。",
+      "closed": "クローズ済み",
+      "closed.description": "解決、受け入れ、または無効化の後、監査証跡とともにアーカイブされた検出結果です。",
+      "confirmed": "確認済み",
+      "confirmed.description": "脅威が分析または証拠によって正当であることが検証されています。",
+      "deferred": "延期済み",
+      "deferred.description": "承認のもと、対応が延期されています（例：将来のスプリント向け）。理由と期日が記載されています。",
       "false_positive": "偽陽性",
+      "false_positive.description": "調査の結果、検出結果が有効な脅威ではないと判断されました。これ以上の対応は不要です。",
       "mitigation_in_progress": "緩和策を実施中。",
+      "mitigation_in_progress.description": "制御策、コード変更、または対策の実装が進行中です。",
       "mitigation_planned": "緩和策を計画済み",
-      "verification_pending": "検証保留中"
+      "mitigation_planned.description": "修正または緩和策が定義され、担当者が割り当てられています。",
+      "open": "オープン",
+      "open.description": "検出結果は特定・文書化されていますが、まだ対応が開始されていません。",
+      "resolved": "解決済み",
+      "resolved.description": "脅威が完全に緩和・検証済みであり、残留リスクは許容範囲内です。",
+      "verification_pending": "検証保留中",
+      "verification_pending.description": "緩和策が完了しました。セキュリティチームが有効性をテストまたはレビューする必要があります。"
     }
   },
   "threatModels": {
@@ -1860,6 +1907,7 @@
       "title": {
         "create": "ドキュメント参照を作成",
         "edit": "ドキュメント参照を編集",
+        "shareRequired": "このファイルをサービスアカウントと共有してください",
         "view": "ドキュメント参照を表示"
       }
     },
@@ -1948,12 +1996,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "進行中",
+      "active.tooltip": "脅威モデルは現在作業中です。",
+      "approved": "承認済み",
+      "approved.tooltip": "すべての問題が解決・検証済みであり、アプリケーションはリリースまたは展開のセキュリティ基準を満たしています。",
+      "closed": "クローズ済み",
+      "closed.tooltip": "レビューが完全に完了してアーカイブされました。これ以上の対応は不要です。",
+      "deferred": "延期",
+      "deferred.tooltip": "レビューが一時停止されています（例：リソース制約やアプリケーション変更のため）。再開が予定されています。",
       "in_progress": "進行中",
+      "in_progress.tooltip": "脅威モデリング、コードレビュー、またはテストを含む評価が進行中です。",
       "not_started": "未着手",
+      "not_started.tooltip": "セキュリティレビューが開始されましたが、評価活動はまだ始まっていません。",
       "pending_review": "レビュー保留中",
+      "pending_review.tooltip": "評価成果物（レポート、検出結果など）がセキュリティリードまたは承認者による正式なレビューを待っています。",
+      "rejected": "却下",
+      "rejected.tooltip": "レビューが重要な基準を満たしていませんでした。再提出前に大幅な修正が必要です。",
       "remediation_in_progress": "修正対応中。",
+      "remediation_in_progress.tooltip": "特定された問題の修正が開発チームによって実施されています。",
       "remediation_required": "修正が必要",
-      "verification_pending": "検証保留中"
+      "remediation_required.tooltip": "脆弱性または問題が特定されました。開発チームが対処する必要があります。",
+      "verification_pending": "検証保留中",
+      "verification_pending.tooltip": "修正対応が完了しました。セキュリティチームが有効性を検証する必要があります。"
     },
     "statusLastUpdated": "ステータス最終更新日時。",
     "tag": "タグ",

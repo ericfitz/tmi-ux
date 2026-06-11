@@ -13,7 +13,8 @@
       "categoryNoteEditing": "تحرير الملاحظات",
       "categoryPdfProcessing": "معالجة PDF",
       "paragraph1": "تم بناء هذا التطبيق بدعم من مشاريع مفتوحة المصدر استثنائية. نحن ممتنون للمجتمعات وراء هذه المشاريع لتوفير القدرات التي تضفي الحيوية على واجهتنا ووظائفنا.",
-      "paragraph2": "شكر خاص لتوفير الإلهام الذي ساعد في تشكيل رؤيتنا ونهجنا لبناء تطبيق آمن وسهل الاستخدام يذهب إلى "
+      "paragraph2": "شكر خاص لتوفير الإلهام الذي ساعد في تشكيل رؤيتنا ونهجنا لبناء تطبيق آمن وسهل الاستخدام يذهب إلى ",
+      "paragraph3": "وأخيراً، شكراً لفرق Windows Core Security/Secure Windows Initiative/Trustworthy Computing في Microsoft في النصف الأول من العقد الأول من الألفية الثالثة، ولا سيما Praerit Garg وMike Howard وJohn Lambert وAdam Shostack، على إتاحة الفرصة لي للتعلم وعلى تجسيدهم التفكير الرائد في أمان التطبيقات ونمذجة التهديدات."
     },
     "opensourcetitle": "مفتوح المصدر",
     "server": "الخادم",
@@ -678,6 +679,7 @@
     "deactivate": "إلغاء التفعيل",
     "delete": "حذف",
     "deleteConfirm": "تأكيد الحذف",
+    "deleteFailed": "فشل الحذف",
     "deleteWarningConfirmationField": "تأكيد الحذف",
     "deleteWarningConfirmationMatch": "نص التأكيد متطابق",
     "deleteWarningConfirmationMismatch": "نص التأكيد غير متطابق",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "بالنسبة للكائنات المخزنة خارج TMI مثل المستندات والمستودعات، سيتم حذف مرجع TMI للكائن فقط.",
     "deleteWarningSubEntities": "سيتم أيضاً حذف جميع كيانات TMI المرتبطة مثل المخططات والتهديدات والملاحظات بشكل نهائي.",
     "deleteWarningTypeConfirmation": "للتأكيد، يرجى كتابة \"{{confirmValue}}\" في الحقل أدناه",
+    "deletedSuccessfully": "تم الحذف بنجاح",
     "description": "الوصف",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "إغلاق",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "تطبيق",
     "metricDescriptions": {
+      "AC": "يرصد هذا المقياس الإجراءات القابلة للقياس التي يجب أن يتخذها المهاجم للتحايل بنشاط على الشروط الأمنية المدمجة الموجودة للحصول على استغلال ناجح.",
       "AR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث التوافر.",
+      "AT": "يرصد هذا المقياس شروط النشر والتشغيل المسبقة أو المتغيرات الخاصة بالنظام الضعيف التي تتيح الهجوم.",
       "AU": "يرصد مقياس قابلية الأتمتة الإجابة على سؤال: «هل يستطيع المهاجم أتمتة استغلال الثغرة عبر أهداف متعددة؟».",
       "CR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث السرية.",
+      "E": "يقيس هذا المقياس احتمالية تعرض الثغرة للهجوم، استناداً إلى الحالة الراهنة لتقنيات الاستغلال أو توافر كود الاستغلال أو الاستغلال النشط \"في البرية\".",
       "IR": "يتيح هذا المقياس للمستهلك تخصيص التقييم بحسب أهمية أصل تقنية المعلومات المتأثر لمنظمة المحلل، مقاسةً من حيث السلامة.",
       "MAC": "تجاوز لتعقيد الهجوم. يعكس هذا المقياس الشروط الخارجة عن سيطرة المهاجم والتي يجب أن تتوفر لاستغلال الثغرة في بيئة المحلل.",
       "MAT": "تجاوز لمتطلبات الهجوم. يرصد شروط نشر النظام وتشغيله اللازمة لتمكين الهجوم في بيئة المحلل.",
@@ -858,15 +864,28 @@
       "MVA": "تجاوز لتأثير توافر النظام الضعيف. يقيس العواقب على توافر النظام الذي يحتوي الثغرة في بيئة المحلل.",
       "MVC": "تجاوز لتأثير سرية النظام الضعيف. يقيس العواقب على سرية النظام الذي يحتوي الثغرة في بيئة المحلل.",
       "MVI": "تجاوز لتأثير سلامة النظام الضعيف. يقيس العواقب على سلامة النظام الذي يحتوي الثغرة في بيئة المحلل.",
+      "PR": "يصف هذا المقياس مستوى الصلاحيات التي يجب أن يمتلكها المهاجم قبل استغلال الثغرة بنجاح.",
       "R": "يصف مقياس الاستعادة مرونة النظام في استعادة الخدمات من حيث الأداء والتوافر بعد وقوع الهجوم.",
       "RE": "يرصد مقياس جهد الاستجابة للثغرة مستوى الجهد المطلوب من المستهلك للتعامل مع ثغرة باتت معروفة.",
       "S": "يعكس مقياس السلامة ما إذا كانت الثغرة قد تُفضي إلى ظروف تؤثر على سلامة الإنسان وفق تصنيفات IEC 61508.",
+      "SA": "يقيس هذا المقياس التأثير على توافر الأنظمة اللاحقة خارج النظام الضعيف الناجم عن ثغرة تم استغلالها بنجاح.",
+      "SC": "يقيس هذا المقياس التأثير على سرية الأنظمة اللاحقة خارج النظام الضعيف الناجم عن ثغرة تم استغلالها بنجاح.",
+      "SI": "يقيس هذا المقياس التأثير على سلامة الأنظمة اللاحقة خارج النظام الضعيف الناجم عن ثغرة تم استغلالها بنجاح.",
       "U": "يعكس مقياس إلحاحية الموفر تقييم الإلحاحية الصادر عن المورد (أحمر، كهرماني، أخضر، شفاف) للثغرة.",
-      "V": "يصف مقياس كثافة القيمة الموارد التي سيسيطر عليها المهاجم من خلال حدث استغلال واحد."
+      "UI": "يرصد هذا المقياس اشتراط مشاركة مستخدم بشري غير المهاجم في الاختراق الناجح للنظام الضعيف.",
+      "V": "يصف مقياس كثافة القيمة الموارد التي سيسيطر عليها المهاجم من خلال حدث استغلال واحد.",
+      "VA": "يقيس هذا المقياس التأثير على توافر النظام الذي يحتوي على المكوّن الضعيف الناجم عن ثغرة تم استغلالها بنجاح.",
+      "VC": "يقيس هذا المقياس التأثير على سرية النظام الذي يحتوي على المكوّن الضعيف الناجم عن ثغرة تم استغلالها بنجاح.",
+      "VI": "يقيس هذا المقياس التأثير على سلامة النظام الذي يحتوي على المكوّن الضعيف الناجم عن ثغرة تم استغلالها بنجاح."
     },
     "metricGroups": {
+      "base": "أساسي",
+      "environmental": "بيئي",
       "environmentalBase": "بيئي (أساس معدَّل).",
-      "environmentalSecurityRequirement": "بيئي (متطلبات الأمان)"
+      "environmentalSecurityRequirement": "بيئي (متطلبات الأمان)",
+      "supplemental": "تكميلي",
+      "temporal": "زمني",
+      "threat": "تهديد"
     },
     "metricsConfigured": "{{count}}/{{total}} تم تكوينها",
     "openCalculator": "إضافة CVSS",
@@ -1019,15 +1038,6 @@
         "top-left": "أعلى اليسار",
         "top-right": "أعلى اليمين"
       },
-      "labelPosition.bottom-center": "Bottom center",
-      "labelPosition.bottom-left": "Bottom left",
-      "labelPosition.bottom-right": "Bottom right",
-      "labelPosition.middle-center": "Center (default)",
-      "labelPosition.middle-left": "Middle left",
-      "labelPosition.middle-right": "Middle right",
-      "labelPosition.top-center": "Top center",
-      "labelPosition.top-left": "Top left",
-      "labelPosition.top-right": "Top right",
       "labelPositionLabel": "موضع التسمية",
       "labelTab": "التسمية",
       "noSelection": "حدد كائناً لتحرير الأنماط.",
@@ -1041,9 +1051,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "تحقق الآن",
+      "failed": "تعذر التحقق من الحالة. حاول مرة أخرى بعد لحظة.",
+      "stillPending": "تم التحقق من الحالة — لا تزال معلقة.",
+      "success": "تم منح الوصول. الوثيقة متاحة الآن."
+    },
     "copiedEmail": "تم نسخ البريد الإلكتروني إلى الحافظة.",
     "copyEmail": "نسخ البريد الإلكتروني",
     "reason": {
+      "extractionDeadLettered": "فشلت معالجة هذه الوثيقة بشكل غير متوقع بعد محاولات متعددة. حاول مرة أخرى لاحقاً.",
+      "extractionInternal": "حدث خطأ داخلي أثناء معالجة هذه الوثيقة. حاول مرة أخرى لاحقاً.",
+      "extractionMalformed": "تعذر معالجة هذه الوثيقة لأنها تبدو تالفة أو مشوهة.",
+      "extractionUnsupported": "تنسيق هذه الوثيقة غير مدعوم لمعالجة المحتوى.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "حدث خطأ أثناء قراءة هذه الوثيقة.",
       "microsoftNotShared": "لا يملك TMI بعد وصولاً إلى ملف OneDrive أو SharePoint هذا. يجب على مالك الملف منح TMI حق الوصول للقراءة باستخدام المقتطف أدناه.",
@@ -1063,11 +1083,15 @@
       "repickFile": "اختر هذا الملف مرة أخرى.",
       "retry": "حاول مرة أخرى",
       "shareWithApplication": {
+        "copied": "تم النسخ إلى الحافظة.",
+        "copyButton": "نسخ",
         "copyFailed": "تعذّر النسخ إلى الحافظة",
+        "curlLabel": "curl",
         "explanation": "لا يملك TMI بعد وصولاً إلى ملف OneDrive أو SharePoint هذا. اطلب من مالك الملف تشغيل استدعاء Microsoft Graph التالي لمنح TMI حق الوصول للقراءة. بعد نجاح الاستدعاء، انقر فوق «تحقق الآن» — يتم تحديث الحالة في غضون دقائق بمجرد منح الإذن.",
         "powershellLabel": "PowerShell (وحدة microsoft.graph)",
         "rawLabel": "استدعاء Microsoft Graph",
-        "title": "منح TMI حق الوصول إلى هذا الملف."
+        "title": "منح TMI حق الوصول إلى هذا الملف.",
+        "unavailable": "تفاصيل معالجة Microsoft غير متاحة. تواصل مع الدعم."
       },
       "shareWithServiceAccount": "مشاركة مع حساب خدمة TMI"
     },
@@ -1075,7 +1099,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "تعذّر إنشاء الوثيقة"
+      "failed": "تعذّر إنشاء الوثيقة",
+      "inFlight": "جارٍ إنشاء الوثيقة…"
     },
     "grantError": {
       "generic": "تعذّر منح حق الوصول إلى ملفك.",
@@ -1100,6 +1125,7 @@
       "pickActionMicrosoft": "تصفّح OneDrive/SharePoint",
       "pickedFile": "الملف المحدد: {{ filename }}.",
       "repickAction": "اختر ملفًا آخر",
+      "serviceUrlHint": "الصق رابط مشاركة الملف. بعد الحفظ، ستُطلب منك مشاركته مع حساب الخدمة الخاص بنا.",
       "url": "ألصق عنوان URL"
     }
   },
@@ -1741,9 +1767,11 @@
     "addCvssEntry": "إضافة إدخال CVSS.",
     "addMapping": "إضافة تعيين...",
     "createNewThreat": "إنشاء تهديد جديد",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "متجه CVSS",
     "cvssVectorPlaceholder": "مثال: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "أدخل معرف CWE (مثال: CWE-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "تعيينات CWE",
     "frameworkMappingPicker": {
       "notApplicable": "غير قابل للتطبيق على نوع الخلية الحالي",
@@ -1777,10 +1805,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "مؤجل (P4)",
+      "deferred.description": "مؤجل بموافقة تجارية موثقة؛ متتبع لكن غير مجدول.",
       "high": "عالي (P1)",
+      "high.description": "يتطلب حلاً فورياً؛ تعرض عالي المخاطر أو موعد إصدار وشيك.",
       "immediate": "فوري (P0)",
+      "immediate.description": "يجب معالجته بشكل عاجل؛ استغلال نشط، أو انتهاك تنظيمي، أو تعرض تجاري حرج.",
       "low": "منخفض (P3)",
-      "medium": "متوسط (P2)"
+      "low.description": "أضفه إلى قائمة المهام للدورات المستقبلية؛ لا تعرض فوري.",
+      "medium": "متوسط (P2)",
+      "medium.description": "المعالجة ضمن دورات التطوير القياسية؛ تعرض معتدل."
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1824,10 +1857,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "مقبول",
+      "accepted.description": "التهديد معترف به لكن لم يتم تخفيفه عمداً (مثل: بسبب مبرر تجاري)؛ يتطلب قبول المخاطر الرسمي.",
+      "closed": "مغلق",
+      "closed.description": "يُؤرشَف الاكتشاف بعد الحل أو القبول أو الإبطال، مع مسار تدقيق.",
+      "confirmed": "مؤكد",
+      "confirmed.description": "تم التحقق من التهديد كتهديد حقيقي من خلال التحليل أو الأدلة.",
+      "deferred": "مؤجل",
+      "deferred.description": "تم تأجيل الإجراء بموافقة (مثل: للسبرينتات المستقبلية)؛ يتضمن المبرر وتاريخ الاستحقاق.",
       "false_positive": "إيجابية كاذبة",
+      "false_positive.description": "خلص التحقيق إلى أن الاكتشاف ليس تهديداً حقيقياً؛ لا يلزم اتخاذ مزيد من الإجراءات.",
       "mitigation_in_progress": "التخفيف قيد التنفيذ.",
+      "mitigation_in_progress.description": "تنفيذ الضوابط أو تغييرات الكود أو التدابير المضادة جارٍ.",
       "mitigation_planned": "التخفيف مخطط له",
-      "verification_pending": "التحقق قيد الانتظار"
+      "mitigation_planned.description": "تم تحديد استراتيجية معالجة أو تخفيف وتعيينها.",
+      "open": "مفتوح",
+      "open.description": "تم تحديد الاكتشاف وتوثيقه لكن لم يتم اتخاذ أي إجراء بعد.",
+      "resolved": "محلول",
+      "resolved.description": "تم تخفيف التهديد بالكامل والتحقق منه؛ المخاطر المتبقية مقبولة.",
+      "verification_pending": "التحقق قيد الانتظار",
+      "verification_pending.description": "اكتمل التخفيف؛ يجب على فريق الأمن اختبار الفعالية أو مراجعتها."
     }
   },
   "threatModels": {
@@ -1858,6 +1907,7 @@
       "title": {
         "create": "إنشاء مرجع الوثيقة",
         "edit": "تحرير مرجع الوثيقة",
+        "shareRequired": "شارك هذا الملف مع حساب الخدمة الخاص بنا",
         "view": "عرض مرجع الوثيقة"
       }
     },
@@ -1946,12 +1996,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "نشط",
+      "active.tooltip": "يجري العمل على نموذج التهديد بشكل نشط.",
+      "approved": "معتمد",
+      "approved.tooltip": "تم حل جميع المشكلات والتحقق منها؛ يستوفي التطبيق معايير الأمان للإصدار أو النشر.",
+      "closed": "مغلق",
+      "closed.tooltip": "اكتملت المراجعة بالكامل وأُرشفت، ولا يلزم اتخاذ مزيد من الإجراءات.",
+      "deferred": "مؤجل",
+      "deferred.tooltip": "المراجعة متوقفة مؤقتاً (مثل: بسبب قيود الموارد أو تغييرات التطبيق)؛ يُخطط لاستئنافها.",
       "in_progress": "قيد التنفيذ",
+      "in_progress.tooltip": "التقييم النشط جارٍ، بما في ذلك نمذجة التهديدات ومراجعة الكود أو الاختبار.",
       "not_started": "لم يبدأ",
+      "not_started.tooltip": "تم بدء المراجعة الأمنية لكن لم تبدأ أنشطة التقييم بعد.",
       "pending_review": "في انتظار المراجعة",
+      "pending_review.tooltip": "مصنوعات التقييم (مثل: التقارير والاكتشافات) في انتظار المراجعة الرسمية من قبل قادة الأمن أو المعتمدين.",
+      "rejected": "مرفوض",
+      "rejected.tooltip": "فشلت المراجعة في استيفاء المعايير الحرجة؛ يلزم إعادة عمل جوهرية قبل إعادة التقديم.",
       "remediation_in_progress": "المعالجة قيد التنفيذ.",
+      "remediation_in_progress.tooltip": "يقوم فريق التطوير بتنفيذ الإصلاحات للمشكلات المحددة.",
       "remediation_required": "المعالجة مطلوبة",
-      "verification_pending": "التحقق قيد الانتظار"
+      "remediation_required.tooltip": "تم تحديد ثغرات أو مشكلات؛ يجب على فريق التطوير معالجتها.",
+      "verification_pending": "التحقق قيد الانتظار",
+      "verification_pending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمن التحقق من الفعالية."
     },
     "statusLastUpdated": "آخر تحديث للحالة.",
     "tag": "علامة",

@@ -13,7 +13,8 @@
       "categoryNoteEditing": "Edição de notas",
       "categoryPdfProcessing": "Processamento de PDF",
       "paragraph1": "Este aplicativo e construido com o suporte de projetos de codigo aberto excepcionais. Somos gratos as comunidades por tras desses projetos por fornecerem as capacidades que dao vida a nossa interface e funcionalidade.",
-      "paragraph2": "Um agradecimento especial por fornecer inspiracao que ajudou a moldar nossa visao e abordagem para construir um aplicativo seguro e amigavel ao usuario vai para "
+      "paragraph2": "Um agradecimento especial por fornecer inspiracao que ajudou a moldar nossa visao e abordagem para construir um aplicativo seguro e amigavel ao usuario vai para ",
+      "paragraph3": "E por fim, um agradecimento às equipes de Windows Core Security/Secure Windows Initiative/Trustworthy Computing da Microsoft na primeira metade dos anos 2000, especialmente Praerit Garg, Mike Howard, John Lambert e Adam Shostack, por me dar a oportunidade de aprender e por demonstrar um pensamento de vanguarda em segurança de aplicações e modelagem de ameaças."
     },
     "opensourcetitle": "Código aberto",
     "server": "Servidor",
@@ -678,6 +679,7 @@
     "deactivate": "Desativar",
     "delete": "Excluir",
     "deleteConfirm": "Confirmar exclusão",
+    "deleteFailed": "Falha ao excluir",
     "deleteWarningConfirmationField": "Confirmação de exclusão",
     "deleteWarningConfirmationMatch": "O texto de confirmação corresponde",
     "deleteWarningConfirmationMismatch": "O texto de confirmação não corresponde",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "Para objetos armazenados fora do TMI, como documentos e repositórios, apenas a referência do TMI ao objeto será excluída.",
     "deleteWarningSubEntities": "Todas as entidades TMI associadas, como diagramas, ameaças e notas, também serão excluídas permanentemente.",
     "deleteWarningTypeConfirmation": "Para confirmar, digite \"{{confirmValue}}\" no campo abaixo",
+    "deletedSuccessfully": "Excluído com sucesso",
     "description": "Descricao",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Descartar",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "Aplicar",
     "metricDescriptions": {
+      "AC": "Esta métrica captura as ações mensuráveis que o atacante deve realizar para contornar ativamente as condições de segurança integradas existentes e obter um exploit funcional.",
       "AR": "Esta métrica permite ao consumidor personalizar a avaliação dependendo da importância do ativo de TI afetado para a organização do analista, medida em termos de disponibilidade.",
+      "AT": "Esta métrica captura as condições de implantação e execução ou variáveis do sistema vulnerável que habilitam o ataque.",
       "AU": "A métrica de automatização captura a resposta à pergunta: 'um atacante pode automatizar a exploração da vulnerabilidade em múltiplos alvos?'.",
       "CR": "Esta métrica permite ao consumidor personalizar a avaliação dependendo da importância do ativo de TI afetado para a organização do analista, medida em termos de confidencialidade.",
+      "E": "Esta métrica mede a probabilidade de a vulnerabilidade ser explorada, com base no estado atual das técnicas de exploit, disponibilidade de código de exploit ou exploração ativa 'in the wild'.",
       "IR": "Esta métrica permite ao consumidor personalizar a avaliação dependendo da importância do ativo de TI afetado para a organização do analista, medida em termos de integridade.",
       "MAC": "Substituição para complexidade do ataque. Esta métrica reflete as condições além do controle do atacante que devem existir para explorar a vulnerabilidade no ambiente do analista.",
       "MAT": "Substituição para requisitos de ataque. Captura as condições de implantação e execução do sistema que habilitam o ataque no ambiente do analista.",
@@ -858,15 +864,28 @@
       "MVA": "Substituição para impacto na disponibilidade do sistema vulnerável. Mede as consequências para a disponibilidade do sistema que contém a vulnerabilidade no ambiente do analista.",
       "MVC": "Substituição para impacto na confidencialidade do sistema vulnerável. Mede as consequências para a confidencialidade do sistema que contém a vulnerabilidade no ambiente do analista.",
       "MVI": "Substituição para impacto na integridade do sistema vulnerável. Mede as consequências para a integridade do sistema que contém a vulnerabilidade no ambiente do analista.",
+      "PR": "Esta métrica descreve o nível de privilégios que um atacante deve possuir antes de explorar a vulnerabilidade com sucesso.",
       "R": "A métrica de recuperação descreve a resiliência de um sistema para recuperar serviços, em termos de desempenho e disponibilidade, após um ataque.",
       "RE": "A métrica de esforço de resposta à vulnerabilidade captura o nível de esforço necessário para o consumidor responder a uma vulnerabilidade depois que ela se torna conhecida.",
       "S": "A métrica de segurança reflete se a vulnerabilidade poderia resultar em condições que afetam a segurança humana conforme definido pelas categorias IEC 61508.",
+      "SA": "Esta métrica mede o impacto na disponibilidade de sistemas subsequentes além do sistema vulnerável, causado por uma vulnerabilidade explorada com sucesso.",
+      "SC": "Esta métrica mede o impacto na confidencialidade de sistemas subsequentes além do sistema vulnerável, causado por uma vulnerabilidade explorada com sucesso.",
+      "SI": "Esta métrica mede o impacto na integridade de sistemas subsequentes além do sistema vulnerável, causado por uma vulnerabilidade explorada com sucesso.",
       "U": "A métrica de urgência do provedor reflete a classificação de urgência fornecida pelo fornecedor (vermelho, âmbar, verde, claro) para uma vulnerabilidade.",
-      "V": "A métrica de densidade de valor descreve os recursos que o atacante obterá controle com um único evento de exploração."
+      "UI": "Esta métrica captura o requisito de participação de um usuário humano, que não o atacante, para o comprometimento bem-sucedido do sistema vulnerável.",
+      "V": "A métrica de densidade de valor descreve os recursos que o atacante obterá controle com um único evento de exploração.",
+      "VA": "Esta métrica mede o impacto na disponibilidade do sistema que contém o componente vulnerável, resultante de uma vulnerabilidade explorada com sucesso.",
+      "VC": "Esta métrica mede o impacto na confidencialidade do sistema que contém o componente vulnerável, resultante de uma vulnerabilidade explorada com sucesso.",
+      "VI": "Esta métrica mede o impacto na integridade do sistema que contém o componente vulnerável, resultante de uma vulnerabilidade explorada com sucesso."
     },
     "metricGroups": {
+      "base": "Base",
+      "environmental": "Ambiental",
       "environmentalBase": "Ambiental (base modificada).",
-      "environmentalSecurityRequirement": "Ambiental (requisitos de segurança)"
+      "environmentalSecurityRequirement": "Ambiental (requisitos de segurança)",
+      "supplemental": "Suplementar",
+      "temporal": "Temporal",
+      "threat": "Ameaça"
     },
     "metricsConfigured": "{{count}}/{{total}} configurado(s)",
     "openCalculator": "Adicionar CVSS",
@@ -1019,15 +1038,6 @@
         "top-left": "Superior esquerdo",
         "top-right": "Superior direito"
       },
-      "labelPosition.bottom-center": "Bottom center",
-      "labelPosition.bottom-left": "Bottom left",
-      "labelPosition.bottom-right": "Bottom right",
-      "labelPosition.middle-center": "Center (default)",
-      "labelPosition.middle-left": "Middle left",
-      "labelPosition.middle-right": "Middle right",
-      "labelPosition.top-center": "Top center",
-      "labelPosition.top-left": "Top left",
-      "labelPosition.top-right": "Top right",
       "labelPositionLabel": "Posição do rótulo",
       "labelTab": "Rótulo",
       "noSelection": "Selecione um objeto para editar os estilos.",
@@ -1041,9 +1051,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "Verificar agora",
+      "failed": "Não foi possível verificar o status. Tente novamente em instantes.",
+      "stillPending": "Status verificado — ainda pendente.",
+      "success": "Acesso concedido. O documento agora está acessível."
+    },
     "copiedEmail": "E-mail copiado para a área de transferência.",
     "copyEmail": "Copiar e-mail",
     "reason": {
+      "extractionDeadLettered": "O processamento deste documento falhou inesperadamente após várias tentativas. Tente novamente mais tarde.",
+      "extractionInternal": "Ocorreu um erro interno ao processar este documento. Tente novamente mais tarde.",
+      "extractionMalformed": "Este documento não pôde ser processado porque parece estar danificado ou malformado.",
+      "extractionUnsupported": "O formato deste documento não é suportado para processamento de conteúdo.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "Ocorreu um erro ao ler este documento.",
       "microsoftNotShared": "O TMI ainda não tem acesso a este arquivo do OneDrive ou SharePoint. O proprietário do arquivo deve conceder acesso de leitura ao TMI usando o trecho abaixo.",
@@ -1063,11 +1083,15 @@
       "repickFile": "Selecione este arquivo novamente.",
       "retry": "Tentar novamente",
       "shareWithApplication": {
+        "copied": "Copiado para a área de transferência.",
+        "copyButton": "Copiar",
         "copyFailed": "Não foi possível copiar para a área de transferência",
+        "curlLabel": "curl",
         "explanation": "O TMI ainda não tem acesso a este arquivo do OneDrive ou SharePoint. Peça ao proprietário do arquivo para executar a seguinte chamada do Microsoft Graph para conceder acesso de leitura ao TMI. Após o sucesso da chamada, clique em \"verificar agora\" — o status é atualizado em alguns minutos após a concessão ser realizada.",
         "powershellLabel": "PowerShell (módulo microsoft.graph)",
         "rawLabel": "Chamada do Microsoft Graph",
-        "title": "Conceder ao TMI acesso a este arquivo."
+        "title": "Conceder ao TMI acesso a este arquivo.",
+        "unavailable": "Os detalhes de remediação da Microsoft não estão disponíveis. Entre em contato com o suporte."
       },
       "shareWithServiceAccount": "Compartilhar com a conta de serviço do TMI"
     },
@@ -1075,7 +1099,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "Não foi possível criar o documento"
+      "failed": "Não foi possível criar o documento",
+      "inFlight": "Criando documento…"
     },
     "grantError": {
       "generic": "Não foi possível conceder acesso ao seu arquivo.",
@@ -1100,6 +1125,7 @@
       "pickActionMicrosoft": "Navegar no OneDrive/SharePoint",
       "pickedFile": "Arquivo selecionado: {{ filename }}.",
       "repickAction": "Escolher um arquivo diferente",
+      "serviceUrlHint": "Cole a URL de compartilhamento do arquivo. Após salvar, será solicitado que você o compartilhe com nossa conta de serviço.",
       "url": "Colar uma URL"
     }
   },
@@ -1768,9 +1794,11 @@
     "addCvssEntry": "Adicionar entrada CVSS.",
     "addMapping": "Adicionar mapeamento...",
     "createNewThreat": "Criar nova ameaça",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "Vetor CVSS",
     "cvssVectorPlaceholder": "Ex.: cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
     "cweIdPlaceholder": "Digite o ID CWE (ex.: cwe-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "Mapeamentos CWE",
     "frameworkMappingPicker": {
       "notApplicable": "Não aplicável ao tipo de célula atual",
@@ -1804,10 +1832,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "Adiada (p4)",
+      "deferred.description": "Adiada com aprovação empresarial documentada; rastreada, mas não agendada.",
       "high": "Alta (p1)",
+      "high.description": "Requer resolução imediata; exposição de alto risco ou prazo de lançamento próximo.",
       "immediate": "Imediata (p0)",
+      "immediate.description": "Deve ser tratada com urgência; exploração ativa, violação regulatória ou exposição crítica de negócios.",
       "low": "Baixa (p3)",
-      "medium": "Média (p2)"
+      "low.description": "Incluir no backlog para ciclos futuros; sem exposição imediata.",
+      "medium": "Média (p2)",
+      "medium.description": "Tratar dentro dos ciclos de desenvolvimento padrão; exposição moderada."
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1851,10 +1884,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "Aceita",
+      "accepted.description": "A ameaça é reconhecida, mas intencionalmente não mitigada (ex.: por justificativa empresarial); requer aceitação formal do risco.",
+      "closed": "Encerrada",
+      "closed.description": "A constatação é arquivada após resolução, aceitação ou invalidação, com trilha de auditoria.",
+      "confirmed": "Confirmada",
+      "confirmed.description": "A ameaça foi validada como legítima por meio de análise ou evidências.",
+      "deferred": "Adiada",
+      "deferred.description": "A ação é adiada com aprovação (ex.: para sprints futuros); inclui justificativa e data prevista.",
       "false_positive": "Falso positivo",
+      "false_positive.description": "A investigação determinou que a constatação não é uma ameaça válida; nenhuma ação adicional é necessária.",
       "mitigation_in_progress": "Mitigação em andamento.",
+      "mitigation_in_progress.description": "A implementação de controles, alterações de código ou contramedidas está em andamento.",
       "mitigation_planned": "Mitigação planejada",
-      "verification_pending": "Verificação pendente"
+      "mitigation_planned.description": "Uma estratégia de remediação ou mitigação foi definida e atribuída.",
+      "open": "Aberta",
+      "open.description": "A constatação foi identificada e documentada, mas nenhuma ação foi iniciada.",
+      "resolved": "Resolvida",
+      "resolved.description": "A ameaça está totalmente mitigada e verificada; o risco residual é aceitável.",
+      "verification_pending": "Verificação pendente",
+      "verification_pending.description": "A mitigação está concluída; a equipe de segurança deve testar ou revisar a eficácia."
     }
   },
   "threatModels": {
@@ -1885,6 +1934,7 @@
       "title": {
         "create": "Criar referência de documento",
         "edit": "Editar referência de documento",
+        "shareRequired": "Compartilhe este arquivo com nossa conta de serviço",
         "view": "Visualizar referência de documento"
       }
     },
@@ -1973,12 +2023,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "Ativo",
+      "active.tooltip": "O modelo de ameaças está sendo ativamente trabalhado.",
+      "approved": "Aprovado",
+      "approved.tooltip": "Todos os problemas estão resolvidos e verificados; a aplicação atende aos critérios de segurança para lançamento ou implantação.",
+      "closed": "Encerrado",
+      "closed.tooltip": "A revisão está totalmente concluída e arquivada, sem necessidade de ações adicionais.",
+      "deferred": "Adiado",
+      "deferred.tooltip": "A revisão está pausada (ex.: por restrições de recursos ou alterações na aplicação); a retomada está planejada.",
       "in_progress": "Em andamento",
+      "in_progress.tooltip": "A avaliação está em andamento, incluindo modelagem de ameaças, revisão de código ou testes.",
       "not_started": "Não iniciado",
+      "not_started.tooltip": "A revisão de segurança foi iniciada, mas nenhuma atividade de avaliação começou.",
       "pending_review": "Revisão pendente",
+      "pending_review.tooltip": "Os artefatos de avaliação (ex.: relatórios, constatações) aguardam revisão formal pelos responsáveis ou aprovadores de segurança.",
+      "rejected": "Rejeitado",
+      "rejected.tooltip": "A revisão não atendeu aos critérios críticos; é necessário retrabalho significativo antes de uma nova submissão.",
       "remediation_in_progress": "Remediação em andamento.",
+      "remediation_in_progress.tooltip": "As correções dos problemas identificados estão sendo implementadas pela equipe de desenvolvimento.",
       "remediation_required": "Remediação necessária",
-      "verification_pending": "Verificação pendente"
+      "remediation_required.tooltip": "Vulnerabilidades ou problemas foram identificados; o desenvolvimento deve resolvê-los.",
+      "verification_pending": "Verificação pendente",
+      "verification_pending.tooltip": "A remediação está concluída; a equipe de segurança deve verificar a eficácia."
     },
     "statusLastUpdated": "Status atualizado pela última vez.",
     "tag": "Etiqueta",

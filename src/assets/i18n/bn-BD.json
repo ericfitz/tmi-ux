@@ -13,7 +13,8 @@
       "categoryNoteEditing": "নোট সম্পাদনা",
       "categoryPdfProcessing": "PDF প্রক্রিয়াকরণ",
       "paragraph1": "এই অ্যাপ্লিকেশনটি অসাধারণ ওপেন-সোর্স প্রকল্পগুলোর সহায়তায় তৈরি। আমরা এই প্রকল্পগুলোর পেছনের সম্প্রদায়ের কাছে কৃতজ্ঞ যারা আমাদের ইন্টারফেস এবং কার্যকারিতাকে জীবন্ত করার সক্ষমতা প্রদান করেছে।",
-      "paragraph2": "একটি বিশেষ ধন্যবাদ সেই অনুপ্রেরণার জন্য যা আমাদের দৃষ্টিভঙ্গি এবং একটি নিরাপদ ও ব্যবহারকারী-বান্ধব অ্যাপ্লিকেশন তৈরির পদ্ধতি গঠনে সাহায্য করেছে "
+      "paragraph2": "একটি বিশেষ ধন্যবাদ সেই অনুপ্রেরণার জন্য যা আমাদের দৃষ্টিভঙ্গি এবং একটি নিরাপদ ও ব্যবহারকারী-বান্ধব অ্যাপ্লিকেশন তৈরির পদ্ধতি গঠনে সাহায্য করেছে ",
+      "paragraph3": "এবং অবশেষে ২০০০-এর দশকের প্রথমার্ধে Microsoft-এর Windows Core Security/Secure Windows Initiative/Trustworthy Computing দলগুলিকে ধন্যবাদ, বিশেষত Praerit Garg, Mike Howard, John Lambert এবং Adam Shostack-কে, যারা আমাকে শেখার সুযোগ দিয়েছেন এবং অ্যাপ্লিকেশন নিরাপত্তা ও থ্রেট মডেলিংয়ে শিল্প-নেতৃস্থানীয় চিন্তাভাবনা প্রদর্শন করেছেন।"
     },
     "opensourcetitle": "ওপেন সোর্স",
     "server": "সার্ভার",
@@ -757,7 +758,6 @@
     "noSessions": "এখনও কোনো চ্যাট সেশন নেই। একটি কথোপকথন শুরু করুন!",
     "preparation": {
       "error": "প্রস্তুতি ব্যর্থ হয়েছে: {{message}}",
-      "processing": "{{phase}} — {{entityName}} — {{progress}}%",
       "ready": "প্রস্তুত! টিমি আপনার উৎসগুলো প্রস্তুত করা শেষ করেছে।"
     },
     "saveAsNoteError": "নোট হিসেবে সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
@@ -883,6 +883,7 @@
     "deactivate": "নিষ্ক্রিয় করুন",
     "delete": "মুছুন",
     "deleteConfirm": "থ্রেট মডেল মুছুন",
+    "deleteFailed": "মুছে ফেলা ব্যর্থ হয়েছে",
     "deleteWarningConfirmationField": "মুছে ফেলার নিশ্চিতকরণ",
     "deleteWarningConfirmationMatch": "নিশ্চিতকরণ টেক্সট মিলেছে",
     "deleteWarningConfirmationMismatch": "নিশ্চিতকরণ টেক্সট মিলছে না",
@@ -891,6 +892,7 @@
     "deleteWarningReferenceOnly": "TMI-এর বাইরে সংরক্ষিত অবজেক্ট যেমন ডকুমেন্ট এবং রিপোজিটরির ক্ষেত্রে, শুধুমাত্র অবজেক্টের TMI রেফারেন্স মুছে যাবে।",
     "deleteWarningSubEntities": "সমস্ত সম্পর্কিত TMI সত্তা যেমন ডায়াগ্রাম, থ্রেট এবং নোটও স্থায়ীভাবে মুছে যাবে।",
     "deleteWarningTypeConfirmation": "নিশ্চিত করতে, অনুগ্রহ করে নিচের ফিল্ডে \"{{confirmValue}}\" টাইপ করুন।",
+    "deletedSuccessfully": "সফলভাবে মুছে ফেলা হয়েছে",
     "description": "বিবরণ",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "বাতিল করুন",
@@ -1026,6 +1028,7 @@
   "common.addMetadata": "মেটাডেটা যুক্ত করুন",
   "common.addThreat": "হুমকি যুক্ত করুন",
   "common.allStatuses": "সকল অবস্থা",
+  "common.clearSearch": "অনুসন্ধান সাফ করুন",
   "common.confirmDeleteMessage": "আপনি কি নিশ্চিত যে আপনি {{objectType}} \"{{name}}\" মুছে ফেলতে চান?",
   "common.copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে।",
   "common.copyToClipboard": "ক্লিপবোর্ডে কপি করুন",
@@ -1101,6 +1104,26 @@
   "createThreatModel.title": "Threat model তৈরি করুন",
   "cvssCalculator": {
     "apply": "প্রয়োগ",
+    "metricDescriptions": {
+      "AC": "এই মেট্রিক কার্যকর শোষণ পেতে বিদ্যমান বিল্ট-ইন নিরাপত্তা-উন্নয়নকারী শর্তগুলি সক্রিয়ভাবে এড়াতে বা বাইপাস করতে আক্রমণকারীকে যে পরিমাপযোগ্য পদক্ষেপ নিতে হবে তা ক্যাপচার করে।",
+      "AT": "এই মেট্রিক দুর্বল সিস্টেমের পূর্বশর্ত স্থাপনা ও কার্যকরী শর্ত বা ভেরিয়েবল ক্যাপচার করে যা আক্রমণকে সক্ষম করে।",
+      "E": "এই মেট্রিক বর্তমান শোষণ কৌশলের অবস্থা, শোষণ কোডের উপলব্ধতা বা সক্রিয় 'ইন-দ্য-ওয়াইল্ড' শোষণের উপর ভিত্তি করে দুর্বলতাটি আক্রান্ত হওয়ার সম্ভাবনা পরিমাপ করে।",
+      "PR": "এই মেট্রিক দুর্বলতা সফলভাবে শোষণের আগে আক্রমণকারীকে যে স্তরের সুবিধা থাকতে হবে তা বর্ণনা করে।",
+      "SA": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার কারণে দুর্বল সিস্টেমের বাইরের পরবর্তী সিস্টেমগুলির প্রাপ্যতার উপর প্রভাব পরিমাপ করে।",
+      "SC": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার কারণে দুর্বল সিস্টেমের বাইরের পরবর্তী সিস্টেমগুলির গোপনীয়তার উপর প্রভাব পরিমাপ করে।",
+      "SI": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার কারণে দুর্বল সিস্টেমের বাইরের পরবর্তী সিস্টেমগুলির অখণ্ডতার উপর প্রভাব পরিমাপ করে।",
+      "UI": "এই মেট্রিক দুর্বল সিস্টেমের সফল আপসের জন্য আক্রমণকারী ব্যতীত একজন মানব ব্যবহারকারীর অংশগ্রহণের প্রয়োজনীয়তা ক্যাপচার করে।",
+      "VA": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার ফলে দুর্বল কম্পোনেন্ট ধারণকারী সিস্টেমের প্রাপ্যতার উপর প্রভাব পরিমাপ করে।",
+      "VC": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার ফলে দুর্বল কম্পোনেন্ট ধারণকারী সিস্টেমের গোপনীয়তার উপর প্রভাব পরিমাপ করে।",
+      "VI": "এই মেট্রিক সফলভাবে শোষিত দুর্বলতার ফলে দুর্বল কম্পোনেন্ট ধারণকারী সিস্টেমের অখণ্ডতার উপর প্রভাব পরিমাপ করে।"
+    },
+    "metricGroups": {
+      "base": "বেস",
+      "environmental": "পরিবেশগত",
+      "supplemental": "সাপ্লিমেন্টাল",
+      "temporal": "টেম্পোরাল",
+      "threat": "থ্রেট"
+    },
     "openCalculator": "CVSS যোগ করুন",
     "parseError": "বিদ্যমান CVSS ভেক্টর স্ট্রিং পার্স করা যায়নি",
     "pasteVectorPlaceholder": "একটি CVSS ভেক্টর স্ট্রিং পেস্ট করুন এবং এন্টার চাপুন",
@@ -1194,7 +1217,6 @@
     "viewAsCards": "কার্ড হিসেবে দেখুন",
     "viewAsList": "তালিকা হিসেবে দেখুন"
   },
-  "common.clearSearch": "অনুসন্ধান সাফ করুন",
   "dashboard.createdAfter": "তৈরির তারিখের পরে",
   "dashboard.createdBefore": "তৈরির তারিখের আগে",
   "dashboard.lessFilters": "কম ফিল্টার",
@@ -1339,9 +1361,19 @@
   "dfd.portLabel.title": "পোর্ট লেবেল",
   "dfd.stylePanel.noSelection": "স্টাইল সম্পাদনা করতে একটি বস্তু নির্বাচন করুন।",
   "documentAccess": {
+    "checkNow": {
+      "button": "এখনই পরীক্ষা করুন",
+      "failed": "অবস্থা পরীক্ষা করা যায়নি। একটু পরে আবার চেষ্টা করুন।",
+      "stillPending": "অবস্থা পরীক্ষা করা হয়েছে — এখনো মুলতুবি।",
+      "success": "প্রবেশাধিকার মঞ্জুর হয়েছে। নথিটি এখন অ্যাক্সেসযোগ্য।"
+    },
     "copiedEmail": "ইমেল ক্লিপবোর্ডে কপি করা হয়েছে।",
     "copyEmail": "ইমেইল কপি করুন",
     "reason": {
+      "extractionDeadLettered": "একাধিক প্রচেষ্টার পরেও এই নথি প্রক্রিয়াকরণ অপ্রত্যাশিতভাবে ব্যর্থ হয়েছে। পরে আবার চেষ্টা করুন।",
+      "extractionInternal": "এই নথি প্রক্রিয়াকরণের সময় একটি অভ্যন্তরীণ ত্রুটি ঘটেছে। পরে আবার চেষ্টা করুন।",
+      "extractionMalformed": "এই নথিটি ক্ষতিগ্রস্ত বা বিকৃত মনে হওয়ায় প্রক্রিয়া করা সম্ভব হয়নি।",
+      "extractionUnsupported": "এই নথির ফরম্যাট কন্টেন্ট প্রক্রিয়াকরণের জন্য সমর্থিত নয়।",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "এই ডকুমেন্টটি পড়ার সময় একটি ত্রুটি ঘটেছে।",
       "noAccessibleSource": "TMI বর্তমান প্রবেশাধিকার দিয়ে এই ডকুমেন্টটি পড়তে পারছে না।",
@@ -1359,6 +1391,12 @@
       "repickAfterShare": "শেয়ার করার পর আবার নির্বাচন করুন",
       "repickFile": "এই ফাইলটি আবার নির্বাচন করুন",
       "retry": "আবার চেষ্টা করুন",
+      "shareWithApplication": {
+        "copied": "ক্লিপবোর্ডে কপি করা হয়েছে।",
+        "copyButton": "কপি",
+        "curlLabel": "curl",
+        "unavailable": "Microsoft প্রতিকার বিবরণ পাওয়া যাচ্ছে না। সাপোর্টের সাথে যোগাযোগ করুন।"
+      },
       "shareWithServiceAccount": "TMI পরিষেবা অ্যাকাউন্টের সাথে শেয়ার করুন"
     },
     "serviceAccountEmail": "এই ইমেইলের সাথে শেয়ার করুন:"
@@ -1375,6 +1413,9 @@
   "documentAccess.remediation.shareWithApplication.rawLabel": "Microsoft Graph কল",
   "documentAccess.remediation.shareWithApplication.title": "TMI-কে এই ফাইলে প্রবেশাধিকার দিন।",
   "documentEditor": {
+    "create": {
+      "inFlight": "নথি তৈরি হচ্ছে…"
+    },
     "grantError": {
       "generic": "আপনার ফাইলে অ্যাক্সেস দেওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
       "linkAccountCta": "অ্যাকাউন্ট লিঙ্ক করুন",
@@ -1395,6 +1436,7 @@
       "pickActionMicrosoft": "OneDrive/SharePoint ব্রাউজ করুন",
       "pickedFile": "ফাইল নির্বাচিত: {{ fileName }}",
       "repickAction": "একটি ভিন্ন ফাইল নির্বাচন করুন",
+      "serviceUrlHint": "ফাইলের শেয়ার URL পেস্ট করুন। সংরক্ষণের পরে, আপনাকে আমাদের সার্ভিস অ্যাকাউন্টের সাথে এটি শেয়ার করতে অনুরোধ করা হবে।",
       "url": "একটি URL পেস্ট করুন"
     }
   },
@@ -1423,9 +1465,6 @@
     "empty": {
       "description": "Google Drive এবং অন্যান্য পরিষেবা থেকে নথি সংযুক্ত করতে একটি ক্লাউড স্টোরেজ অ্যাকাউন্ট লিঙ্ক করুন যখনই তা উপলব্ধ হবে।",
       "title": "কোনো ডকুমেন্ট উৎস সংযুক্ত নেই"
-    },
-    "googleDrive": {
-      "name": "Google Drive"
     },
     "linkedAt": "{{ relativeTime }} লিঙ্ক করা হয়েছে",
     "microsoft": {
@@ -1606,7 +1645,6 @@
   "mermaidViewer.zoomOut": "জুম আউট করুন",
   "navbar": {
     "admin": "অ্যাডমিন",
-    "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
     "dashboard": "ড্যাশবোর্ড",
     "feedback": "একটি বাগ রিপোর্ট করুন, একটি ফিচার অনুরোধ করুন বা মতামত দিন",
@@ -1965,7 +2003,6 @@
     "logoutButton": "এখনই সাইন আউট করুন",
     "message": "আপনার সেশন শীঘ্রই শেষ হতে চলেছে। আপনি কি আপনার সেশন বাড়াতে বা এখনই সাইন আউট করতে চান?",
     "timeFormat": {
-      "minutesSeconds": "{{minutes}}:{{seconds}}",
       "seconds": "{{seconds}} সেকেন্ড"
     },
     "title": "সেশন শীঘ্রই শেষ হবে"
@@ -2271,8 +2308,10 @@
   "threatEditor": {
     "addMapping": "ম্যাপিং যোগ করুন",
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
+    "cvss": "{{report.cvss}}",
     "cvssVectorPlaceholder": "যেমন, CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE আইডি লিখুন (যেমন, CWE-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "CWE ম্যাপিং",
     "frameworkMappingPicker": {
       "notApplicable": "বর্তমান সেল টাইপের জন্য প্রযোজ্য নয়",
@@ -2286,7 +2325,6 @@
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
     "notAssociatedWithCell": "কোনো সেলের সাথে সম্পর্কিত নয়",
     "notAssociatedWithDiagram": "কোনো ডায়াগ্রামের সাথে সম্পর্কিত নয়",
-    "selectDiagramFirst": "প্রথমে একটি ডায়াগ্রাম নির্বাচন করুন",
     "sections": {
       "classification": "{{common.classification}}",
       "description": "{{common.description}}",
@@ -2294,6 +2332,7 @@
       "mitigation": "{{common.mitigation}}",
       "tracking": "ট্র্যাকিং"
     },
+    "selectDiagramFirst": "প্রথমে একটি ডায়াগ্রাম নির্বাচন করুন",
     "threatPriority": {
       "0": "Immediate (P0)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
@@ -2304,7 +2343,12 @@
       "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "4.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "deferred.description": "নথিভুক্ত ব্যবসায়িক অনুমোদনসহ স্থগিত; ট্র্যাক করা হচ্ছে কিন্তু নির্ধারিত নয়।",
+      "high.description": "দ্রুত সমাধান প্রয়োজন; উচ্চ-ঝুঁকির এক্সপোজার বা আসন্ন রিলিজ ডেডলাইন।",
+      "immediate.description": "জরুরিভাবে সমাধান করতে হবে; সক্রিয় শোষণ, নিয়ন্ত্রক লঙ্ঘন, বা গুরুতর ব্যবসায়িক এক্সপোজার।",
+      "low.description": "ভবিষ্যৎ চক্রের জন্য ব্যাকলগে অন্তর্ভুক্ত করুন; তাৎক্ষণিক কোনো এক্সপোজার নেই।",
+      "medium.description": "স্বাভাবিক ডেভেলপমেন্ট চক্রের মধ্যে সমাধান করুন; মাঝারি ঝুঁকি।"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -2347,7 +2391,23 @@
       "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
+      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "গৃহীত",
+      "accepted.description": "হুমকিটি স্বীকৃত কিন্তু ইচ্ছাকৃতভাবে প্রশমিত নয় (যেমন, ব্যবসায়িক যুক্তির কারণে); আনুষ্ঠানিক ঝুঁকি গ্রহণযোগ্যতা প্রয়োজন।",
+      "closed": "বন্ধ",
+      "closed.description": "রেজোলিউশন, গ্রহণযোগ্যতা বা বাতিলের পরে অডিট ট্রেইলসহ ফাইন্ডিং আর্কাইভ করা হয়েছে।",
+      "confirmed": "নিশ্চিত",
+      "confirmed.description": "বিশ্লেষণ বা প্রমাণের মাধ্যমে হুমকিটি বৈধ বলে যাচাই হয়েছে।",
+      "deferred": "স্থগিত",
+      "deferred.description": "অনুমোদনসহ পদক্ষেপ স্থগিত (যেমন, ভবিষ্যৎ স্প্রিন্টের জন্য); যুক্তি ও নির্ধারিত তারিখ অন্তর্ভুক্ত।",
+      "false_positive.description": "তদন্তে নির্ধারিত হয়েছে যে ফাইন্ডিংটি একটি বৈধ হুমকি নয়; আর কোনো পদক্ষেপ প্রয়োজন নেই।",
+      "mitigation_in_progress.description": "নিয়ন্ত্রণ, কোড পরিবর্তন বা প্রতিরোধমূলক ব্যবস্থার বাস্তবায়ন চলমান।",
+      "mitigation_planned.description": "একটি প্রতিকার বা প্রশমন কৌশল সংজ্ঞায়িত ও নির্ধারিত হয়েছে।",
+      "open": "খোলা",
+      "open.description": "ফাইন্ডিং চিহ্নিত ও নথিভুক্ত হয়েছে কিন্তু কোনো পদক্ষেপ শুরু হয়নি।",
+      "resolved": "সমাধান হয়েছে",
+      "resolved.description": "হুমকিটি সম্পূর্ণরূপে প্রশমিত ও যাচাই করা হয়েছে; অবশিষ্ট ঝুঁকি গ্রহণযোগ্য।",
+      "verification_pending.description": "প্রশমন সম্পন্ন হয়েছে; নিরাপত্তা দলকে কার্যকারিতা পরীক্ষা বা পর্যালোচনা করতে হবে।"
     }
   },
   "threatEditor.addCvssEntry": "CVSS এন্ট্রি যুক্ত করুন।",
@@ -2401,6 +2461,7 @@
       "title": {
         "create": "ডকুমেন্ট রেফারেন্স তৈরি করুন",
         "edit": "ডকুমেন্ট রেফারেন্স সম্পাদনা করুন",
+        "shareRequired": "এই ফাইলটি আমাদের সার্ভিস অ্যাকাউন্টের সাথে শেয়ার করুন",
         "view": "ডকুমেন্ট রেফারেন্স দেখুন"
       }
     },
@@ -2488,7 +2549,23 @@
       "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "সক্রিয়",
+      "active.tooltip": "থ্রেট মডেলটি সক্রিয়ভাবে কাজ করা হচ্ছে।",
+      "approved": "অনুমোদিত",
+      "approved.tooltip": "সমস্ত সমস্যা সমাধান ও যাচাই হয়েছে; অ্যাপ্লিকেশন রিলিজ বা ডেপ্লয়মেন্টের জন্য নিরাপত্তা মানদণ্ড পূরণ করেছে।",
+      "closed": "বন্ধ",
+      "closed.tooltip": "পর্যালোচনা সম্পূর্ণ ও আর্কাইভ হয়েছে; আর কোনো পদক্ষেপের প্রয়োজন নেই।",
+      "deferred": "স্থগিত",
+      "deferred.tooltip": "পর্যালোচনা বিরতি দেওয়া হয়েছে (যেমন, সম্পদের সীমাবদ্ধতা বা অ্যাপ্লিকেশন পরিবর্তনের কারণে); পুনরায় শুরুর পরিকল্পনা রয়েছে।",
+      "in_progress.tooltip": "সক্রিয় মূল্যায়ন চলছে, যার মধ্যে রয়েছে থ্রেট মডেলিং, কোড রিভিউ বা পরীক্ষা।",
+      "not_started.tooltip": "নিরাপত্তা পর্যালোচনা শুরু হয়েছে কিন্তু কোনো মূল্যায়ন কার্যক্রম শুরু হয়নি।",
+      "pending_review.tooltip": "মূল্যায়নের আর্টিফ্যাক্ট (যেমন, রিপোর্ট, ফাইন্ডিং) নিরাপত্তা প্রধান বা অনুমোদনকারীদের দ্বারা আনুষ্ঠানিক পর্যালোচনার অপেক্ষায়।",
+      "rejected": "প্রত্যাখ্যাত",
+      "rejected.tooltip": "পর্যালোচনা গুরুত্বপূর্ণ মানদণ্ড পূরণ করতে ব্যর্থ হয়েছে; পুনরায় জমা দেওয়ার আগে উল্লেখযোগ্য পুনর্কাজ প্রয়োজন।",
+      "remediation_in_progress.tooltip": "চিহ্নিত সমস্যাগুলির জন্য ফিক্স ডেভেলপমেন্ট দল দ্বারা বাস্তবায়ন করা হচ্ছে।",
+      "remediation_required.tooltip": "দুর্বলতা বা সমস্যা চিহ্নিত হয়েছে; ডেভেলপমেন্ট দলকে এগুলো সমাধান করতে হবে।",
+      "verification_pending.tooltip": "প্রতিকার সম্পন্ন হয়েছে; নিরাপত্তা দলকে কার্যকারিতা যাচাই করতে হবে।"
     },
     "statusLastUpdated": "স্থিতি সর্বশেষ আপডেট হয়েছে",
     "tag": "ট্যাগ",

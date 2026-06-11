@@ -13,7 +13,8 @@
       "categoryNoteEditing": "Pengeditan Catatan",
       "categoryPdfProcessing": "Pemrosesan PDF",
       "paragraph1": "Aplikasi ini dibangun dengan dukungan proyek sumber terbuka yang luar biasa. Kami berterima kasih kepada komunitas di balik proyek-proyek ini karena menyediakan kemampuan yang mewujudkan antarmuka dan fungsionalitas kami.",
-      "paragraph2": "Terima kasih khusus atas inspirasi yang membantu membentuk visi dan pendekatan kami dalam membangun aplikasi yang aman dan ramah pengguna kepada "
+      "paragraph2": "Terima kasih khusus atas inspirasi yang membantu membentuk visi dan pendekatan kami dalam membangun aplikasi yang aman dan ramah pengguna kepada ",
+      "paragraph3": "Dan terakhir, terima kasih kepada tim Windows Core Security/Secure Windows Initiative/Trustworthy Computing di Microsoft pada paruh pertama tahun 2000-an, khususnya Praerit Garg, Mike Howard, John Lambert, dan Adam Shostack, karena telah memberi saya kesempatan untuk belajar dan menunjukkan pemikiran terdepan di industri dalam keamanan aplikasi dan pemodelan ancaman."
     },
     "opensourcetitle": "Sumber Terbuka",
     "server": "Server",
@@ -678,6 +679,7 @@
     "deactivate": "Nonaktifkan",
     "delete": "Hapus",
     "deleteConfirm": "Konfirmasi Penghapusan",
+    "deleteFailed": "Penghapusan gagal",
     "deleteWarningConfirmationField": "Konfirmasi Penghapusan",
     "deleteWarningConfirmationMatch": "Teks konfirmasi cocok",
     "deleteWarningConfirmationMismatch": "Teks konfirmasi tidak cocok",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "Untuk objek yang disimpan di luar TMI seperti dokumen dan repositori, hanya referensi TMI ke objek tersebut yang akan dihapus.",
     "deleteWarningSubEntities": "Semua entitas TMI terkait seperti diagram, ancaman, dan catatan juga akan dihapus secara permanen.",
     "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmValue}}\" di bidang di bawah ini",
+    "deletedSuccessfully": "Berhasil dihapus",
     "description": "Deskripsi",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Tutup",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "Terapkan",
     "metricDescriptions": {
+      "AC": "Metrik ini menangkap tindakan terukur yang harus dilakukan penyerang untuk secara aktif menghindari atau menyiasati kondisi peningkatan keamanan bawaan yang ada guna memperoleh eksploit yang berfungsi.",
       "AR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi ketersediaan.",
+      "AT": "Metrik ini menangkap kondisi penerapan dan eksekusi atau variabel sistem yang rentan yang memungkinkan serangan.",
       "AU": "Metrik yang dapat diotomatisasi menangkap jawaban atas pertanyaan 'dapatkah penyerang mengotomatisasi eksploitasi kerentanan di beberapa target?'.",
       "CR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi kerahasiaan.",
+      "E": "Metrik ini mengukur kemungkinan kerentanan diserang, berdasarkan keadaan teknik eksploitasi saat ini, ketersediaan kode eksploit, atau eksploitasi aktif 'di alam liar'.",
       "IR": "Metrik ini memungkinkan konsumen untuk menyesuaikan penilaian berdasarkan pentingnya aset TI yang terpengaruh bagi organisasi analis, diukur dari segi integritas.",
       "MAC": "Penggantian untuk kompleksitas serangan. Metrik ini mencerminkan kondisi di luar kendali penyerang yang harus ada agar kerentanan dapat dieksploitasi di lingkungan analis.",
       "MAT": "Penggantian untuk persyaratan serangan. Menangkap kondisi penerapan dan eksekusi sistem yang menjadi prasyarat serangan di lingkungan analis.",
@@ -858,15 +864,28 @@
       "MVA": "Penggantian untuk dampak ketersediaan sistem yang rentan. Mengukur konsekuensi terhadap ketersediaan sistem yang mengandung kerentanan di lingkungan analis.",
       "MVC": "Penggantian untuk dampak kerahasiaan sistem yang rentan. Mengukur konsekuensi terhadap kerahasiaan sistem yang mengandung kerentanan di lingkungan analis.",
       "MVI": "Penggantian untuk dampak integritas sistem yang rentan. Mengukur konsekuensi terhadap integritas sistem yang mengandung kerentanan di lingkungan analis.",
+      "PR": "Metrik ini menggambarkan tingkat hak istimewa yang harus dimiliki penyerang sebelum berhasil mengeksploitasi kerentanan.",
       "R": "Metrik pemulihan menggambarkan ketahanan sistem untuk memulihkan layanan, dari segi kinerja dan ketersediaan, setelah serangan dilakukan.",
       "RE": "Metrik upaya respons kerentanan menangkap tingkat upaya yang dibutuhkan konsumen untuk merespons kerentanan setelah diketahui.",
       "S": "Metrik keselamatan mencerminkan apakah kerentanan dapat mengakibatkan kondisi yang memengaruhi keselamatan manusia sebagaimana didefinisikan oleh kategori IEC 61508.",
+      "SA": "Metrik ini mengukur dampak terhadap ketersediaan sistem berikutnya di luar sistem yang rentan, yang disebabkan oleh kerentanan yang berhasil dieksploitasi.",
+      "SC": "Metrik ini mengukur dampak terhadap kerahasiaan sistem berikutnya di luar sistem yang rentan, yang disebabkan oleh kerentanan yang berhasil dieksploitasi.",
+      "SI": "Metrik ini mengukur dampak terhadap integritas sistem berikutnya di luar sistem yang rentan, yang disebabkan oleh kerentanan yang berhasil dieksploitasi.",
       "U": "Metrik urgensi penyedia mencerminkan peringkat urgensi yang diberikan pemasok (merah, jingga, hijau, biru) untuk suatu kerentanan.",
-      "V": "Metrik kepadatan nilai menggambarkan sumber daya yang akan dikuasai penyerang dengan satu peristiwa eksploitasi."
+      "UI": "Metrik ini menangkap persyaratan keterlibatan pengguna manusia, selain penyerang, untuk berpartisipasi dalam keberhasilan kompromi sistem yang rentan.",
+      "V": "Metrik kepadatan nilai menggambarkan sumber daya yang akan dikuasai penyerang dengan satu peristiwa eksploitasi.",
+      "VA": "Metrik ini mengukur dampak terhadap ketersediaan sistem yang mengandung komponen yang rentan, akibat kerentanan yang berhasil dieksploitasi.",
+      "VC": "Metrik ini mengukur dampak terhadap kerahasiaan sistem yang mengandung komponen yang rentan, akibat kerentanan yang berhasil dieksploitasi.",
+      "VI": "Metrik ini mengukur dampak terhadap integritas sistem yang mengandung komponen yang rentan, akibat kerentanan yang berhasil dieksploitasi."
     },
     "metricGroups": {
+      "base": "Dasar",
+      "environmental": "Lingkungan",
       "environmentalBase": "Lingkungan (basis yang dimodifikasi).",
-      "environmentalSecurityRequirement": "Lingkungan (persyaratan keamanan)"
+      "environmentalSecurityRequirement": "Lingkungan (persyaratan keamanan)",
+      "supplemental": "Tambahan",
+      "temporal": "Temporal",
+      "threat": "Ancaman"
     },
     "metricsConfigured": "{{count}}/{{total}} dikonfigurasi",
     "openCalculator": "Tambah CVSS",
@@ -1030,9 +1049,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "Periksa sekarang",
+      "failed": "Tidak dapat memeriksa status. Coba lagi sebentar lagi.",
+      "stillPending": "Status diperiksa — masih tertunda.",
+      "success": "Akses diberikan. Dokumen kini dapat diakses."
+    },
     "copiedEmail": "Email disalin ke clipboard.",
     "copyEmail": "Salin email",
     "reason": {
+      "extractionDeadLettered": "Pemrosesan dokumen ini gagal secara tidak terduga setelah beberapa percobaan. Coba lagi nanti.",
+      "extractionInternal": "Terjadi kesalahan internal saat memproses dokumen ini. Coba lagi nanti.",
+      "extractionMalformed": "Dokumen ini tidak dapat diproses karena tampaknya rusak atau cacat.",
+      "extractionUnsupported": "Format dokumen ini tidak didukung untuk pemrosesan konten.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "Terjadi kesalahan saat membaca dokumen ini.",
       "microsoftNotShared": "TMI belum memiliki akses ke berkas OneDrive atau SharePoint ini. Pemilik berkas harus memberikan akses baca kepada TMI menggunakan cuplikan di bawah ini.",
@@ -1052,11 +1081,15 @@
       "repickFile": "Pilih kembali berkas ini.",
       "retry": "Coba lagi",
       "shareWithApplication": {
+        "copied": "Disalin ke clipboard.",
+        "copyButton": "Salin",
         "copyFailed": "Tidak dapat menyalin ke papan klip",
+        "curlLabel": "curl",
         "explanation": "TMI belum memiliki akses ke berkas OneDrive atau SharePoint ini. Minta pemilik berkas untuk menjalankan panggilan Microsoft Graph berikut guna memberikan akses baca kepada TMI. Setelah panggilan berhasil, klik \"periksa sekarang\" — pembaruan status akan muncul dalam beberapa menit setelah izin diberikan.",
         "powershellLabel": "PowerShell (modul microsoft.graph)",
         "rawLabel": "Panggilan Microsoft Graph",
-        "title": "Berikan akses TMI ke berkas ini."
+        "title": "Berikan akses TMI ke berkas ini.",
+        "unavailable": "Detail remediasi Microsoft tidak tersedia. Hubungi dukungan."
       },
       "shareWithServiceAccount": "Bagikan dengan akun layanan TMI"
     },
@@ -1064,7 +1097,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "Tidak dapat membuat dokumen"
+      "failed": "Tidak dapat membuat dokumen",
+      "inFlight": "Membuat dokumen…"
     },
     "grantError": {
       "generic": "Tidak dapat memberikan akses ke berkas Anda.",
@@ -1089,6 +1123,7 @@
       "pickActionMicrosoft": "Jelajahi OneDrive/SharePoint",
       "pickedFile": "Berkas dipilih: {{ filename }}.",
       "repickAction": "Pilih berkas yang berbeda",
+      "serviceUrlHint": "Tempel URL berbagi berkas. Setelah menyimpan, Anda akan diminta untuk membagikannya dengan akun layanan kami.",
       "url": "Tempel URL"
     }
   },
@@ -1730,9 +1765,11 @@
     "addCvssEntry": "Tambah Entri CVSS.",
     "addMapping": "Tambah Pemetaan...",
     "createNewThreat": "Buat Ancaman Baru",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "Vektor CVSS",
     "cvssVectorPlaceholder": "Mis., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "Masukkan ID CWE (mis., CWE-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "Pemetaan CWE",
     "frameworkMappingPicker": {
       "notApplicable": "Tidak berlaku untuk jenis sel saat ini",
@@ -1766,10 +1803,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "Ditunda (P4)",
+      "deferred.description": "Ditunda dengan persetujuan bisnis yang terdokumentasi; dilacak tetapi tidak dijadwalkan.",
       "high": "Tinggi (P1)",
+      "high.description": "Memerlukan penyelesaian segera; paparan risiko tinggi atau tenggat rilis yang mendekat.",
       "immediate": "Segera (P0)",
+      "immediate.description": "Harus segera ditangani; eksploitasi aktif, pelanggaran regulasi, atau paparan bisnis kritis.",
       "low": "Rendah (P3)",
-      "medium": "Sedang (P2)"
+      "low.description": "Masukkan dalam backlog untuk siklus mendatang; tidak ada paparan langsung.",
+      "medium": "Sedang (P2)",
+      "medium.description": "Tangani dalam siklus pengembangan standar; paparan sedang."
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1813,10 +1855,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "Diterima",
+      "accepted.description": "Ancaman diakui tetapi sengaja tidak dimitigasi (mis., karena justifikasi bisnis); memerlukan penerimaan risiko formal.",
+      "closed": "Ditutup",
+      "closed.description": "Temuan diarsipkan setelah resolusi, penerimaan, atau pembatalan, dengan jejak audit.",
+      "confirmed": "Dikonfirmasi",
+      "confirmed.description": "Ancaman telah divalidasi sebagai sah melalui analisis atau bukti.",
+      "deferred": "Ditunda",
+      "deferred.description": "Tindakan ditunda dengan persetujuan (mis., untuk sprint mendatang); mencakup alasan dan tanggal jatuh tempo.",
       "false_positive": "Positif Palsu",
+      "false_positive.description": "Investigasi menyimpulkan bahwa temuan bukan merupakan ancaman yang valid; tidak diperlukan tindakan lebih lanjut.",
       "mitigation_in_progress": "Mitigasi Sedang Berlangsung.",
+      "mitigation_in_progress.description": "Implementasi kontrol, perubahan kode, atau tindakan balasan sedang berlangsung.",
       "mitigation_planned": "Mitigasi Direncanakan",
-      "verification_pending": "Verifikasi Tertunda"
+      "mitigation_planned.description": "Strategi remediasi atau mitigasi telah ditetapkan dan ditugaskan.",
+      "open": "Terbuka",
+      "open.description": "Temuan telah diidentifikasi dan didokumentasikan tetapi belum ada tindakan yang dimulai.",
+      "resolved": "Diselesaikan",
+      "resolved.description": "Ancaman sepenuhnya dimitigasi dan diverifikasi; risiko residual dapat diterima.",
+      "verification_pending": "Verifikasi Tertunda",
+      "verification_pending.description": "Mitigasi selesai; tim keamanan harus menguji atau meninjau efektivitasnya."
     }
   },
   "threatModels": {
@@ -1847,6 +1905,7 @@
       "title": {
         "create": "Buat Referensi Dokumen",
         "edit": "Edit Referensi Dokumen",
+        "shareRequired": "Bagikan berkas ini dengan akun layanan kami",
         "view": "Lihat Referensi Dokumen"
       }
     },
@@ -1935,12 +1994,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "Aktif",
+      "active.tooltip": "Model ancaman sedang aktif dikerjakan.",
+      "approved": "Disetujui",
+      "approved.tooltip": "Semua masalah telah diselesaikan dan diverifikasi; aplikasi memenuhi kriteria keamanan untuk rilis atau penerapan.",
+      "closed": "Ditutup",
+      "closed.tooltip": "Tinjauan sepenuhnya selesai dan diarsipkan, tanpa tindakan lebih lanjut yang diperlukan.",
+      "deferred": "Ditunda",
+      "deferred.tooltip": "Tinjauan dijeda (mis., karena keterbatasan sumber daya atau perubahan aplikasi); rencana untuk melanjutkan sudah ada.",
       "in_progress": "Sedang Berlangsung",
+      "in_progress.tooltip": "Penilaian aktif sedang berlangsung, termasuk pemodelan ancaman, tinjauan kode, atau pengujian.",
       "not_started": "Belum Dimulai",
+      "not_started.tooltip": "Tinjauan keamanan telah dimulai tetapi belum ada aktivitas penilaian yang dilakukan.",
       "pending_review": "Menunggu Tinjauan",
+      "pending_review.tooltip": "Artefak penilaian (mis., laporan, temuan) menunggu tinjauan resmi oleh pemimpin keamanan atau pemohon.",
+      "rejected": "Ditolak",
+      "rejected.tooltip": "Tinjauan gagal memenuhi kriteria kritis; pengerjaan ulang yang signifikan diperlukan sebelum pengajuan kembali.",
       "remediation_in_progress": "Remediasi Sedang Berlangsung.",
+      "remediation_in_progress.tooltip": "Perbaikan untuk masalah yang diidentifikasi sedang diimplementasikan oleh tim pengembangan.",
       "remediation_required": "Remediasi Diperlukan",
-      "verification_pending": "Verifikasi Tertunda"
+      "remediation_required.tooltip": "Kerentanan atau masalah telah diidentifikasi; pengembangan harus menanganinya.",
+      "verification_pending": "Verifikasi Tertunda",
+      "verification_pending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitasnya."
     },
     "statusLastUpdated": "Status Terakhir Diperbarui.",
     "tag": "Tag",

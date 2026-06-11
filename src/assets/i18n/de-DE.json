@@ -13,7 +13,8 @@
       "categoryNoteEditing": "Notizbearbeitung",
       "categoryPdfProcessing": "PDF-Verarbeitung",
       "paragraph1": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter diesen Projekten dankbar für die Bereitstellung der Funktionen, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
-      "paragraph2": "Ein besonderer Dank für die Bereitstellung von Inspiration, die uns geholfen hat, unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung zu gestalten, geht an "
+      "paragraph2": "Ein besonderer Dank für die Bereitstellung von Inspiration, die uns geholfen hat, unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung zu gestalten, geht an ",
+      "paragraph3": "Und schließlich danke ich den Windows Core Security/Secure Windows Initiative/Trustworthy Computing-Teams bei Microsoft in der ersten Hälfte der 2000er Jahre, insbesondere Praerit Garg, Mike Howard, John Lambert und Adam Shostack, dafür, dass sie mir die Möglichkeit gegeben haben zu lernen, und dafür, dass sie branchenführendes Denken in der Anwendungssicherheit und Bedrohungsmodellierung demonstriert haben."
     },
     "opensourcetitle": "Open Source",
     "server": "Server",
@@ -678,6 +679,7 @@
     "deactivate": "Deaktivieren",
     "delete": "Löschen",
     "deleteConfirm": "Löschung bestätigen",
+    "deleteFailed": "Löschen fehlgeschlagen",
     "deleteWarningConfirmationField": "Löschbestätigung",
     "deleteWarningConfirmationMatch": "Bestätigungstext stimmt überein",
     "deleteWarningConfirmationMismatch": "Bestätigungstext stimmt nicht überein",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "Bei Objekten, die außerhalb von TMI gespeichert sind, wie Dokumente und Repositories, wird nur die TMI-Referenz zum Objekt gelöscht.",
     "deleteWarningSubEntities": "Alle zugehörigen TMI-Entitäten wie Diagramme, Bedrohungen und Notizen werden ebenfalls dauerhaft gelöscht.",
     "deleteWarningTypeConfirmation": "Zur Bestätigung geben Sie bitte \"{{confirmValue}}\" in das untenstehende Feld ein",
+    "deletedSuccessfully": "Erfolgreich gelöscht",
     "description": "Beschreibung",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "Verwerfen",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "Anwenden",
     "metricDescriptions": {
+      "AC": "Diese Metrik erfasst messbare Maßnahmen, die der Angreifer aktiv ergreifen muss, um bestehende integrierte sicherheitsverbessernde Bedingungen zu umgehen oder zu überwinden, um einen funktionierenden Exploit zu erhalten.",
       "AR": "Diese Metrik ermöglicht es dem Konsumenten, die Bewertung je nach Bedeutung des betroffenen IT-Assets für die Organisation des Analysten anzupassen, gemessen in Bezug auf Verfügbarkeit.",
+      "AT": "Diese Metrik erfasst die Voraussetzungen für Bereitstellung und Ausführung des anfälligen Systems, die den Angriff ermöglichen.",
       "AU": "Die automatisierbare Metrik erfasst die Antwort auf die Frage: \"Kann ein Angreifer die Ausnutzung der Schwachstelle über mehrere Ziele hinweg automatisieren?\".",
       "CR": "Diese Metrik ermöglicht es dem Konsumenten, die Bewertung je nach Bedeutung des betroffenen IT-Assets für die Organisation des Analysten anzupassen, gemessen in Bezug auf Vertraulichkeit.",
+      "E": "Diese Metrik misst die Wahrscheinlichkeit, dass die Schwachstelle angegriffen wird, basierend auf dem aktuellen Stand der Exploit-Techniken, der Verfügbarkeit von Exploit-Code oder aktiver Ausnutzung in der freien Wildbahn.",
       "IR": "Diese Metrik ermöglicht es dem Konsumenten, die Bewertung je nach Bedeutung des betroffenen IT-Assets für die Organisation des Analysten anzupassen, gemessen in Bezug auf Integrität.",
       "MAC": "Überschreibung für Angriffskomplexität. Diese Metrik spiegelt die Bedingungen wider, die außerhalb der Kontrolle des Angreifers liegen und in der Umgebung des Analysten vorhanden sein müssen, um die Schwachstelle auszunutzen.",
       "MAT": "Überschreibung für Angriffsbedingungen. Erfasst die Voraussetzungen für die Bereitstellung und Ausführung des Systems, die den Angriff in der Umgebung des Analysten ermöglichen.",
@@ -858,15 +864,28 @@
       "MVA": "Überschreibung für Auswirkung auf die Verfügbarkeit des anfälligen Systems. Misst die Konsequenzen für die Verfügbarkeit des Systems, das die Schwachstelle enthält, in der Umgebung des Analysten.",
       "MVC": "Überschreibung für Auswirkung auf die Vertraulichkeit des anfälligen Systems. Misst die Konsequenzen für die Vertraulichkeit des Systems, das die Schwachstelle enthält, in der Umgebung des Analysten.",
       "MVI": "Überschreibung für Auswirkung auf die Integrität des anfälligen Systems. Misst die Konsequenzen für die Integrität des Systems, das die Schwachstelle enthält, in der Umgebung des Analysten.",
+      "PR": "Diese Metrik beschreibt das Berechtigungsniveau, das ein Angreifer vor der erfolgreichen Ausnutzung der Schwachstelle besitzen muss.",
       "R": "Die Wiederherstellungsmetrik beschreibt die Resilienz eines Systems, Dienste nach einem Angriff in Bezug auf Leistung und Verfügbarkeit wiederherzustellen.",
       "RE": "Die Metrik für den Aufwand zur Behebung von Schwachstellen erfasst den Aufwand, den der Konsument benötigt, um auf eine Schwachstelle zu reagieren, sobald sie bekannt geworden ist.",
       "S": "Die Sicherheitsmetrik spiegelt wider, ob die Schwachstelle zu Bedingungen führen könnte, die die menschliche Sicherheit beeinträchtigen, gemäß den IEC-61508-Kategorien.",
+      "SA": "Diese Metrik misst die Auswirkung auf die Verfügbarkeit nachgelagerter Systeme über das anfällige System hinaus, die durch eine erfolgreich ausgenutzte Schwachstelle verursacht wird.",
+      "SC": "Diese Metrik misst die Auswirkung auf die Vertraulichkeit nachgelagerter Systeme über das anfällige System hinaus, die durch eine erfolgreich ausgenutzte Schwachstelle verursacht wird.",
+      "SI": "Diese Metrik misst die Auswirkung auf die Integrität nachgelagerter Systeme über das anfällige System hinaus, die durch eine erfolgreich ausgenutzte Schwachstelle verursacht wird.",
       "U": "Die Dringlichkeitsmetrik des Anbieters spiegelt die vom Anbieter bereitgestellte Dringlichkeitsbewertung (Rot, Amber, Grün, Klar) für eine Schwachstelle wider.",
-      "V": "Die Wertdichtemetrik beschreibt die Ressourcen, über die der Angreifer mit einem einzelnen Ausnutzungsereignis die Kontrolle erlangt."
+      "UI": "Diese Metrik erfasst die Anforderung, dass ein menschlicher Benutzer – der nicht der Angreifer ist – an der erfolgreichen Kompromittierung des anfälligen Systems beteiligt sein muss.",
+      "V": "Die Wertdichtemetrik beschreibt die Ressourcen, über die der Angreifer mit einem einzelnen Ausnutzungsereignis die Kontrolle erlangt.",
+      "VA": "Diese Metrik misst die Auswirkung auf die Verfügbarkeit des Systems, das die Schwachstelle enthält, resultierend aus einer erfolgreich ausgenutzte Schwachstelle.",
+      "VC": "Diese Metrik misst die Auswirkung auf die Vertraulichkeit des Systems, das die Schwachstelle enthält, resultierend aus einer erfolgreich ausgenutzte Schwachstelle.",
+      "VI": "Diese Metrik misst die Auswirkung auf die Integrität des Systems, das die Schwachstelle enthält, resultierend aus einer erfolgreich ausgenutzte Schwachstelle."
     },
     "metricGroups": {
+      "base": "Basis",
+      "environmental": "Umgebung",
       "environmentalBase": "Umgebung (modifizierte Basis).",
-      "environmentalSecurityRequirement": "Umgebung (Sicherheitsanforderungen)"
+      "environmentalSecurityRequirement": "Umgebung (Sicherheitsanforderungen)",
+      "supplemental": "Ergänzend",
+      "temporal": "Zeitlich",
+      "threat": "Bedrohung"
     },
     "metricsConfigured": "{{count}}/{{total}} konfiguriert",
     "openCalculator": "CVSS hinzufügen",
@@ -1030,9 +1049,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "Jetzt prüfen",
+      "failed": "Status konnte nicht geprüft werden. Versuchen Sie es gleich erneut.",
+      "stillPending": "Status geprüft – noch ausstehend.",
+      "success": "Zugriff gewährt. Das Dokument ist jetzt zugänglich."
+    },
     "copiedEmail": "E-Mail in die Zwischenablage kopiert.",
     "copyEmail": "E-Mail kopieren",
     "reason": {
+      "extractionDeadLettered": "Die Verarbeitung dieses Dokuments ist nach mehreren Versuchen unerwartet fehlgeschlagen. Versuchen Sie es später erneut.",
+      "extractionInternal": "Beim Verarbeiten dieses Dokuments ist ein interner Fehler aufgetreten. Versuchen Sie es später erneut.",
+      "extractionMalformed": "Dieses Dokument konnte nicht verarbeitet werden, da es beschädigt oder fehlerhaft zu sein scheint.",
+      "extractionUnsupported": "Das Format dieses Dokuments wird für die Inhaltsverarbeitung nicht unterstützt.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "Beim Lesen dieses Dokuments ist ein Fehler aufgetreten.",
       "microsoftNotShared": "TMI hat noch keinen Zugriff auf diese OneDrive- oder SharePoint-Datei. Der Dateibesitzer muss TMI über den untenstehenden Codeausschnitt Lesezugriff gewähren.",
@@ -1052,11 +1081,15 @@
       "repickFile": "Diese Datei erneut auswählen.",
       "retry": "Erneut versuchen",
       "shareWithApplication": {
+        "copied": "In die Zwischenablage kopiert.",
+        "copyButton": "Kopieren",
         "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen",
+        "curlLabel": "curl",
         "explanation": "TMI hat noch keinen Zugriff auf diese OneDrive- oder SharePoint-Datei. Bitten Sie den Dateibesitzer, den folgenden Microsoft-Graph-Aufruf auszuführen, um TMI Lesezugriff zu gewähren. Nachdem der Aufruf erfolgreich war, klicken Sie auf \"Jetzt prüfen\" — der Status aktualisiert sich innerhalb weniger Minuten, sobald die Genehmigung erteilt wurde.",
         "powershellLabel": "PowerShell (Microsoft.Graph-Modul)",
         "rawLabel": "Microsoft-Graph-Aufruf",
-        "title": "TMI Zugriff auf diese Datei gewähren."
+        "title": "TMI Zugriff auf diese Datei gewähren.",
+        "unavailable": "Microsoft-Behebungsdetails sind nicht verfügbar. Wenden Sie sich an den Support."
       },
       "shareWithServiceAccount": "Mit TMI-Dienstkonto teilen"
     },
@@ -1064,7 +1097,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "Dokument konnte nicht erstellt werden"
+      "failed": "Dokument konnte nicht erstellt werden",
+      "inFlight": "Dokument wird erstellt…"
     },
     "grantError": {
       "generic": "Zugriff auf Ihre Datei konnte nicht gewährt werden.",
@@ -1089,6 +1123,7 @@
       "pickActionMicrosoft": "OneDrive/SharePoint durchsuchen",
       "pickedFile": "Ausgewählte Datei: {{ filename }}.",
       "repickAction": "Andere Datei auswählen",
+      "serviceUrlHint": "Fügen Sie die Freigabe-URL der Datei ein. Nach dem Speichern werden Sie aufgefordert, sie mit unserem Dienstkonto zu teilen.",
       "url": "URL einfügen"
     }
   },
@@ -1730,9 +1765,11 @@
     "addCvssEntry": "CVSS-Eintrag hinzufügen.",
     "addMapping": "Zuordnung hinzufügen...",
     "createNewThreat": "Neue Bedrohung erstellen",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "CVSS-Vektor",
     "cvssVectorPlaceholder": "Z.B. CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
     "cweIdPlaceholder": "CWE-ID eingeben (z.B. CWE-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "CWE-Zuordnungen",
     "frameworkMappingPicker": {
       "notApplicable": "Nicht auf den aktuellen Zelltyp anwendbar",
@@ -1766,10 +1803,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "Zurückgestellt (P4)",
+      "deferred.description": "Zurückgestellt mit dokumentierter Geschäftsgenehmigung; wird verfolgt, aber nicht eingeplant.",
       "high": "Hoch (P1)",
+      "high.description": "Erfordert zeitnahe Behebung; hohes Risiko oder bevorstehende Releasedeadline.",
       "immediate": "Sofort (P0)",
+      "immediate.description": "Muss dringend behoben werden; aktive Ausnutzung, regulatorischer Verstoß oder kritische Geschäftsgefährdung.",
       "low": "Niedrig (P3)",
-      "medium": "Mittel (P2)"
+      "low.description": "Im Rückstand für künftige Zyklen aufnehmen; kein unmittelbares Risiko.",
+      "medium": "Mittel (P2)",
+      "medium.description": "Im Rahmen regulärer Entwicklungszyklen beheben; mittleres Risiko."
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1783,9 +1825,7 @@
       "critical.description": "Ausnutzbare Schwachstelle ermöglicht vollständige Systemkompromittierung, Datenpanne oder Sicherheitsbeeinträchtigung; erfordert sofortiges Handeln.",
       "high": "Hoch",
       "high.description": "Erhebliche Auswirkungen oder hohe Wahrscheinlichkeit; ermöglicht größeren unberechtigten Zugriff, Rechteeskalation oder Dienstunterbrechung.",
-      "informational": {
-        "description": "Keine direkte Ausnutzbarkeit; Empfehlung, Abweichung von Best Practices oder Konfigurationsverbesserung"
-      },
+      "informational": "Informativ",
       "informational.description": "Keine direkte Ausnutzbarkeit; Empfehlung, Abweichung von Best Practices oder Konfigurationsverbesserung.",
       "low": "Niedrig",
       "low.description": "Minimale Auswirkungen oder geringe Wahrscheinlichkeit; vernachlässigbare Geschäftsauswirkungen, erfordert bestimmte Bedingungen oder Benutzerinteraktion.",
@@ -1815,10 +1855,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "Akzeptiert",
+      "accepted.description": "Die Bedrohung wird anerkannt, aber absichtlich nicht gemindert (z. B. aufgrund geschäftlicher Begründung); erfordert formale Risikoakzeptanz.",
+      "closed": "Geschlossen",
+      "closed.description": "Der Befund wird nach Behebung, Akzeptanz oder Ungültigkeitserklärung mit Prüfpfad archiviert.",
+      "confirmed": "Bestätigt",
+      "confirmed.description": "Die Bedrohung wurde durch Analyse oder Belege als legitim validiert.",
+      "deferred": "Zurückgestellt",
+      "deferred.description": "Die Maßnahme ist mit Genehmigung aufgeschoben (z. B. für künftige Sprints); enthält Begründung und Fälligkeitsdatum.",
       "false_positive": "Falsch-Positiv",
+      "false_positive.description": "Die Untersuchung ergab, dass der Befund keine gültige Bedrohung ist; keine weiteren Maßnahmen erforderlich.",
       "mitigation_in_progress": "Risikominderung in Bearbeitung.",
+      "mitigation_in_progress.description": "Die Implementierung von Kontrollen, Codeänderungen oder Gegenmaßnahmen ist im Gange.",
       "mitigation_planned": "Risikominderung geplant",
-      "verification_pending": "Überprüfung ausstehend"
+      "mitigation_planned.description": "Eine Behebungs- oder Minderungsstrategie wurde definiert und zugewiesen.",
+      "open": "Offen",
+      "open.description": "Der Befund wurde identifiziert und dokumentiert, aber es wurden noch keine Maßnahmen eingeleitet.",
+      "resolved": "Behoben",
+      "resolved.description": "Die Bedrohung ist vollständig gemindert und überprüft; das Restrisiko ist akzeptabel.",
+      "verification_pending": "Überprüfung ausstehend",
+      "verification_pending.description": "Die Minderung ist abgeschlossen; das Sicherheitsteam muss die Wirksamkeit testen oder überprüfen."
     }
   },
   "threatModels": {
@@ -1849,6 +1905,7 @@
       "title": {
         "create": "Dokumentreferenz erstellen",
         "edit": "Dokumentreferenz bearbeiten",
+        "shareRequired": "Diese Datei mit unserem Dienstkonto teilen",
         "view": "Dokumentreferenz anzeigen"
       }
     },
@@ -1937,12 +1994,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "Aktiv",
+      "active.tooltip": "Am Bedrohungsmodell wird aktiv gearbeitet.",
+      "approved": "Genehmigt",
+      "approved.tooltip": "Alle Probleme sind behoben und überprüft; die Anwendung erfüllt die Sicherheitskriterien für Veröffentlichung oder Bereitstellung.",
+      "closed": "Geschlossen",
+      "closed.tooltip": "Die Überprüfung ist vollständig abgeschlossen und archiviert; es sind keine weiteren Maßnahmen erforderlich.",
+      "deferred": "Zurückgestellt",
+      "deferred.tooltip": "Die Überprüfung ist pausiert (z. B. aufgrund von Ressourcenengpässen oder Anwendungsänderungen); eine Wiederaufnahme ist geplant.",
       "in_progress": "In Bearbeitung",
+      "in_progress.tooltip": "Eine aktive Bewertung ist im Gange, einschließlich Bedrohungsmodellierung, Code-Review oder Tests.",
       "not_started": "Nicht begonnen",
+      "not_started.tooltip": "Die Sicherheitsüberprüfung wurde eingeleitet, aber es wurden noch keine Bewertungsaktivitäten begonnen.",
       "pending_review": "Prüfung ausstehend",
+      "pending_review.tooltip": "Bewertungsartefakte (z. B. Berichte, Befunde) warten auf formale Überprüfung durch Sicherheitsverantwortliche oder Genehmiger.",
+      "rejected": "Abgelehnt",
+      "rejected.tooltip": "Die Überprüfung hat kritische Kriterien nicht erfüllt; vor der erneuten Einreichung ist eine erhebliche Überarbeitung erforderlich.",
       "remediation_in_progress": "Behebung in Bearbeitung.",
+      "remediation_in_progress.tooltip": "Korrekturen für identifizierte Probleme werden vom Entwicklungsteam implementiert.",
       "remediation_required": "Behebung erforderlich",
-      "verification_pending": "Überprüfung ausstehend"
+      "remediation_required.tooltip": "Es wurden Schwachstellen oder Probleme identifiziert; die Entwicklung muss diese beheben.",
+      "verification_pending": "Überprüfung ausstehend",
+      "verification_pending.tooltip": "Die Behebung ist abgeschlossen; das Sicherheitsteam muss die Wirksamkeit überprüfen."
     },
     "statusLastUpdated": "Status zuletzt aktualisiert.",
     "tag": "Tag",

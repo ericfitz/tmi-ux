@@ -13,7 +13,8 @@
       "categoryNoteEditing": "עריכת הערות",
       "categoryPdfProcessing": "עיבוד PDF",
       "paragraph1": "יישום זה נבנה בתמיכת פרויקטים יוצאי דופן בקוד פתוח. אנו אסירי תודה לקהילות מאחורי פרויקטים אלה על אספקת היכולות שמביאות את הממשק והפונקציונליות שלנו לחיים.",
-      "paragraph2": "תודה מיוחדת על ההשראה שסייעה לעצב את החזון והגישה שלנו לבניית יישום מאובטח וידידותי למשתמש מגיעה ל-"
+      "paragraph2": "תודה מיוחדת על ההשראה שסייעה לעצב את החזון והגישה שלנו לבניית יישום מאובטח וידידותי למשתמש מגיעה ל-",
+      "paragraph3": "ולבסוף תודה לצוותי Windows Core Security/Secure Windows Initiative/Trustworthy Computing ב-Microsoft בחצי הראשון של שנות ה-2000, ובמיוחד ל-Praerit Garg, Mike Howard, John Lambert ו-Adam Shostack, על שנתנו לי הזדמנות ללמוד ועל שהדגימו חשיבה מובילה בתעשייה באבטחת יישומים ומידול איומים."
     },
     "opensourcetitle": "קוד פתוח",
     "server": "שרת",
@@ -678,6 +679,7 @@
     "deactivate": "השבתה",
     "delete": "מחק",
     "deleteConfirm": "אשר מחיקה",
+    "deleteFailed": "המחיקה נכשלה",
     "deleteWarningConfirmationField": "אישור מחיקה",
     "deleteWarningConfirmationMatch": "טקסט האישור תואם",
     "deleteWarningConfirmationMismatch": "טקסט האישור אינו תואם",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "עבור אובייקטים המאוחסנים מחוץ ל-TMI כגון מסמכים ומאגרים, רק ההפניה של TMI לאובייקט תימחק.",
     "deleteWarningSubEntities": "כל ישויות TMI המשויכות כגון דיאגרמות, איומים והערות יימחקו גם הן לצמיתות.",
     "deleteWarningTypeConfirmation": "לאישור, הקלד \"{{confirmValue}}\" בשדה למטה",
+    "deletedSuccessfully": "נמחק בהצלחה",
     "description": "תיאור",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "סגור",
@@ -842,6 +845,19 @@
   },
   "cvssCalculator": {
     "apply": "החל",
+    "metricDescriptions": {
+      "AC": "מדד זה לוכד פעולות מדידות שעל התוקף לנקוט כדי להתחמק באופן פעיל או לעקוף תנאים מובנים לשיפור האבטחה על מנת להשיג ניצול פעיל.",
+      "AT": "מדד זה לוכד את תנאי הפריסה וההפעלה המוקדמים או משתני המערכת הפגיעה המאפשרים את המתקפה.",
+      "E": "מדד זה מודד את הסבירות שהפגיעות תותקף, בהתבסס על המצב הנוכחי של טכניקות ניצול, זמינות קוד ניצול, או ניצול פעיל 'בשטח'.",
+      "PR": "מדד זה מתאר את רמת ההרשאות שעל התוקף לקבל לפני ניצול הפגיעות בהצלחה.",
+      "SA": "מדד זה מודד את ההשפעה על זמינות המערכות העוקבות מעבר למערכת הפגיעה, הנגרמת על ידי פגיעות שנוצלה בהצלחה.",
+      "SC": "מדד זה מודד את ההשפעה על סודיות המערכות העוקבות מעבר למערכת הפגיעה, הנגרמת על ידי פגיעות שנוצלה בהצלחה.",
+      "SI": "מדד זה מודד את ההשפעה על שלמות המערכות העוקבות מעבר למערכת הפגיעה, הנגרמת על ידי פגיעות שנוצלה בהצלחה.",
+      "UI": "מדד זה לוכד את הדרישה למשתמש אנושי, מלבד התוקף, להשתתף בפגיעה מוצלחת במערכת הפגיעה.",
+      "VA": "מדד זה מודד את ההשפעה על זמינות המערכת המכילה את הרכיב הפגיע, הנגרמת על ידי פגיעות שנוצלה בהצלחה.",
+      "VC": "מדד זה מודד את ההשפעה על סודיות המערכת המכילה את הרכיב הפגיע, הנגרמת על ידי פגיעות שנוצלה בהצלחה.",
+      "VI": "מדד זה מודד את ההשפעה על שלמות המערכת המכילה את הרכיב הפגיע, הנגרמת על ידי פגיעות שנוצלה בהצלחה."
+    },
     "metricDescriptions.AR": "מדד זה מאפשר למשתמש להתאים את ההערכה בהתאם לחשיבות נכס ה-IT המושפע לארגון האנליסט, נמדד מבחינת זמינות.",
     "metricDescriptions.AU": "המדד 'ניתן לאוטומציה' לוכד את התשובה לשאלה: 'האם תוקף יכול לאוטמט ניצול של הפגיעות על פני מטרות מרובות?'.",
     "metricDescriptions.CR": "מדד זה מאפשר למשתמש להתאים את ההערכה בהתאם לחשיבות נכס ה-IT המושפע לארגון האנליסט, נמדד מבחינת סודיות.",
@@ -862,6 +878,13 @@
     "metricDescriptions.S": "מדד הבטיחות משקף האם הפגיעות עלולה לגרום לתנאים המשפיעים על בטיחות אנשים כמוגדר על פי קטגוריות IEC 61508.",
     "metricDescriptions.U": "מדד הדחיפות של הספק משקף את דירוג הדחיפות שסיפק הספק (אדום, ענבר, ירוק, שקוף) עבור הפגיעות.",
     "metricDescriptions.V": "מדד צפיפות הערך מתאר את המשאבים שהתוקף ישיג שליטה עליהם באמצעות אירוע ניצול בודד.",
+    "metricGroups": {
+      "base": "בסיס",
+      "environmental": "סביבתי",
+      "supplemental": "משלים",
+      "temporal": "זמני",
+      "threat": "איום"
+    },
     "metricGroups.environmentalBase": "סביבתי (בסיס משתנה).",
     "metricGroups.environmentalSecurityRequirement": "סביבתי (דרישות אבטחה)",
     "metricsConfigured": "{{count}}/{{total}} מוגדרים",
@@ -1026,9 +1049,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "בדוק עכשיו",
+      "failed": "לא ניתן היה לבדוק את הסטטוס. נסה שוב בעוד רגע.",
+      "stillPending": "הסטטוס נבדק — עדיין ממתין.",
+      "success": "הגישה אושרה. המסמך נגיש כעת."
+    },
     "copiedEmail": "הדוא\"ל הועתק ללוח.",
     "copyEmail": "העתק כתובת דוא\"ל",
     "reason": {
+      "extractionDeadLettered": "עיבוד המסמך נכשל באופן בלתי צפוי לאחר מספר ניסיונות. נסה שוב מאוחר יותר.",
+      "extractionInternal": "אירעה שגיאה פנימית בעת עיבוד המסמך. נסה שוב מאוחר יותר.",
+      "extractionMalformed": "לא ניתן היה לעבד מסמך זה מכיוון שנראה שהוא פגום או לא תקין.",
+      "extractionUnsupported": "הפורמט של מסמך זה אינו נתמך לעיבוד תוכן.",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "אירעה שגיאה בעת קריאת מסמך זה.",
       "microsoftNotShared": "ל-TMI אין עדיין גישה לקובץ OneDrive או SharePoint זה. בעל הקובץ חייב להעניק ל-TMI גישת קריאה באמצעות הקטע למטה.",
@@ -1047,6 +1080,12 @@
       "repickAfterShare": "בחר שוב לאחר השיתוף.",
       "repickFile": "בחר שוב את הקובץ.",
       "retry": "נסה שוב",
+      "shareWithApplication": {
+        "copied": "הועתק ללוח.",
+        "copyButton": "העתק",
+        "curlLabel": "curl",
+        "unavailable": "פרטי התיקון של Microsoft אינם זמינים. פנה לתמיכה."
+      },
       "shareWithApplication.copyFailed": "לא ניתן היה להעתיק ללוח",
       "shareWithApplication.explanation": "ל-TMI אין עדיין גישה לקובץ OneDrive או SharePoint זה. בקש מבעל הקובץ להריץ את קריאת ה-Microsoft Graph הבאה כדי להעניק ל-TMI גישת קריאה. לאחר הצלחת הקריאה, לחץ על \"בדוק עכשיו\" — הסטטוס יתעדכן תוך מספר דקות לאחר מתן ההרשאה.",
       "shareWithApplication.powershellLabel": "PowerShell (מודול microsoft.graph)",
@@ -1057,6 +1096,9 @@
     "serviceAccountEmail": "שתף עם כתובת דוא\"ל זו:"
   },
   "documentEditor": {
+    "create": {
+      "inFlight": "יוצר מסמך…"
+    },
     "create.failed": "לא ניתן היה ליצור את המסמך",
     "grantError": {
       "generic": "לא ניתן היה להעניק גישה לקובץ שלך.",
@@ -1079,6 +1121,7 @@
       "pickActionMicrosoft": "עיין ב-OneDrive/SharePoint",
       "pickedFile": "קובץ נבחר: {{ filename }}.",
       "repickAction": "בחר קובץ אחר",
+      "serviceUrlHint": "הדבק את כתובת ה-URL לשיתוף של הקובץ. לאחר השמירה, תתבקש לשתף אותו עם חשבון השירות שלנו.",
       "url": "הדבק כתובת URL"
     }
   },
@@ -1720,9 +1763,11 @@
     "addCvssEntry": "הוסף רשומת CVSS.",
     "addMapping": "הוסף מיפוי...",
     "createNewThreat": "צור איום חדש",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "וקטור CVSS",
     "cvssVectorPlaceholder": "למשל, cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
     "cweIdPlaceholder": "הזן מזהה CWE (למשל, cwe-79)",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "מיפויי CWE",
     "frameworkMappingPicker": {
       "notApplicable": "לא ישים לסוג התא הנוכחי",
@@ -1756,10 +1801,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "נדחה (p4)",
+      "deferred.description": "נדחה עם אישור עסקי מתועד; במעקב אך לא מתוזמן.",
       "high": "גבוה (p1)",
+      "high.description": "דורש פתרון מהיר; חשיפת סיכון גבוה או מועד שחרור קרוב.",
       "immediate": "מיידי (p0)",
+      "immediate.description": "חייב להיות מטופל בדחיפות; ניצול פעיל, הפרת רגולציה, או חשיפה עסקית קריטית.",
       "low": "נמוך (p3)",
-      "medium": "בינוני (p2)"
+      "low.description": "כלול ב-backlog למחזורים עתידיים; אין חשיפה מיידית.",
+      "medium": "בינוני (p2)",
+      "medium.description": "טפל במסגרת מחזורי הפיתוח הרגילים; חשיפה מתונה."
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1803,10 +1853,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "מקובל",
+      "accepted.description": "האיום מוכר אך אינו מופחת בכוונה (למשל, עקב הצדקה עסקית); דורש קבלת סיכון רשמית.",
+      "closed": "סגור",
+      "closed.description": "הממצא מאורכב לאחר פתרון, קבלה או ביטול תוקף, עם נתיב ביקורת.",
+      "confirmed": "מאושר",
+      "confirmed.description": "האיום אומת כלגיטימי באמצעות ניתוח או ראיות.",
+      "deferred": "נדחה",
+      "deferred.description": "הפעולה נדחית עם אישור (למשל, לספרינטים עתידיים); כולל נימוק ותאריך יעד.",
       "false_positive": "חיובי כוזב",
+      "false_positive.description": "החקירה קבעה שהממצא אינו איום תקף; אין צורך בפעולה נוספת.",
       "mitigation_in_progress": "הפחתה בתהליך.",
+      "mitigation_in_progress.description": "יישום בקרות, שינויי קוד או אמצעי נגד מתבצע.",
       "mitigation_planned": "הפחתה מתוכננת",
-      "verification_pending": "ממתין לאימות"
+      "mitigation_planned.description": "אסטרטגיית תיקון או הפחתה הוגדרה והוקצתה.",
+      "open": "פתוח",
+      "open.description": "הממצא זוהה ותועד אך לא ננקטה כל פעולה.",
+      "resolved": "נפתר",
+      "resolved.description": "האיום הופחת ואומת במלואו; הסיכון השיורי מקובל.",
+      "verification_pending": "ממתין לאימות",
+      "verification_pending.description": "ההפחתה הושלמה; צוות האבטחה חייב לבדוק או לסקור את יעילותה."
     }
   },
   "threatModels": {
@@ -1837,6 +1903,7 @@
       "title": {
         "create": "צור הפניה למסמך",
         "edit": "ערוך הפניה למסמך",
+        "shareRequired": "שתף קובץ זה עם חשבון השירות שלנו",
         "view": "צפה בהפניה למסמך"
       }
     },
@@ -1925,12 +1992,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "פעיל",
+      "active.tooltip": "מודל האיומים נמצא בעבודה פעילה.",
+      "approved": "מאושר",
+      "approved.tooltip": "כל הבעיות נפתרו ואומתו; היישום עומד בקריטריוני האבטחה לשחרור או פריסה.",
+      "closed": "סגור",
+      "closed.tooltip": "הסקירה הושלמה ואורכבה במלואה; אין צורך בפעולה נוספת.",
+      "deferred": "נדחה",
+      "deferred.tooltip": "הסקירה הושהתה (למשל, עקב מגבלות משאבים או שינויי יישום); חידוש מתוכנן.",
       "in_progress": "בתהליך",
+      "in_progress.tooltip": "הערכה פעילה מתבצעת, כולל מידול איומים, סקירת קוד או בדיקות.",
       "not_started": "לא התחיל",
+      "not_started.tooltip": "סקירת האבטחה הופעלה אך לא החלה כל פעילות הערכה.",
       "pending_review": "ממתין לסקירה",
+      "pending_review.tooltip": "ממצאי ההערכה (למשל, דוחות, ממצאים) ממתינים לסקירה רשמית על ידי ראשי האבטחה או המאשרים.",
+      "rejected": "נדחה",
+      "rejected.tooltip": "הסקירה נכשלה בקריטריונים קריטיים; נדרשת עבודה מחדש משמעותית לפני הגשה חוזרת.",
       "remediation_in_progress": "תיקון בתהליך.",
+      "remediation_in_progress.tooltip": "תיקונים לבעיות שזוהו מיושמים על ידי צוות הפיתוח.",
       "remediation_required": "נדרש תיקון",
-      "verification_pending": "ממתין לאימות"
+      "remediation_required.tooltip": "זוהו פגיעויות או בעיות; הפיתוח חייב לטפל בהן.",
+      "verification_pending": "ממתין לאימות",
+      "verification_pending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את יעילותו."
     },
     "statusLastUpdated": "סטטוס עודכן לאחרונה.",
     "tag": "תג",

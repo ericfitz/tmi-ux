@@ -13,7 +13,8 @@
       "categoryNoteEditing": "笔记编辑",
       "categoryPdfProcessing": "PDF处理",
       "paragraph1": "此应用程序是在杰出开源项目的支持下构建的。我们感谢这些项目背后的社区为我们提供了使界面和功能栩栩如生的能力。",
-      "paragraph2": "特别感谢为我们塑造构建安全且用户友好的应用程序的愿景和方法提供灵感的 "
+      "paragraph2": "特别感谢为我们塑造构建安全且用户友好的应用程序的愿景和方法提供灵感的 ",
+      "paragraph3": "最后，感谢 2000 年代上半叶微软 Windows 核心安全/安全 Windows 计划/可信赖计算团队，特别是 Praerit Garg、Mike Howard、John Lambert 和 Adam Shostack，感谢他们给予我学习机会，并在应用安全和威胁建模方面展示了行业领先的思维。"
     },
     "opensourcetitle": "开源",
     "server": "服务器",
@@ -678,6 +679,7 @@
     "deactivate": "停用",
     "delete": "删除",
     "deleteConfirm": "确认删除",
+    "deleteFailed": "删除失败",
     "deleteWarningConfirmationField": "删除确认",
     "deleteWarningConfirmationMatch": "确认文本匹配",
     "deleteWarningConfirmationMismatch": "确认文本不匹配",
@@ -686,6 +688,7 @@
     "deleteWarningReferenceOnly": "对于存储在 TMI 外部的对象（如文档和仓库），仅删除 TMI 对该对象的引用。",
     "deleteWarningSubEntities": "所有关联的TMI实体（如图表、威胁和笔记）也将被永久删除。",
     "deleteWarningTypeConfirmation": "要确认，请在下方输入 \"{{confirmValue}}\"",
+    "deletedSuccessfully": "删除成功",
     "description": "描述",
     "diagramId": "{{common.objectTypes.diagram}}",
     "dismiss": "关闭",
@@ -843,9 +846,12 @@
   "cvssCalculator": {
     "apply": "应用",
     "metricDescriptions": {
+      "AC": "此指标衡量攻击者为主动规避或绕过目标系统中内置安全增强条件以获取可用漏洞利用代码所必须采取的可量化措施。",
       "AR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以可用性衡量）来定制评估。",
+      "AT": "此指标捕获受影响系统中先决部署和执行条件或变量，这些条件和变量使攻击得以实现。",
       "AU": "可自动化指标捕获对以下问题的回答：'攻击者能否在多个目标上自动利用该漏洞？'。",
       "CR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以保密性衡量）来定制评估。",
+      "E": "此指标根据当前漏洞利用技术状态、漏洞利用代码的可用性或在野活跃利用情况，衡量漏洞遭受攻击的可能性。",
       "IR": "此指标使消费者能够根据受影响的 IT 资产对分析者组织的重要性（以完整性衡量）来定制评估。",
       "MAC": "攻击复杂性覆盖。此指标反映了攻击者控制范围之外必须存在的条件，以便在分析者环境中利用该漏洞。",
       "MAT": "攻击要求覆盖。捕获在分析者环境中启用攻击的系统先决部署和执行条件。",
@@ -858,15 +864,28 @@
       "MVA": "受影响系统可用性影响覆盖。衡量在分析者环境中包含漏洞的系统可用性受到的影响。",
       "MVC": "受影响系统保密性影响覆盖。衡量在分析者环境中包含漏洞的系统保密性受到的影响。",
       "MVI": "受影响系统完整性影响覆盖。衡量在分析者环境中包含漏洞的系统完整性受到的影响。",
+      "PR": "此指标描述攻击者在成功利用漏洞之前必须具备的权限级别。",
       "R": "恢复指标描述了系统在遭受攻击后恢复服务（包括性能和可用性方面）的韧性。",
       "RE": "漏洞响应工作量指标捕获消费者在漏洞已知后进行响应所需的工作量级别。",
       "S": "安全指标反映了该漏洞是否可能导致 IEC 61508 类别所定义的影响人身安全的状况。",
+      "SA": "此指标衡量成功利用漏洞后对受影响系统之外的后续系统可用性造成的影响。",
+      "SC": "此指标衡量成功利用漏洞后对受影响系统之外的后续系统保密性造成的影响。",
+      "SI": "此指标衡量成功利用漏洞后对受影响系统之外的后续系统完整性造成的影响。",
       "U": "提供者紧迫性指标反映了供应商提供的漏洞紧迫性评级（红色、琥珀色、绿色、清除）。",
-      "V": "价值密度指标描述了攻击者通过单次利用事件获得控制权的资源。"
+      "UI": "此指标衡量除攻击者之外，其他人工用户参与成功入侵受影响系统的要求。",
+      "V": "价值密度指标描述了攻击者通过单次利用事件获得控制权的资源。",
+      "VA": "此指标衡量成功利用漏洞后对包含漏洞组件的系统可用性造成的影响。",
+      "VC": "此指标衡量成功利用漏洞后对包含漏洞组件的系统保密性造成的影响。",
+      "VI": "此指标衡量成功利用漏洞后对包含漏洞组件的系统完整性造成的影响。"
     },
     "metricGroups": {
+      "base": "基础",
+      "environmental": "环境",
       "environmentalBase": "环境（修改后的基础）。",
-      "environmentalSecurityRequirement": "环境（安全要求）"
+      "environmentalSecurityRequirement": "环境（安全要求）",
+      "supplemental": "补充",
+      "temporal": "时间",
+      "threat": "威胁"
     },
     "metricsConfigured": "已配置 {{count}}/{{total}} 项",
     "openCalculator": "添加 CVSS",
@@ -1030,9 +1049,19 @@
     }
   },
   "documentAccess": {
+    "checkNow": {
+      "button": "立即检查",
+      "failed": "无法检查状态。请稍后再试。",
+      "stillPending": "状态已检查——仍处于待处理状态。",
+      "success": "访问已授权。文档现在可以访问。"
+    },
     "copiedEmail": "电子邮件已复制到剪贴板。",
     "copyEmail": "复制邮箱",
     "reason": {
+      "extractionDeadLettered": "多次尝试后，处理此文档仍意外失败。请稍后重试。",
+      "extractionInternal": "处理此文档时发生内部错误。请稍后重试。",
+      "extractionMalformed": "此文档无法处理，因为它似乎已损坏或格式不正确。",
+      "extractionUnsupported": "此文档的格式不支持内容处理。",
       "fallback": "{{documentAccess.reason.other}}",
       "fetchError": "读取此文档时发生错误。",
       "microsoftNotShared": "TMI 尚未获得访问此 OneDrive 或 SharePoint 文件的权限。文件所有者必须使用以下代码片段授予 TMI 读取访问权限。",
@@ -1052,11 +1081,15 @@
       "repickFile": "重新选择此文件。",
       "retry": "重试",
       "shareWithApplication": {
+        "copied": "已复制到剪贴板。",
+        "copyButton": "复制",
         "copyFailed": "无法复制到剪贴板",
+        "curlLabel": "curl",
         "explanation": "TMI 尚未获得访问此 OneDrive 或 SharePoint 文件的权限。请让文件所有者运行以下 Microsoft Graph 调用来授予 TMI 读取访问权限。调用成功后，点击\"立即检查\"——授权到位后状态将在几分钟内更新。",
         "powershellLabel": "PowerShell（microsoft.graph 模块）",
         "rawLabel": "Microsoft Graph 调用",
-        "title": "授予 TMI 访问此文件的权限。"
+        "title": "授予 TMI 访问此文件的权限。",
+        "unavailable": "Microsoft 修复详情不可用。请联系支持。"
       },
       "shareWithServiceAccount": "与 TMI 服务账户共享"
     },
@@ -1064,7 +1097,8 @@
   },
   "documentEditor": {
     "create": {
-      "failed": "无法创建文档"
+      "failed": "无法创建文档",
+      "inFlight": "正在创建文档…"
     },
     "grantError": {
       "generic": "无法授予对您文件的访问权限。",
@@ -1089,6 +1123,7 @@
       "pickActionMicrosoft": "浏览 OneDrive/SharePoint",
       "pickedFile": "已选择文件：{{ filename }}。",
       "repickAction": "选择其他文件",
+      "serviceUrlHint": "粘贴文件的共享链接。保存后，系统将提示您与我们的服务账户共享该文件。",
       "url": "粘贴 URL"
     }
   },
@@ -1730,9 +1765,11 @@
     "addCvssEntry": "添加 CVSS 条目。",
     "addMapping": "添加映射...",
     "createNewThreat": "创建新威胁",
+    "cvss": "{{report.cvss}}",
     "cvssVector": "CVSS 向量",
     "cvssVectorPlaceholder": "例如，cvss:3.1/av:n/ac:l/pr:n/ui:n/s:u/c:h/i:h/a:h",
     "cweIdPlaceholder": "输入 CWE ID（例如，cwe-79）",
+    "cweIds": "{{report.cweIds}}",
     "cweMappings": "CWE 映射",
     "frameworkMappingPicker": {
       "notApplicable": "不适用于当前单元格类型",
@@ -1766,10 +1803,15 @@
       "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "已延迟（P4）",
+      "deferred.description": "已通过有据可查的业务审批推迟；已跟踪但未排期。",
       "high": "高（P1）",
+      "high.description": "需要及时解决；高风险暴露或临近发布截止日期。",
       "immediate": "立即（P0）",
+      "immediate.description": "必须紧急处理；存在主动利用、违反法规或关键业务暴露。",
       "low": "低（P3）",
-      "medium": "中等（P2）"
+      "low.description": "纳入待办事项以备未来周期处理；无即时风险暴露。",
+      "medium": "中等（P2）",
+      "medium.description": "在标准开发周期内处理；中等风险暴露。"
     },
     "threatSeverity": {
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
@@ -1813,10 +1855,26 @@
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "accepted": "已接受",
+      "accepted.description": "威胁已被认知但故意不予缓解（例如基于业务理由）；需要正式的风险接受。",
+      "closed": "已关闭",
+      "closed.description": "发现项在解决、接受或撤销后归档，并保留审计记录。",
+      "confirmed": "已确认",
+      "confirmed.description": "威胁已通过分析或证据验证为合法威胁。",
+      "deferred": "已延迟",
+      "deferred.description": "操作在获得批准后推迟（例如留待未来冲刺处理）；包含理由说明和截止日期。",
       "false_positive": "误报",
+      "false_positive.description": "调查确定该发现不是有效威胁；无需进一步行动。",
       "mitigation_in_progress": "缓解措施进行中。",
+      "mitigation_in_progress.description": "控制措施、代码更改或对抗措施的实施正在进行中。",
       "mitigation_planned": "缓解措施已计划",
-      "verification_pending": "验证待处理"
+      "mitigation_planned.description": "已定义并分配了修复或缓解策略。",
+      "open": "未处理",
+      "open.description": "发现项已被识别并记录，但尚未启动任何行动。",
+      "resolved": "已解决",
+      "resolved.description": "威胁已完全缓解并经过验证；残余风险可接受。",
+      "verification_pending": "验证待处理",
+      "verification_pending.description": "缓解措施已完成；安全团队必须测试或审查其有效性。"
     }
   },
   "threatModels": {
@@ -1847,6 +1905,7 @@
       "title": {
         "create": "创建文档引用",
         "edit": "编辑文档引用",
+        "shareRequired": "与我们的服务账户共享此文件",
         "view": "查看文档引用"
       }
     },
@@ -1935,12 +1994,28 @@
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "active": "活跃",
+      "active.tooltip": "威胁模型正在被积极处理中。",
+      "approved": "已批准",
+      "approved.tooltip": "所有问题均已解决并经过验证；应用程序满足发布或部署的安全标准。",
+      "closed": "已关闭",
+      "closed.tooltip": "审查已完全完成并归档，无需进一步行动。",
+      "deferred": "已延迟",
+      "deferred.tooltip": "审查已暂停（例如，由于资源限制或应用程序变更）；计划恢复。",
       "in_progress": "进行中",
+      "in_progress.tooltip": "正在进行积极评估，包括威胁建模、代码审查或测试。",
       "not_started": "未开始",
+      "not_started.tooltip": "安全审查已启动，但尚未开始任何评估活动。",
       "pending_review": "待审核",
+      "pending_review.tooltip": "评估工件（例如报告、发现项）等待安全负责人或审批人的正式审查。",
+      "rejected": "已拒绝",
+      "rejected.tooltip": "审查未能通过关键标准；重新提交前需要大幅返工。",
       "remediation_in_progress": "修复措施进行中。",
+      "remediation_in_progress.tooltip": "开发团队正在实施已发现问题的修复措施。",
       "remediation_required": "需要修复",
-      "verification_pending": "验证待处理"
+      "remediation_required.tooltip": "已发现漏洞或问题；开发团队必须予以解决。",
+      "verification_pending": "验证待处理",
+      "verification_pending.tooltip": "修复已完成；安全团队必须验证其有效性。"
     },
     "statusLastUpdated": "状态最后更新。",
     "tag": "标签",
