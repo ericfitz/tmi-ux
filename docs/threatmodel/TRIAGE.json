@@ -1,0 +1,878 @@
+{
+  "triage_completed": true,
+  "triage_context": {
+    "mode": "auto",
+    "environment": "Unknown. Treat any externally-reachable entry point as untrusted; flag trust-boundary assumptions explicitly in rationale.",
+    "threat_model": [],
+    "scoring": "Derived HIGH/MEDIUM/LOW from preconditions (default)",
+    "noise_tolerance": "precision",
+    "votes_per_finding": 3,
+    "repo": "/Users/efitz/Projects/tmi-ux"
+  },
+  "summary": {
+    "input_count": 24,
+    "duplicates": 3,
+    "false_positives": 20,
+    "true_positives": 1,
+    "needs_manual_test": 0,
+    "by_severity": {
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "f001",
+      "source": "VULN-FINDINGS.json#F-001",
+      "title": "renderer.link concatenates raw markdown href into <a href> with no scheme check, Angular sanitizer disabled \u2014 javascript: URI stored XSS",
+      "file": "src/app/shared/markdown-providers.ts",
+      "line": 67,
+      "category": "xss",
+      "claimed_severity": "HIGH",
+      "verdict": "true_positive",
+      "verify_verdict": "exploitable",
+      "confidence": 8.0,
+      "severity": "MEDIUM",
+      "severity_label": "MEDIUM",
+      "severity_alignment": -2,
+      "preconditions": [
+        "Attacker has an authenticated account on the collaborative app that can author/persist markdown into a shared surface (chat message, note, or triage note) rendered by another user; the three live <markdown [data]> sinks bind backend-persisted, peer-authored content (chat-messages.component.html:50 binds message.content directly).",
+        "A victim user opens the view that renders the attacker's markdown (normal in a collaborative tool). No click is required for the strongest payload (event-handler attribute breakout via the unescaped quote in href/title, markdown-providers.ts:67-69, fires on hover/focus); the plain javascript: href variant additionally requires a victim click."
+      ],
+      "access_level": "authenticated",
+      "threat_match": null,
+      "rationale": "renderer.link concatenates raw token.href into <a href> with no scheme allowlist (markdown-providers.ts:67); the renderer.html DOMPurify hook only covers raw-HTML tokens, not marked-generated anchors. With SANITIZE=SecurityContext.NONE (line 201), ngx-markdown's sanitizeHtml returns the HTML unmodified (ngx-markdown.mjs:425) and assigns it to innerHTML (ngx-markdown.mjs:528), so a javascript: href in peer-persisted note/triage/chat markdown reaches the DOM live. This is a raw-HTML escape-hatch sink (SecurityContext.NONE + innerHTML), so exclusion 14 does not apply; stored cross-user XSS, the only gate being a victim click which is normal for stored XSS in collaborative content.\n\nRANKING: The sink is genuine and unguarded: custom renderer.link (markdown-providers.ts:67-69) concatenates raw href and title into the anchor with no scheme allowlist and no quote-escaping; ngx-markdown is configured SANITIZE=SecurityContext.NONE (line 201) bypassing Angular's sanitizer, and the DOMPurify hook only wraps renderer.html, never the anchor (confirmed against marked 18.0.5, whose own escaping lives in the default renderer this code replaces). Both a click-gated javascript: variant and a no-click attribute-breakout variant (event handler via unescaped quote) are reachable, and three live consumers bind peer-persisted content. Exploitation requires an authenticated account that can persist cross-user markdown plus a victim viewing it (2 preconditions, authenticated access), landing at MEDIUM \u2014 one level below the scanner's HIGH, which under-weighted the authenticated-write precondition inherent to all stored XSS (alignment -2).",
+      "vote_breakdown": {
+        "true_positive": 3,
+        "false_positive": 0,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [],
+      "exclusion_rule": null,
+      "first_links": [
+        "src/app/shared/markdown-providers.ts:67",
+        "src/app/pages/chat/components/chat-messages/chat-messages.component.html:50",
+        "src/app/pages/tm/components/note-page/note-page.component.html:239"
+      ],
+      "duplicate_of": null,
+      "absorbed": [
+        "f014"
+      ],
+      "owner_hint": "component: src/app/shared/ (markdown rendering); no CODEOWNERS in repo; git history on markdown-providers.ts shows only 1 recent commit (author 'Pentest Agent'), so no meaningful human committer signal \u2014 route to the frontend/shared-components team that owns markdown rendering and the ngx-markdown/DOMPurify config.",
+      "missing_fields": []
+    },
+    {
+      "id": "f006",
+      "source": "VULN-FINDINGS.json#F-006",
+      "title": "Unvalidated backend authorization_url assigned to window.location.href (no scheme/origin allowlist)",
+      "file": "src/app/core/components/user-preferences-dialog/connected-accounts-tab/connected-accounts-tab.component.ts",
+      "line": 276,
+      "category": "open-redirect",
+      "claimed_severity": "MEDIUM",
+      "verdict": "duplicate",
+      "verify_verdict": null,
+      "confidence": null,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": null,
+      "vote_breakdown": null,
+      "refute_reasons": null,
+      "exclusion_rule": null,
+      "first_links": null,
+      "duplicate_of": "f007",
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f010",
+      "source": "VULN-FINDINGS.json#F-010",
+      "title": "Unvalidated backend authorization_url assigned to window.location.href in document editor link flow",
+      "file": "src/app/pages/tm/components/document-editor-dialog/document-editor-dialog.component.ts",
+      "line": 560,
+      "category": "open-redirect",
+      "claimed_severity": "MEDIUM",
+      "verdict": "duplicate",
+      "verify_verdict": null,
+      "confidence": null,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": null,
+      "vote_breakdown": null,
+      "refute_reasons": null,
+      "exclusion_rule": null,
+      "first_links": null,
+      "duplicate_of": "f007",
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f014",
+      "source": "VULN-FINDINGS.json#F-014",
+      "title": "Angular sanitizer disabled (SecurityContext.NONE) leaves markdown-native renderer paths without a framework backstop",
+      "file": "src/app/shared/markdown-providers.ts",
+      "line": 201,
+      "category": "xss",
+      "claimed_severity": "HIGH",
+      "verdict": "duplicate",
+      "verify_verdict": null,
+      "confidence": null,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": null,
+      "vote_breakdown": null,
+      "refute_reasons": null,
+      "exclusion_rule": null,
+      "first_links": null,
+      "duplicate_of": "f001",
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f002",
+      "source": "VULN-FINDINGS.json#F-002",
+      "title": "Untrusted remote-cell update keys written via bracket assignment without __proto__/constructor guard",
+      "file": "src/app/pages/dfd/application/executors/node-operation-executor.ts",
+      "line": 500,
+      "category": "prototype-pollution",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 7.7,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The data flow is real and unguarded (untrusted WS JSON.parse at websocket.adapter.ts:501 reaches merged[k]=v at node-operation-executor.ts:504 with no key filter), but the scanner mis-characterizes the impact: merged[k]=v is a single-level computed assignment, so k==='__proto__' invokes the inherited setter and only reassigns the LOCAL merged object's prototype \u2014 it does not mutate global Object.prototype (that needs a nested recursive merge, which this flat loop never performs; setData uses {overwrite:true}). Impact is confined to one X6 cell's data object, no global gadget, no escalation; authz is the out-of-repo Go backend. Missing-hardening / local-only theoretical, not the MEDIUM prototype-pollution claimed.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "implausible_trigger",
+        "misread_code"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/core/services/websocket.adapter.ts:501",
+        "src/app/pages/dfd/application/services/app-remote-operation-handler.service.ts:347"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f003",
+      "source": "VULN-FINDINGS.json#F-003",
+      "title": "Static/SPA server sets no security response headers (no CSP, HSTS, X-Frame-Options, X-Content-Type-Options) \u2014 no server-side backstop for stored XSS or clickjacking",
+      "file": "server.js",
+      "line": 138,
+      "category": "missing-security-headers",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.3,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "server.js does emit no security headers on any path (proxy 28-35, static 126-135, SPA fallback 138-140) and uses no helmet \u2014 factually correct. But no concrete exploit is demonstrated: this Express layer is a pure static SPA host with no server-rendered output and no cookies/sessions; the only cited sink (markdown XSS, F-001) is the client-side concern, and the app injects an app-wide meta-CSP at bootstrap (security-config.service.ts injectDynamicCSP, script-src 'self', object-src 'none') as a client backstop. The residual gap a server header alone closes is frame-ancestors/X-Frame-Options i.e. clickjacking-only (rule 12); the rest is missing-hardening with no reachable exploit (rule 13).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "not_actionable"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "server.js:138",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f004",
+      "source": "VULN-FINDINGS.json#F-004",
+      "title": "MS picker window-message handler validates origin strictly but does not verify evt.source",
+      "file": "src/app/core/services/microsoft-file-picker.service.ts",
+      "line": 243,
+      "category": "origin-validation",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 7.7,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The handler enforces a strict, browser-unspoofable origin check (evt.origin !== this.pickerOrigin, line 245) against a server-minted trusted Microsoft picker_origin (lines 144-153), plus a per-session random channelId (line 253). The missing evt.source check is pure defense-in-depth: any sender able to pass the origin gate must already be running script on the trusted Microsoft origin (inside the integration's trust boundary, where they could obtain the picker-scoped token via the legitimate authenticate flow anyway), and the port reply is itself origin-scoped (postMessage(reply, this.pickerOrigin) line 276). No untrusted (non-MS) origin can pass line 245, so no concrete exploit for an actually-untrusted attacker (rule 13); channelId predictability is separately rule 11/15.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled",
+        "intentional_behavior",
+        "not_actionable"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/core/services/microsoft-file-picker.service.ts:245"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f005",
+      "source": "VULN-FINDINGS.json#F-005",
+      "title": "withCredentials scoped to apiUrl via prefix startsWith, not exact-origin match",
+      "file": "src/app/core/interceptors/credentials.interceptor.ts",
+      "line": 28,
+      "category": "csrf",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The prefix-match weakness is genuine (credentials.interceptor.ts:29 uses startsWith and prod apiUrl has a /v1 path), but no reachable exploit exists: every HttpClient URL is built from the compile-time-constant environment.apiUrl via ApiService.buildUrl (api.service.ts:63-71) or inline ${environment.apiUrl}/... literals, none host-influenced; buildUrl force-prepends a slash so untrusted input only reaches the path, never the host/origin. The only server-controlled host, websocket_url, flows to new WebSocket (bypasses HttpInterceptors); SSE uses raw fetch with a constant host. Even a hypothetical bypass can't leak the HttpOnly cookie cross-origin (browser-scoped by cookie Domain). Missing-hardening, no concrete reachable path (rule 13).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "implausible_trigger",
+        "not_actionable"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/core/interceptors/credentials.interceptor.ts:29",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f007",
+      "source": "VULN-FINDINGS.json#F-007",
+      "title": "Unvalidated backend authorization_url assigned to window.location.href in remediation card",
+      "file": "src/app/shared/components/access-diagnostics-panel/remediation-card/remediation-card.component.ts",
+      "line": 109,
+      "category": "open-redirect",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 7.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "authorization_url is read verbatim from the first-party backend's POST me/content_tokens/{providerId}/authorize response (content-token.service.ts:63-79) and assigned to window.location.href with no scheme check (remediation-card.component.ts:109). Majority verdict: the value's producer is the application's own trusted TLS-authenticated API and the providerId is a closed union selecting only which trusted endpoint is called \u2014 not attacker-controllable from an untrusted entry point (rule 8). The genuine no-https-allowlist gap is defense-in-depth hardening; worst realistic framing is a plain external-https open redirect (rule 12). One dissenting verifier rated TP treating 'backend responses' as untrusted per the threat model, so a javascript: scheme from a compromised/influenced backend response reaching window.location.href would be XSS-class \u2014 this residual is captured in ranking as a hardening recommendation. Split 2FP/1TP, dropped under precision policy.",
+      "vote_breakdown": {
+        "true_positive": 1,
+        "false_positive": 2,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 8,
+      "first_links": [
+        "src/app/core/services/content-token.service.ts:63",
+        "src/app/shared/components/access-diagnostics-panel/remediation-card/remediation-card.component.ts:109"
+      ],
+      "duplicate_of": null,
+      "absorbed": [
+        "f006",
+        "f010"
+      ],
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f008",
+      "source": "VULN-FINDINGS.json#F-008",
+      "title": "OAuth state/CSRF validation is skipped entirely when the callback omits the state parameter",
+      "file": "src/app/auth/services/auth.service.ts",
+      "line": 830,
+      "category": "csrf",
+      "claimed_severity": "HIGH",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 7.7,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The state check at auth.service.ts:830 is genuinely skipped when state is absent (else branch 868-875), but the CSRF/login-CSRF impact is fully mitigated downstream: the code path (exchangeAuthorizationCode) is gated by PKCE whose code_verifier lives in the victim's own sessionStorage (pkce.service.ts:92-93), and the fragment access_token path (handleTMITokenResponse, 914-921) derives auth solely from server-set HttpOnly cookies via refreshUserProfile->/me, using the body access_token only for expiry timing \u2014 the injected token is inert and no cookie is settable from a URL fragment. Neither defense is bypassable by omitting state, so the missing optional state check is defense-in-depth/hardening (rule 13), not the actionable HIGH CSRF claimed.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/auth/services/auth.service.ts:830",
+        "src/app/auth/services/auth.service.ts:868",
+        "src/app/auth/services/auth.service.ts:914"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f009",
+      "source": "VULN-FINDINGS.json#F-009",
+      "title": "Untrusted OAuth state deserialized via JSON.parse(atob(state)) with no shape validation; non-string returnUrl triggers an unhandled exception",
+      "file": "src/app/auth/services/auth.service.ts",
+      "line": 776,
+      "category": "deserialization",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.3,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The deserialization at auth.service.ts:776 lacks runtime shape validation and a non-string returnUrl would throw at isValidReturnUrl (line 803), but the claimed 'unhandled async TypeError' is a misread: both nav sinks sit inside RxJS projections (switchMap ~926 / map ~1049) each paired with a downstream catchError (~949 / ~1063) that catches the throw, logs it, and falls back to landing-page navigation. Reaching either sink also requires passing the CSRF equality gate at line 857, which compares against the crypto-random oauth_state in the victim's own localStorage (generated line 728), so an attacker cannot inject malformed state into another user's session. Net effect is self-inflicted degradation of the attacker's own login with no cross-user/persistent/corruption impact (rule 12 nuisance, already_handled).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled"
+      ],
+      "exclusion_rule": 12,
+      "first_links": [
+        "src/app/auth/services/auth.service.ts:776",
+        "src/app/auth/services/auth.service.ts:857"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f011",
+      "source": "VULN-FINDINGS.json#F-011",
+      "title": "'everyone' pseudo-group grants any authenticated user the entry's role client-side, including writer/owner",
+      "file": "src/app/pages/tm/services/threat-model-authorization.service.ts",
+      "line": 354,
+      "category": "privilege-escalation",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The 'everyone' match (threat-model-authorization.service.ts:355-361) does return an uncapped role for any authenticated user, but it only feeds canEdit$/canManagePermissions$ (lines 82-97) which gate UI state exclusively (form editability, button/dialog visibility). All mutations call apiService.put/post/patch/delete directly with no client permission gate and no blocking interceptor, and the authoritative authz is the out-of-repo Go backend that re-authorizes every mutation. The role value derives from backend-supplied authorization data (the client cannot forge a grant) and 'everyone' is a backend-defined pseudo-group per the generated OpenAPI types (api-types.d.ts), so the client faithfully mirrors authoritative backend semantics. Exploitability is wholly contingent on out-of-repo backend behavior this repo cannot exhibit (rule 9 / intended behavior; docs/AUTHZ_ANALYSIS.md flags it as contingent). Backend-contingent: if the Go backend caps 'everyone' or re-checks (expected), there is no client-originated escalation.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior",
+        "not_actionable"
+      ],
+      "exclusion_rule": 9,
+      "first_links": [
+        "src/app/pages/tm/services/threat-model-authorization.service.ts:355"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f012",
+      "source": "VULN-FINDINGS.json#F-012",
+      "title": "Inbound WS JSON.parse output cast to typed message with open-schema validation; extra attacker keys pass through to handlers",
+      "file": "src/app/core/services/websocket.adapter.ts",
+      "line": 538,
+      "category": "deserialization",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The validator is genuinely open-schema (_validateTMIMessage, websocket.adapter.ts:1146-1231, type-checks known fields without stripping extras; the base message type has [key:string]:unknown) and the raw parsed object is emitted via _tmiMessages$.next(message) (line 571), so extra attacker keys do survive. But every traced envelope consumer (dfd-collaboration.service.ts, ui-presenter-coordinator.service.ts, infra-dfd-websocket.adapter.ts) reads only named typed fields; no rest-spread, Object.assign, dynamic dispatch, eval, or innerHTML consumes the extra keys. The only whole-object spread is the diagram_operation cell path (app-remote-operation-handler.service.ts:347) which IS F-002 \u2014 already assessed local-only and explicitly not independent. Open-schema deserialization with no independent demonstrated sink is missing-hardening / not-actionable on its own (rule 13).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "not_actionable"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/core/services/websocket.adapter.ts:571"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f013",
+      "source": "VULN-FINDINGS.json#F-013",
+      "title": "Query-param return_to navigated via navigateByUrl with no isValidReturnUrl check",
+      "file": "src/app/core/components/content-callback/content-callback.component.ts",
+      "line": 64,
+      "category": "open-redirect",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "Line 64 passes the attacker-controlled return_to query param (read at line 36) into router.navigateByUrl with no isValidReturnUrl check \u2014 a real validation inconsistency versus the three auth.service window.location.href flows. But the sink is Angular's in-app Router using the default UrlSerializer (no custom serializer/UrlHandlingStrategy in repo): https://evil.com fails route resolution and //evil.com is parsed as an internal path segment, so no true off-origin redirect occurs, and return_to never flows into a DOM/HTML or window.location sink (grep confirmed). The finding itself concedes 'no true off-origin redirect.' Residual risk is at most internal-route nuisance navigation \u2014 rule 12 (low-impact nuisance incl. open redirect); the MEDIUM open-redirect severity is unsubstantiated.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 12,
+      "first_links": [
+        "src/app/core/components/content-callback/content-callback.component.ts:64"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f015",
+      "source": "VULN-FINDINGS.json#F-015",
+      "title": "DOMPurify in renderer.html uses permissive ALLOWED_URI_REGEXP and allows style/svg, weakening the only sanitized path",
+      "file": "src/app/shared/markdown-providers.ts",
+      "line": 159,
+      "category": "xss",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The renderer.html DOMPurify config (markdown-providers.ts:85-160) is permissive (style attr, data: URIs via ALLOWED_URI_REGEXP line 159, presentational SVG subset svg/path/g) but permits no script-execution path: ALLOWED_TAGS excludes script/iframe/object/embed/foreignObject/use/animate/set, ALLOWED_ATTR contains no on* handlers or xlink:href, javascript: is excluded from the URI regexp, and DOMPurify 3.x internally confines data: to media src attributes that do not execute JS. The permitted bits enable at most CSS exfil and aesthetic abuse, not script execution, confirmed against DOMPurify 3.4.8 internals. Missing-hardening with no demonstrated sink (rule 13). Distinct from F-001, which is the separate renderer.link path that bypasses DOMPurify entirely.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior",
+        "not_actionable",
+        "already_handled"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/shared/markdown-providers.ts:159"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f016",
+      "source": "VULN-FINDINGS.json#F-016",
+      "title": "Email-fallback owner match can grant 'owner' on email collision (same provider)",
+      "file": "src/app/pages/tm/services/threat-model-authorization.service.ts",
+      "line": 255,
+      "category": "privilege-escalation",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.3,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "_checkOwnerMatch's email fallback (threat-model-authorization.service.ts:256-260) only produces a client-side 'owner' permission feeding canManagePermissions$/canEdit$ UI gates (lines 92-97); it mints no token and persists no decision. The authoritative authz is the out-of-repo Go backend which re-derives owner/role from server-stored fields on every mutation (docs-server AUTHORIZATION.md), so a wrongly-granted owner badge in the browser performs no privileged write (rule 9). The match requires same-provider AND the stored owner.provider_id to literally equal the attacker's own server-issued email (email_verified exists, not spoofable in this flow) \u2014 meaning any user it matches is in fact the legitimate owner under the documented backend data-corruption bug the branch defends against (logger.warn at line 278). The scanner's 'email collision grants owner' is a misread; precondition is implausible and backend-contingent.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior",
+        "not_actionable"
+      ],
+      "exclusion_rule": 9,
+      "first_links": [
+        "src/app/pages/tm/services/threat-model-authorization.service.ts:256"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f017",
+      "source": "VULN-FINDINGS.json#F-017",
+      "title": "Cached is_admin/is_security_reviewer keeps deauthorized users privileged in already-loaded views until a guard re-fetch",
+      "file": "src/app/auth/services/auth.service.ts",
+      "line": 205,
+      "category": "privilege-escalation",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The cached isAdmin/isSecurityReviewer getters (auth.service.ts:205-211) are synchronous reads of the in-memory userProfileSubject used only for UI rendering/navigation (navbar visibility, onClose() route choices, autocomplete suggestions) \u2014 they authorize nothing. Every /admin/* route is gated by adminGuard which calls refreshUserProfile() -> live GET /me on each activation and default-denies (admin.guard.ts:26-49), so admin entry is server-confirmed not cache-trusted; the actual admin API calls are re-authorized by the out-of-repo Go backend (403 -> /unauthorized at api.service.ts:281-285, 401 via JwtInterceptor). The stale-role window only lets a deauthorized user pass the client getter from an already-open page, with no server consequence \u2014 intended client UI gating flagged as a server-class privesc (rule 9), at most a theoretical bounded TOCTOU (rule 16), as the finding itself concedes.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior",
+        "not_actionable"
+      ],
+      "exclusion_rule": 9,
+      "first_links": [
+        "src/app/auth/guards/admin.guard.ts:26",
+        "src/app/auth/services/auth.service.ts:205"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f018",
+      "source": "VULN-FINDINGS.json#F-018",
+      "title": "Legacy URL-fragment flow accepts a raw access_token from an attacker-controlled callback URL (impact neutered by HttpOnly-cookie design)",
+      "file": "src/app/auth/components/auth-callback/auth-callback.component.ts",
+      "line": 91,
+      "category": "auth-bypass",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The fragment access_token injected at auth-callback.component.ts:91 is passed to handleTMITokenResponse but its value is never read as a credential \u2014 only response.expires_in is consumed (auth.service.ts:916) for in-memory session timing; the token is never stored or transmitted. Authentication identity derives entirely from GET /me using the HttpOnly session cookie (refreshUserProfile, 1113-1126), and jwt.interceptor.ts:24-25 confirms no Authorization header is ever built from a body token. An attacker cannot set the victim's HttpOnly cookie via a URL fragment, so injecting an access_token yields at most client-side auth-state confusion (login-CSRF nuisance overlapping F-008), not authentication-as-attacker or account takeover (rule 15 / intended HttpOnly-cookie design).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled",
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 15,
+      "first_links": [
+        "src/app/auth/services/auth.service.ts:916",
+        "src/app/auth/components/auth-callback/auth-callback.component.ts:91"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f019",
+      "source": "VULN-FINDINGS.json#F-019",
+      "title": "/api reverse proxy forwards arbitrary unauthenticated paths to the backend when enabled (no user-controlled target \u2014 not classic SSRF)",
+      "file": "server.js",
+      "line": 28,
+      "category": "ssrf",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The proxy target (server.js:29) is bound once at startup to process.env.TMI_PROXY_TARGET (server.js:17), a fixed trusted-operator env var; the feature is off by default behind TMI_ENABLE_API_PROXY==='true' (server.js:16,21) and fails closed if misconfigured (22-27). An attacker controls only the forwarded path after pathRewrite strips ^/api (server.js:32), never the upstream host or protocol \u2014 changeOrigin:true merely rewrites Host to the fixed target and provides no client-driven target selection. This is precisely exclusion rule 5 (path-only 'SSRF'), compounded by rule 8 (trusted operator env). The only residual \u2014 unauthenticated same-origin traffic reaching the backend \u2014 is an escalation contingent on the out-of-repo Go backend trusting same-origin/internal callers, unverifiable in this repo and not an SSRF here. Off by default, no concrete in-repo exploit.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 5,
+      "first_links": [
+        "server.js:29",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f020",
+      "source": "VULN-FINDINGS.json#F-020",
+      "title": "Loose isBase64 heuristic and non-constant-time csrf comparison in decodeState (claimed undefined===undefined bypass not reachable)",
+      "file": "src/app/auth/services/auth.service.ts",
+      "line": 755,
+      "category": "csrf",
+      "claimed_severity": "MEDIUM",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.7,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The claimed undefined===undefined bypass requires decodedStoredState.csrf to be undefined, but stored oauth_state (auth.service.ts:676) is only ever written by generateRandomState (728-748), which always sets csrf to a 32-char CSPRNG hex; the attacker controls only the received state, never the stored one, so the stored csrf is never undefined and the finding itself concedes non-reachability. The loose isBase64 (755-765) at worst falls through to {csrf: state}, preserving the strict full-string equality check at line 857 that aborts on mismatch. The non-constant-time !== is a client-side comparison in the victim's own browser with no attacker observation channel, guarding a single-use 128-bit secret rotated per flow (removed at 878) \u2014 a non-exploitable timing concern (rule 16); loose isBase64 is a code smell with no reachable exploit (rule 13).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled",
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 16,
+      "first_links": [
+        "src/app/auth/services/auth.service.ts:857",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f021",
+      "source": "VULN-FINDINGS.json#F-021",
+      "title": "All edit/manage gates derive from a single client-side permission calc a user can flip in DevTools (by-design thin-client UX gating)",
+      "file": "src/app/pages/tm/services/threat-model-authorization.service.ts",
+      "line": 389,
+      "category": "auth-bypass",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 8.7,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "canEdit()/canManagePermissions() (threat-model-authorization.service.ts:389-400) compute permissions from an in-memory BehaviorSubject and are consumed only as UI gating \u2014 template @if (canEdit) and local handler early-returns/isReadOnly in tm-edit.component.ts (e.g. 595,753,901). All mutations are forwarded by the thin HTTP wrapper api.service.ts (post/put/patch/delete to environment.apiUrl) to the authoritative out-of-repo Go backend, which re-authorizes every request; threat-model.resolver.ts:60-78 treats client permission as log-only and explicitly handles a server 403 ('User does not have permission'), proving the Go backend is the gate. A DevTools flip only un-hides controls; the mutation request is still re-authorized server-side. A client-side mutation re-check would itself be DevTools-flippable and adds no security value. By-design thin-client UX gating flagged as a server-side authz bypass (rule 9); exploitability backend-contingent and by-contract server-mitigated.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 9,
+      "first_links": [
+        "src/app/pages/tm/services/threat-model-authorization.service.ts:389"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f022",
+      "source": "VULN-FINDINGS.json#F-022",
+      "title": "/config.json reflects only non-secret operator env vars to unauthenticated callers (no user input echoed)",
+      "file": "server.js",
+      "line": 54,
+      "category": "info-disclosure",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The /config.json handler (server.js:54-122) builds its response solely from process.env.TMI_* operator-set vars; req is never read (no query/header/body/cookie access), so there is no reflection or XSS vector, and res.json() (server.js:121) emits escaped JSON regardless. Every exposed field (operatorName, apiUrl, auth provider, security-header policy, UI flags) is non-secret client runtime config the SPA requires to bootstrap (intended behavior, server.js:50-53) and is otherwise observable from the live app; no credential or secret is in the explicit whitelist (no process.env spread, proxy target not exposed). This is trusted-operator-env (rule 8), intended behavior (rule 3), and non-secret info-disclosure with no concrete exploit (rule 13). The threat model rates it risk_accepted (T12).",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "intentional_behavior",
+        "not_actionable"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "server.js:54",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f023",
+      "source": "VULN-FINDINGS.json#F-023",
+      "title": "metadataToRecord writes untrusted metadata keys via bracket assignment without proto guard (non-exploitable today)",
+      "file": "src/app/pages/dfd/domain/value-objects/metadata.ts",
+      "line": 23,
+      "category": "prototype-pollution",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "Majority verdict: metadata.ts:23 (record[entry.key]=entry.value) is a single-level flat assignment on a plain object; with key __proto__ and a STRING value (the typed Metadata.value), JS invokes the __proto__ setter which silently ignores non-object values \u2014 no prototype mutation, no own-property creation. record['constructor']='x' only shadows. metadataToRecord additionally has no production callers (only metadata.spec.ts), and the untrusted-to-Metadata path recordToMetadata routes every value through safeMetadataEntry which String-coerces before assignment. Latent defense-in-depth hardening gap with no concrete exploit today (rule 13). One dissenting verifier (conf 6) argued the array/hybrid ingestion paths (node-info.ts:157, diagram-info.ts:72) bypass safeMetadataEntry and could carry a non-string (object) value that WOULD pollute Object.prototype, but located no concrete downstream gadget and could not confirm reachability of a non-string value at the sink; under precision policy the split resolves FP, with the object-value path flagged as the hardening recommendation worth a __proto__/constructor key filter.",
+      "vote_breakdown": {
+        "true_positive": 1,
+        "false_positive": 2,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "already_handled",
+        "intentional_behavior"
+      ],
+      "exclusion_rule": 13,
+      "first_links": [
+        "src/app/pages/dfd/domain/value-objects/metadata.ts:23",
+        "src/app/pages/dfd/domain/value-objects/node-info.ts:157"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    },
+    {
+      "id": "f024",
+      "source": "VULN-FINDINGS.json#F-024",
+      "title": "Role claims documented as JWT-sourced but consumed only via server-validated GET /me (no client-side JWT trust \u2014 non-issue)",
+      "file": "src/app/auth/models/auth.models.ts",
+      "line": 72,
+      "category": "auth-bypass",
+      "claimed_severity": "LOW",
+      "verdict": "false_positive",
+      "verify_verdict": null,
+      "confidence": 9.0,
+      "severity": null,
+      "severity_label": null,
+      "severity_alignment": null,
+      "preconditions": [],
+      "access_level": null,
+      "threat_match": null,
+      "rationale": "The finding's premise is that a misleading JWT comment (auth.models.ts:73,79 'Populated from JWT tmi_is_administrator claim') reflects real client-side JWT role trust, but no such decode exists. Role flags is_admin/is_security_reviewer are assigned solely from the server response at auth.service.ts:408-409 and 1124-1125, both sourced from http.get<UserMeResponse>('/me'). The only client-side atob in auth (auth.service.ts:776) decodes the OAuth CSRF state, not a role token, and no tmi_is_administrator claim extraction exists anywhere in src (grep confirmed); jwt.interceptor.ts attaches/decodes nothing (HttpOnly cookies). The comment is stale documentation describing backend behavior, not exploitable client code \u2014 the claimed behavior does not exist (doesnt_exist). Confirms the scanner's own non-issue flag.",
+      "vote_breakdown": {
+        "true_positive": 0,
+        "false_positive": 3,
+        "cannot_verify": 0
+      },
+      "refute_reasons": [
+        "doesnt_exist",
+        "misread_code"
+      ],
+      "exclusion_rule": null,
+      "first_links": [
+        "src/app/auth/services/auth.service.ts:397",
+        "none found"
+      ],
+      "duplicate_of": null,
+      "absorbed": null,
+      "owner_hint": null,
+      "missing_fields": []
+    }
+  ]
+}
