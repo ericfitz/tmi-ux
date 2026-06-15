@@ -81,6 +81,93 @@
       "subtitle": "配置插件以扩展 TMI 功能。",
       "title": "管理插件"
     },
+    "audit": {
+      "columns": {
+        "actor": "操作者",
+        "changeSummary": "变更摘要",
+        "changeType": "变更类型",
+        "fieldPath": "字段路径",
+        "object": "对象",
+        "request": "请求",
+        "threatModel": "威胁模型",
+        "timestamp": "时间戳"
+      },
+      "detail": {
+        "actor": "操作者",
+        "changeSummary": "变更摘要",
+        "changeType": "变更类型",
+        "close": "关闭",
+        "copied": "已复制",
+        "copyPermalink": "复制永久链接",
+        "email": "电子邮件",
+        "fieldPath": "字段路径",
+        "method": "HTTP 方法",
+        "newValue": "新值",
+        "notFound": "未找到审计条目。",
+        "objectId": "对象 ID",
+        "objectType": "对象类型",
+        "oldValue": "旧值",
+        "path": "请求路径",
+        "provider": "提供者",
+        "providerId": "提供者 ID",
+        "threatModel": "威胁模型",
+        "timestamp": "时间戳",
+        "title": "审计条目",
+        "version": "版本",
+        "viewInContext": "在上下文中查看"
+      },
+      "empty": "没有条目与这些筛选条件匹配。",
+      "enums": {
+        "changeType": {
+          "created": "已创建",
+          "deleted": "已删除",
+          "patched": "已修补",
+          "restored": "已恢复",
+          "rolled_back": "已回滚",
+          "updated": "已更新"
+        },
+        "objectType": {
+          "asset": "资产",
+          "diagram": "图表",
+          "document": "文档",
+          "note": "备注",
+          "repository": "存储库",
+          "threat": "威胁",
+          "threat_model": "威胁模型"
+        }
+      },
+      "error": "审计查询失败。",
+      "export": {
+        "csv": "CSV",
+        "error": "导出失败",
+        "menu": "导出",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "操作者",
+        "actorPlaceholder": "按电子邮件搜索",
+        "changeType": "变更类型",
+        "clear": "清除筛选条件",
+        "createdAfter": "创建于之后",
+        "createdBefore": "创建于之前",
+        "fieldPath": "字段路径",
+        "httpMethod": "HTTP 方法",
+        "objectType": "对象类型",
+        "pathPrefix": "路径前缀",
+        "threatModelId": "威胁模型 ID"
+      },
+      "pagination": {
+        "newer": "较新",
+        "older": "较旧"
+      },
+      "retry": "重试",
+      "tabs": {
+        "system": "系统",
+        "threatModels": "威胁模型"
+      },
+      "title": "审计日志",
+      "viewInAuditLog": "在审计日志中查看"
+    },
     "createAutomationUserDialog": {
       "email": "电子邮件（可选）",
       "emailHint": "可选 — 默认为自动生成的 @tmi.local 地址",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "安装和配置应用程序插件。",
         "title": "附加组件"
+      },
+      "audit": {
+        "description": "查看系统和威胁模型审计日志。",
+        "title": "审计日志"
       },
       "groups": {
         "description": "配置用户组和成员资格。",

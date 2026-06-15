@@ -81,6 +81,93 @@
       "subtitle": "Erweiterungen zur Erweiterung der TMI-Funktionalität konfigurieren.",
       "title": "Erweiterungen verwalten"
     },
+    "audit": {
+      "columns": {
+        "actor": "Akteur",
+        "changeSummary": "Änderungszusammenfassung",
+        "changeType": "Änderungstyp",
+        "fieldPath": "Feldpfad",
+        "object": "Objekt",
+        "request": "Anfrage",
+        "threatModel": "Threat Model",
+        "timestamp": "Zeitstempel"
+      },
+      "detail": {
+        "actor": "Akteur",
+        "changeSummary": "Änderungszusammenfassung",
+        "changeType": "Änderungstyp",
+        "close": "Schließen",
+        "copied": "Kopiert",
+        "copyPermalink": "Permalink kopieren",
+        "email": "E-Mail",
+        "fieldPath": "Feldpfad",
+        "method": "HTTP-Methode",
+        "newValue": "Neuer Wert",
+        "notFound": "Audit-Eintrag nicht gefunden.",
+        "objectId": "Objekt-ID",
+        "objectType": "Objekttyp",
+        "oldValue": "Alter Wert",
+        "path": "Anfragepfad",
+        "provider": "Anbieter",
+        "providerId": "Anbieter-ID",
+        "threatModel": "Threat Model",
+        "timestamp": "Zeitstempel",
+        "title": "Audit-Eintrag",
+        "version": "Version",
+        "viewInContext": "Im Kontext anzeigen"
+      },
+      "empty": "Keine Einträge stimmen mit diesen Filtern überein.",
+      "enums": {
+        "changeType": {
+          "created": "Erstellt",
+          "deleted": "Gelöscht",
+          "patched": "Aktualisiert",
+          "restored": "Wiederhergestellt",
+          "rolled_back": "Zurückgerollt",
+          "updated": "Aktualisiert"
+        },
+        "objectType": {
+          "asset": "Anlage",
+          "diagram": "Diagramm",
+          "document": "Dokument",
+          "note": "Notiz",
+          "repository": "Repository",
+          "threat": "Bedrohung",
+          "threat_model": "Threat Model"
+        }
+      },
+      "error": "Audit-Abfrage fehlgeschlagen.",
+      "export": {
+        "csv": "CSV",
+        "error": "Export fehlgeschlagen",
+        "menu": "Exportieren",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Akteur",
+        "actorPlaceholder": "Nach E-Mail suchen",
+        "changeType": "Änderungstyp",
+        "clear": "Filter löschen",
+        "createdAfter": "Erstellt nach",
+        "createdBefore": "Erstellt vor",
+        "fieldPath": "Feldpfad",
+        "httpMethod": "HTTP-Methode",
+        "objectType": "Objekttyp",
+        "pathPrefix": "Pfadpräfix",
+        "threatModelId": "Threat Model-ID"
+      },
+      "pagination": {
+        "newer": "Neuer",
+        "older": "Älter"
+      },
+      "retry": "Wiederholen",
+      "tabs": {
+        "system": "System",
+        "threatModels": "Threat Models"
+      },
+      "title": "Audit-Protokolle",
+      "viewInAuditLog": "In Audit-Protokoll anzeigen"
+    },
     "createAutomationUserDialog": {
       "email": "E-Mail (optional)",
       "emailHint": "Optional — Standard ist eine automatisch generierte @tmi.local-Adresse",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "Anwendungserweiterungen installieren und konfigurieren.",
         "title": "Erweiterungen"
+      },
+      "audit": {
+        "description": "System- und Threat Model-Audit-Protokolle anzeigen.",
+        "title": "Audit-Protokolle"
       },
       "groups": {
         "description": "Benutzergruppen und Mitgliedschaften konfigurieren.",

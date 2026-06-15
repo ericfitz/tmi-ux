@@ -81,6 +81,93 @@
       "subtitle": "TMI機能を拡張するためのアドオンを設定します。",
       "title": "アドオンの管理"
     },
+    "audit": {
+      "columns": {
+        "actor": "実行者",
+        "changeSummary": "変更内容",
+        "changeType": "変更種別",
+        "fieldPath": "フィールドパス",
+        "object": "オブジェクト",
+        "request": "リクエスト",
+        "threatModel": "脅威モデル",
+        "timestamp": "タイムスタンプ"
+      },
+      "detail": {
+        "actor": "実行者",
+        "changeSummary": "変更内容",
+        "changeType": "変更種別",
+        "close": "閉じる",
+        "copied": "コピーしました",
+        "copyPermalink": "パーマリンクをコピー",
+        "email": "メールアドレス",
+        "fieldPath": "フィールドパス",
+        "method": "HTTP メソッド",
+        "newValue": "新しい値",
+        "notFound": "監査エントリが見つかりません。",
+        "objectId": "オブジェクト ID",
+        "objectType": "オブジェクトタイプ",
+        "oldValue": "前の値",
+        "path": "リクエストパス",
+        "provider": "プロバイダー",
+        "providerId": "プロバイダー ID",
+        "threatModel": "脅威モデル",
+        "timestamp": "タイムスタンプ",
+        "title": "監査エントリ",
+        "version": "バージョン",
+        "viewInContext": "コンテキストで表示"
+      },
+      "empty": "フィルターに一致するエントリはありません。",
+      "enums": {
+        "changeType": {
+          "created": "作成",
+          "deleted": "削除",
+          "patched": "パッチ適用",
+          "restored": "復元",
+          "rolled_back": "ロールバック",
+          "updated": "更新"
+        },
+        "objectType": {
+          "asset": "アセット",
+          "diagram": "図",
+          "document": "ドキュメント",
+          "note": "ノート",
+          "repository": "リポジトリ",
+          "threat": "脅威",
+          "threat_model": "脅威モデル"
+        }
+      },
+      "error": "監査クエリが失敗しました。",
+      "export": {
+        "csv": "CSV",
+        "error": "エクスポートに失敗しました",
+        "menu": "エクスポート",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "実行者",
+        "actorPlaceholder": "メールアドレスで検索",
+        "changeType": "変更種別",
+        "clear": "フィルターをクリア",
+        "createdAfter": "作成日時（以降）",
+        "createdBefore": "作成日時（以前）",
+        "fieldPath": "フィールドパス",
+        "httpMethod": "HTTP メソッド",
+        "objectType": "オブジェクトタイプ",
+        "pathPrefix": "パスプレフィックス",
+        "threatModelId": "脅威モデル ID"
+      },
+      "pagination": {
+        "newer": "新しい順",
+        "older": "古い順"
+      },
+      "retry": "再試行",
+      "tabs": {
+        "system": "システム",
+        "threatModels": "脅威モデル"
+      },
+      "title": "監査ログ",
+      "viewInAuditLog": "監査ログで表示"
+    },
     "createAutomationUserDialog": {
       "email": "メール（任意）",
       "emailHint": "任意 — デフォルトは自動生成された @tmi.local アドレス",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "アプリケーションアドオンをインストール・設定します。",
         "title": "アドオン"
+      },
+      "audit": {
+        "description": "システムおよび脅威モデルの監査ログを表示します。",
+        "title": "監査ログ"
       },
       "groups": {
         "description": "ユーザーグループとメンバーシップを設定します。",

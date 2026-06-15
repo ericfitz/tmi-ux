@@ -60,7 +60,7 @@
         <mat-option [value]="null">&mdash;</mat-option>
         @for (method of httpMethods; track method) {
           <mat-option [value]="method">
-            {{ 'admin.audit.enums.httpMethod.' + method | transloco }}
+            {{ method }}
           </mat-option>
         }
       </mat-select>

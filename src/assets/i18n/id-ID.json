@@ -81,6 +81,93 @@
       "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI.",
       "title": "Kelola Addon"
     },
+    "audit": {
+      "columns": {
+        "actor": "Aktor",
+        "changeSummary": "Ringkasan perubahan",
+        "changeType": "Jenis perubahan",
+        "fieldPath": "Jalur field",
+        "object": "Objek",
+        "request": "Permintaan",
+        "threatModel": "Model ancaman",
+        "timestamp": "Waktu"
+      },
+      "detail": {
+        "actor": "Aktor",
+        "changeSummary": "Ringkasan perubahan",
+        "changeType": "Jenis perubahan",
+        "close": "Tutup",
+        "copied": "Disalin",
+        "copyPermalink": "Salin tautan permanen",
+        "email": "Email",
+        "fieldPath": "Jalur field",
+        "method": "Metode HTTP",
+        "newValue": "Nilai baru",
+        "notFound": "Entri audit tidak ditemukan.",
+        "objectId": "ID Objek",
+        "objectType": "Jenis objek",
+        "oldValue": "Nilai lama",
+        "path": "Jalur permintaan",
+        "provider": "Penyedia",
+        "providerId": "ID Penyedia",
+        "threatModel": "Model ancaman",
+        "timestamp": "Waktu",
+        "title": "Entri audit",
+        "version": "Versi",
+        "viewInContext": "Lihat dalam konteks"
+      },
+      "empty": "Tidak ada entri yang sesuai dengan filter ini.",
+      "enums": {
+        "changeType": {
+          "created": "Dibuat",
+          "deleted": "Dihapus",
+          "patched": "Dipatch",
+          "restored": "Dipulihkan",
+          "rolled_back": "Dikembalikan",
+          "updated": "Diperbarui"
+        },
+        "objectType": {
+          "asset": "Aset",
+          "diagram": "Diagram",
+          "document": "Dokumen",
+          "note": "Catatan",
+          "repository": "Repositori",
+          "threat": "Ancaman",
+          "threat_model": "Model ancaman"
+        }
+      },
+      "error": "Kueri audit gagal.",
+      "export": {
+        "csv": "CSV",
+        "error": "Ekspor gagal",
+        "menu": "Ekspor",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Aktor",
+        "actorPlaceholder": "Cari berdasarkan email",
+        "changeType": "Jenis perubahan",
+        "clear": "Hapus filter",
+        "createdAfter": "Dibuat setelah",
+        "createdBefore": "Dibuat sebelum",
+        "fieldPath": "Jalur field",
+        "httpMethod": "Metode HTTP",
+        "objectType": "Jenis objek",
+        "pathPrefix": "Awalan jalur",
+        "threatModelId": "ID Model ancaman"
+      },
+      "pagination": {
+        "newer": "Lebih baru",
+        "older": "Lebih lama"
+      },
+      "retry": "Coba lagi",
+      "tabs": {
+        "system": "Sistem",
+        "threatModels": "Model ancaman"
+      },
+      "title": "Log audit",
+      "viewInAuditLog": "Lihat dalam log audit"
+    },
     "createAutomationUserDialog": {
       "email": "Email (Opsional)",
       "emailHint": "Opsional — default ke alamat @tmi.local yang dibuat otomatis",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "Pasang dan konfigurasikan addon aplikasi.",
         "title": "Pengaya"
+      },
+      "audit": {
+        "description": "Lihat log audit sistem dan model ancaman.",
+        "title": "Log audit"
       },
       "groups": {
         "description": "Konfigurasikan grup pengguna dan keanggotaan.",

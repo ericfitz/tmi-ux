@@ -81,6 +81,93 @@
       "subtitle": "TMI کی فعالیت بڑھانے کے لیے ایڈ آنز ترتیب دیں۔",
       "title": "ایڈ آنز کا انتظام"
     },
+    "audit": {
+      "columns": {
+        "actor": "ایکٹر",
+        "changeSummary": "تبدیلی کا خلاصہ",
+        "changeType": "تبدیلی کی قسم",
+        "fieldPath": "فیلڈ کا راستہ",
+        "object": "آبجیکٹ",
+        "request": "درخواست",
+        "threatModel": "Threat model",
+        "timestamp": "ٹائم سٹیمپ"
+      },
+      "detail": {
+        "actor": "ایکٹر",
+        "changeSummary": "تبدیلی کا خلاصہ",
+        "changeType": "تبدیلی کی قسم",
+        "close": "بند کریں",
+        "copied": "کاپی کر دیا گیا",
+        "copyPermalink": "Permalink کاپی کریں",
+        "email": "ای میل",
+        "fieldPath": "فیلڈ کا راستہ",
+        "method": "HTTP method",
+        "newValue": "نی قدر",
+        "notFound": "آڈٹ اندراج نہیں ملا۔",
+        "objectId": "Object ID",
+        "objectType": "آبجیکٹ کی قسم",
+        "oldValue": "پرانی قدر",
+        "path": "درخواست کا راستہ",
+        "provider": "فراہم کنندہ",
+        "providerId": "Provider ID",
+        "threatModel": "Threat model",
+        "timestamp": "ٹائم سٹیمپ",
+        "title": "آڈٹ اندراج",
+        "version": "ورژن",
+        "viewInContext": "تناظر میں دیکھیں"
+      },
+      "empty": "کوئی بھی اندراج ان فلٹرز سے مماثل نہیں۔",
+      "enums": {
+        "changeType": {
+          "created": "بنایا گیا",
+          "deleted": "حذف کر دیا گیا",
+          "patched": "ترمیم کر دی گئی",
+          "restored": "بحال کر دیا گیا",
+          "rolled_back": "واپس کر دیا گیا",
+          "updated": "اپ ڈیٹ کر دیا گیا"
+        },
+        "objectType": {
+          "asset": "ایسیٹ",
+          "diagram": "ڈائیاگرام",
+          "document": "دستاویز",
+          "note": "نوٹ",
+          "repository": "ذخیرہ",
+          "threat": "خطرہ",
+          "threat_model": "Threat model"
+        }
+      },
+      "error": "آڈٹ کویری ناکام۔",
+      "export": {
+        "csv": "CSV",
+        "error": "برآمد ناکام",
+        "menu": "برآمد کریں",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "ایکٹر",
+        "actorPlaceholder": "ای میل سے تلاش کریں",
+        "changeType": "تبدیلی کی قسم",
+        "clear": "فلٹرز صاف کریں",
+        "createdAfter": "بعد میں بنایا گیا",
+        "createdBefore": "پہلے بنایا گیا",
+        "fieldPath": "فیلڈ کا راستہ",
+        "httpMethod": "HTTP method",
+        "objectType": "آبجیکٹ کی قسم",
+        "pathPrefix": "راستے کا سابقہ",
+        "threatModelId": "Threat model ID"
+      },
+      "pagination": {
+        "newer": "نیا",
+        "older": "پرانا"
+      },
+      "retry": "دوبارہ کوشش کریں",
+      "tabs": {
+        "system": "نظام",
+        "threatModels": "Threat models"
+      },
+      "title": "آڈٹ لاگز",
+      "viewInAuditLog": "آڈٹ لاگ میں دیکھیں"
+    },
     "createAutomationUserDialog": {
       "email": "ای میل (اختیاری)",
       "emailHint": "اختیاری — ڈیفالٹ خودکار پیدا شدہ @tmi.local پتہ ہے",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "ایپلیکیشن ایڈ آنز انسٹال اور ترتیب دیں۔",
         "title": "ایڈ آنز"
+      },
+      "audit": {
+        "description": "نظام اور Threat model آڈٹ لاگز دیکھیں۔",
+        "title": "آڈٹ لاگز"
       },
       "groups": {
         "description": "صارف گروپس اور رکنیتیں ترتیب دیں۔",
