@@ -1,0 +1,26 @@
+<h1>{{ 'admin.audit.title' | transloco }}</h1>
+
+<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+  <a
+    mat-tab-link
+    routerLink="system"
+    routerLinkActive
+    #s1="routerLinkActive"
+    [active]="s1.isActive"
+    data-testid="audit-tab-system"
+    >{{ 'admin.audit.tabs.system' | transloco }}</a
+  >
+  <a
+    mat-tab-link
+    routerLink="threat-models"
+    routerLinkActive
+    #s2="routerLinkActive"
+    [active]="s2.isActive"
+    data-testid="audit-tab-tm"
+    >{{ 'admin.audit.tabs.threatModels' | transloco }}</a
+  >
+</nav>
+
+<mat-tab-nav-panel #tabPanel>
+  <router-outlet></router-outlet>
+</mat-tab-nav-panel>

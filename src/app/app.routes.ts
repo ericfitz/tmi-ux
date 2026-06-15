@@ -186,6 +186,51 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
+        path: 'audit',
+        loadComponent: () =>
+          import('./pages/admin/audit/audit-logs-page.component').then(
+            c => c.AuditLogsPageComponent,
+          ),
+        canActivate: [adminGuard],
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'system' },
+          {
+            path: 'system',
+            loadComponent: () =>
+              import('./pages/admin/audit/views/system-audit-view.component').then(
+                c => c.SystemAuditViewComponent,
+              ),
+            children: [
+              {
+                path: ':entryId',
+                loadComponent: () =>
+                  import('./pages/admin/audit/components/audit-detail-panel.component').then(
+                    c => c.AuditDetailPanelComponent,
+                  ),
+                data: { stream: 'system' },
+              },
+            ],
+          },
+          {
+            path: 'threat-models',
+            loadComponent: () =>
+              import('./pages/admin/audit/views/tm-audit-view.component').then(
+                c => c.TmAuditViewComponent,
+              ),
+            children: [
+              {
+                path: ':entryId',
+                loadComponent: () =>
+                  import('./pages/admin/audit/components/audit-detail-panel.component').then(
+                    c => c.AuditDetailPanelComponent,
+                  ),
+                data: { stream: 'tm' },
+              },
+            ],
+          },
+        ],
+      },
+      {
         path: 'surveys/new',
         loadComponent: () =>
           import(
