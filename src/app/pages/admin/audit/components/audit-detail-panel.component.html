@@ -1,0 +1,148 @@
+<div class="detail-panel">
+  <div class="detail-panel__header">
+    <h2>{{ 'admin.audit.detail.title' | transloco }}</h2>
+    <div class="detail-panel__actions">
+      @if (entry && !loading) {
+        <button
+          mat-icon-button
+          data-testid="audit-detail-copy"
+          [matTooltip]="
+            (copied ? 'admin.audit.detail.copied' : 'admin.audit.detail.copyPermalink') | transloco
+          "
+          (click)="copyPermalink()"
+        >
+          <mat-icon>{{ copied ? 'check' : 'link' }}</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          data-testid="audit-detail-context"
+          [matTooltip]="'admin.audit.detail.viewInContext' | transloco"
+          (click)="viewInContext()"
+        >
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        data-testid="audit-detail-close"
+        [matTooltip]="'admin.audit.detail.close' | transloco"
+        (click)="close()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-panel__body">
+    @if (loading) {
+      <div class="detail-panel__spinner">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    } @else if (notFound) {
+      <div class="detail-panel__not-found">
+        <p>{{ 'admin.audit.detail.notFound' | transloco }}</p>
+        <button mat-button data-testid="audit-detail-close" (click)="close()">
+          {{ 'admin.audit.detail.close' | transloco }}
+        </button>
+      </div>
+    } @else if (entry) {
+      <div class="detail-panel__field">
+        <label>{{ 'admin.audit.detail.timestamp' | transloco }}</label>
+        <span class="value">{{ entry.created_at }}</span>
+      </div>
+
+      <div class="detail-panel__field">
+        <label>{{ 'admin.audit.detail.actor' | transloco }}</label>
+        <span class="value">{{ entry.actor.display_name }}</span>
+      </div>
+
+      <div class="detail-panel__field">
+        <label>{{ 'admin.audit.detail.email' | transloco }}</label>
+        <span class="value">{{ entry.actor.email }}</span>
+      </div>
+
+      <div class="detail-panel__field">
+        <label>{{ 'admin.audit.detail.provider' | transloco }}</label>
+        <span class="value">{{ entry.actor.provider }}</span>
+      </div>
+
+      <div class="detail-panel__field">
+        <label>{{ 'admin.audit.detail.providerId' | transloco }}</label>
+        <span class="value">{{ entry.actor.provider_id }}</span>
+      </div>
+
+      @switch (stream) {
+        @case ('system') {
+          @if (systemEntry) {
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.method' | transloco }}</label>
+              <span class="value">{{ systemEntry.http_method }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.path' | transloco }}</label>
+              <span class="value">{{ systemEntry.http_path }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.fieldPath' | transloco }}</label>
+              <span class="value">{{ systemEntry.field_path }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.oldValue' | transloco }}</label>
+              <span class="value">{{ systemEntry.old_value_redacted }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.newValue' | transloco }}</label>
+              <span class="value">{{ systemEntry.new_value_redacted }}</span>
+            </div>
+
+            @if (systemEntry.change_summary) {
+              <div class="detail-panel__field">
+                <label>{{ 'admin.audit.detail.changeSummary' | transloco }}</label>
+                <span class="value">{{ systemEntry.change_summary }}</span>
+              </div>
+            }
+          }
+        }
+        @case ('tm') {
+          @if (tmEntry) {
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.threatModel' | transloco }}</label>
+              <span class="value">{{ tmEntry.threat_model_id }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.objectType' | transloco }}</label>
+              <span class="value">{{ tmEntry.object_type }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.objectId' | transloco }}</label>
+              <span class="value">{{ tmEntry.object_id }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.changeType' | transloco }}</label>
+              <span class="value">{{ tmEntry.change_type }}</span>
+            </div>
+
+            <div class="detail-panel__field">
+              <label>{{ 'admin.audit.detail.version' | transloco }}</label>
+              <span class="value">{{ tmEntry.version }}</span>
+            </div>
+
+            @if (tmEntry.change_summary) {
+              <div class="detail-panel__field">
+                <label>{{ 'admin.audit.detail.changeSummary' | transloco }}</label>
+                <span class="value">{{ tmEntry.change_summary }}</span>
+              </div>
+            }
+          }
+        }
+      }
+    }
+  </div>
+</div>
