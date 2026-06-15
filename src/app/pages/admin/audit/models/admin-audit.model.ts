@@ -77,3 +77,13 @@ export type AuditExportFormat = 'csv' | 'ndjson';
 
 /** Which audit stream a shared component is operating on. */
 export type AuditStream = 'system' | 'tm';
+
+/** A column definition for the audit table: how to render one column. */
+export interface AuditColumnDef {
+  /** Unique column key (used for matColumnDef + displayedColumns). */
+  key: string;
+  /** i18n key for the column header. */
+  headerKey: string;
+  /** Renders the cell text for a given row. */
+  cell: (row: Record<string, unknown>) => string;
+}
