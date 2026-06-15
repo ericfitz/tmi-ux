@@ -180,6 +180,15 @@
                     </button>
                     <button
                       mat-icon-button
+                      data-testid="setting-view-audit"
+                      [routerLink]="['/admin/audit/system']"
+                      [queryParams]="{ field_path: setting.key }"
+                      [matTooltip]="'admin.audit.viewInAuditLog' | transloco"
+                    >
+                      <mat-icon>history</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
                       data-testid="settings-more-button"
                       [matMenuTriggerFor]="settingRowKebabMenu"
                       [matTooltip]="'common.actions' | transloco"
