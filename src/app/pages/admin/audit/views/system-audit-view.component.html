@@ -1,0 +1,24 @@
+<div class="system-audit-view">
+  <app-audit-filter-bar
+    [stream]="stream"
+    [initialFilter]="filter"
+    (filterChange)="onFilterChange($event)"
+    (exportRequested)="onExport($event)"
+  ></app-audit-filter-bar>
+
+  <app-audit-table
+    [columns]="columns"
+    [rows]="rows"
+    [loading]="loading"
+    [nextCursor]="nextCursor"
+    [prevCursor]="prevCursor"
+    [anchorId]="anchorId"
+    [hasError]="hasError"
+    (older)="onOlder()"
+    (newer)="onNewer()"
+    (rowClick)="onRowClick($event)"
+    (retry)="onRetry()"
+  ></app-audit-table>
+
+  <router-outlet></router-outlet>
+</div>
