@@ -1,0 +1,30 @@
+.audit-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.filter-field {
+  min-width: 160px;
+  flex: 1 1 160px;
+}
+
+.actor-field {
+  min-width: 220px;
+  flex: 2 1 220px;
+}
+
+.date-field {
+  min-width: 160px;
+  flex: 1 1 160px;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
