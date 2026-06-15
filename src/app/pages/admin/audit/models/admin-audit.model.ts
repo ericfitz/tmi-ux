@@ -3,14 +3,14 @@
  * published on tmi dev/1.4.0 (tmi#398 + tmi#464). Hand-written because the
  * generated api-types.d.ts is built from tmi main, which lacks these schemas.
  */
-import {
+import type {
   AuditActor,
   AuditChangeType,
   AuditEntry,
   AuditObjectType,
 } from '@app/pages/tm/models/audit-trail.model';
 
-export { AuditActor, AuditChangeType, AuditEntry, AuditObjectType };
+export type { AuditActor, AuditChangeType, AuditEntry, AuditObjectType };
 
 /** HTTP methods recorded by the system audit log. */
 export type AuditHttpMethod = 'POST' | 'PUT' | 'PATCH' | 'DELETE';

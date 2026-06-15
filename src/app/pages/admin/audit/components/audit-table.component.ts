@@ -25,7 +25,7 @@ import { AuditColumnDef } from '@app/pages/admin/audit/models/admin-audit.model'
 })
 export class AuditTableComponent {
   @Input() columns: AuditColumnDef[] = [];
-  @Input() rows: Record<string, unknown>[] = [];
+  @Input() rows: readonly unknown[] = [];
   @Input() loading = false;
   @Input() nextCursor: string | null | undefined = undefined;
   @Input() prevCursor: string | null | undefined = undefined;
@@ -42,8 +42,18 @@ export class AuditTableComponent {
     return this.columns.map(c => c.key);
   }
 
-  onRowClick(row: Record<string, unknown>): void {
-    this.rowClick.emit({ id: row['id'] as string });
+  /** Renders a column's cell text for a row (widens the row to an indexable record). */
+  cellValue(col: AuditColumnDef, row: unknown): string {
+    return col.cell(row as Record<string, unknown>);
+  }
+
+  /** Extracts a row's id for anchor highlighting and click events. */
+  rowId(row: unknown): string {
+    return String((row as Record<string, unknown>)['id'] ?? '');
+  }
+
+  onRowClick(row: unknown): void {
+    this.rowClick.emit({ id: this.rowId(row) });
   }
 
   onOlderClick(): void {

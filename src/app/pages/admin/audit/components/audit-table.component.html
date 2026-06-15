@@ -18,7 +18,7 @@
     @for (col of columns; track col.key) {
       <ng-container [matColumnDef]="col.key">
         <th mat-header-cell *matHeaderCellDef>{{ col.headerKey | transloco }}</th>
-        <td mat-cell *matCellDef="let row">{{ col.cell(row) }}</td>
+        <td mat-cell *matCellDef="let row">{{ cellValue(col, row) }}</td>
       </ng-container>
     }
 
@@ -27,7 +27,7 @@
       mat-row
       data-testid="audit-row"
       *matRowDef="let row; columns: displayedColumns"
-      [class.anchor-row]="row['id'] === anchorId"
+      [class.anchor-row]="rowId(row) === anchorId"
       (click)="onRowClick(row)"
     ></tr>
   </table>
