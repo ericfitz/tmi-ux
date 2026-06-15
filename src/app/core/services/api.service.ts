@@ -114,6 +114,26 @@ export class ApiService {
   }
 
   /**
+   * GET request that returns a Blob (for streamed file exports).
+   * @param endpoint The API endpoint (without the base URL)
+   * @param params Optional query parameters
+   */
+  getBlob(
+    endpoint: string,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+  ): Observable<Blob> {
+    const url = this.buildUrl(endpoint);
+
+    return this.http.get(url, { params, responseType: 'blob' }).pipe(
+      retry({
+        count: 1,
+        delay: (error: HttpErrorResponse) => this.getRetryDelay(error),
+      }),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
+    );
+  }
+
+  /**
    * Generic POST request
    * @param endpoint The API endpoint (without the base URL)
    * @param body The request body
