@@ -49,7 +49,7 @@ export class AuditTableComponent {
 
   /** Extracts a row's id for anchor highlighting and click events. */
   rowId(row: unknown): string {
-    return String((row as Record<string, unknown>)['id'] ?? '');
+    return (row as { id?: string }).id ?? '';
   }
 
   onRowClick(row: unknown): void {
