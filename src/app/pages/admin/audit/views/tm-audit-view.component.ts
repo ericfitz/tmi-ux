@@ -73,6 +73,9 @@ export class TmAuditViewComponent implements OnInit {
   hasError = false;
   anchorId: string | null = null;
 
+  /** The most recent page request, replayed by retry. */
+  private lastPage: AuditPageRequest = {};
+
   readonly limit = 50;
   readonly stream = 'tm' as const;
 
@@ -169,14 +172,18 @@ export class TmAuditViewComponent implements OnInit {
     this.updateUrl();
   }
 
-  /** Navigate to an older (earlier) page using the next cursor. */
+  /** Navigate to an older (earlier) page using the next cursor. Leaves around mode. */
   onOlder(): void {
+    this.anchorId = null;
     this.load({ cursor: this.nextCursor ?? undefined });
+    this.updateUrl();
   }
 
-  /** Navigate to a newer (later) page using the prev cursor. */
+  /** Navigate to a newer (later) page using the prev cursor. Leaves around mode. */
   onNewer(): void {
+    this.anchorId = null;
     this.load({ cursor: this.prevCursor ?? undefined });
+    this.updateUrl();
   }
 
   /** Navigate into the detail panel for the clicked row. */
@@ -184,15 +191,16 @@ export class TmAuditViewComponent implements OnInit {
     void this.router.navigate([e.id], { relativeTo: this.route });
   }
 
-  /** Retry the most recent load (simplest: reload the newest page). */
+  /** Retry the most recent load, preserving the current page position. */
   onRetry(): void {
-    this.load({ limit: this.limit });
+    this.load(this.lastPage);
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────
 
   /** Load a page of entries; sets loading/error state and triggers change detection. */
   private load(page: AuditPageRequest): void {
+    this.lastPage = page;
     this.loading = true;
     this.hasError = false;
     this.cdr.markForCheck();

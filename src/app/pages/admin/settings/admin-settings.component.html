@@ -184,6 +184,7 @@
                       [routerLink]="['/admin/audit/system']"
                       [queryParams]="{ field_path: setting.key }"
                       [matTooltip]="'admin.audit.viewInAuditLog' | transloco"
+                      [attr.aria-label]="'admin.audit.viewInAuditLog' | transloco"
                     >
                       <mat-icon>history</mat-icon>
                     </button>

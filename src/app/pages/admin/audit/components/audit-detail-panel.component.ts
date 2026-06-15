@@ -101,6 +101,7 @@ export class AuditDetailPanelComponent implements OnInit {
           this.loading = true;
           this.notFound = false;
           this.entry = null;
+          this.copied = false;
           this.cdr.markForCheck();
 
           return this.stream === 'system'

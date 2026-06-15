@@ -9,6 +9,9 @@
           [matTooltip]="
             (copied ? 'admin.audit.detail.copied' : 'admin.audit.detail.copyPermalink') | transloco
           "
+          [attr.aria-label]="
+            (copied ? 'admin.audit.detail.copied' : 'admin.audit.detail.copyPermalink') | transloco
+          "
           (click)="copyPermalink()"
         >
           <mat-icon>{{ copied ? 'check' : 'link' }}</mat-icon>
@@ -17,6 +20,7 @@
           mat-icon-button
           data-testid="audit-detail-context"
           [matTooltip]="'admin.audit.detail.viewInContext' | transloco"
+          [attr.aria-label]="'admin.audit.detail.viewInContext' | transloco"
           (click)="viewInContext()"
         >
           <mat-icon>open_in_new</mat-icon>
@@ -26,6 +30,7 @@
         mat-icon-button
         data-testid="audit-detail-close"
         [matTooltip]="'admin.audit.detail.close' | transloco"
+        [attr.aria-label]="'admin.audit.detail.close' | transloco"
         (click)="close()"
       >
         <mat-icon>close</mat-icon>
@@ -41,7 +46,7 @@
     } @else if (notFound) {
       <div class="detail-panel__not-found">
         <p>{{ 'admin.audit.detail.notFound' | transloco }}</p>
-        <button mat-button data-testid="audit-detail-close" (click)="close()">
+        <button mat-button data-testid="audit-detail-close-notfound" (click)="close()">
           {{ 'admin.audit.detail.close' | transloco }}
         </button>
       </div>
