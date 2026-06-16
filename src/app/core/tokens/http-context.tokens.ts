@@ -19,3 +19,10 @@ export const IS_AUTH_RETRY = new HttpContextToken<boolean>(() => false);
  * another logout when the logout POST itself receives a 401
  */
 export const IS_LOGOUT_REQUEST = new HttpContextToken<boolean>(() => false);
+
+/**
+ * HTTP context token to mark a request as a post-step-up retry attempt.
+ * If a request with this flag receives another step-up challenge, the
+ * interceptor does not initiate step-up again (prevents loops).
+ */
+export const IS_STEPUP_RETRY = new HttpContextToken<boolean>(() => false);
