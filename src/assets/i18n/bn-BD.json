@@ -103,6 +103,93 @@
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
       "title": "অ্যাডঅন পরিচালনা করুন"
     },
+    "audit": {
+      "columns": {
+        "actor": "অভিনেতা",
+        "changeSummary": "পরিবর্তনের সারাংশ",
+        "changeType": "পরিবর্তনের ধরন",
+        "fieldPath": "ক্ষেত্র পথ",
+        "object": "বস্তু",
+        "request": "অনুরোধ",
+        "threatModel": "হুমকি মডেল",
+        "timestamp": "সময়ের ছাপ"
+      },
+      "detail": {
+        "actor": "অভিনেতা",
+        "changeSummary": "পরিবর্তনের সারাংশ",
+        "changeType": "পরিবর্তনের ধরন",
+        "close": "বন্ধ করুন",
+        "copied": "অনুলিপি করা হয়েছে",
+        "copyPermalink": "স্থায়ী লিঙ্ক অনুলিপি করুন",
+        "email": "ইমেল",
+        "fieldPath": "ক্ষেত্র পথ",
+        "method": "HTTP পদ্ধতি",
+        "newValue": "নতুন মান",
+        "notFound": "অডিট এন্ট্রি পাওয়া যায়নি।",
+        "objectId": "বস্তু ID",
+        "objectType": "বস্তুর ধরন",
+        "oldValue": "পুরানো মান",
+        "path": "অনুরোধের পথ",
+        "provider": "প্রদানকারী",
+        "providerId": "প্রদানকারী ID",
+        "threatModel": "হুমকি মডেল",
+        "timestamp": "সময়ের ছাপ",
+        "title": "অডিট এন্ট্রি",
+        "version": "সংস্করণ",
+        "viewInContext": "প্রসঙ্গে দেখুন"
+      },
+      "empty": "এই ফিল্টারগুলি মেলে এমন কোনও এন্ট্রি নেই।",
+      "enums": {
+        "changeType": {
+          "created": "তৈরি করা হয়েছে",
+          "deleted": "মুছে ফেলা হয়েছে",
+          "patched": "প্যাচ করা হয়েছে",
+          "restored": "পুনরুদ্ধার করা হয়েছে",
+          "rolled_back": "রোল করা হয়েছে",
+          "updated": "আপডেট করা হয়েছে"
+        },
+        "objectType": {
+          "asset": "সম্পদ",
+          "diagram": "চিত্র",
+          "document": "নথি",
+          "note": "নোট",
+          "repository": "সংরক্ষণাগার",
+          "threat": "হুমকি",
+          "threat_model": "হুমকি মডেল"
+        }
+      },
+      "error": "অডিট প্রশ্ন ব্যর্থ হয়েছে।",
+      "export": {
+        "csv": "CSV",
+        "error": "রপ্তানি ব্যর্থ হয়েছে",
+        "menu": "রপ্তানি",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "অভিনেতা",
+        "actorPlaceholder": "ইমেল দ্বারা অনুসন্ধান করুন",
+        "changeType": "পরিবর্তনের ধরন",
+        "clear": "ফিল্টারগুলি সাফ করুন",
+        "createdAfter": "এরপরে তৈরি করা হয়েছে",
+        "createdBefore": "এর আগে তৈরি করা হয়েছে",
+        "fieldPath": "ক্ষেত্র পথ",
+        "httpMethod": "HTTP পদ্ধতি",
+        "objectType": "বস্তুর ধরন",
+        "pathPrefix": "পথের প্রিফিক্স",
+        "threatModelId": "হুমকি মডেল ID"
+      },
+      "pagination": {
+        "newer": "নতুনতর",
+        "older": "পুরাতনতর"
+      },
+      "retry": "পুনরায় চেষ্টা করুন",
+      "tabs": {
+        "system": "সিস্টেম",
+        "threatModels": "হুমকি মডেল"
+      },
+      "title": "অডিট লগ",
+      "viewInAuditLog": "অডিট লগে দেখুন"
+    },
     "createAutomationUserDialog": {
       "email": "ইমেইল (ঐচ্ছিক)",
       "emailHint": "ঐচ্ছিক — ডিফল্ট হলো স্বয়ংক্রিয়ভাবে তৈরি @tmi.local ঠিকানা",
@@ -198,6 +285,10 @@
       "addons": {
         "description": "অ্যাপ্লিকেশন অ্যাডঅন ইনস্টল এবং কনফিগার করুন",
         "title": "অ্যাডঅন"
+      },
+      "audit": {
+        "description": "সিস্টেম এবং হুমকি মডেল অডিট লগ দেখুন।",
+        "title": "অডিট লগ"
       },
       "groups": {
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",

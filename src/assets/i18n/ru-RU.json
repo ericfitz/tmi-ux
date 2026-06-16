@@ -81,6 +81,93 @@
       "subtitle": "Настройка дополнений для расширения функциональности TMI.",
       "title": "Управление дополнениями"
     },
+    "audit": {
+      "columns": {
+        "actor": "Инициатор",
+        "changeSummary": "Описание изменения",
+        "changeType": "Тип изменения",
+        "fieldPath": "Путь поля",
+        "object": "Объект",
+        "request": "Запрос",
+        "threatModel": "Модель угроз",
+        "timestamp": "Время"
+      },
+      "detail": {
+        "actor": "Инициатор",
+        "changeSummary": "Описание изменения",
+        "changeType": "Тип изменения",
+        "close": "Закрыть",
+        "copied": "Скопировано",
+        "copyPermalink": "Копировать ссылку",
+        "email": "Электронная почта",
+        "fieldPath": "Путь поля",
+        "method": "Метод HTTP",
+        "newValue": "Новое значение",
+        "notFound": "Запись аудита не найдена.",
+        "objectId": "ID объекта",
+        "objectType": "Тип объекта",
+        "oldValue": "Старое значение",
+        "path": "Путь запроса",
+        "provider": "Поставщик",
+        "providerId": "ID поставщика",
+        "threatModel": "Модель угроз",
+        "timestamp": "Время",
+        "title": "Запись аудита",
+        "version": "Версия",
+        "viewInContext": "Просмотр в контексте"
+      },
+      "empty": "Нет записей, соответствующих этим фильтрам.",
+      "enums": {
+        "changeType": {
+          "created": "Создано",
+          "deleted": "Удалено",
+          "patched": "Применено исправление",
+          "restored": "Восстановлено",
+          "rolled_back": "Откачено",
+          "updated": "Обновлено"
+        },
+        "objectType": {
+          "asset": "Актив",
+          "diagram": "Диаграмма",
+          "document": "Документ",
+          "note": "Заметка",
+          "repository": "Репозиторий",
+          "threat": "Угроза",
+          "threat_model": "Модель угроз"
+        }
+      },
+      "error": "Ошибка при выполнении запроса аудита.",
+      "export": {
+        "csv": "CSV",
+        "error": "Экспорт не удался",
+        "menu": "Экспорт",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Инициатор",
+        "actorPlaceholder": "Поиск по электронной почте",
+        "changeType": "Тип изменения",
+        "clear": "Очистить фильтры",
+        "createdAfter": "Создано после",
+        "createdBefore": "Создано до",
+        "fieldPath": "Путь поля",
+        "httpMethod": "Метод HTTP",
+        "objectType": "Тип объекта",
+        "pathPrefix": "Префикс пути",
+        "threatModelId": "ID модели угроз"
+      },
+      "pagination": {
+        "newer": "Новые",
+        "older": "Старые"
+      },
+      "retry": "Повторить",
+      "tabs": {
+        "system": "Система",
+        "threatModels": "Модели угроз"
+      },
+      "title": "Журналы аудита",
+      "viewInAuditLog": "Просмотр в журнале аудита"
+    },
     "createAutomationUserDialog": {
       "email": "Электронная почта (необязательно)",
       "emailHint": "Необязательно — по умолчанию используется автоматически сгенерированный адрес @tmi.local",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "Установка и настройка дополнений приложения.",
         "title": "Дополнения"
+      },
+      "audit": {
+        "description": "Просмотр журналов аудита системы и моделей угроз.",
+        "title": "Журналы аудита"
       },
       "groups": {
         "description": "Настройка групп пользователей и членства.",

@@ -3671,7 +3671,17 @@ export interface paths {
     put?: never;
     /**
      * Send a message to Timmy
-     * @description Sends a user message to the Timmy AI assistant and returns an SSE stream of the assistant response
+     * @description Sends a user message to the Timmy AI assistant and returns an SSE stream of the assistant response.
+     *
+     *     **SSE event types emitted by this endpoint:**
+     *
+     *     - `status` (zero or more) — Phase-transition events fired BEFORE `message_start` so clients can show "Timmy is …" affordances during the often-multi-second pre-token latency. Payload: `{"phase": "<snake_case>", "entity_type": "<optional>", "entity_name": "<optional>", "detail": "<optional>"}`. `phase` is a stable identifier the client can map to localized strings; the server is free to add or rename phases as the pipeline evolves, so unknown phases should be treated as opaque labels. Current phases include `building_context`, `loading_history`, `querying_embeddings`, `waiting_for_llm`. Once tokens begin streaming, no further `status` events are emitted.
+     *     - `message_start` (exactly one, after any `status` events) — Signals that the server is about to (or has just begun) streaming tokens. Payload: `{"status": "processing"}`.
+     *     - `token` (zero or more) — Individual tokens streamed from the LLM. Payload: token text.
+     *     - `message_end` (exactly one, terminal) — The full persisted assistant message. Payload: `TimmyChatMessage` object.
+     *     - `error` (terminal in the failure case) — Emitted instead of `message_end` if the request fails after the SSE stream has begun.
+     *
+     *     **Auto-generated session title.** After the first user message in a fresh session is processed successfully, the server may asynchronously generate a short title (≤ 60 characters) from that message and persist it to the session's `title` field. This only happens when the existing title is empty or matches the client's default placeholder (e.g. `Chat — <date>, <time>`); a user-set title is never overwritten. Title generation runs out-of-band and never blocks or fails the message response — clients see the new title on the next `getTimmyChatSession` / `listTimmyChatSessions` call.
      */
     post: operations['createTimmyChatMessage'];
     delete?: never;
@@ -4049,6 +4059,206 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/oauth2/step_up': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Initiate fresh-prompt step-up re-authentication
+     * @description Forces a fresh interactive re-authentication at the user's bound IdP by adding prompt=login&max_age=0 (OAuth/OIDC) or ForceAuthn=true (SAML) to the upstream authorize URL. For providers that do not honor those parameters (e.g., GitHub), the endpoint short-circuits and rotates tokens in-place with a 'strength: weak' audit marker. See #397 and docs/superpowers/specs/2026-05-10-oauth2-step-up-design.md.
+     */
+    get: operations['stepUpAuthenticate'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/audit/system': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List system audit entries
+     * @description Cursor-paginated, filterable list of system-level admin-write audit records. Admin role required; read-only (no step-up).
+     */
+    get: operations['listSystemAuditEntries'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/audit/system/{entry_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a system audit entry
+     * @description Returns a single system-level audit entry by ID. Admin role required.
+     */
+    get: operations['getSystemAuditEntry'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/audit/threat_models': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List threat-model audit entries across all threat models
+     * @description Cursor-paginated cross-threat-model admin view of the threat-model audit stream. Admin role required; read-only (no step-up).
+     */
+    get: operations['listAdminThreatModelAuditEntries'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/audit/threat_models/{entry_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a threat-model audit entry by id (admin)
+     * @description Returns a single threat-model audit entry by ID, admin cross-TM view. Admin role required.
+     */
+    get: operations['getAdminThreatModelAuditEntry'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/identities/link/start': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start an identity link flow
+     * @description Initiates the OAuth flow to link an additional identity provider to the current user account. Returns a link state token and authorization URL. The user must be redirected to the authorization URL to complete provider authentication.
+     */
+    post: operations['startIdentityLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/identities/link/confirm': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Confirm and complete an identity link
+     * @description Consumes a pending identity link token and permanently links the second identity to the current user account. The token is one-time-use and expires after 5 minutes. Returns the newly created linked identity.
+     */
+    post: operations['confirmIdentityLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/identities': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List current user identities
+     * @description Returns the primary identity and all linked identities for the authenticated user.
+     */
+    get: operations['listMyIdentities'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/identities/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Unlink a linked identity
+     * @description Removes a linked identity from the current user account. The primary identity cannot be removed. Service accounts are not permitted.
+     */
+    delete: operations['deleteMyIdentity'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/identities/link/pending/{link_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get pending identity link details
+     * @description Returns the details of a pending identity link, including both sides of the link for user confirmation. The token must belong to the authenticated user.
+     */
+    get: operations['getPendingIdentityLink'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4250,7 +4460,13 @@ export interface components {
      *       "content_source": "http"
      *     }
      */
-    Document: components['schemas']['DocumentBase'] & {
+    Document: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['DocumentBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the document
@@ -4301,7 +4517,12 @@ export interface components {
        * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
        */
       readonly alias?: number;
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /**
      * @description Base diagram object with common properties - used for API responses
      * @example {
@@ -4456,7 +4677,13 @@ export interface components {
      *       "timmy_enabled": true
      *     }
      */
-    DfdDiagram: Omit<components['schemas']['BaseDiagram'], 'type'> & {
+    DfdDiagram: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (Omit<components['schemas']['BaseDiagram'], 'type'> & {
       /**
        * @description DFD diagram type with version
        * @enum {string}
@@ -4464,6 +4691,11 @@ export interface components {
       type?: 'DFD-1.0.0';
       /** @description List of diagram cells (nodes and edges) following X6 structure */
       cells: (components['schemas']['Node'] | components['schemas']['Edge'])[];
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
     } & {
       /**
        * @description discriminator enum property added by openapi-typescript
@@ -4476,7 +4708,7 @@ export interface components {
        * @enum {string}
        */
       type: 'DFD-1.0.0';
-    };
+    });
     /**
      * @description Input schema for creating or updating a Data Flow Diagram
      * @example {
@@ -4541,7 +4773,13 @@ export interface components {
      *       "cells": []
      *     }
      */
-    Diagram: components['schemas']['DfdDiagram'];
+    Diagram: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & components['schemas']['DfdDiagram'];
     /**
      * @description Base schema for all diagram cells (nodes and edges). Contains common properties shared by Node and Edge types.
      * @example {
@@ -4714,7 +4952,13 @@ export interface components {
      *       "modified_at": "2026-01-15T10:30:00Z"
      *     }
      */
-    ThreatModel: components['schemas']['ThreatModelBase'] & {
+    ThreatModel: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['ThreatModelBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the threat model (UUID)
@@ -4756,7 +5000,12 @@ export interface components {
        * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
        */
       readonly deleted_at?: string | null;
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /**
      * @description A security threat identified during threat modeling, with severity, status, and mitigation details
      * @example {
@@ -4787,7 +5036,13 @@ export interface components {
      *       }
      *     }
      */
-    Threat: components['schemas']['ThreatBase'] & {
+    Threat: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['ThreatBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the threat (UUID)
@@ -4820,7 +5075,12 @@ export interface components {
        * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
        */
       readonly alias?: number;
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /**
      * @description Authorization record granting a user access to a resource with a specific role
      * @example {
@@ -5876,7 +6136,13 @@ export interface components {
      *       "modified_at": "2026-01-14T14:00:00Z"
      *     }
      */
-    Asset: components['schemas']['AssetBase'] & {
+    Asset: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['AssetBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the asset
@@ -5904,7 +6170,12 @@ export interface components {
        * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
        */
       readonly alias?: number;
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /** @description Asset with extended metadata for detailed security analysis */
     ExtendedAsset: components['schemas']['Asset'] & {
       /**
@@ -6376,6 +6647,8 @@ export interface components {
         | 'document.created'
         | 'document.updated'
         | 'document.deleted'
+        | 'document.extraction_completed'
+        | 'document.extraction_failed'
         | 'note.created'
         | 'note.updated'
         | 'note.deleted'
@@ -6390,7 +6663,8 @@ export interface components {
         | 'threat.deleted'
         | 'metadata.created'
         | 'metadata.updated'
-        | 'metadata.deleted';
+        | 'metadata.deleted'
+        | 'system_audit.admin_write';
     };
     /**
      * @description Response from a webhook test including delivery status
@@ -7034,6 +7308,8 @@ export interface components {
       | 'document.created'
       | 'document.updated'
       | 'document.deleted'
+      | 'document.extraction_completed'
+      | 'document.extraction_failed'
       | 'note.created'
       | 'note.updated'
       | 'note.deleted'
@@ -7055,7 +7331,8 @@ export interface components {
       | 'survey.deleted'
       | 'survey_response.created'
       | 'survey_response.updated'
-      | 'survey_response.deleted';
+      | 'survey_response.deleted'
+      | 'system_audit.admin_write';
     /**
      * @description Member of a group with role information
      * @example {
@@ -7681,7 +7958,8 @@ export interface components {
      *       },
      *       "operator": {
      *         "name": "TMI Project",
-     *         "contact": "https://github.com/ericfitz/tmi"
+     *         "contact": "https://github.com/ericfitz/tmi",
+     *         "jurisdiction": "Florida, United States of America"
      *       },
      *       "limits": {
      *         "max_file_upload_mb": 10,
@@ -7722,6 +8000,8 @@ export interface components {
         name?: string;
         /** @description Contact information for the operator */
         contact?: string;
+        /** @description Legal jurisdiction under which the service operates */
+        jurisdiction?: string;
       };
       /** @description System limits and quotas */
       limits?: {
@@ -8375,7 +8655,13 @@ export interface components {
       is_confidential: boolean;
     };
     /** @description A survey response containing answers to survey questions */
-    SurveyResponse: components['schemas']['SurveyResponseBase'] & {
+    SurveyResponse: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['SurveyResponseBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the response (UUID)
@@ -8424,7 +8710,12 @@ export interface components {
       metadata?: components['schemas']['Metadata'][] | null;
       /** @description User who created the response */
       readonly created_by?: components['schemas']['User'] | null;
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /**
      * @description Summary of a survey response for list endpoints
      * @example {
@@ -9030,7 +9321,13 @@ export interface components {
       status?: (string & components['schemas']['TeamStatus']) | null;
     };
     /** @description A team representing an organizational unit */
-    Team: components['schemas']['TeamBase'] & {
+    Team: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['TeamBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the team (UUID)
@@ -9061,7 +9358,12 @@ export interface components {
       metadata?: components['schemas']['Metadata'][] | null;
       /** @description List of notes associated with the team */
       readonly notes?: components['schemas']['TeamNoteListItem'][];
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /** @description Summary of a team for list views */
     TeamListItem: {
       /** Format: uuid */
@@ -9157,7 +9459,13 @@ export interface components {
       status?: (string & components['schemas']['ProjectStatus']) | null;
     };
     /** @description A project representing a product, service, or application */
-    Project: components['schemas']['ProjectBase'] & {
+    Project: {
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    } & (components['schemas']['ProjectBase'] & {
       /**
        * Format: uuid
        * @description Unique identifier for the project (UUID)
@@ -9190,7 +9498,12 @@ export interface components {
       metadata?: components['schemas']['Metadata'][] | null;
       /** @description List of notes associated with the project */
       readonly notes?: components['schemas']['ProjectNoteListItem'][];
-    };
+      /**
+       * Format: int32
+       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       */
+      readonly version?: number;
+    });
     /** @description Summary of a project for list views */
     ProjectListItem: {
       /** Format: uuid */
@@ -10440,6 +10753,8 @@ export interface components {
         | 'needs_tuning';
       client_id: string;
       client_version?: string;
+      /** @description Optional viewport screenshot captured by the client at submission time. Data URL form (e.g. `data:image/jpeg;base64,...`). Used as support context. */
+      screenshot?: string;
     };
     ContentFeedback: components['schemas']['ContentFeedbackInput'] & {
       /** Format: uuid */
@@ -10475,6 +10790,8 @@ export interface components {
       };
       /** @description Viewport dimensions, e.g. '1280x1024' */
       viewport?: string;
+      /** @description Optional viewport screenshot captured by the client at submission time. Data URL form (e.g. `data:image/jpeg;base64,...`). Used as support context. */
+      screenshot?: string;
     };
     UsabilityFeedback: components['schemas']['UsabilityFeedbackInput'] & {
       /**
@@ -10519,6 +10836,128 @@ export interface components {
       picker_config?: {
         [key: string]: string;
       };
+    };
+    /** @description An immutable system-level audit record of a successful /admin/* write (T7 evidence). Old/new values are redacted at write time. */
+    SystemAuditEntry: {
+      /**
+       * Format: uuid
+       * @description Entry identifier.
+       */
+      id: string;
+      actor: components['schemas']['AuditActor'];
+      /** @description HTTP method of the audited request. */
+      http_method: string;
+      /** @description Request path of the audited request. */
+      http_path: string;
+      /** @description Dotted path of the changed field. */
+      field_path: string;
+      /** @description Previous value, redacted at write time. */
+      old_value_redacted?: string | null;
+      /** @description New value, redacted at write time. */
+      new_value_redacted?: string | null;
+      /** @description Human-readable change summary. */
+      change_summary?: string | null;
+      /**
+       * Format: date-time
+       * @description When the audited write completed.
+       */
+      created_at: string;
+    };
+    /** @description Cursor-paginated list of system audit entries. */
+    ListSystemAuditEntriesResponse: {
+      entries: components['schemas']['SystemAuditEntry'][];
+      /** @description Total entries matching the filter. */
+      total: number;
+      /** @description Page size used. */
+      limit: number;
+      /** @description Cursor for the next page; absent or null when exhausted. */
+      next_cursor?: string | null;
+      /** @description Cursor for the previous (newer) page; absent or null when at the newest end. */
+      prev_cursor?: string | null;
+    };
+    /** @description Cursor-paginated cross-threat-model list of audit entries. */
+    ListAdminAuditEntriesResponse: {
+      entries: components['schemas']['AuditEntry'][];
+      /** @description Total entries matching the filter. */
+      total: number;
+      /** @description Page size used. */
+      limit: number;
+      /** @description Cursor for the next page; absent or null when exhausted. */
+      next_cursor?: string | null;
+      /** @description Cursor for the previous (newer) page; absent or null when at the newest end. */
+      prev_cursor?: string | null;
+    };
+    LinkedIdentity: {
+      /**
+       * Format: uuid
+       * @description Linked identity unique identifier
+       */
+      id: string;
+      /** @description Identity provider ID */
+      provider: string;
+      /** @description User identifier at the provider (truncated for display) */
+      provider_user_id: string;
+      /**
+       * Format: email
+       * @description Cached email address from provider (display only)
+       */
+      email?: string;
+      /** @description Cached display name from provider */
+      name?: string;
+      /**
+       * Format: date-time
+       * @description When this identity was linked
+       */
+      linked_at: string;
+      /**
+       * Format: date-time
+       * @description When this identity was last used to sign in
+       */
+      last_used_at?: string | null;
+    };
+    IdentityLinkStartResponse: {
+      /** @description Opaque state identifier for the link flow */
+      link_state: string;
+      /**
+       * Format: uri
+       * @description URL to redirect the user to for identity provider authorization (prompt=select_account)
+       */
+      authorization_url: string;
+      /**
+       * Format: date-time
+       * @description When the link state expires (10 minutes from creation)
+       */
+      expires_at: string;
+    };
+    PendingIdentityLinkResponse: {
+      pending: {
+        /** @description Identity provider of the second identity */
+        provider: string;
+        /** @description User identifier at the provider (first 8 chars + ellipsis) */
+        provider_user_id: string;
+        /** @description Cached email from the second identity (display only) */
+        email?: string;
+        /** @description Cached display name from the second identity */
+        name?: string;
+      };
+      account: {
+        /** @description Primary identity provider of this TMI account */
+        provider: string;
+        /** @description Email address of this TMI account */
+        email: string;
+      };
+    };
+    MyIdentitiesResponse: {
+      primary: {
+        /** @description Primary identity provider ID */
+        provider: string;
+        /** @description Primary account email address */
+        email: string;
+        /** @description Primary account display name */
+        name?: string;
+      };
+      /** @description Additional linked identities */
+      linked?: components['schemas']['LinkedIdentity'][];
     };
   };
   responses: {
@@ -10736,6 +11175,47 @@ export interface components {
         'application/json': components['schemas']['Error'];
       };
     };
+    /** @description Conflict — the supplied version does not match the resource's current version. Refetch and retry. */
+    Conflict: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Precondition Required — the request did not include an If-Match header. This response is returned only when the server has flipped the RequireIfMatch config flag (planned for a future release). */
+    PreconditionRequired: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
+    /** @description Recent re-authentication required for this admin operation. Per draft-ietf-oauth-step-up-authn-challenge: the client must re-authenticate the user (via the standard OAuth flow at /oauth2/authorize) and retry the request with a fresh JWT. */
+    StepUpRequired: {
+      headers: {
+        /** @description Bearer challenge with insufficient_user_authentication error and max_age (seconds) indicating the step-up window. Example: Bearer error="insufficient_user_authentication", error_description="re-authentication required", max_age=300 */
+        'WWW-Authenticate'?: string;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
   };
   parameters: {
     /** @description Threat model identifier */
@@ -10874,9 +11354,9 @@ export interface components {
     UserIdPathParam: string;
     /** @description Filter by email (case-insensitive substring match) */
     EmailQueryParam: string;
-    /** @description Filter users created after this timestamp (RFC3339) */
+    /** @description Return only records created after this RFC 3339 timestamp. */
     CreatedAfterQueryParam: string;
-    /** @description Filter users created before this timestamp (RFC3339) */
+    /** @description Return only records created before this RFC 3339 timestamp. */
     CreatedBeforeQueryParam: string;
     /** @description Filter users who logged in after this timestamp (RFC3339) */
     LastLoginAfterQueryParam: string;
@@ -10949,6 +11429,26 @@ export interface components {
     SecurityReviewerQueryParam: string;
     /** @description Chat session identifier */
     SessionId: string;
+    /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+    IfMatchHeader: number;
+    /** @description Maximum number of entries to return per page. */
+    AuditPageLimit: number;
+    /** @description Opaque pagination cursor from the previous page next_cursor. Omit for the first page. */
+    AuditCursor: string;
+    /** @description Filter by the actor identity provider. */
+    AuditActorProvider: string;
+    /** @description Filter system audit entries by HTTP method. */
+    AuditHTTPMethod: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+    /** @description Filter system audit entries whose request path starts with this prefix (matched literally). */
+    AuditPathPrefix: string;
+    /** @description Filter system audit entries by exact field path. */
+    AuditFieldPath: string;
+    /** @description Filter audit entries to a single threat model. */
+    AuditThreatModelId: string;
+    /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
+    AuditAround: string;
+    /** @description When set, stream the entire filtered set as an attachment instead of a JSON page. Honors all active filters; ignores cursor/limit/around. */
+    AuditExportFormat: 'csv' | 'ndjson';
   };
   requestBodies: never;
   headers: never;
@@ -12366,6 +12866,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -12468,7 +12970,10 @@ export interface operations {
   updateThreatModel: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -12491,6 +12996,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -12558,6 +13065,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -12627,7 +13136,10 @@ export interface operations {
   patchThreatModel: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -12664,6 +13176,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -12731,6 +13245,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -12924,6 +13440,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -12955,7 +13473,10 @@ export interface operations {
   updateThreatModelThreat: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -12980,6 +13501,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -13004,6 +13527,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13060,7 +13585,10 @@ export interface operations {
   patchThreatModelThreat: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -13085,6 +13613,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -13109,6 +13639,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13906,6 +14438,28 @@ export interface operations {
           'application/json': components['schemas']['Document'];
         };
       };
+      /** @description Document created and queued for asynchronous content extraction. Returned instead of 201 when async extraction is enabled (extraction.async_enabled) and the document URI is extractable. The extraction outcome is delivered later via the document access_status and the document.extraction_completed / document.extraction_failed webhook events. */
+      202: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            document: components['schemas']['Document'];
+            /**
+             * Format: uuid
+             * @description Identifier of the queued extraction job, for client correlation. The extraction result is surfaced via the document access_status and the document.extraction_* webhook events; there is no dedicated job-status endpoint.
+             */
+            job_id: string;
+          };
+        };
+      };
       /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
       400: {
         headers: {
@@ -13951,6 +14505,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -13982,7 +14538,10 @@ export interface operations {
   updateThreatModelDocument: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -14007,6 +14566,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -14031,6 +14592,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14087,7 +14650,10 @@ export interface operations {
   patchThreatModelDocument: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -14126,6 +14692,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -14150,6 +14718,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -16275,6 +16845,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -16306,7 +16878,10 @@ export interface operations {
   updateThreatModelDiagram: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -16331,6 +16906,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -16370,6 +16947,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16441,7 +17019,10 @@ export interface operations {
   patchThreatModelDiagram: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -16466,6 +17047,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -16506,6 +17089,7 @@ export interface operations {
         };
       };
       422: components['responses']['Error'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18466,6 +19050,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -18507,7 +19093,10 @@ export interface operations {
   updateThreatModelAsset: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -18532,6 +19121,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -18566,6 +19157,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18622,7 +19215,10 @@ export interface operations {
   patchThreatModelAsset: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Threat model identifier */
         threat_model_id: components['parameters']['ThreatModelId'];
@@ -18661,6 +19257,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -18695,6 +19293,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20723,9 +21323,9 @@ export interface operations {
         email?: components['parameters']['EmailQueryParam'];
         /** @description Filter by name (case-insensitive substring match) */
         name?: components['parameters']['NameQueryParam'];
-        /** @description Filter users created after this timestamp (RFC3339) */
+        /** @description Return only records created after this RFC 3339 timestamp. */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
-        /** @description Filter users created before this timestamp (RFC3339) */
+        /** @description Return only records created before this RFC 3339 timestamp. */
         created_before?: components['parameters']['CreatedBeforeQueryParam'];
         /** @description Filter users who logged in after this timestamp (RFC3339) */
         last_login_after?: components['parameters']['LastLoginAfterQueryParam'];
@@ -25244,6 +25844,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -25314,7 +25916,10 @@ export interface operations {
   updateIntakeSurveyResponse: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Unique identifier of the survey response */
         survey_response_id: components['parameters']['SurveyResponseId'];
@@ -25337,6 +25942,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -25415,6 +26022,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25469,7 +26077,10 @@ export interface operations {
   patchIntakeSurveyResponse: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Unique identifier of the survey response */
         survey_response_id: components['parameters']['SurveyResponseId'];
@@ -25506,6 +26117,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -25605,6 +26218,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27903,6 +28517,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -27986,7 +28602,10 @@ export interface operations {
   updateTeam: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Team UUID */
         team_id: string;
@@ -28015,6 +28634,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -28106,6 +28727,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28217,7 +28839,10 @@ export interface operations {
   patchTeam: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Team UUID */
         team_id: string;
@@ -28249,6 +28874,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -28340,6 +28967,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29158,6 +29786,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -29242,7 +29872,10 @@ export interface operations {
   updateProject: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Project UUID */
         project_id: string;
@@ -29272,6 +29905,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -29364,6 +29999,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29475,7 +30111,10 @@ export interface operations {
   patchProject: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        'If-Match'?: components['parameters']['IfMatchHeader'];
+      };
       path: {
         /** @description Project UUID */
         project_id: string;
@@ -29507,6 +30146,8 @@ export interface operations {
           'X-RateLimit-Remaining'?: number;
           /** @description Unix epoch seconds when the rate limit window resets */
           'X-RateLimit-Reset'?: number;
+          /** @description Current optimistic-locking version of the resource (RFC 7232). Echo this value back via If-Match on the next PUT/PATCH. */
+          ETag?: string;
           [name: string]: unknown;
         };
         content: {
@@ -29599,6 +30240,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -34807,6 +35449,1205 @@ export interface operations {
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+    };
+  };
+  stepUpAuthenticate: {
+    parameters: {
+      query: {
+        /** @description Client callback URL where TMI should redirect after successful OAuth completion with tokens in URL fragment (#access_token=...). If not provided, tokens are returned as JSON response. Per OAuth 2.0 implicit flow spec, tokens are in fragments to prevent logging. */
+        client_callback?: components['parameters']['ClientCallbackQueryParam'];
+        /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
+        state?: components['parameters']['StateQueryParam'];
+        /** @description PKCE code challenge (RFC 7636) - Base64url-encoded SHA256 hash of the code_verifier. Must be 43-128 characters using unreserved characters [A-Za-z0-9-._~]. The server associates this with the authorization code for later verification during token exchange. */
+        code_challenge: components['parameters']['CodeChallengeQueryParam'];
+        /** @description PKCE code challenge method (RFC 7636) - Specifies the transformation applied to the code_verifier. Only "S256" (SHA256) is supported for security. The "plain" method is not supported. */
+        code_challenge_method: components['parameters']['CodeChallengeMethodQueryParam'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Weak-provider short-circuit: tokens rotated in-place. Set-Cookie headers carry new HttpOnly access and refresh tokens. Returned only when the JWT-bound provider is classified as 'weak' (e.g., github). */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "result": "step_up_weak_complete",
+           *       "provider": "github",
+           *       "auth_time": 1715357321,
+           *       "message": "Provider does not support guaranteed fresh re-auth; tokens rotated and step-up window reset. Audit log records this as a weak step-up."
+           *     }
+           */
+          'application/json': {
+            /** @enum {string} */
+            result: 'step_up_weak_complete';
+            provider: string;
+            /** Format: int64 */
+            auth_time: number;
+            message: string;
+          };
+        };
+      };
+      /** @description Strong-provider path: redirect to upstream IdP with prompt=login&max_age=0 (OAuth/OIDC) or ForceAuthn=true (SAML). */
+      302: {
+        headers: {
+          /** @description Upstream IdP authorization URL with fresh-prompt parameters appended. */
+          Location?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation or pre-flight rejection (RFC 6749 §4.1.2.1-aligned error codes). */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description JWT cookie/header missing, invalid, or expired. */
+      401: {
+        headers: {
+          /** @description Bearer error="invalid_token" */
+          'WWW-Authenticate'?: string;
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "invalid_token",
+           *       "error_description": "Missing or invalid access token"
+           *     }
+           */
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Reserved for future per-grant restrictions (unauthorized_client). */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "unauthorized_client",
+           *       "error_description": "Step-up is not permitted for this grant"
+           *     }
+           */
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal server error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "server_error",
+           *       "error_description": "Internal failure during step-up processing"
+           *     }
+           */
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Redis or downstream store temporarily unavailable. */
+      503: {
+        headers: {
+          /** @description Seconds to wait before retry */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "temporarily_unavailable",
+           *       "error_description": "State storage temporarily unavailable"
+           *     }
+           */
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  listSystemAuditEntries: {
+    parameters: {
+      query?: {
+        /** @description Filter by actor email */
+        actor_email?: components['parameters']['AuditActorEmail'];
+        /** @description Filter by the actor identity provider. */
+        actor_provider?: components['parameters']['AuditActorProvider'];
+        /** @description Return only records created after this RFC 3339 timestamp. */
+        created_after?: components['parameters']['CreatedAfterQueryParam'];
+        /** @description Return only records created before this RFC 3339 timestamp. */
+        created_before?: components['parameters']['CreatedBeforeQueryParam'];
+        /** @description Filter system audit entries by HTTP method. */
+        http_method?: components['parameters']['AuditHTTPMethod'];
+        /** @description Filter system audit entries whose request path starts with this prefix (matched literally). */
+        path_prefix?: components['parameters']['AuditPathPrefix'];
+        /** @description Filter system audit entries by exact field path. */
+        field_path?: components['parameters']['AuditFieldPath'];
+        /** @description Maximum number of entries to return per page. */
+        limit?: components['parameters']['AuditPageLimit'];
+        /** @description Opaque pagination cursor from the previous page next_cursor. Omit for the first page. */
+        cursor?: components['parameters']['AuditCursor'];
+        /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
+        around?: components['parameters']['AuditAround'];
+        /** @description When set, stream the entire filtered set as an attachment instead of a JSON page. Honors all active filters; ignores cursor/limit/around. */
+        format?: components['parameters']['AuditExportFormat'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated system audit entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Set to attachment with a filename when format=csv|ndjson. */
+          'Content-Disposition'?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListSystemAuditEntriesResponse'];
+          'text/csv': string;
+          'application/x-ndjson': string;
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found - the around entry id does not exist */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  getSystemAuditEntry: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The system audit entry ID. */
+        entry_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description System audit entry */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SystemAuditEntry'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description System audit entry not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  listAdminThreatModelAuditEntries: {
+    parameters: {
+      query?: {
+        /** @description Filter by actor email */
+        actor_email?: components['parameters']['AuditActorEmail'];
+        /** @description Filter by the actor identity provider. */
+        actor_provider?: components['parameters']['AuditActorProvider'];
+        /** @description Return only records created after this RFC 3339 timestamp. */
+        created_after?: components['parameters']['CreatedAfterQueryParam'];
+        /** @description Return only records created before this RFC 3339 timestamp. */
+        created_before?: components['parameters']['CreatedBeforeQueryParam'];
+        /** @description Filter by change type */
+        change_type?: components['parameters']['AuditChangeType'];
+        /** @description Filter by object type */
+        object_type?: components['parameters']['AuditObjectType'];
+        /** @description Filter audit entries to a single threat model. */
+        threat_model_id?: components['parameters']['AuditThreatModelId'];
+        /** @description Maximum number of entries to return per page. */
+        limit?: components['parameters']['AuditPageLimit'];
+        /** @description Opaque pagination cursor from the previous page next_cursor. Omit for the first page. */
+        cursor?: components['parameters']['AuditCursor'];
+        /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
+        around?: components['parameters']['AuditAround'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated audit entries */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListAdminAuditEntriesResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not Found - the around entry id does not exist */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  getAdminThreatModelAuditEntry: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The audit entry ID. */
+        entry_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Audit entry */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AuditEntry'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Audit entry not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  startIdentityLink: {
+    parameters: {
+      query: {
+        /** @description The identity provider ID to link */
+        idp: string;
+        /** @description The URL to redirect to after the provider returns. Must be in the allowlist. */
+        client_callback: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Identity link flow started successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['IdentityLinkStartResponse'];
+        };
+      };
+      /** @description Invalid request parameters */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - service accounts cannot link identities */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Identity provider not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  confirmIdentityLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @description Pending identity link token from the callback redirect */
+          token: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Identity linked successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['LinkedIdentity'];
+        };
+      };
+      /** @description Invalid request body or token format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - service accounts cannot link identities */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Pending identity link token not found or expired */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Conflict - the identity is already bound to a TMI account (error_code: identity_already_bound) */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            error: string;
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listMyIdentities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description User identities */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MyIdentitiesResponse'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - service accounts cannot list identities */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            error: string;
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
+    };
+  };
+  deleteMyIdentity: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Linked identity UUID */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Identity unlinked successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - service accounts cannot unlink identities */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Linked identity not found or not owned by current user */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            error: string;
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getPendingIdentityLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Pending identity link identifier returned by the OAuth callback */
+        link_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Pending identity link details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PendingIdentityLinkResponse'];
+        };
+      };
+      /** @description Unauthorized - missing or invalid JWT token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Pending identity link not found or does not belong to authenticated user */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            error: string;
+            retry_after?: number;
+          };
+        };
+      };
+      500: components['responses']['InternalServerError'];
     };
   };
 }

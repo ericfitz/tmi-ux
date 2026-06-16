@@ -77,6 +77,12 @@ export class AdminComponent {
       icon: 'assignment',
       action: 'surveys',
     },
+    {
+      title: 'admin.sections.audit.title',
+      description: 'admin.sections.audit.description',
+      icon: 'history',
+      action: 'audit',
+    },
   ];
 
   onSectionClick(action: string): void {

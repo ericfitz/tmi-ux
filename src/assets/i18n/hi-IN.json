@@ -81,6 +81,93 @@
       "subtitle": "TMI कार्यक्षमता बढ़ाने के लिए ऐडऑन कॉन्फ़िगर करें",
       "title": "ऐडऑन प्रबंधित करें"
     },
+    "audit": {
+      "columns": {
+        "actor": "अभिनेता",
+        "changeSummary": "परिवर्तन सारांश",
+        "changeType": "परिवर्तन प्रकार",
+        "fieldPath": "फील्ड पथ",
+        "object": "वस्तु",
+        "request": "अनुरोध",
+        "threatModel": "खतरा मॉडल",
+        "timestamp": "समय मुहर"
+      },
+      "detail": {
+        "actor": "अभिनेता",
+        "changeSummary": "परिवर्तन सारांश",
+        "changeType": "परिवर्तन प्रकार",
+        "close": "बंद करें",
+        "copied": "कॉपी किया गया",
+        "copyPermalink": "स्थायी लिंक कॉपी करें",
+        "email": "ईमेल",
+        "fieldPath": "फील्ड पथ",
+        "method": "HTTP विधि",
+        "newValue": "नया मान",
+        "notFound": "ऑडिट प्रविष्टि नहीं मिली।",
+        "objectId": "वस्तु ID",
+        "objectType": "वस्तु प्रकार",
+        "oldValue": "पुराना मान",
+        "path": "अनुरोध पथ",
+        "provider": "प्रदाता",
+        "providerId": "प्रदाता ID",
+        "threatModel": "खतरा मॉडल",
+        "timestamp": "समय मुहर",
+        "title": "ऑडिट प्रविष्टि",
+        "version": "संस्करण",
+        "viewInContext": "संदर्भ में देखें"
+      },
+      "empty": "कोई प्रविष्टि इन फिल्टर से मेल नहीं खाती।",
+      "enums": {
+        "changeType": {
+          "created": "बनाया गया",
+          "deleted": "हटाया गया",
+          "patched": "पैच किया गया",
+          "restored": "पुनः स्थापित किया गया",
+          "rolled_back": "वापस किया गया",
+          "updated": "अपडेट किया गया"
+        },
+        "objectType": {
+          "asset": "संपत्ति",
+          "diagram": "आरेख",
+          "document": "दस्तावेज़",
+          "note": "नोट",
+          "repository": "रिपॉजिटरी",
+          "threat": "खतरा",
+          "threat_model": "खतरा मॉडल"
+        }
+      },
+      "error": "ऑडिट क्वेरी विफल रही।",
+      "export": {
+        "csv": "CSV",
+        "error": "निर्यात विफल",
+        "menu": "निर्यात",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "अभिनेता",
+        "actorPlaceholder": "ईमेल से खोजें",
+        "changeType": "परिवर्तन प्रकार",
+        "clear": "फिल्टर साफ़ करें",
+        "createdAfter": "इसके बाद बनाया गया",
+        "createdBefore": "इसके पहले बनाया गया",
+        "fieldPath": "फील्ड पथ",
+        "httpMethod": "HTTP विधि",
+        "objectType": "वस्तु प्रकार",
+        "pathPrefix": "पथ उपसर्ग",
+        "threatModelId": "खतरा मॉडल ID"
+      },
+      "pagination": {
+        "newer": "नई",
+        "older": "पुरानी"
+      },
+      "retry": "पुनः प्रयास करें",
+      "tabs": {
+        "system": "सिस्टम",
+        "threatModels": "खतरा मॉडल"
+      },
+      "title": "ऑडिट लॉग",
+      "viewInAuditLog": "ऑडिट लॉग में देखें"
+    },
     "createAutomationUserDialog": {
       "email": "ईमेल (वैकल्पिक)",
       "emailHint": "वैकल्पिक — स्वचालित रूप से उत्पन्न @tmi.local पते पर डिफ़ॉल्ट",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें।",
         "title": "ऐडऑन"
+      },
+      "audit": {
+        "description": "सिस्टम और खतरा मॉडल ऑडिट लॉग देखें।",
+        "title": "ऑडिट लॉग"
       },
       "groups": {
         "description": "उपयोगकर्ता समूह और सदस्यता कॉन्फ़िगर करें।",

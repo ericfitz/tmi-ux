@@ -81,6 +81,93 @@
       "subtitle": "กำหนดค่าส่วนเสริมสำหรับขยายฟังก์ชันของ TMI",
       "title": "จัดการส่วนเสริม"
     },
+    "audit": {
+      "columns": {
+        "actor": "ผู้กระทำการ",
+        "changeSummary": "สรุปการเปลี่ยนแปลง",
+        "changeType": "ประเภทการเปลี่ยนแปลง",
+        "fieldPath": "경로เขตข้อมูล",
+        "object": "วัตถุ",
+        "request": "คำขอ",
+        "threatModel": "แบบจำลองภัยคุกคาม",
+        "timestamp": "ประทับเวลา"
+      },
+      "detail": {
+        "actor": "ผู้กระทำการ",
+        "changeSummary": "สรุปการเปลี่ยนแปลง",
+        "changeType": "ประเภทการเปลี่ยนแปลง",
+        "close": "ปิด",
+        "copied": "คัดลอกแล้ว",
+        "copyPermalink": "คัดลอกลิงก์ถาวร",
+        "email": "อีเมล",
+        "fieldPath": "경로เขตข้อมูล",
+        "method": "เมธอด HTTP",
+        "newValue": "ค่าใหม่",
+        "notFound": "ไม่พบรายการตรวจสอบ",
+        "objectId": "ID วัตถุ",
+        "objectType": "ประเภทวัตถุ",
+        "oldValue": "ค่าเดิม",
+        "path": "경로คำขอ",
+        "provider": "ผู้ให้บริการ",
+        "providerId": "ID ผู้ให้บริการ",
+        "threatModel": "แบบจำลองภัยคุกคาม",
+        "timestamp": "ประทับเวลา",
+        "title": "รายการตรวจสอบ",
+        "version": "เวอร์ชัน",
+        "viewInContext": "ดูในบริบท"
+      },
+      "empty": "ไม่มีรายการที่ตรงกับตัวกรองเหล่านี้",
+      "enums": {
+        "changeType": {
+          "created": "สร้างแล้ว",
+          "deleted": "ลบแล้ว",
+          "patched": "แพตช์แล้ว",
+          "restored": "คืนสภาพแล้ว",
+          "rolled_back": "ย้อนกลับแล้ว",
+          "updated": "อัปเดตแล้ว"
+        },
+        "objectType": {
+          "asset": "สินทรัพย์",
+          "diagram": "แผนภาพ",
+          "document": "เอกสาร",
+          "note": "บันทึก",
+          "repository": "คลังเก็บ",
+          "threat": "ภัยคุกคาม",
+          "threat_model": "แบบจำลองภัยคุกคาม"
+        }
+      },
+      "error": "การค้นหาตรวจสอบล้มเหลว",
+      "export": {
+        "csv": "CSV",
+        "error": "ส่งออกล้มเหลว",
+        "menu": "ส่งออก",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "ผู้กระทำการ",
+        "actorPlaceholder": "ค้นหาตามอีเมล",
+        "changeType": "ประเภทการเปลี่ยนแปลง",
+        "clear": "ล้างตัวกรอง",
+        "createdAfter": "สร้างหลังจาก",
+        "createdBefore": "สร้างก่อน",
+        "fieldPath": "경로เขตข้อมูล",
+        "httpMethod": "เมธอด HTTP",
+        "objectType": "ประเภทวัตถุ",
+        "pathPrefix": "คำนำหน้า경로",
+        "threatModelId": "ID แบบจำลองภัยคุกคาม"
+      },
+      "pagination": {
+        "newer": "ใหม่กว่า",
+        "older": "เก่ากว่า"
+      },
+      "retry": "ลองอีกครั้ง",
+      "tabs": {
+        "system": "ระบบ",
+        "threatModels": "แบบจำลองภัยคุกคาม"
+      },
+      "title": "บันทึกการตรวจสอบ",
+      "viewInAuditLog": "ดูในบันทึกการตรวจสอบ"
+    },
     "createAutomationUserDialog": {
       "email": "อีเมล (ไม่บังคับ)",
       "emailHint": "ไม่บังคับ — ค่าเริ่มต้นคือที่อยู่ @tmi.local ที่สร้างอัตโนมัติ",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "ติดตั้งและกำหนดค่าส่วนเสริมของแอปพลิเคชัน",
         "title": "{{common.addons}}"
+      },
+      "audit": {
+        "description": "ดูบันทึกการตรวจสอบระบบและแบบจำลองภัยคุกคาม",
+        "title": "บันทึกการตรวจสอบ"
       },
       "groups": {
         "description": "กำหนดค่ากลุ่มผู้ใช้และสมาชิกภาพ",

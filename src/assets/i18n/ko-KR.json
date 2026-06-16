@@ -81,6 +81,93 @@
       "subtitle": "TMI 기능 확장을 위한 애드온을 구성합니다.",
       "title": "애드온 관리"
     },
+    "audit": {
+      "columns": {
+        "actor": "행위자",
+        "changeSummary": "변경 요약",
+        "changeType": "변경 유형",
+        "fieldPath": "필드 경로",
+        "object": "객체",
+        "request": "요청",
+        "threatModel": "위협 모델",
+        "timestamp": "타임스탬프"
+      },
+      "detail": {
+        "actor": "행위자",
+        "changeSummary": "변경 요약",
+        "changeType": "변경 유형",
+        "close": "닫기",
+        "copied": "복사됨",
+        "copyPermalink": "고유 링크 복사",
+        "email": "이메일",
+        "fieldPath": "필드 경로",
+        "method": "HTTP 메서드",
+        "newValue": "새 값",
+        "notFound": "감사 항목을 찾을 수 없습니다.",
+        "objectId": "객체 ID",
+        "objectType": "객체 유형",
+        "oldValue": "이전 값",
+        "path": "요청 경로",
+        "provider": "제공자",
+        "providerId": "제공자 ID",
+        "threatModel": "위협 모델",
+        "timestamp": "타임스탬프",
+        "title": "감사 항목",
+        "version": "버전",
+        "viewInContext": "컨텍스트에서 보기"
+      },
+      "empty": "필터와 일치하는 항목이 없습니다.",
+      "enums": {
+        "changeType": {
+          "created": "생성됨",
+          "deleted": "삭제됨",
+          "patched": "패치됨",
+          "restored": "복원됨",
+          "rolled_back": "롤백됨",
+          "updated": "업데이트됨"
+        },
+        "objectType": {
+          "asset": "자산",
+          "diagram": "다이어그램",
+          "document": "문서",
+          "note": "노트",
+          "repository": "저장소",
+          "threat": "위협",
+          "threat_model": "위협 모델"
+        }
+      },
+      "error": "감사 쿼리가 실패했습니다.",
+      "export": {
+        "csv": "CSV",
+        "error": "내보내기 실패",
+        "menu": "내보내기",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "행위자",
+        "actorPlaceholder": "이메일로 검색",
+        "changeType": "변경 유형",
+        "clear": "필터 지우기",
+        "createdAfter": "생성 이후",
+        "createdBefore": "생성 이전",
+        "fieldPath": "필드 경로",
+        "httpMethod": "HTTP 메서드",
+        "objectType": "객체 유형",
+        "pathPrefix": "경로 접두사",
+        "threatModelId": "위협 모델 ID"
+      },
+      "pagination": {
+        "newer": "최신",
+        "older": "이전"
+      },
+      "retry": "다시 시도",
+      "tabs": {
+        "system": "시스템",
+        "threatModels": "위협 모델"
+      },
+      "title": "감사 로그",
+      "viewInAuditLog": "감사 로그에서 보기"
+    },
     "createAutomationUserDialog": {
       "email": "이메일 (선택 사항)",
       "emailHint": "선택 사항 — 기본값은 자동 생성된 @tmi.local 주소",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "애플리케이션 애드온을 설치하고 구성합니다.",
         "title": "애드온"
+      },
+      "audit": {
+        "description": "시스템 및 위협 모델 감사 로그를 봅니다.",
+        "title": "감사 로그"
       },
       "groups": {
         "description": "사용자 그룹 및 멤버십을 구성합니다.",

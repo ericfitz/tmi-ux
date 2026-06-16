@@ -50,7 +50,9 @@
     "CI/CD",
     "JSONL",
     "US",
-    "TMs"
+    "TMs",
+    "CSV",
+    "NDJSON"
   ],
   "domain_nouns": [
     "threat model",

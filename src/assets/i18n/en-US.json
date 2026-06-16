@@ -95,6 +95,93 @@
       "subtitle": "Configure addons for extending TMI functionality.",
       "title": "Manage addons"
     },
+    "audit": {
+      "columns": {
+        "actor": "Actor",
+        "changeSummary": "Change summary",
+        "changeType": "Change type",
+        "fieldPath": "Field path",
+        "object": "Object",
+        "request": "Request",
+        "threatModel": "Threat model",
+        "timestamp": "Timestamp"
+      },
+      "detail": {
+        "actor": "Actor",
+        "changeSummary": "Change summary",
+        "changeType": "Change type",
+        "close": "Close",
+        "copied": "Copied",
+        "copyPermalink": "Copy permalink",
+        "email": "Email",
+        "fieldPath": "Field path",
+        "method": "HTTP method",
+        "newValue": "New value",
+        "notFound": "Audit entry not found.",
+        "objectId": "Object ID",
+        "objectType": "Object type",
+        "oldValue": "Old value",
+        "path": "Request path",
+        "provider": "Provider",
+        "providerId": "Provider ID",
+        "threatModel": "Threat model",
+        "timestamp": "Timestamp",
+        "title": "Audit entry",
+        "version": "Version",
+        "viewInContext": "View in context"
+      },
+      "empty": "No entries match these filters.",
+      "enums": {
+        "changeType": {
+          "created": "Created",
+          "deleted": "Deleted",
+          "patched": "Patched",
+          "restored": "Restored",
+          "rolled_back": "Rolled back",
+          "updated": "Updated"
+        },
+        "objectType": {
+          "asset": "Asset",
+          "diagram": "Diagram",
+          "document": "Document",
+          "note": "Note",
+          "repository": "Repository",
+          "threat": "Threat",
+          "threat_model": "Threat model"
+        }
+      },
+      "error": "Audit query failed.",
+      "export": {
+        "csv": "CSV",
+        "error": "Export failed",
+        "menu": "Export",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Actor",
+        "actorPlaceholder": "Search by email",
+        "changeType": "Change type",
+        "clear": "Clear filters",
+        "createdAfter": "Created after",
+        "createdBefore": "Created before",
+        "fieldPath": "Field path",
+        "httpMethod": "HTTP method",
+        "objectType": "Object type",
+        "pathPrefix": "Path prefix",
+        "threatModelId": "Threat model ID"
+      },
+      "pagination": {
+        "newer": "Newer",
+        "older": "Older"
+      },
+      "retry": "Retry",
+      "tabs": {
+        "system": "System",
+        "threatModels": "Threat models"
+      },
+      "title": "Audit logs",
+      "viewInAuditLog": "View in audit log"
+    },
     "createAutomationUserDialog": {
       "email": "Email (optional)",
       "emailHint": "Optional — defaults to auto-generated @tmi.local address",
@@ -208,6 +295,10 @@
       "addons": {
         "description": "Install and configure application addons.",
         "title": "{{common.addons}}"
+      },
+      "audit": {
+        "description": "View system and threat model audit logs.",
+        "title": "Audit logs"
       },
       "groups": {
         "description": "Configure user groups and memberships.",
@@ -2164,8 +2255,6 @@
     "notAssociatedWithAsset": "Not associated with an asset.",
     "notAssociatedWithCell": "Not associated with a cell.",
     "notAssociatedWithDiagram": "Not associated with a diagram.",
-    "selectDiagramFirst": "Select a diagram first",
-    "selectDiagramFirst.comment": "Hint shown below the cell drop-down when no diagram is selected, prompting the user to pick one.",
     "sections": {
       "classification": "{{common.classification}}",
       "classification.comment": "Section header for threat classification fields (severity, type, CWE, CVSS).",
@@ -2178,6 +2267,8 @@
       "tracking": "Tracking",
       "tracking.comment": "Section header for tracking fields (issue URL, status, checkboxes)."
     },
+    "selectDiagramFirst": "Select a diagram first",
+    "selectDiagramFirst.comment": "Hint shown below the cell drop-down when no diagram is selected, prompting the user to pick one.",
     "threatPriority": {
       "deferred": "Deferred (p4)",
       "deferred.description": "Postponed with documented business approval; tracked but not scheduled.",

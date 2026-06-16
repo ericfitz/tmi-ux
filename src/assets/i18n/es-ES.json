@@ -81,6 +81,93 @@
       "subtitle": "Configurar complementos para ampliar la funcionalidad de TMI.",
       "title": "Gestionar complementos"
     },
+    "audit": {
+      "columns": {
+        "actor": "Actor",
+        "changeSummary": "Resumen de cambios",
+        "changeType": "Tipo de cambio",
+        "fieldPath": "Ruta del campo",
+        "object": "Objeto",
+        "request": "Solicitud",
+        "threatModel": "Modelo de amenaza",
+        "timestamp": "Marca de tiempo"
+      },
+      "detail": {
+        "actor": "Actor",
+        "changeSummary": "Resumen de cambios",
+        "changeType": "Tipo de cambio",
+        "close": "Cerrar",
+        "copied": "Copiado",
+        "copyPermalink": "Copiar enlace permanente",
+        "email": "Correo electrónico",
+        "fieldPath": "Ruta del campo",
+        "method": "Método HTTP",
+        "newValue": "Valor nuevo",
+        "notFound": "Entrada de auditoría no encontrada.",
+        "objectId": "ID de objeto",
+        "objectType": "Tipo de objeto",
+        "oldValue": "Valor anterior",
+        "path": "Ruta de solicitud",
+        "provider": "Proveedor",
+        "providerId": "ID de proveedor",
+        "threatModel": "Modelo de amenaza",
+        "timestamp": "Marca de tiempo",
+        "title": "Entrada de auditoría",
+        "version": "Versión",
+        "viewInContext": "Ver en contexto"
+      },
+      "empty": "No hay entradas que coincidan con estos filtros.",
+      "enums": {
+        "changeType": {
+          "created": "Creado",
+          "deleted": "Eliminado",
+          "patched": "Parcheado",
+          "restored": "Restaurado",
+          "rolled_back": "Revocado",
+          "updated": "Actualizado"
+        },
+        "objectType": {
+          "asset": "Activo",
+          "diagram": "Diagrama",
+          "document": "Documento",
+          "note": "Nota",
+          "repository": "Repositorio",
+          "threat": "Amenaza",
+          "threat_model": "Modelo de amenaza"
+        }
+      },
+      "error": "Consulta de auditoría fallida.",
+      "export": {
+        "csv": "CSV",
+        "error": "Error en la exportación",
+        "menu": "Exportar",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Actor",
+        "actorPlaceholder": "Buscar por correo electrónico",
+        "changeType": "Tipo de cambio",
+        "clear": "Limpiar filtros",
+        "createdAfter": "Creado después de",
+        "createdBefore": "Creado antes de",
+        "fieldPath": "Ruta del campo",
+        "httpMethod": "Método HTTP",
+        "objectType": "Tipo de objeto",
+        "pathPrefix": "Prefijo de ruta",
+        "threatModelId": "ID de modelo de amenaza"
+      },
+      "pagination": {
+        "newer": "Más reciente",
+        "older": "Más antiguo"
+      },
+      "retry": "Reintentar",
+      "tabs": {
+        "system": "Sistema",
+        "threatModels": "Modelos de amenaza"
+      },
+      "title": "Registros de auditoría",
+      "viewInAuditLog": "Ver en registro de auditoría"
+    },
     "createAutomationUserDialog": {
       "email": "Correo electrónico (opcional)",
       "emailHint": "Opcional — el valor predeterminado es una dirección @tmi.local generada automáticamente",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "Instalar y configurar complementos de la aplicación.",
         "title": "Complementos"
+      },
+      "audit": {
+        "description": "Ver registros de auditoría del sistema y modelos de amenaza.",
+        "title": "Registros de auditoría"
       },
       "groups": {
         "description": "Configurar grupos de usuarios y membresías.",

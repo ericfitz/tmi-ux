@@ -81,6 +81,93 @@
       "subtitle": "تكوين الملحقات لتوسيع وظائف TMI.",
       "title": "إدارة الملحقات"
     },
+    "audit": {
+      "columns": {
+        "actor": "الممثل",
+        "changeSummary": "ملخص التغيير",
+        "changeType": "نوع التغيير",
+        "fieldPath": "مسار الحقل",
+        "object": "الكائن",
+        "request": "الطلب",
+        "threatModel": "نموذج التهديد",
+        "timestamp": "الطابع الزمني"
+      },
+      "detail": {
+        "actor": "الممثل",
+        "changeSummary": "ملخص التغيير",
+        "changeType": "نوع التغيير",
+        "close": "إغلاق",
+        "copied": "تم النسخ",
+        "copyPermalink": "نسخ الرابط الدائم",
+        "email": "البريد الإلكتروني",
+        "fieldPath": "مسار الحقل",
+        "method": "طريقة HTTP",
+        "newValue": "القيمة الجديدة",
+        "notFound": "لم يتم العثور على إدخال التدقيق.",
+        "objectId": "معرف الكائن (ID)",
+        "objectType": "نوع الكائن",
+        "oldValue": "القيمة القديمة",
+        "path": "مسار الطلب",
+        "provider": "المزود",
+        "providerId": "معرف المزود (ID)",
+        "threatModel": "نموذج التهديد",
+        "timestamp": "الطابع الزمني",
+        "title": "إدخال التدقيق",
+        "version": "الإصدار",
+        "viewInContext": "عرض في السياق"
+      },
+      "empty": "لا توجد إدخالات تطابق هذه المرشحات.",
+      "enums": {
+        "changeType": {
+          "created": "تم الإنشاء",
+          "deleted": "تم الحذف",
+          "patched": "تم التصحيح",
+          "restored": "تم الاستعادة",
+          "rolled_back": "تم التراجع",
+          "updated": "تم التحديث"
+        },
+        "objectType": {
+          "asset": "الأصل",
+          "diagram": "رسم بياني",
+          "document": "وثيقة",
+          "note": "ملاحظة",
+          "repository": "المستودع",
+          "threat": "تهديد",
+          "threat_model": "نموذج التهديد"
+        }
+      },
+      "error": "فشل استعلام التدقيق.",
+      "export": {
+        "csv": "CSV",
+        "error": "فشل التصدير",
+        "menu": "تصدير",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "الممثل",
+        "actorPlaceholder": "البحث حسب البريد الإلكتروني",
+        "changeType": "نوع التغيير",
+        "clear": "مسح المرشحات",
+        "createdAfter": "تم الإنشاء بعد",
+        "createdBefore": "تم الإنشاء قبل",
+        "fieldPath": "مسار الحقل",
+        "httpMethod": "طريقة HTTP",
+        "objectType": "نوع الكائن",
+        "pathPrefix": "بادئة المسار",
+        "threatModelId": "معرف نموذج التهديد (ID)"
+      },
+      "pagination": {
+        "newer": "أحدث",
+        "older": "أقدم"
+      },
+      "retry": "إعادة محاولة",
+      "tabs": {
+        "system": "النظام",
+        "threatModels": "نماذج التهديد"
+      },
+      "title": "سجلات التدقيق",
+      "viewInAuditLog": "عرض في سجل التدقيق"
+    },
     "createAutomationUserDialog": {
       "email": "البريد الإلكتروني (اختياري)",
       "emailHint": "اختياري — الافتراضي هو عنوان @tmi.local المُنشأ تلقائياً",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق.",
         "title": "الإضافات"
+      },
+      "audit": {
+        "description": "عرض سجلات التدقيق للنظام ونماذج التهديد.",
+        "title": "سجلات التدقيق"
       },
       "groups": {
         "description": "تكوين مجموعات المستخدمين والعضويات.",

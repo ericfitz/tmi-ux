@@ -1,0 +1,169 @@
+<div class="audit-filter-bar">
+  <!-- Actor autocomplete (shared) -->
+  <mat-form-field appearance="outline" class="filter-field actor-field">
+    <mat-label>{{ 'admin.audit.filters.actor' | transloco }}</mat-label>
+    <input
+      matInput
+      [value]="actorInput"
+      [matAutocomplete]="actorAuto"
+      [placeholder]="'admin.audit.filters.actorPlaceholder' | transloco"
+      (input)="onActorInput($any($event.target).value)"
+      data-testid="audit-filter-actor"
+    />
+    <mat-autocomplete
+      #actorAuto="matAutocomplete"
+      [displayWith]="displayActor"
+      (optionSelected)="onActorSelected($event)"
+    >
+      @for (user of actorSuggestions$ | async; track user.internal_uuid) {
+        <mat-option [value]="user">{{ user.email }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <!-- Created After date picker (shared) -->
+  <mat-form-field appearance="outline" class="filter-field date-field">
+    <mat-label>{{ 'admin.audit.filters.createdAfter' | transloco }}</mat-label>
+    <input
+      matInput
+      [matDatepicker]="createdAfterPicker"
+      [value]="createdAfter"
+      (dateChange)="onCreatedAfterChange($event.value?.toISOString() ?? null)"
+    />
+    <mat-datepicker-toggle matSuffix [for]="createdAfterPicker"></mat-datepicker-toggle>
+    <mat-datepicker #createdAfterPicker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Created Before date picker (shared) -->
+  <mat-form-field appearance="outline" class="filter-field date-field">
+    <mat-label>{{ 'admin.audit.filters.createdBefore' | transloco }}</mat-label>
+    <input
+      matInput
+      [matDatepicker]="createdBeforePicker"
+      [value]="createdBefore"
+      (dateChange)="onCreatedBeforeChange($event.value?.toISOString() ?? null)"
+    />
+    <mat-datepicker-toggle matSuffix [for]="createdBeforePicker"></mat-datepicker-toggle>
+    <mat-datepicker #createdBeforePicker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- ── System-only filters ─────────────────────────────────────── -->
+  @if (isSystemStream) {
+    <!-- HTTP Method select -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.httpMethod' | transloco }}</mat-label>
+      <mat-select
+        [value]="httpMethod"
+        (selectionChange)="onHttpMethodChange($event.value)"
+        data-testid="audit-filter-http-method"
+      >
+        <mat-option [value]="null">&mdash;</mat-option>
+        @for (method of httpMethods; track method) {
+          <mat-option [value]="method">
+            {{ method }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Path Prefix text -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.pathPrefix' | transloco }}</mat-label>
+      <input
+        matInput
+        [value]="pathPrefix"
+        (input)="onPathPrefixInput($any($event.target).value)"
+        data-testid="audit-filter-path-prefix"
+      />
+    </mat-form-field>
+
+    <!-- Field Path text -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.fieldPath' | transloco }}</mat-label>
+      <input
+        matInput
+        [value]="fieldPath"
+        (input)="onFieldPathInput($any($event.target).value)"
+        data-testid="audit-filter-field-path"
+      />
+    </mat-form-field>
+  }
+
+  <!-- ── TM-only filters ────────────────────────────────────────── -->
+  @if (!isSystemStream) {
+    <!-- Change Type select -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.changeType' | transloco }}</mat-label>
+      <mat-select
+        [value]="changeType"
+        (selectionChange)="onChangeTypeChange($event.value)"
+        data-testid="audit-filter-change-type"
+      >
+        <mat-option [value]="null">&mdash;</mat-option>
+        @for (ct of changeTypes; track ct) {
+          <mat-option [value]="ct">
+            {{ 'admin.audit.enums.changeType.' + ct | transloco }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Object Type select -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.objectType' | transloco }}</mat-label>
+      <mat-select
+        [value]="objectType"
+        (selectionChange)="onObjectTypeChange($event.value)"
+        data-testid="audit-filter-object-type"
+      >
+        <mat-option [value]="null">&mdash;</mat-option>
+        @for (ot of objectTypes; track ot) {
+          <mat-option [value]="ot">
+            {{ 'admin.audit.enums.objectType.' + ot | transloco }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Threat Model ID text -->
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'admin.audit.filters.threatModelId' | transloco }}</mat-label>
+      <input
+        matInput
+        [value]="threatModelId"
+        (input)="onThreatModelIdInput($any($event.target).value)"
+        data-testid="audit-filter-threat-model-id"
+      />
+    </mat-form-field>
+  }
+
+  <!-- ── Action buttons ─────────────────────────────────────────── -->
+  <div class="filter-actions">
+    <!-- Clear filters -->
+    <button
+      mat-button
+      (click)="clearFilters()"
+      class="clear-filters-button"
+      data-testid="audit-filter-clear"
+    >
+      <mat-icon>filter_list_off</mat-icon>
+      {{ 'admin.audit.filters.clear' | transloco }}
+    </button>
+
+    <!-- Export menu (system stream only) -->
+    @if (isSystemStream) {
+      <button mat-button [matMenuTriggerFor]="exportMenu" data-testid="audit-filter-export-menu">
+        <mat-icon>download</mat-icon>
+        {{ 'admin.audit.export.menu' | transloco }}
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item (click)="onExportCsv()" data-testid="audit-filter-export-csv">
+          {{ 'admin.audit.export.csv' | transloco }}
+        </button>
+        <button mat-menu-item (click)="onExportNdjson()" data-testid="audit-filter-export-ndjson">
+          {{ 'admin.audit.export.ndjson' | transloco }}
+        </button>
+      </mat-menu>
+    }
+  </div>
+</div>

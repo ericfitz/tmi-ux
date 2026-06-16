@@ -81,6 +81,93 @@
       "subtitle": "הגדר תוספים להרחבת פונקציונליות TMI.",
       "title": "ניהול תוספים"
     },
+    "audit": {
+      "columns": {
+        "actor": "מבצע",
+        "changeSummary": "סיכום השינוי",
+        "changeType": "סוג השינוי",
+        "fieldPath": "נתיב שדה",
+        "object": "אובייקט",
+        "request": "בקשה",
+        "threatModel": "דגם איום",
+        "timestamp": "חותמת זמן"
+      },
+      "detail": {
+        "actor": "מבצע",
+        "changeSummary": "סיכום השינוי",
+        "changeType": "סוג השינוי",
+        "close": "סגור",
+        "copied": "הועתק",
+        "copyPermalink": "העתק קישור קבוע",
+        "email": "דוא״ל",
+        "fieldPath": "נתיב שדה",
+        "method": "שיטת HTTP",
+        "newValue": "ערך חדש",
+        "notFound": "רישום ביקורת לא נמצא.",
+        "objectId": "ID אובייקט",
+        "objectType": "סוג אובייקט",
+        "oldValue": "ערך קודם",
+        "path": "נתיב בקשה",
+        "provider": "ספק",
+        "providerId": "ID ספק",
+        "threatModel": "דגם איום",
+        "timestamp": "חותמת זמן",
+        "title": "רישום ביקורת",
+        "version": "גרסה",
+        "viewInContext": "צפה בהקשר"
+      },
+      "empty": "אין רישומים התואמים לסינונים אלה.",
+      "enums": {
+        "changeType": {
+          "created": "נוצר",
+          "deleted": "נמחק",
+          "patched": "תוקן",
+          "restored": "שוחזר",
+          "rolled_back": "חזר לגרסה קודמת",
+          "updated": "עודכן"
+        },
+        "objectType": {
+          "asset": "נכס",
+          "diagram": "דיאגרמה",
+          "document": "מסמך",
+          "note": "הערה",
+          "repository": "מחסן",
+          "threat": "איום",
+          "threat_model": "דגם איום"
+        }
+      },
+      "error": "שאילתת ביקורת נכשלה.",
+      "export": {
+        "csv": "CSV",
+        "error": "הייצוא נכשל",
+        "menu": "ייצוא",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "מבצע",
+        "actorPlaceholder": "חפש לפי דוא״ל",
+        "changeType": "סוג השינוי",
+        "clear": "נקה סינונים",
+        "createdAfter": "נוצר לאחר",
+        "createdBefore": "נוצר לפני",
+        "fieldPath": "נתיב שדה",
+        "httpMethod": "שיטת HTTP",
+        "objectType": "סוג אובייקט",
+        "pathPrefix": "קידומת נתיב",
+        "threatModelId": "ID דגם איום"
+      },
+      "pagination": {
+        "newer": "חדשים יותר",
+        "older": "ישנים יותר"
+      },
+      "retry": "נסה שוב",
+      "tabs": {
+        "system": "מערכת",
+        "threatModels": "דגמי איום"
+      },
+      "title": "יומני ביקורת",
+      "viewInAuditLog": "צפה ביומן הביקורת"
+    },
     "createAutomationUserDialog": {
       "email": "דוא\"ל (אופציונלי)",
       "emailHint": "אופציונלי — ברירת מחדל לכתובת @tmi.local שנוצרת אוטומטית",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "התקן והגדר תוספי יישום.",
         "title": "תוספים"
+      },
+      "audit": {
+        "description": "צפה ביומני ביקורת של מערכת ודגמי איום.",
+        "title": "יומני ביקורת"
       },
       "groups": {
         "description": "הגדר קבוצות משתמשים וחברויות.",

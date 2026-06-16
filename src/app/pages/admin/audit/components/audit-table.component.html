@@ -1,0 +1,43 @@
+@if (hasError) {
+  <div class="audit-error-banner">
+    <span>{{ 'admin.audit.error' | transloco }}</span>
+    <button mat-button data-testid="audit-retry" (click)="onRetryClick()">
+      {{ 'admin.audit.retry' | transloco }}
+    </button>
+  </div>
+} @else if (loading) {
+  <div class="audit-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+} @else if (rows.length === 0) {
+  <div class="audit-empty">
+    {{ 'admin.audit.empty' | transloco }}
+  </div>
+} @else {
+  <table mat-table data-testid="audit-table" [dataSource]="rows">
+    @for (col of columns; track col.key) {
+      <ng-container [matColumnDef]="col.key">
+        <th mat-header-cell *matHeaderCellDef>{{ col.headerKey | transloco }}</th>
+        <td mat-cell *matCellDef="let row">{{ cellValue(col, row) }}</td>
+      </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      data-testid="audit-row"
+      *matRowDef="let row; columns: displayedColumns"
+      [class.anchor-row]="rowId(row) === anchorId"
+      (click)="onRowClick(row)"
+    ></tr>
+  </table>
+
+  <div class="audit-pagination">
+    <button mat-button data-testid="audit-newer" [disabled]="!prevCursor" (click)="onNewerClick()">
+      {{ 'admin.audit.pagination.newer' | transloco }}
+    </button>
+    <button mat-button data-testid="audit-older" [disabled]="!nextCursor" (click)="onOlderClick()">
+      {{ 'admin.audit.pagination.older' | transloco }}
+    </button>
+  </div>
+}

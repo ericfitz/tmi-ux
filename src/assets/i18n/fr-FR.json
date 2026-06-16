@@ -81,6 +81,93 @@
       "subtitle": "Configurer les addons pour étendre les fonctionnalités de TMI.",
       "title": "Gérer les addons"
     },
+    "audit": {
+      "columns": {
+        "actor": "Acteur",
+        "changeSummary": "Résumé des modifications",
+        "changeType": "Type de modification",
+        "fieldPath": "Chemin du champ",
+        "object": "Objet",
+        "request": "Requête",
+        "threatModel": "Modèle de menace",
+        "timestamp": "Horodatage"
+      },
+      "detail": {
+        "actor": "Acteur",
+        "changeSummary": "Résumé des modifications",
+        "changeType": "Type de modification",
+        "close": "Fermer",
+        "copied": "Copié",
+        "copyPermalink": "Copier le lien permanent",
+        "email": "E-mail",
+        "fieldPath": "Chemin du champ",
+        "method": "Méthode HTTP",
+        "newValue": "Nouvelle valeur",
+        "notFound": "Entrée d'audit non trouvée.",
+        "objectId": "ID d'objet",
+        "objectType": "Type d'objet",
+        "oldValue": "Ancienne valeur",
+        "path": "Chemin de la requête",
+        "provider": "Fournisseur",
+        "providerId": "ID du fournisseur",
+        "threatModel": "Modèle de menace",
+        "timestamp": "Horodatage",
+        "title": "Entrée d'audit",
+        "version": "Version",
+        "viewInContext": "Afficher dans le contexte"
+      },
+      "empty": "Aucune entrée ne correspond à ces filtres.",
+      "enums": {
+        "changeType": {
+          "created": "Créé",
+          "deleted": "Supprimé",
+          "patched": "Patché",
+          "restored": "Restauré",
+          "rolled_back": "Annulé",
+          "updated": "Mis à jour"
+        },
+        "objectType": {
+          "asset": "Ressource",
+          "diagram": "Diagramme",
+          "document": "Document",
+          "note": "Note",
+          "repository": "Référentiel",
+          "threat": "Menace",
+          "threat_model": "Modèle de menace"
+        }
+      },
+      "error": "Échec de la requête d'audit.",
+      "export": {
+        "csv": "CSV",
+        "error": "L'export a échoué",
+        "menu": "Exporter",
+        "ndjson": "NDJSON"
+      },
+      "filters": {
+        "actor": "Acteur",
+        "actorPlaceholder": "Rechercher par e-mail",
+        "changeType": "Type de modification",
+        "clear": "Effacer les filtres",
+        "createdAfter": "Créé après",
+        "createdBefore": "Créé avant",
+        "fieldPath": "Chemin du champ",
+        "httpMethod": "Méthode HTTP",
+        "objectType": "Type d'objet",
+        "pathPrefix": "Préfixe du chemin",
+        "threatModelId": "ID du modèle de menace"
+      },
+      "pagination": {
+        "newer": "Plus récent",
+        "older": "Plus ancien"
+      },
+      "retry": "Réessayer",
+      "tabs": {
+        "system": "Système",
+        "threatModels": "Modèles de menace"
+      },
+      "title": "Journaux d'audit",
+      "viewInAuditLog": "Afficher dans le journal d'audit"
+    },
     "createAutomationUserDialog": {
       "email": "E-mail (optionnel)",
       "emailHint": "Optionnel — par défaut, une adresse @tmi.local générée automatiquement",
@@ -176,6 +263,10 @@
       "addons": {
         "description": "Installer et configurer les addons de l'application.",
         "title": "Extensions"
+      },
+      "audit": {
+        "description": "Afficher les journaux d'audit du système et des modèles de menace.",
+        "title": "Journaux d'audit"
       },
       "groups": {
         "description": "Configurer les groupes d'utilisateurs et les appartenances.",
