@@ -10,6 +10,7 @@ import { StepUpService } from './step-up.service';
 import { PkceService } from './pkce.service';
 import { StepUpResponse } from '../models/step-up.models';
 import { createMockLoggerService } from '../../../testing/mocks';
+import { SKIP_ERROR_HANDLING } from '../../core/tokens/http-context.tokens';
 
 interface MockHttp {
   get: ReturnType<typeof vi.fn>;
@@ -70,7 +71,11 @@ describe('StepUpService', () => {
     expect(outcome).toBe('weak_complete');
     const [url, options] = http.get.mock.calls[0] as [
       string,
-      { params: Record<string, string>; headers: Record<string, string> },
+      {
+        params: Record<string, string>;
+        headers: Record<string, string>;
+        context: { get: (token: unknown) => unknown };
+      },
     ];
     expect(url).toContain('/oauth2/step_up');
     expect(options.headers['Accept']).toBe('application/json');
@@ -78,6 +83,7 @@ describe('StepUpService', () => {
     expect(options.params['code_challenge_method']).toBe('S256');
     expect(options.params['client_callback']).toContain('/oauth2/callback');
     expect(options.params['state']).toBe(localStorage.getItem('oauth_state'));
+    expect(options.context.get(SKIP_ERROR_HANDLING)).toBe(true);
   });
 
   it('stores oauth_provider for the callback token exchange', async () => {
