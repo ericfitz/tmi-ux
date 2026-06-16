@@ -49,6 +49,11 @@ describe('AuthCallbackComponent', () => {
       initiateLogin: vi.fn(),
       initiateSAMLLogin: vi.fn(),
       handleOAuthCallback: vi.fn().mockReturnValue(of(true)),
+      // decodeState returns no stepUp by default so pre-existing tests are unaffected
+      decodeState: vi.fn().mockReturnValue({ csrf: 'csrf', stepUp: false }),
+      lastAuthError: null,
+      userEmail: '',
+      userProfile: null,
     };
 
     // Mock sessionStorage
@@ -100,12 +105,28 @@ describe('AuthCallbackComponent', () => {
     vi.useRealTimers();
   });
 
+  let mockSnackBar: { open: ReturnType<typeof vi.fn> };
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockStepUpService: { beginStepUp: ReturnType<typeof vi.fn> };
+  let mockTransloco: { translate: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockSnackBar = { open: vi.fn() };
+    mockDialog = { open: vi.fn() };
+    mockStepUpService = { beginStepUp: vi.fn().mockReturnValue(of('weak_complete')) };
+    mockTransloco = { translate: vi.fn((key: string) => key) };
+  });
+
   function createComponent(): AuthCallbackComponent {
     return new AuthCallbackComponent(
       mockAuthService as AuthService,
       mockActivatedRoute as ActivatedRoute,
       mockRouter as any,
       mockLoggerService as any,
+      mockSnackBar as any,
+      mockDialog as any,
+      mockStepUpService as any,
+      mockTransloco as any,
     );
   }
 
@@ -474,6 +495,152 @@ describe('AuthCallbackComponent', () => {
       component.ngOnInit();
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+    });
+  });
+
+  describe('step-up callback completion', () => {
+    // Build a base64url-encoded state with stepUp=true for these tests.
+    // decodeState is called on the real AuthService; here we mock it on mockAuthService.
+    beforeEach(() => {
+      mockAuthService.decodeState = vi.fn();
+    });
+
+    it('shows redo snackbar on successful step-up callback', () => {
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '/dashboard',
+        stepUp: true,
+      });
+      mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(true));
+
+      queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith('stepUp.redoPrompt', undefined, {
+        duration: 6000,
+      });
+      expect(mockDialog.open).not.toHaveBeenCalled();
+      expect(mockRouter.navigate).not.toHaveBeenCalledWith(['/login']);
+    });
+
+    it('does NOT show redo snackbar on a normal (non-step-up) successful callback', () => {
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '/dashboard',
+        stepUp: false,
+      });
+      mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(true));
+
+      queryParamsSubject.next({ code: 'auth-code', state: 'encoded-normal-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      expect(mockSnackBar.open).not.toHaveBeenCalled();
+    });
+
+    it('opens mismatch dialog (not login redirect) on identity_mismatch during step-up', async () => {
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '/tm/list',
+        stepUp: true,
+      });
+      mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(false));
+      mockAuthService.lastAuthError = {
+        code: 'identity_mismatch',
+        message: 'Wrong identity',
+        retryable: false,
+      };
+      mockAuthService.userEmail = 'user@example.com';
+      mockAuthService.userProfile = { provider: 'google' } as any;
+
+      const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
+      mockDialog.open = vi
+        .fn()
+        .mockReturnValue({ afterClosed: () => afterClosedSubject.asObservable() });
+
+      queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      // navigateByUrl is async; wait for the microtask that runs the .then() callback
+      await Promise.resolve();
+
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/tm/list');
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ data: { email: 'user@example.com' }, width: '420px' }),
+      );
+      // Generic error path must NOT have fired
+      expect(mockRouter.navigate).not.toHaveBeenCalledWith(['/login']);
+      expect(sessionStorage.setItem).not.toHaveBeenCalled();
+    });
+
+    it('calls beginStepUp with provider when user clicks Try again in mismatch dialog', async () => {
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '/tm/list',
+        stepUp: true,
+      });
+      mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(false));
+      mockAuthService.lastAuthError = {
+        code: 'identity_mismatch',
+        message: 'Wrong identity',
+        retryable: false,
+      };
+      mockAuthService.userEmail = 'user@example.com';
+      mockAuthService.userProfile = { provider: 'google' } as any;
+
+      const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
+      mockDialog.open = vi
+        .fn()
+        .mockReturnValue({ afterClosed: () => afterClosedSubject.asObservable() });
+
+      queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      // Let the navigateByUrl promise resolve so the dialog opens
+      await Promise.resolve();
+
+      // Simulate user clicking "Try again"
+      afterClosedSubject.next(true);
+
+      expect(mockStepUpService.beginStepUp).toHaveBeenCalledWith('google');
+    });
+
+    it('uses "/" as fallback target when returnUrl is missing or unsafe on identity_mismatch', async () => {
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '//evil.com/phish',
+        stepUp: true,
+      });
+      mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(false));
+      mockAuthService.lastAuthError = {
+        code: 'identity_mismatch',
+        message: 'Wrong identity',
+        retryable: false,
+      };
+      mockAuthService.userEmail = 'user@example.com';
+      mockAuthService.userProfile = { provider: 'google' } as any;
+
+      const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
+      mockDialog.open = vi
+        .fn()
+        .mockReturnValue({ afterClosed: () => afterClosedSubject.asObservable() });
+
+      queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      await Promise.resolve();
+
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/');
     });
   });
 });

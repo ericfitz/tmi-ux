@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ 'stepUp.mismatchTitle' | transloco }}</h2>
+<mat-dialog-content>
+  <p>{{ 'stepUp.mismatchBody' | transloco: { email: data.email } }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'common.cancel' | transloco }}</button>
+  <button mat-flat-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>
+    {{ 'stepUp.tryAgain' | transloco }}
+  </button>
+</mat-dialog-actions>

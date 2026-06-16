@@ -58,7 +58,7 @@ describe('StepUpService', () => {
       router as never,
       dialog as never,
       pkce as unknown as PkceService,
-      createMockLoggerService() as never,
+      createMockLoggerService(),
     );
   });
 

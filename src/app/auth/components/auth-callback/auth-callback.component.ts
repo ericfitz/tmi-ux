@@ -2,13 +2,20 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslocoModule } from '@jsverse/transloco';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
+import { StepUpService } from '../../services/step-up.service';
 import { AuthError, OAuthResponse } from '../../models/auth.models';
+import {
+  StepUpMismatchDialogComponent,
+  StepUpMismatchDialogData,
+} from '../step-up-mismatch-dialog/step-up-mismatch-dialog.component';
 
 interface CallbackFragmentParams {
   code?: string;
@@ -23,7 +30,13 @@ interface CallbackFragmentParams {
 @Component({
   selector: 'app-auth-callback',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressSpinnerModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    TranslocoModule,
+  ],
   templateUrl: './auth-callback.component.html',
   styleUrls: ['./auth-callback.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +49,10 @@ export class AuthCallbackComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private logger: LoggerService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private stepUpService: StepUpService,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -145,16 +162,29 @@ export class AuthCallbackComponent implements OnInit {
   }
 
   private handleOAuthCallback(response: OAuthResponse): void {
+    const decodedState = response.state ? this.authService.decodeState(response.state) : null;
+    const isStepUp = decodedState?.stepUp === true;
+
     this.authService.handleOAuthCallback(response).subscribe({
       next: success => {
-        if (!success) {
-          this.handleError({
-            code: 'oauth_failed',
-            message: 'login.oauthFailed',
-            retryable: true,
-          });
+        if (success) {
+          if (isStepUp) {
+            this.snackBar.open(this.transloco.translate('stepUp.redoPrompt'), undefined, {
+              duration: 6000,
+            });
+          }
+          // On success, AuthService handles navigation to dashboard/returnUrl
+          return;
         }
-        // On success, AuthService handles navigation to dashboard/returnUrl
+        if (isStepUp && this.authService.lastAuthError?.code === 'identity_mismatch') {
+          this.handleIdentityMismatch(decodedState?.returnUrl);
+          return;
+        }
+        this.handleError({
+          code: 'oauth_failed',
+          message: 'login.oauthFailed',
+          retryable: true,
+        });
       },
       error: (err: unknown) => {
         const message = err instanceof Error ? err.message : 'login.unexpectedError';
@@ -164,6 +194,31 @@ export class AuthCallbackComponent implements OnInit {
           retryable: true,
         });
       },
+    });
+  }
+
+  /**
+   * Step-up completed as the wrong identity. The original session is still
+   * valid: return the user to where they were, then explain and offer retry.
+   * Navigate BEFORE opening the dialog — MatDialog closes on navigation by default.
+   */
+  private handleIdentityMismatch(returnUrl?: string): void {
+    const target =
+      returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/';
+    void this.router.navigateByUrl(target).then(() => {
+      this.dialog
+        .open<StepUpMismatchDialogComponent, StepUpMismatchDialogData, boolean>(
+          StepUpMismatchDialogComponent,
+          { data: { email: this.authService.userEmail }, width: '420px' },
+        )
+        .afterClosed()
+        .subscribe((retry: boolean | undefined) => {
+          if (retry) {
+            this.stepUpService
+              .beginStepUp(this.authService.userProfile?.provider ?? '')
+              .subscribe();
+          }
+        });
     });
   }
 
