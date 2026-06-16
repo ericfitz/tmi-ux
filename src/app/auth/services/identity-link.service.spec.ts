@@ -55,6 +55,24 @@ describe('IdentityLinkService', () => {
     );
   });
 
+  it('getPending() calls GET with the URL-encoded token path', async () => {
+    api.get.mockReturnValue(
+      of({
+        pending: { provider: 'github', provider_user_id: 'gh' },
+        account: { provider: 'google', email: 'a@b.com' },
+      }),
+    );
+    const res = await firstValueFrom(service.getPending('a/b'));
+    expect(api.get).toHaveBeenCalledWith('me/identities/link/pending/a%2Fb');
+    expect(res.pending.provider).toBe('github');
+  });
+
+  it('unlink() calls DELETE with the URL-encoded id path', async () => {
+    api.delete.mockReturnValue(of(undefined));
+    await firstValueFrom(service.unlink('a/b'));
+    expect(api.delete).toHaveBeenCalledWith('me/identities/a%2Fb');
+  });
+
   it('confirmLink() POSTs the token', async () => {
     api.post.mockReturnValue(
       of({ id: '1', provider: 'github', provider_user_id: 'gh', linked_at: 'x' }),
