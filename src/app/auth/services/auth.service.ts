@@ -71,6 +71,9 @@ export class AuthService {
   private authErrorSubject = new BehaviorSubject<AuthError | null>(null);
   private tokenReadySubject = new BehaviorSubject<boolean>(false);
 
+  /** Most recent auth error, readable synchronously (e.g. by AuthCallbackComponent) */
+  public lastAuthError: AuthError | null = null;
+
   // Public observables — isAuthenticated$ is derived from userProfile$
   userProfile$ = this.userProfileSubject.asObservable();
   isAuthenticated$ = this.userProfileSubject.pipe(map(profile => profile !== null));
@@ -816,18 +819,24 @@ export class AuthService {
   }
 
   /**
-   * Decode state parameter and extract CSRF token and return URL
+   * Decode state parameter and extract CSRF token, return URL, and step-up flag.
+   * Public: AuthCallbackComponent uses it to detect step-up callbacks.
    * @param state State parameter from OAuth callback
-   * @returns Object containing csrf token and optional returnUrl
+   * @returns Object containing csrf token and optional returnUrl and stepUp flag
    */
-  private decodeState(state: string): { csrf: string; returnUrl?: string } {
+  decodeState(state: string): { csrf: string; returnUrl?: string; stepUp?: boolean } {
     try {
       // Check if state is Base64 encoded (structured state)
       if (this.isBase64(state)) {
-        const decoded = JSON.parse(atob(state)) as { csrf: string; returnUrl?: string };
+        const decoded = JSON.parse(atob(state)) as {
+          csrf: string;
+          returnUrl?: string;
+          stepUp?: boolean;
+        };
         return {
           csrf: decoded.csrf,
           returnUrl: decoded.returnUrl,
+          stepUp: decoded.stepUp,
         };
       }
     } catch {
@@ -1121,6 +1130,17 @@ export class AuthService {
         catchError((error: HttpErrorResponse) => {
           this.pkceService.clearVerifier();
 
+          const bodyError = (error.error as { error?: string } | null)?.error;
+          if (error.status === 400 && bodyError === 'identity_mismatch') {
+            this.logger.warn('Step-up token exchange rejected: identity mismatch');
+            this.handleAuthError({
+              code: 'identity_mismatch',
+              message: 'Re-authentication used a different identity',
+              retryable: true,
+            });
+            return of(false);
+          }
+
           this.logger.error('Authorization code exchange failed (PKCE)', error);
           this.handleAuthError({
             code: 'code_exchange_failed',
@@ -1232,6 +1252,7 @@ export class AuthService {
    * @param error Authentication error
    */
   handleAuthError(error: AuthError): void {
+    this.lastAuthError = error;
     this.logger.error(`Auth error: ${error.code} - ${error.message}`);
     this.authErrorSubject.next(error);
   }

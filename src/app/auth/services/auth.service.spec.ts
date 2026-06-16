@@ -1929,4 +1929,66 @@ describe('AuthService', () => {
       });
     });
   }); /* End of Session Refresh Boundary Conditions describe block */
+
+  describe('decodeState (public, step-up aware)', () => {
+    it('exposes the stepUp flag from structured state', () => {
+      const state = btoa(
+        JSON.stringify({ csrf: 'a'.repeat(32), returnUrl: '/admin/settings', stepUp: true }),
+      );
+      const decoded = service.decodeState(state);
+      expect(decoded.stepUp).toBe(true);
+      expect(decoded.returnUrl).toBe('/admin/settings');
+    });
+
+    it('returns stepUp undefined for login-flow state', () => {
+      const state = btoa(JSON.stringify({ csrf: 'a'.repeat(32), returnUrl: '/tm' }));
+      expect(service.decodeState(state).stepUp).toBeUndefined();
+    });
+  }); /* End of decodeState (public, step-up aware) describe block */
+
+  describe('identity_mismatch on token exchange', () => {
+    it('surfaces identity_mismatch as a distinct auth error and remains non-destructive', () => {
+      // Arrange: seed localStorage with a plain state value
+      const storedState = 'mismatch-test-state-value';
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'oauth_state') return storedState;
+        if (key === 'oauth_provider') return 'google';
+        return null;
+      });
+
+      // Arrange: mock POST to /oauth2/token to fail with 400 identity_mismatch
+      const mismatchError = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: { error: 'identity_mismatch' },
+      });
+      httpClient.post.mockReturnValue(throwError(() => mismatchError));
+
+      // Arrange: set an authenticated user so we can verify session is untouched
+      service['userProfileSubject'].next(mockUserProfile);
+
+      // Act
+      let result: boolean | undefined;
+      service
+        .handleOAuthCallback({ code: 'auth-code', state: storedState })
+        .subscribe(r => (result = r));
+
+      // Assert: observable returned false
+      expect(result).toBe(false);
+
+      // Assert: lastAuthError carries the identity_mismatch code
+      expect(service.lastAuthError?.code).toBe('identity_mismatch');
+
+      // Assert: session was NOT destroyed (user profile still set)
+      expect(service.isAuthenticated).toBe(true);
+      expect(service.userProfile).not.toBeNull();
+
+      // Assert: logout was NOT called (no POST to /me/logout)
+      const postCalls = vi.mocked(httpClient.post).mock.calls;
+      const logoutCalls = postCalls.filter(
+        call => typeof call[0] === 'string' && call[0].includes('/me/logout'),
+      );
+      expect(logoutCalls.length).toBe(0);
+    });
+  }); /* End of identity_mismatch on token exchange describe block */
 });
