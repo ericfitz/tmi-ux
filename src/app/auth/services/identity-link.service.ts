@@ -34,11 +34,10 @@ export class IdentityLinkService {
   }
 
   startLink(idp: string): Observable<IdentityLinkStartResponse> {
+    // POST with query params + empty body (ApiService.post takes no params arg).
+    const qs = new URLSearchParams({ idp, client_callback: this.linkCallbackUrl }).toString();
     return this.api
-      .get<IdentityLinkStartResponse>('me/identities/link/start', {
-        idp,
-        client_callback: this.linkCallbackUrl,
-      })
+      .post<IdentityLinkStartResponse>(`me/identities/link/start?${qs}`, {})
       .pipe(this.mapStepUp());
   }
 

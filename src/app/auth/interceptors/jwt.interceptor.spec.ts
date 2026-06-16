@@ -1,6 +1,12 @@
 import '@angular/compiler';
 
-import { HttpRequest, HttpHandler, HttpErrorResponse, HttpContext } from '@angular/common/http';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpErrorResponse,
+  HttpContext,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injector } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
@@ -308,6 +314,42 @@ describe('JwtInterceptor', () => {
               }),
             );
             expect(authService.logout).toHaveBeenCalled();
+            resolve();
+          },
+        });
+      });
+    });
+
+    it('should pass through step-up 401 (insufficient_user_authentication) without refresh or logout', async () => {
+      const mockRequest = createMockRequest(`${environment.apiUrl}/me/identities`, 'GET', true);
+
+      const stepUpError = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url: `${environment.apiUrl}/me/identities`,
+        headers: new HttpHeaders({
+          'WWW-Authenticate': 'Bearer error="insufficient_user_authentication"',
+        }),
+      });
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe({
+          next: () => {
+            expect(true).toBe(false); // Should not succeed
+          },
+          error: error => {
+            // The original step-up error propagates unchanged.
+            expect(error).toBe(stepUpError);
+            expect(error.status).toBe(401);
+            // No refresh, no retry, no logout — IdentityLinkService handles the step-up.
+            expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            expect(authService.logout).not.toHaveBeenCalled();
+            expect(mockHandler.handle).toHaveBeenCalledTimes(1);
             resolve();
           },
         });

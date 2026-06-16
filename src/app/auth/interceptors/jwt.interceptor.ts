@@ -72,6 +72,17 @@ export class JwtInterceptor implements HttpInterceptor {
       return next.handle(request).pipe(
         catchError((error: HttpErrorResponse) => {
           if (error.status === 401) {
+            const challenge = (error.headers?.get('WWW-Authenticate') ?? '').toLowerCase();
+            if (challenge.includes('insufficient_user_authentication')) {
+              // Step-up freshness challenge: a valid JWT with stale auth_time.
+              // Refreshing the token cannot satisfy freshness, so do NOT run the
+              // refresh/retry/logout path — propagate so callers (e.g.
+              // IdentityLinkService) can trigger an explicit step-up re-auth.
+              this.logger.info(
+                'Step-up (insufficient_user_authentication) challenge — passing through',
+              );
+              return this.handleError(error, request);
+            }
             this.logger.error('401 UNAUTHORIZED on API request', {
               url: request.url,
               method: request.method,

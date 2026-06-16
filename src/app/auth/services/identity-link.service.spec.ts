@@ -41,18 +41,17 @@ describe('IdentityLinkService', () => {
     expect(res.primary.provider).toBe('google');
   });
 
-  it('startLink() passes idp and the link callback URL', async () => {
-    api.get.mockReturnValue(
+  it('startLink() POSTs with idp and the link callback URL as query params', async () => {
+    api.post.mockReturnValue(
       of({ link_state: 's', authorization_url: 'https://idp', expires_at: 'x' }),
     );
     await firstValueFrom(service.startLink('github'));
-    expect(api.get).toHaveBeenCalledWith(
-      'me/identities/link/start',
-      expect.objectContaining({
-        idp: 'github',
-        client_callback: `${window.location.origin}/oauth2/link/callback`,
-      }),
-    );
+    const qs = new URLSearchParams({
+      idp: 'github',
+      client_callback: `${window.location.origin}/oauth2/link/callback`,
+    }).toString();
+    expect(api.post).toHaveBeenCalledWith(`me/identities/link/start?${qs}`, {});
+    expect(api.get).not.toHaveBeenCalled();
   });
 
   it('getPending() calls GET with the URL-encoded token path', async () => {
