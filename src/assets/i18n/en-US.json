@@ -2074,7 +2074,7 @@
     "confirmTitle": "Re-authentication required",
     "confirmBody": "This action requires recent authentication. You'll be redirected to sign in again. Unsaved changes on this page will be lost.",
     "confirmAction": "Re-authenticate",
-    "redoPrompt": "Re-authentication complete — please retry your action.",
+    "redoPrompt": "Re-authentication is complete — please retry your action.",
     "mismatchTitle": "Wrong account",
     "mismatchBody": "You must re-authenticate as {{email}} to complete this action.",
     "tryAgain": "Try again"
