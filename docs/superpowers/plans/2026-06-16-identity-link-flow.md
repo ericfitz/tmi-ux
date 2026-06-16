@@ -1269,7 +1269,8 @@ Add a top-level `"identities"` object (and confirm `common.close` exists; if not
       "success": "Account linked.",
       "confirm": {
         "title": "Confirm account link",
-        "body": "Link <strong>{{linkProvider}}: {{linkEmail}}</strong> to your account <strong>{{accountEmail}} ({{accountProvider}})</strong>?",
+        "bodyPrefix": "Link",
+        "bodyJoin": "to your account",
         "warning": "Whoever controls the linked identity will be able to sign in to your account.",
         "expiry": "This confirmation expires in 5 minutes.",
         "confirmButton": "Link account"
