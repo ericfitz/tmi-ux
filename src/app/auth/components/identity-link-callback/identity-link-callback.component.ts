@@ -79,7 +79,11 @@ export class IdentityLinkCallbackComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.logger.warn('Failed to load pending identity link', err);
-        this.errorKey = 'identities.link.error.expired';
+        // 404 = expired/foreign/consumed token; anything else is a transient failure.
+        this.errorKey =
+          (err as { status?: number })?.status === 404
+            ? 'identities.link.error.expired'
+            : 'identities.link.error.generic';
         this.state = 'error';
       },
     });

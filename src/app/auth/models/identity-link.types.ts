@@ -18,7 +18,6 @@ export type PrimaryIdentity = MyIdentitiesResponse['primary'];
 /** Server error codes we branch on (RFC6749 `error` field). */
 export const IDENTITY_LINK_ERROR = {
   alreadyBound: 'identity_already_bound',
-  identityMismatch: 'identity_mismatch',
 } as const;
 
 /**
