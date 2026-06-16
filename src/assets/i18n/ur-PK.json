@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "دوبارہ تصدیق درکار ہے",
+    "confirmBody": "اس عمل کے لیے حالیہ تصدیق ضروری ہے۔ آپ کو دوبارہ سائن ان کرنے کے لیے ری ڈائریکٹ کیا جائے گا۔ اس صفحے پر غیر محفوظ تبدیلیاں ضائع ہو جائیں گی۔",
+    "confirmAction": "دوبارہ تصدیق کریں",
+    "redoPrompt": "دوبارہ تصدیق مکمل ہو گئی — براہ کرم اپنا عمل دوبارہ آزمائیں۔",
+    "mismatchTitle": "غلط اکاؤنٹ",
+    "mismatchBody": "اس عمل کو مکمل کرنے کے لیے آپ کو {{email}} کے طور پر دوبارہ تصدیق کرنی ہوگی۔",
+    "tryAgain": "دوبارہ کوشش کریں"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

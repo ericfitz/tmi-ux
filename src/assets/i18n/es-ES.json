@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "Se requiere reautenticación",
+    "confirmBody": "Esta acción requiere autenticación reciente. Se te redirigirá para iniciar sesión de nuevo. Los cambios no guardados en esta página se perderán.",
+    "confirmAction": "Reautenticarse",
+    "redoPrompt": "Reautenticación completada — vuelve a intentar tu acción.",
+    "mismatchTitle": "Cuenta incorrecta",
+    "mismatchBody": "Debes reautenticarte como {{email}} para completar esta acción.",
+    "tryAgain": "Volver a intentar"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

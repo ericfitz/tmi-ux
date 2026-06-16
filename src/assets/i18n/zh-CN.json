@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "需要重新验证身份",
+    "confirmBody": "此操作需要近期的身份验证。您将被重定向至登录页面。本页面未保存的更改将会丢失。",
+    "confirmAction": "重新验证",
+    "redoPrompt": "重新验证成功——请重试您的操作。",
+    "mismatchTitle": "账户不匹配",
+    "mismatchBody": "您必须以 {{email}} 的身份重新验证才能完成此操作。",
+    "tryAgain": "重试"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

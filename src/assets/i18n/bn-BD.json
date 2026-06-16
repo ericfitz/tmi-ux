@@ -2221,6 +2221,15 @@
   "ssvcCalculator.technicalImpact.name": "প্রযুক্তিগত প্রভাব",
   "ssvcCalculator.title": "SSVC ক্যালকুলেটর",
   "ssvcCalculator.utility.superEffective": "অত্যন্ত কার্যকর",
+  "stepUp": {
+    "confirmTitle": "পুনরায় প্রমাণীকরণ প্রয়োজন",
+    "confirmBody": "এই কার্যটি সম্পন্ন করতে সাম্প্রতিক প্রমাণীকরণ প্রয়োজন। আপনাকে পুনরায় সাইন ইন করতে পুনর্নির্দেশ করা হবে। এই পৃষ্ঠায় অসংরক্ষিত পরিবর্তনগুলি হারিয়ে যাবে।",
+    "confirmAction": "পুনরায় প্রমাণীকরণ করুন",
+    "redoPrompt": "পুনরায় প্রমাণীকরণ সম্পন্ন — অনুগ্রহ করে আপনার কার্যটি আবার চেষ্টা করুন।",
+    "mismatchTitle": "ভুল অ্যাকাউন্ট",
+    "mismatchBody": "এই কার্যটি সম্পন্ন করতে আপনাকে অবশ্যই {{email}} হিসেবে পুনরায় প্রমাণীকরণ করতে হবে।",
+    "tryAgain": "আবার চেষ্টা করুন"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

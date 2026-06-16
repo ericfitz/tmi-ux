@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "Ré-authentification requise",
+    "confirmBody": "Cette action nécessite une authentification récente. Vous allez être redirigé(e) vers la page de connexion. Les modifications non enregistrées sur cette page seront perdues.",
+    "confirmAction": "Se ré-authentifier",
+    "redoPrompt": "Ré-authentification réussie — veuillez réessayer votre action.",
+    "mismatchTitle": "Compte incorrect",
+    "mismatchBody": "Vous devez vous ré-authentifier en tant que {{email}} pour effectuer cette action.",
+    "tryAgain": "Réessayer"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

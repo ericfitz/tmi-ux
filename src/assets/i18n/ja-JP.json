@@ -1741,6 +1741,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "再認証が必要です",
+    "confirmBody": "このアクションを実行するには、最近の認証が必要です。サインインページにリダイレクトされます。このページの未保存の変更は失われます。",
+    "confirmAction": "再認証する",
+    "redoPrompt": "再認証が完了しました。もう一度操作を実行してください。",
+    "mismatchTitle": "アカウントが違います",
+    "mismatchBody": "このアクションを完了するには、{{email}} として再認証する必要があります。",
+    "tryAgain": "再試行"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

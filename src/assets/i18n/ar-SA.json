@@ -1741,6 +1741,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "إعادة المصادقة مطلوبة",
+    "confirmBody": "يتطلب هذا الإجراء مصادقة حديثة. ستتم إعادة توجيهك لتسجيل الدخول مرة أخرى. ستُفقد التغييرات غير المحفوظة في هذه الصفحة.",
+    "confirmAction": "إعادة المصادقة",
+    "redoPrompt": "اكتملت إعادة المصادقة — يُرجى إعادة محاولة الإجراء.",
+    "mismatchTitle": "حساب غير صحيح",
+    "mismatchBody": "يجب إعادة المصادقة بوصفك {{email}} لإكمال هذا الإجراء.",
+    "tryAgain": "حاول مجدداً"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

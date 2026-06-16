@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "Erneute Authentifizierung erforderlich",
+    "confirmBody": "Diese Aktion erfordert eine kürzlich durchgeführte Authentifizierung. Sie werden zur erneuten Anmeldung weitergeleitet. Nicht gespeicherte Änderungen auf dieser Seite gehen verloren.",
+    "confirmAction": "Erneut authentifizieren",
+    "redoPrompt": "Erneute Authentifizierung abgeschlossen — bitte wiederholen Sie Ihre Aktion.",
+    "mismatchTitle": "Falsches Konto",
+    "mismatchBody": "Sie müssen sich als {{email}} erneut authentifizieren, um diese Aktion abzuschließen.",
+    "tryAgain": "Erneut versuchen"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

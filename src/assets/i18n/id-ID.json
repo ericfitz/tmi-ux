@@ -1739,6 +1739,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "Autentikasi ulang diperlukan",
+    "confirmBody": "Tindakan ini memerlukan autentikasi terbaru. Anda akan diarahkan untuk masuk kembali. Perubahan yang belum disimpan di halaman ini akan hilang.",
+    "confirmAction": "Autentikasi ulang",
+    "redoPrompt": "Autentikasi ulang selesai — silakan coba tindakan Anda kembali.",
+    "mismatchTitle": "Akun salah",
+    "mismatchBody": "Anda harus melakukan autentikasi ulang sebagai {{email}} untuk menyelesaikan tindakan ini.",
+    "tryAgain": "Coba lagi"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",

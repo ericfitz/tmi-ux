@@ -1737,6 +1737,15 @@
     },
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
+  "stepUp": {
+    "confirmTitle": "נדרשת אימות מחדש",
+    "confirmBody": "פעולה זו מצריכה אימות אחרון. תועבר להתחברות מחדש. שינויים שלא נשמרו בדף זה יאבדו.",
+    "confirmAction": "אמת מחדש",
+    "redoPrompt": "האימות הושלם — נסה שוב את הפעולה.",
+    "mismatchTitle": "חשבון שגוי",
+    "mismatchBody": "עליך לאמת מחדש כ-{{email}} כדי להשלים פעולה זו.",
+    "tryAgain": "נסה שוב"
+  },
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}",
