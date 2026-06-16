@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -30,13 +30,7 @@ interface CallbackFragmentParams {
 @Component({
   selector: 'app-auth-callback',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatDialogModule,
-    MatProgressSpinnerModule,
-    TranslocoModule,
-  ],
+  imports: [CommonModule, MatCardModule, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './auth-callback.component.html',
   styleUrls: ['./auth-callback.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

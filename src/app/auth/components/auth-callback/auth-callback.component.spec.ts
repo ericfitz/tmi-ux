@@ -614,11 +614,6 @@ describe('AuthCallbackComponent', () => {
     });
 
     it('uses "/" as fallback target when returnUrl is missing or unsafe on identity_mismatch', async () => {
-      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
-        csrf: 'csrf-token',
-        returnUrl: '//evil.com/phish',
-        stepUp: true,
-      });
       mockAuthService.handleOAuthCallback = vi.fn().mockReturnValue(of(false));
       mockAuthService.lastAuthError = {
         code: 'identity_mismatch',
@@ -632,6 +627,29 @@ describe('AuthCallbackComponent', () => {
       mockDialog.open = vi
         .fn()
         .mockReturnValue({ afterClosed: () => afterClosedSubject.asObservable() });
+
+      // Case 1: unsafe protocol-relative returnUrl must not be honored
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        returnUrl: '//evil.com/phish',
+        stepUp: true,
+      });
+
+      queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      await Promise.resolve();
+
+      expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/');
+
+      // Case 2: missing (undefined) returnUrl also falls back to "/"
+      (mockRouter.navigateByUrl).mockClear();
+      (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
+        csrf: 'csrf-token',
+        stepUp: true,
+      });
 
       queryParamsSubject.next({ code: 'step-up-code', state: 'encoded-stepup-state' });
 
