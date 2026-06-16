@@ -645,7 +645,7 @@ describe('AuthCallbackComponent', () => {
       expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/');
 
       // Case 2: missing (undefined) returnUrl also falls back to "/"
-      (mockRouter.navigateByUrl).mockClear();
+      mockRouter.navigateByUrl.mockClear();
       (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
         csrf: 'csrf-token',
         stepUp: true,
