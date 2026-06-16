@@ -29,7 +29,7 @@ export class StepUpService {
   private _inFlight$: Observable<StepUpOutcome> | null = null;
 
   /** Seam for tests: performs the top-level navigation to the IdP */
-  navigateTo: (url: string) => void = (url: string) => {
+  navigateTo: (url: string) => void = url => {
     window.location.href = url;
   };
 
@@ -107,6 +107,9 @@ export class StepUpService {
           if (confirmed && response.redirect_url) {
             this.navigateTo(response.redirect_url);
             return 'redirecting' as const;
+          }
+          if (confirmed && !response.redirect_url) {
+            this._logger.warn('Step-up redirect confirmed but no redirect_url in response');
           }
           return 'cancelled' as const;
         }),
