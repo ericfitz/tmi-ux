@@ -13,11 +13,13 @@ import { vi, beforeEach, describe, it, expect } from 'vitest';
 
 import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
+import { StepUpService } from '../services/step-up.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthSession } from '../models/auth.models';
 import {
   IS_AUTH_RETRY,
   IS_LOGOUT_REQUEST,
+  IS_STEPUP_RETRY,
   SKIP_ERROR_HANDLING,
 } from '../../core/tokens/http-context.tokens';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../testing/mocks';
@@ -35,6 +37,7 @@ import { environment } from '../../../environments/environment';
 describe('JwtInterceptor', () => {
   let interceptor: JwtInterceptor;
   let authService: AuthService;
+  let stepUpService: { beginStepUp: ReturnType<typeof vi.fn> };
   let loggerService: MockLoggerService;
 
   const mockAuthSession: AuthSession = {
@@ -71,18 +74,29 @@ describe('JwtInterceptor', () => {
     return request as HttpRequest<unknown>;
   };
 
+  /** Create a PUT request to an admin URL (used in step-up tests). */
+  const makeAdminRequest = (includeClone = true): HttpRequest<unknown> =>
+    createMockRequest(`http://localhost:8080/admin/settings`, 'PUT', includeClone);
+
   beforeEach(() => {
     const mockAuthService = {
       forceRefreshToken: vi.fn(),
       handleAuthError: vi.fn(),
       logout: vi.fn(),
+      userProfile: { provider: 'github' },
     };
 
     authService = mockAuthService as unknown as AuthService;
+    stepUpService = { beginStepUp: vi.fn() };
     loggerService = createTypedMockLoggerService();
 
     const mockInjector = {
-      get: vi.fn().mockReturnValue(authService),
+      get: vi.fn().mockImplementation((token: unknown) => {
+        if (token === StepUpService) {
+          return stepUpService;
+        }
+        return authService;
+      }),
     } as unknown as Injector;
 
     interceptor = new JwtInterceptor(mockInjector, loggerService as unknown as LoggerService);
@@ -320,7 +334,9 @@ describe('JwtInterceptor', () => {
       });
     });
 
-    it('should pass through step-up 401 (insufficient_user_authentication) without refresh or logout', async () => {
+    it('should invoke beginStepUp on step-up 401 (insufficient_user_authentication) and propagate error on cancel', async () => {
+      stepUpService.beginStepUp.mockReturnValue(of('cancelled'));
+
       const mockRequest = createMockRequest(`${environment.apiUrl}/me/identities`, 'GET', true);
 
       const stepUpError = new HttpErrorResponse({
@@ -343,12 +359,14 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: error => {
-            // The original step-up error propagates unchanged.
+            // The original step-up error propagates unchanged when cancelled.
             expect(error).toBe(stepUpError);
             expect(error.status).toBe(401);
-            // No refresh, no retry, no logout — IdentityLinkService handles the step-up.
+            // beginStepUp was invoked, but no refresh or logout.
+            expect(stepUpService.beginStepUp).toHaveBeenCalledTimes(1);
             expect(authService.forceRefreshToken).not.toHaveBeenCalled();
             expect(authService.logout).not.toHaveBeenCalled();
+            // Original request was handled exactly once (no retry on cancel).
             expect(mockHandler.handle).toHaveBeenCalledTimes(1);
             resolve();
           },
@@ -655,6 +673,176 @@ describe('JwtInterceptor', () => {
             expect(authService.forceRefreshToken).not.toHaveBeenCalled();
             expect(authService.handleAuthError).not.toHaveBeenCalled();
             expect(authService.logout).not.toHaveBeenCalled();
+            resolve();
+          },
+        });
+      });
+    });
+  });
+
+  describe('step-up challenge handling', () => {
+    const makeStepUpError = (url: string): HttpErrorResponse =>
+      new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url,
+        headers: new HttpHeaders({
+          'WWW-Authenticate': 'Bearer error="insufficient_user_authentication"',
+        }),
+      });
+
+    it('should call beginStepUp and propagate original error when user cancels', async () => {
+      stepUpService.beginStepUp.mockReturnValue(of('cancelled'));
+
+      const mockRequest = makeAdminRequest();
+      const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: () => expect(true).toBe(false),
+          error: error => {
+            expect(error).toBe(stepUpError);
+            expect(stepUpService.beginStepUp).toHaveBeenCalledTimes(1);
+            expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            expect(mockHandler.handle).toHaveBeenCalledTimes(1);
+            resolve();
+          },
+        });
+      });
+    });
+
+    it('should pass the user provider id to beginStepUp', async () => {
+      stepUpService.beginStepUp.mockReturnValue(of('cancelled'));
+
+      const mockRequest = makeAdminRequest();
+      const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: () => expect(true).toBe(false),
+          error: () => {
+            // mockAuthService.userProfile.provider = 'github'
+            expect(stepUpService.beginStepUp).toHaveBeenCalledWith('github');
+            resolve();
+          },
+        });
+      });
+    });
+
+    it('should retry the original request with IS_STEPUP_RETRY=true on weak_complete', async () => {
+      stepUpService.beginStepUp.mockReturnValue(of('weak_complete'));
+
+      const mockRequest = makeAdminRequest();
+      const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
+
+      const mockHandler = {
+        handle: vi
+          .fn()
+          .mockReturnValueOnce(throwError(() => stepUpError))
+          .mockReturnValueOnce(of({ data: 'settings updated' })),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: response => {
+            expect(response).toEqual({ data: 'settings updated' });
+            expect(stepUpService.beginStepUp).toHaveBeenCalledTimes(1);
+            expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            // handler called twice: original + retry
+            expect(mockHandler.handle).toHaveBeenCalledTimes(2);
+            // retry clone carries IS_STEPUP_RETRY=true
+            const retryCloneArgs = vi.mocked(mockRequest.clone as ReturnType<typeof vi.fn>).mock
+              .calls[0][0];
+            expect(retryCloneArgs.context).toBeDefined();
+            expect(retryCloneArgs.context.get(IS_STEPUP_RETRY)).toBe(true);
+            resolve();
+          },
+          error: () => expect(true).toBe(false),
+        });
+      });
+    });
+
+    it('should not call beginStepUp again when IS_STEPUP_RETRY is already set', async () => {
+      const retryContext = new HttpContext().set(IS_STEPUP_RETRY, true);
+      const mockRequest = createMockRequest(
+        `${environment.apiUrl}/admin/settings`,
+        'PUT',
+        true,
+        retryContext,
+      );
+      const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: () => expect(true).toBe(false),
+          error: error => {
+            expect(error).toBe(stepUpError);
+            expect(stepUpService.beginStepUp).not.toHaveBeenCalled();
+            expect(mockHandler.handle).toHaveBeenCalledTimes(1);
+            resolve();
+          },
+        });
+      });
+    });
+
+    it('should use the refresh path (not beginStepUp) for plain 401 without step-up challenge', async () => {
+      vi.mocked(authService.forceRefreshToken).mockReturnValueOnce(of(mockAuthSession));
+
+      const mockRequest = makeAdminRequest();
+      const plainError = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url: `${environment.apiUrl}/admin/settings`,
+      });
+
+      const mockHandler = {
+        handle: vi
+          .fn()
+          .mockReturnValueOnce(throwError(() => plainError))
+          .mockReturnValueOnce(of({ data: 'ok' })),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: response => {
+            expect(response).toEqual({ data: 'ok' });
+            expect(stepUpService.beginStepUp).not.toHaveBeenCalled();
+            expect(authService.forceRefreshToken).toHaveBeenCalledTimes(1);
+            resolve();
+          },
+          error: () => expect(true).toBe(false),
+        });
+      });
+    });
+
+    it('should propagate original error and not retry when redirecting', async () => {
+      stepUpService.beginStepUp.mockReturnValue(of('redirecting'));
+
+      const mockRequest = makeAdminRequest();
+      const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        interceptor.intercept(mockRequest, mockHandler).subscribe({
+          next: () => expect(true).toBe(false),
+          error: error => {
+            expect(error).toBe(stepUpError);
+            expect(mockHandler.handle).toHaveBeenCalledTimes(1);
             resolve();
           },
         });

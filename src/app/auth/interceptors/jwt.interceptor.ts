@@ -13,9 +13,12 @@ import { LoggerService } from '../../core/services/logger.service';
 import {
   IS_AUTH_RETRY,
   IS_LOGOUT_REQUEST,
+  IS_STEPUP_RETRY,
   SKIP_ERROR_HANDLING,
 } from '../../core/tokens/http-context.tokens';
 import { AuthService } from '../services/auth.service';
+import { StepUpService } from '../services/step-up.service';
+import { isStepUpChallenge } from '../utils/step-up.utils';
 import { environment } from '../../../environments/environment';
 import { AuthError } from '../models/auth.models';
 
@@ -41,6 +44,7 @@ export class JwtInterceptor implements HttpInterceptor {
   ];
 
   private _authService: AuthService | null = null;
+  private _stepUpService: StepUpService | null = null;
 
   constructor(
     private injector: Injector,
@@ -54,6 +58,14 @@ export class JwtInterceptor implements HttpInterceptor {
       this._authService = this.injector.get(AuthService);
     }
     return this._authService;
+  }
+
+  /** Lazily resolve StepUpService to avoid the same DI cycle as AuthService. */
+  private get stepUpService(): StepUpService {
+    if (!this._stepUpService) {
+      this._stepUpService = this.injector.get(StepUpService);
+    }
+    return this._stepUpService;
   }
 
   /**
@@ -72,16 +84,8 @@ export class JwtInterceptor implements HttpInterceptor {
       return next.handle(request).pipe(
         catchError((error: HttpErrorResponse) => {
           if (error.status === 401) {
-            const challenge = (error.headers?.get('WWW-Authenticate') ?? '').toLowerCase();
-            if (challenge.includes('insufficient_user_authentication')) {
-              // Step-up freshness challenge: a valid JWT with stale auth_time.
-              // Refreshing the token cannot satisfy freshness, so do NOT run the
-              // refresh/retry/logout path — propagate so callers (e.g.
-              // IdentityLinkService) can trigger an explicit step-up re-auth.
-              this.logger.info(
-                'Step-up (insufficient_user_authentication) challenge — passing through',
-              );
-              return this.handleError(error, request);
+            if (isStepUpChallenge(error)) {
+              return this.handleStepUpChallenge(request, next, error);
             }
             this.logger.error('401 UNAUTHORIZED on API request', {
               url: request.url,
@@ -125,6 +129,48 @@ export class JwtInterceptor implements HttpInterceptor {
       }
       return path === endpoint || path.startsWith(endpoint + '/');
     });
+  }
+
+  /**
+   * Handle a step-up challenge (401 + insufficient_user_authentication).
+   * Token refresh cannot satisfy a freshness challenge, so this branches
+   * before the refresh path. Weak providers complete in-flight and the
+   * original request is retried once; strong providers redirect (the page
+   * unloads) or the user cancels — either way the original error propagates.
+   */
+  private handleStepUpChallenge(
+    request: HttpRequest<unknown>,
+    next: HttpHandler,
+    originalError: HttpErrorResponse,
+  ): Observable<HttpEvent<unknown>> {
+    if (request.context.get(IS_STEPUP_RETRY)) {
+      this.logger.warn('Step-up challenge on retried request - not retrying again', {
+        url: request.url,
+      });
+      return throwError(() => originalError);
+    }
+    const providerId = this.authService.userProfile?.provider ?? '';
+    this.logger.info('Step-up challenge received - initiating step-up', {
+      url: request.url,
+      provider: providerId,
+    });
+    return this.stepUpService.beginStepUp(providerId).pipe(
+      switchMap(outcome => {
+        if (outcome === 'weak_complete') {
+          // Retry the original request once, marked to prevent loops.
+          // Use a fresh HttpContext (matching the IS_AUTH_RETRY retry pattern)
+          // — SKIP_ERROR_HANDLING requests never reach here because intercept()
+          // short-circuits them at the top.
+          const retryRequest = request.clone({
+            context: new HttpContext().set(IS_STEPUP_RETRY, true),
+          });
+          return next.handle(retryRequest);
+        }
+        // 'redirecting': page is unloading; 'cancelled': user dismissed dialog.
+        // Either way, propagate the original challenge error.
+        return throwError(() => originalError);
+      }),
+    );
   }
 
   /**
