@@ -1339,6 +1339,43 @@
   "getStarted": "Loslegen",
   "homeDescription": "TMI wurde von Sicherheitsprüfern entwickelt, die aus erster Hand wissen, wie mühsam Sicherheitsüberprüfungen sind. Es steuert die Prüfungs-Workflows, organisiert die unterstützenden Informationen und ermöglicht es Teams, gemeinsam an Datenflussdiagrammen zu arbeiten. Es ist außerdem dafür ausgelegt, dass KI-Agenten sich anbinden und Seite an Seite mit menschlichen Prüfern arbeiten können.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
+  "identities": {
+    "columns": {
+      "account": "Konto",
+      "provider": "Anbieter"
+    },
+    "help": "Konten, mit denen Sie sich bei TMI anmelden können.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "mit Ihrem Konto",
+        "bodyPrefix": "Verknüpfen Sie",
+        "confirmButton": "Konto verknüpfen",
+        "expiry": "Diese Bestätigung läuft in 5 Minuten ab.",
+        "title": "Kontoverknüpfung bestätigen",
+        "warning": "Wer die verknüpfte Identität kontrolliert, kann sich bei Ihrem Konto anmelden."
+      },
+      "error": {
+        "alreadyBound": "Diese Identität ist bereits mit einem TMI-Konto verknüpft.",
+        "expired": "Diese Verknüpfungsanfrage ist abgelaufen. Bitte beginnen Sie erneut.",
+        "generic": "Beim Verknüpfen des Kontos ist ein Fehler aufgetreten. Versuchen Sie es erneut.",
+        "startFailed": "Die Kontoverknüpfung konnte nicht gestartet werden. Versuchen Sie es erneut.",
+        "title": "Konto konnte nicht verknüpft werden"
+      },
+      "loading": "Wird geladen…",
+      "submitting": "Ihr Konto wird verknüpft…",
+      "success": "Konto verknüpft."
+    },
+    "linkNew": "Weiteres Konto verknüpfen",
+    "primary": "Primär",
+    "tabTitle": "Verknüpfte Konten",
+    "unlink": {
+      "action": "Verknüpfung aufheben",
+      "confirmBody": "Diese Identität kann sich nicht mehr bei diesem Konto anmelden.",
+      "confirmTitle": "Verknüpfung mit {{identity}} aufheben?",
+      "error": "Die Verknüpfung der Identität konnte nicht aufgehoben werden. Versuchen Sie es erneut.",
+      "success": "Verknüpfung der Identität aufgehoben."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

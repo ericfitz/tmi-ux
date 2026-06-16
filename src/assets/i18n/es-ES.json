@@ -1339,6 +1339,43 @@
   "getStarted": "Comenzar",
   "homeDescription": "TMI ha sido creado por revisores de seguridad que conocen de primera mano lo arduo que es el proceso de revisión. Ejecuta los flujos de trabajo de revisión, organiza la información de apoyo y permite a los equipos colaborar en diagramas de flujo de datos. Además, está diseñado para que agentes de IA se conecten y trabajen junto a los revisores humanos.",
   "homeWelcomeTitle": "Bienvenido a TMI: Modelado de Amenazas Mejorado",
+  "identities": {
+    "columns": {
+      "account": "Cuenta",
+      "provider": "Proveedor"
+    },
+    "help": "Cuentas que puede usar para iniciar sesión en TMI.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "a su cuenta",
+        "bodyPrefix": "Vincular",
+        "confirmButton": "Vincular cuenta",
+        "expiry": "Esta confirmación caduca en 5 minutos.",
+        "title": "Confirmar vinculación de cuenta",
+        "warning": "Cualquier persona que controle la identidad vinculada podrá iniciar sesión en su cuenta."
+      },
+      "error": {
+        "alreadyBound": "Esa identidad ya está vinculada a una cuenta de TMI.",
+        "expired": "Esta solicitud de vinculación ha caducado. Empiece de nuevo.",
+        "generic": "Se produjo un error al vincular la cuenta. Inténtelo de nuevo.",
+        "startFailed": "No se pudo iniciar la vinculación de la cuenta. Inténtelo de nuevo.",
+        "title": "No se pudo vincular la cuenta"
+      },
+      "loading": "Cargando…",
+      "submitting": "Vinculando su cuenta…",
+      "success": "Cuenta vinculada."
+    },
+    "linkNew": "Vincular otra cuenta",
+    "primary": "Principal",
+    "tabTitle": "Cuentas vinculadas",
+    "unlink": {
+      "action": "Desvincular",
+      "confirmBody": "Esa identidad ya no podrá iniciar sesión en esta cuenta.",
+      "confirmTitle": "¿Desvincular {{identity}}?",
+      "error": "No se pudo desvincular la identidad. Inténtelo de nuevo.",
+      "success": "Identidad desvinculada."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

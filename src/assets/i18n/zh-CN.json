@@ -1339,6 +1339,43 @@
   "getStarted": "开始使用",
   "homeDescription": "TMI 由深知安全审查何等繁琐的安全审查人员构建。它驱动审查工作流,整理相关信息,并让团队协同绘制数据流图。它还专为 AI 代理设计,可与人类审查人员并肩工作。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
+  "identities": {
+    "columns": {
+      "account": "账户",
+      "provider": "提供商"
+    },
+    "help": "可用于登录 TMI 的账户。",
+    "link": {
+      "confirm": {
+        "bodyJoin": "关联到您的账户",
+        "bodyPrefix": "将",
+        "confirmButton": "关联账户",
+        "expiry": "此确认将在 5 分钟后失效。",
+        "title": "确认账户关联",
+        "warning": "任何控制该已关联身份的人都将能够登录您的账户。"
+      },
+      "error": {
+        "alreadyBound": "该身份已关联到某个 TMI 账户。",
+        "expired": "此关联请求已过期。请重新开始。",
+        "generic": "关联账户时出现错误。请重试。",
+        "startFailed": "无法启动账户关联。请重试。",
+        "title": "无法关联账户"
+      },
+      "loading": "加载中…",
+      "submitting": "正在关联您的账户…",
+      "success": "账户已关联。"
+    },
+    "linkNew": "关联其他账户",
+    "primary": "主账户",
+    "tabTitle": "已关联的账户",
+    "unlink": {
+      "action": "取消关联",
+      "confirmBody": "该身份将无法再登录此账户。",
+      "confirmTitle": "取消关联 {{identity}}？",
+      "error": "无法取消关联该身份。请重试。",
+      "success": "已取消关联该身份。"
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
