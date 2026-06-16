@@ -23,6 +23,7 @@ interface MockDialog {
 }
 interface MockPkce {
   generatePkceParameters: ReturnType<typeof vi.fn>;
+  clearVerifier: ReturnType<typeof vi.fn>;
 }
 
 describe('StepUpService', () => {
@@ -51,7 +52,10 @@ describe('StepUpService', () => {
     http = { get: vi.fn().mockReturnValue(of(weakResponse)) };
     router = { url: '/admin/settings' };
     dialog = { open: vi.fn() };
-    pkce = { generatePkceParameters: vi.fn().mockResolvedValue(pkceParams) };
+    pkce = {
+      generatePkceParameters: vi.fn().mockResolvedValue(pkceParams),
+      clearVerifier: vi.fn(),
+    };
 
     service = new StepUpService(
       http as never,
@@ -82,11 +86,17 @@ describe('StepUpService', () => {
     expect(options.params['code_challenge']).toBe(pkceParams.codeChallenge);
     expect(options.params['code_challenge_method']).toBe('S256');
     expect(options.params['client_callback']).toContain('/oauth2/callback');
-    expect(options.params['state']).toBe(localStorage.getItem('oauth_state'));
+    // The state sent is the step-up state (storage-independent: the weak path
+    // clears localStorage after completing, so decode the sent value directly).
+    const decodedState = JSON.parse(atob(options.params['state'])) as { stepUp?: boolean };
+    expect(decodedState.stepUp).toBe(true);
     expect(options.context.get(SKIP_ERROR_HANDLING)).toBe(true);
   });
 
-  it('stores oauth_provider for the callback token exchange', async () => {
+  it('stores oauth_provider for the callback token exchange on the strong path', async () => {
+    http.get.mockReturnValue(of(strongResponse));
+    dialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    service.navigateTo = vi.fn();
     await new Promise(resolve => service.beginStepUp('github').subscribe(resolve));
     expect(localStorage.getItem('oauth_provider')).toBe('github');
   });
@@ -119,6 +129,41 @@ describe('StepUpService', () => {
     http.get.mockReturnValue(throwError(() => new Error('503')));
     const outcome = await new Promise(resolve => service.beginStepUp('google').subscribe(resolve));
     expect(outcome).toBe('cancelled');
+  });
+
+  it('clears orphaned handoff storage on the weak short-circuit', async () => {
+    await new Promise(resolve => service.beginStepUp('github').subscribe(resolve));
+    expect(localStorage.getItem('oauth_state')).toBeNull();
+    expect(localStorage.getItem('oauth_provider')).toBeNull();
+    expect(pkce.clearVerifier).toHaveBeenCalled();
+  });
+
+  it('clears handoff storage when the user cancels the confirm dialog', async () => {
+    http.get.mockReturnValue(of(strongResponse));
+    dialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
+    await new Promise(resolve => service.beginStepUp('google').subscribe(resolve));
+    expect(localStorage.getItem('oauth_state')).toBeNull();
+    expect(localStorage.getItem('oauth_provider')).toBeNull();
+    expect(pkce.clearVerifier).toHaveBeenCalled();
+  });
+
+  it('clears handoff storage when the step_up request errors', async () => {
+    http.get.mockReturnValue(throwError(() => new Error('503')));
+    await new Promise(resolve => service.beginStepUp('google').subscribe(resolve));
+    expect(localStorage.getItem('oauth_state')).toBeNull();
+    expect(localStorage.getItem('oauth_provider')).toBeNull();
+    expect(pkce.clearVerifier).toHaveBeenCalled();
+  });
+
+  it('preserves handoff storage on the strong redirect path (callback consumes it)', async () => {
+    http.get.mockReturnValue(of(strongResponse));
+    dialog.open.mockReturnValue({ afterClosed: () => of(true) });
+    service.navigateTo = vi.fn();
+    const outcome = await new Promise(resolve => service.beginStepUp('google').subscribe(resolve));
+    expect(outcome).toBe('redirecting');
+    expect(localStorage.getItem('oauth_state')).not.toBeNull();
+    expect(localStorage.getItem('oauth_provider')).toBe('google');
+    expect(pkce.clearVerifier).not.toHaveBeenCalled();
   });
 
   it('deduplicates concurrent challenges into one in-flight step-up', async () => {

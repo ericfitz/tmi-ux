@@ -33,3 +33,34 @@ export function buildStepUpState(returnUrl: string): string {
   const encoder = new TextEncoder();
   return btoa(String.fromCharCode(...encoder.encode(stateJson)));
 }
+
+/**
+ * Build the query parameters for GET /oauth2/step_up. Single source of truth for
+ * the request contract shared by AuthService.initiateStepUp (top-level redirect)
+ * and StepUpService.beginStepUp (XHR, JSON-negotiated).
+ */
+export function buildStepUpRequestParams(
+  state: string,
+  codeChallenge: string,
+  codeChallengeMethod: string,
+  origin: string = window.location.origin,
+): Record<string, string> {
+  return {
+    client_callback: `${origin}/oauth2/callback`,
+    state,
+    code_challenge: codeChallenge,
+    code_challenge_method: codeChallengeMethod,
+  };
+}
+
+/**
+ * Serialize step-up request params into a full GET URL for top-level navigation.
+ * Every value is percent-encoded (the base64 state can contain '+', '/', '=').
+ */
+export function buildStepUpUrl(apiBaseUrl: string, params: Record<string, string>): string {
+  const base = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+  const query = Object.entries(params)
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join('&');
+  return `${base}/oauth2/step_up?${query}`;
+}

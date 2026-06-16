@@ -10,7 +10,7 @@ import { SKIP_ERROR_HANDLING } from '../../core/tokens/http-context.tokens';
 import { environment } from '../../../environments/environment';
 import { PkceService } from './pkce.service';
 import { StepUpOutcome, StepUpResponse } from '../models/step-up.models';
-import { buildStepUpState } from '../utils/step-up.utils';
+import { buildStepUpRequestParams, buildStepUpState } from '../utils/step-up.utils';
 import { StepUpConfirmDialogComponent } from '../components/step-up-confirm-dialog/step-up-confirm-dialog.component';
 
 /**
@@ -43,6 +43,7 @@ export class StepUpService {
 
   /**
    * Initiate a step-up authentication flow for the given provider.
+   * XHR/JSON-negotiated counterpart of AuthService.initiateStepUp (top-level redirect).
    *
    * Deduplicates concurrent callers: if a step-up is already in flight,
    * the same observable (via shareReplay(1)) is returned to all callers.
@@ -64,12 +65,11 @@ export class StepUpService {
         localStorage.setItem('oauth_state', state);
         localStorage.setItem('oauth_provider', providerId);
 
-        const params: Record<string, string> = {
-          client_callback: `${window.location.origin}/oauth2/callback`,
+        const params = buildStepUpRequestParams(
           state,
-          code_challenge: pkceParams.codeChallenge,
-          code_challenge_method: 'S256',
-        };
+          pkceParams.codeChallenge,
+          pkceParams.codeChallengeMethod,
+        );
 
         return this._http.get<StepUpResponse>(`${environment.apiUrl}/oauth2/step_up`, {
           params,
@@ -80,6 +80,7 @@ export class StepUpService {
       switchMap(response => this._handleStepUpResponse(response)),
       catchError(error => {
         this._logger.error('Step-up initiation failed', error);
+        this._clearStepUpStorage();
         return of('cancelled' as const);
       }),
       finalize(() => {
@@ -96,6 +97,9 @@ export class StepUpService {
       this._logger.info('Step-up completed via weak short-circuit', {
         provider: response.provider,
       });
+      // No callback follows the weak short-circuit (cookies are rotated in
+      // place), so the handoff state this flow wrote is now orphaned — clear it.
+      this._clearStepUpStorage();
       return of('weak_complete' as const);
     }
 
@@ -111,8 +115,24 @@ export class StepUpService {
           if (confirmed && !response.redirect_url) {
             this._logger.warn('Step-up redirect confirmed but no redirect_url in response');
           }
+          // Cancelled (or confirmed-without-url): no callback will consume the
+          // handoff state, so clear it. Only the 'redirecting' path above keeps it.
+          this._clearStepUpStorage();
           return 'cancelled' as const;
         }),
       );
+  }
+
+  /**
+   * Remove the OAuth handoff state this flow wrote to storage. Called on every
+   * terminal outcome EXCEPT 'redirecting' — the strong path needs oauth_state,
+   * oauth_provider, and the PKCE verifier preserved for the /oauth2/callback
+   * token exchange. Clearing on weak/cancel/error prevents a stale handoff from
+   * colliding with a later login or identity-link flow that reuses these keys.
+   */
+  private _clearStepUpStorage(): void {
+    localStorage.removeItem('oauth_state');
+    localStorage.removeItem('oauth_provider');
+    this._pkceService.clearVerifier();
   }
 }

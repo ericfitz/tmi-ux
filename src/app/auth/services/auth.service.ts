@@ -54,6 +54,7 @@ import {
 import { PkceService } from './pkce.service';
 import { PkceError } from '../models/pkce.models';
 import { IS_LOGOUT_REQUEST, SKIP_ERROR_HANDLING } from '../../core/tokens/http-context.tokens';
+import { buildStepUpRequestParams, buildStepUpUrl } from '../utils/step-up.utils';
 
 /**
  * Service for handling authentication with the TMI server.
@@ -730,6 +731,10 @@ export class AuthService {
   /**
    * Initiate a step-up (fresh-prompt) re-authentication for the current user.
    *
+   * Top-level-redirect counterpart of StepUpService.beginStepUp (which is the
+   * XHR/JSON-negotiated path used by the interceptor); both share the request
+   * contract in buildStepUpRequestParams.
+   *
    * Used by step-up-protected flows (e.g. identity-link start/confirm/unlink)
    * after a 401 insufficient_user_authentication. Builds the /oauth2/step_up
    * URL with PKCE + state-encoded returnUrl and top-level-navigates; the
@@ -756,16 +761,12 @@ export class AuthService {
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', providerId);
 
-      const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
-      const baseUrl = environment.apiUrl.endsWith('/')
-        ? environment.apiUrl.slice(0, -1)
-        : environment.apiUrl;
-      const stepUpUrl =
-        `${baseUrl}/oauth2/step_up?` +
-        `state=${state}` +
-        `&client_callback=${encodeURIComponent(clientCallbackUrl)}` +
-        `&code_challenge=${encodeURIComponent(pkceParams.codeChallenge)}` +
-        `&code_challenge_method=${pkceParams.codeChallengeMethod}`;
+      const params = buildStepUpRequestParams(
+        state,
+        pkceParams.codeChallenge,
+        pkceParams.codeChallengeMethod,
+      );
+      const stepUpUrl = buildStepUpUrl(environment.apiUrl, params);
 
       window.location.href = stepUpUrl;
     } catch (error) {

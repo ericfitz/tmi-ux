@@ -6,7 +6,12 @@ import '@angular/compiler';
 import { describe, it, expect } from 'vitest';
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
-import { isStepUpChallenge, buildStepUpState } from './step-up.utils';
+import {
+  isStepUpChallenge,
+  buildStepUpState,
+  buildStepUpRequestParams,
+  buildStepUpUrl,
+} from './step-up.utils';
 
 describe('isStepUpChallenge', () => {
   it('detects the challenge in the WWW-Authenticate header', () => {
@@ -68,5 +73,49 @@ describe('buildStepUpState', () => {
     const a = JSON.parse(atob(buildStepUpState('/x'))) as { csrf: string };
     const b = JSON.parse(atob(buildStepUpState('/x'))) as { csrf: string };
     expect(a.csrf).not.toBe(b.csrf);
+  });
+});
+
+describe('buildStepUpRequestParams', () => {
+  it('returns the 4 required keys', () => {
+    const p = buildStepUpRequestParams('mystate', 'challenge', 'S256', 'https://app.example.com');
+    expect(Object.keys(p).sort()).toEqual(
+      ['client_callback', 'code_challenge', 'code_challenge_method', 'state'].sort(),
+    );
+  });
+
+  it('sets client_callback to origin/oauth2/callback', () => {
+    const p = buildStepUpRequestParams('s', 'c', 'S256', 'https://app.example.com');
+    expect(p['client_callback']).toBe('https://app.example.com/oauth2/callback');
+  });
+
+  it('passes through state, challenge, and method unchanged', () => {
+    const p = buildStepUpRequestParams('mystate', 'mychallenge', 'S256', 'https://app.example.com');
+    expect(p['state']).toBe('mystate');
+    expect(p['code_challenge']).toBe('mychallenge');
+    expect(p['code_challenge_method']).toBe('S256');
+  });
+});
+
+describe('buildStepUpUrl', () => {
+  it('trims a trailing slash from the base URL', () => {
+    const url = buildStepUpUrl('https://api.example.com/', { state: 's', client_callback: 'cb' });
+    expect(url).toContain('https://api.example.com/oauth2/step_up?');
+    expect(url).not.toContain('//oauth2/step_up');
+  });
+
+  it('joins params with & and prefixes /oauth2/step_up?', () => {
+    const url = buildStepUpUrl('https://api.example.com', { state: 's', foo: 'bar' });
+    expect(url).toContain('/oauth2/step_up?');
+    expect(url).toContain('state=s');
+    expect(url).toContain('foo=bar');
+    expect(url).toContain('&');
+  });
+
+  it('percent-encodes values containing +, /, and =', () => {
+    const base64State = 'abc+def/ghi=';
+    const url = buildStepUpUrl('https://api.example.com', { state: base64State });
+    expect(url).toContain('state=abc%2Bdef%2Fghi%3D');
+    expect(url).not.toContain('state=abc+def/ghi=');
   });
 });
