@@ -721,6 +721,57 @@ export class AuthService {
   }
 
   /**
+   * Initiate a step-up (fresh-prompt) re-authentication for the current user.
+   *
+   * Used by step-up-protected flows (e.g. identity-link start/confirm/unlink)
+   * after a 401 insufficient_user_authentication. Builds the /oauth2/step_up
+   * URL with PKCE + state-encoded returnUrl and top-level-navigates; the
+   * existing /oauth2/callback handler exchanges the returned code, refreshing
+   * auth_time, then redirects back to returnUrl where the caller retries.
+   *
+   * LIMITATION: for a weak-provider primary (e.g. GitHub) the server returns
+   * 200 JSON instead of a 302 redirect; this top-level navigation renders that
+   * JSON. Seamless weak-provider step-up is tracked by #680 / server tmi#455.
+   *
+   * @param returnUrl App URL to land on after step-up completes (e.g.
+   *   '/dashboard?openPrefs=identities' or the link confirmation route).
+   */
+  async initiateStepUp(returnUrl: string): Promise<void> {
+    try {
+      const providerId = this.userProfile?.provider;
+      if (!providerId) {
+        this.logger.error('Cannot initiate step-up: no current user profile');
+        return;
+      }
+
+      const pkceParams = await this.pkceService.generatePkceParameters();
+      const state = this.generateRandomState(returnUrl);
+      localStorage.setItem('oauth_state', state);
+      localStorage.setItem('oauth_provider', providerId);
+
+      const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
+      const baseUrl = environment.apiUrl.endsWith('/')
+        ? environment.apiUrl.slice(0, -1)
+        : environment.apiUrl;
+      const stepUpUrl =
+        `${baseUrl}/oauth2/step_up?` +
+        `state=${state}` +
+        `&client_callback=${encodeURIComponent(clientCallbackUrl)}` +
+        `&code_challenge=${encodeURIComponent(pkceParams.codeChallenge)}` +
+        `&code_challenge_method=${pkceParams.codeChallengeMethod}`;
+
+      window.location.href = stepUpUrl;
+    } catch (error) {
+      this.handleAuthError({
+        code: 'step_up_init_error',
+        message: 'Failed to initialize step-up re-authentication',
+        retryable: true,
+      });
+      this.logger.error('Error initializing step-up', error);
+    }
+  }
+
+  /**
    * Generate a state string for CSRF protection and return URL preservation
    * @param returnUrl Optional URL to return to after authentication
    * @returns State string (Base64 encoded JSON if returnUrl provided)
