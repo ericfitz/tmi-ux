@@ -71,8 +71,12 @@ export class AuthService {
   private authErrorSubject = new BehaviorSubject<AuthError | null>(null);
   private tokenReadySubject = new BehaviorSubject<boolean>(false);
 
+  private _lastAuthError: AuthError | null = null;
+
   /** Most recent auth error, readable synchronously (e.g. by AuthCallbackComponent) */
-  public lastAuthError: AuthError | null = null;
+  get lastAuthError(): AuthError | null {
+    return this._lastAuthError;
+  }
 
   // Public observables — isAuthenticated$ is derived from userProfile$
   userProfile$ = this.userProfileSubject.asObservable();
@@ -1130,9 +1134,12 @@ export class AuthService {
         catchError((error: HttpErrorResponse) => {
           this.pkceService.clearVerifier();
 
-          const bodyError = (error.error as { error?: string } | null)?.error;
+          const body = error.error;
+          const bodyError =
+            typeof body === 'object' && body !== null
+              ? (body as { error?: string }).error
+              : undefined;
           if (error.status === 400 && bodyError === 'identity_mismatch') {
-            this.logger.warn('Step-up token exchange rejected: identity mismatch');
             this.handleAuthError({
               code: 'identity_mismatch',
               message: 'Re-authentication used a different identity',
@@ -1252,7 +1259,7 @@ export class AuthService {
    * @param error Authentication error
    */
   handleAuthError(error: AuthError): void {
-    this.lastAuthError = error;
+    this._lastAuthError = error;
     this.logger.error(`Auth error: ${error.code} - ${error.message}`);
     this.authErrorSubject.next(error);
   }

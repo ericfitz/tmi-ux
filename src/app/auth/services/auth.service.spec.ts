@@ -1538,7 +1538,7 @@ describe('AuthService', () => {
         const stateData = { csrf: 'csrf-token-123', returnUrl: '/dashboard' };
         const encodedState = btoa(JSON.stringify(stateData));
 
-        const result = service['decodeState'](encodedState);
+        const result = service.decodeState(encodedState);
 
         expect(result.csrf).toBe('csrf-token-123');
         expect(result.returnUrl).toBe('/dashboard');
@@ -1548,7 +1548,7 @@ describe('AuthService', () => {
         const stateData = { csrf: 'csrf-only-token' };
         const encodedState = btoa(JSON.stringify(stateData));
 
-        const result = service['decodeState'](encodedState);
+        const result = service.decodeState(encodedState);
 
         expect(result.csrf).toBe('csrf-only-token');
         expect(result.returnUrl).toBeUndefined();
@@ -1557,7 +1557,7 @@ describe('AuthService', () => {
       it('should fall back to plain CSRF token for non-Base64 string', () => {
         const plainState = 'plain-csrf-token-!@#$%';
 
-        const result = service['decodeState'](plainState);
+        const result = service.decodeState(plainState);
 
         expect(result.csrf).toBe('plain-csrf-token-!@#$%');
         expect(result.returnUrl).toBeUndefined();
@@ -1566,7 +1566,7 @@ describe('AuthService', () => {
       it('should fall back to plain CSRF token for valid Base64 but non-JSON content', () => {
         const nonJsonBase64 = btoa('this is not json');
 
-        const result = service['decodeState'](nonJsonBase64);
+        const result = service.decodeState(nonJsonBase64);
 
         // Should fall back to treating the entire Base64 string as a plain CSRF token
         expect(result.csrf).toBe(nonJsonBase64);
@@ -1577,7 +1577,7 @@ describe('AuthService', () => {
         const stateData = { returnUrl: '/some-page' }; // Missing csrf field
         const encodedState = btoa(JSON.stringify(stateData));
 
-        const result = service['decodeState'](encodedState);
+        const result = service.decodeState(encodedState);
 
         // csrf will be undefined from the decoded object
         expect(result.csrf).toBeUndefined();
@@ -1586,7 +1586,7 @@ describe('AuthService', () => {
 
       it('should not throw for empty string input', () => {
         // isBase64 returns false for empty string, so this should fall back
-        const result = service['decodeState']('');
+        const result = service.decodeState('');
 
         expect(result.csrf).toBe('');
         expect(result.returnUrl).toBeUndefined();
