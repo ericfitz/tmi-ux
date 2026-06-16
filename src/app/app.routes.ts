@@ -52,6 +52,14 @@ export const routes: Routes = [
       ).then(c => c.ContentCallbackComponent),
   },
   {
+    path: 'oauth2/link/callback',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import(
+        /* webpackChunkName: "identity-link-callback" */ './auth/components/identity-link-callback/identity-link-callback.component'
+      ).then(c => c.IdentityLinkCallbackComponent),
+  },
+  {
     path: 'unauthorized',
     loadComponent: () =>
       import(

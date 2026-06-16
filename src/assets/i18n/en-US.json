@@ -1573,6 +1573,48 @@
   "homeDescription": "TMI is built by security reviewers who know firsthand how toilsome security review is. It runs the review workflows, organizes the supporting information, and lets teams collaborate on data flow diagrams. It's also designed for AI agents to connect to and work alongside human reviewers.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "homeWelcomeTitle.lint-skip": "Tagline expansion of the TMI acronym (Threat Modeling Improved); intentional Title Case.",
+  "identities": {
+    "columns": {
+      "account": "Account",
+      "provider": "Provider"
+    },
+    "help": "Accounts you can use to sign in to TMI.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "to your account",
+        "bodyJoin.lint-skip": "Runtime-composed sentence fragment ('Link' + provider + 'to your account'); intentionally lowercase mid-sentence.",
+        "bodyPrefix": "Link",
+        "confirmButton": "Link account",
+        "expiry": "This confirmation expires in 5 minutes.",
+        "title": "Confirm account link",
+        "warning": "Whoever controls the linked identity will be able to sign in to your account."
+      },
+      "error": {
+        "alreadyBound": "That identity is already linked to a TMI account.",
+        "expired": "This link request has expired. Please start again.",
+        "generic": "Something went wrong while linking the account. Try again.",
+        "startFailed": "Could not start the account link. Try again.",
+        "title": "Could not link account",
+        "title.lint-skip": "Screen heading (rendered in <h2>); label by convention, no trailing period."
+      },
+      "loading": "Loading…",
+      "submitting": "Linking your account…",
+      "submitting.lint-skip": "Progress indicator ending in ellipsis; not a period-terminated sentence.",
+      "success": "Account linked.",
+      "success.lint-skip": "Snackbar confirmation; complete past-tense statement that takes a period, but the two-token heuristic misreads it as a fragment."
+    },
+    "linkNew": "Link another account",
+    "primary": "Primary",
+    "tabTitle": "Linked accounts",
+    "unlink": {
+      "action": "Unlink",
+      "confirmBody": "That identity will no longer be able to sign in to this account.",
+      "confirmTitle": "Unlink {{identity}}?",
+      "error": "Could not unlink the identity. Try again.",
+      "success": "Identity unlinked.",
+      "success.lint-skip": "Snackbar confirmation; complete past-tense statement that takes a period, but the two-token heuristic misreads it as a fragment."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

@@ -1,0 +1,62 @@
+<div class="identity-link-callback">
+  <mat-card>
+    @switch (state) {
+      @case ('loading') {
+        <div class="centered" data-testid="link-loading">
+          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+          <p [transloco]="'identities.link.loading'">Loading…</p>
+        </div>
+      }
+      @case ('submitting') {
+        <div class="centered" data-testid="link-submitting">
+          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+          <p [transloco]="'identities.link.submitting'">Linking…</p>
+        </div>
+      }
+      @case ('error') {
+        <div class="centered" data-testid="link-error">
+          <h2 [transloco]="'identities.link.error.title'">Could not link account</h2>
+          <p>{{ errorKey | transloco }}</p>
+          <button mat-flat-button color="primary" (click)="onCancel()" cdkFocusInitial>
+            {{ 'common.close' | transloco }}
+          </button>
+        </div>
+      }
+      @case ('confirm') {
+        <div class="confirm" data-testid="link-confirm">
+          <h2 [transloco]="'identities.link.confirm.title'">Confirm account link</h2>
+          <p class="confirm-body">
+            <span [transloco]="'identities.link.confirm.bodyPrefix'">Link</span>
+            <strong
+              >{{ pending?.pending?.provider }}:
+              {{ pending?.pending?.email || pending?.pending?.provider_user_id }}</strong
+            >
+            <span [transloco]="'identities.link.confirm.bodyJoin'">to your account</span>
+            <strong>{{ pending?.account?.email }} ({{ pending?.account?.provider }})</strong
+            ><span>?</span>
+          </p>
+          <p class="warning" [transloco]="'identities.link.confirm.warning'">
+            Whoever controls the linked identity will be able to sign in to your account.
+          </p>
+          <p class="expiry" [transloco]="'identities.link.confirm.expiry'">
+            This confirmation expires in 5 minutes.
+          </p>
+          <div class="actions">
+            <button mat-button (click)="onCancel()" data-testid="link-cancel">
+              {{ 'common.cancel' | transloco }}
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              cdkFocusInitial
+              (click)="onConfirm()"
+              data-testid="link-confirm-button"
+            >
+              {{ 'identities.link.confirm.confirmButton' | transloco }}
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </mat-card>
+</div>

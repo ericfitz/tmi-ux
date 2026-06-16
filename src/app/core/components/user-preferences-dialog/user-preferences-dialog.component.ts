@@ -29,6 +29,7 @@ import {
 } from '../delete-user-data-dialog/delete-user-data-dialog.component';
 import { UserProfile } from '@app/auth/models/auth.models';
 import { ConnectedAccountsTabComponent } from './connected-accounts-tab/connected-accounts-tab.component';
+import { IdentitiesTabComponent } from './identities-tab/identities-tab.component';
 import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
 import { ClientCredentialInfo, ClientCredentialResponse } from '@app/types/client-credential.types';
 import { ClientCredentialService } from '../../services/client-credential.service';
@@ -75,6 +76,7 @@ interface CheckboxChangeEvent {
     TranslocoModule,
     UserDisplayComponent,
     ConnectedAccountsTabComponent,
+    IdentitiesTabComponent,
   ],
   template: `
     <h2
@@ -425,6 +427,11 @@ interface CheckboxChangeEvent {
         <!-- Document Sources Tab -->
         <mat-tab [label]="'documentSources.tabTitle' | transloco">
           <app-connected-accounts-tab></app-connected-accounts-tab>
+        </mat-tab>
+
+        <!-- Linked Accounts (sign-in identities) Tab -->
+        <mat-tab [label]="'identities.tabTitle' | transloco">
+          <app-identities-tab></app-identities-tab>
         </mat-tab>
 
         <!-- Credentials Tab (admins and security reviewers only) -->
@@ -965,8 +972,10 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatTabGroup) tabGroup?: MatTabGroup;
   // Tab order: Profile (0), Display (1), Reports (2), Document sources (3),
-  // Credentials (4, conditional), Danger (5).
+  // Linked accounts (4), Credentials (5, conditional), Danger (6).
   private static readonly DOCUMENT_SOURCES_TAB_INDEX = 3;
+  private static readonly IDENTITIES_TAB_INDEX =
+    UserPreferencesDialogComponent.DOCUMENT_SOURCES_TAB_INDEX + 1;
 
   preferences: UserPreferences;
   userProfile: UserProfile | null = null;
@@ -1033,6 +1042,13 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         if (this.tabGroup) {
           this.tabGroup.selectedIndex = UserPreferencesDialogComponent.DOCUMENT_SOURCES_TAB_INDEX;
+        }
+      }, 0);
+    }
+    if (initialTab === 'identities' && this.tabGroup) {
+      setTimeout(() => {
+        if (this.tabGroup) {
+          this.tabGroup.selectedIndex = UserPreferencesDialogComponent.IDENTITIES_TAB_INDEX;
         }
       }, 0);
     }

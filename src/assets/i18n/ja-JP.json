@@ -1341,6 +1341,43 @@
   "getStarted": "はじめる",
   "homeDescription": "TMIは、セキュリティレビューの大変さを身をもって知るセキュリティレビュアーが構築しています。レビューのワークフローを動かし、関連情報を整理し、チームがデータフローダイアグラムで協働できるようにします。AIエージェントが接続し、人間のレビュアーと並んで作業できるようにも設計されています。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
+  "identities": {
+    "columns": {
+      "account": "アカウント",
+      "provider": "プロバイダー"
+    },
+    "help": "TMI へのサインインに使用できるアカウントです。",
+    "link": {
+      "confirm": {
+        "bodyJoin": "をお使いのアカウントに連携します",
+        "bodyPrefix": "次の項目",
+        "confirmButton": "アカウントを連携",
+        "expiry": "この確認は 5 分後に期限切れになります。",
+        "title": "アカウント連携の確認",
+        "warning": "連携された ID を管理する人は誰でも、お使いのアカウントにサインインできるようになります。"
+      },
+      "error": {
+        "alreadyBound": "その ID はすでに別の TMI アカウントに連携されています。",
+        "expired": "この連携リクエストは期限切れになりました。もう一度やり直してください。",
+        "generic": "アカウントの連携中に問題が発生しました。もう一度試してください。",
+        "startFailed": "アカウントの連携を開始できませんでした。もう一度試してください。",
+        "title": "アカウントを連携できませんでした"
+      },
+      "loading": "読み込み中…",
+      "submitting": "アカウントを連携しています…",
+      "success": "アカウントを連携しました。"
+    },
+    "linkNew": "別のアカウントを連携",
+    "primary": "プライマリ",
+    "tabTitle": "連携済みアカウント",
+    "unlink": {
+      "action": "連携解除",
+      "confirmBody": "その ID では、このアカウントにサインインできなくなります。",
+      "confirmTitle": "{{identity}} の連携を解除しますか？",
+      "error": "ID の連携を解除できませんでした。もう一度試してください。",
+      "success": "ID の連携を解除しました。"
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

@@ -1339,6 +1339,43 @@
   "getStarted": "Mulai",
   "homeDescription": "TMI dibangun oleh peninjau keamanan yang tahu langsung betapa melelahkan tinjauan keamanan itu. TMI menjalankan alur kerja tinjauan, mengorganisir informasi pendukung, dan memungkinkan tim berkolaborasi pada diagram alur data. TMI juga dirancang agar agen AI dapat terhubung dan bekerja berdampingan dengan peninjau manusia.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
+  "identities": {
+    "columns": {
+      "account": "Akun",
+      "provider": "Penyedia"
+    },
+    "help": "Akun yang dapat Anda gunakan untuk masuk ke TMI.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "ke akun Anda",
+        "bodyPrefix": "Tautkan",
+        "confirmButton": "Tautkan akun",
+        "expiry": "Konfirmasi ini kedaluwarsa dalam 5 menit.",
+        "title": "Konfirmasi penautan akun",
+        "warning": "Siapa pun yang mengendalikan identitas yang ditautkan akan dapat masuk ke akun Anda."
+      },
+      "error": {
+        "alreadyBound": "Identitas tersebut sudah ditautkan ke akun TMI.",
+        "expired": "Permintaan penautan ini telah kedaluwarsa. Silakan mulai lagi.",
+        "generic": "Terjadi kesalahan saat menautkan akun. Coba lagi.",
+        "startFailed": "Tidak dapat memulai penautan akun. Coba lagi.",
+        "title": "Tidak dapat menautkan akun"
+      },
+      "loading": "Memuat…",
+      "submitting": "Menautkan akun Anda…",
+      "success": "Akun ditautkan."
+    },
+    "linkNew": "Tautkan akun lain",
+    "primary": "Utama",
+    "tabTitle": "Akun tertaut",
+    "unlink": {
+      "action": "Lepaskan tautan",
+      "confirmBody": "Identitas tersebut tidak lagi dapat masuk ke akun ini.",
+      "confirmTitle": "Lepaskan tautan {{identity}}?",
+      "error": "Tidak dapat melepaskan tautan identitas. Coba lagi.",
+      "success": "Tautan identitas dilepaskan."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

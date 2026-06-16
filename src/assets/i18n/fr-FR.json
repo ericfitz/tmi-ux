@@ -1339,6 +1339,43 @@
   "getStarted": "Commencer",
   "homeDescription": "TMI est conçu par des examinateurs en sécurité qui savent de première main à quel point une revue de sécurité peut être laborieuse. Il exécute les flux de travail de revue, organise les informations de référence et permet aux équipes de collaborer sur les diagrammes de flux de données. Il est également conçu pour que les agents d'IA s'y connectent et travaillent aux côtés des examinateurs humains.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
+  "identities": {
+    "columns": {
+      "account": "Compte",
+      "provider": "Fournisseur"
+    },
+    "help": "Comptes que vous pouvez utiliser pour vous connecter à TMI.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "à votre compte",
+        "bodyPrefix": "Lier",
+        "confirmButton": "Lier le compte",
+        "expiry": "Cette confirmation expire dans 5 minutes.",
+        "title": "Confirmer la liaison du compte",
+        "warning": "Toute personne contrôlant l'identité liée pourra se connecter à votre compte."
+      },
+      "error": {
+        "alreadyBound": "Cette identité est déjà liée à un compte TMI.",
+        "expired": "Cette demande de liaison a expiré. Veuillez recommencer.",
+        "generic": "Une erreur s'est produite lors de la liaison du compte. Réessayez.",
+        "startFailed": "Impossible de démarrer la liaison du compte. Réessayez.",
+        "title": "Impossible de lier le compte"
+      },
+      "loading": "Chargement…",
+      "submitting": "Liaison de votre compte en cours…",
+      "success": "Compte lié."
+    },
+    "linkNew": "Lier un autre compte",
+    "primary": "Principal",
+    "tabTitle": "Comptes liés",
+    "unlink": {
+      "action": "Délier",
+      "confirmBody": "Cette identité ne pourra plus se connecter à ce compte.",
+      "confirmTitle": "Délier {{identity}} ?",
+      "error": "Impossible de délier l'identité. Réessayez.",
+      "success": "Identité déliée."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

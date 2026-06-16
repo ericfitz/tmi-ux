@@ -1337,6 +1337,43 @@
   "getStarted": "시작하기",
   "homeDescription": "TMI는 보안 검토가 얼마나 고된 작업인지 직접 겪어본 보안 검토자들이 만들었습니다. 검토 워크플로를 실행하고, 보조 정보를 정리하며, 팀이 데이터 흐름 다이어그램에서 협업할 수 있게 해줍니다. 또한 AI 에이전트가 연결되어 사람 검토자와 나란히 작업할 수 있도록 설계되어 있습니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
+  "identities": {
+    "columns": {
+      "account": "계정",
+      "provider": "제공업체"
+    },
+    "help": "TMI에 로그인할 때 사용할 수 있는 계정입니다.",
+    "link": {
+      "confirm": {
+        "bodyJoin": "을(를) 내 계정에 연결합니다",
+        "bodyPrefix": "다음 계정",
+        "confirmButton": "계정 연결",
+        "expiry": "이 확인은 5분 후에 만료됩니다.",
+        "title": "계정 연결 확인",
+        "warning": "연결된 ID를 관리하는 사람은 누구나 내 계정에 로그인할 수 있습니다."
+      },
+      "error": {
+        "alreadyBound": "해당 ID는 이미 TMI 계정에 연결되어 있습니다.",
+        "expired": "이 연결 요청이 만료되었습니다. 다시 시작해 주세요.",
+        "generic": "계정을 연결하는 중 문제가 발생했습니다. 다시 시도하세요.",
+        "startFailed": "계정 연결을 시작할 수 없습니다. 다시 시도하세요.",
+        "title": "계정을 연결할 수 없습니다"
+      },
+      "loading": "불러오는 중…",
+      "submitting": "계정을 연결하는 중…",
+      "success": "계정이 연결되었습니다."
+    },
+    "linkNew": "다른 계정 연결",
+    "primary": "기본",
+    "tabTitle": "연결된 계정",
+    "unlink": {
+      "action": "연결 해제",
+      "confirmBody": "해당 ID는 더 이상 이 계정에 로그인할 수 없습니다.",
+      "confirmTitle": "{{identity}} 연결을 해제하시겠습니까?",
+      "error": "ID 연결을 해제할 수 없습니다. 다시 시도하세요.",
+      "success": "ID 연결이 해제되었습니다."
+    }
+  },
   "intake": {
     "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {

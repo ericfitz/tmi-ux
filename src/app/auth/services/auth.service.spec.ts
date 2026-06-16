@@ -459,6 +459,51 @@ describe('AuthService', () => {
     });
   }); /* End of OAuth Login describe block */
 
+  describe('initiateStepUp', () => {
+    it('should log an error and not navigate when there is no current user profile', async () => {
+      service['userProfileSubject'].next(null);
+      window.location.href = '';
+
+      await service.initiateStepUp('/dashboard?openPrefs=identities');
+
+      expect(loggerService.error).toHaveBeenCalledWith(
+        'Cannot initiate step-up: no current user profile',
+      );
+      expect(mockPkceService.generatePkceParameters).not.toHaveBeenCalled();
+      expect(window.location.href).not.toContain('/oauth2/step_up');
+      expect(window.location.href).toBe('');
+    });
+
+    it('should navigate to the step_up endpoint with PKCE and state when authenticated', async () => {
+      const googleProfile: UserProfile = {
+        provider: 'google',
+        provider_id: 'google-sub-123',
+        display_name: 'Google User',
+        email: 'google@example.com',
+        groups: null,
+      };
+      service['userProfileSubject'].next(googleProfile);
+
+      mockPkceService.generatePkceParameters.mockResolvedValue({
+        codeChallenge: 'CH',
+        codeChallengeMethod: 'S256',
+      });
+
+      await service.initiateStepUp('/dashboard?openPrefs=identities');
+
+      expect(mockPkceService.generatePkceParameters).toHaveBeenCalled();
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'google');
+
+      const expectedCallback = encodeURIComponent(`${window.location.origin}/oauth2/callback`);
+      expect(window.location.href).toContain(`${environment.apiUrl}/oauth2/step_up?`);
+      expect(window.location.href).toContain('state=');
+      expect(window.location.href).toContain(`client_callback=${expectedCallback}`);
+      expect(window.location.href).toContain('code_challenge=CH');
+      expect(window.location.href).toContain('code_challenge_method=S256');
+    });
+  }); /* End of initiateStepUp describe block */
+
   describe('OAuth Callback Handling', () => {
     beforeEach(() => {
       localStorageMock.getItem.mockImplementation((key: string) => {
