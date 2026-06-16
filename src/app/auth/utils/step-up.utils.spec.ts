@@ -39,6 +39,16 @@ describe('isStepUpChallenge', () => {
     const error = new HttpErrorResponse({ status: 403 });
     expect(isStepUpChallenge(error)).toBe(false);
   });
+
+  it('returns false for a non-step-up WWW-Authenticate challenge', () => {
+    const error = new HttpErrorResponse({
+      status: 401,
+      headers: new HttpHeaders({
+        'WWW-Authenticate': 'Bearer error="invalid_token"',
+      }),
+    });
+    expect(isStepUpChallenge(error)).toBe(false);
+  });
 });
 
 describe('buildStepUpState', () => {

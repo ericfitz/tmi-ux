@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { generateRandomBytes } from './pkce-crypto.utils';
+
 /**
  * Detect the step-up challenge on a 401 response.
  * Primary signal: WWW-Authenticate header (requires the server to expose it
@@ -24,8 +26,7 @@ export function isStepUpChallenge(error: HttpErrorResponse): boolean {
  * additional stepUp flag so the callback knows which flow it is finishing.
  */
 export function buildStepUpState(returnUrl: string): string {
-  const array = new Uint8Array(16);
-  window.crypto.getRandomValues(array);
+  const array = generateRandomBytes(16);
   const csrf = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 
   const stateJson = JSON.stringify({ csrf, returnUrl, stepUp: true });
