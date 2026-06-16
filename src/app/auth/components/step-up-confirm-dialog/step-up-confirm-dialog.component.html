@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ 'stepUp.confirmTitle' | transloco }}</h2>
+<mat-dialog-content>
+  <p>{{ 'stepUp.confirmBody' | transloco }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'common.cancel' | transloco }}</button>
+  <button mat-flat-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>
+    {{ 'stepUp.confirmAction' | transloco }}
+  </button>
+</mat-dialog-actions>
