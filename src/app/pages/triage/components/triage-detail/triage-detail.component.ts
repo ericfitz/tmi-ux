@@ -29,6 +29,11 @@ import {
   TriageNoteEditorDialogData,
   TriageNoteEditorResult,
 } from '../triage-note-editor-dialog/triage-note-editor-dialog.component';
+import { copyToClipboardWithFeedback } from '@app/shared/utils/clipboard.util';
+import {
+  getStatusClass as getStatusClassUtil,
+  getStatusKey as getStatusKeyUtil,
+} from '../../utils/triage-status.util';
 
 /**
  * Flattened survey response row for table display.
@@ -621,18 +626,11 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Copy text to clipboard with snackbar feedback
    */
   copyToClipboard(text: string): void {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        this.snackBar.open(
-          this.transloco.translate('common.copiedToClipboard'),
-          this.transloco.translate('common.close'),
-          { duration: 2000 },
-        );
-      })
-      .catch((err: unknown) => {
-        this.logger.error('Could not copy text: ', err);
-      });
+    copyToClipboardWithFeedback(text, {
+      snackBar: this.snackBar,
+      transloco: this.transloco,
+      logger: this.logger,
+    });
   }
 
   /**
@@ -655,27 +653,13 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Convert snake_case status to camelCase i18n key
    */
   getStatusKey(status: ResponseStatus): string {
-    const keyMap: Record<ResponseStatus, string> = {
-      draft: 'draft',
-      submitted: 'submitted',
-      needs_revision: 'needsRevision',
-      ready_for_review: 'readyForReview',
-      review_created: 'reviewCreated',
-    };
-    return keyMap[status] ?? status;
+    return getStatusKeyUtil(status);
   }
 
   /**
    * Get CSS class for a status
    */
   getStatusClass(status: ResponseStatus): string {
-    const statusClasses: Record<ResponseStatus, string> = {
-      draft: 'status-draft',
-      submitted: 'status-submitted',
-      needs_revision: 'status-needs-revision',
-      ready_for_review: 'status-ready-for-review',
-      review_created: 'status-review-created',
-    };
-    return statusClasses[status] ?? '';
+    return getStatusClassUtil(status);
   }
 }

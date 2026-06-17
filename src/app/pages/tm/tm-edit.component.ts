@@ -19,6 +19,7 @@ import {
   SUBTABLE_PAGE_SIZE_OPTIONS,
 } from '@app/types/pagination.types';
 import { isValidUrl } from '@app/shared/utils/url.util';
+import { copyToClipboardWithFeedback } from '@app/shared/utils/clipboard.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
@@ -342,18 +343,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param text Text to copy
    */
   copyToClipboard(text: string): void {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        this.snackBar.open(
-          this.transloco.translate('common.copiedToClipboard'),
-          this.transloco.translate('common.close'),
-          { duration: 2000 },
-        );
-      })
-      .catch((err: unknown) => {
-        this.logger.error('Could not copy text: ', err);
-      });
+    copyToClipboardWithFeedback(text, {
+      snackBar: this.snackBar,
+      transloco: this.transloco,
+      logger: this.logger,
+    });
   }
 
   /**

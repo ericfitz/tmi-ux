@@ -34,6 +34,10 @@ import {
   RevisionNotesDialogResult,
 } from '../revision-notes-dialog/revision-notes-dialog.component';
 import { environment } from '../../../../../environments/environment';
+import {
+  getStatusClass as getStatusClassUtil,
+  getStatusKey as getStatusKeyUtil,
+} from '../../utils/triage-status.util';
 
 /**
  * Filter state for triage list
@@ -373,28 +377,14 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
    * Get CSS class for a status chip
    */
   getStatusClass(status: ResponseStatus): string {
-    const statusClasses: Record<ResponseStatus, string> = {
-      draft: 'status-draft',
-      submitted: 'status-submitted',
-      needs_revision: 'status-needs-revision',
-      ready_for_review: 'status-ready-for-review',
-      review_created: 'status-review-created',
-    };
-    return statusClasses[status] ?? '';
+    return getStatusClassUtil(status);
   }
 
   /**
    * Convert snake_case status to camelCase i18n key
    */
   getStatusKey(status: ResponseStatus): string {
-    const keyMap: Record<ResponseStatus, string> = {
-      draft: 'draft',
-      submitted: 'submitted',
-      needs_revision: 'needsRevision',
-      ready_for_review: 'readyForReview',
-      review_created: 'reviewCreated',
-    };
-    return keyMap[status] ?? status;
+    return getStatusKeyUtil(status);
   }
 
   /**
