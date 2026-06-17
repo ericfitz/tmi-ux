@@ -35,24 +35,6 @@ export interface DashboardFilters {
 }
 
 /**
- * Canonical ordered list of threat-model status keys.
- * Matches `getFieldKeysForFieldType('threatModels.status')` in field-value-helpers.ts.
- */
-export const ALL_TM_STATUSES: readonly string[] = [
-  'not_started',
-  'active',
-  'in_progress',
-  'pending_review',
-  'remediation_required',
-  'remediation_in_progress',
-  'verification_pending',
-  'approved',
-  'rejected',
-  'deferred',
-  'closed',
-];
-
-/**
  * Non-terminal threat-model statuses — used as the default status filter
  * on fresh dashboard visits. Excludes `rejected`, `deferred`, and `closed`.
  * `active` is included because seeded and server-default TMs sometimes use

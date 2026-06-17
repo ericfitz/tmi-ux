@@ -3,11 +3,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { calculateOffset } from '@app/shared/utils/pagination.util';
-import type { ApiThreatInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 
 import { ThreatModelService, ThreatListParams } from './threat-model.service';
 import { Threat, Metadata } from '../models/threat-model.model';
 import { ThreatFilters } from '../models/threat-filter.model';
+
+type ApiThreatInput = components['schemas']['ThreatInput'];
 
 /** Threats loaded for one page of the threats sub-table. */
 export interface ThreatsPage {

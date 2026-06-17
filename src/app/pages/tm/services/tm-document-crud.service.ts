@@ -6,7 +6,9 @@ import { calculateOffset } from '@app/shared/utils/pagination.util';
 import { ThreatModelService } from './threat-model.service';
 import { Document, Metadata } from '../models/threat-model.model';
 import { DocumentEditorDialogResult } from '../components/document-editor-dialog/document-editor-dialog.component';
-import type { ApiDocumentInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
+
+type ApiDocumentInput = components['schemas']['DocumentInput'];
 
 /** Documents loaded for one page of the documents sub-table. */
 export interface DocumentsPage {

@@ -8,7 +8,7 @@ import { take } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { Threat } from '../../models/threat-model.model';
-import type { ApiThreatInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -19,6 +19,8 @@ import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 import { getFieldLabel } from '../../../../shared/utils/field-value-helpers';
+
+type ApiThreatInput = components['schemas']['ThreatInput'];
 
 interface ThreatUpdateResult {
   name: string;

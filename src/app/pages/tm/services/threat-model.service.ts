@@ -52,18 +52,18 @@ import {
   ListAssetsResponse,
   ListThreatsResponse,
 } from '../models/api-responses.model';
-import type {
-  ApiThreatModelInput,
-  ApiThreatInput,
-  ApiDocumentInput,
-  ApiRepositoryInput,
-  ApiBaseDiagramInput,
-  ApiDfdDiagramInput,
-  ApiNoteInput,
-  ApiAssetInput,
-} from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 import { PaginationMetadata } from '@app/types/api-responses.types';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+
+type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+type ApiThreatInput = components['schemas']['ThreatInput'];
+type ApiDocumentInput = components['schemas']['DocumentInput'];
+type ApiRepositoryInput = components['schemas']['RepositoryInput'];
+type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
+type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
+type ApiNoteInput = components['schemas']['NoteInput'];
+type ApiAssetInput = components['schemas']['AssetInput'];
 
 /**
  * User information from the API (Principal-based)

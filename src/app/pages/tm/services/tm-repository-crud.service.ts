@@ -3,11 +3,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { calculateOffset } from '@app/shared/utils/pagination.util';
-import type { ApiRepositoryInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 
 import { ThreatModelService } from './threat-model.service';
 import { RepositoryFormResult } from './tm-dialog.service';
 import { Repository, Metadata } from '../models/threat-model.model';
+
+type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 
 /** Repositories loaded for one page of the repositories sub-table. */
 export interface RepositoriesPage {

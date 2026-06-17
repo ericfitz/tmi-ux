@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import type {
-  ApiThreatInput,
-  ApiAssetInput,
-  ApiNoteInput,
-  ApiDocumentInput,
-  ApiRepositoryInput,
-} from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 import { IdTranslationService } from './id-translation.service';
+
+type ApiThreatInput = components['schemas']['ThreatInput'];
+type ApiAssetInput = components['schemas']['AssetInput'];
+type ApiNoteInput = components['schemas']['NoteInput'];
+type ApiDocumentInput = components['schemas']['DocumentInput'];
+type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 
 /**
  * Service for rewriting ID references in imported objects.

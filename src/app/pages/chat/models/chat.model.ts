@@ -71,12 +71,6 @@ export interface ProgressEvent {
   detail?: string;
 }
 
-export interface ReadyEvent {
-  status: string;
-  sources_loaded?: number;
-  chunks_embedded?: number;
-}
-
 // Message streaming SSE events
 // Field names match the server's snake_case JSON payloads.
 
