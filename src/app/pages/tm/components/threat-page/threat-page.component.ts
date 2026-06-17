@@ -26,8 +26,10 @@ import { CellDataExtractionService } from '../../../../shared/services/cell-data
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { CVSSScore, SSVCScore, Threat, ThreatModel } from '../../models/threat-model.model';
 import { Diagram } from '../../models/diagram.model';
-import type { ApiThreatInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 import { FrameworkModel, ThreatTypeModel } from '../../../../shared/models/framework.model';
+
+type ApiThreatInput = components['schemas']['ThreatInput'];
 import {
   FieldOption,
   getFieldOptions,

@@ -6,15 +6,15 @@ import {
   sanitizeCellForApi,
 } from '../../../dfd/utils/cell-property-filter.util';
 import type { Cell } from '../../../../core/types/websocket-message.types';
-import type {
-  ApiThreatModelInput,
-  ApiThreatInput,
-  ApiAssetInput,
-  ApiNoteInput,
-  ApiDocumentInput,
-  ApiRepositoryInput,
-  ApiCreateDiagramRequest,
-} from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
+
+type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+type ApiThreatInput = components['schemas']['ThreatInput'];
+type ApiAssetInput = components['schemas']['AssetInput'];
+type ApiNoteInput = components['schemas']['NoteInput'];
+type ApiDocumentInput = components['schemas']['DocumentInput'];
+type ApiRepositoryInput = components['schemas']['RepositoryInput'];
+type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
 
 /**
  * Service for filtering read-only fields from objects before sending to the server.
@@ -30,7 +30,7 @@ export class ReadonlyFieldFilterService {
   /**
    * Read-only fields on Authorization that should be stripped before POST/PUT/PATCH.
    * display_name is populated by the server based on the principal identity.
-   * @see ApiAuthorization in @app/generated/api-type-helpers
+   * @see components['schemas']['Authorization'] in @app/generated/api-types
    */
   private readonly _authorizationReadOnlyFields = ['display_name'] as const;
 

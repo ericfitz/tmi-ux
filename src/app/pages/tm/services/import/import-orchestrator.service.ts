@@ -11,21 +11,21 @@ import type {
   Repository,
 } from '../../models/threat-model.model';
 import type { Diagram } from '../../models/diagram.model';
-import type {
-  ApiThreatModelInput,
-  ApiAssetInput,
-  ApiNoteInput,
-  ApiCreateDiagramRequest,
-  ApiDfdDiagramInput,
-  ApiThreatInput,
-  ApiDocumentInput,
-  ApiRepositoryInput,
-} from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
 import { IdTranslationService } from './id-translation.service';
 import { ReadonlyFieldFilterService } from './readonly-field-filter.service';
 import { ReferenceRewriterService } from './reference-rewriter.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+
+type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+type ApiAssetInput = components['schemas']['AssetInput'];
+type ApiNoteInput = components['schemas']['NoteInput'];
+type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
+type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
+type ApiThreatInput = components['schemas']['ThreatInput'];
+type ApiDocumentInput = components['schemas']['DocumentInput'];
+type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 
 /**
  * Result of importing a nested object

@@ -6,7 +6,9 @@ import { calculateOffset } from '@app/shared/utils/pagination.util';
 import { ThreatModelService } from './threat-model.service';
 import { Diagram } from '../models/diagram.model';
 import { Metadata } from '../models/threat-model.model';
-import type { ApiBaseDiagramInput } from '@app/generated/api-type-helpers';
+import type { components } from '@app/generated/api-types';
+
+type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
 
 /** Diagrams loaded for one page of the diagrams sub-table. */
 export interface DiagramsPage {
