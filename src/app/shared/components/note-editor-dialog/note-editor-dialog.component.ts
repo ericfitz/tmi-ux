@@ -24,6 +24,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.service';
 
+import { NoteEditorBase } from '../note-editor/note-editor-base';
+
 export type NoteEntityType = 'threat_model' | 'team' | 'project';
 
 /** Minimal note shape the dialog needs for initialization */
@@ -80,7 +82,10 @@ export interface NoteFormResult {
   templateUrl: './note-editor-dialog.component.html',
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
-export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class NoteEditorDialogComponent
+  extends NoteEditorBase
+  implements OnInit, OnDestroy, AfterViewChecked
+{
   @Output() saveEvent = new EventEmitter<NoteFormResult>();
   @ViewChild('contentTextarea') contentTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('markdownPreview') markdownPreview?: ElementRef<HTMLDivElement>;
@@ -97,10 +102,6 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   private originalTimmyEnabled: boolean | undefined = true;
   private originalSharable: boolean | null | undefined = true;
   private createdNoteId?: string;
-  private taskListCheckboxesInitialized = false;
-  private anchorClickHandler?: (event: Event) => void;
-  private mermaidViewersInitialized = false;
-  private mermaidCleanup?: () => void;
 
   readonly maxContentLength = 262144;
   readonly maxNameLength = 256;
@@ -108,7 +109,6 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
 
   // Clipboard state
   hasSelection = false;
-  clipboardHasContent = false;
 
   constructor(
     private fb: FormBuilder,
@@ -116,8 +116,9 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     private snackBar: MatSnackBar,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: NoteEditorDialogData,
-    private mermaidViewerService?: MermaidViewerService,
+    protected mermaidViewerService?: MermaidViewerService,
   ) {
+    super();
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
     this.entityType = data.entityType;
@@ -167,29 +168,6 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
 
     // Check clipboard permissions on init
     void this.checkClipboardPermissions();
-  }
-
-  ngAfterViewChecked(): void {
-    // Initialize task list checkboxes and anchor links after markdown is rendered
-    if (this.previewMode && !this.taskListCheckboxesInitialized) {
-      this.initializeTaskListCheckboxes();
-      this.initializeAnchorLinks();
-      this.taskListCheckboxesInitialized = true;
-    } else if (!this.previewMode) {
-      this.taskListCheckboxesInitialized = false;
-    }
-
-    // Initialize mermaid diagram viewers
-    if (this.previewMode && !this.mermaidViewersInitialized && this.markdownPreview) {
-      const cleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
-      if (cleanup) {
-        this.mermaidCleanup = cleanup;
-        this.mermaidViewersInitialized = true;
-      }
-    } else if (!this.previewMode && this.mermaidViewersInitialized) {
-      this.mermaidCleanup?.();
-      this.mermaidViewersInitialized = false;
-    }
   }
 
   ngOnDestroy(): void {
@@ -245,95 +223,6 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
   onTextareaSelect(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     this.hasSelection = textarea.selectionStart !== textarea.selectionEnd;
-  }
-
-  async onCut(): Promise<void> {
-    if (this.previewMode || !this.hasSelection) {
-      return;
-    }
-
-    const textarea = this.contentTextarea?.nativeElement;
-    if (!textarea) {
-      return;
-    }
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-
-    if (!selectedText) {
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(selectedText);
-      const newValue = textarea.value.substring(0, start) + textarea.value.substring(end);
-      this.noteForm.get('content')?.setValue(newValue);
-      textarea.focus();
-      textarea.setSelectionRange(start, start);
-      this.hasSelection = false;
-    } catch {
-      this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
-    }
-  }
-
-  async onCopy(): Promise<void> {
-    if (this.previewMode) {
-      // Copy the entire markdown content in preview mode
-      const content = this.markdownContent;
-      try {
-        await navigator.clipboard.writeText(content);
-        this.showMessage('noteEditor.copiedToClipboard');
-      } catch {
-        this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
-      }
-    } else {
-      // Copy selected text in edit mode
-      const textarea = this.contentTextarea?.nativeElement;
-      if (!textarea || !this.hasSelection) {
-        return;
-      }
-
-      const selectedText = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
-
-      if (!selectedText) {
-        return;
-      }
-
-      try {
-        await navigator.clipboard.writeText(selectedText);
-        this.showMessage('noteEditor.copiedToClipboard');
-      } catch {
-        this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
-      }
-    }
-  }
-
-  async onPaste(): Promise<void> {
-    if (this.previewMode) {
-      return;
-    }
-
-    const textarea = this.contentTextarea?.nativeElement;
-    if (!textarea) {
-      return;
-    }
-
-    try {
-      const clipboardText = await navigator.clipboard.readText();
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const currentValue = textarea.value;
-      const newValue =
-        currentValue.substring(0, start) + clipboardText + currentValue.substring(end);
-
-      this.noteForm.get('content')?.setValue(newValue);
-      textarea.focus();
-      const newPosition = start + clipboardText.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    } catch {
-      this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
-    }
   }
 
   onSave(): void {
@@ -409,130 +298,11 @@ export class NoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewCh
     return result;
   }
 
-  private showMessage(key: string, isError = false): void {
+  showMessage(key: string, isError = false): void {
     const message = this.translocoService.translate(key);
     this.snackBar.open(message, '', {
       duration: isError ? 4000 : 2000,
       panelClass: isError ? ['error-snackbar'] : [],
     });
-  }
-
-  private async checkClipboardPermissions(): Promise<void> {
-    try {
-      const text = await navigator.clipboard.readText();
-      this.clipboardHasContent = !!text;
-    } catch {
-      // Clipboard access might be denied, that's okay
-      this.clipboardHasContent = false;
-    }
-  }
-
-  /**
-   * Initialize event listeners for task list checkboxes to make them interactive
-   */
-  private initializeTaskListCheckboxes(): void {
-    if (!this.markdownPreview) {
-      return;
-    }
-
-    const checkboxes =
-      this.markdownPreview.nativeElement.querySelectorAll('input[type="checkbox"]');
-
-    checkboxes.forEach((checkbox, index) => {
-      const htmlCheckbox = checkbox as HTMLInputElement;
-      // Remove any existing listeners
-      htmlCheckbox.onclick = null;
-
-      // Add click listener to update markdown content
-      htmlCheckbox.onclick = (event): void => {
-        event.preventDefault();
-        this.toggleTaskListItem(index, !htmlCheckbox.checked);
-      };
-    });
-  }
-
-  /**
-   * Toggle a task list item in the markdown content
-   */
-  private toggleTaskListItem(index: number, checked: boolean): void {
-    const content = this.markdownContent;
-    const lines = content.split('\n');
-    let taskListIndex = -1;
-
-    // Find the task list item by index
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      // Match task list items: - [ ] or - [x] or - [X]
-      if (/^(\s*)-\s\[([ xX])\]/.test(line)) {
-        taskListIndex++;
-        if (taskListIndex === index) {
-          // Toggle the checkbox
-          lines[i] = line.replace(/^(\s*)-\s\[([ xX])\]/, `$1- [${checked ? 'x' : ' '}]`);
-          break;
-        }
-      }
-    }
-
-    // Update the form content
-    const newContent = lines.join('\n');
-    this.noteForm.get('content')?.setValue(newContent);
-
-    // Reset initialization flag to re-initialize checkboxes after re-render
-    this.taskListCheckboxesInitialized = false;
-  }
-
-  /**
-   * Initialize event listeners for anchor links to handle internal navigation
-   */
-  private initializeAnchorLinks(): void {
-    if (!this.markdownPreview) {
-      return;
-    }
-
-    // Remove existing handler if present
-    if (this.anchorClickHandler) {
-      this.markdownPreview.nativeElement.removeEventListener(
-        'click',
-        this.anchorClickHandler,
-        true,
-      );
-    }
-
-    // Create delegated event handler for all anchor clicks
-    this.anchorClickHandler = (event: Event): void => {
-      const target = event.target as HTMLElement;
-
-      // Find the closest anchor element (in case user clicked on child element)
-      const anchor = target.closest('a');
-
-      if (anchor) {
-        const href = anchor.getAttribute('href');
-
-        if (href && href.startsWith('#')) {
-          event.preventDefault();
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-
-          const targetId = href.substring(1);
-
-          if (!targetId) {
-            return;
-          }
-
-          // Find the target element within the preview
-          const targetElement = this.markdownPreview?.nativeElement.querySelector(
-            `#${CSS.escape(targetId)}`,
-          );
-
-          if (targetElement) {
-            // Scroll to the target element with smooth behavior
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }
-      }
-    };
-
-    // Add click listener to the preview container (event delegation)
-    this.markdownPreview.nativeElement.addEventListener('click', this.anchorClickHandler, true);
   }
 }
