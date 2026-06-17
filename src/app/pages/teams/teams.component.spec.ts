@@ -10,8 +10,13 @@ import '@angular/compiler';
 import { vi, expect, afterEach, beforeEach, describe, it } from 'vitest';
 import { of, Subject, throwError } from 'rxjs';
 import { DestroyRef, Injector, runInInjectionContext } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 import { TeamsComponent } from './teams.component';
+import { TeamService } from '@app/core/services/team.service';
+import { LoggerService } from '@app/core/services/logger.service';
 import { TeamListItem, Team, ListTeamsResponse } from '@app/types/team.types';
 import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
 import { PageEvent } from '@angular/material/paginator';
@@ -89,18 +94,19 @@ function buildComponent(
 ): TeamsComponent {
   const mockDestroyRef = { onDestroy: vi.fn() };
   const injector = Injector.create({
-    providers: [{ provide: DestroyRef, useValue: mockDestroyRef }],
+    providers: [
+      { provide: DestroyRef, useValue: mockDestroyRef },
+      { provide: TeamService, useValue: mockTeamService },
+      { provide: Location, useValue: mockLocation },
+      { provide: Router, useValue: mockRouter },
+      { provide: ActivatedRoute, useValue: mockRoute },
+      { provide: MatDialog, useValue: mockDialog },
+      { provide: LoggerService, useValue: mockLogger },
+    ],
   });
 
   return runInInjectionContext(injector, () => {
-    return new TeamsComponent(
-      mockTeamService as never,
-      mockLocation as never,
-      mockRouter as never,
-      mockRoute as never,
-      mockDialog as never,
-      mockLogger as never,
-    );
+    return new TeamsComponent();
   });
 }
 
