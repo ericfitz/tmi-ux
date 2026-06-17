@@ -644,4 +644,3 @@ export const DFD_STYLING_HELPERS = {
  * Node type definitions for type safety
  */
 export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
-export type EdgeType = 'edge';
