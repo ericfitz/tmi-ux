@@ -7,6 +7,7 @@ import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { safeMetadataEntry } from '../../domain/value-objects/metadata';
+import { getEdgeMarkup } from '../utils/edge-markup.util';
 
 /**
  * Consolidated Edge Service
@@ -67,7 +68,7 @@ export class InfraEdgeService {
       source: edgeInfo.source,
       target: edgeInfo.target,
       shape: edgeInfo.shape,
-      markup: edgeInfo.markup || this._getEdgeMarkup(),
+      markup: edgeInfo.markup || getEdgeMarkup(),
       attrs,
       labels: edgeInfo.labels,
       vertices: edgeInfo.vertices,
@@ -300,34 +301,6 @@ export class InfraEdgeService {
       };
     }
     return result;
-  }
-
-  /**
-   * Get standard edge markup for consistent rendering
-   */
-  private _getEdgeMarkup(): any[] {
-    return [
-      {
-        tagName: 'path',
-        selector: 'wrap',
-        groupSelector: 'lines',
-        attrs: {
-          fill: 'none',
-          cursor: 'pointer',
-          stroke: 'transparent',
-          strokeLinecap: 'round',
-        },
-      },
-      {
-        tagName: 'path',
-        selector: 'line',
-        groupSelector: 'lines',
-        attrs: {
-          fill: 'none',
-          pointerEvents: 'none',
-        },
-      },
-    ];
   }
 
   /**

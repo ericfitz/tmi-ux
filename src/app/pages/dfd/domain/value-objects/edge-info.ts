@@ -2,7 +2,7 @@ import { Point } from './point';
 import { EdgeTerminal } from './edge-terminal';
 import { EdgeAttrs } from './edge-attrs';
 import { EdgeLabel } from './edge-label';
-import { Metadata, safeMetadataEntry } from './metadata';
+import { Metadata, metadataToRecord, safeMetadataEntry } from './metadata';
 import { MarkupElement, CellTool, EdgeRouter, EdgeConnector } from './x6-types';
 import {
   validateMarkupElements,
@@ -689,11 +689,7 @@ export class EdgeInfo {
    * Converts metadata array to Record format
    */
   getMetadataAsRecord(): Record<string, string> {
-    const record: Record<string, string> = {};
-    this.metadata.forEach(entry => {
-      record[entry.key] = entry.value;
-    });
-    return record;
+    return metadataToRecord(this.metadata);
   }
 
   /**

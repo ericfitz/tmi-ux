@@ -1,6 +1,6 @@
 import { NodeInfo } from './node-info';
 import { EdgeInfo } from './edge-info';
-import { Metadata, safeMetadataEntry } from './metadata';
+import { Metadata, metadataToRecord, safeMetadataEntry } from './metadata';
 
 /**
  * Diagram type supported by the DFD component
@@ -270,11 +270,7 @@ export class DiagramInfo {
    * Gets metadata as Record for backward compatibility
    */
   getMetadataAsRecord(): Record<string, string> {
-    const record: Record<string, string> = {};
-    this.metadata.forEach(entry => {
-      record[entry.key] = entry.value;
-    });
-    return record;
+    return metadataToRecord(this.metadata);
   }
 
   /**

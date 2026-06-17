@@ -51,6 +51,7 @@ import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { X6TooltipAdapter } from './infra-x6-tooltip.adapter';
 import { normalizeCell } from '../../utils/cell-normalization.util';
 import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
+import { getEdgeMarkup } from '../utils/edge-markup.util';
 import { Cell as WebSocketCell } from '../../../../core/types/websocket-message.types';
 import { InfraDfdValidationService } from '../services/infra-dfd-validation.service';
 import {
@@ -677,7 +678,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         source: edgeData.source,
         target: edgeData.target,
         shape: edgeData.shape,
-        markup: this._getEdgeMarkup(),
+        markup: getEdgeMarkup(),
         attrs: edgeData.attrs,
         labels: edgeData.labels,
         vertices: edgeData.vertices,
@@ -2199,34 +2200,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         }
       }
     });
-  }
-
-  /**
-   * Get standard edge markup for consistent rendering
-   */
-  private _getEdgeMarkup(): any[] {
-    return [
-      {
-        tagName: 'path',
-        selector: 'wrap',
-        groupSelector: 'lines',
-        attrs: {
-          fill: 'none',
-          cursor: 'pointer',
-          stroke: 'transparent',
-          strokeLinecap: 'round',
-        },
-      },
-      {
-        tagName: 'path',
-        selector: 'line',
-        groupSelector: 'lines',
-        attrs: {
-          fill: 'none',
-          pointerEvents: 'none',
-        },
-      },
-    ];
   }
 
   /**

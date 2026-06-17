@@ -28,6 +28,7 @@ import {
 import { AuthService } from '@app/auth/services/auth.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyService } from '@app/pages/surveys/services/survey.service';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { SurveyListItem, SurveyStatus } from '@app/types/survey.types';
 import {
   CreateSurveyDialogComponent,
@@ -450,10 +451,6 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
    * Navigate back to admin page
    */
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 }

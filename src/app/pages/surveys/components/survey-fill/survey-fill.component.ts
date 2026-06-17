@@ -27,6 +27,7 @@ import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyDraftService } from '../../services/survey-draft.service';
 import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, SurveyUIState } from '@app/types/survey.types';
+import { loadSurveyJson } from '../../utils/survey-json.util';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 
@@ -149,23 +150,21 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * Fallback: load survey JSON from template service
    */
   private loadSurveyJson(surveyId: string): void {
-    this.surveyService
-      .getSurveyJson(surveyId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: surveyJson => {
-          this.surveyJson = surveyJson;
-          this.initializeSurvey();
-          this.loading = false;
-          this.cdr.markForCheck();
-        },
-        error: error => {
-          this.error = 'Failed to load survey';
-          this.loading = false;
-          this.logger.error('Failed to load survey JSON', error);
-          this.cdr.markForCheck();
-        },
-      });
+    loadSurveyJson(
+      { surveyService: this.surveyService, destroyRef: this.destroyRef, logger: this.logger },
+      surveyId,
+      surveyJson => {
+        this.surveyJson = surveyJson;
+        this.initializeSurvey();
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.error = 'Failed to load survey';
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+    );
   }
 
   /**

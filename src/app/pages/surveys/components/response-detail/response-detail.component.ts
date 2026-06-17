@@ -25,6 +25,7 @@ import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { ProjectService } from '@app/core/services/project.service';
+import { loadSurveyJson } from '../../utils/survey-json.util';
 import { environment } from '../../../../../environments/environment';
 
 /**
@@ -129,23 +130,21 @@ export class ResponseDetailComponent implements OnInit {
    * Fallback: load the survey JSON from template service
    */
   private loadSurveyJson(surveyId: string): void {
-    this.surveyService
-      .getSurveyJson(surveyId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: surveyJson => {
-          this.surveyJson = surveyJson;
-          this.initializeSurvey();
-          this.loading = false;
-          this.cdr.markForCheck();
-        },
-        error: error => {
-          this.error = 'Failed to load survey';
-          this.loading = false;
-          this.logger.error('Failed to load survey JSON', error);
-          this.cdr.markForCheck();
-        },
-      });
+    loadSurveyJson(
+      { surveyService: this.surveyService, destroyRef: this.destroyRef, logger: this.logger },
+      surveyId,
+      surveyJson => {
+        this.surveyJson = surveyJson;
+        this.initializeSurvey();
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      () => {
+        this.error = 'Failed to load survey';
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+    );
   }
 
   /**

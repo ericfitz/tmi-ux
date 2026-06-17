@@ -19,6 +19,7 @@ import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dialog.component';
 import {
   CreateAutomationUserDialogComponent,
@@ -295,10 +296,6 @@ export class AdminWebhooksComponent implements OnInit {
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 }

@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { copyToClipboard } from './clipboard.util';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
+import { LoggerService } from '@app/core/services/logger.service';
+import { copyToClipboard, copyToClipboardWithFeedback } from './clipboard.util';
 
 describe('copyToClipboard', () => {
   let writeTextMock: ReturnType<typeof vi.fn>;
@@ -94,5 +97,77 @@ describe('copyToClipboard', () => {
     copyToClipboard('alert text');
 
     expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('alert text'));
+  });
+});
+
+describe('copyToClipboardWithFeedback', () => {
+  let writeTextMock: ReturnType<typeof vi.fn>;
+  let snackBar: { open: ReturnType<typeof vi.fn> };
+  let transloco: { translate: ReturnType<typeof vi.fn> };
+  let logger: { error: ReturnType<typeof vi.fn> };
+  const originalClipboard = navigator.clipboard;
+
+  const deps = (): {
+    snackBar: MatSnackBar;
+    transloco: TranslocoService;
+    logger: LoggerService;
+  } => ({
+    snackBar: snackBar as unknown as MatSnackBar,
+    transloco: transloco as unknown as TranslocoService,
+    logger: logger as unknown as LoggerService,
+  });
+
+  beforeEach(() => {
+    writeTextMock = vi.fn();
+    snackBar = { open: vi.fn() };
+    transloco = { translate: vi.fn((key: string) => key) };
+    logger = { error: vi.fn() };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    Object.defineProperty(navigator, 'clipboard', {
+      value: originalClipboard,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it('writes the text and shows a success snackbar', async () => {
+    writeTextMock.mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: writeTextMock },
+      writable: true,
+      configurable: true,
+    });
+
+    copyToClipboardWithFeedback('hello', deps());
+
+    expect(writeTextMock).toHaveBeenCalledWith('hello');
+    await vi.waitFor(() => {
+      expect(snackBar.open).toHaveBeenCalledWith(
+        'common.copiedToClipboard',
+        'common.close',
+        { duration: 2000 },
+      );
+    });
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('logs an error when the Clipboard API rejects', async () => {
+    const error = new Error('denied');
+    writeTextMock.mockRejectedValue(error);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: writeTextMock },
+      writable: true,
+      configurable: true,
+    });
+
+    copyToClipboardWithFeedback('hello', deps());
+
+    await vi.waitFor(() => {
+      expect(logger.error).toHaveBeenCalledWith('Could not copy text: ', error);
+    });
+    expect(snackBar.open).not.toHaveBeenCalled();
   });
 });

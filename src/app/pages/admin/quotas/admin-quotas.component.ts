@@ -27,6 +27,7 @@ import {
 import { QuotaService } from '@app/core/services/quota.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import {
   EnrichedUserAPIQuota,
   EnrichedWebhookQuota,
@@ -538,10 +539,6 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 }

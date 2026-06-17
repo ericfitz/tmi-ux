@@ -22,6 +22,7 @@ import { AdminGroup } from '@app/types/group.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { AddGroupDialogComponent } from './add-group-dialog/add-group-dialog.component';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { GroupMembersDialogComponent } from './group-members-dialog/group-members-dialog.component';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
@@ -280,11 +281,7 @@ This action cannot be undone.`);
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 
   getGroupDisplayName(group: AdminGroup): string {
