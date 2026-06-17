@@ -14,7 +14,11 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { ProjectListItem, PROJECT_STATUSES } from '@app/types/project.types';
 import { TeamListItem, ResponsibleParty } from '@app/types/team.types';
 import { Metadata } from '@app/types/metadata.types';
-import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS, PAGINATION_QUERY_PARAMS } from '@app/types/pagination.types';
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+  PAGINATION_QUERY_PARAMS,
+} from '@app/types/pagination.types';
 import { calculateOffset, parsePaginationFromUrl } from '@app/shared/utils/pagination.util';
 import {
   CreateProjectDialogComponent,

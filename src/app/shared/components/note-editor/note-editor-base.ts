@@ -1,4 +1,4 @@
-import { ElementRef } from '@angular/core';
+import { Directive, ElementRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.service';
@@ -15,6 +15,7 @@ import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.servic
  * Subclasses keep their own `@ViewChild` decorators on `contentTextarea` and
  * `markdownPreview`; the base only declares the shapes it consumes.
  */
+@Directive()
 export abstract class NoteEditorBase {
   /** Textarea holding the raw markdown; `@ViewChild` lives in the subclass. */
   abstract contentTextarea?: ElementRef<HTMLTextAreaElement>;

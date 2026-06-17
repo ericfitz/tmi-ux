@@ -145,11 +145,9 @@ describe('copyToClipboardWithFeedback', () => {
 
     expect(writeTextMock).toHaveBeenCalledWith('hello');
     await vi.waitFor(() => {
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'common.copiedToClipboard',
-        'common.close',
-        { duration: 2000 },
-      );
+      expect(snackBar.open).toHaveBeenCalledWith('common.copiedToClipboard', 'common.close', {
+        duration: 2000,
+      });
     });
     expect(logger.error).not.toHaveBeenCalled();
   });
