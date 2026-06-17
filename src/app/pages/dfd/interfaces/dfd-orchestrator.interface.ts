@@ -10,17 +10,6 @@ import { SaveResult, LoadResult } from '../types/persistence.types';
 import { AutoSaveState } from '../types/auto-save.types';
 
 /**
- * DFD operation context
- */
-export interface DfdOperationContext {
-  readonly diagramId: string;
-  readonly threatModelId: string;
-  readonly providerId: string;
-  readonly isCollaborating: boolean;
-  readonly permissions: string[];
-}
-
-/**
  * DFD initialization parameters
  */
 export interface DfdInitializationParams {
@@ -142,25 +131,4 @@ export interface DfdOrchestratorConfig {
   readonly maxHistorySize: number;
   readonly operationTimeoutMs: number;
   readonly debugMode: boolean;
-}
-
-/**
- * Default orchestrator configuration
- */
-export const DEFAULT_ORCHESTRATOR_CONFIG: DfdOrchestratorConfig = {
-  enableAutoSave: true,
-  autoSaveMode: 'normal',
-  enableCollaboration: true,
-  enableHistory: true,
-  enableVisualEffects: true,
-  maxHistorySize: 50,
-  operationTimeoutMs: 30000,
-  debugMode: false,
-};
-
-/**
- * Factory interface for creating DFD orchestrators
- */
-export interface IDfdOrchestratorFactory {
-  create(config?: Partial<DfdOrchestratorConfig>): IDfdOrchestrator;
 }

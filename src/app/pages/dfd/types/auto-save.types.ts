@@ -76,77 +76,6 @@ export interface AutoSavePolicy {
 }
 
 /**
- * Default auto-save policies for different modes
- */
-export const AUTO_SAVE_POLICIES: Record<AutoSaveMode, AutoSavePolicy> = {
-  aggressive: {
-    mode: 'aggressive',
-    debounceMs: 100,
-    maxPendingChanges: 1,
-    periodicSaveIntervalMs: 10000,
-    enableInCollaboration: false,
-    enableDuringLoad: false,
-    significanceThreshold: 'cosmetic',
-    triggers: ['history-modified', 'metadata-changed', 'threat-changed'],
-    excludeOperationTypes: [],
-    maxRetryAttempts: 3,
-    retryDelayMs: 1000,
-  },
-  normal: {
-    mode: 'normal',
-    debounceMs: 1000,
-    maxPendingChanges: 5,
-    periodicSaveIntervalMs: 30000,
-    enableInCollaboration: false,
-    enableDuringLoad: false,
-    significanceThreshold: 'minor',
-    triggers: ['history-modified', 'metadata-changed', 'threat-changed'],
-    excludeOperationTypes: ['load-diagram'],
-    maxRetryAttempts: 3,
-    retryDelayMs: 2000,
-  },
-  conservative: {
-    mode: 'conservative',
-    debounceMs: 3000,
-    maxPendingChanges: 10,
-    periodicSaveIntervalMs: 60000,
-    enableInCollaboration: false,
-    enableDuringLoad: false,
-    significanceThreshold: 'significant',
-    triggers: ['history-modified', 'metadata-changed', 'threat-changed'],
-    excludeOperationTypes: ['load-diagram'],
-    maxRetryAttempts: 2,
-    retryDelayMs: 5000,
-  },
-  manual: {
-    mode: 'manual',
-    debounceMs: 0,
-    maxPendingChanges: 0,
-    periodicSaveIntervalMs: 0,
-    enableInCollaboration: false,
-    enableDuringLoad: false,
-    significanceThreshold: 'critical',
-    triggers: ['manual-trigger'],
-    excludeOperationTypes: ['history-modified', 'metadata-changed'],
-    maxRetryAttempts: 1,
-    retryDelayMs: 0,
-  },
-  collaboration: {
-    mode: 'collaboration',
-    debounceMs: 500,
-    maxPendingChanges: 3,
-    periodicSaveIntervalMs: 120000,
-    enableInCollaboration: true,
-    enableDuringLoad: false,
-    significanceThreshold: 'significant',
-    triggers: ['periodic-save', 'collaboration-sync'],
-    excludeOperationTypes: ['history-modified', 'load-diagram'],
-    maxRetryAttempts: 2,
-    retryDelayMs: 3000,
-  },
-};
-
-/**
  * Auto-save state information
  */
 export interface AutoSaveState {
@@ -270,17 +199,3 @@ export interface AutoSaveConfig {
   readonly customDecisionMakers: SaveDecisionMaker[];
   readonly eventHandlers: AutoSaveEventHandler[];
 }
-
-/**
- * Default auto-save configuration
- */
-export const DEFAULT_AUTO_SAVE_CONFIG: AutoSaveConfig = {
-  defaultPolicy: 'normal',
-  enableStatistics: true,
-  enableEventLogging: true,
-  maxEventLogSize: 1000,
-  debugMode: false,
-  customAnalyzers: [],
-  customDecisionMakers: [],
-  eventHandlers: [],
-};

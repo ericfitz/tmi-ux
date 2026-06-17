@@ -201,14 +201,6 @@ export type PersistenceEventType =
   | 'offline-mode-changed';
 
 /**
- * Interface for persistence event handlers
- */
-export interface PersistenceEventHandler {
-  handle(event: PersistenceEvent): void;
-  canHandle(eventType: PersistenceEventType): boolean;
-}
-
-/**
  * Conflict resolution strategies
  */
 export type ConflictResolutionStrategy =

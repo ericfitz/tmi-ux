@@ -69,12 +69,3 @@ export interface IAutoSaveManager {
   // Cleanup
   dispose(): void;
 }
-
-/**
- * Factory interface for creating auto-save managers
- */
-export interface IAutoSaveManagerFactory {
-  create(config?: Partial<AutoSaveConfig>): IAutoSaveManager;
-  createWithPolicy(policy: AutoSavePolicy): IAutoSaveManager;
-  createForMode(mode: AutoSaveMode): IAutoSaveManager;
-}

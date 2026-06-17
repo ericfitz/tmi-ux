@@ -60,11 +60,3 @@ export interface IGraphOperationManager {
   // Cleanup
   dispose(): void;
 }
-
-/**
- * Factory interface for creating operation managers
- */
-export interface IGraphOperationManagerFactory {
-  create(config?: Partial<OperationConfig>): IGraphOperationManager;
-  createWithDefaults(): IGraphOperationManager;
-}

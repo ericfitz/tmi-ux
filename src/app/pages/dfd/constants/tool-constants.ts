@@ -133,7 +133,6 @@ export const TOOL_CONFIG = {
  */
 export type NodeToolConfig = (typeof NODE_TOOLS)[number];
 export type EdgeToolConfig = (typeof EDGE_TOOLS)[number];
-export type ToolConfig = typeof TOOL_CONFIG;
 
 /**
  * Helper functions for tool operations

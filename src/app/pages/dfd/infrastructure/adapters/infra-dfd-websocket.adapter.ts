@@ -78,17 +78,6 @@ export interface PresenterSelectionEvent {
   selectedCells: string[];
 }
 
-export interface PresenterRequestEvent {
-  type: 'presenter-request';
-  providerId: string;
-}
-
-export interface PresenterDeniedEvent {
-  type: 'presenter-denied';
-  providerId: string;
-  targetUser: string;
-}
-
 export interface PresenterUpdateEvent {
   type: 'presenter-update';
   presenterEmail: string | null;

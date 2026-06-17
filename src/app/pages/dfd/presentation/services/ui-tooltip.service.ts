@@ -4,14 +4,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { Metadata } from '../../domain/value-objects/metadata';
 
 /**
- * Interface for tooltip content data
- */
-export interface TooltipContent {
-  text: string;
-  position: { x: number; y: number };
-}
-
-/**
  * Interface for port object structure
  */
 interface PortObject {

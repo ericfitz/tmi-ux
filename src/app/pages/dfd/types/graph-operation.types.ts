@@ -196,19 +196,6 @@ export interface LoadDiagramOperation extends GraphOperation {
 }
 
 /**
- * Union type of all specific operation types
- */
-export type SpecificGraphOperation =
-  | CreateNodeOperation
-  | UpdateNodeOperation
-  | DeleteNodeOperation
-  | CreateEdgeOperation
-  | UpdateEdgeOperation
-  | DeleteEdgeOperation
-  | BatchOperation
-  | LoadDiagramOperation;
-
-/**
  * Result of executing a graph operation
  */
 export interface OperationResult {

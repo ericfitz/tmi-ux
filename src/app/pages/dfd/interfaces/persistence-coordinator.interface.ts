@@ -82,11 +82,3 @@ export interface PersistenceHealthStatus {
   readonly cacheHealth: 'healthy' | 'degraded' | 'full';
   readonly pendingOperations: number;
 }
-
-/**
- * Factory interface for creating persistence coordinators
- */
-export interface IPersistenceCoordinatorFactory {
-  create(config?: Partial<PersistenceConfig>): IPersistenceCoordinator;
-  createWithStrategies(strategies: PersistenceStrategy[]): IPersistenceCoordinator;
-}

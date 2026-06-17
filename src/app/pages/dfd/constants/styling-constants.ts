@@ -328,11 +328,6 @@ export const DFD_STYLING = {
 Object.freeze(DFD_STYLING);
 
 /**
- * Type-safe access to styling constants
- */
-export type DfdStyling = typeof DFD_STYLING;
-
-/**
  * Helper functions for common styling operations
  */
 export const DFD_STYLING_HELPERS = {
@@ -650,9 +645,3 @@ export const DFD_STYLING_HELPERS = {
  */
 export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
 export type EdgeType = 'edge';
-export type CellType = NodeType | EdgeType;
-
-/**
- * Port position definitions
- */
-export type PortPosition = (typeof DFD_STYLING.NODES.PORTS.POSITIONS)[number];
