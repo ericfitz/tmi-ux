@@ -19,6 +19,7 @@ import {
 import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { AdminUser, CreateAutomationAccountResponse } from '@app/types/user.types';
 import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
@@ -396,11 +397,7 @@ This action cannot be undone.`;
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 
   formatGroups(groups: string[] | undefined): string {

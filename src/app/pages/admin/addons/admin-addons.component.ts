@@ -18,6 +18,7 @@ import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AddAddonDialogComponent } from './add-addon-dialog/add-addon-dialog.component';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -215,11 +216,7 @@ export class AdminAddonsComponent implements OnInit {
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 
   /**

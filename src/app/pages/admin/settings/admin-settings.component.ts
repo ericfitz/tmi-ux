@@ -20,6 +20,7 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { EditableSystemSetting, SystemSetting } from '@app/types/settings.types';
 import { AddSettingDialogComponent } from './add-setting-dialog/add-setting-dialog.component';
+import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -300,10 +301,6 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   }
 
   onClose(): void {
-    if (this.authService.isAdmin) {
-      void this.router.navigate(['/admin']);
-    } else {
-      void this.router.navigate([this.authService.getLandingPage()]);
-    }
+    navigateFromAdminPage(this.router, this.authService);
   }
 }
