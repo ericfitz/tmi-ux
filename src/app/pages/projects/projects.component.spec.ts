@@ -8,11 +8,17 @@
 import '@angular/compiler';
 
 import { DestroyRef, Injector, runInInjectionContext } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { of, Subject } from 'rxjs';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { PageEvent } from '@angular/material/paginator';
 
+import { ProjectService } from '@app/core/services/project.service';
+import { TeamService } from '@app/core/services/team.service';
+import { LoggerService } from '@app/core/services/logger.service';
 import { ProjectsComponent } from './projects.component';
 import { ProjectListItem, Project } from '@app/types/project.types';
 import { TeamListItem } from '@app/types/team.types';
@@ -151,20 +157,19 @@ describe('ProjectsComponent', () => {
 
     const mockDestroyRef = { onDestroy: vi.fn() };
     injector = Injector.create({
-      providers: [{ provide: DestroyRef, useValue: mockDestroyRef }],
+      providers: [
+        { provide: DestroyRef, useValue: mockDestroyRef },
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: TeamService, useValue: mockTeamService },
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockRoute },
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: LoggerService, useValue: mockLogger },
+        { provide: Location, useValue: mockLocation },
+      ],
     });
 
-    component = runInInjectionContext(injector, () => {
-      return new ProjectsComponent(
-        mockProjectService as any,
-        mockTeamService as any,
-        mockRouter as any,
-        mockRoute as any,
-        mockDialog as any,
-        mockLogger as any,
-        mockLocation as any,
-      );
-    });
+    component = runInInjectionContext(injector, () => new ProjectsComponent());
   });
 
   afterEach(() => {
