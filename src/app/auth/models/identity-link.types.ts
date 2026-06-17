@@ -12,9 +12,6 @@ export type PendingIdentityLinkResponse = components['schemas']['PendingIdentity
 /** Response of GET /me/identities (primary + linked). */
 export type MyIdentitiesResponse = components['schemas']['MyIdentitiesResponse'];
 
-/** The primary identity sub-object inside MyIdentitiesResponse. */
-export type PrimaryIdentity = MyIdentitiesResponse['primary'];
-
 /** Server error codes we branch on (RFC6749 `error` field). */
 export const IDENTITY_LINK_ERROR = {
   alreadyBound: 'identity_already_bound',

@@ -10,11 +10,6 @@ export interface IAuthSession {
 }
 
 /**
- * @deprecated Use IAuthSession instead. Alias kept during migration.
- */
-export type IJwtToken = IAuthSession;
-
-/**
  * User profile information
  */
 export interface IUserProfile {

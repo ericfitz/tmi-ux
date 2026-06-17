@@ -141,12 +141,6 @@ export interface ChangePresenterRequestMessage {
 }
 
 /**
- * @deprecated Use ChangePresenterRequestMessage for client requests
- * Kept for backward compatibility during transition
- */
-export type ChangePresenterMessage = ChangePresenterRequestMessage;
-
-/**
  * @deprecated Server does not send a dedicated current_presenter message.
  * Presenter changes are broadcast via participants_update with current_presenter field.
  * Kept for backward compatibility during transition.
@@ -299,20 +293,6 @@ export interface RemoveParticipantRequestMessage {
   removed_user: User;
 }
 
-/**
- * @deprecated Use RemoveParticipantRequestMessage for client requests
- * The server does not echo this message back; it broadcasts participants_update instead
- */
-export type RemoveParticipantMessage = RemoveParticipantRequestMessage;
-
-/**
- * @deprecated Server no longer sends this message type
- * Kept for backward compatibility during transition
- */
-export interface RemoveParticipantMessageWithInitiator extends RemoveParticipantRequestMessage {
-  user: User;
-}
-
 export interface WebSocketErrorMessage {
   message_type: 'error';
   error: string;
@@ -389,16 +369,6 @@ export type TMIMessageType =
   | 'remove_participant_request'
   | 'error'
   | 'operation_rejected';
-
-/**
- * Options for applying remote operations to local graph
- */
-export interface RemoteOperationOptions {
-  suppressHistory?: boolean;
-  ensureVisualRendering?: boolean;
-  updatePortVisibility?: boolean;
-  applyVisualEffects?: boolean;
-}
 
 /**
  * Configuration for collaborative operation service

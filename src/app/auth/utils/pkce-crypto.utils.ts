@@ -88,20 +88,3 @@ export async function computeCodeChallenge(verifier: string): Promise<string> {
   const hash = await sha256(verifier);
   return base64UrlEncode(hash); // Results in 43 characters
 }
-
-/**
- * Validate code verifier format (RFC 7636 section 4.1)
- * Must be 43-128 characters: [A-Za-z0-9-._~]
- *
- * @param verifier String to validate
- * @returns True if verifier format is valid
- */
-export function isValidCodeVerifier(verifier: string): boolean {
-  if (!verifier || verifier.length < 43 || verifier.length > 128) {
-    return false;
-  }
-
-  // RFC 7636: unreserved characters from RFC 3986
-  const validPattern = /^[A-Za-z0-9\-._~]+$/;
-  return validPattern.test(verifier);
-}
