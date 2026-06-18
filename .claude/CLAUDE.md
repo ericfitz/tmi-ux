@@ -157,9 +157,11 @@ When you encounter a problem during development or debugging that appears to ori
 
 ## Development Commands
 
-**Always use pnpm scripts** from `package.json` for building, testing, linting, and deployment rather than bespoke command lines. Run from project root.
+**Always use the pnpm scripts** from `package.json` for building, testing, linting, formatting, and deployment — never hand-craft bespoke command lines. The scripts encode required context (configurations, pre/post steps, env vars, ordering, generated inputs) that a raw `ng`/`vitest`/`playwright`/`eslint` invocation will miss. Reaching for a bespoke command leads to failures that wouldn't have occurred under the real script, and time wasted debugging them. If no script fits the need, add one rather than running a one-off. Run from project root.
 
 Key commands: `pnpm run dev`, `pnpm test`, `pnpm run build`, `pnpm run lint:all`, `pnpm run format`
+
+**Node:** runs on the latest two Node LTS lines — current LTS and previous LTS (today, 24.x and 22.x). Enforced via `engines` in `package.json`; use a version in that range.
 
 ## Architecture
 
@@ -178,7 +180,9 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 - Data Flow Diagrams (`/pages/dfd`) - Layered DDD architecture with AntV X6 graphing
 - Core Services (`/core`) - ApiService, AuthService, LoggerService, WebSocketService, etc.
 - Administration (`/admin`) - Administration of the application while it is operating
-- Intake (`/intake`) - User requests for security review by filling out surveys
+- Intake (`/intake`) - User requests for security review via surveys; code lives under `/pages/surveys` (route `/intake` → `surveys.routes`)
+- Triage (`/triage`) - Reviewers triage and prioritize incoming requests
+- Projects/Teams (`/pages/projects`, `/pages/teams`) - Review project and team management
 
 **Environments:** `src/environments/` - API URLs, feature flags, OAuth config
 
