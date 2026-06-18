@@ -77,18 +77,22 @@ export interface DiagramValidator {
   /** Version pattern this validator supports (for version flexibility) */
   versionPattern: RegExp;
   /** Validate a diagram object */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: validate a diagram object and return validation errors (pure)
   validate(diagram: unknown, context: ValidationContext): ValidationError[];
   /** Validate cells within the diagram */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: validate diagram cells and return validation errors (pure)
   validateCells(cells: unknown[], context: ValidationContext): ValidationError[];
 }
 
 export interface ReferenceValidator {
   /** Validate that all references are consistent */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: validate internal reference consistency in a threat model (pure)
   validateReferences(threatModel: unknown, context: ValidationContext): ValidationError[];
 }
 
 export interface ThreatModelValidator {
   /** Validate the entire threat model */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: validate a complete threat model and return a ValidationResult (pure)
   validate(threatModel: unknown): ValidationResult;
 }
 

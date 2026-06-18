@@ -17,6 +17,7 @@ describe('AiFeedbackDialogComponent', () => {
   let mockTransloco: TranslocoService;
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build an AiFeedbackDialogComponent with mocked dependencies for unit testing (pure)
   function build(data: AiFeedbackDialogData, init = true): AiFeedbackDialogComponent {
     const component = new AiFeedbackDialogComponent(
       mockDialogRef as never,

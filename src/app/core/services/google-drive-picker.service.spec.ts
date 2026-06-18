@@ -79,6 +79,7 @@ describe('GoogleDrivePickerService', () => {
     vi.restoreAllMocks();
   });
 
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: invoke the captured picker callback with test data in unit tests (pure)
   function fireCallback(data: PickerCallbackData): void {
     if (!pickerCallback) throw new Error('callback not set');
     pickerCallback(data);

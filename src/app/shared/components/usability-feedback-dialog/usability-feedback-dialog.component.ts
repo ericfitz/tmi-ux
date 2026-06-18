@@ -48,12 +48,14 @@ export interface UsabilityFeedbackDialogResult {
   styleUrls: ['./usability-feedback-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: dialog for capturing and submitting usability sentiment and optional screenshot feedback
 export class UsabilityFeedbackDialogComponent {
   readonly form: FormGroup;
   readonly maxVerbatim = VERBATIM_MAX;
   submitting = false;
   screenshot: string | null;
 
+  // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: inject services and build the feedback form with initial sentiment and screenshot (pure)
   constructor(
     private readonly _dialogRef: MatDialogRef<
       UsabilityFeedbackDialogComponent,
@@ -74,6 +76,7 @@ export class UsabilityFeedbackDialogComponent {
     });
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: update the sentiment form control value (mutates shared state)
   setSentiment(sentiment: UsabilityFeedbackSentiment): void {
     this.form.get('sentiment')!.setValue(sentiment);
   }
@@ -82,15 +85,18 @@ export class UsabilityFeedbackDialogComponent {
     return this.form.get('sentiment')!.value;
   }
 
+  // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: clear the attached screenshot from the feedback form (mutates shared state)
   removeScreenshot(): void {
     this.screenshot = null;
     this._cdr.markForCheck();
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: dismiss the feedback dialog without submitting (pure)
   onCancel(): void {
     this._dialogRef.close({ submitted: false });
   }
 
+  // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: validate and submit usability feedback to the API, then close the dialog
   onSubmit(): void {
     if (this.form.invalid || this.submitting) return;
     const { sentiment, verbatim } = this.form.value as {

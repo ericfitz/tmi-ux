@@ -16,6 +16,7 @@ describe('NodeOperationValidator', () => {
   let validator: NodeOperationValidator;
   let loggerService: MockLoggerService;
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a mock graph with configurable cells and connected edges for tests (pure)
   function createMockGraph(
     options: {
       cells?: Map<string, any>;
@@ -32,6 +33,7 @@ describe('NodeOperationValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid node graph operation fixture with optional overrides (pure)
   function baseOperation(type: string, overrides: any = {}): any {
     return {
       id: 'op-1',
@@ -43,6 +45,7 @@ describe('NodeOperationValidator', () => {
     };
   }
 
+  // SEM@55f3ff4b17d436ad024147d9d67d05c38d834198: build a minimal valid operation context fixture with a graph instance and optional overrides (pure)
   function baseContext(graph: any, overrides: any = {}): any {
     return {
       graph,
@@ -55,6 +58,7 @@ describe('NodeOperationValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a stub graph cell that identifies as a node (pure)
   function mockNode(id: string): any {
     return {
       id,
@@ -63,6 +67,7 @@ describe('NodeOperationValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a stub graph cell that identifies as an edge (pure)
   function mockEdge(id: string): any {
     return {
       id,

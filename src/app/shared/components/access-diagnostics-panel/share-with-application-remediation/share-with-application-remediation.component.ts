@@ -155,6 +155,7 @@ import {
     `,
   ],
 })
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: display shell snippets for sharing a document with an application identity (mutates shared state)
 export class ShareWithApplicationRemediationComponent implements OnChanges {
   @Input({ required: true }) remediation!: AccessRemediation;
 
@@ -163,6 +164,7 @@ export class ShareWithApplicationRemediationComponent implements OnChanges {
   powershellSnippet = '';
   curlSnippet = '';
 
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: inject clipboard, snackbar, translation, and logger services (pure)
   constructor(
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
@@ -170,6 +172,7 @@ export class ShareWithApplicationRemediationComponent implements OnChanges {
     private logger: LoggerService,
   ) {}
 
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: parse remediation params and build raw, PowerShell, and curl snippets (mutates shared state)
   ngOnChanges(): void {
     this.params = extractShareWithApplicationParams(this.remediation?.params);
     if (!this.params) {
@@ -186,6 +189,7 @@ export class ShareWithApplicationRemediationComponent implements OnChanges {
     this.curlSnippet = buildCurlSnippet(this.params);
   }
 
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: copy a shell snippet to clipboard and notify success or failure (mutates shared state)
   copy(snippet: string): void {
     const ok = this.clipboard.copy(snippet);
     const key = ok

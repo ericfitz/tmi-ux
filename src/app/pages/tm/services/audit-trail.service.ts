@@ -23,7 +23,9 @@ const EMPTY_RESPONSE: ListAuditTrailResponse = { audit_entries: [], total: 0, li
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5952df8e34d391466409913f45ddad0a2f803847: fetch and rollback audit trail entries for a threat model and its sub-entities (reads DB)
 export class AuditTrailService {
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: inject API and logger dependencies for the audit trail service
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -32,6 +34,7 @@ export class AuditTrailService {
   /**
    * List audit trail entries for a threat model and all its sub-entities.
    */
+  // SEM@5952df8e34d391466409913f45ddad0a2f803847: fetch paginated audit trail entries for a threat model (reads DB)
   getAuditTrail(
     threatModelId: string,
     params?: AuditTrailListParams,
@@ -51,6 +54,7 @@ export class AuditTrailService {
   /**
    * List audit trail entries for a specific sub-entity.
    */
+  // SEM@5952df8e34d391466409913f45ddad0a2f803847: fetch paginated audit trail entries for a specific sub-entity (reads DB)
   getEntityAuditTrail(
     threatModelId: string,
     entityType: AuditObjectType,
@@ -71,6 +75,7 @@ export class AuditTrailService {
   /**
    * Get a single audit trail entry by ID.
    */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: fetch a single audit trail entry by id (reads DB)
   getAuditEntry(threatModelId: string, entryId: string): Observable<AuditEntry | undefined> {
     return this.apiService
       .get<AuditEntry>(`threat_models/${threatModelId}/audit_trail/${entryId}`)
@@ -86,6 +91,7 @@ export class AuditTrailService {
    * Rollback an entity to the state captured in the specified audit entry.
    * Returns the restored entity as the API response.
    */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: restore an entity to the state captured in a given audit entry (mutates shared state)
   rollback(threatModelId: string, entryId: string): Observable<AuditEntry> {
     return this.apiService.post<AuditEntry>(
       `threat_models/${threatModelId}/audit_trail/${entryId}/rollback`,
@@ -94,6 +100,7 @@ export class AuditTrailService {
   }
 
   /** Build the entity-specific audit trail endpoint path */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: build the API endpoint path for a sub-entity's audit trail (pure)
   private buildEntityEndpoint(
     threatModelId: string,
     entityType: AuditObjectType,
@@ -113,6 +120,7 @@ export class AuditTrailService {
   }
 
   /** Convert AuditTrailListParams to query param record */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: convert audit trail list params to a query string record (pure)
   private buildQueryParams(p: AuditTrailListParams): Record<string, string> {
     const params: Record<string, string> = {};
     if (p.limit !== undefined) params['limit'] = String(p.limit);

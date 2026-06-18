@@ -7,6 +7,7 @@ import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog'
 import { RelatedTeamsDialog } from '../dialogs/related-teams.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
 
+// SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: E2E flow helper orchestrating CRUD operations on admin teams page
 export class AdminTeamsFlow {
   private adminTeamsPage: AdminTeamsPage;
   private createTeamDialog: CreateTeamDialog;
@@ -15,6 +16,7 @@ export class AdminTeamsFlow {
   private responsiblePartiesDialog: ResponsiblePartiesDialog;
   private relatedTeamsDialog: RelatedTeamsDialog;
   private metadataDialog: MetadataDialog;
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: build page object and dialog handles for the admin teams flow (pure)
   constructor(private page: Page) {
     this.adminTeamsPage = new AdminTeamsPage(page);
     this.createTeamDialog = new CreateTeamDialog(page);
@@ -25,6 +27,7 @@ export class AdminTeamsFlow {
     this.metadataDialog = new MetadataDialog(page);
   }
 
+  // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: create a team via the admin UI dialog and wait for it to close
   async createTeam(name: string, description?: string) {
     await this.adminTeamsPage.addButton().click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
@@ -38,6 +41,7 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: rename a team via the admin edit dialog and wait for close
   async editTeam(name: string, newName: string) {
     await this.adminTeamsPage.editButton(name).click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
@@ -46,6 +50,7 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: open the team members dialog for a team and cancel it
   async openMembers(name: string) {
     await this.adminTeamsPage.membersButton(name).click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
@@ -53,6 +58,7 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: open the responsible parties dialog for a team and cancel it
   async openResponsibleParties(name: string) {
     await this.adminTeamsPage.moreButton(name).click();
     await this.adminTeamsPage.responsiblePartiesItem().dispatchEvent('click');
@@ -61,6 +67,7 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: open the related teams dialog for a team and cancel it
   async openRelatedTeams(name: string) {
     await this.adminTeamsPage.moreButton(name).click();
     await this.adminTeamsPage.relatedTeamsItem().dispatchEvent('click');
@@ -69,6 +76,7 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@f1bfdaee3d5f7f1c879afe5c43d4285e2fabe2ea: open the metadata dialog for a team and cancel it
   async openMetadata(name: string) {
     await this.adminTeamsPage.moreButton(name).click();
     await this.adminTeamsPage.metadataItem().dispatchEvent('click');
@@ -77,8 +85,10 @@ export class AdminTeamsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: delete a team via the admin UI, accepting the confirmation dialog
   async deleteTeam(name: string) {
     await this.adminTeamsPage.moreButton(name).click();
+    // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: accept a browser native confirmation dialog (pure)
     const dialogHandler = (dialog: Dialog) => void dialog.accept();
     this.page.once('dialog', dialogHandler);
     await this.adminTeamsPage.deleteItem().dispatchEvent('click');

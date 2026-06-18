@@ -44,6 +44,7 @@ import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types'
   styleUrl: './my-responses.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: display and manage the current user's survey responses with filtering and actions
 export class MyResponsesComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
@@ -73,6 +74,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
 
   readonly displayedColumns = ['template', 'status', 'created', 'modified', 'actions'];
 
+  // SEM@bc18a88f5e89ecbe67e43a913ff61de18fa5860a: inject services needed to fetch, navigate, log, and translate survey responses (pure)
   constructor(
     private responseService: SurveyResponseService,
     private router: Router,
@@ -81,6 +83,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
     private transloco: TranslocoService,
   ) {}
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: wire the sort control and custom sort accessor to the response table data source (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (
@@ -102,6 +105,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: trigger initial fetch of the user's survey responses on component init
   ngOnInit(): void {
     this.loadResponses();
   }
@@ -109,6 +113,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Load user's responses
    */
+  // SEM@bc18a88f5e89ecbe67e43a913ff61de18fa5860a: fetch the current user's survey response list and populate the filtered table (reads DB)
   loadResponses(): void {
     this.loading = true;
     this.error = null;
@@ -135,6 +140,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Apply status filter
    */
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: filter the displayed survey responses by the selected status values (mutates shared state)
   applyFilter(): void {
     if (this.statusFilter.length === 0 || this.statusFilter.length === this.statusOptions.length) {
       this.dataSource.data = [...this.responses];
@@ -146,6 +152,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Handle filter change
    */
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: re-apply the status filter when the user's filter selection changes (mutates shared state)
   onFilterChange(): void {
     this.applyFilter();
   }
@@ -153,6 +160,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * View a response
    */
+  // SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: route to the fill or read-only view of a survey response based on its status
   viewResponse(response: SurveyResponseListItem): void {
     if (this._deleteInProgress) {
       return;
@@ -167,6 +175,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Continue a draft
    */
+  // SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: route to the survey fill page to resume editing a draft response
   continueDraft(response: SurveyResponseListItem): void {
     if (this._deleteInProgress) {
       return;
@@ -177,6 +186,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Delete a draft
    */
+  // SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: delete a draft survey response and reload the response list
   deleteDraft(response: SurveyResponseListItem, event: Event): void {
     event.stopPropagation();
     this._deleteInProgress = true;
@@ -203,6 +213,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Navigate back to surveys
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: navigate to the intake survey list page (mutates shared state)
   goBack(): void {
     void this.router.navigate(['/intake']);
   }
@@ -210,6 +221,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Get status display info
    */
+  // SEM@bc18a88f5e89ecbe67e43a913ff61de18fa5860a: map a survey response status to its display label, color, and icon (pure)
   getStatusInfo(status: ResponseStatus): { labelKey: string; color: string; icon: string } {
     const statusMap: Record<ResponseStatus, { labelKey: string; color: string; icon: string }> = {
       draft: { labelKey: 'surveys.status.draft', color: 'default', icon: 'edit_note' },
@@ -236,6 +248,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Format date for display
    */
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: format an ISO date string as a localized short date (pure)
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
@@ -248,6 +261,7 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
   /**
    * Format date with time
    */
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: format an ISO date string as a localized date and time (pure)
   formatDateTime(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleString(undefined, {

@@ -46,6 +46,7 @@ export interface OperationStateEvent {
  * Note: X6 history management has been moved to AppHistoryService
  */
 @Injectable()
+// SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: manage diagram graph operation execution, drag tracking, and remote-change signaling (mutates shared state)
 export class AppOperationStateManager {
   private readonly _dragCompletions$ = new Subject<DragCompletionEvent>();
   private readonly _stateEvents$ = new Subject<OperationStateEvent>();
@@ -54,6 +55,7 @@ export class AppOperationStateManager {
   private readonly DRAG_COMPLETION_DELAY = 150; // ms to wait after drag stops before recording
   private _currentOperationType: string | null = null;
 
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: inject the logger dependency for the operation state manager (pure)
   constructor(private logger: LoggerService) {}
 
   /**
@@ -74,6 +76,7 @@ export class AppOperationStateManager {
   /**
    * Execute an atomic operation by batching all changes into a single history entry
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: execute a graph operation as a single batched history entry (mutates shared state)
   executeAtomicOperation<T>(graph: Graph, operation: () => T, _operationType?: string): T {
     return graph.batchUpdate(() => {
       return operation();
@@ -83,6 +86,7 @@ export class AppOperationStateManager {
   /**
    * Execute a compound operation by batching all changes into a single history entry
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: execute multiple graph changes batched into one history entry (mutates shared state)
   executeCompoundOperation<T>(graph: Graph, operation: () => T, _operationType?: string): T {
     return graph.batchUpdate(() => {
       return operation();
@@ -93,6 +97,7 @@ export class AppOperationStateManager {
    * Execute an operation that represents the final state of a drag operation
    * This ensures only the final position/size/vertices are recorded in history
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: execute the final drag state as a single batched history entry (mutates shared state)
   executeFinalizeDragOperation<T>(graph: Graph, operation: () => T, _operationType?: string): T {
     return graph.batchUpdate(() => {
       return operation();
@@ -106,6 +111,7 @@ export class AppOperationStateManager {
    * Note: X6 history plugin integration removed. Visual effects are now excluded
    * from history by the operation metadata flag (isVisualEffect).
    */
+  // SEM@4679a963e2b992ee5a927836995556b59d2deccd: execute a visual-only graph change excluded from undo/redo history (mutates shared state)
   executeVisualEffect(graph: Graph, operation: () => void): void {
     // Execute the operation directly - visual effects are filtered by metadata
     operation();
@@ -118,6 +124,7 @@ export class AppOperationStateManager {
    * Note: X6 history plugin integration removed. Remote operations are now recorded
    * in history (per user feedback) and filtered by the operation source if needed.
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: execute a remote graph change while emitting start/end events to suppress rebroadcast (mutates shared state)
   executeRemoteOperation<T>(graph: Graph, operation: () => T): T {
     // Emit event to signal remote operation start
     this._stateEvents$.next({
@@ -140,6 +147,7 @@ export class AppOperationStateManager {
    * Execute multiple operations as a single atomic transaction
    * This creates one combined history entry instead of separate entries for each operation
    */
+  // SEM@4679a963e2b992ee5a927836995556b59d2deccd: execute multiple operations as one combined history transaction (mutates shared state)
   executeAtomicTransaction<T>(
     graph: Graph,
     operation: () => T,
@@ -151,6 +159,7 @@ export class AppOperationStateManager {
   /**
    * Get default options for operation - visual effects should be excluded
    */
+  // SEM@13bb9d4f1414f961a4cc60bec30b4d4c95249431: return default operation options excluding visual effects and port changes (pure)
   getDefaultOptionsForOperation(): any {
     return {
       includeVisualEffects: false,
@@ -163,6 +172,7 @@ export class AppOperationStateManager {
   /**
    * Start tracking a drag operation to capture only the final state
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: register a cell drag with its initial state for final-position capture (mutates shared state)
   startDragTracking(
     cellId: string,
     dragType: 'move' | 'resize' | 'vertex',
@@ -193,6 +203,7 @@ export class AppOperationStateManager {
   /**
    * Update drag tracking - this extends the debounce timer
    */
+  // SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: extend the drag-completion debounce timer for an in-progress cell drag (mutates shared state)
   updateDragTracking(cellId: string): void {
     if (!this._activeDrags.has(cellId)) {
       return;
@@ -215,6 +226,7 @@ export class AppOperationStateManager {
   /**
    * Force completion of a drag operation (called when user releases mouse, etc.)
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: force-complete a cell drag and emit the drag completion event (mutates shared state)
   finalizeDragTracking(cellId: string, finalState: any): void {
     // Clear any pending timer
     const existingTimer = this._dragDebounceMap.get(cellId);
@@ -229,6 +241,7 @@ export class AppOperationStateManager {
   /**
    * Check if a cell is currently being dragged
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: check whether a specific cell is currently being dragged (pure)
   isDragInProgress(cellId: string): boolean {
     return this._activeDrags.has(cellId);
   }
@@ -236,6 +249,7 @@ export class AppOperationStateManager {
   /**
    * Check if any drag operation is currently in progress
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: check whether any cell drag is currently active (pure)
   isAnyDragInProgress(): boolean {
     return this._activeDrags.size > 0;
   }
@@ -243,6 +257,7 @@ export class AppOperationStateManager {
   /**
    * Cancel drag tracking for a cell (e.g., if drag is cancelled)
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: cancel and discard tracking state for an aborted cell drag (mutates shared state)
   cancelDragTracking(cellId: string): void {
     this._activeDrags.delete(cellId);
     const existingTimer = this._dragDebounceMap.get(cellId);
@@ -255,6 +270,7 @@ export class AppOperationStateManager {
   /**
    * Internal method to finalize a drag operation and emit completion event
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: finalize drag tracking and emit the drag completion event for a cell (mutates shared state)
   private _finalizeDrag(cellId: string, providedFinalState?: any): void {
     const trackingData = this._activeDrags.get(cellId);
     if (!trackingData) {
@@ -287,6 +303,7 @@ export class AppOperationStateManager {
   /**
    * Set current operation type for context-aware filtering
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: store the current operation type for context-aware filtering (mutates shared state)
   setCurrentOperationType(operationType: string | null): void {
     this._currentOperationType = operationType;
   }
@@ -294,6 +311,7 @@ export class AppOperationStateManager {
   /**
    * Get current operation type
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: return the active operation type string for the current gesture (pure)
   getCurrentOperationType(): string | null {
     return this._currentOperationType;
   }
@@ -301,6 +319,7 @@ export class AppOperationStateManager {
   /**
    * Check if an operation should be excluded from history based on type
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: filter whether an operation type is excluded from undo history (pure)
   shouldExcludeOperationType(operationType?: string): boolean {
     if (!operationType) return false;
     return EXCLUDED_OPERATION_TYPES.has(operationType as any);
@@ -309,6 +328,7 @@ export class AppOperationStateManager {
   /**
    * Clean up resources
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: release all drag timers and complete state event streams (mutates shared state)
   dispose(): void {
     // Clear all active timers
     this._dragDebounceMap.forEach(timer => clearTimeout(timer));
@@ -322,6 +342,7 @@ export class AppOperationStateManager {
    * Check if an attribute path should be excluded from history
    * Returns true for visual-only attributes that shouldn't trigger undo/redo
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: filter whether an attribute or property path is visual-only and excluded from history (pure)
   shouldExcludeAttribute(attributePath?: string, propertyPath?: string): boolean {
     if (!attributePath && !propertyPath) {
       return false;
@@ -346,6 +367,7 @@ export class AppOperationStateManager {
   /**
    * Check if a property path represents a port visibility change
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate whether a property path targets port visibility (pure)
   private _isPortVisibilityPath(propertyPath: string): boolean {
     // Port visibility paths look like: "ports/items/0/attrs/circle/style/visibility"
     return (
@@ -357,6 +379,7 @@ export class AppOperationStateManager {
   /**
    * Check if an attribute path represents a visual-only change
    */
+  // SEM@547348ac544c6347e52c6335ffcaec13987c4e9c: validate whether an attribute path is a visual-only effect excluded from undo history (pure)
   private _isVisualAttributePath(attributePath: string): boolean {
     const visualPaths = [
       // Selection and hover effects
@@ -491,6 +514,7 @@ export const HISTORY_OPERATION_TYPES = {
 /**
  * Type for history operation type values
  */
+// SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: union type of all valid history operation type string literals (pure)
 export type HistoryOperationType =
   (typeof HISTORY_OPERATION_TYPES)[keyof typeof HISTORY_OPERATION_TYPES];
 

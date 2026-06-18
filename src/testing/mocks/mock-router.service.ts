@@ -14,6 +14,7 @@ import type { Router } from '@angular/router';
  * @param initialUrl - The initial URL for the router (default: '/current-route')
  * @returns A mock Router with vitest mock functions
  */
+// SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: build a mock Router with navigation spy methods and a configurable initial URL (pure)
 export function createMockRouter(initialUrl: string = '/current-route'): Router {
   return {
     navigate: vi.fn().mockResolvedValue(true),
@@ -55,6 +56,7 @@ export interface MockRouter {
  * @param initialUrl - The initial URL for the router (default: '/current-route')
  * @returns A typed mock Router
  */
+// SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: build a typed mock Router exposing spy methods for test assertions (pure)
 export function createTypedMockRouter(initialUrl: string = '/current-route'): MockRouter {
   return createMockRouter(initialUrl) as unknown as MockRouter;
 }

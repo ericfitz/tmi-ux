@@ -15,6 +15,7 @@ interface IconFailure {
  *
  * Throws with a descriptive error listing all broken icons.
  */
+// SEM@c1228d0855b6d09426aa91237076ac3fc51b72d3: validate all visible icons on page have non-zero size and content (pure)
 export async function assertIconsRendered(page: Page): Promise<void> {
   const icons = page.locator('mat-icon');
   const count = await icons.count();

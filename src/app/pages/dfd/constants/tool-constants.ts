@@ -131,7 +131,9 @@ export const TOOL_CONFIG = {
 /**
  * Type definitions for tool configurations
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: type alias for a single node tool configuration entry (pure)
 export type NodeToolConfig = (typeof NODE_TOOLS)[number];
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: type alias for a single edge tool configuration entry (pure)
 export type EdgeToolConfig = (typeof EDGE_TOOLS)[number];
 
 /**

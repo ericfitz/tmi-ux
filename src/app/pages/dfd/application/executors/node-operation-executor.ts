@@ -30,14 +30,17 @@ import { Cell } from '../../../../core/types/websocket-message.types';
 import { normalizeCell } from '../../utils/cell-normalization.util';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
+// SEM@91e600a4c7ac4e20f0bacb847902b678566401a1: executor that handles create, update, and delete node operations on the diagram graph
 export class NodeOperationExecutor implements OperationExecutor {
   readonly priority = 100; // Standard priority for node operations
 
+  // SEM@ffa374dd1c9de88fc1c583a4695e280597118d74: register logger and node service dependencies for NodeOperationExecutor (pure)
   constructor(
     private readonly logger: LoggerService,
     private readonly nodeService: InfraNodeService,
   ) {}
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether an operation is a create-, update-, or delete-node type (pure)
   canExecute(operation: GraphOperation): boolean {
     return (
       operation.type === 'create-node' ||
@@ -46,6 +49,7 @@ export class NodeOperationExecutor implements OperationExecutor {
     );
   }
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: dispatch a node operation to the appropriate create, update, or delete handler (mutates shared state)
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
     this.logger.debugComponent('NodeOperationExecutor', 'Executing operation', {
       operationId: operation.id,
@@ -73,6 +77,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Create a new node on the graph
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: add a new node to the graph, applying defaults and capturing state for history (mutates shared state)
   private _createNode(
     operation: CreateNodeOperation,
     context: OperationContext,
@@ -193,6 +198,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Update an existing node
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: apply property updates to an existing node, capturing before/after state for history (mutates shared state)
   private _updateNode(
     operation: UpdateNodeOperation,
     context: OperationContext,
@@ -263,6 +269,7 @@ export class NodeOperationExecutor implements OperationExecutor {
    * - Removing connected edges
    * - Updating port visibility and z-order
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: delete a node with cascaded edge and embedding cleanup via InfraNodeService (mutates shared state)
   private _deleteNode(
     operation: DeleteNodeOperation,
     context: OperationContext,
@@ -362,6 +369,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Generate a unique node ID
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: produce a unique node ID from timestamp and random suffix (pure)
   private _generateNodeId(): string {
     return `node-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
@@ -369,6 +377,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Apply default values to node data
    */
+  // SEM@af94667f5b68eaf19e4360c54ef03fcdd8395695: fill missing node data fields with type-appropriate defaults and DFD styling (pure)
   private _applyNodeDefaults(nodeData: NodeData): NodeData {
     // Get node-type-specific default dimensions
     const defaultSize = this._getDefaultSizeForNodeType(nodeData.nodeType);
@@ -395,6 +404,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Build X6 node configuration
    */
+  // SEM@e5ece2b788db1f1a17ccf71d0c23c1585b5606ba: build an X6 node config from NodeData, preferring full attrs when available (pure)
   private _buildNodeConfig(nodeId: string, nodeData: NodeData): any {
     // Check if style contains full X6 attrs (from history/undo-redo)
     // If it has nested objects with body/text (or legacy label), it's the full attrs structure
@@ -443,6 +453,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Get X6 shape name for node type
    */
+  // SEM@4f06868b91bbd81b35d37dff471b38d7389c9609: map a node type string to its X6 shape name (pure)
   private _getShapeForNodeType(nodeType: string): string {
     // Use the centralized shape mapping function that handles all custom shapes
     return getX6ShapeForNodeType(nodeType);
@@ -451,6 +462,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Get default size for node type to match InfraNodeService dimensions
    */
+  // SEM@752e6f045fbd196342e35c47ffee2398495149be: return default width and height dimensions for a node type (pure)
   private _getDefaultSizeForNodeType(nodeType: string): { width: number; height: number } {
     return DFD_STYLING_HELPERS.getDefaultDimensions(
       nodeType as 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box',
@@ -460,6 +472,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Get default label for node type
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: return the default label text for a node type (pure)
   private _getDefaultLabelForNodeType(nodeType: string): string {
     return NodeInfo.getDefaultLabel(nodeType);
   }
@@ -467,6 +480,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Apply updates to a node and return the list of changed property names.
    */
+  // SEM@91e600a4c7ac4e20f0bacb847902b678566401a1: apply partial NodeData updates to an X6 node and return changed property names (mutates shared state)
   private _applyNodeUpdates(node: any, updates: Partial<NodeData>): string[] {
     const changed: string[] = [];
 
@@ -515,6 +529,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Apply individual style property updates to a node.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: apply individual style properties to an X6 node's attrs and record changed keys (mutates shared state)
   private _applyNodeStyleUpdates(node: any, style: Record<string, any>, changed: string[]): void {
     if (style['fill']) {
       node.setAttrByPath('body/fill', style['fill']);
@@ -541,6 +556,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Validate node data for required fields
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate NodeData required fields; return error message or null (pure)
   private _validateNodeData(nodeData: NodeData): string | null {
     if (!nodeData.nodeType) {
       return 'nodeType is required';
@@ -571,6 +587,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   /**
    * Capture the current state of a node for history tracking
    */
+  // SEM@ffa374dd1c9de88fc1c583a4695e280597118d74: snapshot a node's current graph state for history tracking (reads graph state)
   private _captureCellState(graph: Graph, nodeId: string): Cell | null {
     const node = graph.getCellById(nodeId);
     if (!node || !node.isNode?.()) {
@@ -602,6 +619,7 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Children state is captured so undo can restore embedding relationships.
    * Uses normalizeCell to ensure consistency with persistence filtering.
    */
+  // SEM@ffa374dd1c9de88fc1c583a4695e280597118d74: snapshot a node plus its connected edges and embedded children for undo history (reads graph state)
   private _captureCascadedState(graph: Graph, nodeId: string): Cell[] {
     const states: Cell[] = [];
 

@@ -166,6 +166,7 @@ export interface CreateProjectDialogResult {
     `,
   ],
 })
+// SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: dialog component to collect project details and create a new review project
 export class CreateProjectDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -173,6 +174,7 @@ export class CreateProjectDialogComponent implements OnInit {
   teams: TeamListItem[] = [];
   loadingTeams = true;
 
+  // SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: inject services and build the project creation form group (pure)
   constructor(
     public dialogRef: MatDialogRef<CreateProjectDialogComponent>,
     private fb: FormBuilder,
@@ -189,10 +191,12 @@ export class CreateProjectDialogComponent implements OnInit {
     });
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: fetch available teams when the dialog initializes
   ngOnInit(): void {
     this.loadTeams();
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: fetch the team list from the API and populate the teams selector (reads DB)
   private loadTeams(): void {
     this.loadingTeams = true;
     this.teamService
@@ -209,6 +213,7 @@ export class CreateProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: open the create-team dialog, create the team, and add it to the available teams list
   openCreateTeam(): void {
     const teamDialogRef = this.dialog.open(CreateTeamDialogComponent, {
       width: '500px',
@@ -246,6 +251,7 @@ export class CreateProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate form and close dialog with new project data (mutates shared state)
   onCreate(): void {
     if (this.form.invalid) {
       return;
@@ -276,6 +282,7 @@ export class CreateProjectDialogComponent implements OnInit {
     this.dialogRef.close(result);
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: close dialog without submitting project creation (mutates shared state)
   onCancel(): void {
     this.dialogRef.close();
   }

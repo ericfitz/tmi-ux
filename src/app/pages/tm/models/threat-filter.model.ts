@@ -23,6 +23,7 @@ export interface ThreatFilters {
 }
 
 /** Creates a default (empty) ThreatFilters object */
+// SEM@6e22d874fca2906477bada6894288c7d35ac6298: build an empty threat filter object with all fields reset (pure)
 export function createDefaultThreatFilters(): ThreatFilters {
   return {
     name: '',
@@ -38,6 +39,7 @@ export function createDefaultThreatFilters(): ThreatFilters {
  * Returns true if any primary (non-advanced) server-side filter is active
  * @public
  */
+// SEM@6e22d874fca2906477bada6894288c7d35ac6298: validate whether any primary server-side threat filter is active (pure)
 export function hasActiveThreatFilters(filters: ThreatFilters): boolean {
   return (
     filters.name.trim() !== '' ||
@@ -48,11 +50,13 @@ export function hasActiveThreatFilters(filters: ThreatFilters): boolean {
 }
 
 /** Returns true if any advanced filter is active */
+// SEM@6e22d874fca2906477bada6894288c7d35ac6298: validate whether any advanced threat filter is active (pure)
 export function hasAdvancedThreatFilters(filters: ThreatFilters): boolean {
   return filters.threatTypes.length > 0 || filters.priorities.length > 0;
 }
 
 /** Returns true if any filter (primary or advanced) is active */
+// SEM@6e22d874fca2906477bada6894288c7d35ac6298: validate whether any primary or advanced threat filter is active (pure)
 export function hasAnyThreatFilters(filters: ThreatFilters): boolean {
   return hasActiveThreatFilters(filters) || hasAdvancedThreatFilters(filters);
 }

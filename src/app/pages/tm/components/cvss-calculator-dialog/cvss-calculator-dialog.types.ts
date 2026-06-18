@@ -1,5 +1,6 @@
 import { CVSSScore } from '../../models/threat-model.model';
 
+// SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: discriminated union of supported CVSS version strings (pure)
 export type CvssVersion = '3.1' | '4.0';
 
 /** Data passed into the CVSS calculator dialog */

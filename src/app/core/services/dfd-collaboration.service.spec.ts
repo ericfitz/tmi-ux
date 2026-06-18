@@ -379,6 +379,7 @@ describe('DfdCollaborationService', () => {
   });
 
   describe('host end-session confirmation (#274)', () => {
+    // SEM@5bf1a2e1fa628ea957ce2b6c1b81c82743b2200f: test-only type alias exposing private collaboration service internals for white-box testing (pure)
     type ServiceInternals = {
       _currentSession: CollaborationSession;
       _threatModelId: string;
@@ -387,6 +388,7 @@ describe('DfdCollaborationService', () => {
       _setupWebSocketListeners: () => void;
     };
 
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: build a stub host CollaborationSession fixture for testing (pure)
     const makeHostSession = (): CollaborationSession => ({
       session_id: 'sess-confirm',
       threat_model_id: 'tm-1',
@@ -404,6 +406,7 @@ describe('DfdCollaborationService', () => {
       },
     });
 
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: build a stub participant CollaborationSession fixture for testing (pure)
     const makeParticipantSession = (): CollaborationSession => ({
       session_id: 'sess-confirm-p',
       threat_model_id: 'tm-1',
@@ -421,6 +424,7 @@ describe('DfdCollaborationService', () => {
       },
     });
 
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: configure the service under test as an active host collaboration session (mutates shared state)
     function arrangeHostSession(): void {
       const svc = service as unknown as ServiceInternals;
       svc._currentSession = makeHostSession();
@@ -444,6 +448,7 @@ describe('DfdCollaborationService', () => {
       svc._setupWebSocketListeners();
     }
 
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: configure service under test as an active participant collaboration session (mutates shared state)
     function arrangeParticipantSession(): void {
       const svc = service as unknown as ServiceInternals;
       svc._currentSession = makeParticipantSession();
@@ -689,6 +694,7 @@ describe('DfdCollaborationService', () => {
 
   describe('graceful session exit (#274) - no navigation', () => {
     /** Minimal session fixture where the current user is a participant (not host) */
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: build a minimal collaboration session fixture where the current user is a participant (pure)
     const makeParticipantSession = (): CollaborationSession => ({
       session_id: 'sess-1',
       threat_model_id: 'tm-1',
@@ -707,6 +713,7 @@ describe('DfdCollaborationService', () => {
     });
 
     /** Minimal session fixture where the current user is the host */
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: build a minimal collaboration session fixture where the current user is the host (pure)
     const makeHostSession = (): CollaborationSession => ({
       session_id: 'sess-2',
       threat_model_id: 'tm-1',
@@ -724,6 +731,7 @@ describe('DfdCollaborationService', () => {
       },
     });
 
+    // SEM@5bf1a2e1fa628ea957ce2b6c1b81c82743b2200f: expose private service fields for test arrange/assert access (pure)
     type ServiceInternals = {
       _currentSession: CollaborationSession;
       _threatModelId: string;
@@ -733,6 +741,7 @@ describe('DfdCollaborationService', () => {
     };
 
     /** Set up the service as if a participant has joined a session */
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: configure service under test as an active participant collaboration session (mutates shared state)
     function arrangeParticipantSession(): void {
       const svc = service as unknown as ServiceInternals;
       svc._currentSession = makeParticipantSession();
@@ -743,6 +752,7 @@ describe('DfdCollaborationService', () => {
     }
 
     /** Set up the service as if a host has joined a session */
+    // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: configure service under test as an active host collaboration session (mutates shared state)
     function arrangeHostSession(): void {
       const svc = service as unknown as ServiceInternals;
       svc._currentSession = makeHostSession();
@@ -824,6 +834,7 @@ describe('DfdCollaborationService', () => {
   });
 
   describe('deletion fallback navigation (#274)', () => {
+    // SEM@5bf1a2e1fa628ea957ce2b6c1b81c82743b2200f: expose private service fields for test arrange/assert access (pure)
     type ServiceInternals = {
       _currentSession: CollaborationSession;
       _threatModelId: string;
@@ -834,6 +845,7 @@ describe('DfdCollaborationService', () => {
     };
 
     /** Minimal session fixture */
+    // SEM@5bf1a2e1fa628ea957ce2b6c1b81c82743b2200f: build a minimal collaboration session fixture for delete-scenario tests (pure)
     const makeSession = (): CollaborationSession => ({
       session_id: 'sess-del-1',
       threat_model_id: 'tm-del-1',
@@ -851,6 +863,7 @@ describe('DfdCollaborationService', () => {
       },
     });
 
+    // SEM@5bf1a2e1fa628ea957ce2b6c1b81c82743b2200f: configure service under test with an active session for diagram-deletion scenarios (mutates shared state)
     function arrangeDeleteSession(): void {
       const svc = service as unknown as ServiceInternals;
       svc._currentSession = makeSession();

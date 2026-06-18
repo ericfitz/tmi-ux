@@ -7,10 +7,12 @@ import { LoggerService } from '../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@dd4f585071231faa7be62ea453727e96148a393a: fetch and search CWE-699 weakness definitions from a bundled asset
 export class CweService {
   private readonly _cweAssetPath = '/assets/cwe/cwe-699.json';
   private _cache$: Observable<CweWeakness[]> | null = null;
 
+  // SEM@dd4f585071231faa7be62ea453727e96148a393a: inject HTTP client and logger dependencies (pure)
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -20,6 +22,7 @@ export class CweService {
    * Load all CWE-699 weaknesses from the static asset file.
    * Results are cached for the lifetime of the service.
    */
+  // SEM@dd4f585071231faa7be62ea453727e96148a393a: fetch all CWE weakness entries from the static asset, caching for the service lifetime
   loadWeaknesses(): Observable<CweWeakness[]> {
     if (!this._cache$) {
       this._cache$ = this.http.get<CweDataFile>(this._cweAssetPath).pipe(
@@ -37,6 +40,7 @@ export class CweService {
    * Filter weaknesses by a search query (full-text across ID, name, description).
    * Empty query returns all weaknesses.
    */
+  // SEM@dd4f585071231faa7be62ea453727e96148a393a: filter CWE weaknesses by full-text query across ID, name, and description (pure)
   search(weaknesses: CweWeakness[], query: string): CweWeakness[] {
     const trimmed = query.trim();
     if (!trimmed) return weaknesses;

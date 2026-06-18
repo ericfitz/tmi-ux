@@ -1,9 +1,11 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { angularFill } from '../helpers/angular-fill';
 
+// SEM@094a88b0d8860a555c7e20427f0862461d35144d: E2E page object wrapping the delete-confirmation dialog
 export class DeleteConfirmDialog {
   private dialog: Locator;
 
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: bind page and locate dialog container locator (pure)
   constructor(private page: Page) {
     this.dialog = page.locator('mat-dialog-container');
   }
@@ -11,6 +13,7 @@ export class DeleteConfirmDialog {
   readonly confirmInput = () => this.dialog.getByTestId('delete-confirm-input');
   readonly confirmButton = () => this.dialog.getByTestId('delete-confirm-button');
 
+  // SEM@094a88b0d8860a555c7e20427f0862461d35144d: type confirmation phrase if required then click the delete confirm button
   async confirmDeletion() {
     await this.confirmButton().waitFor({ state: 'visible' });
     // Typed confirmation is only required for some object types (not documents/repositories).

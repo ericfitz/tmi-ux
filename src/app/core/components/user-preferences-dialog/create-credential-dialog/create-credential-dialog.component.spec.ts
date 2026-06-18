@@ -23,6 +23,7 @@ describe('CreateCredentialDialogComponent', () => {
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let envInjector: EnvironmentInjector;
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a CreateCredentialDialogComponent with mock deps and initialized form (pure)
   function build(data: CreateCredentialDialogData | null): CreateCredentialDialogComponent {
     const component = runInInjectionContext(
       envInjector,

@@ -59,6 +59,7 @@ import {
   styleUrl: './admin-groups.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: page component listing, filtering, and managing authorization groups
 export class AdminGroupsComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -79,6 +80,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   filterText = '';
   loading = false;
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject group admin service, router, dialog, logger, and auth service
   constructor(
     private groupAdminService: GroupAdminService,
     private router: Router,
@@ -88,6 +90,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
   ) {}
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: attach the sort view child and configure column sort accessors (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item: AdminGroup, property: string): string | number => {
@@ -104,6 +107,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@bfb60b51b1f44fb69eb7f7fbac7656849e9750be: initialize pagination from URL params, load providers and groups, wire debounced filter
   ngOnInit(): void {
     this.loadProviders();
 
@@ -127,6 +131,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch available OAuth providers and prepend the built-in TMI provider (reads DB)
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
@@ -153,6 +158,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@36deac569487dc1c7d2b80d0fb7d384276099fb7: fetch a page of authorization groups with optional filter and update list (reads DB)
   loadGroups(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -180,10 +186,12 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: emit a filter value to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: update page index and size then reload the group list (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -191,6 +199,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     this.updateUrl();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: sync current pagination and filter state to the URL query params without reload
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalGroups },
@@ -206,6 +215,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the add-group dialog and reload the group list on success
   onAddGroup(): void {
     const dialogRef = this.dialog.open(AddGroupDialogComponent, {
       width: '700px',
@@ -222,6 +232,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open group members dialog and reload group list on close (mutates shared state)
   onViewMembers(group: AdminGroup): void {
     const dialogRef = this.dialog.open(GroupMembersDialogComponent, {
       width: '1100px',
@@ -239,6 +250,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: delete a group after confirmation, adjusting pagination and reloading (mutates shared state)
   onDeleteGroup(group: AdminGroup): void {
     const groupName = this.getGroupDisplayName(group);
     const confirmed = confirm(`Are you sure you want to delete the group "${groupName}"?
@@ -280,22 +292,27 @@ This action cannot be undone.`);
     }
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the admin groups page to the appropriate landing page
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the human-readable display name for a group (pure)
   getGroupDisplayName(group: AdminGroup): string {
     return group.name || group.group_name;
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the canonical identifier for a group (pure)
   getGroupIdentifier(group: AdminGroup): string {
     return group.group_name;
   }
 
+  // SEM@76be7d92d38b9a859024414252c3c16bca0b7f9c: check whether a group is the built-in everyone group (pure)
   isEveryoneGroup(group: AdminGroup): boolean {
     return group.provider === 'tmi' && group.group_name.toLowerCase() === 'everyone';
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the OAuth provider info for a given provider ID (pure)
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }

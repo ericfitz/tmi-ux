@@ -9,21 +9,25 @@ import { CellOperation } from '../../../core/types/websocket-message.types';
 /**
  * Types of persistence strategies
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate supported diagram persistence strategy types (pure)
 export type PersistenceStrategyType = 'websocket' | 'rest' | 'cache-only' | 'hybrid';
 
 /**
  * Priority levels for save operations
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate priority levels for diagram save operations (pure)
 export type SavePriority = 'low' | 'normal' | 'high' | 'critical';
 
 /**
  * Context for save operations
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate triggering contexts for diagram save operations (pure)
 export type SaveContext = 'auto-save' | 'manual-save' | 'collaboration' | 'export' | 'backup';
 
 /**
  * Status of save operations
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate lifecycle states of a diagram save operation (pure)
 export type SaveStatus =
   | 'idle'
   | 'pending'
@@ -36,6 +40,7 @@ export type SaveStatus =
 /**
  * Cache synchronization status
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate synchronization states of the diagram cache (pure)
 export type CacheStatus = 'synced' | 'pending' | 'conflict' | 'error' | 'offline';
 
 /**
@@ -75,6 +80,7 @@ export interface SaveResult {
 /**
  * Actions that can result from save operations
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate outcome actions resulting from a diagram save operation (pure)
 export type SaveAction =
   | 'saved'
   | 'queued'
@@ -124,14 +130,21 @@ export interface PersistenceStrategy {
   readonly type: PersistenceStrategyType;
   readonly priority: number;
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store a diagram via this persistence strategy; return save result observable
   save(operation: SaveOperation): Observable<SaveResult>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch a diagram via this persistence strategy; return load result observable
   load(operation: LoadOperation): Observable<LoadResult>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this strategy can handle a given save or load operation (pure)
   canHandle(operation: SaveOperation | LoadOperation): boolean;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this persistence strategy is currently operational (pure)
   isAvailable(): boolean;
 
   // Optional methods for advanced strategies
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: synchronize a diagram between local cache and remote persistence strategy
   sync?(diagramId: string): Observable<SaveResult>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: delete all cached data for a diagram from this persistence strategy
   clear?(diagramId: string): Observable<void>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch current health and queue status of this persistence strategy
   getStatus?(): Observable<PersistenceStrategyStatus>;
 }
 
@@ -188,6 +201,7 @@ export interface PersistenceEvent {
   readonly data: any;
 }
 
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate event types emitted by the persistence coordinator (pure)
 export type PersistenceEventType =
   | 'save-started'
   | 'save-completed'
@@ -203,6 +217,7 @@ export type PersistenceEventType =
 /**
  * Conflict resolution strategies
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate conflict resolution strategies for diagram save conflicts (pure)
 export type ConflictResolutionStrategy =
   | 'server-wins'
   | 'client-wins'

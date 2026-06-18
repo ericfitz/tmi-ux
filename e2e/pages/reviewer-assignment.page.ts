@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@2ec44885144e6f679eace25e5ddb6c574a3dae6e: Playwright page object exposing locators for the reviewer assignment triage view (pure)
 export class ReviewerAssignmentPage {
+  // SEM@2ec44885144e6f679eace25e5ddb6c574a3dae6e: bind Playwright page instance to the page object (pure)
   constructor(private page: Page) {}
 
   readonly searchInput = () =>

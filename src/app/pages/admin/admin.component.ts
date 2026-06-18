@@ -17,7 +17,9 @@ import { AuthService } from '../../auth/services/auth.service';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss',
 })
+// SEM@ad7267a2dd7fbf341955a732f42557d735bad83b: root admin landing page listing all administrative sections for navigation
 export class AdminComponent {
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: inject router and auth service dependencies (pure)
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -85,10 +87,12 @@ export class AdminComponent {
     },
   ];
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: navigate to the selected admin section route (pure)
   onSectionClick(action: string): void {
     void this.router.navigate(['/admin', action]);
   }
 
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: navigate to the authenticated user's landing page (pure)
   onClose(): void {
     void this.router.navigate([this.authService.getLandingPage()]);
   }

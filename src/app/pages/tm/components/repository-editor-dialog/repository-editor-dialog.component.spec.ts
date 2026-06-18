@@ -15,6 +15,7 @@ import type { Repository } from '../../models/threat-model.model';
 describe('RepositoryEditorDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a RepositoryEditorDialogComponent instance for unit tests (pure)
   function build(data: RepositoryEditorDialogData): RepositoryEditorDialogComponent {
     return new RepositoryEditorDialogComponent(mockDialogRef as never, new FormBuilder(), data);
   }

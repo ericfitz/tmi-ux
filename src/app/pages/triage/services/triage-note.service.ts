@@ -16,7 +16,9 @@ import {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@68358605eac63a5552324a78969078da8f45c0cc: service for fetching and creating internal triage notes on survey responses via the API
 export class TriageNoteService {
+  // SEM@68358605eac63a5552324a78969078da8f45c0cc: inject ApiService and LoggerService dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -25,6 +27,7 @@ export class TriageNoteService {
   /**
    * List triage notes for a survey response
    */
+  // SEM@68358605eac63a5552324a78969078da8f45c0cc: fetch all triage notes for a survey response from the API (reads DB)
   public list(responseId: string): Observable<ListTriageNotesResponse> {
     return this.apiService
       .get<ListTriageNotesResponse>(`triage/survey_responses/${responseId}/triage_notes`)
@@ -45,6 +48,7 @@ export class TriageNoteService {
   /**
    * Get a specific triage note
    */
+  // SEM@68358605eac63a5552324a78969078da8f45c0cc: fetch a single triage note by ID for a survey response from the API (reads DB)
   public getById(responseId: string, noteId: number): Observable<TriageNote> {
     return this.apiService
       .get<TriageNote>(`triage/survey_responses/${responseId}/triage_notes/${noteId}`)
@@ -65,6 +69,7 @@ export class TriageNoteService {
   /**
    * Create a new triage note
    */
+  // SEM@68358605eac63a5552324a78969078da8f45c0cc: store a new triage note on a survey response via the API
   public create(responseId: string, request: CreateTriageNoteRequest): Observable<TriageNote> {
     return this.apiService
       .post<TriageNote>(

@@ -3,7 +3,9 @@ import '@angular/compiler';
 import { describe, it, expect } from 'vitest';
 import type { components } from '@app/generated/api-types';
 
+// SEM@ef955cdc8460dca4de356f9462c6c8a3e56f97fc: local alias for the document access diagnostics reason_code enum (pure)
 type ReasonCode = NonNullable<components['schemas']['DocumentAccessDiagnostics']>['reason_code'];
+// SEM@ef955cdc8460dca4de356f9462c6c8a3e56f97fc: local alias for the access remediation action enum (pure)
 type RemediationAction = NonNullable<components['schemas']['AccessRemediation']>['action'];
 
 /**
@@ -31,6 +33,7 @@ const REMEDIATION_ACTION_KEYS: Record<RemediationAction, string> = {
   contact_owner: 'documentAccess.remediation.contactOwner',
 };
 
+// SEM@ef955cdc8460dca4de356f9462c6c8a3e56f97fc: resolve a dotted-key path against a nested object and return the value (pure)
 function lookup(en: unknown, dottedKey: string): unknown {
   let cursor: unknown = en;
   for (const segment of dottedKey.split('.')) {

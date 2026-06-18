@@ -50,12 +50,14 @@ export interface CellPropertiesDialogData {
   styleUrls: ['./cell-properties-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: display an X6 diagram cell's properties as formatted JSON for debugging
 export class CellPropertiesDialogComponent {
   /**
    * Serialized JSON representation of the cell
    */
   readonly cellJson: string;
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: initialize dialog and serialize the cell to JSON (mutates shared state)
   constructor(
     private _dialogRef: MatDialogRef<CellPropertiesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CellPropertiesDialogData,
@@ -67,6 +69,7 @@ export class CellPropertiesDialogComponent {
   /**
    * Copy the JSON content to clipboard
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: copy the cell JSON to the system clipboard (mutates shared state)
   onCopyToClipboard(): void {
     copyToClipboard(this.cellJson);
   }
@@ -74,6 +77,7 @@ export class CellPropertiesDialogComponent {
   /**
    * Close the dialog
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: close the cell properties dialog (mutates shared state)
   onClose(): void {
     this._dialogRef.close();
   }

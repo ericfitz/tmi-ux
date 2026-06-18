@@ -106,6 +106,7 @@ export interface CollaborationState {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@e20499f11e71c87074be1bcb4505941dd194234c: manage real-time diagram collaboration sessions via WebSocket, tracking participants and presenter state
 export class DfdCollaborationService implements OnDestroy {
   // Instance ID for debugging
   private readonly _instanceId = Math.random().toString(36).substring(7);
@@ -151,6 +152,7 @@ export class DfdCollaborationService implements OnDestroy {
 
   // Periodic refresh removed - participants now managed through WebSocket messages only
 
+  // SEM@60762cc905e5fdb316b6da7146b3956600fec759: inject dependencies for HTTP, auth, WebSocket, routing, and dialog into the collaboration service (mutates shared state)
   constructor(
     private _http: HttpClient,
     private _logger: LoggerService,
@@ -174,6 +176,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Helper method to update collaboration state atomically
    * @param updates Partial state updates to apply
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: atomically merge partial updates into the collaboration state, guarding invalid readiness transitions (mutates shared state)
   private _updateState(updates: Partial<CollaborationState>): void {
     const currentState = this._collaborationState$.value;
 
@@ -250,6 +253,7 @@ export class DfdCollaborationService implements OnDestroy {
    * This is useful for debugging and state verification
    * @returns The current collaboration state
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: return the current collaboration state snapshot synchronously (pure)
   public getCurrentState(): CollaborationState {
     const currentState = this._collaborationState$.value;
     // this._logger.debugComponent('DfdCollaborationService', 'getCurrentState called', {
@@ -266,6 +270,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userProfile User profile from AuthService
    * @returns AsyncAPI-compliant User object
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: convert an auth user profile to an AsyncAPI-compliant user object (pure)
   private _mapToAsyncApiUser(userProfile: {
     provider: string;
     provider_id: string;
@@ -287,6 +292,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param user User object from server
    * @returns true if user matches current authenticated user
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: match a server user against the authenticated user by provider identity or email (pure)
   private _isCurrentUser(user: User): boolean {
     const currentProfile = this._authService.userProfile;
     if (!currentProfile) {
@@ -316,6 +322,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param user User object from server
    * @returns User identifier string
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: return a stable string identifier for a user, falling back through provider_id then email (pure)
   private _getUserIdentifier(user: User): string {
     return user.provider_id || user.email || 'unknown';
   }
@@ -333,6 +340,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param threatModelId The threat model ID
    * @param diagramId The diagram ID
    */
+  // SEM@1a438c01a7162fd5c1fe5019e2c6f72f6e4a0fb8: store the active diagram identifiers and mark diagram context ready in collaboration state (mutates shared state)
   setDiagramContext(threatModelId: string, diagramId: string): void {
     // this._logger.info('setDiagramContext called', {
     //   instanceId: this._instanceId,
@@ -362,6 +370,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if the diagram context is set
    * @returns true if both threatModelId and diagramId are set
    */
+  // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: return whether both diagram identifiers are set, logging any mismatch with state (pure)
   isDiagramContextSet(): boolean {
     const isSet = !!(this._threatModelId && this._diagramId);
     const stateReady = this._collaborationState$.value.isDiagramContextReady;
@@ -384,6 +393,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get the current diagram context
    * @returns object with threatModelId and diagramId
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: return the current threat model and diagram identifiers from service state (pure)
   getDiagramContext(): { threatModelId: string | null; diagramId: string | null } {
     return {
       threatModelId: this._threatModelId,
@@ -395,6 +405,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if the diagram context is ready (from state)
    * @returns true if the state indicates context is ready
    */
+  // SEM@0db4bd6c8ebf3dc2d21d1b513db497ac9278af18: return whether the state flag indicates diagram context is ready (pure)
   isDiagramContextReady(): boolean {
     return this._collaborationState$.value.isDiagramContextReady;
   }
@@ -403,6 +414,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Clear the diagram context
    * This should be called when navigating away from the DFD editor
    */
+  // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: clear diagram identifiers and mark context not ready in collaboration state (mutates shared state)
   clearDiagramContext(): void {
     this._logger.info('clearDiagramContext called', {
       instanceId: this._instanceId,
@@ -421,6 +433,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Reset the entire collaboration state
    * This ensures a clean state when needed
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: reset all collaboration state and diagram context to initial defaults (mutates shared state)
   resetState(): void {
     this._logger.info('resetState called', {
       instanceId: this._instanceId,
@@ -448,6 +461,7 @@ export class DfdCollaborationService implements OnDestroy {
    * This should be called on startup to determine UI state
    * @returns Observable<CollaborationSession | null> the existing session or null
    */
+  // SEM@c9ba47293063b70ed1fea4f64cf3d8b5542ffe08: fetch any active collaboration session for the current diagram and update state (reads DB)
   public checkForExistingSession(): Observable<CollaborationSession | null> {
     this._logger.info('Checking for existing collaboration session');
 
@@ -499,6 +513,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if current user would be the host of the existing session
    * @returns boolean indicating if current user is the host of existing session
    */
+  // SEM@ce36638b4a7a3ed72dd855b16e359c4d7987c7d2: return whether the authenticated user is the host of the available existing session (pure)
   public isCurrentUserManagerOfExistingSession(): boolean {
     const existingSession = this._collaborationState$.value.existingSessionAvailable;
     if (!existingSession) {
@@ -512,6 +527,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Join an existing collaboration session by connecting to WebSocket
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: join an existing collaboration session and connect to its WebSocket (mutates shared state)
   public joinCollaboration(): Observable<boolean> {
     this._logger.info('Joining existing collaboration session by connecting to WebSocket');
 
@@ -589,6 +605,7 @@ export class DfdCollaborationService implements OnDestroy {
    * This implements the pattern recommended in CLIENT_INTEGRATION_GUIDE.md
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create or join a diagram collaboration session via WebSocket (mutates shared state)
   public startOrJoinCollaboration(): Observable<boolean> {
     this._logger.info('Smart collaboration starter: attempting to create or join session');
 
@@ -687,6 +704,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Leave the current collaboration session (for non-owners)
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: exit the active collaboration session; delegates to endCollaboration if host (mutates shared state)
   public leaveSession(): Observable<boolean> {
     this._logger.info('Leaving collaboration session');
 
@@ -720,6 +738,7 @@ export class DfdCollaborationService implements OnDestroy {
    * End the current collaboration session (for owners)
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@4f859167439b2c2eed2a88e10394e725331af1c6: terminate the collaboration session via API and disconnect WebSocket (mutates shared state)
   public endCollaboration(): Observable<boolean> {
     this._logger.info('Ending collaboration session');
 
@@ -800,6 +819,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param permission The permission to assign to the user
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: invite a user to the collaboration session with a given permission (stub)
   public inviteUser(email: string, permission: 'writer' | 'reader'): Observable<boolean> {
     this._logger.info('Inviting user to collaboration session', { email, permission });
 
@@ -822,6 +842,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param user The user to remove (must include provider_id and email)
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: send a remove-participant request via WebSocket; host only
   public removeUser(user: {
     provider_id: string;
     email: string;
@@ -876,6 +897,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param permission The new permission to assign
    * @returns Observable<boolean> indicating success or failure
    */
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: update a participant's permission in the collaboration session; host only (stub)
   public updateUserPermission(
     userEmail: string,
     permission: 'writer' | 'reader',
@@ -908,6 +930,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param host Optional host User object
    * @param currentPresenter Optional current presenter User object (null if no presenter)
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: replace the full participant list from a bulk update message (mutates shared state)
   public updateAllParticipants(
     participants: Participant[],
     host?: User,
@@ -1028,6 +1051,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Compare two user objects for identity
    * Uses provider + provider_id as primary key, falls back to email comparison
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: compare two user identities by provider/provider_id with email fallback (pure)
   private _usersMatch(
     user1: { provider?: string; provider_id?: string; email?: string },
     user2: { provider?: string; provider_id?: string; email?: string },
@@ -1051,6 +1075,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get the current user's permission in the collaboration session
    * @returns The current user's permission, or null if not in a session
    */
+  // SEM@56e69dca73614eb265a1092f99dfd87e90c159e7: fetch the current user's collaboration permission from session state (pure)
   public getCurrentUserPermission(): 'writer' | 'reader' | null {
     if (!this._collaborationState$.value.isActive) {
       return null;
@@ -1101,6 +1126,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if collaboration users have been loaded
    * @returns boolean indicating if user list has been populated
    */
+  // SEM@564d07a52a4cc3acbef7d14b332904e5f0d01ad8: check whether the collaboration participant list has been populated (pure)
   public hasLoadedUsers(): boolean {
     return this._collaborationState$.value.users.length > 0;
   }
@@ -1110,6 +1136,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param permission The permission to check
    * @returns boolean indicating if the user has the permission
    */
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: authorize the current user for edit or session-management capability (pure)
   public hasPermission(permission: 'edit' | 'manageSession'): boolean {
     const userPermission = this.getCurrentUserPermission();
 
@@ -1145,6 +1172,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if the current user is the host (created the session)
    * @returns boolean indicating if the current user is the host
    */
+  // SEM@56e69dca73614eb265a1092f99dfd87e90c159e7: check whether the current user is the collaboration session host (pure)
   public isCurrentUserHost(): boolean {
     // Check the users list directly without requiring isActive
     // This allows the host status to be determined even during session initialization
@@ -1181,6 +1209,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param providerId The provider ID to check
    * @returns boolean indicating if this is the current user
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: check whether a given provider ID matches the authenticated user (pure)
   public isCurrentUser(providerId: string): boolean {
     const currentProviderId = this.getCurrentProviderId();
     return !!currentProviderId && providerId === currentProviderId;
@@ -1190,6 +1219,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get the current user's provider ID
    * @returns The current user's provider ID or null if not authenticated
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: fetch the authenticated user's provider ID from the auth service (pure)
   public getCurrentProviderId(): string | null {
     return this._authService.userProfile?.provider_id || null;
   }
@@ -1198,6 +1228,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get the current user's email
    * @returns The current user's email or null if not authenticated
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: fetch the authenticated user's email from the auth service (pure)
   public getCurrentUserEmail(): string | null {
     return this._authService.userEmail || null;
   }
@@ -1206,6 +1237,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get current collaboration status
    * @returns boolean indicating if currently collaborating
    */
+  // SEM@564d07a52a4cc3acbef7d14b332904e5f0d01ad8: check whether a collaboration session is currently active (pure)
   public isCollaborating(): boolean {
     return this._collaborationState$.value.isActive;
   }
@@ -1214,6 +1246,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Toggle collaboration: start/join if not active, end (host) or leave (participant) if active.
    * Returns Observable<boolean> indicating success. Emits an error if the diagram context is not set.
    */
+  // SEM@60762cc905e5fdb316b6da7146b3956600fec759: start or join if inactive; leave or end (with confirmation) if active (mutates shared state)
   public toggleCollaboration(): Observable<boolean> {
     if (!this.isDiagramContextSet()) {
       this._logger.error('Cannot toggle collaboration: diagram context not ready', {
@@ -1252,6 +1285,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Get the current presenter's email
    * @returns The presenter's email or null if no presenter
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: fetch the current presenter's email from collaboration state (pure)
   public getCurrentPresenterEmail(): string | null {
     return this._collaborationState$.value.currentPresenterEmail;
   }
@@ -1260,6 +1294,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Request presenter privileges (for non-owners)
    * @returns Observable<boolean> indicating if request was sent successfully
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: request or directly claim presenter role via WebSocket (mutates shared state)
   public requestPresenterPrivileges(): Observable<boolean> {
     const currentUserEmail = this.getCurrentUserEmail();
     if (!currentUserEmail) {
@@ -1316,6 +1351,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userEmail The user email to approve as presenter
    * @returns Observable<boolean> indicating success
    */
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: approve a pending presenter request and assign the presenter role; host only (mutates shared state)
   public approvePresenterRequest(userEmail: string): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can approve presenter requests'));
@@ -1337,6 +1373,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userEmail The user email to deny presenter privileges
    * @returns Observable<boolean> indicating success
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: deny a pending presenter request and notify the requester via WebSocket; host only (mutates shared state)
   public denyPresenterRequest(userEmail: string): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can deny presenter requests'));
@@ -1395,6 +1432,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userEmail The user email to set as presenter, or null to clear presenter
    * @returns Observable<boolean> indicating success
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: assign or clear the presenter role via WebSocket change request; host only (mutates shared state)
   public setPresenter(userEmail: string | null): Observable<boolean> {
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can set presenter'));
@@ -1465,6 +1503,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Take back presenter privileges (owner only)
    * @returns Observable<boolean> indicating success
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: reclaim the presenter role for the current user; host only (mutates shared state)
   public takeBackPresenterPrivileges(): Observable<boolean> {
     const currentUserEmail = this.getCurrentUserEmail();
     if (!currentUserEmail) {
@@ -1478,6 +1517,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Add a presenter request to pending list
    * @param userEmail The user email requesting presenter privileges
    */
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: register a user's presenter request in the pending list (mutates shared state)
   public addPresenterRequest(userEmail: string): void {
     const pendingRequests = this._collaborationState$.value.pendingPresenterRequests;
     if (!pendingRequests.includes(userEmail)) {
@@ -1491,6 +1531,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Update the current presenter email (for external updates)
    * @param presenterEmail The email of the current presenter
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: store a new presenter email and sync participant presenter flags (mutates shared state)
   public updatePresenterEmail(presenterEmail: string | null): void {
     this._updateState({ currentPresenterEmail: presenterEmail });
     this._updateUsersPresenterStatus(presenterEmail);
@@ -1502,6 +1543,7 @@ export class DfdCollaborationService implements OnDestroy {
    * When turning off presenter mode, sends an empty selection message to clear all participants' selections
    * @returns true if presenter mode is now active, false if deactivated
    */
+  // SEM@231f337d5a6dc4b69daf54737065b5732ad91b1b: toggle presenter mode on/off for the current presenter; clears selections on deactivate (mutates shared state)
   public togglePresenterMode(): boolean {
     const currentState = this._collaborationState$.value;
     const currentUserEmail = this.getCurrentUserEmail();
@@ -1550,6 +1592,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if the current user is the presenter and presenter mode is active
    * @returns true if current user is presenter and presenter mode is active
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: check if current user is presenter with presenter mode active (pure)
   public isCurrentUserPresenterModeActive(): boolean {
     const currentState = this._collaborationState$.value;
     const currentUserEmail = this.getCurrentUserEmail();
@@ -1563,6 +1606,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Check if the current user is the presenter (regardless of presenter mode state)
    * @returns true if current user is the presenter
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: check if current user holds the presenter role regardless of mode state (pure)
   public isCurrentUserPresenter(): boolean {
     const currentState = this._collaborationState$.value;
     const currentUserEmail = this.getCurrentUserEmail();
@@ -1574,6 +1618,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Update users' presenter status based on current presenter
    * @param presenterEmail The email of the current presenter
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: update all session users' presenter flags based on new presenter email (mutates shared state)
   private _updateUsersPresenterStatus(presenterEmail: string | null): void {
     const users = this._collaborationState$.value.users;
     const updatedUsers = users.map(user => ({
@@ -1591,6 +1636,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param userEmail The user email to update
    * @param state The new presenter request state
    */
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: update a session user's presenter hand-raise request state (mutates shared state)
   public updateUserPresenterRequestState(
     userEmail: string,
     state: 'hand_down' | 'hand_raised' | 'presenter',
@@ -1610,6 +1656,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param websocketUrl The WebSocket URL provided by the API
    * @param sessionId The collaboration session ID, passed to the ticket endpoint
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: fetch a session ticket then connect to the collaboration WebSocket URL
   private _connectToWebSocket(websocketUrl: string, sessionId: string): Observable<void> {
     if (!sessionId) {
       this._logger.error('Cannot connect to WebSocket: session_id is empty');
@@ -1689,6 +1736,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param websocketUrl The WebSocket URL (relative or absolute)
    * @returns Full WebSocket URL
    */
+  // SEM@38f8942a04845036dbaa466d4d177a0eec20c1ad: convert a relative or absolute WebSocket path to a fully-qualified wss/ws URL (pure)
   private _getFullWebSocketUrl(websocketUrl: string): string {
     let fullUrl: string;
 
@@ -1728,6 +1776,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Disconnect from WebSocket
    */
+  // SEM@13bb9d4f1414f961a4cc60bec30b4d4c95249431: disconnect the collaboration WebSocket and reset listener setup flag (mutates shared state)
   private _disconnectFromWebSocket(): void {
     this._logger.info('Disconnecting from collaboration WebSocket');
 
@@ -1744,6 +1793,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Setup WebSocket listeners for connection state and collaboration events
    * Only sets up listeners once and only when collaboration is actually starting
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: register WebSocket event subscriptions for collaboration messages, once per session (mutates shared state)
   private _setupWebSocketListeners(): void {
     if (this._webSocketListenersSetup) {
       this._logger.debugComponent(
@@ -1825,6 +1875,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Handle WebSocket state changes and show appropriate notifications
    * Only shows notifications when there's an active collaboration session
    */
+  // SEM@e20499f11e71c87074be1bcb4505941dd194234c: dispatch connection state transitions to notifications and session cleanup (mutates shared state)
   private _handleWebSocketStateChange(state: WebSocketState): void {
     this._logger.debugComponent('DfdCollaborationService', 'WebSocket state changed', {
       state,
@@ -1924,6 +1975,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Handle error messages from WebSocket
    * Differentiates between fatal errors (require ending session) and non-fatal errors (just notify)
    */
+  // SEM@3330349461cc9295098e35f1bf94e29fb447491e: handle server error messages, ending session on fatal errors and notifying on non-fatal (mutates shared state)
   private _handleWebSocketError(message: WebSocketErrorMessage): void {
     this._logger.error('Collaboration error from server', {
       errorType: message.error,
@@ -2004,6 +2056,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Handle presenter request event (host receives this when a participant requests presenter)
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: handle incoming presenter request event, notify host, and update user hand-raise state (mutates shared state)
   private _handlePresenterRequest(message: PresenterRequestEventMessage): void {
     // Defensive: The server should always include requesting_user per AsyncAPI spec
     if (!message.requesting_user) {
@@ -2066,6 +2119,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Handle presenter denied event (participant receives this when their request is denied)
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: notify the requester that their presenter request was denied
   private _handlePresenterDenied(message: PresenterDeniedEventMessage): void {
     this._logger.info('Presenter request denied', {
       deniedUser: message.denied_user,
@@ -2081,6 +2135,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Clean up session state without API calls
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: disconnect WebSocket and reset collaboration session state to inactive (mutates shared state)
   private _cleanupSessionState(): void {
     // No periodic refresh to stop - using WebSocket messages only
 
@@ -2099,6 +2154,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Clean up resources and subscriptions
    */
+  // SEM@6020e20b82397c6763800c3b17e5d48b314a8523: unsubscribe all listeners and leave the active collaboration session on service teardown
   ngOnDestroy(): void {
     this._logger.info('DfdCollaborationService destroying');
 

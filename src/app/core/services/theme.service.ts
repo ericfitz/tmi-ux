@@ -7,11 +7,13 @@ import { UserPreferencesService } from './user-preferences.service';
 /**
  * Theme preference modes
  */
+// SEM@f345afedad08561c58323a139ef27f2821b84d1c: union type for the three supported theme mode options (pure)
 export type ThemeMode = 'automatic' | 'light' | 'dark';
 
 /**
  * Palette types
  */
+// SEM@f345afedad08561c58323a139ef27f2821b84d1c: union type for supported color palette variants (pure)
 export type PaletteType = 'normal' | 'colorblind';
 
 /**
@@ -70,6 +72,7 @@ export interface ThemeConfig {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: manage app-wide theme mode and palette, applying CSS classes to DOM (mutates shared state)
 export class ThemeService {
   private readonly DARK_CLASS = 'dark-theme';
   private readonly COLORBLIND_CLASS = 'colorblind-palette';
@@ -89,6 +92,7 @@ export class ThemeService {
     palette: 'normal',
   });
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: initialize theme service, loading preferences and registering system theme listener (mutates shared state)
   constructor(
     private rendererFactory: RendererFactory2,
     private overlayContainer: OverlayContainer,
@@ -107,6 +111,7 @@ export class ThemeService {
   /**
    * Get current theme preferences
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: return the current user theme preferences snapshot (pure)
   getPreferences(): ThemePreferences {
     return this._preferences$.value;
   }
@@ -114,6 +119,7 @@ export class ThemeService {
   /**
    * Observe theme preference changes
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: subscribe to a stream of theme preference changes (pure)
   observePreferences(): Observable<ThemePreferences> {
     return this._preferences$.asObservable();
   }
@@ -121,6 +127,7 @@ export class ThemeService {
   /**
    * Get the currently active theme (resolved from preferences)
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: return the currently resolved active theme config snapshot (pure)
   getCurrentTheme(): ThemeConfig {
     return this._activeTheme$.value;
   }
@@ -128,6 +135,7 @@ export class ThemeService {
   /**
    * Observe active theme changes
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: subscribe to a stream of resolved active theme config changes (pure)
   observeTheme(): Observable<ThemeConfig> {
     return this._activeTheme$.asObservable();
   }
@@ -135,6 +143,7 @@ export class ThemeService {
   /**
    * Set the theme mode (automatic, light, or dark)
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: update the theme mode preference and persist via user preferences service (mutates shared state)
   setThemeMode(mode: ThemeMode): void {
     const palette = this._preferences$.value.palette;
     this.userPreferencesService.updatePreferences({
@@ -146,6 +155,7 @@ export class ThemeService {
   /**
    * Set the palette (normal or colorblind)
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: update the color palette preference and persist via user preferences service (mutates shared state)
   setPalette(palette: PaletteType): void {
     const mode = this._preferences$.value.mode;
     this.userPreferencesService.updatePreferences({
@@ -157,6 +167,7 @@ export class ThemeService {
   /**
    * Update both theme mode and palette at once
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: update both theme mode and palette preferences atomically (mutates shared state)
   setPreferences(preferences: ThemePreferences): void {
     this.userPreferencesService.updatePreferences({
       themeMode: preferences.mode,
@@ -167,6 +178,7 @@ export class ThemeService {
   /**
    * Check if dark mode is currently active
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: return whether dark color scheme is currently active (pure)
   isDarkMode(): boolean {
     return this._activeTheme$.value.colorScheme === 'dark';
   }
@@ -174,6 +186,7 @@ export class ThemeService {
   /**
    * Check if colorblind palette is active
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: return whether the colorblind palette is currently active (pure)
   isColorblindMode(): boolean {
     return this._activeTheme$.value.palette === 'colorblind';
   }
@@ -181,6 +194,7 @@ export class ThemeService {
   /**
    * Clean up event listeners
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: deregister system theme change listener on service destruction (mutates shared state)
   ngOnDestroy(): void {
     if (this.systemThemeListener) {
       this.mediaQueryList.removeEventListener('change', this.systemThemeListener);
@@ -190,6 +204,7 @@ export class ThemeService {
   /**
    * Load preferences from UserPreferencesService and apply them
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: load stored theme preferences and apply the initial theme to the DOM (mutates shared state)
   private _loadPreferences(): void {
     const userPrefs = this.userPreferencesService.getThemePreferences();
     this._preferences$.next(userPrefs);
@@ -201,6 +216,7 @@ export class ThemeService {
   /**
    * Subscribe to user preferences changes from UserPreferencesService
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: subscribe to user preference changes and trigger theme re-apply (mutates shared state)
   private _subscribeToUserPreferences(): void {
     const source$ = this.userPreferencesService.preferences$;
     const subscription$ = this.destroyRef
@@ -221,6 +237,7 @@ export class ThemeService {
   /**
    * Set up listener for system theme changes
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: register OS-level color scheme change listener to re-apply theme in automatic mode (mutates shared state)
   private _setupSystemThemeListener(): void {
     this.systemThemeListener = () => {
       // Only react to system changes if in automatic mode
@@ -235,6 +252,7 @@ export class ThemeService {
   /**
    * Apply the theme based on current preferences
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: resolve current preferences into active theme config and apply to DOM (mutates shared state)
   private _applyTheme(): void {
     const preferences = this._preferences$.value;
     const colorScheme = this._resolveColorScheme(preferences.mode);
@@ -254,6 +272,7 @@ export class ThemeService {
   /**
    * Resolve the actual color scheme based on mode
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: convert theme mode into light or dark color scheme, honoring system preference (pure)
   private _resolveColorScheme(mode: ThemeMode): 'light' | 'dark' {
     switch (mode) {
       case 'automatic':
@@ -269,6 +288,7 @@ export class ThemeService {
   /**
    * Apply theme classes to body and overlay container
    */
+  // SEM@f345afedad08561c58323a139ef27f2821b84d1c: apply dark and colorblind CSS classes to body and overlay container (mutates shared state)
   private _applyThemeClasses(theme: ThemeConfig): void {
     const body = document.body;
     const overlayElement = this.overlayContainer.getContainerElement();

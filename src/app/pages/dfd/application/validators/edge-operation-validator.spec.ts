@@ -18,6 +18,7 @@ describe('EdgeOperationValidator', () => {
   let loggerService: MockLoggerService;
 
   // Minimal mock graph builder
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal mock graph with configurable cells and edges for tests (pure)
   function createMockGraph(
     options: {
       cells?: Map<string, any>;
@@ -36,6 +37,7 @@ describe('EdgeOperationValidator', () => {
   }
 
   // Helper for a base operation shape
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a base graph operation fixture with optional overrides for tests (pure)
   function baseOperation(type: string, overrides: any = {}): any {
     return {
       id: 'op-1',
@@ -48,6 +50,7 @@ describe('EdgeOperationValidator', () => {
   }
 
   // Helper for base context
+  // SEM@55f3ff4b17d436ad024147d9d67d05c38d834198: build a base operation context fixture with optional overrides for tests (pure)
   function baseContext(graph: any, overrides: any = {}): any {
     return {
       graph,
@@ -61,6 +64,7 @@ describe('EdgeOperationValidator', () => {
   }
 
   // Create a mock node cell
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal mock node cell for use in graph operation tests (pure)
   function mockNode(id: string): any {
     return {
       id,
@@ -70,6 +74,7 @@ describe('EdgeOperationValidator', () => {
   }
 
   // Create a mock edge cell
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal mock edge cell with optional source/target for tests (pure)
   function mockEdge(id: string, sourceId?: string, targetId?: string): any {
     return {
       id,

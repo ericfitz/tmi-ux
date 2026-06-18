@@ -52,6 +52,7 @@ import { environment } from '../../../../../environments/environment';
   styleUrl: './survey-fill.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@bda57c14c5f510b4c12a35bf845e1041df812b78: render and manage an editable survey form with auto-save and submit
 export class SurveyFillComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private draftService = inject(SurveyDraftService);
@@ -78,6 +79,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   private surveyId: string | null = null;
   private responseId: string | null = null;
 
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: inject route, router, services, and change detector (pure)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -87,6 +89,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: resolve route params and trigger survey response load (mutates shared state)
   ngOnInit(): void {
     this.surveyId = this.route.snapshot.paramMap.get('surveyId');
     this.responseId = this.route.snapshot.paramMap.get('responseId');
@@ -100,6 +103,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     this.loadSurvey();
   }
 
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: clear draft service state on component teardown (mutates shared state)
   ngOnDestroy(): void {
     this.draftService.clearState();
   }
@@ -107,6 +111,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Load the survey response (which includes survey_json snapshot)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch an editable survey response by ID and populate the view model (reads DB)
   private loadSurvey(): void {
     this.loading = true;
     this.error = null;
@@ -149,6 +154,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Fallback: load survey JSON from template service
    */
+  // SEM@bda57c14c5f510b4c12a35bf845e1041df812b78: fetch survey JSON template as fallback when response snapshot is absent (reads DB)
   private loadSurveyJson(surveyId: string): void {
     loadSurveyJson(
       { surveyService: this.surveyService, destroyRef: this.destroyRef, logger: this.logger },
@@ -170,6 +176,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Initialize the SurveyJS model
    */
+  // SEM@3fe8590dd363fe4c1feac493886a2b5bc0610e88: build an editable SurveyJS model with auto-save hooks and apply the active theme (mutates shared state)
   private initializeSurvey(): void {
     if (!this.surveyJson || !this.response) return;
 
@@ -230,6 +237,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Queue an auto-save operation
    */
+  // SEM@460788d1a27cc01214df67533d368460b11f3568: schedule a debounced draft save of current survey answers and UI state (mutates shared state)
   private queueAutoSave(): void {
     if (!this.surveyModel || !this.responseId) return;
 
@@ -251,6 +259,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Handle survey completion (submit button clicked in survey)
    */
+  // SEM@460788d1a27cc01214df67533d368460b11f3568: save final draft then submit the survey response on completion event (reads DB)
   private handleComplete(): void {
     if (!this.surveyModel || !this.responseId) return;
 
@@ -283,6 +292,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Submit the survey
    */
+  // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: submit the survey response to the API and update submission state (reads DB)
   private submitSurvey(): void {
     this.responseService
       .submit(this.responseId!)
@@ -304,6 +314,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Save and exit (without submitting)
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: save the current draft and navigate away without submitting (reads DB)
   saveAndExit(): void {
     if (!this.surveyModel || !this.responseId) {
       void this.router.navigate(['/intake']);
@@ -333,6 +344,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * View response details after completion
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: route the user to the response detail view after submission (pure)
   viewResponse(): void {
     void this.router.navigate(['/intake', 'response', this.responseId]);
   }
@@ -340,6 +352,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Start a new survey of the same type
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: navigate to the intake route to begin a new survey
   startAnother(): void {
     void this.router.navigate(['/intake']);
   }
@@ -347,6 +360,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Go back to surveys list
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: navigate to the intake route to return to the survey list
   goBack(): void {
     void this.router.navigate(['/intake']);
   }
@@ -354,6 +368,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Handle project picker selection change
    */
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: update the survey response's project association, reverting on error (mutates shared state)
   onProjectChange(projectId: string | null): void {
     if (!this.response || !this.responseId) return;
 
@@ -383,6 +398,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Format date for display
    */
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: format a date as a localized HH:MM time string (pure)
   formatTime(date: Date | null): string {
     if (!date) return '';
     return date.toLocaleTimeString(undefined, {

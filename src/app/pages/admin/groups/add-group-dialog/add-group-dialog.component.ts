@@ -151,6 +151,7 @@ import { LoggerService } from '@app/core/services/logger.service';
     `,
   ],
 })
+// SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: dialog component for creating a new authorization group
 export class AddGroupDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private groupNameManuallyEdited = false;
@@ -159,6 +160,7 @@ export class AddGroupDialogComponent implements OnInit {
   saving = false;
   errorMessage = '';
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: inject dialog, group admin service, form builder, and logger dependencies
   constructor(
     private dialogRef: MatDialogRef<AddGroupDialogComponent>,
     private groupAdminService: GroupAdminService,
@@ -166,6 +168,7 @@ export class AddGroupDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: build the group form and auto-populate group_name from display name until manually edited
   ngOnInit(): void {
     this.form = this.fb.group({
       group_name: [
@@ -194,10 +197,12 @@ export class AddGroupDialogComponent implements OnInit {
       });
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: mark group name as manually edited to stop auto-population (mutates shared state)
   onGroupNameFocus(): void {
     this.groupNameManuallyEdited = true;
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: validate and submit the new group form, closing dialog on success (reads DB)
   onSave(): void {
     if (this.form.valid && !this.saving) {
       this.saving = true;
@@ -232,6 +237,7 @@ export class AddGroupDialogComponent implements OnInit {
     }
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: dismiss the add-group dialog without saving
   onCancel(): void {
     this.dialogRef.close(false);
   }

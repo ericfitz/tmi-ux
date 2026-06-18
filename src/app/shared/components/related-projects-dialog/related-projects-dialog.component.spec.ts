@@ -27,10 +27,12 @@ describe('RelatedProjectsDialogComponent', () => {
 
   const otherProject: ProjectListItem = { id: 'proj-9', name: 'Other Project' } as ProjectListItem;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a minimal test Project fixture with optional related projects (pure)
   function makeProject(related: RelatedProject[] = []): Project {
     return { id: 'proj-1', name: 'Project A', related_projects: related } as Project;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct and initialize a RelatedProjectsDialogComponent with mock dependencies for testing (pure)
   function build(data: RelatedProjectsDialogData): RelatedProjectsDialogComponent {
     const component = runInInjectionContext(
       envInjector,

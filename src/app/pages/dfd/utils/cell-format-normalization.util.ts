@@ -27,6 +27,7 @@ import { CANONICAL_EDGE_SHAPE } from './cell-property-filter.util';
  * @param cell - Cell in either flat (X6 v1) or nested (X6 v2) format
  * @returns Cell in X6 v2 native nested format with rounded coordinates
  */
+// SEM@6c2eadd0d61cabdb713ac47424595cecc078b162: convert a cell from legacy flat format to API-canonical nested format (pure)
 export function normalizeCellFormat(cell: Cell): Cell {
   // Create a shallow copy to avoid mutating the original
   const normalized = { ...cell };
@@ -83,6 +84,7 @@ export function normalizeCellFormat(cell: Cell): Cell {
  * @returns Array of cells in X6 v2 native nested format
  * @public
  */
+// SEM@bd36f649b65b4ea2b8fb93c7f0012084c0e66f7d: convert an array of cells from flat format to API-canonical nested format (pure)
 export function normalizeCellsFormat(cells: Cell[]): Cell[] {
   if (!Array.isArray(cells)) {
     return [];
@@ -98,6 +100,7 @@ export function normalizeCellsFormat(cells: Cell[]): Cell[] {
  * @param logger - Logger service for reporting validation issues
  * @returns Object containing normalized cells and validation result
  */
+// SEM@9095abe0c2678066920978933f363c805eb3497b: normalize cell format and validate parent-child relationships, reporting issues (pure)
 export function normalizeCellsFormatAndValidateRelationships(
   cells: Cell[],
   logger: LoggerService,

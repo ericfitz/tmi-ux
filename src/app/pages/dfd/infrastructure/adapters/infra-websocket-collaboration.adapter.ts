@@ -44,6 +44,7 @@ interface QueuedOperation {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: send collaborative diagram cell operations over WebSocket with queuing and retry
 export class InfraWebsocketCollaborationAdapter {
   private _config: CollaborativeOperationConfig | null = null;
 
@@ -62,6 +63,7 @@ export class InfraWebsocketCollaborationAdapter {
     }
   >();
 
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: wire dependencies and subscribe to connection state to drain the operation queue (mutates shared state)
   constructor(
     private webSocketAdapter: WebSocketAdapter,
     private authService: AuthService,
@@ -80,6 +82,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Initialize the service with diagram and user context
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: store the diagram and user context required before sending operations (mutates shared state)
   initialize(config: CollaborativeOperationConfig): void {
     this._config = config;
     this.logger.debugComponent(
@@ -96,6 +99,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send a diagram operation via WebSocket with retry and queuing
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: authorize, deduplicate, and send cell operations to the server via WebSocket with retry
   sendDiagramOperation(cellOperations: CellOperation[]): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -177,6 +181,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send a single cell add operation
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: send an add operation for a single cell via WebSocket
   addCell(cell: Cell): Observable<void> {
     const cellOperation: CellOperation = {
       id: cell.id,
@@ -190,6 +195,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send a single cell update operation
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: send an update operation for a single cell's properties via WebSocket
   updateCell(cellId: string, updates: Partial<Cell>): Observable<void> {
     const cellOperation: CellOperation = {
       id: cellId,
@@ -203,6 +209,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send a single cell remove operation
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: dispatch a diagram cell removal operation over WebSocket
   removeCell(cellId: string): Observable<void> {
     const cellOperation: CellOperation = {
       id: cellId,
@@ -215,6 +222,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send multiple cell operations as a batch
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dispatch multiple diagram cell operations as a single batch over WebSocket
   sendBatchOperation(operations: CellOperation[]): Observable<void> {
     return this.sendDiagramOperation(operations);
   }
@@ -222,6 +230,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Request undo operation from server
    */
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: send an undo request to the server; requires edit permission
   requestUndo(): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -243,6 +252,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Request redo operation from server
    */
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: send a redo request to the server; requires edit permission
   requestRedo(): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -266,6 +276,7 @@ export class InfraWebsocketCollaborationAdapter {
    * If updateVector is provided and matches server's, server sends SyncStatusResponse instead
    * If updateVector differs or is omitted, server sends DiagramStateMessage
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: request full diagram state or sync status from server via WebSocket
   sendSyncRequest(updateVector?: number): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -284,6 +295,7 @@ export class InfraWebsocketCollaborationAdapter {
    * Request sync status check from server (new sync protocol)
    * Server responds with current update_vector only
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: request current diagram update vector from server via WebSocket
   sendSyncStatusRequest(): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -300,6 +312,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send presenter cursor position (presenter only)
    */
+  // SEM@f2bb57ba89c5cc48041879bbe8d95d96f6f7ac5d: broadcast presenter cursor position to collaborators; presenter only
   sendPresenterCursor(position: CursorPosition): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -326,6 +339,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send presenter selection (presenter only)
    */
+  // SEM@f2bb57ba89c5cc48041879bbe8d95d96f6f7ac5d: broadcast presenter cell selection to collaborators; presenter only
   sendPresenterSelection(selectedCellIds: string[]): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
@@ -352,6 +366,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Send operation with retry and queuing mechanisms
    */
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: send a diagram operation with retry and offline queuing (mutates shared state)
   private _sendOperationWithRetry(
     message: DiagramOperationRequestMessage,
     maxRetries: number = 3,
@@ -419,6 +434,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Queue operation for later retry
    */
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: store a pending diagram operation for later retry (mutates shared state)
   private _queueOperation(message: DiagramOperationRequestMessage, maxRetries: number): void {
     const queuedOp: QueuedOperation = {
       id: message.operation_id,
@@ -438,6 +454,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Process queued operations when connection is restored
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: drain queued diagram operations over WebSocket when connection restores (mutates shared state)
   private _processOperationQueue(): void {
     if (this._isProcessingQueue || this._operationQueue.length === 0) {
       return;
@@ -446,6 +463,7 @@ export class InfraWebsocketCollaborationAdapter {
     this._isProcessingQueue = true;
     this.logger.info('Processing operation queue', { queueLength: this._operationQueue.length });
 
+    // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: send and retry the next queued diagram operation recursively (mutates shared state)
     const processNext = () => {
       if (this._operationQueue.length === 0) {
         this._isProcessingQueue = false;
@@ -500,6 +518,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Check if an operation error is retryable
    */
+  // SEM@dc5902cbca2aba1397d5a67c7ab5a112f19b62ae: determine if a WebSocket operation error is safe to retry (pure)
   private _isRetryableOperationError(error: any): boolean {
     return (
       !error.message?.includes('401') &&
@@ -512,6 +531,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Clear operation queue (call when ending collaboration)
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: discard all pending and queued diagram operations (mutates shared state)
   clearOperationQueue(): void {
     const queueLength = this._operationQueue.length;
     this._operationQueue = [];
@@ -526,6 +546,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Check if service is properly initialized
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: return whether the collaboration service has been configured (pure)
   isInitialized(): boolean {
     return this._config !== null;
   }
@@ -533,6 +554,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Get current configuration
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: return the current collaboration operation configuration or null (pure)
   getConfig(): CollaborativeOperationConfig | null {
     return this._config;
   }
@@ -540,6 +562,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Reset service state
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: clear operation queue and configuration to restore initial state (mutates shared state)
   reset(): void {
     this.clearOperationQueue();
     this._config = null;
@@ -550,6 +573,7 @@ export class InfraWebsocketCollaborationAdapter {
    * Deduplicate operations by cell ID, keeping the most recent operation for each cell.
    * For update operations on the same cell, merge the data together.
    */
+  // SEM@5838478bfe3b4f257f0c29809d0a2f43e89b5c1b: collapse duplicate cell operations by ID, merging updates and prioritizing removes (pure)
   private _deduplicateOperations(operations: CellOperation[]): CellOperation[] {
     const operationMap = new Map<string, CellOperation>();
 

@@ -11,6 +11,7 @@ import type { ChatSession, SourceSnapshotEntry } from '../../models/chat.model';
 describe('ChatSessionPanelComponent', () => {
   let component: ChatSessionPanelComponent;
 
+  // SEM@51c382750d093e404dff963030ab220a35b8fd1e: build a default ChatSession fixture with optional field overrides for tests (pure)
   function makeSession(overrides: Partial<ChatSession> = {}): ChatSession {
     return {
       id: 's1',

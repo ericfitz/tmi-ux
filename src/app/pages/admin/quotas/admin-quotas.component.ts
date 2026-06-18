@@ -92,6 +92,7 @@ interface EditableWebhookQuota extends EnrichedWebhookQuota {
   styleUrl: './admin-quotas.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: admin page listing, filtering, and editing user API and webhook quotas
 export class AdminQuotasComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -125,6 +126,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
   readonly defaultUserAPIQuota = DEFAULT_USER_API_QUOTA;
   readonly defaultWebhookQuota = DEFAULT_WEBHOOK_QUOTA;
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject quota, router, dialog, logger, and auth service dependencies (pure)
   constructor(
     private quotaService: QuotaService,
     private router: Router,
@@ -134,6 +136,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
   ) {}
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: bind table sort instances to data sources after view initialization (mutates shared state)
   ngAfterViewInit(): void {
     // Assign sorts to data sources once views are available
     this.sortChildren.changes
@@ -144,6 +147,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     this.assignSorts(this.sortChildren);
   }
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: attach sort instances and custom sort accessors to both quota data sources (mutates shared state)
   private assignSorts(sorts: QueryList<MatSort>): void {
     const sortArray = sorts.toArray();
     if (sortArray[0]) {
@@ -196,6 +200,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@bfb60b51b1f44fb69eb7f7fbac7656849e9750be: restore pagination from URL and subscribe to debounced filter changes (mutates shared state)
   ngOnInit(): void {
     this.loadProviders();
 
@@ -222,6 +227,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch available OAuth providers and prepend the TMI provider (reads DB)
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
@@ -248,11 +254,13 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: fetch both user API and webhook quota pages concurrently (reads DB)
   loadAllQuotas(): void {
     this.loadUserAPIQuotas();
     this.loadWebhookQuotas();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch the current page of user API quotas and apply the active filter (reads DB)
   loadUserAPIQuotas(): void {
     this.loadingUserAPI = true;
     const offset = calculateOffset(this.userAPIPageIndex, this.userAPIPageSize);
@@ -283,6 +291,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch the current page of webhook quotas and apply the active filter (reads DB)
   loadWebhookQuotas(): void {
     this.loadingWebhook = true;
     const offset = calculateOffset(this.webhookPageIndex, this.webhookPageSize);
@@ -313,10 +322,12 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: dispatch a filter value to the debounce subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle user API quota pagination and reload the current page (reads DB)
   onUserAPIPageChange(event: PageEvent): void {
     this.userAPIPageIndex = event.pageIndex;
     this.userAPIPageSize = event.pageSize;
@@ -324,12 +335,14 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     this.updateUrl();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle webhook quota pagination and reload the current page (reads DB)
   onWebhookPageChange(event: PageEvent): void {
     this.webhookPageIndex = event.pageIndex;
     this.webhookPageSize = event.pageSize;
     this.loadWebhookQuotas();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: sync pagination and filter state into the URL query params (mutates shared state)
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       {
@@ -349,6 +362,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: filter quota data sources by user email, name, provider, or ID (mutates shared state)
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
@@ -374,6 +388,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     );
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open dialog to add a new quota, reload list on success (mutates shared state)
   onAddQuota(): void {
     const dialogRef = this.dialog.open(AddQuotaDialogComponent, {
       width: '800px',
@@ -392,6 +407,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
   }
 
   // User API Quota methods
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: enter inline edit mode for a user API quota row (mutates shared state)
   onEditUserAPIQuota(quota: EditableUserAPIQuota): void {
     quota.editing = true;
     quota.editValues = {
@@ -400,11 +416,13 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: discard pending edits and exit inline edit mode for a user API quota (mutates shared state)
   onCancelEditUserAPIQuota(quota: EditableUserAPIQuota): void {
     quota.editing = false;
     quota.editValues = undefined;
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: store edited user API quota limits to the API and refresh the row (mutates shared state)
   onSaveUserAPIQuota(quota: EditableUserAPIQuota): void {
     if (!quota.editValues) return;
 
@@ -429,6 +447,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: delete a user API quota after confirmation, revert to system defaults (mutates shared state)
   onDeleteUserAPIQuota(quota: EditableUserAPIQuota): void {
     const confirmed = confirm(
       `Are you sure you want to remove custom API quota for ${quota.user_email}? This will revert to system defaults.`,
@@ -462,6 +481,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
   }
 
   // Webhook Quota methods
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: enter inline edit mode for a webhook quota row (mutates shared state)
   onEditWebhookQuota(quota: EditableWebhookQuota): void {
     quota.editing = true;
     quota.editValues = {
@@ -472,11 +492,13 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: discard pending edits and exit inline edit mode for a webhook quota (mutates shared state)
   onCancelEditWebhookQuota(quota: EditableWebhookQuota): void {
     quota.editing = false;
     quota.editValues = undefined;
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: store edited webhook quota limits to the API and refresh the row (mutates shared state)
   onSaveWebhookQuota(quota: EditableWebhookQuota): void {
     if (!quota.editValues) return;
 
@@ -503,6 +525,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: delete a webhook quota after confirmation, revert to system defaults (mutates shared state)
   onDeleteWebhookQuota(quota: EditableWebhookQuota): void {
     const confirmed = confirm(
       `Are you sure you want to remove custom webhook quota for ${quota.user_email}? This will revert to system defaults.`,
@@ -534,10 +557,12 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@2dfcd7d9300974716c0db10b1754f59f39c679fd: fetch OAuth provider metadata by provider ID from the available providers list (pure)
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the admin quota page (mutates shared state)
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }

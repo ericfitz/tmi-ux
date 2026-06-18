@@ -24,6 +24,7 @@ describe('ThreatEditorDialogComponent', () => {
   let mockTransloco: TranslocoService;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: construct a ThreatEditorDialogComponent with mock dependencies for testing (pure)
   function build(data: ThreatEditorDialogData): ThreatEditorDialogComponent {
     return new ThreatEditorDialogComponent(
       mockDialogRef as never,
@@ -36,6 +37,7 @@ describe('ThreatEditorDialogComponent', () => {
     );
   }
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a minimal test threat with optional field overrides (pure)
   function makeThreat(overrides: Partial<Threat> = {}): Threat {
     return {
       id: 't1',

@@ -20,9 +20,11 @@ export interface LocalStorageData {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store and retrieve diagram data in browser localStorage for offline persistence
 export class InfraLocalStorageAdapter {
   private readonly _keyPrefix = 'tmi-diagram-';
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: initialize the adapter with a logger dependency
   constructor(private readonly logger: LoggerService) {
     this.logger.debugComponent('InfraLocalStorageAdapter', 'initialized');
   }
@@ -30,6 +32,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Save diagram data to localStorage
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store diagram data to localStorage, incrementing its version (mutates shared state)
   saveDiagram(diagramId: string, threatModelId: string, data: any): Observable<boolean> {
     try {
       const key = this._getKey(diagramId);
@@ -65,6 +68,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Load diagram data from localStorage
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: fetch stored diagram data from localStorage by diagram ID (reads DB)
   loadDiagram(diagramId: string): Observable<LocalStorageData | null> {
     try {
       const key = this._getKey(diagramId);
@@ -95,6 +99,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Check if a diagram exists in localStorage
    */
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: check whether a diagram exists in localStorage (reads DB)
   hasDiagram(diagramId: string): boolean {
     const key = this._getKey(diagramId);
     return localStorage.getItem(key) !== null;
@@ -103,6 +108,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Delete a diagram from localStorage
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: delete a diagram entry from localStorage by diagram ID (mutates shared state)
   deleteDiagram(diagramId: string): Observable<boolean> {
     try {
       const key = this._getKey(diagramId);
@@ -124,6 +130,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Clear all diagrams from localStorage
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: delete all diagram entries from localStorage (mutates shared state)
   clearAll(): Observable<boolean> {
     try {
       const keys = Object.keys(localStorage);
@@ -149,6 +156,7 @@ export class InfraLocalStorageAdapter {
   /**
    * Get list of all diagram IDs in localStorage
    */
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: list all diagram IDs currently persisted in localStorage (reads DB)
   listDiagrams(): string[] {
     try {
       const keys = Object.keys(localStorage);
@@ -161,10 +169,12 @@ export class InfraLocalStorageAdapter {
     }
   }
 
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: build the localStorage key for a given diagram ID (pure)
   private _getKey(diagramId: string): string {
     return `${this._keyPrefix}${diagramId}`;
   }
 
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: fetch and parse a typed localStorage entry, returning null on miss or parse failure (reads DB)
   private _getFromStorage(key: string): LocalStorageData | null {
     const item = localStorage.getItem(key);
     if (!item) {

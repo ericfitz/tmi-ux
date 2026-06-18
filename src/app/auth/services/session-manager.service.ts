@@ -36,6 +36,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: manage session lifecycle: activity-aware token refresh, expiry warnings, and automatic logout (mutates shared state)
 export class SessionManagerService {
   // Timer for showing warning dialog (fires 5 minutes before expiry for inactive users)
   private warningTimer: Subscription | null = null;
@@ -61,6 +62,7 @@ export class SessionManagerService {
   // Grace period after token expiry before forcing logout (allows in-flight refreshes to complete)
   private readonly logoutGracePeriod = SESSION_CONFIG.LOGOUT_GRACE_PERIOD_MS;
 
+  // SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: register with AuthService and start session monitoring on construction (mutates shared state)
   constructor(
     private authService: AuthService,
     private logger: LoggerService,
@@ -79,6 +81,7 @@ export class SessionManagerService {
    * Initialize session monitoring
    * Sets up timers based on token expiry times
    */
+  // SEM@1dca05095f1e2fded0fbb8aab5061c3c1e6cc6f6: subscribe to authentication state and start or stop expiry timers accordingly (mutates shared state)
   private initSessionMonitoring(): void {
     // Subscribe to authentication state changes
     this.authService.isAuthenticated$.subscribe(isAuthenticated => {
@@ -94,6 +97,7 @@ export class SessionManagerService {
    * Start the token expiry timers based on current token expiration
    * Sets up activity check timer, warning timer (for inactive users), and logout timer
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: schedule warning, activity-check, and logout timers based on token expiry (mutates shared state)
   private startExpiryTimers(): void {
     const session = this.authService.getSessionInfo();
     if (!session) {
@@ -181,6 +185,7 @@ export class SessionManagerService {
    * Start periodic activity check timer for proactive token refresh
    * Checks every minute if user is active and token needs refresh
    */
+  // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: schedule periodic activity checks to trigger proactive token refresh (mutates shared state)
   private startActivityCheckTimer(): void {
     // Stop existing timer if any
     if (this.activityCheckTimer) {
@@ -203,6 +208,7 @@ export class SessionManagerService {
   /**
    * Check if user is active and proactively refresh token if needed
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: refresh session token if user is active and expiry is imminent (mutates shared state)
   private checkActivityAndRefreshIfNeeded(): void {
     const session = this.authService.getSessionInfo();
     if (!session) {
@@ -241,6 +247,7 @@ export class SessionManagerService {
    * Cancel all timers without closing the warning dialog
    * Used when starting a refresh operation to prevent race conditions
    */
+  // SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: cancel all session timers without closing the expiry warning dialog (mutates shared state)
   private cancelTimersOnly(): void {
     if (this.warningTimer) {
       this.logger.debugComponent('SessionManager', 'Cancelling warning timer');
@@ -265,6 +272,7 @@ export class SessionManagerService {
    * Stop all expiry timers and close warning dialog
    * Made public so AuthService can call it during logout
    */
+  // SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: cancel all session timers and close the expiry warning dialog (mutates shared state)
   stopExpiryTimers(): void {
     this.cancelTimersOnly();
 
@@ -279,6 +287,7 @@ export class SessionManagerService {
    * Show session expiry warning dialog
    * @param expiresAt When the token expires
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: open the session expiry dialog offering the user extend or logout actions (mutates shared state)
   private showExpiryWarning(expiresAt: Date): void {
     // Don't show warning if dialog is already open
     if (this.warningDialog) {
@@ -319,6 +328,7 @@ export class SessionManagerService {
    * refresh succeeds, storeToken() triggers onTokenRefreshed() which sets new timers
    * and cancels the old ones. If refresh fails, handleSessionTimeout() is called.
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: refresh the session token on user request and restart timers; logout on failure (mutates shared state)
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
 
@@ -351,6 +361,7 @@ export class SessionManagerService {
    * Public method to reset timers when token is refreshed
    * Called by AuthService when new tokens are received
    */
+  // SEM@1dca05095f1e2fded0fbb8aab5061c3c1e6cc6f6: restart expiry timers after a session token refresh (mutates shared state)
   onTokenRefreshed(): void {
     if (this.authService.isAuthenticated) {
       this.logger.debugComponent('SessionManager', 'Token refreshed, restarting timers');
@@ -362,6 +373,7 @@ export class SessionManagerService {
    * Handle session timeout
    * Logs out the user and redirects to home page
    */
+  // SEM@1dca05095f1e2fded0fbb8aab5061c3c1e6cc6f6: stop all timers and log the user out on session timeout (mutates shared state)
   private handleSessionTimeout(): void {
     this.logger.warn('Session timeout - logging out user and redirecting to home');
 

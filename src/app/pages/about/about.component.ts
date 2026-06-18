@@ -14,6 +14,7 @@ import { gitCommit } from '../../../build-info.json';
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss',
 })
+// SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: display application version, operator info, and open-source attributions
 export class AboutComponent implements OnInit {
   operatorName = '';
   operatorContact = '';
@@ -79,12 +80,14 @@ export class AboutComponent implements OnInit {
     },
   ];
 
+  // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: inject operator, server connection, and navigation services
   constructor(
     private operatorService: OperatorService,
     private serverConnectionService: ServerConnectionService,
     private location: Location,
   ) {}
 
+  // SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: populate operator info and version strings from services (reads DB)
   ngOnInit(): void {
     this.operatorName = this.operatorService.getOperatorName();
     this.operatorContact = this.operatorService.getOperatorContact();
@@ -93,6 +96,7 @@ export class AboutComponent implements OnInit {
     this.serverVersion = this.serverConnectionService.getFormattedServerVersion();
   }
 
+  // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: navigate to the previous browser history entry
   goBack(): void {
     this.location.back();
   }

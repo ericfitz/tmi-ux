@@ -21,6 +21,7 @@ interface ContentTokenListResponse {
  * mutations and explicit refresh().
  */
 @Injectable({ providedIn: 'root' })
+// SEM@c062e63e1c7ebd9f5dc5a91928bc6af3b94776a5: manage the current user's linked content tokens with cached listing, authorize, and unlink operations
 export class ContentTokenService {
   private readonly _cache$ = new BehaviorSubject<ContentTokenInfo[] | null>(null);
 
@@ -33,12 +34,14 @@ export class ContentTokenService {
     }),
   );
 
+  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: inject API and logger dependencies; cache is initialized lazily on first subscription (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
   ) {}
 
   /** Fetches the current user's linked content tokens. */
+  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: fetch the current user's linked content tokens from the API (reads DB)
   list(): Observable<ContentTokenInfo[]> {
     return this.apiService.get<ContentTokenListResponse>('me/content_tokens').pipe(
       tap(res => this.logger.debug('Content tokens loaded', { count: res.content_tokens.length })),
@@ -51,6 +54,7 @@ export class ContentTokenService {
   }
 
   /** Forces the cached observable to re-fetch on next subscription. */
+  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: invalidate the content token cache to force re-fetch on next subscription (mutates shared state)
   refresh(): void {
     this._cache$.next(null);
   }
@@ -60,6 +64,7 @@ export class ContentTokenService {
    * should redirect the browser to. The server-side callback redirects back
    * to `<origin>/oauth2/content-callback?return_to=<encoded returnTo>`.
    */
+  // SEM@c062e63e1c7ebd9f5dc5a91928bc6af3b94776a5: initiate an OAuth account-link flow and return the authorization URL for a content provider (reads DB)
   authorize(providerId: ContentProviderId, returnTo: string): Observable<ContentAuthorizationURL> {
     const clientCallback = `${window.location.origin}/oauth2/content-callback?return_to=${encodeURIComponent(returnTo)}`;
     return this.apiService
@@ -79,6 +84,7 @@ export class ContentTokenService {
   }
 
   /** Unlinks the named provider; invalidates the cache. */
+  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: delete a linked content token for a provider and invalidate the cache (reads DB)
   unlink(providerId: ContentProviderId): Observable<void> {
     return this.apiService.delete<void>(`me/content_tokens/${providerId}`).pipe(
       tap(() => {
@@ -98,6 +104,7 @@ export class ContentTokenService {
  * server returns this when the requested provider id is absent from its
  * `ContentOAuthProviderRegistry` (no OAuth client credentials configured).
  */
+// SEM@c062e63e1c7ebd9f5dc5a91928bc6af3b94776a5: detect a 422 content_token_provider_not_configured error response (pure)
 function isProviderNotConfigured(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
   if ((err as { status?: unknown }).status !== 422) return false;
@@ -114,6 +121,7 @@ function isProviderNotConfigured(err: unknown): boolean {
  * the client registry knows about it) by falling back to the raw id as the
  * source name.
  */
+// SEM@c062e63e1c7ebd9f5dc5a91928bc6af3b94776a5: build a localized error message for a failed content token authorize attempt (pure)
 export function buildContentAuthorizeErrorMessage(
   err: unknown,
   providerId: ContentProviderId,

@@ -44,7 +44,9 @@ export interface UnlinkIdentityDialogData {
     </mat-dialog-actions>
   `,
 })
+// SEM@8436b9549fdd78cb2c4df17aef56eb7433de330e: confirm dialog for unlinking a linked OAuth identity from the account
 export class UnlinkIdentityDialogComponent {
+  // SEM@8436b9549fdd78cb2c4df17aef56eb7433de330e: inject dialog ref and identity label data for the unlink confirm dialog (pure)
   constructor(
     public ref: MatDialogRef<UnlinkIdentityDialogComponent, boolean>,
     @Inject(MAT_DIALOG_DATA) public data: UnlinkIdentityDialogData,

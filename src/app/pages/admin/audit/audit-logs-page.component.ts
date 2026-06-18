@@ -27,4 +27,5 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
   templateUrl: './audit-logs-page.component.html',
   styleUrl: './audit-logs-page.component.scss',
 })
+// SEM@ad7267a2dd7fbf341955a732f42557d735bad83b: shell page component rendering audit log tab nav and router outlet
 export class AuditLogsPageComponent {}

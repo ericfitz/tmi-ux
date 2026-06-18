@@ -74,9 +74,11 @@ const REMEDIATION_KEYS: Record<string, string> = {
     `,
   ],
 })
+// SEM@21df0284358e24c57c5fd991864d31e88af271f3: render an access remediation action card and handle its dispatch (mutates shared state)
 export class RemediationCardComponent {
   @Input({ required: true }) remediation!: AccessRemediation;
 
+  // SEM@21df0284358e24c57c5fd991864d31e88af271f3: inject services for content auth, routing, clipboard, and notifications (pure)
   constructor(
     private injector: Injector,
     private transloco: TranslocoService,
@@ -97,6 +99,7 @@ export class RemediationCardComponent {
     return typeof email === 'string' ? email : null;
   }
 
+  // SEM@21df0284358e24c57c5fd991864d31e88af271f3: dispatch the appropriate remediation action for the current access issue (mutates shared state)
   handle(): void {
     const rem = this.remediation;
     switch (rem.action) {
@@ -154,6 +157,7 @@ export class RemediationCardComponent {
     }
   }
 
+  // SEM@21df0284358e24c57c5fd991864d31e88af271f3: copy service account email to clipboard and notify the user (mutates shared state)
   copyServiceEmail(email: string): void {
     this.clipboard.copy(email);
     this.snackBar.open(this.transloco.translate('documentAccess.copiedEmail'), undefined, {

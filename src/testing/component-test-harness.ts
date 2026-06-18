@@ -15,6 +15,7 @@ import { Type } from '@angular/core';
  * @param imports Optional imports for the test module
  * @returns A ComponentFixture for the component
  */
+// SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: build a TestBed component fixture for standalone or module-based components (mutates shared state)
 export function createComponentFixture<T>(
   component: Type<T>,
   {

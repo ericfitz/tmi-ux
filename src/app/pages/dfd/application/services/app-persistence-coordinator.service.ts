@@ -55,6 +55,7 @@ export interface SaveStatusEvent {
 }
 
 @Injectable()
+// SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: coordinate diagram save and load across REST, WebSocket, and localStorage strategies
 export class AppPersistenceCoordinator {
   private readonly _saveStatus$ = new Subject<SaveStatusEvent>();
   private readonly _loadStatus$ = new Subject<SaveStatusEvent>();
@@ -69,6 +70,7 @@ export class AppPersistenceCoordinator {
     failedLoads: 0,
   };
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: inject persistence adapters and log initialization (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly localStorageAdapter: InfraLocalStorageAdapter,
@@ -86,6 +88,7 @@ export class AppPersistenceCoordinator {
    * Uses WebSocket if in collaboration mode, otherwise REST API
    * Falls back to localStorage if both fail and local provider is detected
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store diagram data via WebSocket or REST, emitting save status events (reads DB)
   save(operation: SaveOperation, useWebSocket: boolean): Observable<SaveResult> {
     this.logger.debugComponent('AppPersistenceCoordinator', 'Starting save operation', {
       diagramId: operation.diagramId,
@@ -160,6 +163,7 @@ export class AppPersistenceCoordinator {
   /**
    * Save to localStorage (for local provider offline mode)
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store diagram data to localStorage for offline local-provider mode
   saveToLocalStorage(diagramId: string, threatModelId: string, data: any): Observable<SaveResult> {
     this.logger.debugComponent('AppPersistenceCoordinator', 'Saving to localStorage', {
       diagramId,
@@ -188,6 +192,7 @@ export class AppPersistenceCoordinator {
    * Always loads from REST API (never from cache)
    * Falls back to localStorage only if REST fails and local provider detected
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: fetch diagram data from REST API, falling back to localStorage if allowed (reads DB)
   load(operation: LoadOperation, allowLocalStorageFallback = false): Observable<LoadResult> {
     this.logger.debugComponent('AppPersistenceCoordinator', 'Loading diagram from REST API', {
       diagramId: operation.diagramId,
@@ -281,10 +286,12 @@ export class AppPersistenceCoordinator {
   /**
    * Get statistics
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: return a snapshot of save and load operation counters (pure)
   getStats(): any {
     return { ...this._stats };
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: reset all save and load operation counters to zero (mutates shared state)
   resetStats(): void {
     this._stats = {
       totalSaves: 0,
@@ -300,6 +307,7 @@ export class AppPersistenceCoordinator {
   /**
    * Cleanup
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: complete save and load status observables on teardown (mutates shared state)
   dispose(): void {
     this._saveStatus$.complete();
     this._loadStatus$.complete();

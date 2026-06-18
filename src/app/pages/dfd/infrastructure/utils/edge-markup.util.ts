@@ -8,6 +8,7 @@ import { Markup } from '@antv/x6';
  *
  * @returns The X6 JSON markup describing the edge's wrap and line paths.
  */
+// SEM@e99bb98ad3ad07b8d4047d771022c542c89d8e39: build the X6 edge markup with transparent hit-area and visible line paths (pure)
 export function getEdgeMarkup(): Markup.JSONMarkup[] {
   return [
     {

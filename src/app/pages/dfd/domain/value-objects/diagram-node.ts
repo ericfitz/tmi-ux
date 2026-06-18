@@ -25,12 +25,14 @@ import { Point } from './point';
  * DiagramNode entity representing a node in the diagram domain
  * Uses the 'shape' property for node type determination, following X6 standards.
  */
+// SEM@a31ab2e4c978de326750079b6beb589924901b63: domain entity wrapping a node with selection, highlight, and connected-edge state (mutates shared state)
 export class DiagramNode {
   private _data: NodeInfo;
   private _isSelected: boolean = false;
   private _isHighlighted: boolean = false;
   private _connectedEdgeIds: Set<string> = new Set();
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: initialize a diagram node entity from a NodeInfo value object (pure)
   constructor(data: NodeInfo) {
     this._data = data;
   }
@@ -115,6 +117,7 @@ export class DiagramNode {
   /**
    * Creates a DiagramNode from a plain object
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: deserialize a diagram node from a plain object, restoring selection and edge links (pure)
   static fromJSON(data: {
     data: Parameters<typeof NodeInfo.fromJSON>[0];
     isSelected?: boolean;
@@ -141,6 +144,7 @@ export class DiagramNode {
   /**
    * Updates the node info
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update node info, rejecting attempts to change the node ID (mutates shared state)
   updateData(data: NodeInfo): void {
     if (data.id !== this._data.id) {
       throw new Error('Cannot change node ID');
@@ -151,6 +155,7 @@ export class DiagramNode {
   /**
    * Moves the node to a new position
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the node's position to a new point (mutates shared state)
   moveTo(position: Point): void {
     this._data = this._data.withPosition(position);
   }
@@ -158,6 +163,7 @@ export class DiagramNode {
   /**
    * Updates the node label
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the node's display label (mutates shared state)
   updateLabel(label: string): void {
     this._data = this._data.withLabel(label);
   }
@@ -165,6 +171,7 @@ export class DiagramNode {
   /**
    * Resizes the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the node's width and height dimensions (mutates shared state)
   resize(width: number, height: number): void {
     this._data = this._data.withWidth(width).withHeight(height);
   }
@@ -172,6 +179,7 @@ export class DiagramNode {
   /**
    * Updates the node metadata
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the node's business metadata record (mutates shared state)
   updateMetadata(metadata: Record<string, string>): void {
     this._data = this._data.withMetadata(metadata);
   }
@@ -179,6 +187,7 @@ export class DiagramNode {
   /**
    * Selects the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: mark the node as selected (mutates shared state)
   select(): void {
     this._isSelected = true;
   }
@@ -186,6 +195,7 @@ export class DiagramNode {
   /**
    * Deselects the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the node's selected state (mutates shared state)
   deselect(): void {
     this._isSelected = false;
   }
@@ -193,6 +203,7 @@ export class DiagramNode {
   /**
    * Highlights the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: mark the node as highlighted (mutates shared state)
   highlight(): void {
     this._isHighlighted = true;
   }
@@ -200,6 +211,7 @@ export class DiagramNode {
   /**
    * Removes highlight from the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the node's highlighted state (mutates shared state)
   unhighlight(): void {
     this._isHighlighted = false;
   }
@@ -207,6 +219,7 @@ export class DiagramNode {
   /**
    * Adds a connected edge ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register an edge ID as connected to this node (mutates shared state)
   addConnectedEdge(edgeId: string): void {
     this._connectedEdgeIds.add(edgeId);
   }
@@ -214,6 +227,7 @@ export class DiagramNode {
   /**
    * Removes a connected edge ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: deregister a connected edge ID from this node (mutates shared state)
   removeConnectedEdge(edgeId: string): void {
     this._connectedEdgeIds.delete(edgeId);
   }
@@ -221,6 +235,7 @@ export class DiagramNode {
   /**
    * Checks if the node is connected to the specified edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a given edge ID is connected to this node (pure)
   isConnectedToEdge(edgeId: string): boolean {
     return this._connectedEdgeIds.has(edgeId);
   }
@@ -228,6 +243,7 @@ export class DiagramNode {
   /**
    * Gets the center point of the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the center point of the node's bounding box (pure)
   getCenter(): Point {
     return this._data.getCenter();
   }
@@ -235,6 +251,7 @@ export class DiagramNode {
   /**
    * Gets the bounding box of the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the node's top-left and bottom-right bounding box corners (pure)
   getBounds(): { topLeft: Point; bottomRight: Point } {
     return this._data.getBounds();
   }
@@ -242,6 +259,7 @@ export class DiagramNode {
   /**
    * Checks if a point is within the node bounds
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a point falls within the node's bounding box (pure)
   containsPoint(point: Point): boolean {
     const bounds = this.getBounds();
     return (
@@ -255,6 +273,7 @@ export class DiagramNode {
   /**
    * Checks if this node overlaps with another node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether this node's bounding box intersects another node's (pure)
   overlapsWith(other: DiagramNode): boolean {
     const thisBounds = this.getBounds();
     const otherBounds = other.getBounds();
@@ -270,6 +289,7 @@ export class DiagramNode {
   /**
    * Calculates the distance to another node (center to center)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute center-to-center distance between this node and another (pure)
   distanceTo(other: DiagramNode): number {
     return this.getCenter().distanceTo(other.getCenter());
   }
@@ -277,6 +297,7 @@ export class DiagramNode {
   /**
    * Creates a copy of this node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a deep copy of the node including selection and edge state (pure)
   clone(): DiagramNode {
     const cloned = new DiagramNode(this._data);
     cloned._isSelected = this._isSelected;
@@ -288,6 +309,7 @@ export class DiagramNode {
   /**
    * Converts the node to a plain object for serialization
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: serialize the node to a plain object for storage or transport (pure)
   toJSON(): {
     data: ReturnType<NodeInfo['toJSON']>;
     isSelected: boolean;
@@ -305,6 +327,7 @@ export class DiagramNode {
   /**
    * Returns a string representation of the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: format the node as a human-readable debug string (pure)
   toString(): string {
     return `DiagramNode(${this.id}, ${this.type}, "${this.label}")`;
   }

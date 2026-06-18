@@ -9,6 +9,7 @@ import type { Document } from '../../../pages/tm/models/threat-model.model';
 describe('AccessDiagnosticsPanelComponent', () => {
   let mockTransloco: { translate: ReturnType<typeof vi.fn> };
 
+  // SEM@fad1d9c9fa7381e39fa2b4ca04ae89c63647ae94: build an AccessDiagnosticsPanelComponent with a mock transloco service for testing (pure)
   function createComponent(doc: Document): AccessDiagnosticsPanelComponent {
     const component = new AccessDiagnosticsPanelComponent(
       mockTransloco as unknown as TranslocoService,

@@ -8,6 +8,7 @@ import { generateRandomBytes } from './pkce-crypto.utils';
  * via Access-Control-Expose-Headers — see tmi#455).
  * Fallback: error code in the JSON body.
  */
+// SEM@8115293f499cb35560c587d54dc47a72f5e72ec4: detect whether a 401 response signals a step-up authentication challenge (pure)
 export function isStepUpChallenge(error: HttpErrorResponse): boolean {
   if (error.status !== 401) {
     return false;
@@ -25,6 +26,7 @@ export function isStepUpChallenge(error: HttpErrorResponse): boolean {
  * Same base64-JSON format as AuthService.generateRandomState, with an
  * additional stepUp flag so the callback knows which flow it is finishing.
  */
+// SEM@f416334cbe65cf2b4e746b5a9c2243637cd94ebb: build a CSRF-protected OAuth state parameter for a step-up round-trip (pure)
 export function buildStepUpState(returnUrl: string): string {
   const array = generateRandomBytes(16);
   const csrf = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
@@ -39,6 +41,7 @@ export function buildStepUpState(returnUrl: string): string {
  * the request contract shared by AuthService.initiateStepUp (top-level redirect)
  * and StepUpService.beginStepUp (XHR, JSON-negotiated).
  */
+// SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: build query parameters for the step-up OAuth authorization request (pure)
 export function buildStepUpRequestParams(
   state: string,
   codeChallenge: string,
@@ -57,6 +60,7 @@ export function buildStepUpRequestParams(
  * Serialize step-up request params into a full GET URL for top-level navigation.
  * Every value is percent-encoded (the base64 state can contain '+', '/', '=').
  */
+// SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: serialize step-up request params into a full percent-encoded GET URL (pure)
 export function buildStepUpUrl(apiBaseUrl: string, params: Record<string, string>): string {
   const base = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
   const query = Object.entries(params)

@@ -9,7 +9,9 @@ import { AppSvgOptimizationService } from './app-svg-optimization.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: service that prepares and processes diagram image exports for SVG, PNG, JPEG, and thumbnails
 export class AppExportService {
+  // SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: inject logger and SVG optimization dependencies (pure)
   constructor(
     private logger: LoggerService,
     private svgOptimizationService: AppSvgOptimizationService,
@@ -22,6 +24,7 @@ export class AppExportService {
    * @param padding Padding around the content (default: 20)
    * @returns Export preparation data or null if no cells to export
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: compute bounding box and export options for a diagram graph export (pure)
   prepareImageExport(
     graph: any,
     padding: number = 20,
@@ -87,6 +90,7 @@ export class AppExportService {
    * @param encodeBase64 Whether to encode the result as base64 (for thumbnails)
    * @returns Processed SVG string, optionally base64 encoded
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: optimize an SVG string for export or thumbnail, optionally base64-encoding it (pure)
   processSvg(svgString: string, encodeBase64: boolean = false, optimalViewBox?: string): string {
     if (encodeBase64) {
       // For thumbnails, use SVGO optimization with base64 encoding

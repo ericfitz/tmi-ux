@@ -13,6 +13,7 @@ export interface ThreatModelFormValues {
 }
 
 /** Subset of ThreatModel fields the form auto-save is allowed to patch. */
+// SEM@4965798ce1913deffcd3c8db182ca83584cf53fa: type alias for allowed auto-save PATCH fields on a threat model (pure)
 export type ThreatModelFormUpdates = Partial<
   Pick<ThreatModel, 'name' | 'description' | 'threat_model_framework' | 'issue_uri' | 'status'>
 >;
@@ -23,7 +24,9 @@ export type ThreatModelFormUpdates = Partial<
  * is unit-testable without a live FormGroup.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@4965798ce1913deffcd3c8db182ca83584cf53fa: detect dirty threat model form fields and build a safe partial update (pure)
 export class TmEditAutoSaveService {
+  // SEM@4965798ce1913deffcd3c8db182ca83584cf53fa: inject LoggerService dependency for auto-save dirty-checking service
   constructor(private logger: LoggerService) {}
 
   /**
@@ -32,6 +35,7 @@ export class TmEditAutoSaveService {
    * @param original The last-saved form values, or undefined if none.
    * @returns True if any tracked field changed; false when no original exists.
    */
+  // SEM@4965798ce1913deffcd3c8db182ca83584cf53fa: compare current form values to saved values; return true if any field differs (pure)
   hasFormChanged(
     formValue: ThreatModelFormValues,
     original: ThreatModelFormValues | undefined,
@@ -58,6 +62,7 @@ export class TmEditAutoSaveService {
    * @param original The last-saved form values to diff against.
    * @returns A partial update with only the changed, allowed fields.
    */
+  // SEM@4965798ce1913deffcd3c8db182ca83584cf53fa: compute partial update with only changed allowed fields, stripping auth fields (pure)
   buildUpdates(
     formValue: ThreatModelFormValues,
     original: ThreatModelFormValues,

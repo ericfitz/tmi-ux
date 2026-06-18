@@ -25,10 +25,12 @@ import { buildHttpParams } from '@app/shared/utils/http-params.util';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@d3673c432adb96a54e45842d945d5dd3e6dae4a1: manage admin user lifecycle: list, delete, create automation users, and transfer ownership
 export class UserAdminService {
   private usersSubject$ = new BehaviorSubject<AdminUser[]>([]);
   public users$: Observable<AdminUser[]> = this.usersSubject$.asObservable();
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: inject API and logger dependencies for user admin operations (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -37,6 +39,7 @@ export class UserAdminService {
   /**
    * List all users with optional filtering
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch paginated admin user list with optional filter and cache results (reads DB)
   public list(filter?: AdminUserFilter): Observable<ListAdminUsersResponse> {
     const params = buildHttpParams(filter);
     return this.apiService.get<ListAdminUsersResponse>('admin/users', params).pipe(
@@ -59,6 +62,7 @@ export class UserAdminService {
    * Deletes a user and all associated data.
    * Transfers sole-owned threat models or deletes them if no other owners exist.
    */
+  // SEM@885bd0d48e74e84fd09796ae44a8b35d2874e69a: delete a user and all associated data by internal UUID, then refresh list (reads DB)
   public delete(internal_uuid: string): Observable<void> {
     return this.apiService.delete<void>(`admin/users/${internal_uuid}`).pipe(
       tap(() => {
@@ -76,6 +80,7 @@ export class UserAdminService {
   /**
    * Create an automation (machine) user account with an initial client credential
    */
+  // SEM@d3673c432adb96a54e45842d945d5dd3e6dae4a1: register a machine automation user account with an initial client credential via API
   public createAutomationUser(
     request: CreateAutomationAccountRequest,
   ): Observable<CreateAutomationAccountResponse> {
@@ -98,6 +103,7 @@ export class UserAdminService {
   /**
    * List all client credentials for a given user
    */
+  // SEM@d3673c432adb96a54e45842d945d5dd3e6dae4a1: fetch all client credentials for a given user from the admin API (reads DB)
   public listUserCredentials(internalUuid: string): Observable<ListClientCredentialsResponse> {
     return this.apiService
       .get<ListClientCredentialsResponse>(`admin/users/${internalUuid}/client_credentials`)
@@ -118,6 +124,7 @@ export class UserAdminService {
   /**
    * Create a new client credential for a given user
    */
+  // SEM@d3673c432adb96a54e45842d945d5dd3e6dae4a1: register a new client credential for a user via admin API
   public createUserCredential(
     internalUuid: string,
     input: CreateClientCredentialRequest,
@@ -144,6 +151,7 @@ export class UserAdminService {
   /**
    * Delete a client credential for a given user
    */
+  // SEM@d3673c432adb96a54e45842d945d5dd3e6dae4a1: delete a specific client credential for a user via admin API
   public deleteUserCredential(internalUuid: string, credentialId: string): Observable<void> {
     return this.apiService
       .delete<void>(`admin/users/${internalUuid}/client_credentials/${credentialId}`)
@@ -161,6 +169,7 @@ export class UserAdminService {
   /**
    * Transfer all threat models and survey responses from one user to another
    */
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: transfer all threat models and survey responses from one user to another via admin API
   public transferOwnership(
     sourceUserId: string,
     targetUserId: string,

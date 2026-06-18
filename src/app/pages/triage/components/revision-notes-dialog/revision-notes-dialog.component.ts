@@ -32,10 +32,12 @@ export type { RevisionNotesDialogResult } from './revision-notes-dialog.types';
   templateUrl: './revision-notes-dialog.component.html',
   styleUrls: ['./revision-notes-dialog.component.scss'],
 })
+// SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: dialog for capturing reviewer revision notes before returning a survey response
 export class RevisionNotesDialogComponent {
   /** Revision notes input */
   revisionNotes = '';
 
+  // SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: inject dialog reference for closing with revision notes result
   constructor(
     private _dialogRef: MatDialogRef<RevisionNotesDialogComponent, RevisionNotesDialogResult>,
   ) {}
@@ -50,6 +52,7 @@ export class RevisionNotesDialogComponent {
   /**
    * Handle cancel action.
    */
+  // SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: dismiss the revision notes dialog without returning a result
   onCancel(): void {
     this._dialogRef.close();
   }
@@ -57,6 +60,7 @@ export class RevisionNotesDialogComponent {
   /**
    * Handle confirm action.
    */
+  // SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: close the dialog and return trimmed revision notes if input is valid
   onConfirm(): void {
     if (this.canSubmit) {
       this._dialogRef.close({ notes: this.revisionNotes.trim() });

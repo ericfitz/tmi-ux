@@ -25,6 +25,7 @@ interface FakeCell extends LayoutCell {
   __attrs: Record<string, unknown>;
 }
 
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: write a value into a nested object at a slash-delimited path (pure)
 function setByPath(target: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split('/');
   let node = target;
@@ -38,6 +39,7 @@ function setByPath(target: Record<string, unknown>, path: string, value: unknown
   node[parts[parts.length - 1]] = value;
 }
 
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: read a value from a nested object at a slash-delimited path (pure)
 function getByPath(target: Record<string, unknown>, path: string): unknown {
   const parts = path.split('/');
   let node: unknown = target;
@@ -48,6 +50,7 @@ function getByPath(target: Record<string, unknown>, path: string): unknown {
   return node;
 }
 
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: build an in-memory LayoutCell test double with configurable attrs and data (pure)
 function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   const cell: FakeCell = {
     id: overrides.id ?? 'cell-1',
@@ -109,6 +112,7 @@ function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   return cell;
 }
 
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: build a minimal LayoutGraph test double from a list of cells (pure)
 function fakeGraph(cells: LayoutCell[] = []): LayoutGraph {
   const byId = new Map<string, LayoutCell>();
   for (const c of cells) byId.set(c.id, c);

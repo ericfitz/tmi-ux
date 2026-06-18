@@ -18,7 +18,9 @@ import { buildHttpParams } from '@app/shared/utils/http-params.util';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@ec780ca190b16e9c25b3170baee0b36ce8194495: fetch group membership data for the authenticated user without admin privileges
 export class UserGroupService {
+  // SEM@6c071df61169a648a295f203e10831067d21bcaa: inject API and logger dependencies for group membership queries (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -31,6 +33,7 @@ export class UserGroupService {
    * @param offset Number of results to skip
    * @returns Observable with group members
    */
+  // SEM@ec780ca190b16e9c25b3170baee0b36ce8194495: fetch paginated members of a group the current user belongs to (reads DB)
   listMembers(
     groupUuid: string,
     limit?: number,

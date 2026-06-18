@@ -133,10 +133,12 @@ export interface CreateTeamDialogResult {
     `,
   ],
 })
+// SEM@53b5c954f863d742e2565068126182c97eb91b44: dialog component to collect and submit new team details (mutates shared state)
 export class CreateTeamDialogComponent {
   teamStatuses: TeamStatus[] = TEAM_STATUSES;
   form: FormGroup;
 
+  // SEM@53b5c954f863d742e2565068126182c97eb91b44: initialize team creation form with validation rules (mutates shared state)
   constructor(
     public dialogRef: MatDialogRef<CreateTeamDialogComponent>,
     private fb: FormBuilder,
@@ -150,6 +152,7 @@ export class CreateTeamDialogComponent {
     });
   }
 
+  // SEM@f9af8c3f614051967898c1616392abde0638b600: validate form and close dialog with new team data (mutates shared state)
   onCreate(): void {
     if (this.form.invalid) {
       return;
@@ -182,6 +185,7 @@ export class CreateTeamDialogComponent {
     this.dialogRef.close(result);
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: close dialog without submitting team creation (mutates shared state)
   onCancel(): void {
     this.dialogRef.close();
   }

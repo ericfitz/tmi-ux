@@ -29,6 +29,7 @@ import { Diagram } from '../../models/diagram.model';
 import type { components } from '@app/generated/api-types';
 import { FrameworkModel, ThreatTypeModel } from '../../../../shared/models/framework.model';
 
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: local alias for the ThreatInput API schema component type (pure)
 type ApiThreatInput = components['schemas']['ThreatInput'];
 import {
   FieldOption,
@@ -115,6 +116,7 @@ interface ThreatFormValues {
   templateUrl: './threat-page.component.html',
   styleUrls: ['./threat-page.component.scss'],
 })
+// SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: full-page standalone component for viewing and editing an individual threat
 export class ThreatPageComponent implements OnInit, OnDestroy {
   private destroyRef: DestroyRef | null = null;
 
@@ -174,6 +176,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // CWE name lookup
   private cweNameMap = new Map<string, string>();
 
+  // SEM@fda5a8a7189951ee270000543334c785ff38e1f6: inject dependencies and build the reactive threat form with validators (mutates shared state)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -218,10 +221,12 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    * Helper to conditionally apply takeUntilDestroyed
    * Returns identity operator when destroyRef is not available (tests)
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: return takeUntilDestroyed operator, or identity when destroyRef is absent (pure)
   private untilDestroyed<T>(): MonoTypeOperatorFunction<T> {
     return this.destroyRef ? takeUntilDestroyed<T>(this.destroyRef) : identity;
   }
 
+  // SEM@fda5a8a7189951ee270000543334c785ff38e1f6: resolve route params, load threat, subscribe to auth and language, load frameworks (mutates shared state)
   ngOnInit(): void {
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id') || '';
@@ -292,6 +297,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: unsubscribe the diagram change subscription on component teardown (mutates shared state)
   ngOnDestroy(): void {
     this.diagramChangeSubscription?.unsubscribe();
   }
@@ -299,6 +305,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Load frameworks and initialize the form
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch all frameworks, select the matching one, then initialize form and dropdowns (mutates shared state)
   private loadFrameworksAndInitialize(): void {
     this.frameworkService
       .loadAllFrameworks()
@@ -340,6 +347,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Initialize all dropdown options
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: initialize all dropdown option lists from threat model and framework data (mutates shared state)
   private initializeDropdownOptions(): void {
     this.initializeDiagramOptions();
     this.initializeCellOptions();
@@ -351,6 +359,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Reinitialize dropdown options (for language changes)
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: rebuild all dropdown options and reload cell list after a locale change (mutates shared state)
   private reinitializeDropdownOptions(): void {
     this.initializeDiagramOptions();
     this.initializeAssetOptions();
@@ -365,6 +374,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Initialize diagram options for the dropdown
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: build diagram dropdown options from the threat model's diagram list (mutates shared state)
   private initializeDiagramOptions(): void {
     const diagrams = this.threatModel?.diagrams ?? [];
     this.hasNoDiagramsInThreatModel = diagrams.length === 0;
@@ -383,6 +393,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    * loadCellsForDiagram); on init we just show the "not associated" entry
    * and let populateForm() trigger the actual fetch.
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: seed the cell dropdown with the not-associated placeholder before diagram selection (mutates shared state)
   private initializeCellOptions(): void {
     this.cellOptions = [
       {
@@ -395,6 +406,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Initialize asset options for the dropdown
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: build asset dropdown options from the threat model's sorted asset list (mutates shared state)
   private initializeAssetOptions(): void {
     this.assetOptions = [
       {
@@ -418,6 +430,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Initialize threat type options based on the framework
    */
+  // SEM@fc4f8e5e163a8b6aa93df61a4b0cf00196573dc4: build threat type dropdown options from framework, falling back to STRIDE defaults (mutates shared state)
   private initializeThreatTypeOptions(): void {
     if (this.framework?.threatTypes?.length) {
       this.threatTypeModels = this.framework.threatTypes;
@@ -439,6 +452,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Get the shape of the currently selected cell from the loaded diagram.
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: resolve the shape type of the currently selected diagram cell (pure)
   private _getSelectedCellType(): string | null {
     const cellId = this.threatForm.get('cell_id')?.value as string;
     if (!cellId || cellId === this.NOT_ASSOCIATED_VALUE) return null;
@@ -450,6 +464,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Initialize field options for severity, status, and priority dropdowns
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: build localized dropdown options for severity, status, and priority fields (mutates shared state)
   private initializeFieldOptions(): void {
     this.severityOptions = getFieldOptions('threatEditor.threatSeverity', this.translocoService);
     this.statusOptions = getFieldOptions('threatEditor.threatStatus', this.translocoService);
@@ -465,6 +480,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    * If the currently-selected cell_id is not in the loaded set, it is reset
    * to "not associated" so the dropdown never shows a stale selection.
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: fetch diagram cells and populate the cell dropdown, resetting stale selection (mutates shared state)
   private loadCellsForDiagram(diagramId: string | null | undefined): void {
     const notAssociatedOption: CellOption = {
       id: this.NOT_ASSOCIATED_VALUE,
@@ -513,6 +529,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /** Reset the cell_id form control if the selected value is not in cellOptions. */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: clear the cell form control when its current value is absent from available options (mutates shared state)
   private resetCellIfStale(): void {
     const currentCellId = this.threatForm.get('cell_id')?.value as string;
     if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
@@ -526,6 +543,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Set up reactive subscription to reload cell options when diagram selection changes.
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: subscribe to diagram selection changes and reload cell options reactively (mutates shared state)
   private setupDiagramChangeFiltering(): void {
     const diagramControl = this.threatForm.get('diagram_id');
     if (diagramControl) {
@@ -538,6 +556,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /** Resolve asset_id to its threat-model value or "not associated" if missing. */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: resolve the threat's asset id against the threat model, returning sentinel if missing (pure)
   private resolveAssetIdValue(): string {
     const id = this.threat?.asset_id;
     if (!id) return this.NOT_ASSOCIATED_VALUE;
@@ -546,6 +565,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /** Resolve diagram_id to its threat-model value or "not associated" if missing. */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: resolve the threat's diagram id against the threat model, returning sentinel if missing (pure)
   private resolveDiagramIdValue(): string {
     const id = this.threat?.diagram_id;
     if (!id) return this.NOT_ASSOCIATED_VALUE;
@@ -556,6 +576,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Populate form with threat data
    */
+  // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: populate the threat form with migrated field values and trigger initial cell load (mutates shared state)
   private populateForm(): void {
     if (!this.threat) return;
 
@@ -615,6 +636,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Update form editability based on permissions
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: enable or disable the threat form based on edit permission (mutates shared state)
   private updateFormEditability(): void {
     if (this.canEdit) {
       this.threatForm.enable();
@@ -626,6 +648,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Navigate back to threat model page
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: route the user back to the parent threat model page
   navigateBack(): void {
     void this.router.navigate(['/tm', this.threatModelId]);
   }
@@ -633,6 +656,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Cancel and navigate back
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: navigate back, prompting for confirmation if the form has unsaved changes
   cancel(): void {
     if (this.threatForm.dirty) {
       const confirmed = window.confirm(
@@ -650,6 +674,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Save the threat
    */
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: persist threat edits to the API and navigate back on success (writes DB)
   save(): void {
     if (this.threatForm.invalid || !this.canEdit || this.isSaving) return;
 
@@ -682,6 +707,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@d097e9c21706f5e53de376a2a2fdab9581f73717: convert form values to a threat API input payload, nulling sentinel associations (pure)
   private buildThreatData(): Partial<ApiThreatInput> {
     const formValues = this.threatForm.getRawValue() as ThreatFormValues;
 
@@ -718,6 +744,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Delete the threat
    */
+  // SEM@6f6a3c38fe60c48b7e5f30344fd306519e169b05: confirm and delete the current threat via the API, then navigate back (writes DB)
   deleteThreat(): void {
     if (!this.canEdit || !this.threat) return;
 
@@ -765,6 +792,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open metadata dialog
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the metadata editor dialog and merge returned key-value pairs onto the threat (mutates shared state)
   openMetadataDialog(): void {
     if (!this.threat) return;
 
@@ -793,6 +821,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Copy text to clipboard
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: copy a text string to the system clipboard and notify the user
   copyToClipboard(text: string): void {
     navigator.clipboard
       .writeText(text)
@@ -813,6 +842,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    * Handles a URL dropped onto the issue URI container.
    * Sets the issue_uri form control value to the dropped URL.
    */
+  // SEM@9cb14cd85aff4520986fafb81c4d07db32adc09d: handle a dropped URL by setting the issue URI form field value (mutates shared state)
   onIssueUriUrlDropped(url: string): void {
     if (!this.canEdit) return;
     this.threatForm.get('issue_uri')?.setValue(url);
@@ -822,6 +852,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Check if a string is a valid URL
    */
+  // SEM@842e13b899452ede91f10594c85586d003e70d31: validate whether a string is a well-formed URL (pure)
   isValidUrl(url: string): boolean {
     return isValidUrl(url);
   }
@@ -829,6 +860,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Opens URI in new tab
    */
+  // SEM@842e13b899452ede91f10594c85586d003e70d31: open a validated URI in a new browser tab
   openUriInNewTab(uri: string): void {
     if (isValidUrl(uri)) {
       window.open(uri, '_blank', 'noopener,noreferrer');
@@ -838,10 +870,12 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Remove a CWE ID chip
    */
+  // SEM@fda5a8a7189951ee270000543334c785ff38e1f6: look up the display name for a CWE id, falling back to the raw id (pure)
   getCweName(cweId: string): string {
     return this.cweNameMap.get(cweId) || cweId;
   }
 
+  // SEM@8ec8f3c2c7654e2033be230890574aaabedd875a: remove a CWE id from the form's cwe list and mark the form dirty (mutates shared state)
   removeCweId(cweId: string): void {
     const current = this.threatForm.get('cwe_id')?.value as string[];
     const index = current.indexOf(cweId);
@@ -856,6 +890,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the CWE picker dialog to browse and select a CWE
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open the CWE picker dialog and append the selected CWE id to the form (mutates shared state)
   openCwePicker(): void {
     const dialogRef = this.dialog.open(CwePickerDialogComponent, {
       width: '700px',
@@ -882,6 +917,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the framework mapping picker dialog to select threat types
    */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: open the framework mapping picker and update the selected threat types on the form (mutates shared state)
   openFrameworkMappingPicker(): void {
     const dialogRef = this.dialog.open(FrameworkMappingPickerDialogComponent, {
       width: '500px',
@@ -907,6 +943,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Remove a threat type chip
    */
+  // SEM@cbc9ac25398b066c451e1176a56c8b44a11f3ee4: remove a threat type from the form's threat type list and mark the form dirty (mutates shared state)
   removeThreatType(typeName: string): void {
     const current = this.threatForm.get('threat_type')?.value as string[];
     const updated = current.filter(t => t !== typeName);
@@ -926,6 +963,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the CVSS calculator dialog to create a new entry
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open the CVSS calculator dialog and append the resulting score entry to the form (mutates shared state)
   openCvssCalculator(): void {
     const dialogRef = this.dialog.open(CvssCalculatorDialogComponent, {
       width: '800px',
@@ -952,6 +990,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the CVSS calculator dialog to edit an existing entry
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open CVSS calculator dialog to edit an existing score entry (mutates shared state)
   editCvssEntry(index: number): void {
     const current = this.threatForm.get('cvss')?.value as CVSSScore[];
     if (index < 0 || index >= current.length) return;
@@ -981,6 +1020,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Remove a CVSS entry by index
    */
+  // SEM@8ec8f3c2c7654e2033be230890574aaabedd875a: delete a CVSS score entry from the threat form by index (mutates shared state)
   removeCvssEntry(index: number): void {
     const current = this.threatForm.get('cvss')?.value as CVSSScore[];
     if (index >= 0 && index < current.length) {
@@ -991,6 +1031,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@c19b6f2113fec36784e9fe7b2e6b5968f505490f: list CVSS versions present in the current threat form entries (pure)
   private _getExistingCvssVersions(): CvssVersion[] {
     const entries = (this.threatForm.get('cvss')?.value as CVSSScore[]) ?? [];
     const versions: CvssVersion[] = [];
@@ -1002,6 +1043,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the SSVC calculator dialog to create a new entry
    */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: open SSVC calculator dialog to create a new scoring entry (mutates shared state)
   openSsvcCalculator(): void {
     const dialogRef = this.dialog.open(SsvcCalculatorDialogComponent, {
       width: '700px',
@@ -1023,6 +1065,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Open the SSVC calculator dialog to edit the existing entry
    */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: open SSVC calculator dialog to edit the existing score entry (mutates shared state)
   editSsvcEntry(): void {
     const existing = this.threatForm.get('ssvc')?.value as SSVCScore | null;
     if (!existing) return;
@@ -1047,6 +1090,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Remove the SSVC entry
    */
+  // SEM@cfd296b973ca675f9b4d7a207d27e5be5ed95e32: delete the SSVC score entry from the threat form (mutates shared state)
   removeSsvcEntry(): void {
     this.threatForm.patchValue({ ssvc: null });
     this.threatForm.markAsDirty();
@@ -1055,6 +1099,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Get CSS class for the SSVC decision chip
    */
+  // SEM@cfd296b973ca675f9b4d7a207d27e5be5ed95e32: map an SSVC decision value to its CSS chip class name (pure)
   getSsvcDecisionClass(): string {
     const ssvc = this.threatForm.get('ssvc')?.value as SSVCScore | null;
     if (!ssvc) return '';
@@ -1075,6 +1120,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Load addons from server and filter for threat type
    */
+  // SEM@d790b8bd7f1bf990d1aec2d3118089a501ee6f98: fetch threat-applicable addons from the server and store them (mutates shared state)
   private loadAddons(): void {
     this.addonService
       .list()
@@ -1095,6 +1141,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Gets the icon name for display, handling material-symbols: prefix
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: resolve an addon's display icon name, stripping the material-symbols prefix (pure)
   getAddonIcon(addon: Addon): string {
     if (!addon.icon) {
       return 'extension';
@@ -1105,6 +1152,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   /**
    * Invoke addon for this threat
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: dispatch an addon against the current threat via an invocation dialog
   invokeAddon(addon: Addon): void {
     if (!this.threatModel || !this.threat) {
       this.logger.error('Cannot invoke addon: no threat model or threat loaded');

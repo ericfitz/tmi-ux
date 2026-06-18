@@ -14,6 +14,7 @@ import { testConfig } from '../../config/test.config';
  * cookies via fetch — idempotent enough: running twice just adds another
  * submitted response.
  */
+// SEM@88e6a889c33276e0b9d96b4698fbf7d39d4a382b: create and submit a seed survey response via the intake API (mutates shared state)
 async function ensureSubmittedResponse(page: Page): Promise<void> {
   const apiUrl = testConfig.apiUrl;
   const result = await page.evaluate(async (api: string) => {

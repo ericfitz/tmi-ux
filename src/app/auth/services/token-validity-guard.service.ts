@@ -25,6 +25,7 @@ import { SESSION_CONFIG } from '../config/session.config';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@da0060051d2e642429c7d95549638e7c4afb741c: guard against zombie sessions via tab visibility, heartbeat drift, and cross-tab logout events (mutates shared state)
 export class TokenValidityGuardService implements OnDestroy {
   // Heartbeat tracking for drift detection
   private lastHeartbeat = Date.now();
@@ -38,6 +39,7 @@ export class TokenValidityGuardService implements OnDestroy {
   private readonly heartbeatIntervalMs = SESSION_CONFIG.HEARTBEAT_INTERVAL_MS;
   private readonly driftMultiplier = SESSION_CONFIG.DRIFT_DETECTION_MULTIPLIER;
 
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: inject auth, logger, router, and zone dependencies (pure)
   constructor(
     private authService: AuthService,
     private logger: LoggerService,
@@ -45,6 +47,7 @@ export class TokenValidityGuardService implements OnDestroy {
     private ngZone: NgZone,
   ) {}
 
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: stop all token validity monitors on service destruction (mutates shared state)
   ngOnDestroy(): void {
     this.stopMonitoring();
   }
@@ -53,6 +56,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * Start all monitoring mechanisms.
    * Called during app initialization via APP_INITIALIZER.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: register all token-expiry monitoring listeners (mutates shared state)
   startMonitoring(): void {
     this.logger.debugComponent('TokenValidityGuard', 'Starting token validity monitoring');
 
@@ -65,6 +69,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * Stop all monitoring mechanisms.
    * Called during service destruction.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: deregister all token-expiry monitoring listeners and clear timers (mutates shared state)
   stopMonitoring(): void {
     this.logger.debugComponent('TokenValidityGuard', 'Stopping token validity monitoring');
 
@@ -94,6 +99,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * immediately validate the token. This catches the most common case of
    * users returning to a tab after a long absence.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: register tab-visibility listener to validate session token on foreground (mutates shared state)
   private setupVisibilityChangeHandler(): void {
     this.visibilityChangeHandler = () => {
       if (document.visibilityState === 'visible') {
@@ -115,6 +121,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * interval, we know timers were throttled (browser backgrounded, CPU throttled, etc.)
    * and should immediately validate the token.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: schedule heartbeat interval to detect timer drift and validate session token (mutates shared state)
   private setupHeartbeatDriftDetection(): void {
     this.lastHeartbeat = Date.now();
 
@@ -152,6 +159,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * Note: The 'storage' event only fires in OTHER tabs, not the one that made
    * the change. This is by design - the originating tab handles its own state.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: register cross-tab storage listener to handle logout broadcast from other tabs (mutates shared state)
   private setupStorageEventListener(): void {
     this.storageEventHandler = (event: StorageEvent) => {
       // Handle logout broadcast from another tab
@@ -170,6 +178,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * Validate token and redirect to home if expired.
    * This is the core method called by all three layers.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: validate session token and redirect to home if expired (mutates shared state)
   private validateTokenAndRedirectIfExpired(): void {
     // First, update the auth state based on actual token validity
     this.authService.validateAndUpdateAuthState();
@@ -186,6 +195,7 @@ export class TokenValidityGuardService implements OnDestroy {
    * Handle logout broadcast from another tab.
    * Clears local auth state and redirects to home.
    */
+  // SEM@da0060051d2e642429c7d95549638e7c4afb741c: clear auth state and redirect home on cross-tab logout broadcast (mutates shared state)
   private handleCrossTabLogout(): void {
     // Validate state (this will clear if token is gone)
     this.authService.validateAndUpdateAuthState();

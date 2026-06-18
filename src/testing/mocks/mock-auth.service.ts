@@ -16,6 +16,7 @@ export interface User {
 /**
  * Mock implementation of an authentication service for testing
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: in-memory auth service stub for controlling user session state in tests (mutates shared state)
 export class MockAuthService {
   private _currentUser = new BehaviorSubject<User | null>(null);
 
@@ -38,6 +39,7 @@ export class MockAuthService {
    * @param email The email address to login with
    * @param role The role to assign to the user
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: authenticate a test user with a given email and role (mutates shared state)
   login(email: string, role: 'owner' | 'writer' | 'reader' = 'owner'): void {
     this._currentUser.next({
       email,
@@ -49,6 +51,7 @@ export class MockAuthService {
   /**
    * Logout the current user
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the current user session in the mock auth service (mutates shared state)
   logout(): void {
     this._currentUser.next(null);
   }
@@ -58,6 +61,7 @@ export class MockAuthService {
    * @param role The role to check for
    * @returns True if the current user has the specified role, false otherwise
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that the current user holds at least the specified role (pure)
   hasRole(role: 'owner' | 'writer' | 'reader'): boolean {
     const user = this._currentUser.value;
     if (!user) {
@@ -82,6 +86,7 @@ export class MockAuthService {
    * Check if the current user is authenticated
    * @returns True if the current user is authenticated, false otherwise
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that a user session is currently active (pure)
   isAuthenticated(): boolean {
     const user = this._currentUser.value;
     return user !== null && user.isAuthenticated;
@@ -91,6 +96,7 @@ export class MockAuthService {
    * Check if the current user can edit
    * @returns True if the current user can edit, false otherwise
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that the current user has edit permission (pure)
   canEdit(): boolean {
     return this.hasRole('writer') || this.hasRole('owner');
   }
@@ -99,6 +105,7 @@ export class MockAuthService {
    * Check if the current user can delete
    * @returns True if the current user can delete, false otherwise
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that the current user has delete permission (pure)
   canDelete(): boolean {
     return this.hasRole('owner');
   }

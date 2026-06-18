@@ -27,6 +27,7 @@ describe('DataAssetDialogComponent', () => {
   let mockDialogRef: any;
   let mockTranslocoService: any;
 
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: build a stub data asset with given id, name, and optional type for tests (pure)
   const createMockAsset = (id: string, name: string, type: Asset['type'] = 'data'): Asset => ({
     id,
     name,

@@ -147,6 +147,7 @@ export interface TeamMembersDialogData {
     `,
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog for adding, removing, and saving team members
 export class TeamMembersDialogComponent {
   private destroyRef = inject(DestroyRef);
 
@@ -155,6 +156,7 @@ export class TeamMembersDialogComponent {
   saving = false;
   errorMessage = '';
 
+  // SEM@312c26668daedc4e0554b2c7726817f0f665e12c: inject dialog services and initialize local member list from team data (pure)
   constructor(
     private dialogRef: MatDialogRef<TeamMembersDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: TeamMembersDialogData,
@@ -166,6 +168,7 @@ export class TeamMembersDialogComponent {
     this.members = [...(data.team.members || [])];
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open user-picker dialog and append the selected user as a team member (mutates shared state)
   addMember(): void {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       width: '500px',
@@ -198,11 +201,13 @@ export class TeamMembersDialogComponent {
       });
   }
 
+  // SEM@312c26668daedc4e0554b2c7726817f0f665e12c: delete a team member from the local members list (mutates shared state)
   removeMember(member: TeamMember): void {
     this.members = this.members.filter(m => m.user_id !== member.user_id);
     this.dirty = true;
   }
 
+  // SEM@312c26668daedc4e0554b2c7726817f0f665e12c: persist team member changes to the API and close the dialog (mutates shared state)
   onSave(): void {
     if (!this.dirty || this.saving) return;
     this.saving = true;
@@ -224,6 +229,7 @@ export class TeamMembersDialogComponent {
       });
   }
 
+  // SEM@312c26668daedc4e0554b2c7726817f0f665e12c: dismiss the dialog without saving, returning a false result (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }

@@ -76,6 +76,7 @@ const STRING_PARAM_PATTERN = /^[a-zA-Z0-9 \-.,/]*$/;
   templateUrl: './invoke-addon-dialog.component.html',
   styleUrls: ['./invoke-addon-dialog.component.scss'],
 })
+// SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: dialog component for configuring and invoking an addon against a threat model object
 export class InvokeAddonDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -94,6 +95,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /** Validation errors for metadata_key parameters */
   metadataKeyErrors: Record<string, string> = {};
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: inject dialog data, services, and form builder dependencies (pure)
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: InvokeAddonDialogData,
     private dialogRef: MatDialogRef<InvokeAddonDialogComponent>,
@@ -104,6 +106,7 @@ export class InvokeAddonDialogComponent implements OnInit {
     private userPreferencesService: UserPreferencesService,
   ) {}
 
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: fetch fresh addon details and build dynamic parameter form on init (reads DB)
   ngOnInit(): void {
     this.form = this.fb.group({});
 
@@ -136,6 +139,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Build dynamic form controls from parameter definitions
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: build reactive form controls from addon parameter definitions (mutates shared state)
   private buildForm(): void {
     for (const param of this.parameters) {
       const isRequired = param.required === true;
@@ -154,6 +158,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Create a FormControl with appropriate validators for the parameter type
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: build a FormControl with type-appropriate validators for an addon parameter (pure)
   private createControlForParam(param: AddonParameter): FormControl {
     const validators: ValidatorFn[] = [];
     if (param.required) {
@@ -167,6 +172,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Resolve the default value and add type-specific validators
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: resolve typed default value and attach validators for an addon parameter (pure)
   private resolveDefaultValue(
     param: AddonParameter,
     validators: ValidatorFn[],
@@ -199,6 +205,7 @@ export class InvokeAddonDialogComponent implements OnInit {
     }
   }
 
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: attach max-length and pattern validators to a string addon parameter (pure)
   private addStringValidators(param: AddonParameter, validators: ValidatorFn[]): void {
     validators.push(Validators.maxLength(param.string_max_length ?? 256));
     validators.push(Validators.pattern(STRING_PARAM_PATTERN));
@@ -207,6 +214,7 @@ export class InvokeAddonDialogComponent implements OnInit {
     }
   }
 
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: attach min and max validators to a numeric addon parameter (pure)
   private addNumberValidators(param: AddonParameter, validators: ValidatorFn[]): void {
     if (param.number_min !== undefined) {
       validators.push(Validators.min(param.number_min));
@@ -216,6 +224,7 @@ export class InvokeAddonDialogComponent implements OnInit {
     }
   }
 
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: resolve default value for a metadata_key parameter and flag missing required keys (pure)
   private resolveMetadataKeyDefault(param: AddonParameter): string {
     const metadataValue = this.lookupMetadataValue(param.metadata_key ?? param.name);
     if (param.required && !metadataValue) {
@@ -230,6 +239,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Look up a metadata value by key from the context metadata
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: fetch a metadata entry value by key from dialog context (pure)
   private lookupMetadataValue(key: string): string | undefined {
     if (!this.data.metadata) {
       return undefined;
@@ -241,6 +251,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Toggle inclusion of an optional parameter
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: enable or disable an optional addon parameter form control (mutates shared state)
   toggleParam(paramName: string, included: boolean): void {
     this.includedParams[paramName] = included;
     const control = this.form.get(paramName);
@@ -256,6 +267,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Check if a parameter is required
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: return whether an addon parameter is required (pure)
   isParamRequired(param: AddonParameter): boolean {
     return param.required === true;
   }
@@ -263,6 +275,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Get addon icon for display (strips material-symbols: prefix)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: return the addon icon name, stripping the material-symbols prefix (pure)
   getAddonIcon(): string {
     if (!this.data.addon.icon) {
       return 'extension';
@@ -273,6 +286,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Get translation key for object type display
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: map an object type identifier to its i18n translation key (pure)
   getObjectTypeTranslationKey(): string {
     const typeMap: Record<string, string> = {
       threat_model: 'common.objectTypes.threatModel',
@@ -309,6 +323,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Handle invoke button click
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: collect included parameter values and invoke the addon via API, then close dialog
   onInvoke(): void {
     if (!this.canInvoke) {
       return;
@@ -365,6 +380,7 @@ export class InvokeAddonDialogComponent implements OnInit {
   /**
    * Handle cancel button click
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: close dialog signalling the addon invocation was cancelled (pure)
   onCancel(): void {
     const result: InvokeAddonDialogResult = { submitted: false };
     this.dialogRef.close(result);

@@ -50,7 +50,9 @@ import {
  * Provides simplified, high-level operations while managing complex dependencies internally
  */
 @Injectable()
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: coordinate DFD graph operations by delegating to domain services and adapters (mutates shared state)
 export class AppDfdFacade {
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: inject all collaborating services required by the DFD facade (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly infraX6GraphAdapter: InfraX6GraphAdapter,
@@ -77,6 +79,7 @@ export class AppDfdFacade {
    * Initialize the graph adapter with the provided graph instance
    * This must be called before any graph operations can be performed
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: initialize the graph adapter with a container element before any graph operations (mutates shared state)
   initializeGraphAdapter(containerElement: HTMLElement): void {
     this.logger.debugComponent('AppDfdFacade', 'Initializing graph adapter');
     this.infraX6GraphAdapter.initialize(containerElement);
@@ -89,6 +92,7 @@ export class AppDfdFacade {
    * Set the graph instance on the adapter (for orchestrator-created graphs)
    * This allows the orchestrator to create the graph and pass it to the infrastructure
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: assign an externally created graph instance to the infrastructure adapter (mutates shared state)
   setGraphOnAdapter(graph: any): void {
     this.logger.debugComponent('AppDfdFacade', 'Setting graph instance on adapter');
     this.infraX6GraphAdapter.setGraph(graph);
@@ -101,6 +105,7 @@ export class AppDfdFacade {
   /**
    * Create a node using intelligent positioning algorithm
    */
+  // SEM@45bebd666a6507589bf129e5a99c6d8232350abd: add a graph node using auto-positioning and return its id and instance (mutates shared state)
   createNodeWithIntelligentPositioning(
     nodeType: NodeType,
     isInitialized: boolean,
@@ -111,6 +116,7 @@ export class AppDfdFacade {
   /**
    * Create a node at a specific position
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: add a graph node at an explicit position (mutates shared state)
   createNodeAtPosition(nodeType: NodeType, position: { x: number; y: number }): Observable<void> {
     // Use the InfraNodeService's createNode method directly
     return (this.infraNodeService as any).createNode(nodeType, position);
@@ -120,6 +126,7 @@ export class AppDfdFacade {
    * Handle drag completion for node movement, resizing, or edge vertices
    * Creates UpdateNodeOperation or UpdateEdgeOperation to record final state in history
    */
+  // SEM@0c87215b5a30edd1c4d7c3f00e626588ff9ef4a1: dispatch move, resize, or vertex drag completion to the appropriate history operation (mutates shared state)
   handleDragCompletion(
     completion: {
       cellId: string;
@@ -160,6 +167,7 @@ export class AppDfdFacade {
   /**
    * Handle node movement completion
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: record a node position change as an update operation in history, skip if unchanged (mutates shared state)
   private _handleNodeMove(
     node: any,
     initialState: any,
@@ -229,6 +237,7 @@ export class AppDfdFacade {
   /**
    * Handle node resize completion
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: record a node size change as an update operation in history, skip if unchanged (mutates shared state)
   private _handleNodeResize(
     node: any,
     initialState: any,
@@ -298,6 +307,7 @@ export class AppDfdFacade {
   /**
    * Handle edge vertices drag completion
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: record an edge vertices change as an update operation in history, skip if unchanged (mutates shared state)
   private _handleEdgeVerticesDrag(
     edge: any,
     initialState: any,
@@ -365,6 +375,7 @@ export class AppDfdFacade {
   /**
    * Helper to compare vertices arrays for equality
    */
+  // SEM@141c5177a23d03d5e9457daee40e8526092d1e5f: compare two vertex arrays for positional equality (pure)
   private _verticesEqual(
     v1: Array<{ x: number; y: number }>,
     v2: Array<{ x: number; y: number }>,
@@ -382,6 +393,7 @@ export class AppDfdFacade {
    * Handle node added to the graph (validation and history tracking)
    * Similar pattern to edge creation - creates retroactive GraphOperation
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: retroactively register a newly added node in operation history, skipping undo/redo or remote sync (mutates shared state)
   handleNodeAdded(node: any, diagramId: string, isInitialized: boolean): Observable<void> {
     if (!isInitialized) {
       this.logger.warn('Cannot handle node added: Graph is not initialized');
@@ -486,6 +498,7 @@ export class AppDfdFacade {
   /**
    * Handle edge added to the graph (validation and setup)
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: delegate edge-added validation and setup to the edge service (mutates shared state)
   handleEdgeAdded(edge: any, diagramId: string, isInitialized: boolean): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
     return this.appEdgeService.handleEdgeAdded(edge, graph, diagramId, isInitialized);
@@ -494,6 +507,7 @@ export class AppDfdFacade {
   /**
    * Handle edge vertices changed
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: delegate edge vertex change recording to the edge service (mutates shared state)
   handleEdgeVerticesChanged(
     edgeId: string,
     vertices: Array<{ x: number; y: number }>,
@@ -513,6 +527,7 @@ export class AppDfdFacade {
   /**
    * Add an inverse connection for the specified edge
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: register a reverse edge for an existing diagram connection (mutates shared state)
   addInverseConnection(edge: any, diagramId: string): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
     return this.appEdgeService.addInverseConnection(edge, graph, diagramId);
@@ -521,6 +536,7 @@ export class AppDfdFacade {
   /**
    * Validate if a connection is allowed between nodes
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: validate whether a connection between two nodes is permitted (pure)
   validateConnection(sourceNode: any, targetNode: any): boolean {
     return this.appEdgeService.validateConnection(sourceNode, targetNode);
   }
@@ -528,6 +544,7 @@ export class AppDfdFacade {
   /**
    * Check if a magnet is valid for connections
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: validate whether a port magnet may accept a new connection (pure)
   isMagnetValid(magnet: Element): boolean {
     return this.appEdgeService.isMagnetValid({ magnet });
   }
@@ -535,6 +552,7 @@ export class AppDfdFacade {
   /**
    * Check if a connection between ports is valid
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: validate whether a port-to-port edge connection is permitted by DFD rules (pure)
   isConnectionValid(
     sourceView: any,
     targetView: any,
@@ -552,6 +570,7 @@ export class AppDfdFacade {
   /**
    * Check if node connection is valid based on DFD rules
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: validate whether a node-to-node edge is allowed by DFD rules (pure)
   isNodeConnectionValid(sourceNode: any, targetNode: any): boolean {
     return this.appEdgeService.isNodeConnectionValid(sourceNode, targetNode);
   }
@@ -559,6 +578,7 @@ export class AppDfdFacade {
   /**
    * Validate embedding operation based on DFD rules
    */
+  // SEM@a5ca78d7784b249979df24c1ed89b792ca838765: validate whether a child node may be embedded in a parent node (pure)
   validateEmbedding(parent: any, child: any): boolean {
     const result = this.infraEmbeddingService.validateEmbedding(parent, child);
     return result.isValid;
@@ -567,6 +587,7 @@ export class AppDfdFacade {
   /**
    * Update edge label
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: update the text label on a diagram edge (mutates shared state)
   updateEdgeLabel(edge: any, label: string): void {
     this.appEdgeService.updateEdgeLabel(edge, label);
   }
@@ -574,6 +595,7 @@ export class AppDfdFacade {
   /**
    * Remove edge label
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: delete the text label from a diagram edge (mutates shared state)
   removeEdgeLabel(edge: any): void {
     this.appEdgeService.removeEdgeLabel(edge);
   }
@@ -581,6 +603,7 @@ export class AppDfdFacade {
   /**
    * Check if edge is connected to a specific node
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: check whether an edge has the given node as either endpoint (pure)
   isEdgeConnectedToNode(edge: any, nodeId: string): boolean {
     return this.appEdgeService.isEdgeConnectedToNode(edge, nodeId);
   }
@@ -588,6 +611,7 @@ export class AppDfdFacade {
   /**
    * Remove all edges connected to a node
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: delete all edges connected to a node from the graph (mutates shared state)
   removeNodeEdges(nodeId: string): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.appEdgeService.removeNodeEdges(graph, nodeId);
@@ -605,6 +629,7 @@ export class AppDfdFacade {
    * Execute a direct cell deletion (called after any confirmation has been obtained).
    * Delegates to the graph adapter for proper history and port visibility handling.
    */
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: delete a confirmed cell immediately via the graph adapter (mutates shared state)
   executeDirectCellDeletion(cell: Cell): void {
     this.infraX6GraphAdapter.executeCellDeletion(cell);
   }
@@ -615,6 +640,7 @@ export class AppDfdFacade {
    * cleanup, edge removal, port visibility, and z-order updates.
    * Edges are deleted via the operation manager.
    */
+  // SEM@ffa374dd1c9de88fc1c583a4695e280597118d74: delete all selected nodes and edges, returning success and count
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {
     try {
       const graph = this.infraX6GraphAdapter.getGraph();
@@ -689,6 +715,7 @@ export class AppDfdFacade {
   /**
    * Create and execute a DeleteEdgeOperation
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: build and execute a tracked delete-edge operation via the operation manager
   private _createDeleteEdgeOperation(edge: any, graph: any): Observable<any> {
     const edgeId = edge.id;
 
@@ -735,6 +762,7 @@ export class AppDfdFacade {
    * Cut selected cells to clipboard with history tracking
    * Copies cells to clipboard then deletes them via GraphOperations
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: copy selected cells to clipboard then delete them with history tracking
   cut(): Observable<{ success: boolean; cutCount: number }> {
     try {
       const graph = this.infraX6GraphAdapter.getGraph();
@@ -781,6 +809,7 @@ export class AppDfdFacade {
    * Copy selected cells to clipboard
    * Does not modify the diagram, so no history tracking needed
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: copy selected diagram cells to the clipboard without modifying the diagram (mutates shared state)
   copy(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     const selectedCells = graph.getSelectedCells();
@@ -800,6 +829,7 @@ export class AppDfdFacade {
    * Paste cells from clipboard
    * Note: Pasted cells are created by X6, then captured by retroactive handlers
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: paste clipboard cells into the diagram if the clipboard is non-empty (mutates shared state)
   paste(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
 
@@ -817,6 +847,7 @@ export class AppDfdFacade {
   /**
    * Check if the clipboard is empty
    */
+  // SEM@b71c37e6ebaadf734d302ac51ca182bd0b5482b8: check whether the diagram clipboard holds any copied cells (pure)
   isClipboardEmpty(): boolean {
     const graph = this.infraX6GraphAdapter.getGraph();
     return graph.isClipboardEmpty();
@@ -829,6 +860,7 @@ export class AppDfdFacade {
   /**
    * Get current selected cells
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: fetch the list of currently selected diagram cells (pure)
   getSelectedCells(): any[] {
     const graph = this.infraX6GraphAdapter.getGraph();
     return graph.getSelectedCells();
@@ -837,6 +869,7 @@ export class AppDfdFacade {
   /**
    * Check if there are selected cells
    */
+  // SEM@26eb8c79253dd24d4fc29a99ffc46c417287dc3b: check whether any diagram cells are currently selected (pure)
   hasSelectedCells(): boolean {
     return this.getSelectedCells().length > 0;
   }
@@ -844,6 +877,7 @@ export class AppDfdFacade {
   /**
    * Check if exactly one cell is selected
    */
+  // SEM@26eb8c79253dd24d4fc29a99ffc46c417287dc3b: check whether exactly one diagram cell is currently selected (pure)
   hasExactlyOneSelectedCell(): boolean {
     return this.getSelectedCells().length === 1;
   }
@@ -851,6 +885,7 @@ export class AppDfdFacade {
   /**
    * Get the current graph instance
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: fetch the underlying graph instance from the infrastructure adapter (pure)
   getGraph(): any {
     return this.infraX6GraphAdapter.getGraph();
   }
@@ -866,6 +901,7 @@ export class AppDfdFacade {
   /**
    * Move selected cell forward in z-order
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: raise selected cells one step forward in z-order (mutates shared state)
   moveSelectedForward(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.infraX6ZOrderAdapter.moveSelectedCellsForward(graph);
@@ -874,6 +910,7 @@ export class AppDfdFacade {
   /**
    * Move selected cell backward in z-order
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: lower selected cells one step backward in z-order (mutates shared state)
   moveSelectedBackward(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.infraX6ZOrderAdapter.moveSelectedCellsBackward(graph);
@@ -882,6 +919,7 @@ export class AppDfdFacade {
   /**
    * Move selected cell to front
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: raise selected cells to the topmost z-order position (mutates shared state)
   moveSelectedToFront(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.infraX6ZOrderAdapter.moveSelectedCellsToFront(graph);
@@ -890,6 +928,7 @@ export class AppDfdFacade {
   /**
    * Move selected cell to back
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: lower selected cells to the bottommost z-order position (mutates shared state)
   moveSelectedToBack(): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.infraX6ZOrderAdapter.moveSelectedCellsToBack(graph);
@@ -952,6 +991,7 @@ export class AppDfdFacade {
   /**
    * Handle cell label change (creates UpdateNodeOperation or UpdateEdgeOperation)
    */
+  // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: dispatch a label-change operation for a node or edge cell (mutates shared state)
   handleLabelChange(
     change: {
       cellId: string;
@@ -974,6 +1014,7 @@ export class AppDfdFacade {
   /**
    * Handle node label change
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: execute an update-node operation to record a node label change in history (mutates shared state)
   private _handleNodeLabelChange(
     change: { cellId: string; oldLabel: string; newLabel: string; previousCellState?: any },
     graph: any,
@@ -1030,6 +1071,7 @@ export class AppDfdFacade {
   /**
    * Handle edge label change
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: execute an update-edge operation to record an edge label change in history (mutates shared state)
   private _handleEdgeLabelChange(
     change: { cellId: string; oldLabel: string; newLabel: string; previousCellState?: any },
     graph: any,
@@ -1086,6 +1128,7 @@ export class AppDfdFacade {
   /**
    * Handle edge reconnection (creates UpdateEdgeOperation for source or target changes)
    */
+  // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: dispatch a source or target reconnection operation for a diagram edge (mutates shared state)
   handleEdgeReconnection(
     reconnection: {
       edgeId: string;
@@ -1110,6 +1153,7 @@ export class AppDfdFacade {
   /**
    * Handle edge source reconnection
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: execute an update-edge operation to record an edge source endpoint change in history (mutates shared state)
   private _handleEdgeReconnectionSource(
     reconnection: {
       edgeId: string;
@@ -1186,6 +1230,7 @@ export class AppDfdFacade {
   /**
    * Handle edge target reconnection
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: execute an update-edge operation to record an edge target endpoint change in history (mutates shared state)
   private _handleEdgeReconnectionTarget(
     reconnection: {
       edgeId: string;
@@ -1263,6 +1308,7 @@ export class AppDfdFacade {
    * Handle node parent change (embedding/unembedding)
    * Creates UpdateNodeOperation with parent change
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: execute an update-node operation to record a node embedding or un-embedding in history (mutates shared state)
   handleNodeParentChange(
     change: {
       nodeId: string;
@@ -1331,6 +1377,7 @@ export class AppDfdFacade {
   /**
    * Check if the selected cell is a text box
    */
+  // SEM@528e7572ac1e2d99984ad20dd1d1e629cde6a570: validate that the sole selected cell is a text-box node (pure)
   isSelectedCellTextBox(): boolean {
     const selectedCells = this.getSelectedCells();
     if (selectedCells.length !== 1) return false;
@@ -1342,6 +1389,7 @@ export class AppDfdFacade {
   /**
    * Check if the selected cell is a security boundary
    */
+  // SEM@528e7572ac1e2d99984ad20dd1d1e629cde6a570: validate that the sole selected cell is a security-boundary node (pure)
   isSelectedCellSecurityBoundary(): boolean {
     const selectedCells = this.getSelectedCells();
     if (selectedCells.length !== 1) return false;
@@ -1356,6 +1404,7 @@ export class AppDfdFacade {
   /**
    * Check if the right-clicked cell is an edge
    */
+  // SEM@26eb8c79253dd24d4fc29a99ffc46c417287dc3b: validate that the right-clicked diagram cell is an edge (pure)
   isRightClickedCellEdge(rightClickedCell?: any): boolean {
     if (!rightClickedCell) return false;
     return rightClickedCell.isEdge && rightClickedCell.isEdge();
@@ -1364,6 +1413,7 @@ export class AppDfdFacade {
   /**
    * Initialize graph with container element
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: initialize the graph renderer in a given DOM container element (mutates shared state)
   initializeGraph(containerElement: HTMLElement): void {
     this.infraX6GraphAdapter.initialize(containerElement);
   }
@@ -1371,6 +1421,7 @@ export class AppDfdFacade {
   /**
    * Set read-only mode for the graph
    */
+  // SEM@accadabe6b8fd5d9b4d99f398db8781982b535c9: toggle read-only interaction mode on the graph adapter (mutates shared state)
   setReadOnlyMode(readOnly: boolean): void {
     this.infraX6GraphAdapter.setReadOnlyMode(readOnly);
   }
@@ -1378,6 +1429,7 @@ export class AppDfdFacade {
   /**
    * Dispose of facade resources
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: release facade resources and delegate cleanup to dependent services (mutates shared state)
   dispose(): void {
     this.logger.debugComponent('AppDfdFacade', 'Disposing resources');
     // The individual services will handle their own cleanup

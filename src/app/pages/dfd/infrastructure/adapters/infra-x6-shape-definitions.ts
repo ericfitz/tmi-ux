@@ -14,6 +14,7 @@ const registeredShapes = new Set<string>();
 /**
  * Register all custom shapes for DFD diagrams
  */
+// SEM@cc0e1a15eec4793129c5756ebcdf311cd3c2478e: register all DFD node and edge shape types with X6 (mutates shared state)
 export function registerCustomShapes(): void {
   // Register custom store shape (cylinder/drum per DFD3 spec)
   // Adapted from official X6 custom cylinder example
@@ -81,6 +82,7 @@ export function registerCustomShapes(): void {
       },
       attrHooks: {
         lateral: {
+          // SEM@4b4d1bf7d365f081f736dd2852791d9e153e73f2: compute SVG path data for a cylinder store shape from bounding box (pure)
           set(val, { refBBox }) {
             let t: number | string = val as number | string;
             const isPercentage = NumberExt.isPercentage(t);
@@ -404,6 +406,7 @@ export function registerCustomShapes(): void {
 /**
  * Get X6 shape name for domain node type
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: map a domain node type string to its registered X6 shape name (pure)
 export function getX6ShapeForNodeType(nodeType: string): string {
   switch (nodeType) {
     case 'process':

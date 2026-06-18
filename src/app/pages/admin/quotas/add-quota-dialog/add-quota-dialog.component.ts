@@ -36,6 +36,7 @@ import { DEFAULT_USER_API_QUOTA, DEFAULT_WEBHOOK_QUOTA } from '@app/types/quota.
   templateUrl: './add-quota-dialog.component.html',
   styleUrl: './add-quota-dialog.component.scss',
 })
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: dialog for selecting a user and setting API and webhook quotas
 export class AddQuotaDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private searchSubject$ = new Subject<string>();
@@ -52,6 +53,7 @@ export class AddQuotaDialogComponent implements OnInit {
   readonly defaultUserAPIQuota = DEFAULT_USER_API_QUOTA;
   readonly defaultWebhookQuota = DEFAULT_WEBHOOK_QUOTA;
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: initialize user search and quota forms with default values (pure)
   constructor(
     public dialogRef: MatDialogRef<AddQuotaDialogComponent>,
     private fb: FormBuilder,
@@ -89,6 +91,7 @@ export class AddQuotaDialogComponent implements OnInit {
     });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: subscribe to debounced search input to trigger user search (mutates shared state)
   ngOnInit(): void {
     this.searchSubject$
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
@@ -97,10 +100,12 @@ export class AddQuotaDialogComponent implements OnInit {
       });
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: dispatch a user search query to the debounce subject (mutates shared state)
   onSearchChange(value: string): void {
     this.searchSubject$.next(value);
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch users matching email search text and populate the suggestion list (reads DB)
   searchUsers(searchText: string): void {
     if (!searchText || searchText.length < 2) {
       this.filteredUsers = [];
@@ -124,18 +129,21 @@ export class AddQuotaDialogComponent implements OnInit {
       });
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: store the chosen user and populate the search field with their email (mutates shared state)
   onSelectUser(user: AdminUser): void {
     this.selectedUser = user;
     this.userSearchForm.patchValue({ searchText: user.email });
     this.filteredUsers = [];
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: clear the selected user and reset the search field (mutates shared state)
   onClearUser(): void {
     this.selectedUser = null;
     this.userSearchForm.patchValue({ searchText: '' });
     this.filteredUsers = [];
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: store API and webhook quotas for the selected user and close the dialog (reads DB)
   onSave(): void {
     if (!this.selectedUser || this.quotaForm.invalid) {
       return;
@@ -188,6 +196,7 @@ export class AddQuotaDialogComponent implements OnInit {
     });
   }
 
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: close the dialog without saving (pure)
   onCancel(): void {
     this.dialogRef.close();
   }

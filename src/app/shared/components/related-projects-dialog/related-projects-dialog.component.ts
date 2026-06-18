@@ -241,6 +241,7 @@ export interface RelatedProjectsDialogData {
     `,
   ],
 })
+// SEM@288a0970185217119fccb662f068c905f2e2e1af: dialog to manage a project's related projects list with add/remove and save (mutates shared state)
 export class RelatedProjectsDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -255,6 +256,7 @@ export class RelatedProjectsDialogComponent implements OnInit {
   readonly relationshipTypes = RELATIONSHIP_TYPES;
   addForm: FormGroup;
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: initialize dialog state and add-form from injected project data (pure)
   constructor(
     private dialogRef: MatDialogRef<RelatedProjectsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RelatedProjectsDialogData,
@@ -270,6 +272,7 @@ export class RelatedProjectsDialogComponent implements OnInit {
     });
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: subscribe search input to fetch matching project list from API (mutates shared state)
   ngOnInit(): void {
     this.filteredProjects$ = (
       this.addForm.get('projectSearch') as FormControl<string | ProjectListItem>
@@ -290,10 +293,12 @@ export class RelatedProjectsDialogComponent implements OnInit {
   /** Display function for the autocomplete input — arrow form preserves `this` for [displayWith]. */
   displayProject = (project: ProjectListItem): string => project?.name || '';
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: store the autocomplete-selected project as the pending selection (mutates shared state)
   onProjectSelected(event: MatAutocompleteSelectedEvent): void {
     this.selectedProject = event.option.value as ProjectListItem;
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: add selected project with relationship type to local list, reject duplicates (mutates shared state)
   addRelated(): void {
     if (!this.selectedProject) return;
     const relationship = this.addForm.get('relationship')?.value as RelationshipType;
@@ -320,12 +325,14 @@ export class RelatedProjectsDialogComponent implements OnInit {
     this.cancelAddForm();
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: hide and reset the add-related-project form without saving (mutates shared state)
   cancelAddForm(): void {
     this.showAddForm = false;
     this.selectedProject = null;
     this.addForm.reset();
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: delete a related project entry from the local list and mark dirty (mutates shared state)
   removeRelated(related: RelatedProject): void {
     this.relatedProjects = this.relatedProjects.filter(
       r => r.related_project_id !== related.related_project_id,
@@ -333,6 +340,7 @@ export class RelatedProjectsDialogComponent implements OnInit {
     this.dirty = true;
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: persist updated related projects list to API and close dialog on success (reads DB)
   onSave(): void {
     if (!this.dirty || this.saving) return;
     this.saving = true;
@@ -354,6 +362,7 @@ export class RelatedProjectsDialogComponent implements OnInit {
       });
   }
 
+  // SEM@288a0970185217119fccb662f068c905f2e2e1af: close dialog without saving, returning false to caller (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }

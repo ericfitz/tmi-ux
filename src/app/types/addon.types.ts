@@ -6,6 +6,7 @@
 /**
  * Supported TMI object types that addons can operate on
  */
+// SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: enumerate TMI domain object types that an addon may target (pure)
 export type AddonObjectType =
   | 'threat_model'
   | 'diagram'
@@ -21,6 +22,7 @@ export type AddonObjectType =
 /**
  * Parameter type determining client UI control
  */
+// SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: enumerate addon parameter value types for UI control selection (pure)
 export type AddonParameterType = 'enum' | 'boolean' | 'string' | 'number' | 'metadata_key';
 
 /**
@@ -132,6 +134,7 @@ export interface InvokeAddonRequest {
 /**
  * Invocation status values
  */
+// SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: enumerate lifecycle statuses for an addon invocation (pure)
 export type InvokeAddonStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
 
 /**

@@ -11,6 +11,7 @@
  * The dfd component owns x6 wiring; this module owns the math.
  */
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: union type for layout axis direction: horizontal or vertical (pure)
 export type Orientation = 'horizontal' | 'vertical';
 
 /** Visible-icon dimensions inside the cell. Constant, see #96. */
@@ -101,6 +102,7 @@ export interface IconOnlyFitGeometry {
  *   n=1 → 1×1 ; n=2 → 1×2 ; n=3,4 → 2×2 ; n=5,6 → 2×3 ;
  *   n=7..9 → 3×3 ; n=10..12 → 3×4 ; n=13..16 → 4×4 ; ...
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute grid rows and cols for n children given orientation (pure)
 export function gridDimensions(
   n: number,
   orientation: Orientation,
@@ -133,6 +135,7 @@ interface NodeBBox {
  * Infer graph orientation from current top-level node positions.
  * Fewer than 2 nodes → 'horizontal'. Equal spans → 'horizontal'.
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: infer layout orientation from bounding spans of graph nodes (pure)
 export function inferOrientation(nodes: NodeBBox[]): Orientation {
   if (nodes.length < 2) return 'horizontal';
   let minX = Infinity;
@@ -156,12 +159,14 @@ export function inferOrientation(nodes: NodeBBox[]): Orientation {
  *
  * Vertical leading=top, trailing=bottom. Horizontal leading=left, trailing=right.
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute vertical port bias score for a child node (pure)
 function verticalBias(p: ChildBox['ports']): number {
   if (p.top && !p.bottom) return 1;
   if (p.bottom && !p.top) return -1;
   return 0;
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute horizontal port bias score for a child node (pure)
 function horizontalBias(p: ChildBox['ports']): number {
   if (p.left && !p.right) return 1;
   if (p.right && !p.left) return -1;
@@ -177,6 +182,7 @@ function horizontalBias(p: ChildBox['ports']): number {
  *
  * Stable sort preserves insertion order for ties.
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: sort child nodes by connection port usage relative to orientation (pure)
 export function sortChildrenByPorts(children: ChildBox[], orientation: Orientation): ChildBox[] {
   const indexed = children.map((c, i) => ({ c, i }));
   indexed.sort((a, b) => {
@@ -204,6 +210,7 @@ export function sortChildrenByPorts(children: ChildBox[], orientation: Orientati
  *
  * Children missing x/y fall to the end (stable).
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: sort child nodes by current position after a drag operation (pure)
 export function sortChildrenByPosition(children: ChildBox[], orientation: Orientation): ChildBox[] {
   const indexed = children.map((c, i) => ({ c, i }));
   indexed.sort((a, b) => {
@@ -228,6 +235,7 @@ export function sortChildrenByPosition(children: ChildBox[], orientation: Orient
 
 // ---------- icon-only fit ----------
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute icon and label geometry for a childless icon-only shape (pure)
 export function iconOnlyFitGeometry(labelLineHeight: number): IconOnlyFitGeometry {
   const width = ICON_SIZE;
   const height = ICON_SIZE + labelLineHeight;
@@ -254,6 +262,7 @@ export function iconOnlyFitGeometry(labelLineHeight: number): IconOnlyFitGeometr
  * The caller is responsible for choosing which sort to apply
  * (sortChildrenByPorts on first apply; sortChildrenByPosition after a drag).
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute container size and child positions for a DFD container shape (pure)
 export function layoutContainer(
   iconCol: IconColumn,
   sortedChildren: ChildBox[],
@@ -296,6 +305,7 @@ export function layoutContainer(
   );
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute horizontal container layout with icon column left of child grid (pure)
 function layoutHorizontal(
   iconCol: IconColumn,
   children: ChildBox[],
@@ -344,6 +354,7 @@ function layoutHorizontal(
   return { containerWidth, containerHeight, iconAttrs, labelAttrs, childPositions };
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute vertical container layout with icon row above child grid (pure)
 function layoutVertical(
   iconCol: IconColumn,
   children: ChildBox[],
@@ -392,6 +403,7 @@ function layoutVertical(
   return { containerWidth, containerHeight, iconAttrs, labelAttrs, childPositions };
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: map sorted children to centred grid cell positions (pure)
 function placeChildren(
   children: ChildBox[],
   rows: number,
@@ -417,6 +429,7 @@ function placeChildren(
   return positions;
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: build X6 ref attrs for positioning an icon within its container (pure)
 function buildIconAttrs(centerX: number, topY: number): IconAttrs {
   return {
     refX: centerX - ICON_SIZE / 2,
@@ -426,6 +439,7 @@ function buildIconAttrs(centerX: number, topY: number): IconAttrs {
   };
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: build X6 ref attrs for positioning a label below an icon (pure)
 function buildLabelAttrs(centerX: number, topY: number, labelLineHeight: number): LabelAttrs {
   return {
     refX: centerX,
@@ -437,6 +451,7 @@ function buildLabelAttrs(centerX: number, topY: number, labelLineHeight: number)
   };
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute maximum child width per grid column (pure)
 function computeColWidths(children: ChildBox[], rows: number, cols: number): number[] {
   if (cols === 0) return [];
   const widths = new Array(cols).fill(0);
@@ -449,6 +464,7 @@ function computeColWidths(children: ChildBox[], rows: number, cols: number): num
   return widths;
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute maximum child height per grid row (pure)
 function computeRowHeights(children: ChildBox[], rows: number, cols: number): number[] {
   if (rows === 0) return [];
   const heights = new Array(rows).fill(0);
@@ -460,6 +476,7 @@ function computeRowHeights(children: ChildBox[], rows: number, cols: number): nu
   return heights;
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: sum a dimension array including inter-element gaps (pure)
 function sumWithGaps(values: number[], gap: number): number {
   if (values.length === 0) return 0;
   let total = 0;
@@ -467,6 +484,7 @@ function sumWithGaps(values: number[], gap: number): number {
   return total + (values.length - 1) * gap;
 }
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: sum a slice of a dimension array from start to end (pure)
 function sumRange(values: number[], start: number, end: number): number {
   let total = 0;
   for (let i = start; i < end; i++) total += values[i];
@@ -476,6 +494,7 @@ function sumRange(values: number[], start: number, end: number): number {
 /**
  * Compute the line height a label needs for a given font size.
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute label line height from font size using layout multiplier (pure)
 export function labelLineHeightForFontSize(fontSize: number): number {
   return Math.ceil(fontSize * AUTO_LAYOUT_DEFAULTS.labelLineHeightMultiplier);
 }

@@ -36,6 +36,7 @@ import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 @Injectable()
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: apply incoming remote collaboration cell operations to the local diagram graph
 export class AppRemoteOperationHandler implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _subscriptions = new Subscription();
@@ -50,6 +51,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     failedOperations: 0,
   };
 
+  // SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: inject collaborator services for graph operations, state, and visual effects (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly appStateService: AppStateService,
@@ -63,6 +65,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Initialize the handler with graph and operation context
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: subscribe to remote operation event streams and bind the graph instance (mutates shared state)
   initialize(graph: Graph, operationContext: OperationContext): void {
     if (this._initialized) {
       this.logger.warn('AppRemoteOperationHandler already initialized');
@@ -108,6 +111,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Get handler statistics
    */
+  // SEM@52c2f1da90ce3a3af3e457a005a37e2983327c38: return a snapshot of remote operation success and failure counters (pure)
   getStats() {
     return { ...this._stats };
   }
@@ -115,6 +119,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Reset statistics
    */
+  // SEM@52c2f1da90ce3a3af3e457a005a37e2983327c38: reset all remote operation counters to zero (mutates shared state)
   resetStats(): void {
     this._stats = {
       totalOperations: 0,
@@ -126,6 +131,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Cleanup
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: unsubscribe from remote operation streams and complete destroy signal (mutates shared state)
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -136,6 +142,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Handle batched remote operations (from a single diagram_operation message)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: dispatch each cell operation in a batched remote message to the graph (mutates shared state)
   private _handleBatchedRemoteOperations(
     cellOperations: CellOperation[],
     email: string,
@@ -167,6 +174,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Handle a remote operation event
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: convert and execute a single remote cell operation on the local diagram graph (mutates shared state)
   private _handleRemoteOperation(
     cellOperation: CellOperation,
     email: string,
@@ -269,6 +277,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Convert CellOperation (WebSocket format) to GraphOperation (internal format)
    */
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: convert a WebSocket CellOperation to an internal GraphOperation (pure)
   private _convertCellOperationToGraphOperation(
     cellOp: CellOperation,
     _email: string,
@@ -321,6 +330,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Convert cell operation to node operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: convert a WebSocket cell operation for a node into a typed GraphOperation (pure)
   private _convertToCellNodeOperation(
     cellOp: CellOperation,
     cellData: WSCell,
@@ -380,6 +390,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Convert cell operation to edge operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: convert a WebSocket cell operation into a typed graph edge operation (pure)
   private _convertToCellEdgeOperation(
     cellOp: CellOperation,
     cellData: WSCell,
@@ -453,6 +464,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   /**
    * Show user display name labels near remotely modified cells
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: display a remote collaborator's name label on each affected diagram cell (mutates shared state)
   private _showRemoteUserLabels(
     graph: Graph,
     cellIds: string[],
@@ -471,6 +483,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
    * Apply creation visual effects to remotely created cells
    * Uses green color to distinguish from local operations (blue)
    */
+  // SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: apply a creation highlight to remotely added diagram cells (mutates shared state)
   private _applyRemoteCreationEffects(graph: Graph, cellIds: string[]): void {
     const remoteColor = DFD_STYLING_HELPERS.getRemoteCreationColor();
 

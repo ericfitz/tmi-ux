@@ -11,10 +11,12 @@ import { DFD_STYLING } from '../../constants/styling-constants';
  * Delegates business logic to UiTooltipService
  */
 @Injectable()
+// SEM@fa402b2f2a4a64946fb4201c8bde6185adc6650d: manage DFD tooltip DOM lifecycle and X6 graph event bindings
 export class X6TooltipAdapter {
   private tooltipElement: HTMLElement | null = null;
   private isInitialized = false;
 
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: inject logger, tooltip service, and user preferences dependencies (pure)
   constructor(
     private logger: LoggerService,
     private tooltipService: UiTooltipService,
@@ -24,6 +26,7 @@ export class X6TooltipAdapter {
   /**
    * Initialize tooltip system for a graph
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: build tooltip DOM element and register all graph event handlers (mutates shared state)
   initialize(graph: Graph): void {
     if (this.isInitialized) {
       this.logger.warn('[X6TooltipAdapter] Already initialized, skipping');
@@ -44,6 +47,7 @@ export class X6TooltipAdapter {
   /**
    * Dispose tooltip system
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove tooltip DOM element and reset initialized state (mutates shared state)
   dispose(): void {
     if (this.tooltipElement) {
       this.tooltipElement.remove();
@@ -56,6 +60,7 @@ export class X6TooltipAdapter {
   /**
    * Show tooltip at specified position with content
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: display the tooltip at a position with formatted single-line content (mutates shared state)
   showTooltip(content: string, position: { x: number; y: number }): void {
     if (!this.tooltipElement) {
       this.logger.warn('[X6TooltipAdapter] Cannot show tooltip: element not initialized');
@@ -89,6 +94,7 @@ export class X6TooltipAdapter {
   /**
    * Hide tooltip
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: hide the tooltip DOM element (mutates shared state)
   hideTooltip(): void {
     if (this.tooltipElement) {
       this.tooltipElement.style.display = 'none';
@@ -98,6 +104,7 @@ export class X6TooltipAdapter {
   /**
    * Check if tooltip system is initialized
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return whether the tooltip system is initialized and its DOM element exists (pure)
   isReady(): boolean {
     return this.isInitialized && this.tooltipElement !== null;
   }
@@ -105,6 +112,7 @@ export class X6TooltipAdapter {
   /**
    * Create tooltip DOM element
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: build and attach the tooltip DOM element to the graph container (mutates shared state)
   private createTooltipElement(graph: Graph): void {
     if (!graph.container) {
       throw new Error('Graph container not available for tooltip creation');
@@ -135,6 +143,7 @@ export class X6TooltipAdapter {
   /**
    * Set up port tooltip event handlers
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: register X6 graph events that show or hide port tooltips on hover (mutates shared state)
   private setupPortTooltipEvents(graph: Graph): void {
     // Handle port mouseenter
     graph.on(
@@ -186,6 +195,7 @@ export class X6TooltipAdapter {
    * Show multi-line tooltip at specified position with raw content.
    * Bypasses formatTooltipContent to preserve line breaks.
    */
+  // SEM@fa402b2f2a4a64946fb4201c8bde6185adc6650d: display tooltip with multi-line content, bypassing format truncation (mutates shared state)
   private showMultilineTooltip(content: string, position: { x: number; y: number }): void {
     if (!this.tooltipElement) {
       this.logger.warn('[X6TooltipAdapter] Cannot show tooltip: element not initialized');
@@ -216,6 +226,7 @@ export class X6TooltipAdapter {
   /**
    * Set up cell metadata tooltip event handlers
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: register cell mouseenter/leave events to show metadata tooltip on hover (mutates shared state)
   private setupCellMetadataTooltipEvents(graph: Graph): void {
     graph.on('cell:mouseenter', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
       try {

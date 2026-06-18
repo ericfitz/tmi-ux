@@ -54,6 +54,7 @@ const TM_FILTER_KEYS: (keyof TmAuditFilter)[] = [
   templateUrl: './tm-audit-view.component.html',
   styleUrl: './tm-audit-view.component.scss',
 })
+// SEM@bdc7912ec604dacec178423545047395c6eda4a2: display, filter, and paginate the threat-model audit log (mutates shared state)
 export class TmAuditViewComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -121,6 +122,7 @@ export class TmAuditViewComponent implements OnInit {
 
   // ── Lifecycle ────────────────────────────────────────────────────────────
 
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: initialize audit view from URL query params and subscribe to param changes (mutates shared state)
   ngOnInit(): void {
     // Read initial state from a snapshot so we don't create a reload loop.
     // Then subscribe to queryParamMap for subsequent navigation changes
@@ -165,6 +167,7 @@ export class TmAuditViewComponent implements OnInit {
   // ── Event handlers ───────────────────────────────────────────────────────
 
   /** Called by the filter bar when any filter value changes. */
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: apply a new audit filter and reload the first page (mutates shared state)
   onFilterChange(f: TmAuditFilter): void {
     this.filter = f;
     this.anchorId = null;
@@ -173,6 +176,7 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Navigate to an older (earlier) page using the next cursor. Leaves around mode. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: navigate to the older audit page using the next cursor (mutates shared state)
   onOlder(): void {
     this.anchorId = null;
     this.load({ cursor: this.nextCursor ?? undefined });
@@ -180,6 +184,7 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Navigate to a newer (later) page using the prev cursor. Leaves around mode. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: navigate to the newer audit page using the prev cursor (mutates shared state)
   onNewer(): void {
     this.anchorId = null;
     this.load({ cursor: this.prevCursor ?? undefined });
@@ -187,11 +192,13 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Navigate into the detail panel for the clicked row. */
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: route to the audit entry detail view for the selected row
   onRowClick(e: { id: string }): void {
     void this.router.navigate([e.id], { relativeTo: this.route });
   }
 
   /** Retry the most recent load, preserving the current page position. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: retry the last audit page load preserving current page position
   onRetry(): void {
     this.load(this.lastPage);
   }
@@ -199,6 +206,7 @@ export class TmAuditViewComponent implements OnInit {
   // ── Private helpers ──────────────────────────────────────────────────────
 
   /** Load a page of entries; sets loading/error state and triggers change detection. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: fetch a page of threat-model audit entries and update component state (reads DB)
   private load(page: AuditPageRequest): void {
     this.lastPage = page;
     this.loading = true;
@@ -227,6 +235,7 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Mirror the current filter (without cursor/around) to the URL. */
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: sync current audit filter state to the URL query params without reload
   private updateUrl(): void {
     const queryParams: Record<string, string | undefined> = {};
     for (const key of TM_FILTER_KEYS) {
@@ -242,6 +251,7 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Extract filter values from a raw query-params map. */
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: parse raw URL query params into a typed audit filter object (pure)
   private _buildFilter(params: Record<string, string>): TmAuditFilter {
     const f: TmAuditFilter = {};
     for (const key of TM_FILTER_KEYS) {
@@ -252,6 +262,7 @@ export class TmAuditViewComponent implements OnInit {
   }
 
   /** Apply snapshot query params to `this.filter` (without triggering a reload). */
+  // SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: apply snapshot query params to the component filter without triggering reload (mutates shared state)
   private _applyQueryParams(params: Record<string, string>): void {
     this.filter = this._buildFilter(params);
   }

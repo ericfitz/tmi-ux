@@ -16,6 +16,7 @@ describe('DeleteConfirmationDialogComponent', () => {
   let component: DeleteConfirmationDialogComponent;
   let dialogRef: MockDialogRef;
 
+  // SEM@4296d623a7e0438fe6deade81726563408285d79: build a DeleteConfirmationDialogComponent with mocked dialog ref for testing (pure)
   const createComponent = (
     data: DeleteConfirmationDialogData,
   ): DeleteConfirmationDialogComponent => {

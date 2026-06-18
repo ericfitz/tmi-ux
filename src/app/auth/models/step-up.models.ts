@@ -12,4 +12,5 @@ export interface StepUpResponse {
 }
 
 /** Outcome of StepUpService.beginStepUp() as seen by the interceptor */
+// SEM@f0cbf56cdd766324ff656d4dcae789fc6db4c69d: enumerate possible outcomes of a step-up re-authentication attempt (pure)
 export type StepUpOutcome = 'weak_complete' | 'redirecting' | 'cancelled';

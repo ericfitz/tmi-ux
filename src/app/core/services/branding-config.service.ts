@@ -34,6 +34,7 @@ const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
 @Injectable({
   providedIn: 'root',
 })
+// SEM@3410970da6c2ced5ae2f12b5eaccac4618a73b69: fetch and cache server branding config and logo; expose reactive observables (mutates shared state)
 export class BrandingConfigService {
   private readonly config$ = new BehaviorSubject<ServerConfig | null>(null);
   private readonly logoImageUrl = new BehaviorSubject<string>(DEFAULT_LOGO_PATH);
@@ -73,6 +74,7 @@ export class BrandingConfigService {
     map(c => c?.ui?.user_hyperlink_provider ?? null),
   );
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: inject HTTP and logger dependencies (pure)
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -131,6 +133,7 @@ export class BrandingConfigService {
    * Called via APP_INITIALIZER at application startup.
    * Never rejects — failures are handled gracefully with defaults.
    */
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch server branding config and logo at startup; never rejects (mutates shared state)
   async initialize(): Promise<void> {
     try {
       const config = await this.fetchConfig();
@@ -144,6 +147,7 @@ export class BrandingConfigService {
     }
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch the server branding config JSON from /config endpoint (reads DB)
   private async fetchConfig(): Promise<ServerConfig | null> {
     const apiUrl = environment.apiUrl;
     if (!apiUrl || !apiUrl.trim()) {
@@ -175,6 +179,7 @@ export class BrandingConfigService {
     }
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: fetch and validate custom logo PNG, falling back to default (mutates shared state)
   private async loadLogo(logoUrl: string | null): Promise<void> {
     if (logoUrl) {
       try {
@@ -195,6 +200,7 @@ export class BrandingConfigService {
     await this.loadDefaultLogo();
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch the default logo PNG and store bytes for PDF embedding (mutates shared state)
   private async loadDefaultLogo(): Promise<void> {
     try {
       const pngData = await this.fetchPngBytes(DEFAULT_LOGO_PATH);
@@ -207,6 +213,7 @@ export class BrandingConfigService {
     this.logoImageUrl.next(DEFAULT_LOGO_PATH);
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch a URL, validate content-type and size as PNG, return bytes (reads DB)
   private async fetchAndValidatePng(url: string): Promise<Uint8Array | null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), CONFIG_FETCH_TIMEOUT);
@@ -238,6 +245,7 @@ export class BrandingConfigService {
     return new Uint8Array(buffer);
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch raw bytes from a path and return as Uint8Array (reads DB)
   private async fetchPngBytes(path: string): Promise<Uint8Array | null> {
     const response = await fetch(path);
     if (!response.ok) {

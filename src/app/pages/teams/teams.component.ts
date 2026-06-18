@@ -40,15 +40,18 @@ import { TeamsListBase } from './teams-list-base';
   templateUrl: './teams.component.html',
   styleUrl: './teams.component.scss',
 })
+// SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: display and manage the team list with delete and navigation actions
 export class TeamsComponent extends TeamsListBase {
   private location = inject(Location);
 
   /** Navigate back to the previous page. */
+  // SEM@f59ab5d251cf1610042058cdc7053c6e1ca38986: navigate back to the previous page in browser history (mutates shared state)
   onClose(): void {
     this.location.back();
   }
 
   /** Open the delete confirmation dialog and delete the team on confirm. */
+  // SEM@6d9d66672763adecc482974841b300a67ef5a5ef: confirm team deletion via dialog then delete the team and reload the list
   onDelete(team: TeamListItem): void {
     const dialogData: DeleteConfirmationDialogData = {
       id: team.id,

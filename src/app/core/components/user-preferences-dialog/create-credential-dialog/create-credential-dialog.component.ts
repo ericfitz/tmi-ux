@@ -170,6 +170,7 @@ export interface CreateCredentialDialogData {
     `,
   ],
 })
+// SEM@aad84ab32cf289d2e8f34339f3b96bcb5647f3c3: dialog for collecting and submitting a new client credential creation request
 export class CreateCredentialDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -178,6 +179,7 @@ export class CreateCredentialDialogComponent implements OnInit {
   errorMessage = '';
   minDate = new Date();
 
+  // SEM@aad84ab32cf289d2e8f34339f3b96bcb5647f3c3: initialize create-credential dialog with required services (pure)
   constructor(
     private dialogRef: MatDialogRef<CreateCredentialDialogComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) private data: CreateCredentialDialogData | null,
@@ -186,6 +188,7 @@ export class CreateCredentialDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: build the credential form group with name, description, and expiry fields (mutates shared state)
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -194,6 +197,7 @@ export class CreateCredentialDialogComponent implements OnInit {
     });
   }
 
+  // SEM@aad84ab32cf289d2e8f34339f3b96bcb5647f3c3: validate form and submit new client credential to the API, then close dialog (reads DB)
   onSave(): void {
     if (this.form.valid && !this.saving) {
       const formValue = this.form.value as {
@@ -234,6 +238,7 @@ export class CreateCredentialDialogComponent implements OnInit {
     }
   }
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: dismiss the create-credential dialog without saving (mutates shared state)
   onCancel(): void {
     this.dialogRef.close(null);
   }

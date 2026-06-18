@@ -27,6 +27,7 @@ describe('ShareWithApplicationRemediationComponent', () => {
   let mockTransloco: { translate: ReturnType<typeof vi.fn> };
   let mockLogger: { warn: ReturnType<typeof vi.fn> };
 
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: build a ShareWithApplicationRemediationComponent with mocks and trigger ngOnChanges (pure)
   function createComponent(
     remediation: AccessRemediation,
   ): ShareWithApplicationRemediationComponent {

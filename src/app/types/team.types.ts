@@ -45,6 +45,7 @@ export interface TeamInput {
 }
 
 /** Team member roles */
+// SEM@36bc8ee45670471d2a2b21d8b4183b460c81557c: enumerate valid roles a member may hold on a team (pure)
 export type TeamMemberRole =
   | 'engineering_lead'
   | 'engineer'
@@ -64,6 +65,7 @@ export const TEAM_MEMBER_ROLES: TeamMemberRole[] = [
 ];
 
 /** Relationship types between teams or projects */
+// SEM@36bc8ee45670471d2a2b21d8b4183b460c81557c: enumerate valid structural relationship types between teams or projects (pure)
 export type RelationshipType =
   | 'parent'
   | 'child'
@@ -87,6 +89,7 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 ];
 
 /** Team lifecycle statuses */
+// SEM@36bc8ee45670471d2a2b21d8b4183b460c81557c: enumerate valid lifecycle statuses for a team (pure)
 export type TeamStatus =
   | 'active'
   | 'on_hold'

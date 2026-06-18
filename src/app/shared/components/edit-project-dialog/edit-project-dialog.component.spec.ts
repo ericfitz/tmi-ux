@@ -27,6 +27,7 @@ describe('EditProjectDialogComponent', () => {
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let envInjector: EnvironmentInjector;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a stub project fixture with optional field overrides for testing (pure)
   function makeProject(overrides: Partial<Project> = {}): Project {
     return {
       id: 'proj-1',
@@ -37,6 +38,7 @@ describe('EditProjectDialogComponent', () => {
     } as Project;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct an EditProjectDialogComponent with mocked dependencies for testing (pure)
   function build(data: EditProjectDialogData): EditProjectDialogComponent {
     const component = runInInjectionContext(
       envInjector,

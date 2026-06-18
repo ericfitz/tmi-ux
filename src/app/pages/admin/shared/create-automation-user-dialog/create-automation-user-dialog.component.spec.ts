@@ -23,6 +23,7 @@ describe('CreateAutomationUserDialogComponent', () => {
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let envInjector: EnvironmentInjector;
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: instantiate and initialize the dialog component under test with given data (pure)
   function build(data: CreateAutomationUserDialogData | null): CreateAutomationUserDialogComponent {
     const component = runInInjectionContext(
       envInjector,

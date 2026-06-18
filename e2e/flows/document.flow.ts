@@ -2,15 +2,18 @@ import { Page } from '@playwright/test';
 import { DocumentEditorDialog } from '../dialogs/document-editor.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
+// SEM@b040dc0c1400a4a5bfc238295aa021aa0a18c4a7: E2E page-object flow for document create, edit, and delete actions
 export class DocumentFlow {
   private documentEditorDialog: DocumentEditorDialog;
   private deleteConfirmDialog: DeleteConfirmDialog;
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: initialize dialog page objects for document flow (pure)
   constructor(private page: Page) {
     this.documentEditorDialog = new DocumentEditorDialog(page);
     this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: create a document with name, URI, and optional description from the TM edit page (mutates shared state)
   async createFromTmEdit(fields: { name: string; uri: string; description?: string }) {
     const addButton = this.page.getByTestId('add-document-button');
     await addButton.scrollIntoViewIfNeeded();
@@ -25,6 +28,7 @@ export class DocumentFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
   }
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: open and update document fields from the TM edit page (mutates shared state)
   async editFromTmEdit(name: string, updates: Record<string, string>) {
     const documentRow = this.page.getByTestId('document-row').filter({ hasText: name });
     await documentRow.click();
@@ -44,6 +48,7 @@ export class DocumentFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
   }
 
+  // SEM@b040dc0c1400a4a5bfc238295aa021aa0a18c4a7: delete a named document via kebab menu and confirm deletion from the TM edit page (mutates shared state)
   async deleteFromTmEdit(name: string) {
     // Wait for any pending API saves to complete before interacting with the row
     await this.page.waitForLoadState('networkidle');

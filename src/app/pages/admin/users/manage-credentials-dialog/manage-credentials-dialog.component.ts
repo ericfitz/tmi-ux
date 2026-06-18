@@ -177,6 +177,7 @@ export interface ManageCredentialsDialogData {
     `,
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog to list, add, and delete client credentials for a user
 export class ManageCredentialsDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -185,6 +186,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
   errorMessage = '';
   displayedColumns = ['name', 'client_id', 'created_at', 'expires_at', 'actions'];
 
+  // SEM@9ac9b8923b35bac1b54c1db22282e1cf8d4a7580: inject dialog data and services for the manage-credentials dialog (pure)
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ManageCredentialsDialogData,
     private dialog: MatDialog,
@@ -193,10 +195,12 @@ export class ManageCredentialsDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@9ac9b8923b35bac1b54c1db22282e1cf8d4a7580: fetch the user's credentials on component initialization
   ngOnInit(): void {
     this.loadCredentials();
   }
 
+  // SEM@9ac9b8923b35bac1b54c1db22282e1cf8d4a7580: fetch client credentials for a user and populate the credentials list (reads DB)
   loadCredentials(): void {
     this.loading = true;
     this.errorMessage = '';
@@ -217,6 +221,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
       });
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open a create-credential dialog, then store the new credential for a user
   onAddCredential(): void {
     const createDialogRef = this.dialog.open(CreateCredentialDialogComponent, {
       data: { returnFormOnly: true },
@@ -250,6 +255,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
       });
   }
 
+  // SEM@236d847ca4b0925133ac5e7b2c8b266aa2502665: delete a client credential after confirmation and reload the credentials list
   onDeleteCredential(cred: ClientCredentialInfo): void {
     const message = this.transloco.translate('admin.users.manageCredentials.deleteConfirm', {
       name: cred.name,

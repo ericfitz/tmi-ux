@@ -29,9 +29,11 @@ import { SessionManagerService } from './auth/services/session-manager.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
+// SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: root application shell; bootstraps injector and session manager (mutates shared state)
 export class AppComponent {
   title = 'TMI: Threat Modeling Improved';
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register the DI injector and initialize the session manager (mutates shared state)
   constructor(
     private injector: Injector,
     private sessionManager: SessionManagerService,

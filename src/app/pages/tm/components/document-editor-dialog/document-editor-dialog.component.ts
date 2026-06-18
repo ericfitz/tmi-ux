@@ -113,6 +113,7 @@ interface PickerErrorState {
  * 'post-create' so the user can copy the share-with-SA email and recheck access
  * without the dialog closing and reopening (Option X — in-place transition).
  */
+// SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: discriminated union tracking the document creation dialog phase (pure)
 type DialogPhase = 'form' | 'creating' | 'post-create';
 
 @Component({
@@ -138,6 +139,7 @@ type DialogPhase = 'form' | 'creating' | 'post-create';
   templateUrl: './document-editor-dialog.component.html',
   styleUrls: ['./document-editor-dialog.component.scss'],
 })
+// SEM@a5cbec52a3608482d242f3356edf06fef2fdcf32: dialog for creating or editing a threat-model document with third-party picker support
 export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   documentForm: FormGroup;
   mode: 'create' | 'edit';
@@ -176,6 +178,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  // SEM@a5cbec52a3608482d242f3356edf06fef2fdcf32: initialize document editor dialog form and services, disable if read-only (mutates shared state)
   constructor(
     private dialogRef: MatDialogRef<DocumentEditorDialogComponent>,
     private fb: FormBuilder,
@@ -213,6 +216,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: subscribe to content tokens, source options, and URI changes on dialog open (mutates shared state)
   ngOnInit(): void {
     this.contentTokens.contentTokens$.pipe(takeUntil(this.destroy$)).subscribe(tokens => {
       this.linkedTokens = tokens ?? [];
@@ -236,6 +240,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * the radio so the post-create UX (e.g. share-prompt for Google Drive) kicks
    * in. Only applies in create mode and only when the user is on the URL tile.
    */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: auto-detect pasted URL and switch selected source to matching provider (mutates shared state)
   private _onUriChanged(value: string): void {
     if (this._suppressPasteDetection) return;
     if (this.mode !== 'create' || this.selectedSource !== 'url') return;
@@ -251,6 +256,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /** Called by the radio change handler when the user switches manually. */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: update selected document source and reset picker state on radio change (mutates shared state)
   onSourceChange(value: string): void {
     this.selectedSource = value;
     this.pickerError = null;
@@ -291,6 +297,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * If the editing document is pending_access and we have a threatModelId,
    * silently fetch the latest document state. Don't block dialog rendering.
    */
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: fetch latest document state when access is pending, without blocking dialog render (reads DB)
   private _refreshDocumentIfPending(): void {
     if (this.mode !== 'edit') return;
     if (!this.data.threatModelId || !this.data.document?.id) return;
@@ -312,6 +319,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * Triggered by AccessDiagnosticsPanel's `recheck` Output. POSTs the
    * request_access endpoint, then re-fetches the document.
    */
+  // SEM@c0a8ced8043ccf0a23441dc818a6c963cfa50351: request document access then re-fetch to refresh access status (reads DB)
   onRecheckAccess(): void {
     if (!this.data.threatModelId || !this.currentDocument?.id) return;
     const tmId = this.data.threatModelId;
@@ -336,10 +344,12 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@2e3f01381b1dc7fbdaa76074464417e52094a126: check whether an error object carries a given HTTP status code (pure)
   private _isStatus(err: unknown, status: number): boolean {
     return typeof err === 'object' && err !== null && 'status' in err && err.status === status;
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: fetch document after access recheck and notify user of updated access status (reads DB)
   private _fetchAfterRecheck(threatModelId: string, documentId: string): void {
     this.threatModelService
       .getDocument(threatModelId, documentId)
@@ -368,6 +378,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@e36c318bc6403ea0d42dbc1e9ce6e9685c640a63: clean up active picker and complete destroy subject on dialog teardown (mutates shared state)
   ngOnDestroy(): void {
     // Defensive: ensure the body class is cleared if the component is torn
     // down with a picker still open (e.g. user navigates away).
@@ -378,20 +389,24 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return whether an active content token exists for a given provider (pure)
   hasLinkedToken(providerId: string): boolean {
     return this.linkedTokens.some(t => t.provider_id === providerId && t.status === 'active');
   }
 
+  // SEM@8849584aeec6973e6de6e4537e13f1a28159a1f3: return whether a non-URL content provider is currently selected (pure)
   isProviderSelected(): boolean {
     return this.selectedSource !== 'url';
   }
 
   /** Disabled while a finalizing-grant call is in flight to prevent orphan grants. */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return whether cancel is disabled due to in-flight finalizing or create operation (pure)
   isCancelDisabled(): boolean {
     return this.finalizing || this.phase === 'creating';
   }
 
   /** Disabled while finalizing or creating — submit would race in-flight calls. */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return whether submit is disabled due to invalid form or in-flight operation (pure)
   isSubmitDisabled(): boolean {
     return this.documentForm.invalid || this.finalizing || this.phase === 'creating';
   }
@@ -400,6 +415,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * Localization key for the picker action button. Microsoft uses a
    * provider-specific label; fall back to the generic key for others.
    */
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: return localization key for the picker action button, with Microsoft override (pure)
   pickActionKey(): string {
     return this.selectedSource === 'microsoft'
       ? 'documentEditor.source.pickActionMicrosoft'
@@ -407,6 +423,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /** Localization key for the unlinked-account prompt, with Microsoft override. */
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: return localization key for the unlinked-account prompt, with Microsoft override (pure)
   linkPromptKey(): string {
     return this.selectedSource === 'microsoft'
       ? 'documentEditor.source.linkPromptMicrosoft'
@@ -414,11 +431,13 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /** Translation key (or raw display name) for the selected source's display. */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return display name key or raw name for a selectable content source (pure)
   displayNameForSource(s: SelectableSource): string {
     return s.displayNameKey ?? s.displayName;
   }
 
   /** Hint copy for service-mode URL field (provider-specific). */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return localization key for the service-mode URL field hint (pure)
   serviceUrlHintKey(): string {
     return 'documentEditor.source.serviceUrlHint';
   }
@@ -426,10 +445,12 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Get URI validation suggestion message (if any)
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: return URI validation suggestion message from the form control, if any (pure)
   getUriSuggestion(): string | null {
     return getUriSuggestionFromControl(this.documentForm.get('uri'));
   }
 
+  // SEM@e36c318bc6403ea0d42dbc1e9ce6e9685c640a63: launch the content provider file picker and handle selection events (mutates shared state)
   onPickFile(): void {
     if (this.selectedSource === 'url') return;
     const meta = CONTENT_PROVIDERS[this.selectedSource as ContentProviderId];
@@ -467,6 +488,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * prevents the dialog's stacking context from trapping the picker behind it.
    * Picker DOM is injected directly on document.body and remains visible.
    */
+  // SEM@a5cbec52a3608482d242f3356edf06fef2fdcf32: toggle body CSS class to hide CDK overlay while a third-party picker is open (mutates shared state)
   private _setPickingInProgress(active: boolean): void {
     this.pickingInProgress = active;
     const body = this.htmlDocument.body;
@@ -478,6 +500,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@e36c318bc6403ea0d42dbc1e9ce6e9685c640a63: dispatch picker lifecycle events to update dialog state on finalizing, cancel, or pick (mutates shared state)
   private _handlePickerEvent(event: PickerEvent): void {
     switch (event.kind) {
       case 'finalizing':
@@ -510,6 +533,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@e36c318bc6403ea0d42dbc1e9ce6e9685c640a63: reset picker state and map error to displayable error state on picker failure (mutates shared state)
   private _handlePickerError(err: unknown): void {
     this.finalizing = false;
     this.finalizingMessageKey = null;
@@ -520,6 +544,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.logger.warn('Picker failed', err);
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: convert a picker error into a localized error state with optional link-account CTA (pure)
   private _mapErrorToState(err: unknown): PickerErrorState {
     if (
       err instanceof MicrosoftAccountNotLinkedError ||
@@ -548,6 +573,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     return { messageKey: 'documentEditor.grantError.generic', showLinkAccountCta: false };
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: initiate OAuth authorization flow to link a content provider account (mutates shared state)
   onLinkSource(): void {
     if (this.selectedSource === 'url') return;
     const providerId = this.selectedSource as ContentProviderId;
@@ -577,6 +603,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * - All other cases (delegated create, edit, plain URL create): close the
    *   dialog and let the caller perform the API call as before.
    */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: validate and submit document form, creating in-place for service-mode or closing dialog otherwise (mutates shared state)
   onSubmit(): void {
     if (!this._validateForm()) return;
 
@@ -595,6 +622,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     this.dialogRef.close(result);
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: validate document form fields and return whether blocking errors exist (pure)
   private _validateForm(): boolean {
     const nameControl = this.documentForm.get('name');
     const uriControl = this.documentForm.get('uri');
@@ -610,6 +638,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     return !hasBlockingErrors;
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: collect current form values, merging picker registration if delegated source selected (pure)
   private _collectFormValues(): DocumentFormValues {
     const formValues = this.documentForm.getRawValue() as DocumentFormValues;
     if (this._pickerRegistration && this.isDelegatedSourceSelected) {
@@ -618,6 +647,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     return formValues;
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: return the selected document source kind from current metadata (pure)
   private _currentSourceKind(): 'url' | 'delegated' | 'service' {
     const meta = this.selectedSourceMeta;
     if (!meta) return 'url';
@@ -629,6 +659,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * transition the view to the share-with-service-account panel driven by
    * the existing AccessDiagnosticsPanelComponent.
    */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: create document via API and transition dialog to post-create or close on success
   private _createServiceModeInPlace(values: DocumentFormValues): void {
     if (!this.data.threatModelId) return;
     this.phase = 'creating';
@@ -662,6 +693,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: close dialog returning the newly created document and form result
   private _closeWithCreated(created: Document): void {
     const result: DocumentEditorDialogResult = {
       values: this._collectFormValues(),
@@ -673,6 +705,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /** "Done" button in post-create phase — user accepts pending state and exits. */
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: handle Done action in post-create phase, closing dialog with created document
   onPostCreateDone(): void {
     if (this.currentDocument) {
       this._closeWithCreated(this.currentDocument);
@@ -681,6 +714,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: dismiss dialog without result, guarded against in-progress create
   onCancel(): void {
     if (this.finalizing || this.phase === 'creating') return;
     this.dialogRef.close();

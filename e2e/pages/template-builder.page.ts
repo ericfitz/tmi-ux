@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: Playwright page object exposing survey template builder UI locators (pure)
 export class TemplateBuilderPage {
+  // SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: bind the Playwright page for the template builder page object (pure)
   constructor(private page: Page) {}
 
   readonly saveButton = () =>

@@ -26,6 +26,7 @@ export interface MockPlatformLocation {
 /**
  * Create a mock PlatformLocation instance
  */
+// SEM@c3d478e447493092cbe7f8b433823d84716c0adc: build a mock PlatformLocation with default localhost URL properties and spy methods (pure)
 export function createMockPlatformLocation(): MockPlatformLocation {
   return {
     getBaseHrefFromDOM: vi.fn().mockReturnValue('/'),
@@ -51,6 +52,7 @@ export function createMockPlatformLocation(): MockPlatformLocation {
  * Create a typed mock PlatformLocation instance (same as createMockPlatformLocation)
  * Provided for consistency with other mock services
  */
+// SEM@c3d478e447493092cbe7f8b433823d84716c0adc: build a typed mock PlatformLocation exposing spy methods for test assertions (pure)
 export function createTypedMockPlatformLocation(): MockPlatformLocation {
   return createMockPlatformLocation();
 }

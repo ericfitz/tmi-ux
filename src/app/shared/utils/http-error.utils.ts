@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
  * @param fallback Optional fallback message when no message can be extracted
  * @returns A string error message
  */
+// SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: extract a human-readable message from any error type with a fallback (pure)
 export function getErrorMessage(error: unknown, fallback = 'Unknown error'): string {
   if (error instanceof Error) {
     return error.message;
@@ -28,6 +29,7 @@ export function getErrorMessage(error: unknown, fallback = 'Unknown error'): str
  * @param error HttpErrorResponse to extract message from
  * @returns Extracted error message or null if no message found
  */
+// SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: extract the primary error message string from an HTTP error response body (pure)
 export function extractHttpErrorMessage(error: HttpErrorResponse): string | null {
   try {
     const errorBody = error.error as unknown;
@@ -65,6 +67,7 @@ export function extractHttpErrorMessage(error: HttpErrorResponse): string | null
  * @param error HttpErrorResponse to extract from
  * @returns Object with error and errorDescription fields
  */
+// SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: extract error summary and description pair from an HTTP error response body (pure)
 export function extractHttpErrorDetails(error: HttpErrorResponse): {
   error: string | null;
   errorDescription: string | null;

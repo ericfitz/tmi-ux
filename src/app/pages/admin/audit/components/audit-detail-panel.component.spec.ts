@@ -51,6 +51,7 @@ const TM_ENTRY: AuditEntry = {
 
 // ── Shared mock setup helpers ─────────────────────────────────────────────────
 
+// SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: build injector and mock dependencies for AuditDetailPanelComponent tests (pure)
 function buildMocks(
   options: {
     stream?: 'system' | 'tm';
@@ -110,6 +111,7 @@ function buildMocks(
   return { injector, paramMapSubject, mockRoute, mockRouter, mockAuditService, mockLogger };
 }
 
+// SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: instantiate and initialize AuditDetailPanelComponent within an injection context (pure)
 function createComponent(injector: Injector): AuditDetailPanelComponent {
   const comp = runInInjectionContext(injector, () => new AuditDetailPanelComponent());
   comp.ngOnInit();

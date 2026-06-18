@@ -9,6 +9,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
  * Handles keyboard events for snap to grid control, cursor changes, and other keyboard interactions
  */
 @Injectable()
+// SEM@31e172d820a65e4d5bda2ae6c2dd752ccc9ccc07: manage keyboard events, shift-snap-to-grid toggling, and cursor state for the DFD graph (mutates shared state)
 export class InfraX6KeyboardAdapter {
   // Shift key and drag state tracking for snap to grid control
   private _isShiftPressed = false;
@@ -26,11 +27,13 @@ export class InfraX6KeyboardAdapter {
   private _graph: Graph | null = null;
   private _graphContainer: HTMLElement | null = null;
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Setup shift key handling for temporary snap to grid disable and cursor changes
    */
+  // SEM@31e172d820a65e4d5bda2ae6c2dd752ccc9ccc07: register keyboard and mouse event listeners for shift-snap, pan, and undo/redo (mutates shared state)
   setupKeyboardHandling(graph: Graph, orchestrator?: any): void {
     this._graph = graph;
     this._graphContainer = graph.container;
@@ -57,6 +60,7 @@ export class InfraX6KeyboardAdapter {
 
     // Setup undo/redo keyboard shortcuts if orchestrator is provided
     if (orchestrator) {
+      // SEM@4679a963e2b992ee5a927836995556b59d2deccd: dispatch undo or redo on Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z keyboard shortcuts (mutates shared state)
       const handleUndoRedo = (event: KeyboardEvent): void => {
         // Cmd+Z (Mac) or Ctrl+Z (Windows/Linux) for undo
         if ((event.metaKey || event.ctrlKey) && event.key === 'z' && !event.shiftKey) {
@@ -86,6 +90,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Clean up keyboard event listeners
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: remove all keyboard and window event listeners and reset drag/cursor state (mutates shared state)
   cleanup(): void {
     document.removeEventListener('keydown', this._handleKeyDown);
     document.removeEventListener('keyup', this._handleKeyUp);
@@ -101,6 +106,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Get the initial position of a node when drag started (for history tracking)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch the recorded drag-start position of a node by ID (pure)
   getInitialNodePosition(nodeId: string): Point | null {
     return this._initialNodePositions.get(nodeId) || null;
   }
@@ -108,6 +114,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Set the graph reference for grid updates
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: store the graph reference for grid and cursor updates (mutates shared state)
   setGraph(graph: Graph): void {
     this._graph = graph;
   }
@@ -248,6 +255,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Update snap to grid based on current shift and drag state
    */
+  // SEM@8d3ae261ddc4e8ed74fa37cd5daa89826eb2f1a5: toggle grid snap size between free (1px) and normal when shift/drag state changes (mutates shared state)
   private _updateSnapToGrid(): void {
     if (!this._graph) return;
 
@@ -298,6 +306,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Update cursor based on shift key state
    */
+  // SEM@95bca72dad207a74255d64399972ff72a210e749: set graph cursor to grab or default based on shift key state (mutates shared state)
   private _updateCursor(): void {
     if (!this._graphContainer) return;
 
@@ -313,6 +322,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Apply cursor style to the graph container and all X6 child elements
    */
+  // SEM@95bca72dad207a74255d64399972ff72a210e749: apply a cursor style to the graph container and all X6 child elements (mutates shared state)
   private _applyCursorToGraphElements(cursor: string): void {
     if (!this._graphContainer) return;
 
@@ -332,6 +342,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Clear all cursor styles from graph elements
    */
+  // SEM@95bca72dad207a74255d64399972ff72a210e749: remove cursor style overrides from the graph container and its child elements (mutates shared state)
   private _clearCursorStyles(): void {
     if (!this._graphContainer) return;
 

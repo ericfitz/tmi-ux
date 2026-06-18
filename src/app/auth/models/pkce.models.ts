@@ -60,7 +60,9 @@ export interface PkceError {
  * Custom Error class for PKCE-related errors
  * Extends built-in Error class to satisfy TypeScript linting requirements
  */
+// SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: error class for PKCE failures with code, message, and retryable flag (pure)
 export class PkceErrorClass extends Error implements PkceError {
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: build a typed PKCE error with code, message, and retryable flag (pure)
   constructor(
     public code: PkceErrorCode,
     message: string,

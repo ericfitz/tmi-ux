@@ -41,12 +41,14 @@ const FALSE_POSITIVE_REASONS = Object.keys(FALSE_POSITIVE_TAXONOMY) as FalsePosi
   styleUrls: ['./ai-feedback-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: collect and submit user sentiment feedback on an AI-generated artifact (mutates shared state)
 export class AiFeedbackDialogComponent implements OnInit {
   readonly form: FormGroup;
   readonly maxVerbatim = VERBATIM_MAX;
   readonly reasons = FALSE_POSITIVE_REASONS;
   submitting = false;
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: build the feedback form with initial sentiment and validation rules (pure)
   constructor(
     private readonly _dialogRef: MatDialogRef<AiFeedbackDialogComponent, AiFeedbackDialogResult>,
     @Inject(MAT_DIALOG_DATA) public readonly data: AiFeedbackDialogData,
@@ -64,6 +66,7 @@ export class AiFeedbackDialogComponent implements OnInit {
     });
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: subscribe to form changes and apply dynamic validators on init (mutates shared state)
   ngOnInit(): void {
     this.form.valueChanges.subscribe(() => this._applyDynamicValidators());
     this._applyDynamicValidators();
@@ -84,6 +87,7 @@ export class AiFeedbackDialogComponent implements OnInit {
     return !!reason && FALSE_POSITIVE_TAXONOMY[reason].verbatimRequired;
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: update sentiment selection and clear false-positive fields when positive (mutates shared state)
   setSentiment(sentiment: ArtifactFeedbackSentiment): void {
     this.form.get('sentiment')!.setValue(sentiment);
     if (sentiment === 'up') {
@@ -92,10 +96,12 @@ export class AiFeedbackDialogComponent implements OnInit {
     }
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: dismiss the dialog without submitting feedback
   onCancel(): void {
     this._dialogRef.close({ submitted: false });
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: submit AI artifact feedback to the API and close dialog on success
   onSubmit(): void {
     if (this.form.invalid || this.submitting) return;
     const v = this.form.value as {
@@ -133,6 +139,7 @@ export class AiFeedbackDialogComponent implements OnInit {
       });
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: apply conditional validators for false-positive taxonomy fields based on form state (mutates shared state)
   private _applyDynamicValidators(): void {
     const verbatim = this.form.get('verbatim')!;
     const reason = this.form.get('falsePositiveReason')!;

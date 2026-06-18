@@ -6,6 +6,7 @@
 /**
  * Type for valid HTTP parameter values
  */
+// SEM@b983d74ba06e874752f04ffc2adcc60f3e5687e9: enumerate valid scalar types for HTTP query parameter values (pure)
 type HttpParamValue = string | number | boolean;
 
 /**
@@ -22,6 +23,7 @@ type HttpParamValue = string | number | boolean;
  * // Result: { provider: 'github', limit: 10 }
  * ```
  */
+// SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: convert a filter object to HTTP query params, omitting null and undefined fields (pure)
 export function buildHttpParams<T extends object>(
   filter?: T,
 ): Record<string, HttpParamValue> | undefined {

@@ -15,12 +15,15 @@ import {
  * per the OpenAPI spec.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: fetch short-lived picker tokens for content providers via the API
 export class PickerTokenService {
+  // SEM@3279bf56cfe067d881cec5428814425252b4b5d8: inject ApiService and LoggerService dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
   ) {}
 
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: fetch a short-lived picker token for a content provider from the API
   mint(providerId: ContentProviderId): Observable<PickerTokenResponse> {
     return this.apiService.post<PickerTokenResponse>(`me/picker_tokens/${providerId}`, {}).pipe(
       tap(() => this.logger.debug('Picker token minted', { providerId })),

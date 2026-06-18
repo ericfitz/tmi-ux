@@ -10,13 +10,16 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: optimize exported SVG for X6 graphs by stripping artifacts and compressing output (pure)
 export class AppSvgOptimizationService {
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: inject the logger dependency for the SVG optimization service (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Get SVGO configuration optimized for X6 graph exports
    * Preserves viewBox and removes X6-specific artifacts
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: build SVGO plugin config for X6 graph export, preserving viewBox (pure)
   private getX6OptimizationConfig(): any {
     return {
       plugins: [
@@ -76,6 +79,7 @@ export class AppSvgOptimizationService {
    * Get SVGO configuration for thumbnail optimization
    * More aggressive optimization for smaller file sizes
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: build aggressive SVGO plugin config for thumbnail size reduction (pure)
   private getThumbnailOptimizationConfig(): any {
     return {
       plugins: [
@@ -118,6 +122,7 @@ export class AppSvgOptimizationService {
    * @param optimalViewBox Optional optimal viewBox to apply
    * @returns Optimized SVG string
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: optimize an X6 SVG string for export, returning cleaned SVG markup (pure)
   optimizeForExport(svgString: string, optimalViewBox?: string): string {
     try {
       this.logger.debugComponent(
@@ -173,6 +178,7 @@ export class AppSvgOptimizationService {
    * @param optimalViewBox Optional optimal viewBox to apply
    * @returns Base64 encoded optimized SVG
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: optimize an X6 SVG string for thumbnail and return base64-encoded result (pure)
   optimizeForThumbnail(svgString: string, optimalViewBox?: string): string {
     try {
       this.logger.debugComponent(
@@ -229,6 +235,7 @@ export class AppSvgOptimizationService {
    * @param svgString The SVG string to clean
    * @returns SVG string with X6 classes cleaned
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: strip X6-specific CSS classes and reset viewport transform from SVG markup (pure)
   private cleanX6Classes(svgString: string): string {
     try {
       const parser = new DOMParser();
@@ -271,6 +278,7 @@ export class AppSvgOptimizationService {
    * @param optimalViewBox The optimal viewBox to apply
    * @returns SVG string with optimal viewBox applied
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: set viewBox and preserveAspectRatio on the root SVG element (pure)
   private applyOptimalViewBox(svgString: string, optimalViewBox: string): string {
     try {
       const parser = new DOMParser();
@@ -293,6 +301,7 @@ export class AppSvgOptimizationService {
    * @param svgString The SVG string to post-process
    * @returns Post-processed SVG string
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: remove X6 decorative elements, hidden ports, and empty groups from SVG (pure)
   private postProcessX6Svg(svgString: string): string {
     try {
       const parser = new DOMParser();
@@ -343,6 +352,7 @@ export class AppSvgOptimizationService {
    * Clean duplicate viewBox attributes from SVG document
    * @param svgDoc The parsed SVG document
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: deduplicate viewBox attributes, keeping first valid one on root SVG (mutates shared state)
   private cleanDuplicateViewBoxAttributes(svgDoc: Document): void {
     const elementsWithViewBox = svgDoc.querySelectorAll('[viewBox]');
 
@@ -380,6 +390,7 @@ export class AppSvgOptimizationService {
    * @param viewBox The viewBox attribute value
    * @returns True if the viewBox is valid
    */
+  // SEM@5d20e1d89e0d64098c87c0a30f949970ba2f1a5d: validate a viewBox string has four finite numeric components (pure)
   private isValidViewBox(viewBox: string | null): boolean {
     if (!viewBox || !viewBox.trim()) {
       return false;

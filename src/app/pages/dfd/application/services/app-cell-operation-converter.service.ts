@@ -27,7 +27,9 @@ import { normalizeCell } from '../../utils/cell-normalization.util';
 import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 @Injectable()
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: convert diagram cells to typed graph operations for node and edge CRUD (pure)
 export class AppCellOperationConverterService {
+  // SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: inject the logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
@@ -37,6 +39,7 @@ export class AppCellOperationConverterService {
    * @param source - Source of the change ('user-interaction' | 'undo-redo')
    * @returns Array of graph operations
    */
+  // SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: convert a cell array diff into add, update, and delete graph operations (pure)
   convertCellsToOperations(
     cells: Cell[],
     previousCells: Cell[],
@@ -76,6 +79,7 @@ export class AppCellOperationConverterService {
    * @param source - Source of the change
    * @returns Graph operation or null if no operation needed
    */
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: map a single cell to its create or update graph operation based on prior state (pure)
   convertCellToOperation(
     cell: Cell,
     previousCell: Cell | undefined,
@@ -111,6 +115,7 @@ export class AppCellOperationConverterService {
   /**
    * Create a node creation operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build a create-node operation from a diagram cell (pure)
   createNodeOperation(cell: Cell, baseOperation: Partial<GraphOperation>): CreateNodeOperation {
     // Normalize cell to remove visual-only properties (filter effects, tools)
     const normalizedCell = normalizeCell(cell);
@@ -150,6 +155,7 @@ export class AppCellOperationConverterService {
   /**
    * Create a node update operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build an update-node operation capturing the node's current full state (pure)
   createNodeUpdateOperation(
     cell: Cell,
     previousCell: Cell,
@@ -194,6 +200,7 @@ export class AppCellOperationConverterService {
   /**
    * Create an edge creation operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build a create-edge operation including source and target endpoint resolution (pure)
   createEdgeOperation(cell: Cell, baseOperation: Partial<GraphOperation>): CreateEdgeOperation {
     // Normalize cell to remove visual-only properties (filter effects, tools)
     const normalizedCell = normalizeCell(cell);
@@ -249,6 +256,7 @@ export class AppCellOperationConverterService {
   /**
    * Create an edge update operation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build an update-edge operation capturing the edge's current full state (pure)
   createEdgeUpdateOperation(
     cell: Cell,
     previousCell: Cell,
@@ -288,6 +296,7 @@ export class AppCellOperationConverterService {
   /**
    * Create a delete operation
    */
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: build a delete-node or delete-edge operation for a removed diagram cell (pure)
   createDeleteOperation(cell: Cell, source: 'user-interaction' | 'undo-redo'): GraphOperation {
     const baseOperation = {
       id: uuidv4(),

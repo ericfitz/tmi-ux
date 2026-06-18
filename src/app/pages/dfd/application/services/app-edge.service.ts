@@ -47,7 +47,9 @@ import { DFD_STYLING } from '../../constants/styling-constants';
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
 @Injectable()
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: application service managing DFD edge lifecycle, validation, and graph mutations
 export class AppEdgeService {
+  // SEM@6774bae2f845efae6c7636f13727d462e9fb9e6d: register infrastructure and coordination dependencies for the edge service
   constructor(
     private logger: LoggerService,
     private dfdValidation: InfraDfdValidationService,
@@ -67,6 +69,7 @@ export class AppEdgeService {
    * Handle edge added events from the graph adapter
    * Validates the edge and records it in history via GraphOperation
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: validate a newly added graph edge and record its creation in history (mutates shared state)
   handleEdgeAdded(
     edge: Edge,
     graph: Graph,
@@ -218,6 +221,7 @@ export class AppEdgeService {
    * Handle edge vertices changes from the graph adapter
    * Now simplified to just log the change without domain model sync
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: handle edge vertex change events and log the updated vertex positions (mutates shared state)
   handleEdgeVerticesChanged(
     edgeId: string,
     vertices: Array<{ x: number; y: number }>,
@@ -256,6 +260,7 @@ export class AppEdgeService {
    * Now works directly with X6 without domain model sync
    * All operations are batched into a single history command
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build and register a reverse edge with mirrored vertices and swapped label (mutates shared state)
   addInverseConnection(edge: Edge, graph: Graph, _diagramId: string): Observable<void> {
     const sourceNodeId = edge.getSourceCellId();
     const targetNodeId = edge.getTargetCellId();
@@ -378,6 +383,7 @@ export class AppEdgeService {
   /**
    * Add a vertex at the geometric center of a straight edge and move it perpendicular to the edge line
    */
+  // SEM@e7d06da01f025fb3cc5daa85e0e6f738b4e4f2d4: compute a single perpendicular offset vertex at the midpoint of a straight edge (pure)
   private _addCenterVertexToStraightEdge(edge: Edge): Array<{ x: number; y: number }> {
     // Get the actual geometric points where the edge connects to the nodes
     const sourcePoint = edge.getSourcePoint();
@@ -416,6 +422,7 @@ export class AppEdgeService {
   /**
    * Mirror vertices around the line from source connection point to target connection point
    */
+  // SEM@cec3597aa7246164ad7e0d481f8ef36cac21b2f7: map edge vertices to their geometric mirror across the source-target axis (pure)
   private _mirrorVerticesAroundSourceTargetLine(
     originalVertices: Array<{ x: number; y: number }>,
     edge: Edge,
@@ -463,6 +470,7 @@ export class AppEdgeService {
   /**
    * Process label for inverse edge, swapping request/query with response/reply
    */
+  // SEM@cec3597aa7246164ad7e0d481f8ef36cac21b2f7: swap request/query/response/reply suffixes in an edge label for the inverse direction (pure)
   private _processLabelForInverse(originalLabel: string): string {
     if (!originalLabel || originalLabel.trim() === '') {
       return originalLabel;
@@ -495,6 +503,7 @@ export class AppEdgeService {
    * Create an edge between two nodes
    * All operations are batched into a single history command
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build and add a validated DFD edge between two nodes in the graph (mutates shared state)
   createEdge(
     graph: Graph,
     sourceNodeId: string,
@@ -573,6 +582,7 @@ export class AppEdgeService {
   /**
    * Validate if a connection between two nodes is allowed
    */
+  // SEM@6774bae2f845efae6c7636f13727d462e9fb9e6d: validate that a node-to-node connection is permitted by DFD rules (pure)
   validateConnection(sourceNode: Node, targetNode: Node): boolean {
     return this.dfdValidation.isNodeConnectionValid(sourceNode, targetNode);
   }
@@ -580,6 +590,7 @@ export class AppEdgeService {
   /**
    * Update edge label
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: update the display label of a graph edge (mutates shared state)
   updateEdgeLabel(edge: Edge, label: string): void {
     try {
       // Use standardized setLabel method from x6-cell-extensions
@@ -598,6 +609,7 @@ export class AppEdgeService {
   /**
    * Remove edge label
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: clear the display label from a graph edge (mutates shared state)
   removeEdgeLabel(edge: Edge): void {
     try {
       // Use standardized setLabel method to set empty label
@@ -615,6 +627,7 @@ export class AppEdgeService {
   /**
    * Get edge label text
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: fetch the current display label text of a graph edge (pure)
   getEdgeLabel(edge: Edge): string {
     try {
       // Use standardized getLabel method from x6-cell-extensions
@@ -633,6 +646,7 @@ export class AppEdgeService {
   /**
    * Update edge style
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: apply stroke color, width, and dash-array style attrs to a graph edge (mutates shared state)
   updateEdgeStyle(
     edge: Edge,
     style: {
@@ -665,6 +679,7 @@ export class AppEdgeService {
   /**
    * Check if edge is connected to a specific node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether an edge is connected to a specific node (pure)
   isEdgeConnectedToNode(edge: Edge, nodeId: string): boolean {
     const sourceId = edge.getSourceCellId();
     const targetId = edge.getTargetCellId();
@@ -674,6 +689,7 @@ export class AppEdgeService {
   /**
    * Get all edges connected to a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all edges connected to a given node (pure)
   getNodeEdges(graph: Graph, nodeId: string): Edge[] {
     return graph.getEdges().filter(edge => this.isEdgeConnectedToNode(edge, nodeId));
   }
@@ -681,6 +697,7 @@ export class AppEdgeService {
   /**
    * Get incoming edges for a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all edges targeting a given node (pure)
   getIncomingEdges(graph: Graph, nodeId: string): Edge[] {
     return graph.getEdges().filter(edge => edge.getTargetCellId() === nodeId);
   }
@@ -688,6 +705,7 @@ export class AppEdgeService {
   /**
    * Get outgoing edges for a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all edges originating from a given node (pure)
   getOutgoingEdges(graph: Graph, nodeId: string): Edge[] {
     return graph.getEdges().filter(edge => edge.getSourceCellId() === nodeId);
   }
@@ -695,6 +713,7 @@ export class AppEdgeService {
   /**
    * Remove all edges connected to a node
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: delete all edges connected to a given node from the graph (mutates shared state)
   removeNodeEdges(graph: Graph, nodeId: string): void {
     const connectedEdges = this.getNodeEdges(graph, nodeId);
 
@@ -712,6 +731,7 @@ export class AppEdgeService {
   /**
    * Validate edge connection during creation
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a proposed edge connection against DFD rules, ports, and duplicates (pure)
   validateEdgeConnection(
     graph: Graph,
     sourceNodeId: string,
@@ -783,38 +803,47 @@ export class AppEdgeService {
   // Connection Validation Methods (delegated to InfraDfdValidationService)
   // ========================================
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: delegate magnet validity check to the DFD validation service (pure)
   isMagnetValid(args: MagnetValidationArgs): boolean {
     return this.dfdValidation.isMagnetValid(args);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: delegate connection validity check to the DFD validation service (pure)
   isConnectionValid(args: ConnectionValidationArgs): boolean {
     return this.dfdValidation.isConnectionValid(args);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: validate whether two nodes may be connected per DFD rules (pure)
   isNodeConnectionValid(sourceNode: Node, targetNode: Node): boolean {
     return this.dfdValidation.isNodeConnectionValid(sourceNode, targetNode);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: validate a node shape type by ID via the DFD validation service (pure)
   validateNodeShape(nodeType: string, nodeId: string): void {
     this.dfdValidation.validateNodeShape(nodeType, nodeId);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: validate an X6 node's shape via the DFD validation service (pure)
   validateX6NodeShape(x6Node: Node): void {
     this.dfdValidation.validateX6NodeShape(x6Node);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: list valid target shapes for a given source shape (pure)
   getValidConnectionTargets(sourceShape: string): string[] {
     return this.dfdValidation.getValidConnectionTargets(sourceShape);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: list all valid DFD node shape names (pure)
   getValidNodeShapes(): string[] {
     return this.dfdValidation.getValidNodeShapes();
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: check whether two DFD shapes are permitted to connect (pure)
   canShapesConnect(sourceShape: string, targetShape: string): boolean {
     return this.dfdValidation.canShapesConnect(sourceShape, targetShape);
   }
 
+  // SEM@a56b4801461d020f3dcb941c926be2174c4afb11: fetch the localized display label for a data flow edge (pure)
   getLocalizedFlowLabel(): string {
     return this.dfdValidation.getLocalizedFlowLabel();
   }
@@ -822,6 +851,7 @@ export class AppEdgeService {
   /**
    * Create edge from remote WebSocket operation
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: build and render a diagram edge received from a remote WebSocket operation (mutates shared state)
   createEdgeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Convert WebSocket cell data to EdgeInfo format
     const edgeInfo = this.convertWebSocketCellToEdgeInfo(cellData);
@@ -837,6 +867,7 @@ export class AppEdgeService {
   /**
    * Remove edge from remote WebSocket operation
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: delete a diagram edge received from a remote WebSocket operation, suppressing history (mutates shared state)
   removeEdgeFromRemoteOperation(graph: Graph, cellId: string, _options: any): void {
     const cell = graph.getCellById(cellId);
     if (cell && cell.isEdge()) {
@@ -851,6 +882,7 @@ export class AppEdgeService {
   /**
    * Convert WebSocket cell data to EdgeInfo format
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: convert a raw WebSocket cell payload to an EdgeInfo object (pure)
   private convertWebSocketCellToEdgeInfo(cellData: any): any {
     return {
       id: cellData.id,

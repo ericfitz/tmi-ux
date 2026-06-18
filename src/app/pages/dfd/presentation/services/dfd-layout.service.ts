@@ -37,7 +37,9 @@ import { measureLabelWidth } from '../../utils/text-measurement.util';
  * the pure layout methods here, and dispatches the batched history operation.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: compute and apply auto-layout geometry for icon-only cells and container cells (mutates shared state)
 export class DfdLayoutService {
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: inject user preferences service dependency (pure)
   constructor(private userPreferences: UserPreferencesService) {}
 
   /**
@@ -50,6 +52,7 @@ export class DfdLayoutService {
    *   - `ports` (default) — by connection-port usage (initial layout)
    *   - `position` — by current (x, y) (after a child drag)
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: dispatch auto-layout to icon-only or container fit based on cell children (mutates shared state)
   applyAutoLayout(
     cell: LayoutCell,
     graph: LayoutGraph,
@@ -76,6 +79,7 @@ export class DfdLayoutService {
    *
    * Returns true if any change was applied.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: resize a leaf icon cell to icon-plus-label geometry when in icon-only mode (mutates shared state)
   applyIconOnlyFit(cell: LayoutCell): boolean {
     if (!(ICON_HIDEABLE_BORDER_SHAPES as readonly string[]).includes(cell.shape)) return false;
 
@@ -129,6 +133,7 @@ export class DfdLayoutService {
    * current size is shape default OR matches the previously-recorded auto-fit
    * size (i.e., the user has not manually resized this cell).
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: resize and reposition a container cell to fit its icon and child grid (mutates shared state)
   applyContainerFit(
     cell: LayoutCell,
     layoutChildren: LayoutCell[],
@@ -218,6 +223,7 @@ export class DfdLayoutService {
     return true;
   }
 
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: compute icon column dimensions from cell label text and font metrics (pure)
   private buildIconColumn(
     cell: LayoutCell,
     arch: ArchIconData | undefined,
@@ -242,6 +248,7 @@ export class DfdLayoutService {
    * Build a `ChildBox` for a layout child: its size, current position, and a
    * map of which of the four cardinal ports carry a connected edge.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: build child layout box with size, position, and connected port flags (pure)
   buildChildBox(graph: LayoutGraph, child: LayoutCell): ChildBox {
     const { width, height } = child.getSize();
     const ports: { top: boolean; right: boolean; bottom: boolean; left: boolean } = {
@@ -250,6 +257,7 @@ export class DfdLayoutService {
       bottom: false,
       left: false,
     };
+    // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: flag a named port as connected on the port-presence map (pure)
     const markPort = (portId: unknown): void => {
       if (portId === 'top' || portId === 'right' || portId === 'bottom' || portId === 'left') {
         ports[portId] = true;
@@ -272,6 +280,7 @@ export class DfdLayoutService {
    * Resolve the auto-layout orientation. Honors an explicit user preference;
    * otherwise infers it from the geometry of the top-level nodes.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: compute auto-layout orientation from user preference or node geometry (pure)
   resolveLayoutOrientation(graph: LayoutGraph): Orientation {
     const prefs = this.userPreferences.getPreferences();
     if (prefs.autoLayoutOrientation === 'horizontal') return 'horizontal';
@@ -291,6 +300,7 @@ export class DfdLayoutService {
    * container-fit state, re-apply container fit. Stops at the first ancestor
    * without an `_archAutoFit.kind === 'container'` flag.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: re-apply container-fit layout up the ancestor chain from a moved cell (mutates shared state)
   cascadeContainerLayout(startCell: LayoutCell, graph: LayoutGraph): void {
     let parent = startCell.getParent();
     while (parent) {
@@ -316,6 +326,7 @@ export class DfdLayoutService {
    * Eligible cells include any iconned shape (icon-only or container fit) plus
    * security boundaries with embedded layout children (container fit, no icon).
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: apply auto-layout to every iconned or container cell in the graph (mutates shared state)
   applyAutoLayoutToAllEligibleCells(graph: LayoutGraph): void {
     for (const node of graph.getNodes()) {
       if (isCellLayoutLocked(node)) continue;
@@ -332,6 +343,7 @@ export class DfdLayoutService {
    * Clear routing vertices on every edge connected to `node`. Used before a
    * container re-layout so dragged children don't keep stale edge bends.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: remove routing vertices from all edges connected to a node (mutates shared state)
   clearVerticesOfConnectedEdges(graph: LayoutGraph, node: LayoutCell): void {
     const edges = graph.getConnectedEdges?.(node) ?? [];
     for (const edge of edges) {
@@ -344,6 +356,7 @@ export class DfdLayoutService {
   /**
    * Write the absolute icon ref attrs (`refX/refY/refX2/refY2`) onto a cell.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: write absolute icon ref position attrs onto a cell (mutates shared state)
   private setAbsoluteIconAttrs(
     cell: LayoutCell,
     attrs: { refX: number; refY: number; refX2: number; refY2: number },
@@ -357,6 +370,7 @@ export class DfdLayoutService {
   /**
    * Write the absolute label ref/anchor attrs onto a cell.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: write absolute label ref position and anchor attrs onto a cell (mutates shared state)
   private setAbsoluteLabelAttrs(
     cell: LayoutCell,
     attrs: {

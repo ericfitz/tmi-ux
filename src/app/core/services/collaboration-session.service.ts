@@ -66,6 +66,7 @@ export interface SessionAnnouncement {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: poll and broadcast active collaboration sessions via WebSocket and HTTP (mutates shared state)
 export class CollaborationSessionService implements OnDestroy {
   private readonly _sessions$ = new BehaviorSubject<CollaborationSession[]>([]);
   private readonly _destroy$ = new Subject<void>();
@@ -74,6 +75,7 @@ export class CollaborationSessionService implements OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _authProvider: any = null; // Lazy-loaded to avoid circular dependency
 
+  // SEM@7b1c50d5310daf035ba2d194bb898b33003dc519: inject dependencies and initialize WebSocket listeners (mutates shared state)
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -101,6 +103,7 @@ export class CollaborationSessionService implements OnDestroy {
     );
   }
 
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: cancel all subscriptions and stop session polling on destroy (mutates shared state)
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -114,6 +117,7 @@ export class CollaborationSessionService implements OnDestroy {
    * Subscribe to collaboration session polling
    * This will start session polling if no other subscribers exist
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: register a polling consumer; start polling on first subscriber (mutates shared state)
   subscribeToSessionPolling(): void {
     this._subscriberCount++;
     // this.logger.debugComponent(
@@ -131,6 +135,7 @@ export class CollaborationSessionService implements OnDestroy {
    * Unsubscribe from collaboration session polling
    * This will stop session polling if no subscribers remain
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: deregister a polling consumer; stop polling when no subscribers remain (mutates shared state)
   unsubscribeFromSessionPolling(): void {
     if (this._subscriberCount > 0) {
       this._subscriberCount--;
@@ -151,6 +156,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Manually refresh collaboration sessions
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: manually trigger a one-shot reload of collaboration sessions (reads DB)
   refreshSessions(): void {
     this.loadSessions().subscribe({
       next: () => {
@@ -165,6 +171,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Initialize the service and set up reactive data flow
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: set up WebSocket listeners for real-time session announcements (mutates shared state)
   private initializeService(): void {
     // this.logger.info('CollaborationSessionService initialized');
 
@@ -175,6 +182,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Start polling for collaboration sessions
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: start reactive session polling tied to server connection status (mutates shared state)
   private startSessionPolling(): void {
     if (this._sessionPollingSubscription) {
       return; // Already polling
@@ -199,6 +207,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Stop polling for collaboration sessions
    */
+  // SEM@9e59453b8a7a00576b4430464d29100ac3a7ab7b: cancel the active collaboration session polling subscription (mutates shared state)
   private stopSessionPolling(): void {
     if (this._sessionPollingSubscription) {
       this._sessionPollingSubscription.unsubscribe();
@@ -209,6 +218,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Load collaboration sessions based on current state
    */
+  // SEM@99984b054fdc39a5bbb0b01e01beba172934773f: fetch collaboration sessions when connected, or clear the list (mutates shared state)
   private loadSessions(): Observable<CollaborationSession[]> {
     if (this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED) {
       return this.loadRealSessions();
@@ -222,6 +232,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Load real collaboration sessions from server
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: fetch collaboration sessions from REST API and publish to session stream (mutates shared state)
   private loadRealSessions(): Observable<CollaborationSession[]> {
     // Always use REST API to load sessions - WebSocket is only for real-time updates
     return this.requestSessionsViaHttp().pipe(
@@ -238,6 +249,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Request sessions via HTTP API
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: fetch the current user's collaboration sessions from the REST API (reads DB)
   private requestSessionsViaHttp(): Observable<CollaborationSession[]> {
     const url = `${environment.apiUrl}/me/sessions`;
 
@@ -256,6 +268,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Transform server session data to CollaborationSession format
    */
+  // SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: convert a server collaboration session DTO to the client CollaborationSession model (pure)
   private transformServerSession(serverSession: ServerCollaborationSession): CollaborationSession {
     // this.logger.debugComponent(
     //   'CollaborationSession',
@@ -293,6 +306,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Set up WebSocket listeners for session announcements
    */
+  // SEM@94f68d7fee2c7372bc00137ee2e1031b3e48fe89: register WebSocket listeners for session-started and session-ended announcements (mutates shared state)
   private setupWebSocketListeners(): void {
     // Listen for session started announcements
     this.webSocketAdapter
@@ -314,6 +328,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Handle session started announcement
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: add or update a collaboration session in the active session list (mutates shared state)
   private handleSessionStarted(session: CollaborationSession): void {
     // this.logger.info('Session started', {
     //   sessionId: session.id,
@@ -337,6 +352,7 @@ export class CollaborationSessionService implements OnDestroy {
   /**
    * Handle session ended announcement
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: remove an ended collaboration session from the active session list (mutates shared state)
   private handleSessionEnded(session: CollaborationSession): void {
     // this.logger.info('Session ended', { sessionId: session.id, diagramName: session.diagramName });
 
@@ -350,7 +366,8 @@ export class CollaborationSessionService implements OnDestroy {
    * AuthService is in the auth module which depends on core services
    * We use late binding via Injector to get it without static import
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
+  // SEM@5cf5885c74a030f8c823e9e6b34c6ff2405967e6: lazy-load AuthService via injector to break circular dependency at module level (mutates shared state)
   private getAuthProvider(): any {
     if (!this._authProvider) {
       try {

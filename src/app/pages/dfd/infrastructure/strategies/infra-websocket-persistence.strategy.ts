@@ -22,12 +22,14 @@ import { HistoryOperationEvent } from '../../types/history.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
 
 @Injectable()
+// SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: persist diagram changes to collaborators via WebSocket using history-driven broadcasting (mutates shared state)
 export class WebSocketPersistenceStrategy implements OnDestroy {
   readonly type = 'websocket' as const;
 
   private readonly destroy$ = new Subject<void>();
   private readonly batchTrigger$ = new Subject<void>();
 
+  // SEM@64c6f90cbf08c65ffe52297dde996cced3996fc0: register dependencies and initialize history broadcast subscription (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly webSocketAdapter: WebSocketAdapter,
@@ -43,6 +45,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
     this._initializeHistoryBroadcasting();
   }
 
+  // SEM@fa066b188f441910bbde00f2c9c56b2bf95ca618: acknowledge a save request as no-op; reject undo/redo and disconnected calls (pure)
   save(operation: SaveOperation): Observable<SaveResult> {
     const isUndo = operation.metadata?.['isUndo'] === true;
     const isRedo = operation.metadata?.['isRedo'] === true;
@@ -100,6 +103,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
   /**
    * Convert diagram data to cell operations
    */
+  // SEM@34c4f50e937666974ea302cc280f9d9cc6d6d294: convert diagram node and edge data to update cell operations (pure)
   private _convertDiagramDataToCellOperations(data: any): CellOperation[] {
     if (!data) {
       return [];
@@ -132,6 +136,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
     return operations;
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: reject a load request; WebSocket strategy does not support loading diagrams (pure)
   load(operation: LoadOperation): Observable<LoadResult> {
     this.logger.debugComponent('WebSocketPersistenceStrategy', 'WebSocket load operation started', {
       diagramId: operation.diagramId,
@@ -150,10 +155,12 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
   }
 
   // Connection status methods
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: return the current WebSocket connection status (pure)
   getConnectionStatus(): boolean {
     return this.webSocketAdapter.isConnected;
   }
 
+  // SEM@64c6f90cbf08c65ffe52297dde996cced3996fc0: complete destroy and batch subjects to unsubscribe all streams (mutates shared state)
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -164,6 +171,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
    * Initialize history-driven broadcasting
    * Listens to history operation events and broadcasts them to collaborators
    */
+  // SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: subscribe to history add-operations and schedule batched broadcast to collaborators (mutates shared state)
   private _initializeHistoryBroadcasting(): void {
     // Buffer 'add' operations for batching (these contain all cell changes: adds, updates, deletes)
     const addOperations$ = this.historyService.historyOperation$.pipe(
@@ -197,6 +205,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
    * Computes add/update/remove operations by diffing cells vs previousCells
    * Normalizes cells before comparison to filter out visual effects and other transient properties
    */
+  // SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: diff batched history events and dispatch add/update/remove cell operations over WebSocket (mutates shared state)
   private _broadcastCellOperations(events: HistoryOperationEvent[]): void {
     if (!this.webSocketAdapter.isConnected) {
       this.logger.debugComponent(
@@ -320,6 +329,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
    * Compare two normalized cells to determine if they are different
    * Uses JSON serialization for deep comparison
    */
+  // SEM@8c4e66777d474f43af6ac7642c96bc4c67e8c70e: compare two normalized cells for deep equality using JSON serialization (pure)
   private _cellsAreDifferent(cellA: Cell, cellB: Cell): boolean {
     // Simple deep comparison using JSON serialization
     // Both cells are already normalized, so this comparison is consistent

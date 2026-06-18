@@ -38,6 +38,7 @@ interface FakeCell extends LayoutCell {
   __vertices: unknown[];
 }
 
+// SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: set a nested value in an object by slash-delimited path (pure)
 function setByPath(target: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split('/');
   let node = target;
@@ -51,6 +52,7 @@ function setByPath(target: Record<string, unknown>, path: string, value: unknown
   node[parts[parts.length - 1]] = value;
 }
 
+// SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: fetch a nested value from an object by slash-delimited path (pure)
 function getByPath(target: Record<string, unknown>, path: string): unknown {
   const parts = path.split('/');
   let node: unknown = target;
@@ -61,6 +63,7 @@ function getByPath(target: Record<string, unknown>, path: string): unknown {
   return node;
 }
 
+// SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: build a test-double diagram cell with configurable properties and behavior (pure)
 function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   const cell: FakeCell = {
     id: overrides.id ?? 'cell-1',
@@ -140,6 +143,7 @@ function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   return cell;
 }
 
+// SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: build a test-double diagram graph from node and edge arrays (pure)
 function fakeGraph(
   nodes: LayoutCell[] = [],
   edges: LayoutCell[] = [],
@@ -160,6 +164,7 @@ describe('DfdLayoutService', () => {
   let service: DfdLayoutService;
   let userPrefs: { getPreferences: ReturnType<typeof vi.fn> };
 
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: configure mock user preferences with optional overrides for layout service tests (pure)
   function setPrefs(overrides: Record<string, unknown> = {}): void {
     userPrefs.getPreferences.mockReturnValue({
       autoLayoutEnabled: true,

@@ -61,6 +61,7 @@ export interface TmiLoginDialogResult {
     `,
   ],
 })
+// SEM@bcddd7c6d5d4c21a9077a0ffaff1a9272515d19d: dialog that collects a login hint before initiating tmi OAuth flow
 export class TmiLoginDialogComponent {
   usernameControl = new FormControl('', [
     Validators.pattern(/^[a-zA-Z0-9._%+-]*$/),
@@ -68,11 +69,13 @@ export class TmiLoginDialogComponent {
     Validators.maxLength(20),
   ]);
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: inject dialog ref and provider name data (pure)
   constructor(
     private _dialogRef: MatDialogRef<TmiLoginDialogComponent, TmiLoginDialogResult | undefined>,
     @Inject(MAT_DIALOG_DATA) public data: TmiLoginDialogData,
   ) {}
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: validate username and close dialog with login hint result
   onSignIn(): void {
     if (this.usernameControl.invalid) {
       this.usernameControl.markAsTouched();
@@ -81,6 +84,7 @@ export class TmiLoginDialogComponent {
     this._dialogRef.close({ loginHint: this.usernameControl.value || '' });
   }
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: dismiss the dialog without a result
   onCancel(): void {
     this._dialogRef.close(undefined);
   }

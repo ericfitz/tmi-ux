@@ -133,7 +133,9 @@ export interface PresenterRequestSnackbarData {
     `,
   ],
 })
+// SEM@2ee7de4555d27c2af18eaee4686f6735d85b472d: snackbar to notify a user of a presenter role request and accept or deny it
 export class PresenterRequestSnackbarComponent {
+  // SEM@2ee7de4555d27c2af18eaee4686f6735d85b472d: inject snackbar data and ref for approve/deny actions (pure)
   constructor(
     @Inject(MAT_SNACK_BAR_DATA) public data: PresenterRequestSnackbarData,
     private _snackBarRef: MatSnackBarRef<PresenterRequestSnackbarComponent>,
@@ -142,6 +144,7 @@ export class PresenterRequestSnackbarComponent {
   /**
    * Get the user display name (uses displayName if available, otherwise email)
    */
+  // SEM@2ee7de4555d27c2af18eaee4686f6735d85b472d: return display name if set, otherwise fall back to the user email (pure)
   getUserDisplay(): string {
     if (this.data.displayName && this.data.displayName.trim() !== '') {
       return this.data.displayName;
@@ -149,10 +152,12 @@ export class PresenterRequestSnackbarComponent {
     return this.data.userEmail;
   }
 
+  // SEM@2ee7de4555d27c2af18eaee4686f6735d85b472d: dismiss snackbar with action to approve the presenter request (mutates shared state)
   approve(): void {
     this._snackBarRef.dismissWithAction();
   }
 
+  // SEM@2ee7de4555d27c2af18eaee4686f6735d85b472d: dismiss snackbar without action to deny the presenter request (mutates shared state)
   deny(): void {
     this._snackBarRef.dismiss();
   }

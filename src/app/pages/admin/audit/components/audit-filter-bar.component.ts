@@ -64,6 +64,7 @@ const ACTOR_MIN_LENGTH = 1;
   styleUrl: './audit-filter-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: filter bar component for audit log views emitting debounced filter change events
 export class AuditFilterBarComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -133,6 +134,7 @@ export class AuditFilterBarComponent implements OnInit {
   private fieldPathSubject$ = new Subject<string>();
   private threatModelIdSubject$ = new Subject<string>();
 
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: inject user admin and logger service dependencies (pure)
   constructor(
     private userAdminService: UserAdminService,
     private logger: LoggerService,
@@ -143,6 +145,7 @@ export class AuditFilterBarComponent implements OnInit {
     return this.stream === 'system';
   }
 
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: initialize controls from initial filter and wire debounced text input subscriptions (mutates shared state)
   ngOnInit(): void {
     this._initFromFilter();
     this._wireTextDebounce();
@@ -152,12 +155,14 @@ export class AuditFilterBarComponent implements OnInit {
   // ── Template event handlers ──────────────────────────────────────────────
 
   /** Called by the actor `<input>` on every keystroke. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: handle actor text input keystrokes and push value to debounced search subject (mutates shared state)
   onActorInput(value: string): void {
     this.actorInput = value;
     this.actorSubject$.next(value);
   }
 
   /** Called when the user picks a suggestion from the actor autocomplete. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: handle actor autocomplete selection and emit updated filter (mutates shared state)
   onActorSelected(event: MatAutocompleteSelectedEvent): void {
     const user = event.option.value as AdminUser;
     this.actorInput = user.email ?? '';
@@ -172,54 +177,63 @@ export class AuditFilterBarComponent implements OnInit {
   };
 
   /** Called by the http_method `<mat-select>`. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: handle HTTP method select change and emit updated audit filter (mutates shared state)
   onHttpMethodChange(value: AuditHttpMethod | null): void {
     this.httpMethod = value;
     this._emit();
   }
 
   /** Called by the path_prefix text input. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: handle path prefix text input and push value to debounced filter subject (mutates shared state)
   onPathPrefixInput(value: string): void {
     this.pathPrefix = value;
     this.pathPrefixSubject$.next(value);
   }
 
   /** Called by the field_path text input. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update field path filter state and dispatch debounced emit (mutates shared state)
   onFieldPathInput(value: string): void {
     this.fieldPath = value;
     this.fieldPathSubject$.next(value);
   }
 
   /** Called by the change_type `<mat-select>`. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update change type filter selection and emit updated audit filter (mutates shared state)
   onChangeTypeChange(value: AuditChangeType | null): void {
     this.changeType = value;
     this._emit();
   }
 
   /** Called by the object_type `<mat-select>`. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update object type filter selection and emit updated audit filter (mutates shared state)
   onObjectTypeChange(value: AuditObjectType | null): void {
     this.objectType = value;
     this._emit();
   }
 
   /** Called by the threat_model_id text input. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update threat model ID filter state and dispatch debounced emit (mutates shared state)
   onThreatModelIdInput(value: string): void {
     this.threatModelId = value;
     this.threatModelIdSubject$.next(value);
   }
 
   /** Called by the created_after date picker. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update created-after date filter and emit updated audit filter (mutates shared state)
   onCreatedAfterChange(isoString: string | null): void {
     this.createdAfter = isoString ?? null;
     this._emit();
   }
 
   /** Called by the created_before date picker. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: update created-before date filter and emit updated audit filter (mutates shared state)
   onCreatedBeforeChange(isoString: string | null): void {
     this.createdBefore = isoString ?? null;
     this._emit();
   }
 
   /** Resets every control and emits an empty filter. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: reset all audit filter controls and emit an empty filter (mutates shared state)
   clearFilters(): void {
     this.actorInput = '';
     this.createdAfter = null;
@@ -234,11 +248,13 @@ export class AuditFilterBarComponent implements OnInit {
   }
 
   /** Emits the CSV export request. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: dispatch CSV export request event to the parent (pure)
   onExportCsv(): void {
     this.exportRequested.emit('csv');
   }
 
   /** Emits the NDJSON export request. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: dispatch NDJSON export request event to the parent (pure)
   onExportNdjson(): void {
     this.exportRequested.emit('ndjson');
   }
@@ -246,6 +262,7 @@ export class AuditFilterBarComponent implements OnInit {
   // ── Private helpers ──────────────────────────────────────────────────────
 
   /** Populates controls from `initialFilter` so query-param restoration works upstream. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: populate filter controls from an initial audit filter for query-param restoration (mutates shared state)
   private _initFromFilter(): void {
     const f = this.initialFilter as SystemAuditFilter & TmAuditFilter;
     this.actorInput = f.actor_email ?? '';
@@ -266,6 +283,7 @@ export class AuditFilterBarComponent implements OnInit {
   }
 
   /** Sets up debounced subjects for text inputs; each debounce calls `_emit()`. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: subscribe text-input subjects to debounced filter emit on component lifetime (mutates shared state)
   private _wireTextDebounce(): void {
     this.actorSubject$
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
@@ -285,6 +303,7 @@ export class AuditFilterBarComponent implements OnInit {
   }
 
   /** Wires the actor autocomplete search against UserAdminService. */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: build actor autocomplete suggestion stream by searching users on debounced input (reads DB)
   private _wireActorAutocomplete(): void {
     this.actorSuggestions$ = this.actorSubject$.pipe(
       debounceTime(300),
@@ -302,6 +321,7 @@ export class AuditFilterBarComponent implements OnInit {
    * Builds and emits the current filter, omitting any undefined/null/'' keys
    * so that blank fields don't pollute query params.
    */
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: build and emit the current audit filter, omitting blank fields (pure)
   private _emit(): void {
     const raw: Record<string, string | undefined | null> = {
       actor_email: this.actorInput || undefined,

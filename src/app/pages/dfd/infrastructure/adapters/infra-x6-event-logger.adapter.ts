@@ -10,17 +10,20 @@ import { LoggerService } from '../../../../core/services/logger.service';
  * to a dedicated x6-events.log file, separate from the main application logger.
  */
 @Injectable()
+// SEM@0c4b0e63a2f170695121de276aae1d8887c94516: subscribe to all X6 graph events and record them to an in-memory structured log (mutates shared state)
 export class InfraX6EventLoggerAdapter {
   private _logEntries: string[] = [];
   private _isEnabled = false;
   private _maxLogEntries = 1000; // Prevent memory issues
   private _logFileName = 'x6-events.log';
 
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: inject LoggerService dependency for the event logger adapter (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Initialize X6 event logging for the given graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: subscribe to all X6 graph events and log each to the in-memory event log (mutates shared state)
   initializeEventLogging(graph: Graph): void {
     if (!this._isEnabled || !graph) {
       return;
@@ -370,6 +373,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Get all logged events
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a copy of all accumulated event log entries (pure)
   getLogEntries(): string[] {
     return [...this._logEntries];
   }
@@ -377,6 +381,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Clear all logged events
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: discard all accumulated event log entries (mutates shared state)
   clearLog(): void {
     this._logEntries = [];
     this._logEvent('SYSTEM', 'Log cleared', {});
@@ -385,6 +390,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Enable or disable event logging
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: enable or disable event log capture for the logger adapter (mutates shared state)
   setEnabled(enabled: boolean): void {
     this._isEnabled = enabled;
     this._logEvent('SYSTEM', `Event logging ${enabled ? 'enabled' : 'disabled'}`, {});
@@ -393,6 +399,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Check if logging is enabled
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return whether event log capture is currently active (pure)
   isEnabled(): boolean {
     return this._isEnabled;
   }
@@ -400,6 +407,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Export log entries as a downloadable file (browser environment)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: trigger a browser download of accumulated event log entries as a text file
   exportLogFile(): void {
     if (typeof window === 'undefined') {
       return; // Not in browser environment
@@ -427,6 +435,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Get statistics about logged events
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: aggregate log entries by event type and return counts per type (pure)
   getLogStatistics(): Record<string, number> {
     const stats: Record<string, number> = {};
 
@@ -444,6 +453,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Cleanup resources
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear event log and disable capture to release resources (mutates shared state)
   dispose(): void {
     this._logEvent('SYSTEM', 'X6EventLogger disposing', {
       totalLoggedEvents: this._logEntries.length,
@@ -455,6 +465,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Log an X6 event with timestamp and structured data
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: append a timestamped structured event entry to the in-memory log (mutates shared state)
   private _logEvent(eventType: string, message: string, data?: Record<string, unknown>): void {
     if (!this._isEnabled) {
       return;
@@ -480,6 +491,7 @@ export class InfraX6EventLoggerAdapter {
   /**
    * Get node label safely
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label from a graph node safely, returning empty string on failure (pure)
   private _getNodeLabel(node: Node): string {
     try {
       // Use X6 cell extensions if available

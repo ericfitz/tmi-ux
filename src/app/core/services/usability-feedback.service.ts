@@ -5,6 +5,7 @@ import { version } from '../../../../package.json';
 import { gitCommit } from '../../../build-info.json';
 import { ApiService } from './api.service';
 
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: union type representing thumbs-up or thumbs-down sentiment on usability feedback (pure)
 export type UsabilityFeedbackSentiment = 'up' | 'down';
 
 /**
@@ -13,6 +14,7 @@ export type UsabilityFeedbackSentiment = 'up' | 'down';
  * open-ended; new surfaces can be added at the call site without server
  * coordination.
  */
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: string alias identifying the UI surface where usability feedback was submitted (pure)
 export type UsabilityFeedbackSurface = string;
 
 export interface UsabilityFeedbackInput {
@@ -50,9 +52,12 @@ interface NavigatorWithUAData {
  * need to supply sentiment, surface, and the optional comment.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: submit usability feedback with client metadata to the API
 export class UsabilityFeedbackService {
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: inject API service dependency for feedback submission (pure)
   constructor(private readonly api: ApiService) {}
 
+  // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: post usability feedback with sentiment, surface, and enriched client metadata to API
   submit(input: UsabilityFeedbackInput): Observable<UsabilityFeedbackResponse> {
     const body: Record<string, unknown> = {
       sentiment: input.sentiment,
@@ -85,6 +90,7 @@ export class UsabilityFeedbackService {
     return this.api.post<UsabilityFeedbackResponse>('/usability_feedback', body);
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: return current browser viewport dimensions as a WxH string (pure)
   private _viewport(): string {
     if (typeof window === 'undefined') return '';
     const w = Math.max(0, Math.min(99999, Math.floor(window.innerWidth)));

@@ -6,6 +6,7 @@ import { ResponsiblePartiesDialog } from '../dialogs/responsible-parties.dialog'
 import { RelatedProjectsDialog } from '../dialogs/related-projects.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
 
+// SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: E2E flow helper orchestrating CRUD operations on admin projects page
 export class AdminProjectsFlow {
   private adminProjectsPage: AdminProjectsPage;
   private createProjectDialog: CreateProjectDialog;
@@ -13,6 +14,7 @@ export class AdminProjectsFlow {
   private responsiblePartiesDialog: ResponsiblePartiesDialog;
   private relatedProjectsDialog: RelatedProjectsDialog;
   private metadataDialog: MetadataDialog;
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: build page object and dialog handles for the admin projects flow (pure)
   constructor(private page: Page) {
     this.adminProjectsPage = new AdminProjectsPage(page);
     this.createProjectDialog = new CreateProjectDialog(page);
@@ -22,6 +24,7 @@ export class AdminProjectsFlow {
     this.metadataDialog = new MetadataDialog(page);
   }
 
+  // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: create a project via the admin UI dialog and wait for it to close
   async createProject(name: string, teamName: string, description?: string) {
     await this.adminProjectsPage.addButton().click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
@@ -36,6 +39,7 @@ export class AdminProjectsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: rename a project via the admin edit dialog and wait for close
   async editProject(name: string, newName: string) {
     await this.adminProjectsPage.editButton(name).click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
@@ -44,6 +48,7 @@ export class AdminProjectsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: open the responsible parties dialog for a project and cancel it
   async openResponsibleParties(name: string) {
     await this.adminProjectsPage.moreButton(name).click();
     await this.adminProjectsPage.responsiblePartiesItem().dispatchEvent('click');
@@ -52,6 +57,7 @@ export class AdminProjectsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: open the related projects dialog for a project and cancel it
   async openRelatedProjects(name: string) {
     await this.adminProjectsPage.moreButton(name).click();
     await this.adminProjectsPage.relatedProjectsItem().dispatchEvent('click');
@@ -60,6 +66,7 @@ export class AdminProjectsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: open the metadata dialog for a project and cancel it
   async openMetadata(name: string) {
     await this.adminProjectsPage.moreButton(name).click();
     await this.adminProjectsPage.metadataItem().dispatchEvent('click');
@@ -68,8 +75,10 @@ export class AdminProjectsFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: delete a project via the admin UI, accepting the confirmation dialog
   async deleteProject(name: string) {
     await this.adminProjectsPage.moreButton(name).click();
+    // SEM@e39d6bc80f404f961466ab734d8f0db2cea5bdea: accept a browser native confirmation dialog (pure)
     const dialogHandler = (dialog: Dialog) => void dialog.accept();
     this.page.once('dialog', dialogHandler);
     await this.adminProjectsPage.deleteItem().dispatchEvent('click');

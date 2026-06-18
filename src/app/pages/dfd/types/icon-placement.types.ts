@@ -5,7 +5,9 @@
  * Mirrors the label position system (label-position.types.ts) with a 3x3 grid.
  */
 
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: enumerate valid horizontal positions for a diagram icon (pure)
 export type IconHorizontalPosition = 'left' | 'center' | 'right';
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: enumerate valid vertical positions for a diagram icon (pure)
 export type IconVerticalPosition = 'top' | 'middle' | 'bottom';
 
 export interface IconPlacement {
@@ -60,6 +62,7 @@ export interface LabelAttrsForIcon {
   textVerticalAnchor: 'top';
 }
 
+// SEM@b014e6403262ba7b21b0a0dc67becd79d03bd878: compute X6 label text attrs centered below an icon placement (pure)
 export function getLabelAttrsForIconPlacement(placement: IconPlacement): LabelAttrsForIcon {
   const key = getIconPlacementKey(placement);
   const iconAttrs = ICON_PLACEMENT_ATTRS[key];
@@ -94,6 +97,7 @@ export const DEFAULT_LABEL_ATTRS_BY_SHAPE: Record<string, DefaultLabelAttrs> = {
 /**
  * Build a placement key from an IconPlacement.
  */
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: convert an icon placement to its string lookup key (pure)
 export function getIconPlacementKey(placement: IconPlacement): string {
   return `${placement.vertical}-${placement.horizontal}`;
 }
@@ -102,6 +106,7 @@ export function getIconPlacementKey(placement: IconPlacement): string {
  * Parse a placement key (e.g. 'top-left') into an IconPlacement.
  * Returns null if the key is invalid.
  */
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: parse a placement key string into an icon placement, or null if invalid (pure)
 export function getIconPlacementFromKey(key: string): IconPlacement | null {
   if (!key || !ICON_PLACEMENT_ATTRS[key]) {
     return null;

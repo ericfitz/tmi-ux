@@ -13,6 +13,7 @@ import { getCompositeKey } from '../../../shared/utils/principal-display.utils';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: manage and reactively expose the current user's permission on a threat model (mutates shared state)
 export class ThreatModelAuthorizationService implements OnDestroy {
   // Current threat model authorization state
   private _authorizationSubject = new BehaviorSubject<Authorization[] | null>(null);
@@ -26,6 +27,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   // Subscription management
   private _subscriptions = new Subscription();
 
+  // SEM@54393a32c11c0e9f3f5d36d392902ac8ea6ecbbd: subscribe to user profile changes and trigger permission recalculation (mutates shared state)
   constructor(
     private logger: LoggerService,
     private authService: AuthService,
@@ -109,6 +111,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * @param authorization The authorization data
    * @param owner The owner of the threat model (Principal-based User object)
    */
+  // SEM@3ba1b5ecbae8ba77016197b17800c120f1185e5c: store authorization list and owner for a threat model, replacing prior state (mutates shared state)
   setAuthorization(
     threatModelId: string,
     authorization: Authorization[] | null,
@@ -131,6 +134,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Update authorization data (partial update)
    * @param authorization The new authorization data
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: replace the authorization list for the current threat model (mutates shared state)
   updateAuthorization(authorization: Authorization[]): void {
     if (!this._currentThreatModelId) {
       this.logger.warn('Cannot update authorization - no threat model ID set');
@@ -150,6 +154,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   /**
    * Clear authorization data
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: reset all authorization state and current threat model context (mutates shared state)
   clearAuthorization(): void {
     this.logger.debugComponent('ThreatModelAuthorizationService', 'clearAuthorization called', {
       previousThreatModelId: this._currentThreatModelId,
@@ -169,6 +174,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * @param authorizations The authorization data
    * @returns The user's permission level or null
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: compute the current user's effective permission role from authorization list and owner (pure)
   private calculateUserPermission(
     authorizations: Authorization[] | null,
   ): 'reader' | 'writer' | 'owner' | null {
@@ -224,6 +230,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Check if the current user matches the threat model owner.
    * Uses primary (provider, provider_id) match with email fallback.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: determine if the current user matches the threat model owner by provider identity or email fallback (pure)
   private _checkOwnerMatch(
     currentUserProvider: string,
     currentUserProviderId: string,
@@ -298,6 +305,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Find the highest permission from authorization entries.
    * Short-circuits when 'owner' is found (maximum possible).
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: compute the highest permission role from all authorization entries matching the current user (pure)
   private _findHighestPermission(
     authorizations: Authorization[],
     currentUserProvider: string,
@@ -332,6 +340,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Check if a single authorization entry matches the current user.
    * Returns the entry's role if matched, null otherwise.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: match one authorization entry against the current user by identity or group membership (pure)
   private _matchAuthorizationEntry(
     auth: Authorization,
     currentUserProvider: string,
@@ -378,6 +387,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Get current user's permission synchronously
    * @returns The user's permission level or null
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: return the current user's permission role synchronously from cached authorization state (pure)
   getCurrentUserPermission(): 'reader' | 'writer' | 'owner' | null {
     const authorizations = this._authorizationSubject.value;
     return this.calculateUserPermission(authorizations);
@@ -386,6 +396,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   /**
    * Check if current user can edit synchronously
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: authorize the current user to edit based on writer or owner permission (pure)
   canEdit(): boolean {
     const permission = this.getCurrentUserPermission();
     return permission === 'writer' || permission === 'owner';
@@ -394,6 +405,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   /**
    * Check if current user can manage permissions synchronously
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: authorize the current user to manage permissions based on owner role (pure)
   canManagePermissions(): boolean {
     const permission = this.getCurrentUserPermission();
     return permission === 'owner';
@@ -402,6 +414,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   /**
    * Clean up subscriptions
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: unsubscribe all active subscriptions on service destruction (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
     this.logger.debugComponent(

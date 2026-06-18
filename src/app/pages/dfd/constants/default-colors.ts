@@ -30,7 +30,9 @@ const DEFAULT_PALETTE: readonly string[] = [
   '#9e9e9e', // Grey
 ] as const;
 
+// SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: expose the curated Material Design color palette for the style panel picker (pure)
 export class DefaultColorsConfig {
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: return the immutable default color palette for the DFD style panel (pure)
   static getColors(): readonly string[] {
     return DEFAULT_PALETTE;
   }

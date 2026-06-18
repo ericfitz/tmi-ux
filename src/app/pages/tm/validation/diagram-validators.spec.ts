@@ -22,6 +22,7 @@ describe('DfdDiagramValidator', () => {
   const validUUID3 = '550e8400-e29b-41d4-a716-446655440002';
   const validDateTime = '2025-01-15T10:30:00Z';
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid diagram fixture with optional field overrides (pure)
   function validDiagram(overrides: Partial<Diagram> = {}): Diagram {
     return {
       id: validUUID,
@@ -33,6 +34,7 @@ describe('DfdDiagramValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid node cell fixture with optional field overrides (pure)
   function validNodeCell(id: string, overrides: Partial<Cell> = {}): Cell {
     return {
       id,
@@ -43,6 +45,7 @@ describe('DfdDiagramValidator', () => {
     };
   }
 
+  // SEM@5e8dcdb8812ff7af6f749c95d9d665a4931de86f: build a minimal valid edge cell fixture with source, target, and overrides (pure)
   function validEdgeCell(
     id: string,
     source: string,
@@ -58,6 +61,7 @@ describe('DfdDiagramValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: check whether a validation error list contains a specific error code (pure)
   function hasError(errors: ValidationError[], code: string): boolean {
     return errors.some(e => e.code === code);
   }

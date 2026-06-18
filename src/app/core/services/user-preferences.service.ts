@@ -7,6 +7,7 @@ import { BrandingConfigService } from './branding-config.service';
 import { LoggerService } from './logger.service';
 import type { ThemeMode, PaletteType } from './theme.service';
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: union type for diagram auto-layout orientation: automatic, horizontal, or vertical (pure)
 export type AutoLayoutOrientation = 'automatic' | 'horizontal' | 'vertical';
 
 /**
@@ -100,6 +101,7 @@ interface LegacyThemePreferences {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: store and sync user preferences between localStorage cache and server with debounced writes
 export class UserPreferencesService {
   private readonly apiService = inject(ApiService);
   private readonly authService = inject(AUTH_SERVICE);
@@ -117,6 +119,7 @@ export class UserPreferencesService {
    */
   readonly preferences$: Observable<UserPreferencesData> = this.preferencesSubject.asObservable();
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: wire debounced server-sync pipeline on service init (mutates shared state)
   constructor() {
     // Set up debounced server sync
     this.syncSubject
@@ -132,6 +135,7 @@ export class UserPreferencesService {
    * Initialize preferences service
    * Should be called via APP_INITIALIZER before other services
    */
+  // SEM@722a83b7ed334166eeffb7936fedfd6410c51a41: load user preferences from cache then server, seeding defaults if absent (reads DB)
   async initialize(): Promise<void> {
     this.logger.debug('UserPreferencesService: Initializing');
 
@@ -166,6 +170,7 @@ export class UserPreferencesService {
   /**
    * Get current preferences (synchronous)
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: fetch the current user preferences snapshot synchronously (pure)
   getPreferences(): UserPreferencesData {
     return this.preferencesSubject.value;
   }
@@ -173,6 +178,7 @@ export class UserPreferencesService {
   /**
    * Update preferences (partial update supported)
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: update user preferences locally and queue debounced server sync (mutates shared state)
   updatePreferences(partial: Partial<UserPreferencesData>): void {
     const updated = {
       ...this.preferencesSubject.value,
@@ -192,6 +198,7 @@ export class UserPreferencesService {
   /**
    * Get theme preferences (convenience method for ThemeService)
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: convert stored preferences to a theme mode and palette pair (pure)
   getThemePreferences(): { mode: ThemeMode; palette: PaletteType } {
     const prefs = this.getPreferences();
     return {
@@ -203,6 +210,7 @@ export class UserPreferencesService {
   /**
    * Load preferences from localStorage with migration
    */
+  // SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: fetch user preferences from localStorage, migrating legacy keys if needed (reads DB)
   private loadFromLocalStorage(): UserPreferencesData {
     try {
       // Try new storage key first
@@ -233,6 +241,7 @@ export class UserPreferencesService {
    * `false` so saved diagrams aren't surprise-rearranged on first load. New
    * users (no blob at all) get the regular default of `true`.
    */
+  // SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: merge partial preferences with defaults, applying per-field migration rules (pure)
   private mergeWithFieldMigrations(parsed: Partial<UserPreferencesData>): UserPreferencesData {
     const merged = { ...DEFAULT_PREFERENCES, ...parsed };
     if (parsed.autoLayoutEnabled === undefined) {
@@ -245,6 +254,7 @@ export class UserPreferencesService {
    * Apply server-configured default theme when user has no saved preference.
    * Only modifies the themeMode field; all other defaults remain unchanged.
    */
+  // SEM@3ab268cba5795031f4bde5e2423d5f9734bb35af: override theme mode in defaults with the server-configured branding theme (pure)
   private applyServerDefaultTheme(defaults: UserPreferencesData): UserPreferencesData {
     const serverTheme = this.brandingConfigService.defaultTheme;
     if (!serverTheme) {
@@ -256,6 +266,7 @@ export class UserPreferencesService {
   /**
    * Save preferences to localStorage
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store user preferences to localStorage (mutates shared state)
   private saveToLocalStorage(preferences: UserPreferencesData): void {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
@@ -268,6 +279,7 @@ export class UserPreferencesService {
    * Load preferences from server
    * Returns null if server has no preferences
    */
+  // SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: fetch user preferences from the server API, returning null if absent (reads DB)
   private async loadFromServer(): Promise<UserPreferencesData | null> {
     try {
       const response = await this.apiService
@@ -297,6 +309,7 @@ export class UserPreferencesService {
   /**
    * Sync preferences to server (debounced)
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: store user preferences to the server API when authenticated (mutates shared state)
   private syncToServer(preferences: UserPreferencesData): void {
     if (!this.authService.isAuthenticated) {
       return;
@@ -324,6 +337,7 @@ export class UserPreferencesService {
   /**
    * Migrate from legacy localStorage keys
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: migrate user preferences from legacy localStorage keys, removing old entries (mutates shared state)
   private migrateFromLegacy(): UserPreferencesData | null {
     try {
       const oldUserPrefs = localStorage.getItem(LEGACY_KEYS.userPreferences);
@@ -373,6 +387,7 @@ export class UserPreferencesService {
   /**
    * Cleanup on service destroy
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: complete the destroy subject to cancel all active subscriptions (mutates shared state)
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

@@ -19,6 +19,7 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './provider-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@217ef29eafa7ca16ebab6e664fe0eace6dfae844: render an OAuth provider logo and display name from provider ID or full provider info
 export class ProviderDisplayComponent {
   /**
    * Provider identifier (e.g., "google", "github", "microsoft")
@@ -35,6 +36,7 @@ export class ProviderDisplayComponent {
   /**
    * Check if provider uses FontAwesome icon
    */
+  // SEM@53b2889220212702aa1ea90d745be0e566740a1c: return whether the provider icon is a FontAwesome class string (pure)
   isFontAwesomeIcon(): boolean {
     if (this.providerInfo?.icon) {
       return this.providerInfo.icon.startsWith('fa-');
@@ -46,6 +48,7 @@ export class ProviderDisplayComponent {
    * Get the FontAwesome icon class for the provider
    * Returns the FontAwesome class string (e.g., 'fa-brands fa-microsoft')
    */
+  // SEM@53b2889220212702aa1ea90d745be0e566740a1c: return the FontAwesome class string for the provider icon (pure)
   getFontAwesomeIcon(): string {
     if (this.providerInfo?.icon && this.providerInfo.icon.startsWith('fa-')) {
       return this.providerInfo.icon;
@@ -58,6 +61,7 @@ export class ProviderDisplayComponent {
    * Uses icon from providerInfo if available, otherwise falls back to hardcoded mapping
    * Note: Returns null for FontAwesome icons (use isFontAwesomeIcon() to detect those)
    */
+  // SEM@217ef29eafa7ca16ebab6e664fe0eace6dfae844: resolve the provider logo URL from API icon or hardcoded asset map (pure)
   getProviderLogoPath(): string | null {
     // Use icon from API if available
     if (this.providerInfo?.icon) {
@@ -96,6 +100,7 @@ export class ProviderDisplayComponent {
    * Get the properly capitalized provider name
    * Uses name from providerInfo if available, otherwise capitalizes provider ID
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return the properly capitalized display name for an OAuth provider (pure)
   getProviderName(): string {
     // Use name from API if available
     if (this.providerInfo?.name) {

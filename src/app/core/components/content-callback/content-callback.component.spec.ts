@@ -23,6 +23,7 @@ describe('ContentCallbackComponent', () => {
     error: ReturnType<typeof vi.fn>;
   };
 
+  // SEM@a3bcde0177cf5a6d478690770e6cce73ca9cb74d: instantiate ContentCallbackComponent with mock dependencies for testing (pure)
   function createComponent(): ContentCallbackComponent {
     return new ContentCallbackComponent(
       mockRoute as ActivatedRoute,

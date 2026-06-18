@@ -19,6 +19,7 @@ const DEFAULT_OPTIONS: Required<SafeStringifyOptions> = {
  * Safely stringify an object, handling circular references, DOM elements,
  * functions, and large arrays/objects with configurable limits.
  */
+// SEM@072b833dabe66ab37b1210752c3f9d0605bde827: serialize any value to JSON, handling circular refs, DOM, and large objects (pure)
 export function safeStringify(
   obj: unknown,
   indent: number = 0,
@@ -27,6 +28,7 @@ export function safeStringify(
   const { maxArrayLength, maxProperties } = { ...DEFAULT_OPTIONS, ...options };
   const seen = new WeakSet();
 
+  // SEM@072b833dabe66ab37b1210752c3f9d0605bde827: JSON replacer that substitutes circular refs, DOM nodes, and oversized collections (pure)
   const replacerFunction = (_key: string, value: unknown): unknown => {
     // Handle null and undefined
     if (value === null || value === undefined) {

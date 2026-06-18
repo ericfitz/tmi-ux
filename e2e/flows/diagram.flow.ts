@@ -4,12 +4,14 @@ import { DfdEditorPage } from '../pages/dfd-editor.page';
 import { CreateDiagramDialog } from '../dialogs/create-diagram.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
+// SEM@730d3939c8add6cb89b4fd69c42938e4725d420f: E2E page-object flow for diagram create, open, close, and delete actions
 export class DiagramFlow {
   private tmEditPage: TmEditPage;
   private dfdEditorPage: DfdEditorPage;
   private createDiagramDialog: CreateDiagramDialog;
   private deleteConfirmDialog: DeleteConfirmDialog;
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: initialize page-object dependencies for the diagram flow (pure)
   constructor(private page: Page) {
     this.tmEditPage = new TmEditPage(page);
     this.dfdEditorPage = new DfdEditorPage(page);
@@ -17,6 +19,7 @@ export class DiagramFlow {
     this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
+  // SEM@5c2f0da0392debc5d0f79635d640cb1c9db17a13: create a named diagram via the TM edit page and wait for it to appear (mutates shared state)
   async createFromTmEdit(name: string) {
     await this.tmEditPage.addDiagramButton().waitFor({ state: 'visible', timeout: 15000 });
     await this.tmEditPage.addDiagramButton().scrollIntoViewIfNeeded();
@@ -28,6 +31,7 @@ export class DiagramFlow {
     await this.tmEditPage.diagramRow(name).waitFor({ state: 'visible', timeout: 15000 });
   }
 
+  // SEM@730d3939c8add6cb89b4fd69c42938e4725d420f: navigate to the DFD editor for a named diagram from the TM edit page (mutates shared state)
   async openFromTmEdit(name: string) {
     await this.tmEditPage.diagramRow(name).waitFor({ state: 'visible', timeout: 15000 });
     await this.tmEditPage.diagramRow(name).click();
@@ -35,11 +39,13 @@ export class DiagramFlow {
     await this.dfdEditorPage.graphContainer().waitFor({ state: 'visible', timeout: 15000 });
   }
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: close the DFD editor and return to the TM edit page (mutates shared state)
   async closeDiagram() {
     await this.dfdEditorPage.closeButton().click();
     await this.page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
   }
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: delete a named diagram via kebab menu and confirm deletion (mutates shared state)
   async deleteFromTmEdit(name: string) {
     await this.tmEditPage.diagramKebabButton(name).click();
     await this.tmEditPage.diagramDeleteButton().waitFor({ state: 'visible' });

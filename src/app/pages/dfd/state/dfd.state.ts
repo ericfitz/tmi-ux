@@ -38,6 +38,7 @@ const initialDfdState: DfdState = {
 /**
  * Type for state updates - allows partial updates
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: partial DFD state type for targeted state patch operations (pure)
 export type DfdStateUpdate = Partial<DfdState>;
 
 /**
@@ -47,6 +48,7 @@ export type DfdStateUpdate = Partial<DfdState>;
 @Injectable({
   providedIn: 'root',
 })
+// SEM@3d6e88ab6055c2e5493011c1bdff43e1f3bb8e24: reactive observable store for all DFD editor state (mutates shared state)
 export class DfdStateStore {
   // Public readonly observables
   readonly state$: Observable<DfdState>;
@@ -63,6 +65,7 @@ export class DfdStateStore {
   // Private BehaviorSubject holding the current state
   private _state = new BehaviorSubject<DfdState>(initialDfdState);
 
+  // SEM@3d6e88ab6055c2e5493011c1bdff43e1f3bb8e24: initialize DFD state store and fan state changes to individual streams (mutates shared state)
   constructor(private logger: LoggerService) {
     this.logger.debugComponent('DfdStateStore', 'DfdStateStore initialized');
 
@@ -118,6 +121,7 @@ export class DfdStateStore {
    * @param update Partial state to merge with current state
    * @param source Optional source identifier for logging
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: merge a partial update into the DFD state and notify subscribers (mutates shared state)
   updateState(update: DfdStateUpdate, source?: string): void {
     const currentState = this._state.value;
     const newState = { ...currentState, ...update };
@@ -136,6 +140,7 @@ export class DfdStateStore {
   /**
    * Reset the state to initial values
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: restore DFD state to initial defaults and notify subscribers (mutates shared state)
   resetState(): void {
     this._state.next({ ...initialDfdState });
     this.logger.info('DfdStateStore reset to initial state');
@@ -146,6 +151,7 @@ export class DfdStateStore {
    * @param selector Function that selects a portion of the state
    * @returns Observable of the queried state portion
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: derive an observable slice of DFD state via a selector function (pure)
   query<T>(selector: (state: DfdState) => T): Observable<T> {
     return new Observable<T>(observer => {
       const subscription = this._state.subscribe(state => {
@@ -165,6 +171,7 @@ export class DfdStateStore {
    * Get a version of the state that's safe for logging
    * Removes circular references and large objects
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: convert DFD state to a serializable snapshot safe for logging (pure)
   private getLogSafeState(state: DfdState): Record<string, unknown> {
     const { graph, selectedNode, cells, ...rest } = state;
     return {

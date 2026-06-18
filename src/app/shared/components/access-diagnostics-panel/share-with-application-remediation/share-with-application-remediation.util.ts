@@ -17,6 +17,7 @@ export interface ShareWithApplicationParams {
  * for the `share_with_application` action; null indicates a server contract
  * violation.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: parse and validate share-with-application remediation params from raw record (pure)
 export function extractShareWithApplicationParams(
   params: Record<string, unknown> | undefined,
 ): ShareWithApplicationParams | null {
@@ -47,6 +48,7 @@ export function extractShareWithApplicationParams(
  * Pretty-prints valid JSON with 2-space indent. Returns input verbatim
  * (and never throws) if the input is not valid JSON.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: format a string as pretty-printed JSON, returning it verbatim if invalid (pure)
 export function prettyJsonOrVerbatim(input: string): string {
   try {
     return JSON.stringify(JSON.parse(input), null, 2);
@@ -59,6 +61,7 @@ export function prettyJsonOrVerbatim(input: string): string {
  * Splits the graph_call string ("METHOD https://...") into method and uri.
  * Falls back to POST + the whole string if no space is found.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: parse a Graph API call string into HTTP method and URI parts (pure)
 function splitGraphCall(graphCall: string): { method: string; uri: string } {
   const idx = graphCall.indexOf(' ');
   if (idx === -1) return { method: 'POST', uri: graphCall };
@@ -69,6 +72,7 @@ function splitGraphCall(graphCall: string): { method: string; uri: string } {
  * Escapes a string for use inside a single-quoted PowerShell literal.
  * Single quotes inside are doubled (PowerShell convention).
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: escape a string for safe embedding in a PowerShell single-quoted literal (pure)
 function escapeForPowerShellSingleQuoted(value: string): string {
   return value.replace(/'/g, "''");
 }
@@ -77,6 +81,7 @@ function escapeForPowerShellSingleQuoted(value: string): string {
  * Escapes a string for use inside a single-quoted shell literal.
  * Single quotes inside are closed-then-escaped-then-reopened: ' -> '\''
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: escape a string for safe embedding in a POSIX shell single-quoted literal (pure)
 function escapeForShellSingleQuoted(value: string): string {
   return value.replace(/'/g, `'\\''`);
 }
@@ -85,6 +90,7 @@ function escapeForShellSingleQuoted(value: string): string {
  * Builds a multi-line PowerShell snippet using `Invoke-MgGraphRequest` with
  * backtick line continuations.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: build an Invoke-MgGraphRequest PowerShell snippet from share-with-application params (pure)
 export function buildPowerShellSnippet(params: ShareWithApplicationParams): string {
   const { method, uri } = splitGraphCall(params.graph_call);
   const escapedBody = escapeForPowerShellSingleQuoted(params.graph_body);
@@ -99,6 +105,7 @@ export function buildPowerShellSnippet(params: ShareWithApplicationParams): stri
 /**
  * Builds a multi-line curl snippet using backslash line continuations.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: build a curl shell snippet from share-with-application Graph API params (pure)
 export function buildCurlSnippet(params: ShareWithApplicationParams): string {
   const { method, uri } = splitGraphCall(params.graph_call);
   const escapedBody = escapeForShellSingleQuoted(params.graph_body);
@@ -114,6 +121,7 @@ export function buildCurlSnippet(params: ShareWithApplicationParams): string {
  * Builds the raw two-line snippet: graph_call on one line, body
  * (pretty-printed when valid JSON) on subsequent lines.
  */
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: build a raw Graph API call snippet with pretty-printed body (pure)
 export function buildRawSnippet(params: ShareWithApplicationParams): string {
   return `${params.graph_call}\n${prettyJsonOrVerbatim(params.graph_body)}`;
 }

@@ -46,6 +46,7 @@ describe('JwtInterceptor', () => {
   };
 
   // Helper function to create mock requests
+  // SEM@04ef43aefdebc79041ccc78bc009f0d0d130c110: build a mock HTTP request for interceptor tests (pure)
   const createMockRequest = (
     url: string,
     method = 'GET',
@@ -75,6 +76,7 @@ describe('JwtInterceptor', () => {
   };
 
   /** Create a PUT request to an admin URL (used in step-up tests). */
+  // SEM@a0359eb0b6e1fd48cf64d58f74313645e64a3e46: build a mock PUT request to an admin URL for step-up tests (pure)
   const makeAdminRequest = (includeClone = true): HttpRequest<unknown> =>
     createMockRequest(`http://localhost:8080/admin/settings`, 'PUT', includeClone);
 
@@ -681,6 +683,7 @@ describe('JwtInterceptor', () => {
   });
 
   describe('step-up challenge handling', () => {
+    // SEM@a0359eb0b6e1fd48cf64d58f74313645e64a3e46: build a 401 HTTP error response with step-up WWW-Authenticate header (pure)
     const makeStepUpError = (url: string): HttpErrorResponse =>
       new HttpErrorResponse({
         status: 401,

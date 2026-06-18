@@ -43,6 +43,7 @@ interface ProviderRule {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@10a1c25477a868d41404f6284fb3ecb65aa29fd6: encapsulate provider-specific rules for principal support, defaults, and ID transformation (pure)
 export class ProviderAdapterService {
   /**
    * Provider-specific rules configuration
@@ -75,6 +76,7 @@ export class ProviderAdapterService {
    * @param provider - The provider identifier
    * @returns Provider rule configuration
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: resolve provider rule config, falling back to default for unknown providers (pure)
   private getProviderRule(provider: string): ProviderRule {
     return this.providerRules[provider] || this.defaultRule;
   }
@@ -85,6 +87,7 @@ export class ProviderAdapterService {
    * @param principalType - The principal type ('user' or 'group')
    * @returns True if the provider supports this principal type
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: check whether a provider supports a given principal type (pure)
   isValidForPrincipalType(provider: string, principalType: PrincipalType): boolean {
     const rule = this.getProviderRule(provider);
     return principalType === 'user' ? rule.supportsUser : rule.supportsGroup;
@@ -96,6 +99,7 @@ export class ProviderAdapterService {
    * @param principalType - The principal type ('user' or 'group')
    * @returns Default subject value or null if no default
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return provider-specific default subject value for a principal type (pure)
   getDefaultSubject(provider: string, principalType: PrincipalType): string | null {
     const rule = this.getProviderRule(provider);
     return rule.defaultSubject ? rule.defaultSubject(principalType) : null;
@@ -107,6 +111,7 @@ export class ProviderAdapterService {
    * @param provider - The provider identifier from the UI
    * @returns The provider identifier to send to the API
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: convert UI provider ID to its API-submission equivalent (pure)
   transformProviderForApi(provider: string): string {
     const rule = this.getProviderRule(provider);
     return rule.apiProvider || provider;
@@ -118,6 +123,7 @@ export class ProviderAdapterService {
    * @param provider - The provider identifier from the API
    * @returns The provider identifier to display in the UI
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: convert API provider ID back to its UI display equivalent via reverse lookup (pure)
   transformProviderForDisplay(provider: string): string {
     // Reverse lookup: find provider whose apiProvider matches the input
     for (const [uiProvider, rule] of Object.entries(this.providerRules)) {
@@ -135,6 +141,7 @@ export class ProviderAdapterService {
    * for managing provider-independent group permissions (e.g., TMI).
    * @returns Array of OAuthProviderInfo objects for built-in providers
    */
+  // SEM@6c8878fb5e0ec62d91e60e0de2293417ebc05238: list built-in pseudo-providers as OAuthProviderInfo objects for the permissions UI (pure)
   getBuiltInProviders(): OAuthProviderInfo[] {
     return Object.entries(this.providerRules).map(([id, rule]) => ({
       id,
@@ -151,6 +158,7 @@ export class ProviderAdapterService {
    * @param provider - The provider identifier
    * @returns The display name for this provider
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return human-readable display name for a provider, capitalizing unknown IDs (pure)
   getProviderDisplayName(provider: string): string {
     const rule = this.getProviderRule(provider);
     if (rule.displayName) {

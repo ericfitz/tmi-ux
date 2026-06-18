@@ -10,6 +10,7 @@ import { AdminUser } from '@app/types/user.types';
 
 describe('GroupMembersDialogComponent', () => {
   describe('addMember', () => {
+    // SEM@3b9fbbc9940aca7e6a4ff80594014408ee0b6582: build a GroupMembersDialogComponent with mock dependencies for testing (pure)
     function createComponent(group: Partial<AdminGroup>): {
       component: GroupMembersDialogComponent;
       mockGroupAdminService: {
@@ -73,6 +74,7 @@ describe('GroupMembersDialogComponent', () => {
       return { component, mockGroupAdminService, mockLogger };
     }
 
+    // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: build a test AdminUser fixture with optional overrides (pure)
     function makeUser(overrides: Partial<AdminUser> = {}): AdminUser {
       return {
         internal_uuid: 'user-uuid-456',

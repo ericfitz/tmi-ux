@@ -64,6 +64,7 @@ interface ProcessedHistoryEntry {
   styleUrls: ['./history-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: display and manage diagram edit history; supports copy and clear actions
 export class HistoryDialogComponent {
   /**
    * Serialized JSON representation of the complete history (for copying)
@@ -92,6 +93,7 @@ export class HistoryDialogComponent {
    */
   readonly redoStack: ProcessedHistoryEntry[];
 
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: initialize history dialog by processing undo/redo stacks and serializing history JSON (pure)
   constructor(
     private _dialogRef: MatDialogRef<HistoryDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: HistoryDialogData,
@@ -126,6 +128,7 @@ export class HistoryDialogComponent {
   /**
    * Process a history entry for display
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: convert a raw history entry into a display-ready processed entry (pure)
   private _processHistoryEntry(entry: HistoryEntry, index: number): ProcessedHistoryEntry {
     return {
       index,
@@ -150,6 +153,7 @@ export class HistoryDialogComponent {
   /**
    * Extract history data from the custom history state
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: build a serializable summary of the full history state for export (pure)
   private _extractHistoryData(historyState: Readonly<HistoryState>): any {
     try {
       // Extract history state information
@@ -209,6 +213,7 @@ export class HistoryDialogComponent {
   /**
    * Copy the JSON content to clipboard
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: copy the serialized history JSON to the clipboard (mutates shared state)
   onCopyToClipboard(): void {
     copyToClipboard(this.historyJson);
   }
@@ -216,6 +221,7 @@ export class HistoryDialogComponent {
   /**
    * Clear all history (undo and redo stacks)
    */
+  // SEM@e9ca914ffc3220cf3f567742e85cd2757a0e3ef5: clear all undo and redo history and close the dialog (mutates shared state)
   onClearHistory(): void {
     this.data.historyService.clearHistory();
     this._dialogRef.close();
@@ -224,6 +230,7 @@ export class HistoryDialogComponent {
   /**
    * Close the dialog
    */
+  // SEM@284dd2adba1be491c6ff9864fdc906ee6ce282fe: close the history dialog without making changes
   onClose(): void {
     this._dialogRef.close();
   }

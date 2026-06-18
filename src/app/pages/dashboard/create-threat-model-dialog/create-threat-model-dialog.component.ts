@@ -17,6 +17,7 @@ export interface CreateThreatModelDialogResult {
   isConfidential: boolean;
 }
 
+// SEM@6b35da8ffade83ef6579f36d41c97823a2565785: union of valid threat modeling framework name literals (pure)
 type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
 
 @Component({
@@ -129,12 +130,14 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
     `,
   ],
 })
+// SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: dialog for collecting name, framework, and confidentiality to create a threat model
 export class CreateThreatModelDialogComponent {
   readonly frameworkOptions: FrameworkOption[] = ['STRIDE', 'CIA', 'LINDDUN', 'DIE', 'PLOT4ai'];
   readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
 
   form: FormGroup;
 
+  // SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: build the threat model creation form with validation and environment defaults
   constructor(
     public dialogRef: MatDialogRef<CreateThreatModelDialogComponent>,
     private fb: FormBuilder,
@@ -150,6 +153,7 @@ export class CreateThreatModelDialogComponent {
     });
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: validate and close dialog with threat model creation result
   onCreate(): void {
     if (this.form.invalid) {
       return;
@@ -172,6 +176,7 @@ export class CreateThreatModelDialogComponent {
     this.dialogRef.close(result);
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: close the dialog without a result (pure)
   onCancel(): void {
     this.dialogRef.close();
   }

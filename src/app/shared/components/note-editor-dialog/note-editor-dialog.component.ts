@@ -26,6 +26,7 @@ import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.servic
 
 import { NoteEditorBase } from '../note-editor/note-editor-base';
 
+// SEM@f8bb7d452669751727661321f30812abe4b1566b: union type discriminating the domain entity a note belongs to (pure)
 export type NoteEntityType = 'threat_model' | 'team' | 'project';
 
 /** Minimal note shape the dialog needs for initialization */
@@ -82,6 +83,7 @@ export interface NoteFormResult {
   templateUrl: './note-editor-dialog.component.html',
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
+// SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: dialog component for creating or editing a markdown note on a domain entity
 export class NoteEditorDialogComponent
   extends NoteEditorBase
   implements OnInit, OnDestroy, AfterViewChecked
@@ -110,6 +112,7 @@ export class NoteEditorDialogComponent
   // Clipboard state
   hasSelection = false;
 
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: initialize note editor dialog with mode, entity type, and read-only state (pure)
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<NoteEditorDialogComponent>,
@@ -124,6 +127,7 @@ export class NoteEditorDialogComponent
     this.entityType = data.entityType;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build the note form, snapshot original values, and set initial preview mode (mutates shared state)
   ngOnInit(): void {
     const note = this.data.note;
     const isCreate = this.data.mode === 'create';
@@ -170,6 +174,7 @@ export class NoteEditorDialogComponent
     void this.checkClipboardPermissions();
   }
 
+  // SEM@955e86c38b8b27985a838cc5a692ed3a5fbc0eb9: clean up mermaid diagram viewers on component destroy (mutates shared state)
   ngOnDestroy(): void {
     this.mermaidCleanup?.();
   }
@@ -190,6 +195,7 @@ export class NoteEditorDialogComponent
     return content;
   }
 
+  // SEM@f8bb7d452669751727661321f30812abe4b1566b: validate whether note form fields differ from their last-saved snapshot (pure)
   hasUnsavedChanges(): boolean {
     if (!this.noteForm.valid) {
       return false;
@@ -216,15 +222,18 @@ export class NoteEditorDialogComponent
     );
   }
 
+  // SEM@21283931c91448ecb7cf01ca0b545369c3e2c20d: switch between edit and preview display modes (mutates shared state)
   togglePreview(): void {
     this.previewMode = !this.previewMode;
   }
 
+  // SEM@21283931c91448ecb7cf01ca0b545369c3e2c20d: track whether the textarea has a non-empty selection (mutates shared state)
   onTextareaSelect(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     this.hasSelection = textarea.selectionStart !== textarea.selectionEnd;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: save note form changes without closing and emit the result to the parent
   onSave(): void {
     if (!this.noteForm.valid || !this.hasUnsavedChanges()) {
       return;
@@ -244,6 +253,7 @@ export class NoteEditorDialogComponent
     this.showMessage('noteEditor.savedSuccessfully');
   }
 
+  // SEM@a37c865035e477ea743cf36d218c2fa4f4de5044: save pending note changes and close the dialog with the result
   onSaveAndClose(): void {
     if (!this.noteForm.valid) {
       return;
@@ -264,6 +274,7 @@ export class NoteEditorDialogComponent
     this.dialogRef.close(result);
   }
 
+  // SEM@21283931c91448ecb7cf01ca0b545369c3e2c20d: discard note edits and close the dialog, prompting if unsaved changes exist
   onCancel(): void {
     if (this.hasUnsavedChanges()) {
       const confirmed = confirm(this.translocoService.translate('common.unsavedChangesWarning'));
@@ -278,11 +289,13 @@ export class NoteEditorDialogComponent
    * Called by parent component when a note is created via the save button.
    * Updates internal state to track that we're now editing an existing note.
    */
+  // SEM@876f34f4d7872e2f69dce186d08b675c2df73cb6: record a newly created note ID and switch dialog mode to edit (mutates shared state)
   setCreatedNoteId(noteId: string): void {
     this.createdNoteId = noteId;
     this.mode = 'edit';
   }
 
+  // SEM@f8bb7d452669751727661321f30812abe4b1566b: extract and normalize form values, filtering fields by entity type (pure)
   private getFormValue(value: NoteFormResult): NoteFormResult {
     const result: NoteFormResult = {
       name: value.name.trim(),
@@ -298,6 +311,7 @@ export class NoteEditorDialogComponent
     return result;
   }
 
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: display a localized snackbar notification, styled as error when flagged
   showMessage(key: string, isError = false): void {
     const message = this.translocoService.translate(key);
     this.snackBar.open(message, '', {

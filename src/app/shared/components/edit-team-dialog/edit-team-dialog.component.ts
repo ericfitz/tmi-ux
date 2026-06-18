@@ -297,6 +297,7 @@ export interface EditTeamDialogData {
     `,
   ],
 })
+// SEM@0044214fdc57a3ef5cd64987b680cab157eedffc: dialog for editing team metadata and managing team notes (mutates shared state)
 export class EditTeamDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   form!: FormGroup;
@@ -313,6 +314,7 @@ export class EditTeamDialogComponent implements OnInit {
   notesLoading = false;
   private notesLoaded = false;
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: inject dialog, team service, form builder, logger, and sub-dialog dependencies (pure)
   constructor(
     private dialogRef: MatDialogRef<EditTeamDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: EditTeamDialogData,
@@ -322,6 +324,7 @@ export class EditTeamDialogComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  // SEM@db25faafa0f04ade19d133d3285f8e6338aa3616: initialize the team edit form with current team field values (mutates shared state)
   ngOnInit(): void {
     const team = this.data.team;
     this.form = this.fb.group({
@@ -333,6 +336,7 @@ export class EditTeamDialogComponent implements OnInit {
     });
   }
 
+  // SEM@0044214fdc57a3ef5cd64987b680cab157eedffc: validate form and patch team fields via API, then close the dialog (mutates shared state)
   onSave(): void {
     if (!this.form.valid || this.saving) return;
     this.saving = true;
@@ -368,10 +372,12 @@ export class EditTeamDialogComponent implements OnInit {
       });
   }
 
+  // SEM@db25faafa0f04ade19d133d3285f8e6338aa3616: close the dialog without saving, returning false (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: track active tab index and lazy-load notes on first switch to notes tab (mutates shared state)
   onTabChange(event: { index: number }): void {
     this.selectedTabIndex = event.index;
     if (event.index === 1 && !this.notesLoaded) {
@@ -379,6 +385,7 @@ export class EditTeamDialogComponent implements OnInit {
     }
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: fetch a paginated page of team notes from the API (reads DB)
   private loadNotes(): void {
     this.notesLoading = true;
     this.teamService
@@ -398,12 +405,14 @@ export class EditTeamDialogComponent implements OnInit {
       });
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: update pagination state and reload the current notes page (mutates shared state)
   onNotesPageChange(event: PageEvent): void {
     this.notesPageIndex = event.pageIndex;
     this.notesPageSize = event.pageSize;
     this.loadNotes();
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: open note editor dialog to create a new team note and refresh the list (mutates shared state)
   addNote(): void {
     const dialogData: NoteEditorDialogData = {
       mode: 'create',
@@ -454,6 +463,7 @@ export class EditTeamDialogComponent implements OnInit {
     });
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: fetch a team note then open the editor dialog to update it (mutates shared state)
   editNote(noteListItem: TeamNoteListItem): void {
     this.teamService
       .getNoteById(this.data.team.id, noteListItem.id)
@@ -502,6 +512,7 @@ export class EditTeamDialogComponent implements OnInit {
       });
   }
 
+  // SEM@39487926cab0539782044f9d6f74260c0ab8416a: confirm and delete a note from the current team (mutates shared state)
   deleteNote(noteListItem: TeamNoteListItem): void {
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
       data: {

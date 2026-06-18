@@ -2,13 +2,16 @@ import { Locator, Page } from '@playwright/test';
 import { DashboardPage } from '../pages/dashboard.page';
 import { angularFill } from '../helpers/angular-fill';
 
+// SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: E2E flow for applying and clearing dashboard filter controls
 export class DashboardFilterFlow {
   private dashboardPage: DashboardPage;
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: initialize dashboard page reference for filter flow
   constructor(private page: Page) {
     this.dashboardPage = new DashboardPage(page);
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: filter dashboard items by typing a search term into the search input
   async searchByName(term: string) {
     await angularFill(this.dashboardPage.searchInput(), term);
     await this.page.waitForTimeout(500);
@@ -18,12 +21,14 @@ export class DashboardFilterFlow {
    * Server-side name filter (lives in advanced row since #640).
    * Toggles advanced filters open before filling.
    */
+  // SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: apply server-side name filter via the advanced filters panel
   async filterByName(name: string) {
     await this.toggleAdvancedFilters();
     await angularFill(this.dashboardPage.nameFilter(), name);
     await this.page.waitForTimeout(500);
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: select one or more status values in the dashboard status filter
   async filterByStatus(statuses: string[]) {
     await this.dashboardPage.statusFilter().click();
     for (const status of statuses) {
@@ -34,12 +39,14 @@ export class DashboardFilterFlow {
     await this.page.waitForTimeout(500);
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: apply owner filter via the advanced filters panel
   async filterByOwner(owner: string) {
     await this.toggleAdvancedFilters();
     await angularFill(this.dashboardPage.ownerFilter(), owner);
     await this.page.waitForTimeout(500);
   }
 
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: filter dashboard items by created or modified date range
   async filterByDateRange(
     field: 'created' | 'modified',
     after?: string,
@@ -66,6 +73,7 @@ export class DashboardFilterFlow {
    * Datepicker inputs are wrapped by a mat-label that intercepts synthetic
    * clicks, so we set the value via the native setter without clicking first.
    */
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: set a datepicker input value via native setter, bypassing Material label intercept
   private async setDateInput(locator: Locator, value: string) {
     await locator.waitFor({ state: 'visible', timeout: 5000 });
     await locator.evaluate((el, val) => {
@@ -81,6 +89,7 @@ export class DashboardFilterFlow {
     }, value);
   }
 
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: dismiss all active dashboard filters if present (mutates shared state)
   async clearAllFilters() {
     // Button only renders when a filter is active — no-op if it's absent.
     const button = this.dashboardPage.clearFiltersButton();
@@ -89,6 +98,7 @@ export class DashboardFilterFlow {
     }
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: expand the advanced filter panel if not already visible (mutates shared state)
   async toggleAdvancedFilters() {
     // Only toggle if not already visible
     const isVisible = await this.dashboardPage

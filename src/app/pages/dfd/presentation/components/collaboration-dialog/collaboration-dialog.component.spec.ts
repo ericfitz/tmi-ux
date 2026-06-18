@@ -23,6 +23,7 @@ describe('CollaborationDialogComponent', () => {
   let mockTransloco: TranslocoService;
   let component: CollaborationDialogComponent;
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a CollaborationDialogComponent with mock dependencies for unit tests (pure)
   function build(): CollaborationDialogComponent {
     return new CollaborationDialogComponent(
       mockDialogRef as never,

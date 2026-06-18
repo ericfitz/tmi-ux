@@ -7,6 +7,7 @@ import type {
 export type { Metadata } from '@app/types/metadata.types';
 
 // Principal-based identity types
+// SEM@13ad524189c94573aeee64a7185463714eeb6821: enumerate principal identity categories for access control (pure)
 export type PrincipalType = 'user' | 'group';
 
 export interface Principal {

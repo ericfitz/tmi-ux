@@ -134,6 +134,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./tm-edit.component.scss'],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: route component for editing a threat model and all its child artifacts (mutates shared state)
 export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModel: ThreatModel | undefined;
   threatModelForm: FormGroup;
@@ -296,6 +297,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   private _originalFormValues?: ThreatModelFormValues;
   private _isSaving = false;
 
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: register injected services and initialize the threat model reactive form (mutates shared state)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -342,6 +344,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Copy text to clipboard with snackbar feedback
    * @param text Text to copy
    */
+  // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: copy text to clipboard and notify the user via snackbar
   copyToClipboard(text: string): void {
     copyToClipboardWithFeedback(text, {
       snackBar: this.snackBar,
@@ -353,6 +356,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Copy the threat model ID to clipboard
    */
+  // SEM@dac6bb108d615c885aaf4c8b0ac82595f838ecd6: copy the current threat model ID to clipboard with snackbar feedback
   copyThreatModelId(): void {
     if (this.threatModel?.id) {
       this.copyToClipboard(this.threatModel.id);
@@ -362,6 +366,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Enter edit mode for issue URI
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: switch the issue URI field to edit mode and focus the input (mutates shared state)
   editIssueUri(): void {
     this.isEditingIssueUri = true;
     // Focus the input field after the view updates
@@ -378,6 +383,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Check if we should show the hyperlink view for issue URI
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: return whether the issue URI hyperlink view should be rendered instead of the editor (pure)
   shouldShowIssueUriHyperlink(): boolean {
     return (
       !this.isEditingIssueUri &&
@@ -389,6 +395,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens URI in new tab when clicked
    */
+  // SEM@842e13b899452ede91f10594c85586d003e70d31: open a validated URI in a new browser tab
   openUriInNewTab(uri: string): void {
     if (isValidUrl(uri)) {
       window.open(uri, '_blank', 'noopener,noreferrer');
@@ -398,25 +405,30 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Check if a URL is valid
    */
+  // SEM@842e13b899452ede91f10594c85586d003e70d31: validate whether a string is a well-formed URL (pure)
   isValidUrl(url: string): boolean {
     return isValidUrl(url);
   }
 
   /** Gets the translated label for a threat severity value, handling legacy numeric values. */
+  // SEM@a9878a701a7dd9c267ccc2dc9292958bb05e1fcd: fetch the translated display label for a threat severity value (pure)
   getThreatSeverityLabel(severity: string | null | undefined): string {
     return getFieldLabel(severity, 'threatEditor.threatSeverity', this.transloco);
   }
 
   /** Gets the translated label for a threat status value, handling legacy numeric values. */
+  // SEM@a9878a701a7dd9c267ccc2dc9292958bb05e1fcd: fetch the translated display label for a threat status value (pure)
   getThreatStatusLabel(status: string | null | undefined): string {
     return getFieldLabel(status, 'threatEditor.threatStatus', this.transloco);
   }
 
   /** Gets the CSS class for a threat severity value, handling legacy numeric values. */
+  // SEM@e99d1625a4dc0a2f2b84345424ec14cb9b48ca0f: fetch the CSS severity class for a threat severity value (pure)
   getThreatSeverityClass(severity: string | null | undefined): string {
     return this.formattingService.getThreatSeverityClass(severity);
   }
 
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: initialize the threat model editor: load data, subscribe to changes, configure form (mutates shared state)
   ngOnInit(): void {
     // Initialize status dropdown options
     this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
@@ -585,6 +597,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Update form editability based on permissions
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: enable or disable the threat model form based on the user's edit permission (mutates shared state)
   private updateFormEditability(): void {
     if (this.canEdit) {
       this.threatModelForm.enable();
@@ -593,6 +606,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: connect MatSort instances to their table data sources after the view initializes (mutates shared state)
   ngAfterViewInit(): void {
     // Connect sort to data sources
     if (this.assetsSort) {
@@ -613,6 +627,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: persist threat card state, unsubscribe all subscriptions, and clear SVG caches on teardown (mutates shared state)
   ngOnDestroy(): void {
     // Save threat card state for restoration if returning to same TM
     this.saveThreatCardState();
@@ -637,6 +652,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Clear all SVG-related caches
    * This should be called when navigating away from threat models
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: evict all cached SVG data for diagrams to free memory (mutates shared state)
   private clearSvgCaches(): void {
     this.svgCacheService.clearAllCaches();
     this.diagramSvgValidation.clear();
@@ -644,11 +660,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Toggle the Inputs section expand/collapse state */
+  // SEM@7e0905392e5e4c24877e4640bec67f12d70d9ee7: toggle the expand/collapse state of the Inputs section (mutates shared state)
   toggleInputsSection(): void {
     this.inputsSectionExpanded = !this.inputsSectionExpanded;
   }
 
   /** Toggle the Outputs section expand/collapse state */
+  // SEM@7e0905392e5e4c24877e4640bec67f12d70d9ee7: toggle the expand/collapse state of the Outputs section (mutates shared state)
   toggleOutputsSection(): void {
     this.outputsSectionExpanded = !this.outputsSectionExpanded;
   }
@@ -656,6 +674,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Set up simplified form-level change monitoring
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: subscribe to form value changes and trigger auto-save when the threat model form is dirty (mutates shared state)
   private setupFormChangeMonitoring(): void {
     // Single form-level subscription for all changes
     this._subscriptions.add(
@@ -677,6 +696,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Check if form values have changed from original
    */
+  // SEM@5430d2efdce732310b5e837d71bd1329e58af449: compare current form values against saved snapshot to detect unsaved edits (pure)
   private hasFormChanged(formValue: ThreatModelFormValues): boolean {
     return this.autoSaveService.hasFormChanged(formValue, this._originalFormValues);
   }
@@ -684,6 +704,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Update original form values after successful save
    */
+  // SEM@df857842acb683048164ddc3b37030f666db756c: store current form values as the saved baseline after a successful save (mutates shared state)
   private updateOriginalFormValues(formValue: ThreatModelFormValues): void {
     this._originalFormValues = { ...formValue };
   }
@@ -691,6 +712,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle framework selection change (for framework-specific logic)
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: handle threat model framework selection change and trigger auto-save (mutates shared state)
   onFrameworkChange(event: { value: unknown }): void {
     if (
       !this._isLoadingInitialData &&
@@ -723,6 +745,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load security reviewer options via shared SecurityReviewerService.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: fetch security reviewer options and set dropdown or picker mode (mutates shared state)
   private loadSecurityReviewers(): void {
     this._subscriptions.add(
       this.securityReviewerService
@@ -743,6 +766,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handle security reviewer dropdown selection change.
    * Persists immediately via PATCH (not through form auto-save).
    */
+  // SEM@6c071df61169a648a295f203e10831067d21bcaa: persist security reviewer assignment via PATCH with optimistic update and rollback
   onSecurityReviewerChange(event: { value: unknown }): void {
     if (!this.threatModel || !this.canEdit) return;
 
@@ -782,6 +806,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Open user picker dialog for security reviewer (fallback when group list unavailable)
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dispatch user picker dialog to assign a security reviewer when dropdown is unavailable
   openSecurityReviewerPicker(): void {
     if (!this.threatModel || !this.canEdit) return;
 
@@ -811,6 +836,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Clear the security reviewer assignment
    */
+  // SEM@6c071df61169a648a295f203e10831067d21bcaa: remove the assigned security reviewer from the threat model
   clearSecurityReviewer(): void {
     this.onSecurityReviewerChange({ value: null });
   }
@@ -829,6 +855,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handle project picker selection change.
    * Persists immediately via PATCH (not through form auto-save).
    */
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: persist project assignment change via PATCH with optimistic update and rollback
   onProjectChange(projectId: string | null): void {
     if (!this.threatModel || !this.canEdit) return;
 
@@ -869,6 +896,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Simplified field blur handler (mainly for UI state like issue URL editing)
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: route field blur events to field-specific handlers for UI state updates (pure)
   onFieldBlur(fieldName: string, event: Event): void {
     // Only handle UI-specific blur logic now - auto-save is handled by form valueChanges
     if (fieldName === 'issue_uri') {
@@ -879,6 +907,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Issue URI blur handler for UI state management
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: finalize issue URI display value and exit edit mode on blur (mutates shared state)
   onIssueUriBlur(_event: Event): void {
     // Update the display value for consistency
     const currentValue = (this.threatModelForm.get('issue_uri')?.value as string) || '';
@@ -891,6 +920,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handles a URL dropped onto the issue URI container.
    * Sets the issue_uri form control value to the dropped URL.
    */
+  // SEM@52e5d401a2aa7bf4620d0d17860898f6b21da94a: populate the issue URI form control with a dropped URL (mutates shared state)
   onIssueUriUrlDropped(url: string): void {
     if (!this.canEdit) return;
     this.threatModelForm.get('issue_uri')?.setValue(url);
@@ -903,6 +933,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new threat
    * If the user confirms, adds the threat to the threat model
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: open threat creation dialog to add a new threat to the threat model
   addThreat(): void {
     this.openThreatEditor();
   }
@@ -914,6 +945,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param threat Optional threat to edit or view
    * @param shapeType Optional shape type to filter applicable threat types (used for dialog creation)
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: navigate to threat page for existing threats or open creation dialog for new threats
   openThreatEditor(threat?: Threat, shapeType?: string): void {
     if (!this.threatModel) {
       return;
@@ -939,6 +971,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param shapeType Optional shape type to filter applicable threat types
    * @param mode Dialog mode
    */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: build threat editor dialog data and dispatch create or edit dialog
   private openThreatEditorWithData(
     threat?: Threat,
     shapeType?: string,
@@ -1004,6 +1037,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Handle creating a new threat from dialog result. */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: store a new threat via API and reload the threats list on success
   private _handleCreateThreatResult(result: Partial<Threat>): void {
     if (!this.threatModel) return;
     this._subscriptions.add(
@@ -1020,6 +1054,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Handle updating an existing threat from dialog result. */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: update an existing threat via API and refresh the local threats list
   private _handleEditThreatResult(result: Partial<Threat>, threat: Threat): void {
     if (!this.threatModel) return;
     this._subscriptions.add(
@@ -1041,6 +1076,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param threat The threat to delete
    * @param event The click event
    */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: confirm and delete a threat, then remove it from the local threat model state
   deleteThreat(threat: Threat, event: Event): void {
     // Prevent event propagation to avoid opening the threat editor
     event.stopPropagation();
@@ -1090,6 +1126,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new diagram
    * If the user confirms, adds the new diagram to the threat model
    */
+  // SEM@8276927976b5e15eec42a3b06951c5fa0409615f: open diagram creation dialog and add the new diagram to the threat model
   addDiagram(): void {
     if (!this.canEdit) {
       this.logger.warn('Cannot add diagram - insufficient permissions');
@@ -1120,6 +1157,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param diagram The diagram to delete
    * @param event The click event
    */
+  // SEM@8276927976b5e15eec42a3b06951c5fa0409615f: confirm and delete a diagram, then remove it from the local threat model state
   deleteDiagram(diagram: Diagram, event: Event): void {
     // Prevent event propagation to avoid navigating to the diagram
     event.stopPropagation();
@@ -1171,6 +1209,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new document
    * If the user confirms, adds the new document to the threat model
    */
+  // SEM@58d59feac54c60ffda564c30c3c6881885a5d865: open document creation dialog and store the new document on the threat model
   addDocument(uri?: string): void {
     if (!this.canEdit) {
       this.logger.warn('Cannot add document - insufficient permissions');
@@ -1211,6 +1250,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handles a URL dropped onto the documents card.
    * Opens the create document dialog with the URI pre-populated.
    */
+  // SEM@6b3cabf678313d326a2521b0cf1b48844d4c2aa1: handle a dropped URL by opening the document creation dialog pre-populated with the URI
   onDocumentUrlDropped(url: string): void {
     if (!this.canEdit || this.dialog.openDialogs.length > 0) return;
     this.addDocument(url);
@@ -1222,6 +1262,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param document The document to edit
    * @param event The click event
    */
+  // SEM@58d59feac54c60ffda564c30c3c6881885a5d865: open document editor dialog and persist the updated document to the threat model
   editDocument(document: Document, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1266,6 +1307,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param document The document to delete
    * @param event The click event
    */
+  // SEM@58d59feac54c60ffda564c30c3c6881885a5d865: confirm and delete a document, then remove it from the local threat model state
   deleteDocument(document: Document, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1310,6 +1352,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new source code repository reference
    * If the user confirms, adds the new source code to the threat model
    */
+  // SEM@273bab474c740f41e9d130e66d12ffdd239e9ac9: open repository creation dialog and store the new repository on the threat model
   addRepository(uri?: string): void {
     if (!this.canEdit) {
       this.logger.warn('Cannot add repository - insufficient permissions');
@@ -1343,6 +1386,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handles a URL dropped onto the repositories card.
    * Opens the create repository dialog with the URI pre-populated.
    */
+  // SEM@6b3cabf678313d326a2521b0cf1b48844d4c2aa1: handle a dropped URL by opening the repository creation dialog pre-populated with the URI
   onRepositoryUrlDropped(url: string): void {
     if (!this.canEdit || this.dialog.openDialogs.length > 0) return;
     this.addRepository(url);
@@ -1354,6 +1398,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param repository The repository to edit
    * @param event The click event
    */
+  // SEM@273bab474c740f41e9d130e66d12ffdd239e9ac9: open editor dialog and update a repository reference on the threat model (mutates shared state)
   editRepository(repository: Repository, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
@@ -1400,6 +1445,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param repository The repository to delete
    * @param event The click event
    */
+  // SEM@273bab474c740f41e9d130e66d12ffdd239e9ac9: confirm and delete a repository reference from the threat model (mutates shared state)
   deleteRepository(repository: Repository, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
@@ -1447,6 +1493,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific repository
    */
+  // SEM@273bab474c740f41e9d130e66d12ffdd239e9ac9: open metadata dialog and update a repository's metadata via API (mutates shared state)
   openRepositoryMetadataDialog(repository: Repository, event: Event): void {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
@@ -1490,6 +1537,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the dialog to create a new note
    */
+  // SEM@139bebbae2731b16f251536df55fbd29ea901c42: open note editor dialog and create a new note on the threat model (mutates shared state)
   addNote(): void {
     if (!this.canEdit) {
       this.logger.warn('User does not have permission to create notes');
@@ -1570,6 +1618,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Navigates to the full-page note editor for an existing note.
    * For new notes, use addNote() which opens the dialog.
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: navigate to the full-page note editor for an existing note
   editNote(note: Note, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1589,6 +1638,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Deletes a note from the threat model
    */
+  // SEM@139bebbae2731b16f251536df55fbd29ea901c42: confirm and delete a note from the threat model (mutates shared state)
   deleteNote(note: Note, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1630,6 +1680,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Downloads a note as a markdown file
    */
+  // SEM@6035d4ff1f129142bc9e672956f001cf13ed700b: download a note's content as a markdown file to the user's device
   downloadNote(note: Note, event: Event): void {
     event.stopPropagation();
 
@@ -1652,6 +1703,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param diagram The diagram to download
    * @param format The format to download: 'json', 'yaml', or 'graphml'
    */
+  // SEM@8276927976b5e15eec42a3b06951c5fa0409615f: fetch diagram model from API and download it in the specified format
   downloadDiagramModel(diagram: Diagram, format: 'json' | 'yaml' | 'graphml'): void {
     if (!this.threatModel) {
       this.logger.warn('Cannot download diagram model: no threat model loaded');
@@ -1690,6 +1742,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle diagram model export using File System Access API with fallback
    */
+  // SEM@febac2629261f5184c68f094bd6ab6afc986bea7: save a diagram model blob to disk using File System API or anchor fallback
   private async handleDiagramModelExport(
     blob: Blob,
     filename: string,
@@ -1752,6 +1805,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Get file types configuration for the save dialog based on format
    */
+  // SEM@febac2629261f5184c68f094bd6ab6afc986bea7: map an export format to its save-dialog file type configuration (pure)
   private getFileTypesForFormat(
     format: 'json' | 'yaml' | 'graphml',
   ): { description: string; accept: Record<string, string[]> }[] {
@@ -1770,6 +1824,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific note
    */
+  // SEM@139bebbae2731b16f251536df55fbd29ea901c42: open metadata dialog and update a note's metadata via API (mutates shared state)
   openNoteMetadataDialog(note: Note, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1809,6 +1864,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific document
    */
+  // SEM@58d59feac54c60ffda564c30c3c6881885a5d865: open metadata dialog and update a document's metadata via API (mutates shared state)
   openDocumentMetadataDialog(document: Document, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -1849,6 +1905,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: discard edits and navigate back to the dashboard
   cancel(): void {
     // Clear SVG caches before navigating away
     this.clearSvgCaches();
@@ -1858,6 +1915,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the permissions dialog to manage threat model permissions
    */
+  // SEM@b35f37669194da06fdcb5b2eba70858b8916088f: open permissions dialog and persist updated authorization and owner to the threat model (mutates shared state)
   openPermissionsDialog(): void {
     if (!this.threatModel) {
       return;
@@ -1951,6 +2009,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog to manage threat model metadata
    */
+  // SEM@384da63391fdb7be917bbe163eee1e687d263bdf: fetch fresh metadata, open metadata dialog, and persist threat model metadata via API (mutates shared state)
   openMetadataDialog(): void {
     if (!this.threatModel) {
       return;
@@ -1997,6 +2056,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific diagram
    */
+  // SEM@8276927976b5e15eec42a3b06951c5fa0409615f: fetch diagram metadata, open metadata dialog, and persist updates via API (mutates shared state)
   openDiagramMetadataDialog(diagram: Diagram, event: Event): void {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
@@ -2043,6 +2103,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific threat
    */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: open metadata dialog and update a threat's metadata via API (mutates shared state)
   openThreatMetadataDialog(threat: Threat, event: Event): void {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
@@ -2085,6 +2146,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the repository view (placeholder for future functionality)
    */
+  // SEM@4135678012329fabec902d99e43836ab6545b889: placeholder: log intent to open repository view (no-op)
   openRepositoryView(): void {
     // TODO: Implement repository view functionality
     this.logger.info('Repository view clicked - functionality to be implemented');
@@ -2093,6 +2155,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Generates and saves a PDF report for the current threat model
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: generate and save a PDF report for the current threat model
   async openReport(): Promise<void> {
     if (!this.threatModel) {
       this.logger.warn('Cannot generate report: no threat model loaded');
@@ -2112,6 +2175,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Navigate to the Timmy chat page for the current threat model.
    */
+  // SEM@0d2745da4e8e3843cd65f62979270c63dc57e657: navigate to the Timmy AI chat page for the current threat model
   openChat(): void {
     if (!this.threatModel) return;
     void this.router.navigate(['/tm', this.threatModel.id, 'chat']);
@@ -2120,6 +2184,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Navigate to the audit trail page for the current threat model (all entities).
    */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: navigate to the full audit trail page for the current threat model
   openAuditTrail(): void {
     if (!this.threatModel) return;
     void this.router.navigate(['/tm', this.threatModel.id, 'audit']);
@@ -2128,6 +2193,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Navigate to the audit trail page scoped to a specific sub-entity.
    */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: navigate to the audit trail page filtered to a specific sub-entity
   openEntityAuditTrail(
     objectType: string,
     entityId: string,
@@ -2141,6 +2207,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@fb0bbd2e1d7140740b5cc7054991efc5dd765fd4: open export dialog and download the full threat model as a JSON file
   downloadToDesktop(): void {
     if (!this.threatModel) {
       this.logger.warn('Cannot download threat model: no threat model loaded');
@@ -2177,6 +2244,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Must be called within a user activation context (e.g., from a dialog
    * afterClosed callback triggered by a user click).
    */
+  // SEM@fb0bbd2e1d7140740b5cc7054991efc5dd765fd4: save a blob to disk using File System Access API with anchor-element fallback
   private async triggerDownload(blob: Blob, filename: string): Promise<void> {
     if ('showSaveFilePicker' in window) {
       try {
@@ -2222,6 +2290,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Used to determine if the framework control should be disabled
    * @returns true if threats exist, false otherwise
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: return whether the threat model has at least one threat defined (pure)
   hasThreats(): boolean {
     return !!(this.threatModel?.threats && this.threatModel.threats.length > 0);
   }
@@ -2231,6 +2300,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * The framework cannot be changed once threats are defined to maintain data consistency
    * Also respects read-only mode permissions
    */
+  // SEM@3d4759907cc752579d755e92067e98a48c64991e: enable or disable the framework form control based on threat existence and edit permission (mutates shared state)
   private updateFrameworkControlState(): void {
     const frameworkControl = this.threatModelForm.get('threat_model_framework');
     if (frameworkControl) {
@@ -2243,11 +2313,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Gets the appropriate Material icon for a diagram based on its type. */
+  // SEM@e99d1625a4dc0a2f2b84345424ec14cb9b48ca0f: map a diagram to its Material icon name by type (pure)
   getDiagramIcon(diagram: Diagram): string {
     return this.formattingService.getDiagramIcon(diagram);
   }
 
   /** Gets tooltip text for a diagram icon showing the diagram type. */
+  // SEM@e99d1625a4dc0a2f2b84345424ec14cb9b48ca0f: map a diagram to its localized tooltip text by type (pure)
   getDiagramTooltip(diagram: Diagram): string {
     return this.formattingService.getDiagramTooltip(diagram);
   }
@@ -2255,6 +2327,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Compute SVG data for all diagrams to prevent change detection loops
    */
+  // SEM@e99d1625a4dc0a2f2b84345424ec14cb9b48ca0f: precompute and cache SVG validation flags and data URLs for all diagrams (mutates shared state)
   private computeDiagramSvgData(): void {
     this.diagramSvgValidation.clear();
     this.diagramSvgDataUrls.clear();
@@ -2296,6 +2369,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param diagram The diagram object
    * @returns True if the diagram has valid SVG data
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: return whether a diagram has a valid cached SVG thumbnail (pure)
   hasSvgImage(diagram: Diagram): boolean {
     return this.diagramSvgValidation.get(diagram.id) || false;
   }
@@ -2305,6 +2379,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param diagram The diagram object
    * @returns SVG data URL or empty string
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: return the cached SVG data URL for a diagram thumbnail (pure)
   getSvgDataUrl(diagram: Diagram): string {
     return this.diagramSvgDataUrls.get(diagram.id) || '';
   }
@@ -2314,6 +2389,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param oldFramework The previous framework name
    * @param newFramework The new framework name
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: log a framework change event and warn if threats already exist (pure)
   private handleFrameworkChange(oldFramework: string, newFramework: string): void {
     this.logger.info('Framework changed', {
       oldFramework,
@@ -2338,6 +2414,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Apply form changes to the threat model object before saving
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: sync valid form field values onto the threat model before saving (mutates shared state)
   private applyFormChangesToThreatModel(): void {
     if (!this.threatModel || !this.threatModelForm.valid) {
       return;
@@ -2367,6 +2444,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Trigger auto-save by emitting to the auto-save subject
    * This will be debounced to prevent excessive API calls
    */
+  // SEM@1e88117765617743294af0ef90f010d702265698: emit to the debounced auto-save subject to schedule a save (mutates shared state)
   private autoSaveThreatModel(): void {
     this.logger.info('Auto-save triggered');
     this._autoSaveSubject.next();
@@ -2376,6 +2454,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Perform the actual auto-save operation with enhanced error handling
    * This method is called after debouncing
    */
+  // SEM@5430d2efdce732310b5e837d71bd1329e58af449: PATCH changed threat model fields to the API and reconcile state on success (reads DB)
   private performAutoSave(): void {
     // this.logger.debugComponent('TmEdit', 'performAutoSave called', {
     //   threatModelExists: !!this.threatModel,
@@ -2481,6 +2560,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Load diagrams for the threat model with pagination
    * Always uses API call for server-side pagination
    */
+  // SEM@8276927976b5e15eec42a3b06951c5fa0409615f: fetch a paginated diagram list for a threat model and update component state (reads DB)
   private loadDiagrams(threatModelId: string): void {
     this._subscriptions.add(
       this.diagramCrud
@@ -2506,6 +2586,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle diagrams page change
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle diagram paginator event and reload the current page (reads DB)
   onDiagramsPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.diagramsPageIndex = event.pageIndex;
     this.diagramsPageSize = event.pageSize;
@@ -2517,6 +2598,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load documents for the threat model using separate API call with pagination
    */
+  // SEM@58d59feac54c60ffda564c30c3c6881885a5d865: fetch a paginated document list for a threat model and update component state (reads DB)
   private loadDocuments(threatModelId: string): void {
     this._subscriptions.add(
       this.documentCrud
@@ -2537,6 +2619,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle documents page change
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle document paginator event and reload the current page (reads DB)
   onDocumentsPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.documentsPageIndex = event.pageIndex;
     this.documentsPageSize = event.pageSize;
@@ -2548,6 +2631,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load repositories for the threat model using separate API call with pagination
    */
+  // SEM@273bab474c740f41e9d130e66d12ffdd239e9ac9: fetch a paginated repository list for a threat model and update component state (reads DB)
   private loadRepositories(threatModelId: string): void {
     this._subscriptions.add(
       this.repositoryCrud
@@ -2568,6 +2652,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle repositories page change
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle repository paginator event and reload the current page (reads DB)
   onRepositoriesPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.repositoriesPageIndex = event.pageIndex;
     this.repositoriesPageSize = event.pageSize;
@@ -2577,6 +2662,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Gets the appropriate Material icon for an asset type. */
+  // SEM@e99d1625a4dc0a2f2b84345424ec14cb9b48ca0f: map an asset type string to its Material icon name (pure)
   getAssetTypeIcon(type?: string): string {
     return this.formattingService.getAssetTypeIcon(type);
   }
@@ -2584,6 +2670,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load assets for the threat model using separate API call with pagination
    */
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: fetch a paginated asset list for a threat model and update component state (reads DB)
   private loadAssets(threatModelId: string): void {
     // Initialize assets array to empty array to ensure it exists
     if (this.threatModel) {
@@ -2616,6 +2703,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle assets page change
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle asset paginator event and reload the current page (reads DB)
   onAssetsPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.assetsPageIndex = event.pageIndex;
     this.assetsPageSize = event.pageSize;
@@ -2625,6 +2713,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Snapshot the component's current threat query state (page + sort + filters). */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: snapshot current threat pagination, sort, and filter state into a query object (pure)
   private buildThreatQueryState(): ThreatQueryState {
     return {
       pageIndex: this.threatsPageIndex,
@@ -2638,6 +2727,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load threats for the threat model using API with filters, sorting, and pagination
    */
+  // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: fetch a filtered, sorted, paginated threat list and update component state (reads DB)
   private loadThreats(threatModelId: string): void {
     this._subscriptions.add(
       this.threatCrud.loadThreats(threatModelId, this.buildThreatQueryState()).subscribe({
@@ -2664,6 +2754,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Reload threats and persist current filter state */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: reload threats and persist the current filter card state (reads DB)
   private loadThreatsAndSaveState(): void {
     if (this.threatModel) {
       this.loadThreats(this.threatModel.id);
@@ -2674,6 +2765,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle threats page change
    */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: handle threat paginator event and reload the current page (reads DB)
   onThreatsPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.threatsPageIndex = event.pageIndex;
     this.threatsPageSize = event.pageSize;
@@ -2681,17 +2773,20 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Handle threat name filter input */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: dispatch a threat name filter value to the debounced filter subject (mutates shared state)
   onThreatNameFilterChange(value: string): void {
     this.threatNameFilterChanged$.next(value);
   }
 
   /** Handle server-side filter change (dropdowns, toggles) — immediate reload */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: reset threat page to zero and reload threats on dropdown or toggle filter change (reads DB)
   onThreatFilterChange(): void {
     this.threatsPageIndex = 0;
     this.loadThreatsAndSaveState();
   }
 
   /** Handle sort change from the threats table header */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: update threat sort column and direction, reset page to first (mutates shared state)
   onThreatSortChange(sort: { active: string; direction: 'asc' | 'desc' | '' }): void {
     this.threatSortActive = sort.active;
     this.threatSortDirection = sort.direction;
@@ -2700,6 +2795,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Clear all threat filters and reset to defaults */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: reset all threat filters to defaults and reload the threat list (mutates shared state)
   clearAllThreatFilters(): void {
     this.threatFilters = createDefaultThreatFilters();
     this.threatsPageIndex = 0;
@@ -2708,6 +2804,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Toggle the mitigated filter: null → true → false → null */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: cycle the mitigated threat filter through null, true, and false states (mutates shared state)
   toggleMitigatedFilter(): void {
     if (this.threatFilters.mitigated === null) {
       this.threatFilters.mitigated = true;
@@ -2728,6 +2825,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Update threat type options from the current framework */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: populate threat type options from the active threat modeling framework (mutates shared state)
   private updateThreatTypeOptions(): void {
     if (!this.threatModel) return;
     const frameworkName = this.threatModel.threat_model_framework || 'STRIDE';
@@ -2736,6 +2834,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Save current threat card state for later restoration */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: persist current threat filter, sort, and pagination state for later restoration (mutates shared state)
   private saveThreatCardState(): void {
     if (!this.threatModel) return;
     this.threatFilterStateService.saveState({
@@ -2750,6 +2849,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Restore threat card state if returning to the same threat model */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: restore previously saved threat filter, sort, and pagination state (mutates shared state)
   private restoreThreatCardState(threatModelId: string): void {
     const saved = this.threatFilterStateService.getState(threatModelId);
     if (saved) {
@@ -2765,6 +2865,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the dialog to create a new asset
    */
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: open asset editor dialog and create a new asset via API (mutates shared state)
   addAsset(): void {
     if (!this.canEdit) {
       this.logger.warn('User does not have permission to create assets');
@@ -2796,6 +2897,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Loads addons from server and caches filtered lists by object type
    */
+  // SEM@d790b8bd7f1bf990d1aec2d3118089a501ee6f98: fetch all addons from the server and cache them by object type (mutates shared state)
   private loadAddons(): void {
     this._subscriptions.add(
       this.addonService.list().subscribe({
@@ -2818,7 +2920,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Filters addons by object type and caches them
    */
+  // SEM@0fe5ff80314766ac33e872ed59e185586c3c1eb3: partition addon list by supported object type and store into typed caches (mutates shared state)
   private filterAndCacheAddons(addons: Addon[]): void {
+    // SEM@0fe5ff80314766ac33e872ed59e185586c3c1eb3: filter addons to those supporting a given object type (pure)
     const filterByType = (type: AddonObjectType): Addon[] =>
       addons.filter(addon => addon.objects?.includes(type));
 
@@ -2834,6 +2938,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Gets the icon name for display, handling material-symbols: prefix
    */
+  // SEM@0fe5ff80314766ac33e872ed59e185586c3c1eb3: resolve display icon name for an addon, stripping material-symbols prefix (pure)
   getAddonIcon(addon: Addon): string {
     if (!addon.icon) {
       return 'extension';
@@ -2844,6 +2949,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the dialog to edit an existing asset
    */
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: open asset editor dialog and persist changes to an existing asset via API (mutates shared state)
   editAsset(asset: Asset, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -2879,6 +2985,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Deletes an asset from the threat model
    */
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: confirm and delete an asset from the threat model via API (mutates shared state)
   deleteAsset(asset: Asset, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -2919,6 +3026,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Opens the metadata dialog for a specific asset
    */
+  // SEM@458002b0819d7370853d19a3b4bfc01cfe4708ed: open metadata editor dialog and update an asset's metadata via API (mutates shared state)
   openAssetMetadataDialog(asset: Asset, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
@@ -2957,6 +3065,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load notes for the threat model using separate API call with pagination
    */
+  // SEM@139bebbae2731b16f251536df55fbd29ea901c42: fetch a paginated page of notes for the threat model from the API (mutates shared state)
   private loadNotes(threatModelId: string): void {
     // Initialize notes array to empty array to ensure it exists
     if (this.threatModel) {
@@ -2986,6 +3095,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle notes page change
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: update notes pagination state and reload the notes page (mutates shared state)
   onNotesPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.notesPageIndex = event.pageIndex;
     this.notesPageSize = event.pageSize;
@@ -2998,6 +3108,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handle mouse enter on diagram thumbnail to show hover preview
    * @param diagramId The ID of the diagram to preview
    */
+  // SEM@1d2d0267968e0b8635f7aac0bba50d275f94b62d: show diagram thumbnail preview after a hover delay (mutates shared state)
   onThumbnailHover(diagramId: string): void {
     // Clear any existing timeout
     if (this.hoverTimeout) {
@@ -3013,6 +3124,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Handle mouse leave on diagram thumbnail to hide hover preview
    */
+  // SEM@1d2d0267968e0b8635f7aac0bba50d275f94b62d: cancel pending hover delay and hide the diagram thumbnail preview (mutates shared state)
   onThumbnailLeave(): void {
     // Clear timeout if hover hasn't triggered yet
     if (this.hoverTimeout) {
@@ -3028,6 +3140,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Get the SVG data URL for the currently hovered diagram
    * @returns SVG data URL or empty string if no diagram is hovered
    */
+  // SEM@d4911b695f58ccef3d5ee02916c161dc056adc86: return the SVG data URL for the currently hovered diagram (pure)
   getHoveredDiagramSvgUrl(): string {
     if (!this.hoveredDiagramId) {
       return '';
@@ -3043,6 +3156,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Set the addon context for row-level invocation
    * Called when a row-level addon menu trigger is clicked
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: store the row-level addon invocation context for the selected object (mutates shared state)
   setAddonRowContext(type: AddonObjectType, id: string, name: string, metadata?: Metadata[]): void {
     this.currentAddonRowContext = { type, id, name, metadata };
   }
@@ -3051,6 +3165,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Clear addon row context
    * Called when a row-level addon menu is closed
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: clear the stored row-level addon invocation context (mutates shared state)
   clearAddonRowContext(): void {
     this.currentAddonRowContext = null;
   }
@@ -3063,6 +3178,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param objectId Optional object ID (for row-level invocations)
    * @param objectName Optional object name for display
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: dispatch addon invocation dialog for a given object and notify on submission (mutates shared state)
   private openInvokeAddonDialog(
     addon: Addon,
     objectType: AddonObjectType,
@@ -3111,6 +3227,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Invoke addon with current row context
    * Called from row-level addon menu items
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: invoke an addon against the currently stored row-level object context (mutates shared state)
   invokeAddonWithRowContext(addon: Addon): void {
     if (!this.currentAddonRowContext) {
       this.logger.warn('No row context set for addon invocation');
@@ -3131,6 +3248,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for the threat model (card-level)
    */
+  // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: invoke an addon against the entire threat model as a bulk operation (mutates shared state)
   invokeAddonForThreatModel(addon: Addon): void {
     this.openInvokeAddonDialog(
       addon,
@@ -3145,6 +3263,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for assets (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: invoke an addon against all assets as a bulk operation (mutates shared state)
   invokeAddonForAssets(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'asset', true);
   }
@@ -3152,6 +3271,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for threats (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: dispatch addon invocation dialog scoped to the threat entity type
   invokeAddonForThreats(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'threat', true);
   }
@@ -3159,6 +3279,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for diagrams (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: dispatch addon invocation dialog scoped to the diagram entity type
   invokeAddonForDiagrams(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'diagram', true);
   }
@@ -3166,6 +3287,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for notes (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: dispatch addon invocation dialog scoped to the note entity type
   invokeAddonForNotes(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'note', true);
   }
@@ -3173,6 +3295,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for documents (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: dispatch addon invocation dialog scoped to the document entity type
   invokeAddonForDocuments(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'document', true);
   }
@@ -3180,6 +3303,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Invoke addon for repositories (card-level)
    */
+  // SEM@04ec57f52a96d3a77af63334dfa3631637c8b6fe: dispatch addon invocation dialog scoped to the repository entity type
   invokeAddonForRepositories(addon: Addon): void {
     this.openInvokeAddonDialog(addon, 'repository', true);
   }

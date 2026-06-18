@@ -16,6 +16,7 @@ import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.servic
  * `markdownPreview`; the base only declares the shapes it consumes.
  */
 @Directive()
+// SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: abstract base directive providing shared clipboard, task-list, and mermaid viewer behaviour for note editors
 export abstract class NoteEditorBase {
   /** Textarea holding the raw markdown; `@ViewChild` lives in the subclass. */
   abstract contentTextarea?: ElementRef<HTMLTextAreaElement>;
@@ -30,6 +31,7 @@ export abstract class NoteEditorBase {
   abstract hasSelection: boolean;
 
   /** Raw markdown content used for preview rendering. */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: return the raw markdown source for preview rendering (pure)
   abstract get markdownContent(): string;
 
   /** Optional service that wires up interactive mermaid diagram viewers. */
@@ -39,6 +41,7 @@ export abstract class NoteEditorBase {
    * Show a snackbar message. Abstract so each subclass can localize/route it,
    * though both current implementations are identical.
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: dispatch a localized snackbar notification, optionally as an error
   abstract showMessage(key: string, isError?: boolean): void;
 
   /** True when the clipboard was readable and held content at init time. */
@@ -54,6 +57,7 @@ export abstract class NoteEditorBase {
    * anchor links, and mermaid viewers whenever preview mode is entered, and
    * tears them down when it is left.
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: initialize or teardown task-list, anchor, and mermaid viewer bindings on preview toggle (mutates shared state)
   ngAfterViewChecked(): void {
     // Initialize task list checkboxes and anchor links after markdown is rendered
     if (this.previewMode && !this.taskListCheckboxesInitialized) {
@@ -81,6 +85,7 @@ export abstract class NoteEditorBase {
    * Cut the current textarea selection to the clipboard, removing it from the
    * form content. No-op in preview mode or when nothing is selected.
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: cut the selected markdown text to the clipboard and remove it from the form
   async onCut(): Promise<void> {
     if (this.previewMode || !this.hasSelection) {
       return;
@@ -115,6 +120,7 @@ export abstract class NoteEditorBase {
    * Copy the full markdown content (preview mode) or the current textarea
    * selection (edit mode) to the clipboard.
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: copy the selected or full markdown content to the clipboard
   async onCopy(): Promise<void> {
     if (this.previewMode) {
       // Copy the entire markdown content in preview mode
@@ -151,6 +157,7 @@ export abstract class NoteEditorBase {
    * Paste clipboard text into the textarea at the current caret/selection.
    * No-op in preview mode.
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: paste clipboard text into the markdown textarea at the current caret position
   async onPaste(): Promise<void> {
     if (this.previewMode) {
       return;
@@ -182,6 +189,7 @@ export abstract class NoteEditorBase {
    * Probe clipboard read access on init and record whether it holds content.
    * A denied read is expected and silently treated as "no content".
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: probe clipboard read access and record whether it holds content (mutates shared state)
   protected async checkClipboardPermissions(): Promise<void> {
     try {
       const text = await navigator.clipboard.readText();
@@ -195,6 +203,7 @@ export abstract class NoteEditorBase {
   /**
    * Initialize event listeners for task list checkboxes to make them interactive
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: register click handlers on rendered task-list checkboxes to enable toggling (mutates shared state)
   protected initializeTaskListCheckboxes(): void {
     if (!this.markdownPreview) {
       return;
@@ -219,6 +228,7 @@ export abstract class NoteEditorBase {
   /**
    * Toggle a task list item in the markdown content
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: update the checked state of a task-list item in the markdown form content (mutates shared state)
   protected toggleTaskListItem(index: number, checked: boolean): void {
     const content = this.markdownContent;
     const lines = content.split('\n');
@@ -249,6 +259,7 @@ export abstract class NoteEditorBase {
   /**
    * Initialize event listeners for anchor links to handle internal navigation
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: register delegated click handler on the preview to scroll to in-page anchor targets (mutates shared state)
   protected initializeAnchorLinks(): void {
     if (!this.markdownPreview) {
       return;

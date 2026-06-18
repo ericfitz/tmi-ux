@@ -28,6 +28,7 @@ interface UriSuggestionError {
  * }
  * ```
  */
+// SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: extract a URI format suggestion message from a form control's validation errors (pure)
 export function getUriSuggestionFromControl(control: AbstractControl | null): string | null {
   if (!control) return null;
 

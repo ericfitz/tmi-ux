@@ -19,6 +19,7 @@ const TWO_ROWS: Record<string, unknown>[] = [
   { id: 'row-2', action: 'delete' },
 ];
 
+// SEM@cbcc3ec1aaec7b489eee0eea6221a528f5f3cc7e: build a configured AuditTableComponent test fixture with optional input overrides (pure)
 function buildFixture(
   overrides: Partial<{
     columns: AuditColumnDef[];
@@ -54,6 +55,7 @@ function buildFixture(
   return fixture;
 }
 
+// SEM@cbcc3ec1aaec7b489eee0eea6221a528f5f3cc7e: fetch the first matching DOM element from a component fixture (pure)
 function query<E extends Element = HTMLElement>(
   fixture: ComponentFixture<AuditTableComponent>,
   selector: string,
@@ -61,6 +63,7 @@ function query<E extends Element = HTMLElement>(
   return fixture.nativeElement.querySelector(selector) as E;
 }
 
+// SEM@cbcc3ec1aaec7b489eee0eea6221a528f5f3cc7e: fetch all matching DOM elements from a component fixture (pure)
 function queryAll<E extends Element = HTMLElement>(
   fixture: ComponentFixture<AuditTableComponent>,
   selector: string,

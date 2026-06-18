@@ -15,4 +15,5 @@ import { TranslocoModule } from '@jsverse/transloco';
   templateUrl: './step-up-confirm-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@f0cbf56cdd766324ff656d4dcae789fc6db4c69d: dialog that confirms user intent to re-authenticate via IdP for step-up
 export class StepUpConfirmDialogComponent {}

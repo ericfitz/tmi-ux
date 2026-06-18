@@ -54,6 +54,7 @@ const ENTRY_2: SystemAuditEntry = {
   created_at: '2026-01-02T08:00:00Z',
 };
 
+// SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: build a stub system audit list response for tests (pure)
 function makeListResponse(
   entries: SystemAuditEntry[] = [ENTRY_1],
   opts: { total?: number; next_cursor?: string | null; prev_cursor?: string | null } = {},
@@ -75,6 +76,7 @@ function makeListResponse(
 
 // ── Build mocks / injector helper ─────────────────────────────────────────────
 
+// SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: build a configured Angular injector with audit service mocks for tests (pure)
 function buildMocks(
   options: {
     queryParams?: Record<string, string>;
@@ -149,6 +151,7 @@ function buildMocks(
   };
 }
 
+// SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: instantiate and initialize SystemAuditViewComponent in an injection context (pure)
 function createComponent(injector: Injector): SystemAuditViewComponent {
   const comp = runInInjectionContext(injector, () => new SystemAuditViewComponent());
   comp.ngOnInit();

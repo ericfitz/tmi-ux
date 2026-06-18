@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
  * the right icon name. This test mirrors the template logic so a refactor
  * doesn't silently swap icons.
  */
+// SEM@41a8887ebfdcd4ccb0bb336d0ccfa8340923a4ed: map a document access status string to its Material icon name (pure)
 function pickIconName(status: string | undefined): string {
   switch (status) {
     case 'auth_required':

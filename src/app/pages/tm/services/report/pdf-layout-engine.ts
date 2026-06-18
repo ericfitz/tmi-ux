@@ -41,7 +41,9 @@ interface DrawWrappedTextOptions {
  * All drawing methods accept and return a Cursor, making the flow explicit
  * and the engine composable.
  */
+// SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render text, rules, and key-value pairs onto paginated PDF pages (mutates shared state)
 export class PdfLayoutEngine {
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: build a layout engine bound to a PDF document and layout config (pure)
   constructor(
     private doc: PDFDocument,
     private config: LayoutConfig,
@@ -83,6 +85,7 @@ export class PdfLayoutEngine {
   /**
    * Create a new page and return a cursor at the top content position.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: add a new page to the PDF document and return a cursor at the top content position (mutates shared state)
   newPage(): Cursor {
     const page = this.doc.addPage([this.config.pageWidth, this.config.pageHeight]);
     return { page, y: this.topBound };
@@ -92,6 +95,7 @@ export class PdfLayoutEngine {
    * Ensure at least `requiredHeight` points remain on the current page.
    * If not, starts a new page. Used for orphan prevention.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: start a new page if remaining vertical space is insufficient for required height (mutates shared state)
   ensureSpace(cursor: Cursor, requiredHeight: number): Cursor {
     if (cursor.y - requiredHeight < this.bottomBound) {
       return this.newPage();
@@ -103,6 +107,7 @@ export class PdfLayoutEngine {
    * Advance the cursor vertically by the given number of points.
    * Starts a new page if the cursor would go below the bottom bound.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: move cursor down by given points, starting a new page if below bottom bound (mutates shared state)
   advanceCursor(cursor: Cursor, points: number): Cursor {
     const newY = cursor.y - points;
     if (newY < this.bottomBound) {
@@ -122,6 +127,7 @@ export class PdfLayoutEngine {
    *
    * @returns Array of wrapped line strings
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: wrap text into lines fitting a max pixel width, breaking overlong words by character (pure)
   wrapText(text: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
     if (!text || maxWidth <= 0) {
       return text ? [text] : [''];
@@ -178,6 +184,7 @@ export class PdfLayoutEngine {
    * Break a single word into lines that fit within maxWidth.
    * Used when a word is too long for the available space.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: split a single word into character-level segments that fit within max width (pure)
   private breakWord(word: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
     const lines: string[] = [];
     let current = '';
@@ -205,6 +212,7 @@ export class PdfLayoutEngine {
    * Draw a single line of text at the cursor position (no wrapping).
    * Does NOT handle page breaks — caller must ensureSpace first.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: draw a single text line at cursor position without wrapping or page break (mutates shared state)
   drawText(
     cursor: Cursor,
     text: string,
@@ -236,6 +244,7 @@ export class PdfLayoutEngine {
    * Draw text with automatic word wrapping and page break handling.
    * Returns the cursor positioned after all text has been drawn.
    */
+  // SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: draw word-wrapped text across pages, advancing cursor after each line (mutates shared state)
   drawWrappedText(
     cursor: Cursor,
     text: string,
@@ -281,6 +290,7 @@ export class PdfLayoutEngine {
   /**
    * Draw a horizontal rule across the content width.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: draw a horizontal rule line across the content width at cursor position (mutates shared state)
   drawHorizontalRule(
     cursor: Cursor,
     color: Color,
@@ -305,6 +315,7 @@ export class PdfLayoutEngine {
    * Draw a "Label: Value" pair where the label is drawn with one font
    * and the value with another. Value text wraps if needed.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: draw a label-value pair, wrapping the value text if it exceeds available width (mutates shared state)
   drawKeyValuePair(
     cursor: Cursor,
     labelText: string,
@@ -388,6 +399,7 @@ export class PdfLayoutEngine {
    * Calculate the total height that wrapped text would occupy,
    * without actually drawing it. Useful for pre-measuring.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: compute total height of wrapped text without drawing it (pure)
   measureWrappedTextHeight(
     text: string,
     font: PDFFont,

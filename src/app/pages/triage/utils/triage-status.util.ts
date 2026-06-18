@@ -14,6 +14,7 @@ import { ResponseStatus } from '@app/types/survey.types';
  * @param status - The response status to map
  * @returns The camelCase i18n key, or the original status if unmapped
  */
+// SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: convert a survey response status to its camelCase i18n key (pure)
 export function getStatusKey(status: ResponseStatus): string {
   const keyMap: Record<ResponseStatus, string> = {
     draft: 'draft',
@@ -31,6 +32,7 @@ export function getStatusKey(status: ResponseStatus): string {
  * @param status - The response status to map
  * @returns The CSS class name, or an empty string if unmapped
  */
+// SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: map a survey response status to its status-chip CSS class name (pure)
 export function getStatusClass(status: ResponseStatus): string {
   const statusClasses: Record<ResponseStatus, string> = {
     draft: 'status-draft',

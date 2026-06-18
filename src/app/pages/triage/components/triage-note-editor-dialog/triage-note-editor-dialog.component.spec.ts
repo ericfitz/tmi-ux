@@ -17,6 +17,7 @@ describe('TriageNoteEditorDialogComponent', () => {
   let mockSnackBar: { open: ReturnType<typeof vi.fn> };
   let mockTransloco: TranslocoService;
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a TriageNoteEditorDialogComponent with mocked dependencies for testing (pure)
   function build(data: TriageNoteEditorDialogData): TriageNoteEditorDialogComponent {
     const component = new TriageNoteEditorDialogComponent(
       new FormBuilder(),

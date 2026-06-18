@@ -20,6 +20,7 @@ const SYSTEM_PATH = 'admin/audit/system';
 const TM_PATH = 'admin/audit/threat_models';
 
 /** Strip undefined, null, and empty-string values so blank filters don't become query params. */
+// SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: strip null, undefined, and empty-string fields from an object before submission (pure)
 function clean<T extends object>(obj: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
@@ -32,7 +33,9 @@ function clean<T extends object>(obj: T): Partial<T> {
  * and the threat-model audit log.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch, list, and export admin audit log entries for system and threat-model streams
 export class AdminAuditService {
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: inject API and logger dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -44,6 +47,7 @@ export class AdminAuditService {
    * @param page Pagination params (limit, cursor, or around)
    * @returns Observable of the paginated system audit response
    */
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch a paginated list of system audit entries with optional filters
   listSystem(
     filter: SystemAuditFilter,
     page: AuditPageRequest,
@@ -68,6 +72,7 @@ export class AdminAuditService {
    * @param entryId The audit entry UUID
    * @returns Observable of the system audit entry
    */
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch a single system audit entry by ID
   getSystemEntry(entryId: string): Observable<SystemAuditEntry> {
     return this.apiService.get<SystemAuditEntry>(`${SYSTEM_PATH}/${entryId}`).pipe(
       catchError(error => {
@@ -83,6 +88,7 @@ export class AdminAuditService {
    * @param page Pagination params (limit, cursor, or around)
    * @returns Observable of the paginated TM audit response
    */
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch a paginated list of threat-model audit entries with optional filters
   listTm(filter: TmAuditFilter, page: AuditPageRequest): Observable<ListTmAuditResponse> {
     const params = buildHttpParams(clean({ ...filter, ...page }));
     return this.apiService.get<ListTmAuditResponse>(TM_PATH, params).pipe(
@@ -101,6 +107,7 @@ export class AdminAuditService {
    * @param entryId The audit entry UUID
    * @returns Observable of the TM audit entry
    */
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch a single threat-model audit entry by ID
   getTmEntry(entryId: string): Observable<AuditEntry> {
     return this.apiService.get<AuditEntry>(`${TM_PATH}/${entryId}`).pipe(
       catchError(error => {
@@ -116,6 +123,7 @@ export class AdminAuditService {
    * @param format Export format: 'csv' or 'ndjson'
    * @returns Observable of the response Blob
    */
+  // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch system audit entries as a downloadable blob in CSV or NDJSON format
   exportSystem(filter: SystemAuditFilter, format: AuditExportFormat): Observable<Blob> {
     const params = buildHttpParams(clean({ ...filter, format }));
     return this.apiService.getBlob(SYSTEM_PATH, params).pipe(

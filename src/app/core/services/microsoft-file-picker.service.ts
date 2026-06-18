@@ -47,9 +47,11 @@ interface MessageEnvelope {
 }
 
 @Injectable({ providedIn: 'root' })
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: open the Microsoft OneDrive file picker and emit picker lifecycle events
 export class MicrosoftFilePickerService implements IContentPickerService {
   private _open = false;
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: inject token, grant, language, and logger dependencies (mutates shared state)
   constructor(
     private pickerToken: PickerTokenService,
     private grantService: MicrosoftPickerGrantService,
@@ -57,6 +59,7 @@ export class MicrosoftFilePickerService implements IContentPickerService {
     private logger: LoggerService,
   ) {}
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: open the Microsoft file picker and stream picker events to the subscriber
   pick(): Observable<PickerEvent> {
     return new Observable<PickerEvent>(subscriber => {
       if (this._open) {
@@ -87,6 +90,7 @@ export class MicrosoftFilePickerService implements IContentPickerService {
 // Session — encapsulates the per-pick iframe lifecycle.
 // ---------------------------------------------------------------------------
 
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: define the subscriber interface for emitting picker lifecycle events (pure)
 type PickerEventEmitter = {
   next(value: PickerEvent): void;
   error(err: unknown): void;
@@ -94,6 +98,7 @@ type PickerEventEmitter = {
   closed?: boolean;
 };
 
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: manage a OneDrive file picker session lifecycle from open to teardown (mutates shared state)
 class MicrosoftPickerSession {
   private overlay: HTMLDivElement | null = null;
   private iframe: HTMLIFrameElement | null = null;
@@ -107,6 +112,7 @@ class MicrosoftPickerSession {
   private terminated = false;
   private windowMessageListener: ((evt: MessageEvent) => void) | null = null;
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: build a picker session with required services and event emitter (pure)
   constructor(
     private pickerToken: PickerTokenService,
     private grantService: MicrosoftPickerGrantService,
@@ -115,10 +121,12 @@ class MicrosoftPickerSession {
     private subscriber: PickerEventEmitter,
   ) {}
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: launch the picker session asynchronously (mutates shared state)
   start(): void {
     void this._startAsync();
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: fetch a picker token, validate config, and mount the picker iframe (mutates shared state)
   private async _startAsync(): Promise<void> {
     try {
       const token = await this._mintToken();
@@ -131,6 +139,7 @@ class MicrosoftPickerSession {
     }
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: fetch a Microsoft picker access token from the token service
   private _mintToken(): Promise<PickerTokenResponse> {
     return new Promise((resolve, reject) => {
       this.pickerToken.mint('microsoft').subscribe({
@@ -140,6 +149,7 @@ class MicrosoftPickerSession {
     });
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: validate required picker origin and client id from token config (mutates shared state)
   private _validateConfig(token: PickerTokenResponse): void {
     const cfg = token.provider_config ?? {};
     const pickerOrigin = cfg['picker_origin'];
@@ -154,6 +164,7 @@ class MicrosoftPickerSession {
     this.accessToken = token.access_token;
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: inject the picker overlay and iframe into the DOM and submit the auth form (mutates shared state)
   private _mountIframe(token: PickerTokenResponse): void {
     const cfg = token.provider_config ?? {};
     const channelId = this._generateChannelId();
@@ -204,6 +215,7 @@ class MicrosoftPickerSession {
     this.logger.debug('Microsoft picker iframe submitted');
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: build the OneDrive file picker SDK options payload (pure)
   private _buildPickerOptions(
     channelId: string,
     cfg: Record<string, string>,
@@ -228,6 +240,7 @@ class MicrosoftPickerSession {
     };
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: resolve the locale string for the picker UI from the document language (pure)
   private _buildLocale(): string {
     const docLang = document.documentElement.lang;
     if (docLang) return docLang.toLowerCase();
@@ -236,10 +249,12 @@ class MicrosoftPickerSession {
     return 'en-us';
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: generate a unique message channel id for the picker session (pure)
   private _generateChannelId(): string {
     return `tmi-msft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: handle window postMessage, validate picker origin, and install the message port (mutates shared state)
   private _onWindowMessage(evt: MessageEvent, channelId: string): void {
     if (this.terminated) return;
     if (evt.origin !== this.pickerOrigin) {
@@ -257,6 +272,7 @@ class MicrosoftPickerSession {
     this._installPort(evt);
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: establish the MessageChannel port and connect it to the picker iframe (mutates shared state)
   private _installPort(evt: MessageEvent): void {
     const channel = new MessageChannel();
     this.channel = channel;
@@ -278,6 +294,7 @@ class MicrosoftPickerSession {
     }
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: dispatch picker port commands: authenticate, pick, or close (mutates shared state)
   private _onPortMessage(evt: MessageEvent): void {
     if (this.terminated) return;
     const env = evt.data as MessageEnvelope | undefined;
@@ -307,17 +324,20 @@ class MicrosoftPickerSession {
     }
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: extract the selected file items array from a picker command payload (pure)
   private _extractSelectedItems(data: unknown): PickerSelectedItem[] {
     if (!data || typeof data !== 'object') return [];
     const obj = data as { items?: PickerSelectedItem[] };
     return Array.isArray(obj.items) ? obj.items : [];
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: send a response message to the picker over the established port (mutates shared state)
   private _respond(env: MessageEnvelope, response: Record<string, unknown>): void {
     if (!this.port) return;
     this.port.postMessage({ type: 'response', id: env.id, data: response });
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: grant access to the selected file, emit the picked event, and teardown (mutates shared state)
   private _finalizePick(item: PickerSelectedItem): void {
     if (this.terminated) return;
     const driveId = item.parentReference?.driveId ?? '';
@@ -357,12 +377,14 @@ class MicrosoftPickerSession {
     });
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: schedule a load timeout that fails the session if the picker does not initialize (mutates shared state)
   private _armLoadTimeout(): void {
     this.loadTimeoutId = setTimeout(() => {
       this._fail(new PickerLoadFailedError('Microsoft picker iframe did not initialize in time'));
     }, PICKER_LOAD_TIMEOUT_MS);
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: cancel the pending load timeout if it is still armed (mutates shared state)
   private _cancelLoadTimeout(): void {
     if (this.loadTimeoutId !== null) {
       clearTimeout(this.loadTimeoutId);
@@ -370,6 +392,7 @@ class MicrosoftPickerSession {
     }
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: cancel the pending grant timeout if it is still armed (mutates shared state)
   private _clearGrantTimeout(): void {
     if (this.grantTimeoutId !== null) {
       clearTimeout(this.grantTimeoutId);
@@ -377,23 +400,27 @@ class MicrosoftPickerSession {
     }
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: cancel the active picker session if not already terminated (mutates shared state)
   cancel(): void {
     if (this.terminated) return;
     this._cancel();
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: emit a cancelled event, teardown, and complete the subscriber (mutates shared state)
   private _cancel(): void {
     this.subscriber.next({ kind: 'cancelled' });
     this._teardown();
     this.subscriber.complete();
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: teardown the session and propagate an error to the subscriber (mutates shared state)
   private _fail(err: unknown): void {
     if (this.terminated) return;
     this._teardown();
     this.subscriber.error(err);
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: remove the picker DOM overlay, close the message port, and clear all session state (mutates shared state)
   private _teardown(): void {
     if (this.terminated) return;
     this.terminated = true;

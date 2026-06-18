@@ -98,14 +98,17 @@ export interface CreateSurveyDialogResult {
     `,
   ],
 })
+// SEM@6297e6cb099bef2dccad14f9ce7b634369834014: dialog component for collecting survey template name and version before creation
 export class CreateSurveyDialogComponent implements OnInit {
   form!: FormGroup;
 
+  // SEM@6297e6cb099bef2dccad14f9ce7b634369834014: inject dialog reference and form builder for the create-survey dialog
   constructor(
     private dialogRef: MatDialogRef<CreateSurveyDialogComponent, CreateSurveyDialogResult>,
     private fb: FormBuilder,
   ) {}
 
+  // SEM@6297e6cb099bef2dccad14f9ce7b634369834014: build the reactive form with name and version fields for survey creation (mutates shared state)
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(256)]],
@@ -113,6 +116,7 @@ export class CreateSurveyDialogComponent implements OnInit {
     });
   }
 
+  // SEM@6297e6cb099bef2dccad14f9ce7b634369834014: validate the form and close the dialog with the trimmed survey name and version
   onCreate(): void {
     if (this.form.valid) {
       const { name, version } = this.form.value as CreateSurveyDialogResult;
@@ -120,6 +124,7 @@ export class CreateSurveyDialogComponent implements OnInit {
     }
   }
 
+  // SEM@6297e6cb099bef2dccad14f9ce7b634369834014: dismiss the create-survey dialog without returning a result
   onCancel(): void {
     this.dialogRef.close();
   }

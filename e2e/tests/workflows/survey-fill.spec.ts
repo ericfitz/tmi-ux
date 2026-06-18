@@ -163,6 +163,7 @@ const KITCHEN_SINK_JSON = {
  * apply survey_json). Runs in a throwaway test-admin context so the main
  * test-user session isn't disturbed.
  */
+// SEM@7cbd1a4a9519eb72ea7f3f46e9a76e4e192159d2: seed survey schemas with test questions if they are empty (mutates shared state)
 async function ensureSeededSurveySchemas(): Promise<void> {
   const browser = await chromium.launch();
   try {

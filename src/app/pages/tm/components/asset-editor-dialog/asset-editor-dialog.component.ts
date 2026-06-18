@@ -62,6 +62,7 @@ export interface AssetEditorDialogData {
   templateUrl: './asset-editor-dialog.component.html',
   styleUrls: ['./asset-editor-dialog.component.scss'],
 })
+// SEM@a5d47afbe751f0027d056ced66949574212e626e: dialog for creating, editing, or viewing a threat model asset
 export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   assetForm: FormGroup;
   mode: 'create' | 'edit';
@@ -76,6 +77,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
 
   private _subscriptions: Subscription = new Subscription();
 
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: initialize the asset form from dialog data and disable it in read-only mode (pure)
   constructor(
     private dialogRef: MatDialogRef<AssetEditorDialogComponent>,
     private fb: FormBuilder,
@@ -100,10 +102,12 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: complete component initialization; no-op placeholder (pure)
   ngOnInit(): void {
     // Component initialization complete
   }
 
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: unsubscribe all subscriptions on component teardown (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
   }
@@ -111,6 +115,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Add a classification chip
    */
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: add a classification tag from a chip input event if not already present (mutates shared state)
   addClassification(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
@@ -129,6 +134,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Remove a classification chip
    */
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: delete a classification tag from the asset form's classification list (mutates shared state)
   removeClassification(classification: string): void {
     const currentClassification = this.assetForm.get('classification')?.value as string[];
     const index = currentClassification.indexOf(classification);
@@ -143,6 +149,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Close the dialog with the asset data
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: validate and close the dialog with the cleaned asset form values
   onSubmit(): void {
     if (this.assetForm.invalid) {
       return;
@@ -184,6 +191,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Close the dialog without saving
    */
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: close the dialog without saving any changes (pure)
   onCancel(): void {
     this.dialogRef.close();
   }

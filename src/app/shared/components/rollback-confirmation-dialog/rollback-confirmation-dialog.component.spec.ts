@@ -34,6 +34,7 @@ describe('RollbackConfirmationDialogComponent', () => {
     timestamp: '2024-06-01T10:00:00Z',
   };
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: build a RollbackConfirmationDialogComponent with mock dependencies for unit tests (pure)
   const createComponent = (
     data: RollbackConfirmationDialogData = defaultData,
   ): RollbackConfirmationDialogComponent => {

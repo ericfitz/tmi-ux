@@ -73,6 +73,7 @@ interface ReviewerFilters {
     ]),
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: list and assign security reviewers to unreviewed threat models (reads DB)
 export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
@@ -133,6 +134,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   private securityReviewerChanged$ = new Subject<string>();
   private ownerChanged$ = new Subject<string>();
 
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: inject dependencies and bind reviewer comparison delegate (pure)
   constructor(
     private router: Router,
     private threatModelService: ThreatModelService,
@@ -145,6 +147,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
     this.compareReviewers = (a, b) => this.securityReviewerService.compareReviewers(a, b);
   }
 
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: initialize filter options, debounced subjects, and initial data load (mutates shared state)
   ngOnInit(): void {
     // Build status filter options
     const statuses = getFieldKeysForFieldType('threatModels.status').filter(s => s !== 'closed');
@@ -171,6 +174,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
     this.loadThreatModels();
   }
 
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: complete the destroy subject to cancel all active subscriptions (mutates shared state)
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -179,6 +183,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Load security reviewer dropdown options via shared service.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: fetch available security reviewers and set dropdown or picker mode (reads DB)
   private loadReviewerOptions(): void {
     this.securityReviewerService
       .loadReviewerOptions()
@@ -194,6 +199,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: wire a debounced subject to update a filter field and reload threat models (mutates shared state)
   private setupDebouncedFilter(subject: Subject<string>, setter: (value: string) => void): void {
     subject
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
@@ -207,6 +213,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Load threat models from the server using current filter state.
    */
+  // SEM@ba27cb611fd1af5b4ea1c4acb1933f29cde942d7: fetch a filtered, paginated threat model list and update the table (reads DB)
   loadThreatModels(): void {
     this.isLoading = true;
     this.error = null;
@@ -263,6 +270,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle search text input changes (debounced).
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: dispatch a search-term change to the debounced filter subject (mutates shared state)
   onSearchChange(value: string): void {
     this.searchChanged$.next(value);
   }
@@ -270,6 +278,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle security reviewer filter text changes (debounced).
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: dispatch a security-reviewer filter change to the debounced subject (mutates shared state)
   onSecurityReviewerChange(value: string): void {
     this.securityReviewerChanged$.next(value);
   }
@@ -277,6 +286,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle owner filter text changes (debounced).
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: dispatch an owner filter change to the debounced filter subject (mutates shared state)
   onOwnerChange(value: string): void {
     this.ownerChanged$.next(value);
   }
@@ -284,6 +294,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle immediate filter changes (e.g., select, checkbox).
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: reset pagination to page zero and reload threat models with current filters (reads DB)
   onFilterChange(): void {
     this.pageIndex = 0;
     this.loadThreatModels();
@@ -292,6 +303,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle unassigned checkbox change.
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: toggle the unassigned-only filter, clearing reviewer text when enabled (reads DB)
   onUnassignedChange(checked: boolean): void {
     this.filters.unassigned = checked;
     if (checked) {
@@ -303,6 +315,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Clear all filters and reload.
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: reset all filters to defaults and reload the threat model list (reads DB)
   clearFilters(): void {
     this.filters = {
       searchTerm: '',
@@ -349,6 +362,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle page change.
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: update page index and size then reload the threat model list (reads DB)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -358,6 +372,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Handle reviewer selection from dropdown for a specific row.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: store the chosen reviewer for a threat model row pending confirmation (mutates shared state)
   onReviewerSelected(tmId: string, reviewer: User | null): void {
     this.selectedReviewers.set(tmId, reviewer);
   }
@@ -365,6 +380,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Open user picker dialog for a specific row (picker mode fallback).
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open a user-picker dialog and store the selected reviewer for a threat model row (mutates shared state)
   openReviewerPicker(tmId: string): void {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       data: {
@@ -393,6 +409,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Assign the selected reviewer to a threat model.
    */
+  // SEM@be78231c51b6810fcacb2df86acef694d051405c: persist a security reviewer assignment to a threat model via API (reads DB)
   assignReviewer(tmId: string, reviewer: User): void {
     this.isAssigning.add(tmId);
     this.cdr.detectChanges();
@@ -418,6 +435,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Assign the current user as reviewer ("Assign to Me").
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: assign the current authenticated user as reviewer on a threat model (reads DB)
   assignToMe(tmId: string): void {
     const me = this.securityReviewerService.getCurrentUserAsReviewer();
     if (me) {
@@ -428,6 +446,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Navigate to threat model detail/edit page.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: navigate to the threat model detail page for the given item (mutates shared state)
   viewThreatModel(tm: TMListItem): void {
     void this.router.navigate(['/tm', tm.id]);
   }
@@ -435,6 +454,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Get a localized label for a threat model status value.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: convert a threat model status key to its localized display label (pure)
   getStatusLabel(status: string | null | undefined): string {
     if (!status) return '';
     return getFieldLabel(status, 'threatModels.status', this.transloco);
@@ -443,6 +463,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Get CSS class for a threat model status chip.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: map a threat model status string to its CSS chip class (pure)
   getStatusClass(status: string | null | undefined): string {
     if (!status) return '';
     return `status-${status}`;
@@ -451,6 +472,7 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
   /**
    * Get the display text for a selected reviewer in picker mode.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: return display name or email for the selected reviewer of a threat model (pure)
   getSelectedReviewerDisplay(tmId: string): string | null {
     const reviewer = this.selectedReviewers.get(tmId);
     if (!reviewer) return null;

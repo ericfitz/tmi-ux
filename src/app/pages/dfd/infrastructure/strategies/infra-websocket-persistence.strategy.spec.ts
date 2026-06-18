@@ -64,11 +64,13 @@ describe('WebSocketPersistenceStrategy', () => {
   });
 
   // Helper to create a minimal Cell
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal Cell fixture for testing (pure)
   function makeCell(id: string, extras: Partial<Cell> = {}): Cell {
     return { id, shape: 'rect', ...extras };
   }
 
   // Helper to create a HistoryEntry
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a HistoryEntry fixture with cells and operation type (pure)
   function makeEntry(
     cells: Cell[],
     previousCells: Cell[],
@@ -85,6 +87,7 @@ describe('WebSocketPersistenceStrategy', () => {
   }
 
   // Helper to create a HistoryOperationEvent
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a HistoryOperationEvent fixture wrapping a HistoryEntry (pure)
   function makeEvent(
     cells: Cell[],
     previousCells: Cell[],

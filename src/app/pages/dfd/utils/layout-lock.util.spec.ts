@@ -3,6 +3,7 @@ import { isCellLayoutLocked, LOCK_BADGE_ICON_HREF } from './layout-lock.util';
 
 describe('layout-lock.util', () => {
   describe('isCellLayoutLocked', () => {
+    // SEM@6669d4d013fdcc4367a137b4ddc96f104ae80a2a: build a minimal stub cell with a getData method for layout-lock tests (pure)
     function makeCell(data: unknown): { getData: () => unknown } {
       return { getData: () => data };
     }

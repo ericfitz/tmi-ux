@@ -5,6 +5,7 @@ import { Principal, User, Group } from '@app/pages/tm/models/threat-model.model'
  * @param principal The principal (User or Group) to get display name for
  * @returns Formatted display name
  */
+// SEM@17ea5e2433175c5b660d4a31535e1749d0305f70: format a principal's display name as 'Name (email)' or 'Name' (pure)
 export function getPrincipalDisplayName(principal: Principal): string {
   if (!principal) {
     return '';
@@ -28,6 +29,7 @@ export function getPrincipalDisplayName(principal: Principal): string {
  * @param principal The principal to get composite key for
  * @returns Composite key string
  */
+// SEM@17ea5e2433175c5b660d4a31535e1749d0305f70: build a unique composite key for a principal as 'provider:provider_id' (pure)
 export function getCompositeKey(principal: Principal): string {
   if (!principal) {
     return '';
@@ -41,6 +43,7 @@ export function getCompositeKey(principal: Principal): string {
  * @param p2 Second principal
  * @returns True if principals match
  */
+// SEM@17ea5e2433175c5b660d4a31535e1749d0305f70: compare two principals for equality by provider and provider_id (pure)
 export function principalsEqual(
   p1: Principal | null | undefined,
   p2: Principal | null | undefined,
@@ -56,6 +59,7 @@ export function principalsEqual(
  * @param principal The principal to check
  * @returns True if principal is a User
  */
+// SEM@13ad524189c94573aeee64a7185463714eeb6821: type guard: validate that a principal is a User (pure)
 export function isPrincipalUser(principal: Principal): principal is User {
   return principal.principal_type === 'user';
 }
@@ -65,6 +69,7 @@ export function isPrincipalUser(principal: Principal): principal is User {
  * @param principal The principal to check
  * @returns True if principal is a Group
  */
+// SEM@13ad524189c94573aeee64a7185463714eeb6821: type guard: validate that a principal is a Group (pure)
 export function isPrincipalGroup(principal: Principal): principal is Group {
   return principal.principal_type === 'group';
 }

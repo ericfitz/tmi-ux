@@ -12,6 +12,7 @@ interface MockBranding {
   push: (cfg: ServerConfig | null) => void;
 }
 
+// SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: build a mock BrandingConfigService backed by a controllable BehaviorSubject (pure)
 function makeBranding(initial: ServerConfig | null): MockBranding {
   const subject = new BehaviorSubject<ServerConfig | null>(initial);
   return {

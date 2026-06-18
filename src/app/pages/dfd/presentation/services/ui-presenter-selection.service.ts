@@ -15,12 +15,14 @@ import { UiPresenterCursorDisplayService } from './ui-presenter-cursor-display.s
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: broadcast presenter graph selection to participants and apply remote selection updates for viewers (mutates shared state)
 export class UiPresenterSelectionService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _graph: Graph | null = null;
   private _selectionAdapter: InfraX6SelectionAdapter | null = null;
   private _isInitialized = false;
 
+  // SEM@5e88aabadfaae05e8ef4c5de99d82329411466af: inject logger, collaboration, websocket adapter, and cursor display dependencies (pure)
   constructor(
     private logger: LoggerService,
     private collaborationService: DfdCollaborationService,
@@ -33,6 +35,7 @@ export class UiPresenterSelectionService implements OnDestroy {
    * @param graph The X6 graph instance
    * @param selectionAdapter The X6 selection adapter instance
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: attach graph and selection adapter and register selection change listener (mutates shared state)
   initialize(graph: Graph, selectionAdapter: InfraX6SelectionAdapter): void {
     this._graph = graph;
     this._selectionAdapter = selectionAdapter;
@@ -47,6 +50,7 @@ export class UiPresenterSelectionService implements OnDestroy {
   /**
    * Setup listener for X6 selection changes to broadcast when presenter mode is active
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: register X6 selection:changed listener to broadcast when presenter mode is active (mutates shared state)
   private _setupSelectionListener(): void {
     if (!this._graph) {
       this.logger.error('Cannot setup selection listener: graph not available');
@@ -70,6 +74,7 @@ export class UiPresenterSelectionService implements OnDestroy {
   /**
    * Broadcast current selection state to all participants
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: send currently selected cell IDs to all collaboration participants via websocket
   private _broadcastSelectionChange(): void {
     if (!this._graph || !this._selectionAdapter) {
       return;
@@ -106,6 +111,7 @@ export class UiPresenterSelectionService implements OnDestroy {
    * Called when a PresenterSelectionMessage is received
    * @param selectedCellIds Array of cell IDs that should be selected
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: apply incoming presenter cell selection to viewer's graph, skipping for the presenter (mutates shared state)
   handlePresenterSelectionUpdate(selectedCellIds: string[]): void {
     // Only apply selection if current user is not the presenter
     if (this.collaborationService.isCurrentUserPresenter()) {
@@ -151,6 +157,7 @@ export class UiPresenterSelectionService implements OnDestroy {
   /**
    * Manually trigger selection broadcast (useful for testing or specific scenarios)
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: broadcast current graph selection if presenter mode is active
   broadcastCurrentSelection(): void {
     if (this.collaborationService.isCurrentUserPresenterModeActive()) {
       this._broadcastSelectionChange();
@@ -162,6 +169,7 @@ export class UiPresenterSelectionService implements OnDestroy {
   /**
    * Clear selection for non-presenter users (useful when presenter disables presenter mode)
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: deselect all graph cells for viewer users, leaving presenter selection intact (mutates shared state)
   clearSelectionForNonPresenters(): void {
     if (this.collaborationService.isCurrentUserPresenter()) {
       return; // Don't clear selection for the presenter
@@ -185,6 +193,7 @@ export class UiPresenterSelectionService implements OnDestroy {
   /**
    * Cleanup resources
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: unsubscribe all listeners and release graph and selection adapter references
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
     this._graph = null;

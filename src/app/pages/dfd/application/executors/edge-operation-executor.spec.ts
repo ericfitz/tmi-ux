@@ -20,6 +20,7 @@ import {
 } from '../../types/graph-operation.types';
 
 /** A mock X6 node — only isNode/isEdge are needed by the executor. */
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a minimal mock graph node with the given id (pure)
 function createMockNode(id: string): Record<string, unknown> {
   return { id, isNode: () => true, isEdge: () => false };
 }
@@ -28,6 +29,7 @@ function createMockNode(id: string): Record<string, unknown> {
  * Recursive merge mirroring X6's `setAttrs` default (deep) merge behavior, so
  * the mock edge's attrs handling matches what the executor relies on.
  */
+// SEM@16e70871be30dfa1d3a516313196a38ca75845db: recursively merge two plain objects mirroring X6 setAttrs deep-merge semantics (pure)
 function deepMerge(
   target: Record<string, unknown>,
   source: Record<string, unknown>,
@@ -55,6 +57,7 @@ function deepMerge(
 }
 
 /** A mock X6 edge exposing the getters/setters the executor touches. */
+// SEM@16e70871be30dfa1d3a516313196a38ca75845db: build a stateful mock X6 edge exposing all getters and setters the executor touches (pure)
 function createMockEdge(id: string): Record<string, unknown> {
   let source: unknown = { cell: 'n1' };
   let target: unknown = { cell: 'n2' };
@@ -160,6 +163,7 @@ describe('EdgeOperationExecutor', () => {
   // create-edge
   // -------------------------------------------------------------------------
   describe('create-edge', () => {
+    // SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a create-edge operation fixture with optional field overrides (pure)
     function makeCreateOp(overrides: Partial<CreateEdgeOperation> = {}): CreateEdgeOperation {
       return {
         id: 'op-create',
@@ -310,6 +314,7 @@ describe('EdgeOperationExecutor', () => {
   // update-edge
   // -------------------------------------------------------------------------
   describe('update-edge', () => {
+    // SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build an update-edge operation fixture with given updates and optional overrides (pure)
     function makeUpdateOp(
       updates: UpdateEdgeOperation['updates'],
       overrides: Partial<UpdateEdgeOperation> = {},
@@ -568,6 +573,7 @@ describe('EdgeOperationExecutor', () => {
   // delete-edge
   // -------------------------------------------------------------------------
   describe('delete-edge', () => {
+    // SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a delete-edge operation fixture for a given edge id (pure)
     function makeDeleteOp(edgeId = 'e1'): DeleteEdgeOperation {
       return {
         id: 'op-delete',

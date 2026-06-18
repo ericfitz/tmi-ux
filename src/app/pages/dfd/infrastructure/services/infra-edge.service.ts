@@ -21,7 +21,9 @@ import { getEdgeMarkup } from '../utils/edge-markup.util';
  * - Provide consistent edge attribute handling
  */
 @Injectable()
+// SEM@e99bb98ad3ad07b8d4047d771022c542c89d8e39: manage DFD edge lifecycle: create, update, and delete edges in the X6 graph
 export class InfraEdgeService {
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject logger, port state manager, X6 core ops, and history coordinator dependencies
   constructor(
     private readonly _logger: LoggerService,
     private readonly _portStateManager: InfraPortStateService,
@@ -32,6 +34,7 @@ export class InfraEdgeService {
   /**
    * Create an edge in the X6 graph from EdgeInfo
    */
+  // SEM@e99bb98ad3ad07b8d4047d771022c542c89d8e39: build and register an edge in the X6 graph from an EdgeInfo domain object (mutates shared state)
   createEdge(
     graph: any,
     edgeInfo: EdgeInfo,
@@ -119,6 +122,7 @@ export class InfraEdgeService {
   /**
    * Update an existing edge using EdgeInfo.update() method
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: apply property updates to an existing edge and refresh port visibility (mutates shared state)
   updateEdge(
     edge: Edge,
     updates: Parameters<EdgeInfo['update']>[0],
@@ -202,6 +206,7 @@ export class InfraEdgeService {
   /**
    * Remove an edge from the graph
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: delete an edge from the graph and update port visibility on affected nodes (mutates shared state)
   removeEdge(graph: any, edgeId: string): boolean {
     const edge = graph.getCellById(edgeId) as Edge;
 
@@ -240,6 +245,7 @@ export class InfraEdgeService {
   /**
    * Get edge by ID with type safety
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a type-safe edge by ID from the graph, returning null if absent (pure)
   getEdge(graph: any, edgeId: string): Edge | null {
     const cell = graph.getCellById(edgeId);
     return cell && cell.isEdge() ? cell : null;
@@ -248,6 +254,7 @@ export class InfraEdgeService {
   /**
    * Get all edges from the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all edges in the graph (pure)
   getEdges(graph: any): Edge[] {
     return graph.getEdges();
   }
@@ -255,6 +262,7 @@ export class InfraEdgeService {
   /**
    * Ensure edge has proper attrs structure for visual rendering
    */
+  // SEM@5f881a84d0935fecd8e018eac99b16974e7641c9: build edge visual attrs with required connection and stroke defaults when missing (pure)
   private _ensureEdgeAttrs(attrs: Edge.Properties['attrs']): Edge.Properties['attrs'] {
     // If attrs is empty or missing critical styling, provide defaults.
     // The 'lines' group selector targets both 'wrap' and 'line' paths
@@ -306,6 +314,7 @@ export class InfraEdgeService {
   /**
    * Verify that source and target nodes exist for edge creation
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: validate source and target nodes and ports exist in the graph before edge creation (pure)
   private _verifyEdgeNodes(graph: any, edgeInfo: EdgeInfo): void {
     const sourceNodeId = edgeInfo.source?.cell;
     const targetNodeId = edgeInfo.target?.cell;

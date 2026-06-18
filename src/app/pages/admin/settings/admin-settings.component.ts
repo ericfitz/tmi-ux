@@ -54,6 +54,7 @@ import {
   styleUrl: './admin-settings.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: admin page component for listing, filtering, editing, and deleting system settings
 export class AdminSettingsComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -74,6 +75,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   filterText = '';
   loading = false;
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: inject settings, routing, dialog, logger, auth, and translation dependencies (pure)
   constructor(
     private settingsService: SettingsAdminService,
     private router: Router,
@@ -84,6 +86,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     private transloco: TranslocoService,
   ) {}
 
+  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: wire paginator sort and custom sort accessor to the settings data source (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (
@@ -103,6 +106,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: restore pagination state from URL params and subscribe to debounced filter changes (mutates shared state)
   ngOnInit(): void {
     this.route.queryParams.pipe(take(1)).subscribe(params => {
       const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
@@ -122,6 +126,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: fetch all system settings from the API and populate the table data source (reads DB)
   loadSettings(): void {
     this.loading = true;
 
@@ -147,16 +152,19 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: dispatch a filter value change to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: update pagination state and sync URL on paginator page change (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     this.updateUrl();
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: sync current pagination and filter state into the route query params (mutates shared state)
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       {
@@ -176,6 +184,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: filter the settings table by key, value, description, or source text (mutates shared state)
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
@@ -192,6 +201,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     );
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: open add-setting dialog and reload settings list on confirmation
   onAddSetting(): void {
     const dialogRef = this.dialog.open(AddSettingDialogComponent, {
       width: '600px',
@@ -209,6 +219,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: enter inline-edit mode for a system setting row (mutates shared state)
   onEditSetting(setting: EditableSystemSetting): void {
     if (setting.read_only) return;
     setting.editing = true;
@@ -218,11 +229,13 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: discard pending edits and exit inline-edit mode for a setting row (mutates shared state)
   onCancelEditSetting(setting: EditableSystemSetting): void {
     setting.editing = false;
     setting.editValues = undefined;
   }
 
+  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: persist inline-edited system setting value and description to the API (mutates shared state)
   onSaveSetting(setting: EditableSystemSetting): void {
     if (!setting.editValues) return;
 
@@ -256,6 +269,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: confirm and delete a system setting via the API, then refresh the list (mutates shared state)
   onDeleteSetting(setting: EditableSystemSetting): void {
     if (setting.read_only) return;
     const message = this.transloco.translate('admin.settings.confirmDelete', {
@@ -289,17 +303,20 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: convert a system setting's string value to boolean for the current edit state (pure)
   getBoolValue(setting: EditableSystemSetting): boolean {
     const val = setting.editing ? setting.editValues?.value : setting.value;
     return val === 'true';
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: update a boolean setting's draft value when its toggle changes (mutates shared state)
   onBoolToggle(setting: EditableSystemSetting, checked: boolean): void {
     if (setting.editValues) {
       setting.editValues.value = checked ? 'true' : 'false';
     }
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the settings page to the role-appropriate landing page
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }

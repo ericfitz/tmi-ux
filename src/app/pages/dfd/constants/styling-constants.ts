@@ -643,4 +643,5 @@ export const DFD_STYLING_HELPERS = {
 /**
  * Node type definitions for type safety
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: union type enumerating valid DFD node shape categories (pure)
 export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';

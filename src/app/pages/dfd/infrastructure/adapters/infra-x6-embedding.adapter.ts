@@ -32,7 +32,9 @@ import { AppOperationStateManager } from '../../application/services/app-operati
  * Works with InfraEmbeddingService for business logic
  */
 @Injectable()
+// SEM@5b7995108d43c3368c218c5cf9f539e0c87aba54: manage X6 graph node embedding relationships and hierarchy validation
 export class InfraX6EmbeddingAdapter {
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject logger, embedding service, z-order adapter, and history coordinator
   constructor(
     private logger: LoggerService,
     private infraEmbeddingService: InfraEmbeddingService,
@@ -43,6 +45,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Initialize embedding functionality for the graph
    */
+  // SEM@31e172d820a65e4d5bda2ae6c2dd752ccc9ccc07: register embedding event handlers on the X6 graph instance (mutates shared state)
   initializeEmbedding(graph: Graph): void {
     // this.logger.info('Initializing embedding functionality');
 
@@ -57,6 +60,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Embed a node into a parent manually
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: attach a child node to a parent node if the embedding is valid (mutates shared state)
   embedNode(graph: Graph, child: Node, parent: Node): boolean {
     // Validate embedding
     if (!this.validateEmbedding(child, parent)) {
@@ -80,6 +84,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Unembed a node manually
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: detach a node from its parent in the graph embedding hierarchy (mutates shared state)
   unembedNode(graph: Graph, node: Node): boolean {
     const parent = node.getParent();
     if (!parent?.isNode()) {
@@ -106,6 +111,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Get embedding hierarchy for a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the ancestor chain of a node from root to self (pure)
   getEmbeddingHierarchy(node: Node): Node[] {
     const hierarchy: Node[] = [];
     let current: Cell | null = node;
@@ -122,6 +128,7 @@ export class InfraX6EmbeddingAdapter {
    * Validate and fix embedding relationships after diagram load
    * Ensures all loaded embeddings comply with current business rules
    */
+  // SEM@98bf9546a1fa99e7b4209fedfbc1204e9beaa03e: audit and repair invalid node embedding relationships after diagram load (mutates shared state)
   validateAndFixLoadedDiagram(graph: Graph): {
     fixed: number;
     violations: Array<{ nodeId: string; parentId: string; reason: string; action: string }>;
@@ -181,6 +188,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Get all embedded children of a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list direct child nodes embedded within a graph node (pure)
   getEmbeddedChildren(node: Node): Node[] {
     const children = node.getChildren();
     if (!children) {
@@ -193,6 +201,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Check if a node is embedded
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check if a node has a node parent in the embedding hierarchy (pure)
   isEmbedded(node: Node): boolean {
     const parent = node.getParent();
     return parent?.isNode() ?? false;
@@ -201,6 +210,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Get embedding depth of a node
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: compute the nesting depth of a node in the embedding hierarchy (pure)
   getEmbeddingDepth(node: Node): number {
     return this.infraEmbeddingService.calculateEmbeddingDepth(node);
   }
@@ -209,6 +219,7 @@ export class InfraX6EmbeddingAdapter {
    * Update all embedding appearances in the graph
    * This is a style consistency operation and should not be added to history
    */
+  // SEM@ed1f6c08609b9b0691bebca8e773f9d6d9af3c13: refresh fill and opacity for all embedded nodes in the graph (mutates shared state)
   updateAllEmbeddingAppearances(graph: Graph): void {
     const nodes = graph.getNodes();
 
@@ -233,6 +244,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Set up embedding-related event handlers
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: register graph event listeners for node embed, unembed, and move (mutates shared state)
   private setupEmbeddingEvents(graph: Graph): void {
     // Track previous parent states for unembedding detection
     const nodeParentStates = new Map<string, string | null>();
@@ -349,6 +361,7 @@ export class InfraX6EmbeddingAdapter {
    * Safely extract the ID from a potential parent node reference.
    * Handles the case where the value may not be a valid X6 Node.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: extract a node's ID from a candidate reference, returning null if invalid (pure)
   private safeGetNodeId(candidate: Node | null | undefined, contextNodeId: string): string | null {
     if (!candidate || typeof candidate !== 'object' || !('isNode' in candidate)) {
       return null;
@@ -373,6 +386,7 @@ export class InfraX6EmbeddingAdapter {
    * Dispatch the appropriate handler based on parent change state transition.
    * Determines whether this is an unembed, embed, or re-embed and delegates accordingly.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: route a parent-change transition to the embed, unembed, or re-embed handler (mutates shared state)
   private dispatchParentChange(
     graph: Graph,
     node: Node,
@@ -406,6 +420,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Handle re-embedding: validate and either apply or revert the parent change.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: validate and apply or revert a node parent change to a new embedding target (mutates shared state)
   private handleReEmbedding(
     graph: Graph,
     node: Node,
@@ -446,6 +461,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Find potential parent for embedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: search for the first graph node whose bounds fully contain the given node (pure)
   private findEmbeddingParent(graph: Graph, node: Node): Node | null {
     const nodePosition = node.getPosition();
     const nodeSize = node.getSize();
@@ -481,6 +497,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Validate if embedding is allowed
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: validate that a child node may be embedded in a candidate parent (pure)
   private validateEmbedding(child: Node, parent: Node): boolean {
     const validation = this.infraEmbeddingService.validateEmbedding(parent, child);
 
@@ -500,6 +517,7 @@ export class InfraX6EmbeddingAdapter {
    * Note: This is called AFTER setParent, which is already in history.
    * Style updates should not create a separate history entry.
    */
+  // SEM@d9b90af4d6dde8edf7ca0cfd5fc0840d565aa5be: apply visual appearance and z-order after a node is embedded in a parent (mutates shared state)
   private handleNodeEmbedded(graph: Graph, node: Node, parent: Node): void {
     if (!node || !parent) {
       this.logger.error('handleNodeEmbedded called with invalid parameters', {
@@ -544,6 +562,7 @@ export class InfraX6EmbeddingAdapter {
    * Note: This is called AFTER removeFromParent, which is already in history.
    * Style updates should not create a separate history entry.
    */
+  // SEM@d9b90af4d6dde8edf7ca0cfd5fc0840d565aa5be: restore fill, opacity, and z-order after a node is removed from its parent (mutates shared state)
   private handleNodeUnembedded(graph: Graph, node: Node): void {
     if (!node) {
       this.logger.error('handleNodeUnembedded called with invalid node parameter');
@@ -598,6 +617,7 @@ export class InfraX6EmbeddingAdapter {
    * Recalculate z-indexes for all descendants of a node
    * Called after unembedding to ensure nested children have correct z-order relative to their new hierarchy
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: recompute z-index for all recursive descendants of a node after unembed (mutates shared state)
   private recalculateAllDescendantsZIndex(graph: Graph, node: Node): void {
     const descendants = this.getAllDescendants(node);
 
@@ -643,6 +663,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Get all descendants of a node recursively (children, grandchildren, etc.)
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: recursively collect all descendant nodes in an embedding subtree (pure)
   private getAllDescendants(node: Node): Node[] {
     const descendants: Node[] = [];
     const children = node.getChildren() || [];
@@ -663,6 +684,7 @@ export class InfraX6EmbeddingAdapter {
    * Handle node re-embedded event (moving from one parent to another)
    * This ensures descendant depths and appearances are recalculated
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: update appearance and z-order when a node moves to a new parent (mutates shared state)
   private handleNodeReEmbedded(graph: Graph, node: Node, newParent: Node): void {
     if (!node || !newParent) {
       this.logger.error('handleNodeReEmbedded called with invalid parameters', {
@@ -706,6 +728,7 @@ export class InfraX6EmbeddingAdapter {
    * Recalculate embedding depths and appearances for all descendants of a node
    * Called when a node is re-embedded to ensure children maintain correct appearance
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: recompute depth-based fill and opacity for all children after re-embedding (mutates shared state)
   private recalculateDescendantEmbeddings(graph: Graph, parentNode: Node): void {
     const children = this.getEmbeddedChildren(parentNode);
 
@@ -732,6 +755,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Handle node moved event (for embedding operations)
    */
+  // SEM@ed1f6c08609b9b0691bebca8e773f9d6d9af3c13: restore z-order and refresh embedding appearance after a node is moved (mutates shared state)
   private handleNodeMoved(graph: Graph, node: Node): void {
     if (!node) {
       this.logger.error('handleNodeMoved called with invalid node parameter');
@@ -761,6 +785,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Update visual appearance for embedded nodes
    */
+  // SEM@5ea5c4bdeac9840635aca4b362b2e8435c89c4ca: apply depth-driven fill color and opacity to an embedded node (mutates shared state)
   private updateEmbeddingAppearance(node: Node, parent: Node): void {
     // Get embedding configuration which includes shouldUpdateColor flag
     const config = this.infraEmbeddingService.getEmbeddingConfiguration(node);
@@ -785,6 +810,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Reset visual appearance for unembedded nodes
    */
+  // SEM@5b7995108d43c3368c218c5cf9f539e0c87aba54: restore a node's original fill and opacity when it leaves an embedding (mutates shared state)
   private resetEmbeddingAppearance(node: Node): void {
     // Respect user-authored styles — don't override body/fill when the node
     // has been marked customStyles via the style panel.
@@ -802,6 +828,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Apply visual effects for embedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: set node body fill color and depth-scaled opacity attributes (mutates shared state)
   private applyEmbeddingVisualEffects(node: Node, fillColor: string, depth: number): void {
     // Update node attributes
     const currentAttrs = node.getAttrs() || {};
@@ -837,6 +864,7 @@ export class InfraX6EmbeddingAdapter {
   /**
    * Get original fill color based on X6 shape type (matches shape definitions)
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: map a diagram shape type to its default fill color (pure)
   private _getOriginalFillColorForShape(shape: string): string {
     const shapeColorMap: Record<string, string> = {
       process: '#FFFFFF',

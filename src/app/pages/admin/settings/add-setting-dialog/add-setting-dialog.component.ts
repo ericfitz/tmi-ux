@@ -205,6 +205,7 @@ import { SettingType } from '@app/types/settings.types';
     `,
   ],
 })
+// SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: dialog for creating a new system setting with typed value and optional description
 export class AddSettingDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -213,6 +214,7 @@ export class AddSettingDialogComponent implements OnInit {
   errorMessage = '';
   readonly settingTypes: SettingType[] = ['string', 'int', 'bool', 'json'];
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: inject dialog ref, settings service, form builder, and logger dependencies (pure)
   constructor(
     private dialogRef: MatDialogRef<AddSettingDialogComponent>,
     private settingsService: SettingsAdminService,
@@ -220,6 +222,7 @@ export class AddSettingDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: build the setting form group with key, type, value, and description controls (mutates shared state)
   ngOnInit(): void {
     this.form = this.fb.group({
       key: [
@@ -233,6 +236,7 @@ export class AddSettingDialogComponent implements OnInit {
     });
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: validate the setting form, with special handling for boolean type (pure)
   isFormValid(): boolean {
     const type = this.form.get('type')?.value as SettingType;
     if (type === 'bool') {
@@ -241,6 +245,7 @@ export class AddSettingDialogComponent implements OnInit {
     return this.form.valid;
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: convert the typed form value to its string representation for the API (pure)
   private getValueString(): string {
     const type = this.form.get('type')?.value as SettingType;
     if (type === 'bool') {
@@ -249,6 +254,7 @@ export class AddSettingDialogComponent implements OnInit {
     return this.form.get('value')?.value as string;
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: store the new system setting via the API and close the dialog on success (mutates shared state)
   onSave(): void {
     if (this.isFormValid() && !this.saving) {
       this.saving = true;
@@ -281,6 +287,7 @@ export class AddSettingDialogComponent implements OnInit {
     }
   }
 
+  // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: close the dialog without saving, returning false to the caller (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }

@@ -13,11 +13,13 @@ import type { Asset } from '../../models/threat-model.model';
 describe('AssetEditorDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: instantiate AssetEditorDialogComponent with given dialog data for testing (pure)
   function build(data: AssetEditorDialogData): AssetEditorDialogComponent {
     return new AssetEditorDialogComponent(mockDialogRef as never, new FormBuilder(), data);
   }
 
   /** Build a MatChipInputEvent stub carrying a value and a clear() spy. */
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a MatChipInputEvent stub with a value and a clear spy (pure)
   function chipEvent(value: string): MatChipInputEvent {
     return { value, chipInput: { clear: vi.fn() } } as unknown as MatChipInputEvent;
   }

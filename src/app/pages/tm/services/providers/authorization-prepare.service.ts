@@ -10,6 +10,7 @@ import { LoggerService } from '@app/core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@265fc899a5fddc4756440804a488b1d550081e77: prepare authorization objects for API submission via subject parsing and validation (pure)
 export class AuthorizationPrepareService {
   /**
    * Simple email validation regex
@@ -17,6 +18,7 @@ export class AuthorizationPrepareService {
    */
   private readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: inject provider adapter and logger dependencies (pure)
   constructor(
     private providerAdapter: ProviderAdapterService,
     private logger: LoggerService,
@@ -32,6 +34,7 @@ export class AuthorizationPrepareService {
    * @param authorizations - Array of authorizations from the UI
    * @returns Array of authorizations ready for API submission
    */
+  // SEM@265fc899a5fddc4756440804a488b1d550081e77: convert UI authorizations to API-ready form; parses subject, transforms provider, strips temp fields (pure)
   prepareForApi(authorizations: Authorization[]): Authorization[] {
     return authorizations.map(auth => {
       // Extract subject from temporary field if it exists
@@ -83,6 +86,7 @@ export class AuthorizationPrepareService {
    * @param principalType - The principal type (user or group)
    * @returns Parsed provider_id and email fields
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: parse subject string into provider_id or email based on provider and principal type rules (pure)
   parseSubject(
     subject: string,
     provider: string,
@@ -113,6 +117,7 @@ export class AuthorizationPrepareService {
    * @param authorization - The authorization to validate
    * @returns Error message if invalid, null if valid
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: validate authorization has supported principal type and required identity field (pure)
   validate(authorization: Authorization): string | null {
     // Check if provider supports the principal type
     if (

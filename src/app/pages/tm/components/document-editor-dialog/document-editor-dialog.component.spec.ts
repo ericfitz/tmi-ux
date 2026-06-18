@@ -74,6 +74,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
     },
   ];
 
+  // SEM@e36c318bc6403ea0d42dbc1e9ce6e9685c640a63: build a DocumentEditorDialogComponent with mocked dependencies for unit tests (pure)
   function createComponent(data: DocumentEditorDialogData): DocumentEditorDialogComponent {
     return new DocumentEditorDialogComponent(
       mockDialogRef as unknown as MatDialogRef<DocumentEditorDialogComponent>,
@@ -363,6 +364,7 @@ describe('DocumentEditorDialogComponent — picker integration', () => {
   });
 
   describe('Microsoft picker integration', () => {
+    // SEM@338c179e5efb196ff54ba21d43c47c6330789216: build an active Microsoft content token fixture for tests (pure)
     function makeLinked(): ContentTokenInfo {
       return {
         provider_id: 'microsoft',

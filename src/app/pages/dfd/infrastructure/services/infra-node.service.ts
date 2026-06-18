@@ -46,7 +46,9 @@ import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@3cc37d6267d3fadce87e2b6dd15a7ffe0ae1859e: manage DFD graph node lifecycle: create, position, and delete with history coordination
 export class InfraNodeService {
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject graph adapter, configuration, effects, and history coordinator dependencies (pure)
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
@@ -68,6 +70,7 @@ export class InfraNodeService {
   /**
    * Add a node at a predictable position
    */
+  // SEM@45bebd666a6507589bf129e5a99c6d8232350abd: add a new node at a grid-calculated viewport position (mutates shared state)
   addGraphNode(
     shapeType: NodeType = 'actor',
     isInitialized: boolean,
@@ -89,6 +92,7 @@ export class InfraNodeService {
    * Calculate the next predictable position for a new node using a grid-based algorithm
    * that ensures nodes are always placed in the visible viewport area
    */
+  // SEM@adde4690890c1296c4263adae7820cf95585c8c5: compute the next grid-aligned position within the visible viewport for a new node (pure)
   private calculateNextNodePosition(graph: Graph): { x: number; y: number } {
     // Use actor dimensions as the default for grid calculation (most common node type)
     const defaultDimensions = DFD_STYLING_HELPERS.getDefaultDimensions('actor');
@@ -156,6 +160,7 @@ export class InfraNodeService {
    * Create a node with the specified type and position directly in X6
    * All operations are batched into a single history command
    */
+  // SEM@45bebd666a6507589bf129e5a99c6d8232350abd: build and add a typed node to the X6 graph as a batched history operation (mutates shared state)
   private createNode(
     shapeType: NodeType,
     position: { x: number; y: number },
@@ -208,6 +213,7 @@ export class InfraNodeService {
    * Get node configuration based on node type
    * Uses the original CSS-based styling system instead of inline attrs
    */
+  // SEM@752e6f045fbd196342e35c47ffee2398495149be: build the X6 node config object for a given node type and position (pure)
   private getNodeConfigForType(
     shapeType: NodeType,
     nodeId: string,
@@ -237,6 +243,7 @@ export class InfraNodeService {
   /**
    * Get default label for a shape type
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch the localized default label string for a node type (pure)
   private getDefaultLabelForType(shapeType: NodeType): string {
     return NodeInfo.getDefaultLabel(shapeType, (key: string) => this.transloco.translate(key));
   }
@@ -245,6 +252,7 @@ export class InfraNodeService {
    * Create a node from NodeInfo domain object for diagram loading
    * Used by diagram service for batch loading operations
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: add an X6 node from a NodeInfo domain object, optionally suppressing history (mutates shared state)
   createNodeFromInfo(
     graph: any,
     nodeInfo: NodeInfo,
@@ -310,6 +318,7 @@ export class InfraNodeService {
    * Convert NodeInfo domain object to X6 node configuration
    * Private method used by createNodeFromInfo
    */
+  // SEM@3cc37d6267d3fadce87e2b6dd15a7ffe0ae1859e: convert a NodeInfo domain object to an X6 node configuration map (pure)
   private convertNodeInfoToX6Config(nodeInfo: NodeInfo): any {
     const x6Shape = getX6ShapeForNodeType(nodeInfo.type);
 
@@ -347,6 +356,7 @@ export class InfraNodeService {
   /**
    * Create node from remote WebSocket operation with proper visual effects
    */
+  // SEM@a308b1150dfa5b167f4dee3bbe64c1abea47daad: add a node from a WebSocket remote operation without recording undo history (mutates shared state)
   createNodeFromRemoteOperation(graph: Graph, cellData: any, options: any): void {
     // Convert WebSocket cell data to NodeInfo format
     const nodeInfo = this.convertWebSocketCellToNodeInfo(cellData);
@@ -371,6 +381,7 @@ export class InfraNodeService {
   /**
    * Remove node from remote WebSocket operation
    */
+  // SEM@2d0a5fe4b5507768d4604debd61018f8d3909cec: delete a node from a WebSocket remote operation without recording undo history (mutates shared state)
   removeNodeFromRemoteOperation(graph: Graph, cellId: string, options: any): void {
     const cell = graph.getCellById(cellId);
     if (cell && cell.isNode()) {
@@ -388,6 +399,7 @@ export class InfraNodeService {
   /**
    * Convert WebSocket cell data to NodeInfo format
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: convert a WebSocket cell payload to a NodeInfo-compatible object (pure)
   private convertWebSocketCellToNodeInfo(cellData: any): any {
     return {
       id: cellData.id,
@@ -410,6 +422,7 @@ export class InfraNodeService {
    * - Port visibility updates
    * - All operations in a single atomic transaction
    */
+  // SEM@6cdc0ab7ff93f6fe49cf1effb921de880988155a: delete a node and atomically clean up its edges, embeddings, ports, and z-order (mutates shared state)
   removeNode(
     graph: Graph,
     nodeId: string,
@@ -438,6 +451,7 @@ export class InfraNodeService {
       }
 
       // Execute all removal operations as a single compound operation for history
+      // SEM@6cdc0ab7ff93f6fe49cf1effb921de880988155a: execute full node removal: disconnect edges, re-parent children, update ports and z-order (mutates shared state)
       const executeRemoval = () => {
         // 1. Get all connected edges before removal
         const connectedEdges = graph.getConnectedEdges(node) || [];

@@ -19,17 +19,21 @@ import { EdgeAttrs } from '../../domain/value-objects/edge-attrs';
 import { EdgeLabel } from '../../domain/value-objects/edge-label';
 
 @Injectable()
+// SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate create, update, and delete edge operations against the diagram graph (pure)
 export class EdgeOperationValidator extends BaseOperationValidator {
   readonly priority = 100;
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: inject logger dependency into the edge operation validator (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: filter to edge operation types this validator handles (pure)
   canValidate(operation: GraphOperation): boolean {
     return ['create-edge', 'update-edge', 'delete-edge'].includes(operation.type);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: dispatch a graph edge operation to its specific validator and return a validation result (pure)
   validate(operation: GraphOperation, context: OperationContext): ValidationResult {
     this.logValidationStart(operation);
 
@@ -58,6 +62,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     return result;
   }
 
+  // SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: validate a create-edge operation against graph state, permissions, and edge attributes (pure)
   private validateCreateEdge(
     operation: CreateEdgeOperation,
     context: OperationContext,
@@ -142,6 +147,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: warn if an edge between the same source and target nodes already exists (pure)
   private _checkDuplicateEdge(
     graph: any,
     sourceNodeId: string,
@@ -162,6 +168,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: validate an update-edge operation checking target existence, endpoints, and visual attributes (pure)
   private validateUpdateEdge(
     operation: UpdateEdgeOperation,
     context: OperationContext,
@@ -244,6 +251,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate a delete-edge operation for permissions and edge existence (pure)
   private validateDeleteEdge(
     operation: DeleteEdgeOperation,
     context: OperationContext,
@@ -280,6 +288,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: validate edge label text, position, and color values (pure)
   private validateEdgeLabels(labels: EdgeLabel[], errors: string[], warnings: string[]): void {
     if (!Array.isArray(labels)) {
       return;
@@ -312,6 +321,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate edge line and text visual attribute groups (pure)
   private validateEdgeAttrs(attrs: EdgeAttrs, errors: string[], warnings: string[]): void {
     if (attrs.line) {
       this.validateLineAttrs(attrs.line, errors, warnings);
@@ -321,6 +331,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate edge line stroke color, width, dash pattern, and marker colors (pure)
   private validateLineAttrs(
     line: NonNullable<EdgeAttrs['line']>,
     errors: string[],
@@ -353,6 +364,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     this.validateMarkerColors(line.sourceMarker, 'source', errors);
   }
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate fill and stroke colors of an edge endpoint marker (pure)
   private validateMarkerColors(
     marker: { fill?: string; stroke?: string } | undefined,
     label: string,
@@ -366,6 +378,7 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: validate edge text color and font size attributes (pure)
   private validateTextAttrs(
     text: NonNullable<EdgeAttrs['text']>,
     errors: string[],

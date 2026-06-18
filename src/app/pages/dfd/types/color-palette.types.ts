@@ -26,6 +26,7 @@ export const PLACEHOLDER_COLOR = '#9e9e9e';
  * Normalize a hex color to lowercase 6-digit format to match server convention.
  * Handles #RGB -> #rrggbb expansion and case normalization.
  */
+// SEM@2c555798bd2125fe80100290956defed1b05474e: convert a hex color string to lowercase 6-digit format (pure)
 export function normalizeHexColor(color: string): string {
   const lower = color.toLowerCase();
   // Expand 3-digit to 6-digit: #abc -> #aabbcc
@@ -39,6 +40,7 @@ export function normalizeHexColor(color: string): string {
  * Get the next available position (1-8) for a new palette entry.
  * Returns null if all 8 positions are occupied.
  */
+// SEM@2c555798bd2125fe80100290956defed1b05474e: compute the next open palette slot (1-8); null if full (pure)
 export function nextAvailablePosition(entries: ColorPaletteEntry[]): number | null {
   const usedPositions = new Set(entries.map(e => e.position));
   for (let i = 1; i <= MAX_DIAGRAM_COLORS; i++) {

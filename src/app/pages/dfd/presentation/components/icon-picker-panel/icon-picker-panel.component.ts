@@ -95,6 +95,7 @@ export interface PlacementChangedEvent {
   styleUrl: './icon-picker-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@1610b9703ddd3bb3b78930cce96873386708c765: panel for searching and selecting architecture icons for diagram cells
 export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedCells: IconPickerCellInfo[] = [];
   @Input() disabled = false;
@@ -126,11 +127,13 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
   private readonly searchSubject$ = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: inject ChangeDetectorRef and icon service dependencies (pure)
   constructor(
     private cdr: ChangeDetectorRef,
     private iconService: ArchitectureIconService,
   ) {}
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: load icon manifest and wire debounced search on initialization (mutates shared state)
   ngOnInit(): void {
     void this.iconService.loadManifest().then(() => {
       this.cdr.markForCheck();
@@ -141,12 +144,14 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: mark component for check when selected cells input changes (mutates shared state)
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedCells']) {
       this.cdr.markForCheck();
     }
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: complete the destroy subject to unsubscribe all subscriptions
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -201,29 +206,35 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
 
   // --- Search ---
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: dispatch a debounced icon search query from user input (mutates shared state)
   onSearchInput(query: string): void {
     this.searchQuery = query;
     this.searchSubject$.next(query);
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: search the icon manifest and update grouped results and match count (mutates shared state)
   private performSearch(query: string): void {
     this.searchResults = this.iconService.search(query);
     this.matchCount = this.searchResults.reduce((sum, g) => sum + g.icons.length, 0);
     this.cdr.markForCheck();
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: resolve the asset path for an icon manifest entry (pure)
   getIconPathFromEntry(entry: ArchIconManifestEntry): string {
     return this.iconService.getIconPathFromEntry(entry);
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: compute a unique key for an icon search result group (pure)
   getGroupKey(group: ArchIconSearchResult): string {
     return `${group.provider}·${group.subcategory}`;
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: return whether an icon search result group is currently collapsed (pure)
   isGroupCollapsed(group: ArchIconSearchResult): boolean {
     return this.collapsedGroups.has(this.getGroupKey(group));
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: toggle the collapsed state of an icon search result group (mutates shared state)
   toggleGroup(group: ArchIconSearchResult): void {
     const key = this.getGroupKey(group);
     if (this.collapsedGroups.has(key)) {
@@ -235,6 +246,7 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
 
   // --- Actions ---
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: emit icon selection event for eligible cells when an icon is clicked
   onIconClick(entry: ArchIconManifestEntry): void {
     if (this.disabled || !this.hasEligibleCells) return;
 
@@ -252,6 +264,7 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: emit icon removal event for all eligible selected cells
   onRemoveIcon(): void {
     if (this.disabled || !this.hasEligibleCells) return;
 
@@ -260,6 +273,7 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: emit icon placement change for eligible cells (mutates shared state)
   onPlacementSelected(vertical: IconVerticalPosition, horizontal: IconHorizontalPosition): void {
     if (this.disabled || !this.hasEligibleCells || !this.currentArch) return;
 
@@ -269,6 +283,7 @@ export class IconPickerPanelComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // SEM@1610b9703ddd3bb3b78930cce96873386708c765: check whether a placement matches the current icon arch position (pure)
   isActivePlacement(vertical: IconVerticalPosition, horizontal: IconHorizontalPosition): boolean {
     const arch = this.currentArch;
     if (!arch) return false;

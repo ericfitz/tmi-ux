@@ -21,6 +21,7 @@ vi.mock('../../../environments/environment', () => ({
 
 import { environment } from '../../../environments/environment';
 
+// SEM@3410970da6c2ced5ae2f12b5eaccac4618a73b69: build a BrandingConfigService test stub with optional operator fields (pure)
 function createBrandingStub(
   operator: { name?: string; contact?: string; jurisdiction?: string } | null = null,
 ): BrandingConfigService {

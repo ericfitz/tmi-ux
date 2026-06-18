@@ -10,9 +10,12 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
   templateUrl: './privacy.component.html',
   styleUrl: './privacy.component.scss',
 })
+// SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: display the privacy policy page with back navigation
 export class PrivacyComponent {
+  // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: inject Location service for browser history navigation (pure)
   constructor(private location: Location) {}
 
+  // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: navigate back to the previous browser history entry (pure)
   goBack(): void {
     this.location.back();
   }

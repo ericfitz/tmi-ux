@@ -9,6 +9,7 @@ import { ValidationConfig } from './types';
 import { createMockLoggerService } from '../../../../testing/mocks/mock-logger.service';
 
 // Helper to create Principal objects for test fixtures
+// SEM@0d8ef5842818f1be8b057536bbf346d0ac357fe6: build a principal test fixture with email and optional type (pure)
 const createTestPrincipal = (
   email: string,
   type: 'user' | 'group' = 'user',
@@ -27,6 +28,7 @@ const createTestPrincipal = (
 });
 
 // Helper to create Authorization objects for test fixtures
+// SEM@c79a19c1ad822f1bf5be101c3a38dbd18347ccf0: build an authorization test fixture with email, role, and type (pure)
 const createTestAuthorization = (
   email: string,
   role: 'owner' | 'writer' | 'reader',

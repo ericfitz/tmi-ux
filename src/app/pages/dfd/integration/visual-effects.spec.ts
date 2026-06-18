@@ -471,6 +471,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
   });
 
   // Helper functions
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build and register a diagram node on the graph adapter for tests
   function createTestNode(
     nodeType: NodeType,
     label: string,
@@ -489,6 +490,7 @@ describe.skip('DFD Integration - Visual Effects', () => {
     return adapter.addNode(diagramNode);
   }
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build and register a diagram edge between two nodes for tests
   function createTestEdge(source: Node, target: Node): Edge {
     const edgeInfo = EdgeInfo.create({
       id: `test-edge-${Date.now()}-${Math.random()}`,

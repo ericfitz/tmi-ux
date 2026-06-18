@@ -41,15 +41,18 @@ import { ProjectsListBase } from '@app/pages/projects/projects-list-base';
   templateUrl: './admin-projects.component.html',
   styleUrl: './admin-projects.component.scss',
 })
+// SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: admin page component for listing and managing review projects
 export class AdminProjectsComponent extends ProjectsListBase {
   private translocoService = inject(TranslocoService);
 
   /** Navigate back to admin landing page. */
+  // SEM@6b183fad0ddaa8ad841906d3ca3be67be6e15acc: navigate back to the admin landing page
   onClose(): void {
     void this.router.navigate(['/admin']);
   }
 
   /** Confirm and delete the given project. */
+  // SEM@f8876a826b949da1079dc0fe9eb97ae85aee0a63: delete a project after confirmation and reload the project list (reads DB)
   onDelete(project: ProjectListItem): void {
     const message = this.translocoService.translate('projects.deleteDialog.message', {
       name: project.name,

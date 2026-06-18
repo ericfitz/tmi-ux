@@ -20,6 +20,7 @@ import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { map, take } from 'rxjs';
 
+// SEM@da0060051d2e642429c7d95549638e7c4afb741c: authorize route access for authenticated users; redirect unauthenticated to login (mutates shared state)
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);

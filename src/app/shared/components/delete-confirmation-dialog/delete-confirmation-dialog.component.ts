@@ -50,6 +50,7 @@ export type {
   templateUrl: './delete-confirmation-dialog.component.html',
   styleUrls: ['./delete-confirmation-dialog.component.scss'],
 })
+// SEM@de3e89ecb32ed70c4f53c656b67f960454b5176a: dialog component to confirm destructive delete with optional typed confirmation (mutates shared state)
 export class DeleteConfirmationDialogComponent {
   /** User's typed confirmation input */
   confirmationInput = '';
@@ -57,6 +58,7 @@ export class DeleteConfirmationDialogComponent {
   /** The required confirmation value (from i18n) */
   readonly confirmationValue = 'gone forever';
 
+  // SEM@4296d623a7e0438fe6deade81726563408285d79: initialize delete confirmation dialog with dialog ref and object data (pure)
   constructor(
     private _dialogRef: MatDialogRef<
       DeleteConfirmationDialogComponent,
@@ -133,6 +135,7 @@ export class DeleteConfirmationDialogComponent {
    * Handle native input events to ensure confirmationInput stays in sync.
    * This supplements ngModel for compatibility with programmatic input methods.
    */
+  // SEM@de3e89ecb32ed70c4f53c656b67f960454b5176a: sync confirmation input field value from native DOM event (mutates shared state)
   onConfirmationInput(event: Event): void {
     this.confirmationInput = (event.target as HTMLInputElement).value;
   }
@@ -140,6 +143,7 @@ export class DeleteConfirmationDialogComponent {
   /**
    * Handle cancel action.
    */
+  // SEM@4296d623a7e0438fe6deade81726563408285d79: close delete dialog with confirmed false (mutates shared state)
   onCancel(): void {
     this._dialogRef.close({ confirmed: false });
   }
@@ -147,6 +151,7 @@ export class DeleteConfirmationDialogComponent {
   /**
    * Handle delete confirmation action.
    */
+  // SEM@4296d623a7e0438fe6deade81726563408285d79: close delete dialog with confirmed true if deletion is allowed (mutates shared state)
   onConfirmDelete(): void {
     if (this.canDelete) {
       this._dialogRef.close({ confirmed: true });

@@ -30,6 +30,7 @@ interface MockNode extends MockCell {
 }
 
 // MockEdge uses the same interface as MockCell
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: type alias for a mock diagram edge cell used in visual-effects tests (pure)
 type MockEdge = MockCell;
 
 describe('InfraVisualEffectsService', () => {
@@ -40,6 +41,7 @@ describe('InfraVisualEffectsService', () => {
   };
 
   // Test helper to create mock cells
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub diagram node with a given id and node type for tests (pure)
   const createMockNode = (id: string, nodeType = 'process'): MockNode => ({
     id,
     isNode: vi.fn().mockReturnValue(true),
@@ -48,6 +50,7 @@ describe('InfraVisualEffectsService', () => {
     getNodeTypeInfo: vi.fn().mockReturnValue({ type: nodeType }),
   });
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub diagram edge with a given id for tests (pure)
   const createMockEdge = (id: string): MockEdge => ({
     id,
     isNode: vi.fn().mockReturnValue(false),
@@ -55,6 +58,7 @@ describe('InfraVisualEffectsService', () => {
     attr: vi.fn(),
   });
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub text-box diagram node with a given id for tests (pure)
   const createMockTextBoxNode = (id: string): MockNode => ({
     id,
     isNode: vi.fn().mockReturnValue(true),
@@ -487,6 +491,7 @@ describe('InfraVisualEffectsService', () => {
       };
     });
 
+    // SEM@7d86e38e60e4f1878b92a548e7a76a7545389ec1: build a stub diagram cell with a fixed bounding box for label tests (pure)
     const createMockCellWithBBox = (id: string) => {
       const cell = createMockNode(id);
       (cell as any).getBBox = vi.fn().mockReturnValue({

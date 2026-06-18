@@ -13,6 +13,7 @@ import type {
 export type { AuditActor, AuditChangeType, AuditEntry, AuditObjectType };
 
 /** HTTP methods recorded by the system audit log. */
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: enumerate HTTP methods recorded by the system audit log (pure)
 export type AuditHttpMethod = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 /** A system audit entry: an immutable record of a successful /admin/* write. */
@@ -39,7 +40,9 @@ export interface AuditListResponse<T> {
   prev_cursor?: string | null;
 }
 
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: type alias for a paginated list response of system audit entries (pure)
 export type ListSystemAuditResponse = AuditListResponse<SystemAuditEntry>;
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: cursor-paginated list envelope for threat-model audit entries (pure)
 export type ListTmAuditResponse = AuditListResponse<AuditEntry>;
 
 /** Active filters for the system audit list. All optional. */
@@ -64,6 +67,7 @@ export interface TmAuditFilter {
   threat_model_id?: string;
 }
 
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: union of system and threat-model audit filter shapes (pure)
 export type AuditFilter = SystemAuditFilter | TmAuditFilter;
 
 /** Pagination request: forward/back cursor traversal OR around-anchor. Mutually exclusive cursor/around. */
@@ -73,9 +77,11 @@ export interface AuditPageRequest {
   around?: string;
 }
 
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: enumerate supported audit log export formats (pure)
 export type AuditExportFormat = 'csv' | 'ndjson';
 
 /** Which audit stream a shared component is operating on. */
+// SEM@8bd9eb2300a4586a96f96ac1068a4095ce979df5: discriminate which audit log stream a component targets (pure)
 export type AuditStream = 'system' | 'tm';
 
 /** A column definition for the audit table: how to render one column. */

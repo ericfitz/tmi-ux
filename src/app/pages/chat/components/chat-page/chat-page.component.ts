@@ -57,6 +57,7 @@ import { ChatSessionPanelComponent } from '../chat-session-panel/chat-session-pa
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DatePipe],
 })
+// SEM@80267eb3b6af8d2f1d6798d8fb1796201823108b: host the AI chat page: manage sessions, messages, and note-saving for a threat model
 export class ChatPageComponent implements OnInit {
   threatModel: ThreatModel | null = null;
   threatModelId = '';
@@ -72,6 +73,7 @@ export class ChatPageComponent implements OnInit {
 
   @ViewChild(ChatMessagesComponent) chatMessages?: ChatMessagesComponent;
 
+  // SEM@d656c0d1e7e92b92cd02daf759043a393ab4ddc9: inject dependencies for routing, chat, logging, i18n, and note creation (pure)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -85,6 +87,7 @@ export class ChatPageComponent implements OnInit {
     @Optional() private destroyRef: DestroyRef,
   ) {}
 
+  // SEM@8341a7f78b37ef24d80f728f524b67d13874ea8b: resolve the threat model id from the route and load existing chat sessions (mutates shared state)
   ngOnInit(): void {
     this.threatModelId = this.route.snapshot.paramMap.get('id') ?? '';
     this.threatModel = (this.route.snapshot.data['threatModel'] as ThreatModel) ?? null;
@@ -92,14 +95,17 @@ export class ChatPageComponent implements OnInit {
     this.loadSessions();
   }
 
+  // SEM@0d2745da4e8e3843cd65f62979270c63dc57e657: route back to the threat model edit page (mutates shared state)
   navigateBack(): void {
     void this.router.navigate(['/tm', this.threatModelId]);
   }
 
+  // SEM@0d2745da4e8e3843cd65f62979270c63dc57e657: toggle the session list side panel open or closed (mutates shared state)
   toggleSidePanel(): void {
     this.sidePanelOpen = !this.sidePanelOpen;
   }
 
+  // SEM@8341a7f78b37ef24d80f728f524b67d13874ea8b: dispatch a user message to an active session, or create a new session first (mutates shared state)
   onMessageSent(text: string): void {
     if (!this.threatModelId) return;
 
@@ -110,6 +116,7 @@ export class ChatPageComponent implements OnInit {
     }
   }
 
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: fetch and display messages for a selected chat session (reads DB)
   onSessionSelected(sessionId: string): void {
     this.activeSessionId = sessionId;
     this.streamingMessageId = null;
@@ -133,6 +140,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@8341a7f78b37ef24d80f728f524b67d13874ea8b: reset active session state when a new chat session is started (mutates shared state)
   onSessionCreated(): void {
     this.activeSessionId = null;
     this.activeSourceSnapshot = [];
@@ -142,6 +150,7 @@ export class ChatPageComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  // SEM@d656c0d1e7e92b92cd02daf759043a393ab4ddc9: delete a chat session and clear active state if it was selected (reads DB)
   onSessionDeleted(sessionId: string): void {
     this.timmyChat
       .deleteSession(this.threatModelId, sessionId)
@@ -161,6 +170,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@20f07620df60d6cb0702ab476f86bb23b1d8a4cd: save an entire chat session as a threat model note in markdown format (reads DB)
   onSessionSavedAsNote(sessionId: string): void {
     if (this.savingNote) return;
 
@@ -173,6 +183,7 @@ export class ChatPageComponent implements OnInit {
     this.saveAsNote(name, content);
   }
 
+  // SEM@20f07620df60d6cb0702ab476f86bb23b1d8a4cd: save a single assistant message as a threat model note with a generated title (reads DB)
   onMessageSavedAsNote(messageId: string): void {
     if (this.savingNote) return;
 
@@ -193,6 +204,7 @@ export class ChatPageComponent implements OnInit {
     this.saveAsNote(name, content);
   }
 
+  // SEM@d656c0d1e7e92b92cd02daf759043a393ab4ddc9: persist chat content as a new threat model note and offer a navigation snackbar (reads DB)
   private saveAsNote(name: string, content: string): void {
     this.savingNote = true;
     this.cdr.markForCheck();
@@ -231,6 +243,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@4db2dd0a222a4f8a791726648870e8e04861a57b: create a new chat session via SSE then send the queued user message when ready (reads DB)
   private startNewSessionAndSend(text: string): void {
     const userMessage = this.createUserMessage(text, 'pending-session');
     this.messages = [userMessage];
@@ -239,6 +252,7 @@ export class ChatPageComponent implements OnInit {
     let sessionId = '';
     let messageSent = false;
 
+    // SEM@4db2dd0a222a4f8a791726648870e8e04861a57b: send the pending user message once a new session id is available, guarded against double-send (mutates shared state)
     const sendQueuedMessage = (): void => {
       if (!sessionId || messageSent) return;
       messageSent = true;
@@ -285,6 +299,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@80267eb3b6af8d2f1d6798d8fb1796201823108b: update preparation status from session creation SSE events (session_created, progress, ready, error) (mutates shared state)
   private handleSessionCreationEvent(event: SseEvent, onSessionId: (id: string) => void): void {
     switch (event.event) {
       case 'session_created': {
@@ -338,6 +353,7 @@ export class ChatPageComponent implements OnInit {
     }
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: dispatch a user message to the active chat session and stream the assistant reply (mutates shared state)
   private sendMessageToSession(text: string): void {
     if (!this.messages.some(m => m.role === 'user' && m.content === text)) {
       const userMessage = this.createUserMessage(text, this.activeSessionId!);
@@ -437,6 +453,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: handle a server-sent stream error event and append an error message to the chat (mutates shared state)
   private handleStreamError(data: ChatErrorEvent, currentMessageId: string): void {
     this.streamingMessageId = null;
     this.loading = false;
@@ -462,6 +479,7 @@ export class ChatPageComponent implements OnInit {
    * Logs a warning when the token-assembled content diverges from the server
    * content so that truncation issues are visible in the application log.
    */
+  // SEM@7196e42d2530d6d9837ac1fc41d3f5208aa78e06: reconcile the in-memory assistant chat message with the server-authoritative message_end payload (mutates shared state)
   private reconcileMessage(
     data: MessageEndEvent,
     clientMessageId: string,
@@ -502,6 +520,7 @@ export class ChatPageComponent implements OnInit {
    * first, then falls back to the server-assigned id (in case message_start
    * included it), and finally falls back to the last assistant message.
    */
+  // SEM@7196e42d2530d6d9837ac1fc41d3f5208aa78e06: locate the assistant chat message to reconcile using client id, server id, or last assistant fallback (pure)
   private findMessageForReconciliation(
     clientMessageId: string,
     serverId: string,
@@ -513,6 +532,7 @@ export class ChatPageComponent implements OnInit {
     );
   }
 
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: append a formatted error chat message to the current message list (mutates shared state)
   private addErrorMessage(text: string): void {
     const errorMsg: ChatMessage = {
       id: crypto.randomUUID(),
@@ -525,6 +545,7 @@ export class ChatPageComponent implements OnInit {
     this.messages = [...this.messages, errorMsg];
   }
 
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: build a new user chat message object for the given session (pure)
   private createUserMessage(text: string, sessionId: string): ChatMessage {
     return {
       id: crypto.randomUUID(),
@@ -536,10 +557,12 @@ export class ChatPageComponent implements OnInit {
     };
   }
 
+  // SEM@e4560728b1da3f75b025ebd023e9c2d5fd097b11: convert all chat session messages to a combined markdown string (pure)
   private formatSessionAsMarkdown(messages: ChatMessage[]): string {
     return messages.map(m => this.formatSingleMessage(m)).join('\n\n');
   }
 
+  // SEM@e4560728b1da3f75b025ebd023e9c2d5fd097b11: format a single assistant message and its preceding user prompt as markdown (pure)
   private formatMessageAsMarkdown(assistantMessageId: string, messages: ChatMessage[]): string {
     const msgIndex = messages.findIndex(m => m.id === assistantMessageId);
     if (msgIndex === -1) return '';
@@ -556,12 +579,14 @@ export class ChatPageComponent implements OnInit {
     return parts.join('\n\n');
   }
 
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: format a single chat message as a labeled markdown line with timestamp (pure)
   private formatSingleMessage(message: ChatMessage): string {
     const role = message.role === 'user' ? 'You' : 'Timmy';
     const timestamp = this.datePipe.transform(message.created_at, 'long') ?? message.created_at;
     return `**${role}** (${timestamp}): ${message.content}`;
   }
 
+  // SEM@20f07620df60d6cb0702ab476f86bb23b1d8a4cd: build a default chat session title from the session creation timestamp (pure)
   private generateSessionTitle(createdAt: string): string {
     const date = new Date(createdAt);
     const dateStr = this.datePipe.transform(date, 'mediumDate') ?? date.toLocaleDateString();
@@ -569,6 +594,7 @@ export class ChatPageComponent implements OnInit {
     return `Chat \u2014 ${dateStr}, ${timeStr}`;
   }
 
+  // SEM@e4560728b1da3f75b025ebd023e9c2d5fd097b11: build a note title from assistant message content, truncating to 50 chars (pure)
   private generateNoteTitle(assistantContent: string): string {
     const stripped = assistantContent.replace(/```[\s\S]*?```/g, '').trim();
     if (!stripped || stripped.length < 5) {
@@ -583,6 +609,7 @@ export class ChatPageComponent implements OnInit {
     return (lastSpace > 20 ? truncated.substring(0, lastSpace) : truncated) + '\u2026';
   }
 
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: fetch chat sessions for the current threat model and refresh the session list (mutates shared state)
   private loadSessions(): void {
     this.timmyChat
       .listSessions(this.threatModelId)
@@ -602,6 +629,7 @@ export class ChatPageComponent implements OnInit {
       });
   }
 
+  // SEM@61f7c7b8452d540fd09fdab08c148b61ba2e2a69: map a session-creation HTTP error to a localized user-facing error message (pure)
   private sessionCreationErrorMessage(err: unknown): string {
     const sseErr = err as SseHttpError;
     switch (sseErr.status) {
@@ -620,6 +648,7 @@ export class ChatPageComponent implements OnInit {
     }
   }
 
+  // SEM@0d2745da4e8e3843cd65f62979270c63dc57e657: return an RxJS operator that completes the stream when the component is destroyed (pure)
   private untilDestroyed<T>(): MonoTypeOperatorFunction<T> {
     return this.destroyRef ? takeUntilDestroyed<T>(this.destroyRef) : identity;
   }

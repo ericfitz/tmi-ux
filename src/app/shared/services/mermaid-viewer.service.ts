@@ -24,7 +24,9 @@ const WRAPPER_CLASS = 'mermaid-viewer-wrapper';
  * innerHTML replacement only affects the target element's children, not its siblings.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: attach and manage MermaidViewerComponent overlays on diagram elements
 export class MermaidViewerService {
+  // SEM@8967000098ce9524a88950fb01388a9402de0924: inject application ref, injector, and logger dependencies
   constructor(
     private appRef: ApplicationRef,
     private injector: Injector,
@@ -35,6 +37,7 @@ export class MermaidViewerService {
    * Find all .mermaid elements in the preview and attach viewer components.
    * @returns Cleanup function, or null if no .mermaid elements exist yet.
    */
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: attach viewer components to all diagram elements; return cleanup function (mutates DOM)
   initialize(previewElement: ElementRef<HTMLDivElement>): (() => void) | null {
     const mermaidElements = previewElement.nativeElement.querySelectorAll('.mermaid');
 
@@ -73,6 +76,7 @@ export class MermaidViewerService {
    * @returns Cleanup function that removes the wrapper, restores the .mermaid element
    * to its original position, and removes event listeners.
    */
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: wrap a diagram element, mount viewer component as sibling, wire events (mutates DOM)
   private attachViewer(
     mermaidEl: HTMLElement,
     componentRefs: ComponentRef<MermaidViewerComponent>[],
@@ -104,9 +108,13 @@ export class MermaidViewerService {
 
     // Attach event listeners on the wrapper so the toolbar (a sibling of .mermaid
     // inside the wrapper) is included in the hover area
+    // SEM@8967000098ce9524a88950fb01388a9402de0924: handle mouse-enter event to show viewer toolbar overlay
     const onMouseEnter = (): void => componentRef.instance.onMouseEnter();
+    // SEM@8967000098ce9524a88950fb01388a9402de0924: handle mouse-leave event to hide viewer toolbar overlay
     const onMouseLeave = (): void => componentRef.instance.onMouseLeave();
+    // SEM@8967000098ce9524a88950fb01388a9402de0924: handle context-menu event on a diagram element
     const onContextMenu = (e: Event): void => componentRef.instance.onContextMenu(e as MouseEvent);
+    // SEM@8967000098ce9524a88950fb01388a9402de0924: handle double-click event on a diagram element
     const onDblClick = (): void => componentRef.instance.onDoubleClick();
 
     wrapper.addEventListener('mouseenter', onMouseEnter);

@@ -22,6 +22,7 @@ import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-orde
 import { AppNotificationService } from '../application/services/app-notification.service';
 
 // Test helpers
+// SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: build a minimal X6 graph instance for integration test setup (mutates shared state)
 function createTestGraph(): Graph {
   const container = document.createElement('div');
   container.style.width = '800px';
@@ -38,6 +39,7 @@ function createTestGraph(): Graph {
   });
 }
 
+// SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: add a security boundary node fixture to a test graph (mutates shared state)
 function createSecurityBoundary(
   graph: Graph,
   id: string,
@@ -64,6 +66,7 @@ function createSecurityBoundary(
   return node;
 }
 
+// SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: add a process node fixture to a test graph (mutates shared state)
 function createProcessNode(
   graph: Graph,
   id: string,
@@ -90,6 +93,7 @@ function createProcessNode(
   return node;
 }
 
+// SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: build a transparent text-box graph node at given position for tests (pure)
 function createTextBoxNode(
   graph: Graph,
   id: string,

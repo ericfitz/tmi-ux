@@ -21,7 +21,9 @@ interface ActiveEffect {
  * Uses the same styling techniques as hover/selection effects but with customizable coloring
  */
 @Injectable()
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: manage transient visual effects (highlights, labels) on diagram cells (mutates shared state)
 export class InfraVisualEffectsService {
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: inject logger and user-preferences dependencies for the visual effects service (pure)
   constructor(
     private readonly logger: LoggerService,
     private readonly userPreferencesService: UserPreferencesService,
@@ -46,6 +48,7 @@ export class InfraVisualEffectsService {
    * @param color - Optional RGB color object, defaults to light blue (0, 150, 255)
    * @param options - Optional configuration for the effect
    */
+  // SEM@4caca46d4b23a62c77ebde47a08b8419d566f71d: apply a fade-out glow to a newly created diagram cell; skips if animations disabled (mutates shared state)
   applyCreationHighlight(
     cell: Cell,
     graph?: any,
@@ -107,6 +110,7 @@ export class InfraVisualEffectsService {
   /**
    * Remove any active visual effects from a cell
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: cancel active visual effects and clear visual state on a diagram cell (mutates shared state)
   removeVisualEffects(cell: Cell, graph?: any): void {
     if (!cell) return;
 
@@ -139,6 +143,7 @@ export class InfraVisualEffectsService {
   /**
    * Check if a cell currently has active visual effects
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a diagram cell currently has a tracked visual effect (pure)
   hasActiveEffects(cell: Cell): boolean {
     return this.activeEffects.has(cell.id);
   }
@@ -147,6 +152,7 @@ export class InfraVisualEffectsService {
    * Show a user display name label near a cell for remote collaboration feedback.
    * Creates a DOM overlay that fades out over USER_LABEL.FADE_DURATION_MS.
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: display a collaborator's name overlay near a diagram cell then fade it out (mutates shared state)
   showUserLabel(cell: Cell, graph: Graph, email: string, displayName: string): void {
     if (!cell || !graph?.container) {
       return;
@@ -218,6 +224,7 @@ export class InfraVisualEffectsService {
   /**
    * Create a styled DOM element for the user label overlay
    */
+  // SEM@7d86e38e60e4f1878b92a548e7a76a7545389ec1: build a styled DOM overlay element for a collaborator display-name label (pure)
   private _createUserLabelElement(
     displayName: string,
     color: { r: number; g: number; b: number },
@@ -251,6 +258,7 @@ export class InfraVisualEffectsService {
   /**
    * Get contrasting text color (white or black) based on background luminance
    */
+  // SEM@7d86e38e60e4f1878b92a548e7a76a7545389ec1: compute a contrasting text color (black or white) for a given background color (pure)
   private _getUserLabelTextColor(color: { r: number; g: number; b: number }): string {
     const luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
     return luminance > 186 ? '#000000' : '#ffffff';
@@ -259,6 +267,7 @@ export class InfraVisualEffectsService {
   /**
    * Remove a user label element and update tracking maps
    */
+  // SEM@7d86e38e60e4f1878b92a548e7a76a7545389ec1: remove a collaborator label element from the DOM and decrement its cell counter (mutates shared state)
   private _removeLabel(labelKey: string, cellId: string): void {
     const existing = this._activeLabels.get(labelKey);
     if (existing) {
@@ -276,6 +285,7 @@ export class InfraVisualEffectsService {
   /**
    * Clean up all active effects (useful for component destruction)
    */
+  // SEM@7d86e38e60e4f1878b92a548e7a76a7545389ec1: cancel all active effects and remove all collaborator label overlays (mutates shared state)
   cleanup(): void {
     this.activeEffects.forEach((effect, cellId) => {
       if (effect.timer) {
@@ -296,6 +306,7 @@ export class InfraVisualEffectsService {
   /**
    * Alias for cleanup() to match test expectations
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: cancel all active visual effects; delegates to cleanup (mutates shared state)
   clearAllActiveEffects(): void {
     this.cleanup();
   }
@@ -304,6 +315,7 @@ export class InfraVisualEffectsService {
    * Apply invalid embedding visual feedback (red stroke)
    * Shows user that the current drop target is not valid
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: apply a red stroke to a diagram cell to signal an invalid drop target (mutates shared state)
   applyInvalidEmbeddingFeedback(cell: Cell, _graph?: any): void {
     if (!cell || this.activeEffects.has(cell.id)) {
       return;
@@ -344,6 +356,7 @@ export class InfraVisualEffectsService {
    * Remove invalid embedding visual feedback
    * Restores original stroke attributes
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: restore original stroke on a diagram cell after invalid embedding feedback (mutates shared state)
   removeInvalidEmbeddingFeedback(cell: Cell, _graph?: any): void {
     const activeEffect = this.activeEffects.get(cell.id);
     if (!activeEffect) {
@@ -381,6 +394,7 @@ export class InfraVisualEffectsService {
    * Start simple fade animation from bright to transparent over 1 second
    * Disables history for the entire animation lifecycle to prevent excessive history entries
    */
+  // SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: run a timed fade-out glow animation on a diagram cell, suppressing history entries (mutates shared state)
   private startFadeAnimation(
     cell: Cell,
     color: { r: number; g: number; b: number },
@@ -406,6 +420,7 @@ export class InfraVisualEffectsService {
       color,
     };
 
+    // SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: advance one animation frame of a cell fade-out, scheduling next frame or cleanup (mutates shared state)
     const fadeStep = () => {
       const elapsed = Date.now() - startTime;
       const fadeProgress = elapsed / this.FADE_DURATION_MS;
@@ -455,6 +470,7 @@ export class InfraVisualEffectsService {
    * Apply fade effect directly without any batching or history considerations
    * Used during animations when history is already disabled for the entire animation lifecycle
    */
+  // SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: apply a color-tinted drop-shadow filter at given opacity to a diagram cell (mutates shared state)
   private applyFadeEffectDirect(
     cell: Cell,
     opacity: number,
@@ -516,6 +532,7 @@ export class InfraVisualEffectsService {
   /**
    * Remove all visual effects from a cell
    */
+  // SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: strip all visual filter effects from a diagram cell, restoring default appearance (mutates shared state)
   private removeAllEffectsFromCell(cell: Cell): void {
     // this.logger.debugComponent('DfdVisualEffects', 'Removing all effects from cell', {
     //   cellId: cell.id,
@@ -540,6 +557,7 @@ export class InfraVisualEffectsService {
   /**
    * Check if a cell is currently selected (to avoid conflicts)
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: check whether a diagram cell currently has selection filter attributes applied (pure)
   isCellSelected(cell: Cell): boolean {
     // Check if cell has selection filter attributes that would indicate it's selected
     // Only rely on filter attributes, not stroke width (which can match default stroke width)
@@ -572,6 +590,7 @@ export class InfraVisualEffectsService {
     return false;
   }
 
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: locate the history plugin on a graph instance via multiple access strategies (pure)
   private _discoverHistoryPlugin(graph?: any): any {
     // Method 1: Direct property access
     if (graph && graph.history) {
@@ -609,6 +628,7 @@ export class InfraVisualEffectsService {
    * @param graph - Graph instance that may have history disable functionality
    * @returns true if history was disabled, false if it was already disabled or not available
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: disable the graph history plugin if present, returning whether it was disabled (mutates shared state)
   private _disableHistoryIfAvailable(graph?: any): boolean {
     const historyPlugin = this._discoverHistoryPlugin(graph);
 
@@ -627,6 +647,7 @@ export class InfraVisualEffectsService {
    * Check if animations are enabled in user preferences
    * @returns true if animations are enabled or preference not set, false otherwise
    */
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: fetch the user preference for animations, defaulting to enabled (reads DB)
   private areAnimationsEnabled(): boolean {
     const prefs = this.userPreferencesService.getPreferences();
     return prefs.animations !== false;
@@ -637,6 +658,7 @@ export class InfraVisualEffectsService {
    * @param graph - Graph instance that may have history enable functionality
    * @param wasDisabled - Whether history was previously disabled by this service
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: re-enable the graph history plugin only if it was previously disabled by this service (mutates shared state)
   private _enableHistoryIfAvailable(graph?: any, wasDisabled?: boolean): void {
     if (!wasDisabled) return;
 

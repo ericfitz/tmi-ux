@@ -13,6 +13,7 @@ describe('HistoryDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockHistoryService: { clearHistory: ReturnType<typeof vi.fn> };
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a minimal HistoryEntry fixture for tests (pure)
   function makeEntry(id: string): HistoryEntry {
     return {
       id,
@@ -25,6 +26,7 @@ describe('HistoryDialogComponent', () => {
     } as unknown as HistoryEntry;
   }
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a HistoryState fixture with given undo and redo stacks (pure)
   function makeState(undo: HistoryEntry[], redo: HistoryEntry[]): HistoryState {
     return {
       undoStack: undo,
@@ -34,6 +36,7 @@ describe('HistoryDialogComponent', () => {
     };
   }
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: instantiate HistoryDialogComponent from a HistoryState fixture (pure)
   function build(state: HistoryState): HistoryDialogComponent {
     const data: HistoryDialogData = {
       historyState: state,

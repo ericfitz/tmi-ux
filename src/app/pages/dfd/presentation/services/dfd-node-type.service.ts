@@ -7,11 +7,13 @@ import type { LayoutCell } from '../../types/layout-cell.types';
  * Holds no state — all cell/selection state stays in the component.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@78ec1e38fde70c14588b63411f0defa8fe691543: stateless service for node-type mapping and data-asset predicates on DFD cells (pure)
 export class DfdNodeTypeService {
   /**
    * Map a raw shape string to a known NodeType, defaulting to 'process'
    * for unrecognized values.
    */
+  // SEM@0469810b1b99b769654583c819ed256c216078e2: convert a raw shape string to a canonical NodeType, defaulting to process (pure)
   mapStringToNodeType(nodeType: string): NodeType {
     switch (nodeType) {
       case 'actor':
@@ -30,6 +32,7 @@ export class DfdNodeTypeService {
   }
 
   /** Read a cell's data assets, supporting both the array and legacy single-id formats. */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: fetch data asset IDs from a cell, normalizing array and legacy single-id formats (pure)
   getCellDataAssets(cell: LayoutCell): string[] {
     const data = cell.getData() ?? {};
     const assets = (data as { data_assets?: unknown }).data_assets;
@@ -44,6 +47,7 @@ export class DfdNodeTypeService {
   }
 
   /** Write data assets to a cell in the array format, removing the legacy key. */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: store data asset IDs on a cell in array format, removing the legacy key (mutates shared state)
   setCellDataAssets(cell: LayoutCell, assetIds: string[]): void {
     const updated: Record<string, unknown> = { ...(cell.getData() ?? {}) };
     delete updated['dataAssetId'];
@@ -56,6 +60,7 @@ export class DfdNodeTypeService {
   }
 
   /** True when every cell in the selection map has the given asset. */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: validate that every selected cell carries a given data asset (pure)
   isDataAssetChecked(selected: ReadonlyMap<string, Set<string>>, assetId: string): boolean {
     if (selected.size === 0) {
       return false;
@@ -69,6 +74,7 @@ export class DfdNodeTypeService {
   }
 
   /** True when some — but not all — cells in the selection map have the asset. */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: compute whether a data asset is present on only some selected cells (pure)
   isDataAssetIndeterminate(selected: ReadonlyMap<string, Set<string>>, assetId: string): boolean {
     if (selected.size <= 1) {
       return false;

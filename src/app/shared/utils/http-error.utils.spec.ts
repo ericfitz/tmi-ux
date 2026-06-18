@@ -15,6 +15,7 @@ import {
   getErrorMessage,
 } from './http-error.utils';
 
+// SEM@365582f1125eb9c182dd26126db7c2bc7b96349d: build an HttpErrorResponse fixture for testing error-handling utilities (pure)
 function makeErrorResponse(error: unknown, status = 400): HttpErrorResponse {
   return new HttpErrorResponse({ error, status, statusText: 'Bad Request' });
 }

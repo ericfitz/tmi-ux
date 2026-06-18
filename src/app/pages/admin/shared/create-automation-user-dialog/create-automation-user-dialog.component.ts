@@ -155,6 +155,7 @@ export interface CreateAutomationUserDialogData {
     `,
   ],
 })
+// SEM@22da868385ffe475aeaf1a11eb657ffda5267341: dialog for creating a new automation service account with name and email
 export class CreateAutomationUserDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -162,6 +163,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
   saving = false;
   errorMessage = '';
 
+  // SEM@22da868385ffe475aeaf1a11eb657ffda5267341: inject dialog ref, data, user admin service, form builder, and logger
   constructor(
     private dialogRef: MatDialogRef<CreateAutomationUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: CreateAutomationUserDialogData | null,
@@ -170,6 +172,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@8b0bb0df016a0e6d542fd365563a666e173d4ce6: build the automation user form pre-populated with suggested name and generated email (mutates shared state)
   ngOnInit(): void {
     const suggestedName = this.data?.suggestedName || '';
     const generatedEmail = suggestedName ? this.generateEmail(suggestedName) : '';
@@ -193,6 +196,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
    * lowercase, replace non-alphanumeric sequences with single hyphen,
    * trim leading/trailing hyphens, append @tmi.local
    */
+  // SEM@8b0bb0df016a0e6d542fd365563a666e173d4ce6: derive a slug-based @tmi.local email address from an automation user name (pure)
   private generateEmail(name: string): string {
     const slug = name
       .toLowerCase()
@@ -201,6 +205,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
     return `${slug}@tmi.local`;
   }
 
+  // SEM@16a12de16f46596ddb6d847a588d043dcdbea3f7: create the automation service account via the API and close dialog with result
   onSave(): void {
     if (this.form.valid && !this.saving) {
       this.saving = true;
@@ -230,6 +235,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
     }
   }
 
+  // SEM@16a12de16f46596ddb6d847a588d043dcdbea3f7: dismiss the dialog without creating an automation user (pure)
   onCancel(): void {
     this.dialogRef.close(null);
   }

@@ -156,6 +156,7 @@ export interface ResponsiblePartiesDialogData {
     `,
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog to manage an entity's responsible parties list with add/remove and save (mutates shared state)
 export class ResponsiblePartiesDialogComponent {
   private destroyRef = inject(DestroyRef);
 
@@ -165,6 +166,7 @@ export class ResponsiblePartiesDialogComponent {
   errorMessage = '';
   i18nPrefix: string;
 
+  // SEM@e575264921944c1f0cabd59e8c2eab964f074d05: initialize party list and i18n prefix from injected entity data (pure)
   constructor(
     private dialogRef: MatDialogRef<ResponsiblePartiesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ResponsiblePartiesDialogData,
@@ -176,6 +178,7 @@ export class ResponsiblePartiesDialogComponent {
     this.i18nPrefix = data.entityType === 'team' ? 'teams' : 'projects';
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: open user-picker dialog and append selected user with role to party list (mutates shared state)
   addParty(): void {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       width: '500px',
@@ -210,11 +213,13 @@ export class ResponsiblePartiesDialogComponent {
       });
   }
 
+  // SEM@77620418e831366839fd9505341c2bab18d576bd: delete a responsible party entry from the local list and mark dirty (mutates shared state)
   removeParty(party: ResponsibleParty): void {
     this.parties = this.parties.filter(p => p.user_id !== party.user_id);
     this.dirty = true;
   }
 
+  // SEM@e575264921944c1f0cabd59e8c2eab964f074d05: persist responsible-party changes to the API and close the dialog (mutates shared state)
   onSave(): void {
     if (!this.dirty || this.saving) return;
     this.saving = true;
@@ -236,6 +241,7 @@ export class ResponsiblePartiesDialogComponent {
       });
   }
 
+  // SEM@77620418e831366839fd9505341c2bab18d576bd: dismiss the dialog without saving, returning a false result (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }

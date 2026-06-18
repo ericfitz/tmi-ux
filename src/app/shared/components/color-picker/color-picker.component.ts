@@ -64,6 +64,7 @@ import {
   styleUrl: './color-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@2c555798bd2125fe80100290956defed1b05474e: color picker component with default and diagram palette slots and hex input
 export class ColorPickerComponent {
   @Input() selectedColor: string | null = null;
   @Input() diagramPalette: ColorPaletteEntry[] = [];
@@ -81,6 +82,7 @@ export class ColorPickerComponent {
   selectedDiagramPosition: number | null = null;
   selectedSource: 'default' | 'diagram' | null = null;
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: inject ChangeDetectorRef for manual change detection (pure)
   constructor(private cdr: ChangeDetectorRef) {}
 
   get isHexInputEnabled(): boolean {
@@ -98,6 +100,7 @@ export class ColorPickerComponent {
     return [...this.diagramPalette].sort((a, b) => a.position - b.position);
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: return true if the given color and palette source are the current selection (pure)
   isSelected(color: string, source: 'default' | 'diagram', position?: number): boolean {
     if (source === 'default') {
       return this.selectedSource === 'default' && this.selectedColor === color;
@@ -105,6 +108,7 @@ export class ColorPickerComponent {
     return this.selectedSource === 'diagram' && this.selectedDiagramPosition === position;
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: select a default palette color and emit the color selection event (mutates shared state)
   onDefaultColorClick(color: string): void {
     if (this.disabled) return;
     this.selectedSource = 'default';
@@ -114,6 +118,7 @@ export class ColorPickerComponent {
     this.colorSelected.emit(color);
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: select an existing diagram palette entry and emit the color selection event (mutates shared state)
   onDiagramColorClick(entry: ColorPaletteEntry): void {
     if (this.disabled) return;
     this.selectedSource = 'diagram';
@@ -123,6 +128,7 @@ export class ColorPickerComponent {
     this.colorSelected.emit(entry.color);
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: add a placeholder color to the next available diagram palette slot and emit changes (mutates shared state)
   onEmptySlotClick(): void {
     if (this.disabled || !this.canAddDiagramColor) return;
     const position = nextAvailablePosition(this.diagramPalette);
@@ -140,6 +146,7 @@ export class ColorPickerComponent {
     this.cdr.markForCheck();
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: delete a diagram palette entry and emit the updated palette (mutates shared state)
   onRemoveDiagramColor(event: MouseEvent, entry: ColorPaletteEntry): void {
     event.stopPropagation();
     if (this.disabled) return;
@@ -154,6 +161,7 @@ export class ColorPickerComponent {
     this.cdr.markForCheck();
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: validate hex input and update the selected diagram palette entry color (mutates shared state)
   onHexInput(value: string): void {
     if (!this.isHexInputEnabled || this.selectedDiagramPosition === null) return;
     this.hexInputValue = value;
@@ -171,11 +179,13 @@ export class ColorPickerComponent {
     }
   }
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: delegate click to the native OS color input element (mutates shared state)
   onOsColorPickerClick(): void {
     if (!this.isHexInputEnabled) return;
     this.osColorInput.nativeElement.click();
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: apply OS color picker selection to the current diagram palette entry (mutates shared state)
   onOsColorChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const color = normalizeHexColor(input.value);

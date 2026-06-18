@@ -135,6 +135,7 @@ import { DfdIconService } from '../services/dfd-icon.service';
 import { DfdStylingService } from '../services/dfd-styling.service';
 import { GraphOperation } from '../../types/graph-operation.types';
 
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: enumerate supported diagram export image formats (pure)
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
 @Component({
@@ -198,6 +199,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
   styleUrls: ['./dfd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: root component orchestrating the interactive data flow diagram editor page
 export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('graphContainer', { static: true }) graphContainer!: ElementRef;
   @ViewChild('contextMenuTrigger') contextMenuTrigger!: MatMenuTrigger;
@@ -275,6 +277,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // User preference for showing developer tools
   showDeveloperTools = false;
 
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: inject diagram services and initialize X6 cell extensions (mutates shared state)
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
@@ -307,6 +310,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     initializeX6CellExtensions();
   }
 
+  // SEM@f27ffdf4b41e57e775742a3de7caa83658a4af47: extract route params, set diagram context, and configure auto-save on init (mutates shared state)
   ngOnInit(): void {
     // this.logger.info('DfdComponent v2 ngOnInit called');
 
@@ -355,6 +359,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.configureAutoSave();
   }
 
+  // SEM@2de9acd9c0f615f9127954482ca522837ca91618: initialize the diagram graph after resolving the user's authorization permission (mutates shared state)
   ngAfterViewInit(): void {
     // this.logger.info('DfdComponent v2 ngAfterViewInit called - starting initialization sequence');
 
@@ -457,6 +462,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // SEM@99432db5bab9519af796a5c794b160d0fbad7d0a: initialize or reconfigure the DFD orchestrator given the resolved user permission (mutates shared state)
   private initializeWithPermission(permission: 'reader' | 'writer' | 'owner'): void {
     // Update component state
     this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
@@ -566,6 +572,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupOrchestratorSubscriptions();
   }
 
+  // SEM@d09d726f6e5e0a8865bd0ad25acc5215ba4b8896: flush unsaved diagram changes and clean up all subscriptions on destroy (mutates shared state)
   ngOnDestroy(): void {
     // this.logger.info('DfdComponent v2 ngOnDestroy called');
 
@@ -607,6 +614,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // AppDfdOrchestrator doesn't have dispose method, handle cleanup via subscriptions
   }
 
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: enable or disable the orchestrator auto-save based on the user's write permission (mutates shared state)
   private configureAutoSave(): void {
     // Configure auto-save based on user permission
     const autoSaveMode = this.isReadOnlyMode ? 'manual' : 'auto';
@@ -625,6 +633,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: subscribe to orchestrator, collaboration, and selection streams to sync component state (mutates shared state)
   private setupOrchestratorSubscriptions(): void {
     // Subscribe to collaboration state changes to initialize services when collaboration starts
     this._subscriptions.add(
@@ -779,6 +788,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupPortClickHandlers();
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: delegate a newly added graph node to the infrastructure facade for persistence (mutates shared state)
   private handleNodeAdded(node: any): void {
     this.logger.info('DFD Component: handleNodeAdded called', {
       nodeId: node?.id,
@@ -807,6 +817,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: delegate a newly added graph edge to the infrastructure facade for persistence (mutates shared state)
   private handleEdgeAdded(edge: any): void {
     this.logger.info('DFD Component: handleEdgeAdded called', {
       edgeId: edge?.id,
@@ -835,6 +846,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch a diagram cell label change to infrastructure for persistence (mutates shared state)
   private handleLabelChange(change: any): void {
     this.logger.info('DFD Component: handleLabelChange called', {
       cellId: change?.cellId,
@@ -870,6 +882,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch an edge reconnection event to infrastructure for persistence (mutates shared state)
   private handleEdgeReconnection(reconnection: any): void {
     this.logger.info('DFD Component: handleEdgeReconnection called', {
       edgeId: reconnection?.edgeId,
@@ -908,6 +921,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch a node parent change to infrastructure for persistence (mutates shared state)
   private handleNodeParentChange(change: any): void {
     this.logger.info('DFD Component: handleNodeParentChange called', {
       nodeId: change?.nodeId,
@@ -944,6 +958,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch edge vertex geometry updates to infrastructure for persistence (mutates shared state)
   private handleEdgeVerticesChanged(edge: any): void {
     if (!edge || !this.dfdId) {
       this.logger.warn('Cannot handle edge vertices changed - missing edge or diagram ID');
@@ -970,6 +985,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: fetch and render a diagram, then clear selection and apply icons (mutates shared state)
   private loadDiagramData(dfdId: string): void {
     // Use AppDfdOrchestrator to load diagram
     this.appDfdOrchestrator.loadDiagram(dfdId).subscribe({
@@ -1011,16 +1027,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Toolbar Methods - Using AppDfdOrchestrator
 
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: convert a string node type and delegate node creation to the orchestrator (mutates shared state)
   addGraphNode(nodeType: string): void {
     // Map string nodeType to NodeType enum
     const mappedNodeType = this.dfdNodeType.mapStringToNodeType(nodeType);
     this.onAddNode(mappedNodeType);
   }
 
+  // SEM@1706f3be4a28e5816fc47b3548744f8a64b1e5af: delegate deletion of selected diagram cells to the handler (mutates shared state)
   deleteSelected(): void {
     this.onDeleteSelected();
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the diagram edit history dialog for review
   showHistory(): void {
     // Get custom history state from orchestrator
     const historyState = this.appDfdOrchestrator.getHistoryState();
@@ -1040,6 +1059,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Opened history dialog');
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open a dialog displaying the raw graph data for inspection
   showGraphData(): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
@@ -1057,12 +1077,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Opened graph data dialog');
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the diagram editor help dialog
   showHelp(): void {
     this.dfdDialog.openHelp();
 
     this.logger.info('Opened help dialog');
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open a dialog displaying the current clipboard contents
   showClipboard(): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) {
@@ -1080,6 +1102,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Opened clipboard dialog');
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: add a new node of the given type to the diagram if not read-only (mutates shared state)
   onAddNode(nodeType: NodeType): void {
     if (this.isReadOnlyMode) return;
 
@@ -1113,6 +1136,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: delete selected diagram cells after optional confirmation if not read-only (mutates shared state)
   onDeleteSelected(): void {
     if (this.isReadOnlyMode || !this.hasSelectedCells) return;
 
@@ -1140,6 +1164,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: revert the last diagram edit if undo is available and not read-only (mutates shared state)
   onUndo(): void {
     if (!this.canUndo || this.isReadOnlyMode) return;
 
@@ -1158,6 +1183,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: reapply the last undone diagram edit if redo is available and not read-only (mutates shared state)
   onRedo(): void {
     if (!this.canRedo || this.isReadOnlyMode) return;
 
@@ -1176,6 +1202,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: cut selected diagram cells to clipboard after optional confirmation if not read-only (mutates shared state)
   onCut(): void {
     if (!this.hasSelectedCells || this.isReadOnlyMode) return;
 
@@ -1199,6 +1226,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@b71c37e6ebaadf734d302ac51ca182bd0b5482b8: copy selected diagram cells to clipboard if any are selected (mutates shared state)
   onCopy(): void {
     if (!this.hasSelectedCells) return;
 
@@ -1207,6 +1235,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateClipboardState();
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: paste clipboard contents into the diagram if not read-only (mutates shared state)
   onPaste(): void {
     if (this.isReadOnlyMode) return;
 
@@ -1215,38 +1244,47 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Template compatibility methods
+  // SEM@ae89d605380655be047b26e5033cc5b0a62302f6: delegate undo to the canonical handler for template compatibility (mutates shared state)
   undo(): void {
     this.onUndo();
   }
 
+  // SEM@ae89d605380655be047b26e5033cc5b0a62302f6: delegate redo to the canonical handler for template compatibility (mutates shared state)
   redo(): void {
     this.onRedo();
   }
 
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: delegate cut to the canonical handler for template compatibility (mutates shared state)
   cut(): void {
     this.onCut();
   }
 
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: delegate copy to the canonical handler for template compatibility (mutates shared state)
   copy(): void {
     this.onCopy();
   }
 
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: delegate paste to the canonical handler for template compatibility (mutates shared state)
   paste(): void {
     this.onPaste();
   }
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: select all diagram cells via the orchestrator (mutates shared state)
   onSelectAll(): void {
     this.appDfdOrchestrator.selectAll();
   }
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: clear all selected diagram cells via the orchestrator (mutates shared state)
   onClearSelection(): void {
     this.appDfdOrchestrator.clearSelection();
   }
 
+  // SEM@95fe89a8e4d1743d0c2bac75e2efd95ce4b2c2f5: scale the diagram viewport to fit all cells
   zoomToFit(): void {
     this.appDfdOrchestrator.zoomToFit();
   }
 
+  // SEM@c89dfe72536d141f71b7471de3e72bd7b08e9ff2: save the diagram with an SVG thumbnail, falling back to thumbnail-less save (mutates shared state)
   onSaveManually(): void {
     if (this.isReadOnlyMode) return;
 
@@ -1291,6 +1329,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@d53da449952ce06ea3620d522f180dc4f090349f: persist a new diagram name to the API and update local metadata (mutates shared state)
   onDiagramNameChange(newName: string): void {
     if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
       return;
@@ -1321,6 +1360,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@d53da449952ce06ea3620d522f180dc4f090349f: persist a new diagram description to the API and update local metadata (mutates shared state)
   onDiagramDescriptionChange(newDescription: string): void {
     if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
       return;
@@ -1356,6 +1396,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@d53da449952ce06ea3620d522f180dc4f090349f: update the diagram report-inclusion flag via the API (mutates shared state)
   onIncludeInReportChange(event: { checked: boolean }): void {
     if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
       return;
@@ -1383,6 +1424,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: update the Timmy AI-assistant enabled flag for the diagram via the API (mutates shared state)
   onTimmyEnabledChange(event: { checked: boolean }): void {
     if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
       return;
@@ -1410,6 +1452,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // SEM@e727b5931f6efd6cf61c25837601eff84c732dac: export the diagram in the given format and trigger a browser download
   onExport(format: ExportFormat): void {
     // Check if DFD system is initialized before attempting to export
     if (!this.appDfdOrchestrator.getState().initialized) {
@@ -1436,14 +1479,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Template compatibility methods
+  // SEM@ae89d605380655be047b26e5033cc5b0a62302f6: delegate diagram export in the given format to the export handler
   exportDiagram(format: ExportFormat): void {
     this.onExport(format);
   }
 
+  // SEM@ae89d605380655be047b26e5033cc5b0a62302f6: open the diagram metadata editor dialog
   manageMetadata(): void {
     this.onEditMetadata();
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the threat creation dialog for the selected cell, loading framework context (reads DB)
   openThreatEditor(): void {
     if (!this.threatModelId) {
       this.logger.warn('Cannot open threat editor: No threat model ID available');
@@ -1539,6 +1585,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the threat management dialog for the selected cell's threats (reads DB)
   manageThreats(): void {
     // Get the target cell (right-clicked or selected)
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
@@ -1617,6 +1664,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: save the diagram with an SVG thumbnail then navigate away (mutates shared state)
   closeDiagram(): void {
     this.logger.info('Closing diagram');
 
@@ -1659,6 +1707,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Fallback save without thumbnail (used when thumbnail capture fails)
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: save the diagram without a thumbnail then navigate away as a fallback (mutates shared state)
   private _fallbackSaveAndNavigate(): void {
     // Start save request (fire-and-forget - navigate immediately after request is sent)
     this.appDfdOrchestrator.saveManually().subscribe({
@@ -1680,6 +1729,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * supplying the live graph adapter, export service, and a selection-clearing
    * callback so the command service stays graph-agnostic.
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: capture a base64 SVG thumbnail of the current diagram graph (pure)
   private _captureDiagramSvgThumbnail(): Promise<string | null> {
     return this.dfdCommand.captureDiagramSvgThumbnail(
       this.dfdInfrastructure.graphAdapter,
@@ -1688,6 +1738,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: activate inline label editing for the selected or right-clicked cell (mutates shared state)
   editCellText(): void {
     const cell = this._rightClickedCell || this.getFirstSelectedCell();
     if (!cell) {
@@ -1718,6 +1769,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // SEM@f67099f69f85603be7f4b71b3f0a1ca63d704ee0: return the first currently selected diagram cell, or null if none (pure)
   private getFirstSelectedCell(): any {
     const selectedCells = this.appDfdOrchestrator.getSelectedCells();
     if (selectedCells.length === 0) return null;
@@ -1727,6 +1779,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Z-order methods
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: raise the selected cell one z-order step (mutates shared state)
   moveForward(): void {
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
     if (!targetCell) {
@@ -1739,6 +1792,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debugComponent('DfdComponent', 'Moved cell forward', { cellId: targetCell.id });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: lower the selected cell one z-order step (mutates shared state)
   moveBackward(): void {
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
     if (!targetCell) {
@@ -1751,6 +1805,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debugComponent('DfdComponent', 'Moved cell backward', { cellId: targetCell.id });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: raise the selected cell to the top z-order (mutates shared state)
   moveToFront(): void {
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
     if (!targetCell) {
@@ -1763,6 +1818,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.debugComponent('DfdComponent', 'Moved cell to front', { cellId: targetCell.id });
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: lower the selected cell to the bottom z-order (mutates shared state)
   moveToBack(): void {
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
     if (!targetCell) {
@@ -1788,6 +1844,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * No-op if the right-clicked cell is missing, not lock-eligible, or in
    * read-only mode (the menu item is also disabled in that case).
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: toggle per-cell layout lock, running a layout cycle on unlock (mutates shared state)
   toggleLayoutLock(): void {
     if (this.isReadOnlyMode) return;
     const cell = this._rightClickedCell;
@@ -1825,6 +1882,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Lock removed: capture pre-state for cell + children + cascade ancestors,
     // clear the flag, run a layout cycle inside one batched history entry.
     const previousStates = new Map<string, unknown>();
+    // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: record a cell's pre-change state into the history snapshot map (mutates shared state)
     const captureCell = (c: any): void => {
       if (!c?.id || previousStates.has(c.id)) return;
       if (!c.isNode?.()) return;
@@ -1894,6 +1952,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Edge methods
+  // SEM@f67099f69f85603be7f4b71b3f0a1ca63d704ee0: add a reverse-direction edge for the selected diagram edge (mutates shared state)
   addInverseConnection(): void {
     const edge = this._rightClickedCell || this.getFirstSelectedCell();
     if (!edge || !edge.isEdge()) {
@@ -1924,6 +1983,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Load data assets from the threat model when the sub-menu opens
    */
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: fetch data assets for the context menu and current cell associations (reads DB)
   loadDataAssetsForMenu(): void {
     if (!this.threatModelId) {
       this.logger.warn('Cannot load data assets: No threat model ID available');
@@ -1959,6 +2019,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Load current data asset associations for selected/right-clicked cells
    */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: populate the selected-cell data-asset association map from cell metadata (mutates shared state)
   private _loadSelectedCellDataAssets(): void {
     this._selectedCellDataAssets.clear();
 
@@ -1979,6 +2040,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Check if a data asset is associated with ALL selected/right-clicked cells
    */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: check if a data asset is associated with all selected cells (pure)
   isDataAssetChecked(assetId: string): boolean {
     return this.dfdNodeType.isDataAssetChecked(this._selectedCellDataAssets, assetId);
   }
@@ -1986,6 +2048,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Check if a data asset is associated with SOME (but not all) selected cells
    */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: check if a data asset is associated with some but not all selected cells (pure)
   isDataAssetIndeterminate(assetId: string): boolean {
     return this.dfdNodeType.isDataAssetIndeterminate(this._selectedCellDataAssets, assetId);
   }
@@ -1993,6 +2056,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Toggle a data asset association for all selected/right-clicked cells
    */
+  // SEM@78ec1e38fde70c14588b63411f0defa8fe691543: toggle data asset association on selected or right-clicked diagram cells (mutates shared state)
   toggleDataAsset(assetId: string, event: Event): void {
     event.stopPropagation();
 
@@ -2084,16 +2148,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@f67099f69f85603be7f4b71b3f0a1ca63d704ee0: check if the context-menu target cell is an edge (pure)
   isRightClickedCellEdge(): boolean {
     return (
       this._rightClickedCell && this._rightClickedCell.isEdge && this._rightClickedCell.isEdge()
     );
   }
 
+  // SEM@f67099f69f85603be7f4b71b3f0a1ca63d704ee0: return the diagram cell that was most recently right-clicked (pure)
   getRightClickedCell(): any {
     return this._rightClickedCell;
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the cell properties dialog for the target or selected cell
   showCellProperties(): void {
     // Get the target cell (right-clicked or selected)
     const targetCell = this._rightClickedCell || this.getFirstSelectedCell();
@@ -2122,6 +2189,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Edge Observable Subscriptions
 
+  // SEM@5d3839af4d23487f5d92aed58214fc0dabaf9d1d: subscribe to graph adapter events for node, edge, label, reconnection, and deletion (mutates shared state)
   private setupEdgeObservableSubscriptions(): void {
     this.logger.debugComponent(
       'DfdComponent',
@@ -2230,10 +2298,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * The `_inLayoutCycle` flag short-circuits these handlers when the layout
    * itself calls `cell.resize()` / `child.position()`.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: subscribe to graph drag-end events to trigger auto-layout on parent containers (mutates shared state)
   private subscribeToAutoLayoutTriggers(): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
 
+    // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: handle node parent-change event by re-running layout on new and old parent containers
     const onParent = ({ node, previous }: { node: any; previous: any }): void => {
       if (this._inLayoutCycle) return;
       const newParent = node.getParent?.();
@@ -2257,6 +2327,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     };
 
+    // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: handle node-moved event by re-running position layout on auto-fit container parent
     const onMoved = ({ node }: { node: any }): void => {
       if (this._inLayoutCycle) return;
       const parent = node.getParent?.();
@@ -2270,6 +2341,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this._runLayoutCycle(parent, 'position');
     };
 
+    // SEM@5d3839af4d23487f5d92aed58214fc0dabaf9d1d: handle node-resized event by re-running port layout on auto-fit container parent
     const onResized = ({ node }: { node: any }): void => {
       if (this._inLayoutCycle) return;
       const parent = node.getParent?.();
@@ -2295,6 +2367,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Context Menu Methods
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: subscribe to graph adapter context-menu events and route them to the cell context menu (mutates shared state)
   private setupContextMenuHandlers(): void {
     // Get the graph adapter's context menu observable through the facade
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
@@ -2312,6 +2385,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // SEM@473768aa561d287a179c19a1ab908f4eb0b93188: store the right-clicked cell, position the context menu, and open it (mutates shared state)
   private openCellContextMenu(cell: any, x: number, y: number): void {
     // Store the right-clicked cell for context menu actions
     this._rightClickedCell = cell;
@@ -2346,6 +2420,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@f67099f69f85603be7f4b71b3f0a1ca63d704ee0: handle a browser context-menu event by positioning and opening the diagram context menu
   onContextMenu(event: MouseEvent): void {
     // This method is kept for any manual context menu triggers
     event.preventDefault();
@@ -2358,6 +2433,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Port Label Popover Methods
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: subscribe to port-click events from the graph adapter and open the port label popover (mutates shared state)
   private setupPortClickHandlers(): void {
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
     if (graphAdapter && graphAdapter.portClicked$) {
@@ -2372,6 +2448,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: populate port label state and display the port label popover at the given position (mutates shared state)
   private openPortLabelPopover(node: any, portId: string, x: number, y: number): void {
     if (this.isReadOnlyMode) return;
 
@@ -2403,6 +2480,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: update a port label on the node and persist the change with undo history (mutates shared state)
   onPortLabelChanged(event: PortLabelChangeEvent): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
@@ -2467,11 +2545,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: dismiss the port label popover (mutates shared state)
   closePortLabelPopover(): void {
     this.isPortLabelPopoverOpen = false;
     this.cdr.detectChanges();
   }
 
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: open the metadata dialog for the selected cell and persist edits via the orchestrator
   onEditMetadata(): void {
     if (!this.hasExactlyOneSelectedCell) return;
 
@@ -2549,6 +2629,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Keyboard Shortcuts
 
   @HostListener('window:keydown', ['$event'])
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: handle global keydown events for save, delete, and delegated diagram shortcuts
   onKeyDown(event: KeyboardEvent): void {
     // Handle Ctrl+S/Cmd+S for manual save with thumbnail
     if ((event.ctrlKey || event.metaKey) && event.key === 's') {
@@ -2578,6 +2659,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: handle window resize events by delegating to the orchestrator
   onWindowResize(_event: Event): void {
     // Delegate to orchestrator for centralized resize handling
     this.appDfdOrchestrator.onWindowResize();
@@ -2585,6 +2667,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Helper Methods
 
+  // SEM@8e3b401a9132a5eba91fd80043ac0e6ff4c5b355: subscribe to user preferences and sync the developer-tools visibility flag (mutates shared state)
   private loadDeveloperToolsPreference(): void {
     this.userPreferencesService.preferences$.pipe(takeUntil(this._destroy$)).subscribe(prefs => {
       this.showDeveloperTools = prefs.showDeveloperTools;
@@ -2597,6 +2680,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * graph when any of: `showShapeBordersWithIcons`, `autoLayoutEnabled`,
    * `autoLayoutOrientation` toggles. The first emission only seeds state.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: subscribe to layout preference changes and re-apply auto-layout or border settings across all graph cells (mutates shared state)
   private subscribeToAutoLayoutPreferences(): void {
     let lastBorders: boolean | undefined;
     let lastEnabled: boolean | undefined;
@@ -2638,6 +2722,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // SEM@473768aa561d287a179c19a1ab908f4eb0b93188: recompute selection flags from the current graph selection and trigger change detection (mutates shared state)
   private updateSelectionState(): void {
     if (!this.appDfdOrchestrator.getState().initialized) {
       return;
@@ -2698,6 +2783,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Style panel methods
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: toggle the style panel open or closed, refreshing selected cells when opening (mutates shared state)
   toggleStylePanel(): void {
     this.isStylePanelOpen = !this.isStylePanelOpen;
     if (this.isStylePanelOpen) {
@@ -2706,6 +2792,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: update style panel cell list from current graph selection (mutates shared state)
   private updateStylePanelCells(): void {
     const selectedCellIds = this.appDfdOrchestrator.getSelectedCells();
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2718,6 +2805,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Icon picker panel methods
 
+  // SEM@5b6850126e0e1bc9cf6da18cb7fb77e18f818caa: toggle icon picker panel open/closed and refresh its cell list (mutates shared state)
   toggleIconPickerPanel(): void {
     this.isIconPickerPanelOpen = !this.isIconPickerPanelOpen;
     if (this.isIconPickerPanelOpen) {
@@ -2726,6 +2814,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: refresh icon picker cell list from current graph selection (mutates shared state)
   private updateIconPickerCells(): void {
     if (!this.isIconPickerPanelOpen) return;
     const selectedCellIds = this.appDfdOrchestrator.getSelectedCells();
@@ -2737,6 +2826,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.iconPickerCells = this.dfdStyling.buildIconPickerCells(graph, selectedCellIds);
   }
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: apply selected icon to diagram nodes and record undo history (mutates shared state)
   onIconSelected(event: IconSelectedEvent): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2776,6 +2866,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: remove icon from diagram nodes and restore label defaults with undo history (mutates shared state)
   onIconRemoved(event: IconRemovedEvent): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2815,6 +2906,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: update icon placement on diagram nodes and record undo history (mutates shared state)
   onIconPlacementChanged(event: PlacementChangedEvent): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2863,6 +2955,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * re-enter `_runLayoutCycle`. Caller owns history capture/dispatch; this
    * helper performs only the cell mutations.
    */
+  // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: apply auto-layout to a cell and cascade to ancestors, guarded against re-entry (mutates shared state)
   private _runInlineLayoutCycle(cell: any): void {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return;
@@ -2884,6 +2977,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * `_inLayoutCycle` guard prevents the handler-fired resize/position events
    * from re-entering this method recursively.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: run auto-layout for a trigger cell and emit batched undo history, re-entry guarded (mutates shared state)
   private _runLayoutCycle(triggerCell: any, sortBy: 'ports' | 'position' = 'ports'): boolean {
     if (this._inLayoutCycle) return false;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -2891,6 +2985,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._inLayoutCycle = true;
     try {
       const previousStates = new Map<string, unknown>();
+      // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: capture a node cell's state into the pre-layout snapshot map (mutates shared state)
       const captureCell = (c: any): void => {
         if (!c?.id || previousStates.has(c.id)) return;
         if (!c.isNode?.()) return;
@@ -2958,6 +3053,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: apply a style property change to selected diagram cells and update style panel (mutates shared state)
   onStyleChange(event: StyleChangeEvent): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -3005,6 +3101,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: clear custom formatting from specified diagram cells and refresh style panel (mutates shared state)
   onClearCustomFormatting(cellIds: string[]): void {
     if (this.isReadOnlyMode) return;
     const graph = this.appDfdOrchestrator.getGraph;
@@ -3033,11 +3130,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: store updated diagram color palette in component state (mutates shared state)
   onDiagramPaletteChanged(palette: ColorPaletteEntry[]): void {
     this.diagramColorPalette = palette;
     // TODO: persist palette via REST/WebSocket diagram update using color_palette field
   }
 
+  // SEM@b71c37e6ebaadf734d302ac51ca182bd0b5482b8: sync clipboard content flag from infrastructure and trigger change detection if changed (mutates shared state)
   private updateClipboardState(): void {
     const oldHasClipboardContent = this.hasClipboardContent;
     this.hasClipboardContent = !this.dfdInfrastructure.isClipboardEmpty();
@@ -3051,6 +3150,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Check if any of the given cells have non-empty _metadata entries.
    * If no cells are provided, checks all currently selected cells.
    */
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: check whether any selected or given cells carry non-empty metadata entries (pure)
   private _selectedCellsHaveMetadata(cells?: Cell[]): boolean {
     const graph = this.appDfdOrchestrator.getGraph;
     if (!graph) return false;
@@ -3069,6 +3169,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
    * Show metadata loss confirmation dialog if any target cells have metadata.
    * Returns Observable<boolean> — true if deletion should proceed.
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: show deletion confirmation dialog if target cells have metadata; return proceed signal (pure)
   private _confirmDeletionIfNeeded(cells?: Cell[]): Observable<boolean> {
     if (!this._selectedCellsHaveMetadata(cells)) {
       return of(true);

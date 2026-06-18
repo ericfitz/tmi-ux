@@ -44,7 +44,9 @@ export type {
   templateUrl: './confirm-action-dialog.component.html',
   styleUrls: ['./confirm-action-dialog.component.scss'],
 })
+// SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: dialog component that prompts the user to confirm or cancel a destructive action
 export class ConfirmActionDialogComponent {
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: inject dialog ref and dialog data configuration (pure)
   constructor(
     private _dialogRef: MatDialogRef<ConfirmActionDialogComponent, ConfirmActionDialogResult>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmActionDialogData,
@@ -71,11 +73,13 @@ export class ConfirmActionDialogComponent {
   }
 
   /** Handle cancel action. */
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: close dialog with a confirmed=false result
   onCancel(): void {
     this._dialogRef.close({ confirmed: false });
   }
 
   /** Handle confirm action. */
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: close dialog with a confirmed=true result
   onConfirm(): void {
     this._dialogRef.close({ confirmed: true });
   }

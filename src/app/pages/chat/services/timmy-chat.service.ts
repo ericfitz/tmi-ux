@@ -21,7 +21,9 @@ import { SseEvent } from '../../../core/interfaces/sse.interface';
  * for streaming progress/token events.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: fetch and manage Timmy chat sessions and messages via REST and SSE
 export class TimmyChatService {
+  // SEM@1fd1f0a0e184c87f1a815b67edcab2ceb503a836: inject API, SSE, and activity-tracker dependencies
   constructor(
     private api: ApiService,
     private sse: SseClientService,
@@ -32,12 +34,14 @@ export class TimmyChatService {
    * Create a new chat session. Returns an SSE stream of progress events
    * (session_created, progress, ready, error).
    */
+  // SEM@1fd1f0a0e184c87f1a815b67edcab2ceb503a836: create a chat session and stream SSE progress events to caller
   createSession(threatModelId: string): Observable<SseEvent> {
     this.activityTracker.markActive();
     return this.sse.post(`/threat_models/${threatModelId}/chat/sessions`);
   }
 
   /** List the current user's chat sessions for a threat model. */
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: fetch all chat sessions for a threat model (reads API)
   listSessions(threatModelId: string): Observable<ChatSession[]> {
     return this.api
       .get<ListSessionsResponse>(`/threat_models/${threatModelId}/chat/sessions`)
@@ -45,11 +49,13 @@ export class TimmyChatService {
   }
 
   /** Get a single session's details (metadata + source snapshot). */
+  // SEM@1fd1f0a0e184c87f1a815b67edcab2ceb503a836: fetch a single chat session's metadata and source snapshot (reads API)
   getSession(threatModelId: string, sessionId: string): Observable<ChatSession> {
     return this.api.get<ChatSession>(`/threat_models/${threatModelId}/chat/sessions/${sessionId}`);
   }
 
   /** Soft-delete a session. */
+  // SEM@1fd1f0a0e184c87f1a815b67edcab2ceb503a836: delete a chat session from the API
   deleteSession(threatModelId: string, sessionId: string): Observable<void> {
     return this.api.delete<void>(`/threat_models/${threatModelId}/chat/sessions/${sessionId}`);
   }
@@ -58,6 +64,7 @@ export class TimmyChatService {
    * Send a message to Timmy. Returns an SSE stream of response events
    * (message_start, token, message_end, error).
    */
+  // SEM@1fd1f0a0e184c87f1a815b67edcab2ceb503a836: send a chat message and stream SSE token/response events to caller
   sendMessage(threatModelId: string, sessionId: string, content: string): Observable<SseEvent> {
     this.activityTracker.markActive();
     return this.sse.post(`/threat_models/${threatModelId}/chat/sessions/${sessionId}/messages`, {
@@ -66,6 +73,7 @@ export class TimmyChatService {
   }
 
   /** Fetch message history for a session (paginated). */
+  // SEM@961e8a66879858c86fe33ec0d572b5ed71dc8cd4: fetch paginated chat message history for a session (reads API)
   getMessages(
     threatModelId: string,
     sessionId: string,

@@ -18,6 +18,7 @@ import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { map, catchError, of } from 'rxjs';
 
+// SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: authorize route access for security reviewer role; redirect others to landing (reads DB)
 export const reviewerGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

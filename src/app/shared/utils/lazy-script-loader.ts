@@ -5,6 +5,7 @@ const cache = new Map<string, Promise<void>>();
  * promise; if the load fails, the cache entry is removed so a retry can
  * make a fresh attempt.
  */
+// SEM@d0f158f19ac1da312d179e2a25e720ad51dd2824: load an external script by URL exactly once, sharing the promise across concurrent callers (mutates shared state)
 export function loadScriptOnce(src: string): Promise<void> {
   const existing = cache.get(src);
   if (existing) return existing;
@@ -26,6 +27,7 @@ export function loadScriptOnce(src: string): Promise<void> {
 }
 
 /** Test helper. */
+// SEM@d0f158f19ac1da312d179e2a25e720ad51dd2824: clear the script-loader cache for test isolation (mutates shared state)
 export function _resetLoaderCache(): void {
   cache.clear();
 }

@@ -15,6 +15,7 @@ describe('ConfirmActionDialogComponent', () => {
   let component: ConfirmActionDialogComponent;
   let dialogRef: MockDialogRef;
 
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: build a ConfirmActionDialogComponent with a mock dialog ref for testing (pure)
   const createComponent = (data: ConfirmActionDialogData): ConfirmActionDialogComponent => {
     dialogRef = {
       close: vi.fn(),

@@ -16,6 +16,7 @@ afterEach(() => {
   TestBed.resetTestingModule();
 });
 
+// SEM@ad7267a2dd7fbf341955a732f42557d735bad83b: build a configured TestBed fixture for AuditLogsPageComponent (pure)
 function buildFixture(): ComponentFixture<AuditLogsPageComponent> {
   const translocoTesting = TranslocoTestingModule.forRoot({
     langs: { en: {} },

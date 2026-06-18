@@ -43,6 +43,7 @@ import {
   styleUrl: './audit-detail-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@bdc7912ec604dacec178423545047395c6eda4a2: route-driven side panel displaying a single audit entry for system or threat-model stream
 export class AuditDetailPanelComponent implements OnInit {
   private readonly route: ActivatedRoute;
   private readonly router: Router;
@@ -69,6 +70,7 @@ export class AuditDetailPanelComponent implements OnInit {
   /** The current entryId from the route. */
   private _currentEntryId: string | null = null;
 
+  // SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: inject dependencies and read the audit stream from route data (pure)
   constructor() {
     this.route = inject(ActivatedRoute);
     this.router = inject(Router);
@@ -91,6 +93,7 @@ export class AuditDetailPanelComponent implements OnInit {
     return this.entry as AuditEntry | null;
   }
 
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: subscribe to route param changes and fetch the corresponding audit entry (mutates shared state)
   ngOnInit(): void {
     this.route.paramMap
       .pipe(
@@ -135,6 +138,7 @@ export class AuditDetailPanelComponent implements OnInit {
    * Copies the absolute permalink URL of this entry to the clipboard.
    * URL = window.location.origin + router.url (the current route is already the permalink).
    */
+  // SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: copy the current audit entry's absolute URL to the clipboard (mutates shared state)
   copyPermalink(): void {
     const url = `${window.location.origin}${this.router.url}`;
     void navigator.clipboard.writeText(url);
@@ -146,6 +150,7 @@ export class AuditDetailPanelComponent implements OnInit {
    * Navigates to the parent list with this entry as the around-anchor,
    * allowing the user to see this entry in context.
    */
+  // SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: navigate to the audit list centered on the current entry via around query param
   viewInContext(): void {
     void this.router.navigate(['../'], {
       relativeTo: this.route,
@@ -154,6 +159,7 @@ export class AuditDetailPanelComponent implements OnInit {
   }
 
   /** Closes the detail panel by navigating back to the parent list. */
+  // SEM@5581443329b5f5aa1c4acb36eae3a5b903c0619e: navigate back to the parent audit list, dismissing the detail panel
   close(): void {
     void this.router.navigate(['../'], { relativeTo: this.route });
   }

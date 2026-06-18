@@ -8,6 +8,7 @@ import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 import { MetadataDialog } from '../dialogs/metadata.dialog';
 import { UserPickerDialog } from '../dialogs/user-picker.dialog';
 
+// SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: E2E flow helper for CRUD and relationship actions on projects
 export class ProjectFlow {
   private projectsPage: ProjectsPage;
   private createProjectDialog: CreateProjectDialog;
@@ -17,6 +18,7 @@ export class ProjectFlow {
   private deleteConfirmDialog: DeleteConfirmDialog;
   private metadataDialog: MetadataDialog;
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: build ProjectFlow and initialize all project page and dialog wrappers (pure)
   constructor(private page: Page) {
     this.projectsPage = new ProjectsPage(page);
     this.createProjectDialog = new CreateProjectDialog(page);
@@ -27,6 +29,7 @@ export class ProjectFlow {
     this.metadataDialog = new MetadataDialog(page);
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: create a project via the create dialog and wait for the API POST
   async createProject(fields: {
     name: string;
     team: string;
@@ -51,6 +54,7 @@ export class ProjectFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@0044214fdc57a3ef5cd64987b680cab157eedffc: update project fields via the edit dialog and wait for the API PATCH
   async editProject(
     name: string,
     updates: {
@@ -82,6 +86,7 @@ export class ProjectFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: delete a project via the more menu and confirm deletion dialog
   async deleteProject(name: string) {
     await this.projectsPage.moreButton(name).click();
     await this.projectsPage.deleteItem().dispatchEvent('click');
@@ -90,24 +95,28 @@ export class ProjectFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden' });
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: open the responsible parties dialog for a named project
   async openResponsibleParties(name: string) {
     await this.projectsPage.moreButton(name).click();
     await this.projectsPage.responsiblePartiesItem().dispatchEvent('click');
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
   }
 
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: add a responsible party user with a given role via user picker
   async addResponsibleParty(email: string, role: string) {
     await this.responsiblePartiesDialog.addButton().click();
     const picker = new UserPickerDialog(this.page);
     await picker.pickUser(email, role);
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: open the related projects dialog for a named project
   async openRelatedProjects(name: string) {
     await this.projectsPage.moreButton(name).click();
     await this.projectsPage.relatedProjectsItem().dispatchEvent('click');
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible' });
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: search for and link a related project with a given relationship type
   async addRelatedProject(projectName: string, relationship: string) {
     await this.relatedProjectsDialog.addButton().click();
     await this.page.waitForTimeout(300);
@@ -116,6 +125,7 @@ export class ProjectFlow {
     await this.relatedProjectsDialog.confirmAdd();
   }
 
+  // SEM@d7c4da22330e2aa1eb04b7b122520ad2b0596635: open the metadata dialog for a named project
   async openMetadata(name: string) {
     await this.projectsPage.moreButton(name).click();
     await this.projectsPage.metadataItem().dispatchEvent('click');

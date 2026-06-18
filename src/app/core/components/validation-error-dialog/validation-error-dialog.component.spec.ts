@@ -13,6 +13,7 @@ import {
 describe('ValidationErrorDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: construct a ValidationErrorDialogComponent with mock dependencies for testing (pure)
   function build(data: ValidationErrorData): ValidationErrorDialogComponent {
     return new ValidationErrorDialogComponent(mockDialogRef as never, data);
   }

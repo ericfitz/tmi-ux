@@ -4,6 +4,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UrlDropZoneDirective } from './url-drop-zone.directive';
 import type { Renderer2 } from '@angular/core';
 
+// SEM@60a60bd1cbe57ecd30def58877849e868f9669ee: build a synthetic drag event with stubbed dataTransfer for testing (pure)
 function createDragEvent(type: string, data?: Record<string, string>): DragEvent {
   const dataTransfer: Partial<DataTransfer> = {
     types: Object.keys(data || {}),

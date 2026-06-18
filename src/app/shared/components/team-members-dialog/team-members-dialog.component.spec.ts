@@ -23,10 +23,12 @@ describe('TeamMembersDialogComponent', () => {
   let mockTransloco: TranslocoService;
   let envInjector: EnvironmentInjector;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a stub Team fixture with optional members for unit tests (pure)
   function makeTeam(members: TeamMember[] = []): Team {
     return { id: 'team-1', name: 'Team A', members } as Team;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a TeamMembersDialogComponent with mock dependencies for unit tests (pure)
   function build(data: TeamMembersDialogData): TeamMembersDialogComponent {
     return runInInjectionContext(
       envInjector,

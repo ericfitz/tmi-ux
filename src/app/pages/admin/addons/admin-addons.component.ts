@@ -53,6 +53,7 @@ import {
   styleUrl: './admin-addons.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: list, filter, add, and delete addons with paginated API-backed data
 export class AdminAddonsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -71,6 +72,7 @@ export class AdminAddonsComponent implements OnInit {
   filterText = '';
   loading = false;
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject addon, router, dialog, logger, translation, and auth dependencies (pure)
   constructor(
     private addonService: AddonService,
     private router: Router,
@@ -81,6 +83,7 @@ export class AdminAddonsComponent implements OnInit {
     private authService: AuthService,
   ) {}
 
+  // SEM@bfb60b51b1f44fb69eb7f7fbac7656849e9750be: restore pagination state from URL and subscribe to debounced filter changes (mutates shared state)
   ngOnInit(): void {
     // Initialize pagination state from URL query params
     this.route.queryParams.pipe(take(1)).subscribe(params => {
@@ -102,6 +105,7 @@ export class AdminAddonsComponent implements OnInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated addon list from the API and apply the current filter (reads DB)
   loadAddons(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -128,10 +132,12 @@ export class AdminAddonsComponent implements OnInit {
       });
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: push a new filter value into the debounced filter stream (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: update page state and reload addons when the paginator changes (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -139,6 +145,7 @@ export class AdminAddonsComponent implements OnInit {
     this.updateUrl();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: sync current pagination and filter state into the URL query params (mutates shared state)
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalAddons },
@@ -154,6 +161,7 @@ export class AdminAddonsComponent implements OnInit {
     });
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: filter the loaded addon list by name or description against filterText (mutates shared state)
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
@@ -168,6 +176,7 @@ export class AdminAddonsComponent implements OnInit {
     );
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the add-addon dialog and reload the list if an addon was created (mutates shared state)
   onAddAddon(): void {
     const dialogRef = this.dialog.open(AddAddonDialogComponent, {
       width: '700px',
@@ -184,6 +193,7 @@ export class AdminAddonsComponent implements OnInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: confirm and delete an addon via the API, adjusting pagination afterward (mutates shared state)
   onDeleteAddon(addon: Addon): void {
     const message = this.transloco.translate('admin.addons.confirmDelete', { name: addon.name });
     const confirmed = confirm(message);
@@ -215,6 +225,7 @@ export class AdminAddonsComponent implements OnInit {
     }
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the addons page to the user's landing page (pure)
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }
@@ -223,6 +234,7 @@ export class AdminAddonsComponent implements OnInit {
    * Returns the translation key for an object type.
    * Falls back to the raw value for unknown types.
    */
+  // SEM@296348f9accb29fe5c44ef260ea24805f292a868: map an object-type string to its i18n translation key (pure)
   getObjectTypeKey(objectType: string): string {
     const keyMap: Record<string, string> = {
       threat_model: 'common.objectTypes.threatModel',

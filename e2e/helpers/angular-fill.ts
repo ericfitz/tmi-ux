@@ -16,6 +16,7 @@ import { Locator } from '@playwright/test';
  * @param options - Optional settings
  * @param options.clear - Whether to clear existing value first (default: true)
  */
+// SEM@b7f96ef4ba4c187527f5fb5c63fc22ef06eacff5: set an input value atomically bypassing Angular change-detection race conditions (mutates shared state)
 export async function angularFill(
   locator: Locator,
   value: string,

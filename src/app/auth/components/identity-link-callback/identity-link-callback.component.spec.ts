@@ -33,6 +33,7 @@ interface MockOverrides {
   confirmLink?: ReturnType<typeof vi.fn>;
 }
 
+// SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: build a configured TestBed fixture for IdentityLinkCallbackComponent with mock services (pure)
 function buildFixture(overrides: MockOverrides): {
   fixture: ComponentFixture<IdentityLinkCallbackComponent>;
   identityLink: { getPending: ReturnType<typeof vi.fn>; confirmLink: ReturnType<typeof vi.fn> };

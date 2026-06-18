@@ -46,6 +46,7 @@ describe('AppHistoryService', () => {
     x6GraphAdapter: {} as any,
   };
 
+  // SEM@09b5ebb360fd1538de624244d388e0e2c63b8c5f: build a minimal Cell fixture for use in history service tests (pure)
   const createMockCell = (id: string, x = 100, y = 100): Cell => ({
     id,
     shape: 'process',
@@ -56,6 +57,7 @@ describe('AppHistoryService', () => {
     label: `Cell ${id}`,
   });
 
+  // SEM@09b5ebb360fd1538de624244d388e0e2c63b8c5f: build a HistoryEntry fixture with given cells for use in tests (pure)
   const createMockHistoryEntry = (
     id: string,
     cells: Cell[],

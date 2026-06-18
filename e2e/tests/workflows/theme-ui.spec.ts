@@ -22,6 +22,7 @@ userTest.describe('Theme UI', () => {
     const navbar = new NavbarPage(userPage);
     const dialog = userPage.locator('[data-testid="user-preferences-dialog"]');
 
+    // SEM@b0c615fca19cc3cb61a27950cb062681163d7e5d: open the user preferences dialog and navigate to the Display tab (mutates shared state)
     const openDialog = async (): Promise<void> => {
       await navbar.userMenu().click();
       await dialog.waitFor({ state: 'visible', timeout: 5000 });
@@ -32,6 +33,7 @@ userTest.describe('Theme UI', () => {
       }
     };
 
+    // SEM@b0c615fca19cc3cb61a27950cb062681163d7e5d: wait for preference sync PUT then close the preferences dialog (mutates shared state)
     const closeDialog = async (): Promise<void> => {
       // Wait longer than the UserPreferencesService 500ms debounce before closing
       // to ensure the server sync PUT fires.
@@ -48,6 +50,7 @@ userTest.describe('Theme UI', () => {
       await dialog.waitFor({ state: 'hidden', timeout: 5000 });
     };
 
+    // SEM@b0c615fca19cc3cb61a27950cb062681163d7e5d: fetch the current CSS class list from the document body (pure)
     const bodyClasses = (): Promise<string> =>
       userPage.evaluate(() => document.body.className);
 

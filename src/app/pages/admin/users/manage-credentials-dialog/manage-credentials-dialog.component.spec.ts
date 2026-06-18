@@ -32,6 +32,7 @@ describe('ManageCredentialsDialogComponent', () => {
     { id: 'cred-2', name: 'Deploy Key', client_id: 'client-2', created_at: '2024-01-02' },
   ] as ClientCredentialInfo[];
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build a ManageCredentialsDialogComponent with mocked dependencies for testing (pure)
   function build(): ManageCredentialsDialogComponent {
     const component = runInInjectionContext(
       envInjector,

@@ -17,6 +17,7 @@ export interface Metadata {
 /**
  * Converts an array of Metadata entries to a Record object
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: convert a metadata entry array to a key-value record (pure)
 export function metadataToRecord(metadata: Metadata[]): Record<string, string> {
   const record: Record<string, string> = {};
   metadata.forEach(entry => {
@@ -29,6 +30,7 @@ export function metadataToRecord(metadata: Metadata[]): Record<string, string> {
  * Converts a Record object to an array of Metadata entries
  * Ensures all values are strings and logs warnings for non-string values
  */
+// SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: convert a key-value record to a metadata entry array (pure)
 export function recordToMetadata(record: Record<string, string>): Metadata[] {
   return Object.entries(record).map(([key, value]) =>
     safeMetadataEntry(key, value, 'recordToMetadata'),
@@ -44,6 +46,7 @@ export function recordToMetadata(record: Record<string, string>): Metadata[] {
  * @param source - The source location/function calling this (for logging)
  * @returns A Metadata entry with guaranteed string value
  */
+// SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: build a metadata entry coercing non-string values to string with warning (pure)
 export function safeMetadataEntry(key: string, value: unknown, source?: string): Metadata {
   // If value is already a string, return as-is
   if (typeof value === 'string') {
@@ -72,6 +75,7 @@ export function safeMetadataEntry(key: string, value: unknown, source?: string):
 /**
  * Merges multiple metadata arrays, with later entries overriding earlier ones
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: merge multiple metadata arrays, later entries overriding earlier by key (pure)
 export function mergeMetadata(...metadataArrays: Metadata[][]): Metadata[] {
   const combined = new Map<string, string>();
 
@@ -87,6 +91,7 @@ export function mergeMetadata(...metadataArrays: Metadata[][]): Metadata[] {
 /**
  * Filters metadata entries by key prefix
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter metadata entries whose key matches a given prefix (pure)
 export function filterMetadataByPrefix(metadata: Metadata[], prefix: string): Metadata[] {
   return metadata.filter(entry => entry.key.startsWith(prefix));
 }
@@ -94,6 +99,7 @@ export function filterMetadataByPrefix(metadata: Metadata[], prefix: string): Me
 /**
  * Gets a metadata value by key, with optional default value
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: fetch a metadata value by key, returning a default if absent (pure)
 export function getMetadataValue(
   metadata: Metadata[],
   key: string,

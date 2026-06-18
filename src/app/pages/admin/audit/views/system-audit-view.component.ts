@@ -62,6 +62,7 @@ const SYSTEM_FILTER_KEYS: (keyof SystemAuditFilter)[] = [
   templateUrl: './system-audit-view.component.html',
   styleUrl: './system-audit-view.component.scss',
 })
+// SEM@bdc7912ec604dacec178423545047395c6eda4a2: display, filter, paginate, and export the system admin audit log (mutates shared state)
 export class SystemAuditViewComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -127,6 +128,7 @@ export class SystemAuditViewComponent implements OnInit {
 
   // ── Lifecycle ────────────────────────────────────────────────────────────
 
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: initialize audit view from URL query params and subscribe to param changes (mutates shared state)
   ngOnInit(): void {
     // Read initial state from a snapshot so we don't create a reload loop.
     // Then subscribe to queryParamMap for subsequent navigation changes
@@ -171,6 +173,7 @@ export class SystemAuditViewComponent implements OnInit {
   // ── Event handlers ───────────────────────────────────────────────────────
 
   /** Called by the filter bar when any filter value changes. */
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: apply a new audit filter and reload the first page (mutates shared state)
   onFilterChange(f: SystemAuditFilter): void {
     this.filter = f;
     this.anchorId = null;
@@ -179,6 +182,7 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Navigate to an older (earlier) page using the next cursor. Leaves around mode. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: navigate to the next (older) audit log page via cursor (mutates shared state)
   onOlder(): void {
     this.anchorId = null;
     this.load({ cursor: this.nextCursor ?? undefined });
@@ -186,6 +190,7 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Navigate to a newer (later) page using the prev cursor. Leaves around mode. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: navigate to the previous (newer) audit log page via cursor (mutates shared state)
   onNewer(): void {
     this.anchorId = null;
     this.load({ cursor: this.prevCursor ?? undefined });
@@ -193,16 +198,19 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Navigate into the detail panel for the clicked row. */
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: route to the audit entry detail panel for the clicked row
   onRowClick(e: { id: string }): void {
     void this.router.navigate([e.id], { relativeTo: this.route });
   }
 
   /** Retry the most recent load, preserving the current page position. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: retry the most recent audit page load after an error (mutates shared state)
   onRetry(): void {
     this.load(this.lastPage);
   }
 
   /** Export the current filtered view in the chosen format. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: fetch and download the filtered system audit log in the chosen format
   onExport(format: AuditExportFormat): void {
     const timestamp = new Date().toISOString();
     const ext = format === 'csv' ? 'csv' : 'ndjson';
@@ -229,6 +237,7 @@ export class SystemAuditViewComponent implements OnInit {
   // ── Private helpers ──────────────────────────────────────────────────────
 
   /** Load a page of entries; sets loading/error state and triggers change detection. */
+  // SEM@bdc7912ec604dacec178423545047395c6eda4a2: fetch a page of system audit entries and update component state (mutates shared state)
   private load(page: AuditPageRequest): void {
     this.lastPage = page;
     this.loading = true;
@@ -257,6 +266,7 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Mirror the current filter (without cursor/around) to the URL. */
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: sync the current audit filter to the URL query params without reloading
   private updateUrl(): void {
     const queryParams: Record<string, string | undefined> = {};
     for (const key of SYSTEM_FILTER_KEYS) {
@@ -272,6 +282,7 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Extract filter values from a raw query-params map. */
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: parse system audit filter values from a raw query-params map (pure)
   private _buildFilter(params: Record<string, string>): SystemAuditFilter {
     const f: SystemAuditFilter = {};
     for (const key of SYSTEM_FILTER_KEYS) {
@@ -282,6 +293,7 @@ export class SystemAuditViewComponent implements OnInit {
   }
 
   /** Apply snapshot query params to `this.filter` (without triggering a reload). */
+  // SEM@3693bdce12f3ecf112bc73a8942becbc4e0c60da: initialize the active filter from URL query params without reloading (mutates shared state)
   private _applyQueryParams(params: Record<string, string>): void {
     this.filter = this._buildFilter(params);
   }

@@ -78,6 +78,7 @@ export interface CellTool {
 /**
  * Edge routing algorithm configuration
  */
+// SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: discriminated union type for edge routing algorithm and its arguments (pure)
 export type EdgeRouter =
   | 'normal'
   | 'orth'
@@ -101,6 +102,7 @@ export type EdgeRouter =
 /**
  * Edge connector style configuration
  */
+// SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: discriminated union type for edge connector style and its arguments (pure)
 export type EdgeConnector =
   | 'normal'
   | 'rounded'

@@ -25,11 +25,13 @@ interface ChaiAssertionThis {
   ) => void;
 }
 
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: type alias for a Chai plugin factory function (pure)
 type ChaiPlugin = (chai: ChaiStatic, utils: unknown) => void;
 
 /**
  * Add custom matchers for AntV/X6 graphs to Chai
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register custom Chai assertions for AntV/X6 graph state (mutates shared state)
 export const graphMatchers: ChaiPlugin = (chai, _utils) => {
   const Assertion = chai.Assertion;
 
@@ -141,6 +143,7 @@ export const graphMatchers: ChaiPlugin = (chai, _utils) => {
 /**
  * Register the graph matchers with Chai (Vitest)
  */
+// SEM@c9c12f6f9246bdd9e03134b27a87210a0ab059a1: register graph matchers with the global Chai instance if available (mutates shared state)
 export const registerGraphMatchers = (): void => {
   if (typeof window !== 'undefined') {
     const chaiExists = 'chai' in window;

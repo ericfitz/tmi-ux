@@ -37,6 +37,7 @@ export interface SectionRenderContext {
 /**
  * Format a date for display in the report.
  */
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: format a date value as a localized long-form string for the report (pure)
 function formatDate(date: string | Date | undefined, transloco: TranslocoService): string {
   if (!date) return transloco.translate('common.noDataAvailable');
 
@@ -57,6 +58,7 @@ function formatDate(date: string | Date | undefined, transloco: TranslocoService
 /**
  * Draw a section heading (e.g., "Inputs", "Outputs").
  */
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a top-level section heading with spacing to the PDF page
 function drawSectionHeading(ctx: SectionRenderContext, cursor: Cursor, text: string): Cursor {
   const style = REPORT_STYLES.sectionHeading;
   cursor = ctx.engine.advanceCursor(cursor, style.spaceBefore);
@@ -73,6 +75,7 @@ function drawSectionHeading(ctx: SectionRenderContext, cursor: Cursor, text: str
 /**
  * Draw a sub-section heading (e.g., "Assets", "Documents").
  */
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a sub-section heading with spacing to the PDF page
 function drawSubSectionHeading(ctx: SectionRenderContext, cursor: Cursor, text: string): Cursor {
   const style = REPORT_STYLES.subSectionHeading;
   cursor = ctx.engine.advanceCursor(cursor, style.spaceBefore);
@@ -96,6 +99,7 @@ function drawSubSectionHeading(ctx: SectionRenderContext, cursor: Cursor, text: 
  * Fields: Report generated at, TM created at, TM created by,
  * TM last modified, TM status, Security Reviewer, Description.
  */
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: render the threat model summary key-value fields and description to PDF
 export function renderSummarySection(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -175,6 +179,7 @@ export function renderSummarySection(
 /**
  * Render the "Inputs" section group. Omitted entirely if all sub-sections are empty.
  */
+// SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render the Inputs section group (assets, documents, repositories) into the PDF (pure)
 export function renderInputsGroup(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -210,6 +215,7 @@ export function renderInputsGroup(
 /**
  * Render the "Outputs" section group. Omitted entirely if all sub-sections are empty.
  */
+// SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render the Outputs section group (diagrams, threats, notes) into the PDF (pure)
 export async function renderOutputsGroup(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -246,6 +252,7 @@ export async function renderOutputsGroup(
 // Assets Section (compact table + detail rows)
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render assets as a summary table with per-asset detail rows into the PDF (pure)
 function renderAssetsSection(ctx: SectionRenderContext, cursor: Cursor, assets: Asset[]): Cursor {
   const { engine, fonts, transloco } = ctx;
 
@@ -350,6 +357,7 @@ function renderAssetsSection(ctx: SectionRenderContext, cursor: Cursor, assets: 
 // Documents Table (standard 3-column)
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render documents as a three-column table into the PDF (pure)
 function renderDocumentsTable(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -382,6 +390,7 @@ function renderDocumentsTable(
 // Repositories Section (compact table + detail rows)
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render repositories as a summary table with per-repo detail rows into the PDF (pure)
 function renderRepositoriesSection(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -481,6 +490,7 @@ function renderRepositoriesSection(
 // Diagrams Section
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render each diagram image and name as a page-per-diagram section into the PDF (pure)
 async function renderDiagramsSection(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -558,6 +568,7 @@ async function renderDiagramsSection(
 // Threats Section (card-style blocks)
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build localized key-value pairs for a threat's fields and linked entities (pure)
 function buildThreatKvPairs(
   threat: Threat,
   tm: ThreatModel,
@@ -627,6 +638,7 @@ function buildThreatKvPairs(
   return kvPairs;
 }
 
+// SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: append linked asset, diagram, and issue URI pairs to a threat's key-value list (pure)
 function addLinkedEntityPairs(
   kvPairs: { label: string; value: string }[],
   threat: Threat,
@@ -659,6 +671,7 @@ function addLinkedEntityPairs(
   }
 }
 
+// SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: render threats as card-style key-value blocks into the PDF (pure)
 function renderThreatsSection(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -720,6 +733,7 @@ function renderThreatsSection(
 // Notes Section (content blocks with markdown)
 // ────────────────────────────────────────────────────────────────────
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render notes as titled markdown content blocks into the PDF (pure)
 function renderNotesSection(ctx: SectionRenderContext, cursor: Cursor, notes: Note[]): Cursor {
   const { engine, fonts, transloco, markdownRenderer } = ctx;
 
@@ -763,6 +777,7 @@ function renderNotesSection(ctx: SectionRenderContext, cursor: Cursor, notes: No
  * Add data classification footer and page numbers to all pages.
  * Classification is centered, page number is right-aligned.
  */
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: add data classification label and page numbers to all PDF page footers (mutates shared state)
 export function addPageFooters(
   doc: PDFDocument,
   fonts: PdfFontManager,
@@ -823,6 +838,7 @@ const SCREEN_DPI = 72;
  * Convert base64-encoded SVG to PNG for pdf-lib embedding.
  * Renders at 300 DPI for print quality.
  */
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: convert a base64-encoded SVG to a high-DPI PNG byte array for PDF embedding (pure)
 function convertSvgToPng(
   base64Svg: string,
   displayWidth: number,

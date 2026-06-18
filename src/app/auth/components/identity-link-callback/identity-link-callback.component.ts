@@ -17,6 +17,7 @@ import {
   StepUpRequiredError,
 } from '../../models/identity-link.types';
 
+// SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: enumerate the loading, confirm, submitting, and error view states (pure)
 type ViewState = 'loading' | 'confirm' | 'submitting' | 'error';
 
 @Component({
@@ -33,6 +34,7 @@ type ViewState = 'loading' | 'confirm' | 'submitting' | 'error';
   styleUrls: ['./identity-link-callback.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@bd45fb9a4810c15dfaf1be6bb8d3774c84caa2c9: handle identity-link callback URL, confirm or cancel linking a new identity provider
 export class IdentityLinkCallbackComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -47,6 +49,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
   pending: PendingIdentityLinkResponse | null = null;
   private token = '';
 
+  // SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: parse link_pending token or error from query params and load pending link details
   ngOnInit(): void {
     this.route.queryParams.pipe(take(1)).subscribe(params => {
       const error = params['error'] as string | undefined;
@@ -71,6 +74,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
     });
   }
 
+  // SEM@bd45fb9a4810c15dfaf1be6bb8d3774c84caa2c9: fetch pending identity link details by token and transition to confirm state (reads DB)
   private loadPending(token: string): void {
     this.identityLink.getPending(token).subscribe({
       next: details => {
@@ -89,6 +93,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
     });
   }
 
+  // SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: confirm pending identity link and navigate to identity preferences on success
   onConfirm(): void {
     this.state = 'submitting';
     this.identityLink.confirmLink(this.token).subscribe({
@@ -102,10 +107,12 @@ export class IdentityLinkCallbackComponent implements OnInit {
     });
   }
 
+  // SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: cancel identity link and navigate back to identity preferences
   onCancel(): void {
     void this.router.navigateByUrl('/dashboard?openPrefs=identities');
   }
 
+  // SEM@b562cc8846260a61f266975d7fec6be675ea6ec3: dispatch step-up or set error state when identity link confirmation fails
   private handleConfirmError(err: unknown): void {
     if (err instanceof StepUpRequiredError) {
       void this.auth.initiateStepUp(

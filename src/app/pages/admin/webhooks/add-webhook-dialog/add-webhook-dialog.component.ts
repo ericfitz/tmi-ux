@@ -200,6 +200,7 @@ import { LoggerService } from '@app/core/services/logger.service';
     `,
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog to create a new webhook subscription with event selection and optional secret
 export class AddWebhookDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -243,6 +244,7 @@ export class AddWebhookDialogComponent implements OnInit {
     'survey_response.deleted',
   ];
 
+  // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: inject dialog ref and services for the add-webhook dialog (pure)
   constructor(
     private dialogRef: MatDialogRef<AddWebhookDialogComponent>,
     private dialog: MatDialog,
@@ -251,6 +253,7 @@ export class AddWebhookDialogComponent implements OnInit {
     private logger: LoggerService,
   ) {}
 
+  // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: build the webhook form and subscribe to URL changes for http-warning detection
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -268,6 +271,7 @@ export class AddWebhookDialogComponent implements OnInit {
       });
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: validate the form and create the webhook, prompting for http-URL confirmation if needed
   onSave(): void {
     if (!this.form.valid || this.saving) {
       return;
@@ -299,6 +303,7 @@ export class AddWebhookDialogComponent implements OnInit {
     }
   }
 
+  // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: store a new webhook subscription via the API and close the dialog on success
   private createWebhook(): void {
     this.saving = true;
     this.errorMessage = '';
@@ -337,6 +342,7 @@ export class AddWebhookDialogComponent implements OnInit {
       });
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: close the webhook dialog without saving
   onCancel(): void {
     this.dialogRef.close(false);
   }

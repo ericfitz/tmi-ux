@@ -24,6 +24,7 @@ interface MockGraph {
   getCellById: ReturnType<typeof vi.fn>;
 }
 
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a LoadDiagramOperation fixture for tests (pure)
 function makeLoadOperation(diagramData: unknown, clearExisting = false): LoadDiagramOperation {
   return {
     id: 'load-1',

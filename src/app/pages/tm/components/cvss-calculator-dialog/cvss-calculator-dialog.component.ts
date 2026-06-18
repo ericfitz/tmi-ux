@@ -32,6 +32,7 @@ import {
 } from './cvss-calculator-dialog.types';
 
 /** Union of the CVSS vector instances we support */
+// SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: union type representing a supported CVSS vector instance (pure)
 type CvssInstance = Cvss3P1 | Cvss4P0;
 
 /**
@@ -60,6 +61,7 @@ const CATEGORY_NAME_KEYS: Readonly<Record<string, string>> = {
   styleUrls: ['./cvss-calculator-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: dialog component for computing and editing a CVSS score vector
 export class CvssCalculatorDialogComponent implements OnInit {
   selectedVersion: CvssVersion = '3.1';
   metricGroups: MetricGroup[] = [];
@@ -76,6 +78,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
 
   private _cvssInstance: CvssInstance | null = null;
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: inject dialog, CVSS data, CDR, and service dependencies (pure)
   constructor(
     public dialogRef: MatDialogRef<CvssCalculatorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CvssCalculatorDialogData,
@@ -87,6 +90,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     @Optional() private _destroyRef?: DestroyRef,
   ) {}
 
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: initialize CVSS state from existing entry or fresh, subscribe to locale/direction changes (mutates shared state)
   ngOnInit(): void {
     this._languageService.direction$.pipe(this._untilDestroyed()).subscribe(direction => {
       this.currentDirection = direction;
@@ -118,12 +122,14 @@ export class CvssCalculatorDialogComponent implements OnInit {
     }
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: reset CVSS metric groups when the selected version changes (mutates shared state)
   onVersionChange(version: CvssVersion): void {
     if (version === this.selectedVersion) return;
     this.selectedVersion = version;
     this._initializeFresh();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: apply a metric value change and recalculate the CVSS score (mutates shared state)
   onMetricChange(metricShortName: string, valueShortName: string): void {
     if (!this._cvssInstance) return;
     this._cvssInstance.applyComponentString(metricShortName, valueShortName);
@@ -131,6 +137,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this._recalculate();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: close the dialog returning the validated CVSS vector and score
   apply(): void {
     if (!this.isValid || this.currentScore === null) return;
     const result: CvssCalculatorDialogResult = {
@@ -143,10 +150,12 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this.dialogRef.close(result);
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: close the CVSS calculator dialog without returning a result
   cancel(): void {
     this.dialogRef.close();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: copy the current CVSS vector string to the clipboard
   copyVector(): void {
     navigator.clipboard.writeText(this.vectorString).then(
       () => {
@@ -164,6 +173,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
    * Handle pasting a CVSS vector string into the dialog.
    * Validates, detects version, and initializes the dialog from the vector.
    */
+  // SEM@3afa7f6201259242ffe5056ac4684368949157a6: validate and parse a pasted CVSS vector string, initializing the dialog state (mutates shared state)
   applyPastedVector(): void {
     const value = (this.vectorPasteControl.value ?? '').trim();
     if (!value) return;
@@ -211,6 +221,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this._cdr.markForCheck();
   }
 
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: return a localized count of configured metrics for a metric group (pure)
   getGroupSummary(group: MetricGroup): string {
     const configured = group.metrics.filter(m => m.selectedValue && m.selectedValue !== 'X').length;
     return this._translocoService.translate('cvssCalculator.metricsConfigured', {
@@ -219,17 +230,20 @@ export class CvssCalculatorDialogComponent implements OnInit {
     });
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: parse the CVSS version from a vector string prefix (pure)
   private _detectVersion(vector: string): CvssVersion {
     if (vector.startsWith('CVSS:4.0')) return '4.0';
     return '3.1';
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: build a blank CVSS instance and refresh metric groups and score (mutates shared state)
   private _initializeFresh(): void {
     this._cvssInstance = this.selectedVersion === '4.0' ? new Cvss4P0() : new Cvss3P1();
     this._buildMetricGroups();
     this._recalculate();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: parse a CVSS vector string into a calculator instance, falling back to blank on error (mutates shared state)
   private _initializeFromVector(vector: string): void {
     try {
       this._cvssInstance =
@@ -247,6 +261,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     }
   }
 
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: build template-ready metric groups from the registered CVSS components (mutates shared state)
   private _buildMetricGroups(): void {
     if (!this._cvssInstance) return;
     const registered = this._cvssInstance.getRegisteredComponents();
@@ -287,6 +302,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
    * into a CVSS-spec-aligned, capitalized display name (e.g. "Base", "Environmental
    * (Modified Base)"). Falls back to a capitalized version of the raw name.
    */
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: convert a raw library category name to a localized CVSS display name (pure)
   private _getCategoryDisplayName(rawName: string): string {
     const key = CATEGORY_NAME_KEYS[rawName];
     if (key) {
@@ -301,6 +317,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
    * library returns an empty string. Returns empty string when no description
    * is available so the template can hide the help icon.
    */
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: resolve a CVSS metric description, falling back to a translation key (pure)
   private _getMetricDescription(comp: VectorComponent<VectorComponentValue>): string {
     if (comp.description && comp.description.trim().length > 0) {
       return comp.description;
@@ -315,12 +332,14 @@ export class CvssCalculatorDialogComponent implements OnInit {
     return '';
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: fetch the currently selected short-name value for a CVSS metric (pure)
   private _getCurrentValue(metricShortName: string): string | null {
     if (!this._cvssInstance) return null;
     const value = this._cvssInstance.getComponentByStringOpt(metricShortName);
     return value?.shortName ?? null;
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: update a metric's selectedValue in the in-memory metric groups (mutates shared state)
   private _updateSelectedValue(metricShortName: string, valueShortName: string): void {
     for (const group of this.metricGroups) {
       for (const metric of group.metrics) {
@@ -332,6 +351,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     }
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: recompute the CVSS score and vector string, then refresh severity and validity (mutates shared state)
   private _recalculate(): void {
     if (!this._cvssInstance) return;
 
@@ -350,6 +370,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this._cdr.markForCheck();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: map the current numeric CVSS score to a severity class and label (mutates shared state)
   private _updateSeverity(): void {
     if (this.currentScore === null) {
       this.severityClass = 'severity-none';
@@ -375,6 +396,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     }
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: validate that all CVSS base metrics are fully defined (mutates shared state)
   private _updateValidity(): void {
     if (!this._cvssInstance) {
       this.isValid = false;
@@ -383,6 +405,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
     this.isValid = this._cvssInstance.isBaseFullyDefined();
   }
 
+  // SEM@66770ce0d5e0ad448c69e2cb9692a85a61d530ea: return an operator that completes a stream on component destroy (pure)
   private _untilDestroyed<T>(): MonoTypeOperatorFunction<T> {
     return this._destroyRef ? takeUntilDestroyed<T>(this._destroyRef) : identity;
   }

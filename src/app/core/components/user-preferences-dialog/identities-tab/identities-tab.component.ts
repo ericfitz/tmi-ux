@@ -163,6 +163,7 @@ interface IdentityRow {
     `,
   ],
 })
+// SEM@f13904a7483e210c376e9ef5432cf35606829ea4: display and manage linked OAuth identities for the current user
 export class IdentitiesTabComponent implements OnInit {
   private identityLink = inject(IdentityLinkService);
   private auth = inject(AuthService);
@@ -176,6 +177,7 @@ export class IdentitiesTabComponent implements OnInit {
   readonly identities = signal<MyIdentitiesResponse | null>(null);
   readonly linkableProviders = signal<OAuthProviderInfo[]>([]);
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: load linked identities and available OAuth providers on init (reads DB)
   ngOnInit(): void {
     this.refresh();
     this.auth
@@ -187,6 +189,7 @@ export class IdentitiesTabComponent implements OnInit {
       });
   }
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: map identity response to display rows with primary first (pure)
   rows(ids: MyIdentitiesResponse): IdentityRow[] {
     const primary: IdentityRow = {
       id: 'primary',
@@ -203,6 +206,7 @@ export class IdentitiesTabComponent implements OnInit {
     return [primary, ...linked];
   }
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: fetch current linked identities and update display signal (reads DB)
   private refresh(): void {
     this.identityLink
       .listIdentities()
@@ -213,6 +217,7 @@ export class IdentitiesTabComponent implements OnInit {
       });
   }
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: initiate OAuth link flow for a given identity provider
   onLink(idp: string): void {
     this.identityLink
       .startLink(idp)
@@ -225,6 +230,7 @@ export class IdentitiesTabComponent implements OnInit {
       });
   }
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: confirm and delete a linked identity after user confirmation (reads DB)
   onUnlink(row: IdentityRow): void {
     const data: UnlinkIdentityDialogData = { identityLabel: row.label };
     this.dialog
@@ -251,6 +257,7 @@ export class IdentitiesTabComponent implements OnInit {
       });
   }
 
+  // SEM@f13904a7483e210c376e9ef5432cf35606829ea4: route step-up auth errors to re-authentication or show fallback snack
   private handleStepUpOr(err: unknown, fallbackKey: string): void {
     if (err instanceof StepUpRequiredError) {
       void this.auth.initiateStepUp('/dashboard?openPrefs=identities');

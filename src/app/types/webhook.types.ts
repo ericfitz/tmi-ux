@@ -8,6 +8,7 @@ import { PaginationMetadata } from './api-responses.types';
 /**
  * Webhook subscription status
  */
+// SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: enumerate valid lifecycle statuses for a webhook subscription (pure)
 export type WebhookStatus = 'pending_verification' | 'active' | 'pending_delete';
 
 /**

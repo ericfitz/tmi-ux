@@ -56,13 +56,21 @@ import type { components } from '@app/generated/api-types';
 import { PaginationMetadata } from '@app/types/api-responses.types';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for threat model create/update input payload (pure)
 type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for threat create/update input payload (pure)
 type ApiThreatInput = components['schemas']['ThreatInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for document create/update input payload (pure)
 type ApiDocumentInput = components['schemas']['DocumentInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for repository create/update input payload (pure)
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for base diagram create/update input payload (pure)
 type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for DFD diagram create/update input payload (pure)
 type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for note create/update input payload (pure)
 type ApiNoteInput = components['schemas']['NoteInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for asset create/update input payload (pure)
 type ApiAssetInput = components['schemas']['AssetInput'];
 
 /**
@@ -106,6 +114,7 @@ import { ApiService } from '../../../core/services/api.service';
 /**
  * Type guard to check if an error is an HttpErrorResponse
  */
+// SEM@eba2c85b929c638b42c9013e63a10373be57ac39: validate that an unknown error value is an HttpErrorResponse (pure)
 function isHttpErrorResponse(error: unknown): error is HttpErrorResponse {
   return error instanceof HttpErrorResponse;
 }
@@ -169,11 +178,13 @@ export interface ThreatListParams {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: fetch, cache, and mutate threat models and their nested resources via the API (reads DB)
 export class ThreatModelService implements OnDestroy {
   private _threatModelList: TMListItem[] = [];
   private _cachedThreatModels = new Map<string, ThreatModel>();
   private _threatModelListSubject = new BehaviorSubject<TMListItem[]>([]);
 
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: inject dependencies for API access, authorization, import orchestration, and provider adaptation
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -190,6 +201,7 @@ export class ThreatModelService implements OnDestroy {
    * Fetch threat models with pagination and filtering support.
    * Returns the full API response including pagination metadata.
    */
+  // SEM@8e6da6d9a0b8a933bcb0885eccc9a3306ddfb569: fetch a filtered, paginated list of threat models from the API (reads DB)
   fetchThreatModels(listParams?: ThreatModelListParams): Observable<ListThreatModelsResponse> {
     const params: Record<string, string> = {};
     if (listParams) {
@@ -233,6 +245,7 @@ export class ThreatModelService implements OnDestroy {
    * Always fetches fresh data from API to minimize stale data issues
    * @deprecated Use fetchThreatModels() for pagination support
    */
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: fetch the reactive threat model list, triggering an API refresh (reads DB)
   getThreatModelList(_forceRefresh: boolean = false): Observable<TMListItem[]> {
     // Trigger a fetch and update the internal subject
     this.fetchThreatModels().subscribe();
@@ -243,6 +256,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Force refresh the threat model list from the API
    */
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: fetch the threat model list from the API and notify subscribers (reads DB)
   refreshThreatModelList(): void {
     this.fetchThreatModels().subscribe();
   }
@@ -250,6 +264,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get a full threat model by ID (for editing)
    */
+  // SEM@7fa283733048fe57c2b273455f32e8cf97ad4702: fetch a threat model by ID from cache or API, setting authorization (reads DB)
   getThreatModelById(
     id: string,
     forceRefresh: boolean = false,
@@ -340,6 +355,7 @@ export class ThreatModelService implements OnDestroy {
    * endpoint calls. This method fetches everything and assembles a complete
    * ThreatModel object suitable for JSON serialization.
    */
+  // SEM@303ce38bb1f256e2e3464d90115ce8485ba862b2: fetch a complete threat model with all sub-entities for export (reads DB)
   exportThreatModel(id: string): Observable<ThreatModel | undefined> {
     return this.getThreatModelById(id, true).pipe(
       switchMap(threatModel => {
@@ -380,6 +396,7 @@ export class ThreatModelService implements OnDestroy {
    * @param pageSize Number of items to request per page
    * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
    */
+  // SEM@90a9e82c7ca17df97eb7890a53a8f0ba75cb4d92: fetch all pages of a paginated API endpoint into a single array (reads DB)
   private fetchAllPages<T>(
     endpoint: string,
     itemsKey: string,
@@ -427,6 +444,7 @@ export class ThreatModelService implements OnDestroy {
    * performance. We fetch the list to get all IDs, then fetch each note
    * individually via getNoteById to get complete data including content.
    */
+  // SEM@303ce38bb1f256e2e3464d90115ce8485ba862b2: fetch all notes with full content for a threat model (reads DB)
   private fetchAllNotes(threatModelId: string): Observable<Note[]> {
     return this.fetchAllPages<{ id: string }>(`threat_models/${threatModelId}/notes`, 'notes').pipe(
       switchMap(listItems => {
@@ -450,6 +468,7 @@ export class ThreatModelService implements OnDestroy {
    * performance. We fetch the list to get all IDs, then fetch each diagram
    * individually via getDiagramById to get complete data including cells.
    */
+  // SEM@c17e73f2fd93d69a5bc5c49749a2a0bdf45426b6: fetch all diagrams with full cell data for a threat model (reads DB)
   private fetchAllDiagrams(threatModelId: string): Observable<Diagram[]> {
     return this.fetchAllPages<{ id: string }>(
       `threat_models/${threatModelId}/diagrams`,
@@ -481,6 +500,7 @@ export class ThreatModelService implements OnDestroy {
    * @param pageSize Number of items to request per page
    * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
    */
+  // SEM@90a9e82c7ca17df97eb7890a53a8f0ba75cb4d92: fetch all threat pages for a threat model, accumulating results (reads DB)
   private fetchAllThreats(
     threatModelId: string,
     pageSize = 100,
@@ -525,6 +545,7 @@ export class ThreatModelService implements OnDestroy {
    * This is more efficient than getThreatModelById when you only need basic info
    */
   // Note: This method is currently unused but kept for potential future use
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: fetch lightweight threat model identity fields without loading full data (reads DB)
   getThreatModelBasicInfo(
     threatModelId: string,
   ): Observable<
@@ -571,6 +592,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get diagrams for a threat model with optional pagination
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated list of diagrams for a threat model (reads DB)
   getDiagramsForThreatModel(
     threatModelId: string,
     limit?: number,
@@ -596,6 +618,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get a diagram by ID
    */
+  // SEM@a130f0a1556ca72349c607e4b63c8fc829d1ee3c: fetch a single diagram by ID including cell data (reads DB)
   getDiagramById(threatModelId: string, diagramId: string): Observable<Diagram | undefined> {
     // In a real implementation, this would call the API
     // this.logger.debugComponent(
@@ -615,6 +638,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get documents for a threat model with optional pagination
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated list of documents for a threat model (reads DB)
   getDocumentsForThreatModel(
     threatModelId: string,
     limit?: number,
@@ -640,6 +664,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get repository references for a threat model with optional pagination
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated list of repository references for a threat model (reads DB)
   getRepositoriesForThreatModel(
     threatModelId: string,
     limit?: number,
@@ -665,6 +690,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get notes for a threat model with optional pagination
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated list of notes for a threat model (reads DB)
   getNotesForThreatModel(
     threatModelId: string,
     limit?: number,
@@ -690,6 +716,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new threat model
    */
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: create a new threat model via API and update the local list cache (mutates shared state)
   createThreatModel(
     name: string,
     description?: string,
@@ -771,6 +798,7 @@ export class ThreatModelService implements OnDestroy {
    *
    * @param data Validated threat model data from exported JSON file
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: import exported threat model data as a new API-assigned instance (mutates shared state)
   importThreatModel(data: Partial<ThreatModel> & { id: string; name: string }): Observable<{
     model: ThreatModel;
   }> {
@@ -795,6 +823,7 @@ export class ThreatModelService implements OnDestroy {
    * Create a new threat model from imported data.
    * Uses the import orchestrator to handle nested objects and ID translation.
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: orchestrate creation of a threat model and all nested sub-entities from import data (mutates shared state)
   private createNewThreatModelFromImport(
     data: Partial<ThreatModel> & { id: string; name: string },
   ): Observable<ThreatModel> {
@@ -886,6 +915,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update a threat model
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: replace a threat model via full PUT update (mutates shared state)
   updateThreatModel(
     threatModelId: string,
     data: Partial<ApiThreatModelInput>,
@@ -905,6 +935,7 @@ export class ThreatModelService implements OnDestroy {
    * @param threatModelId The threat model ID
    * @param updates Object containing the fields to update
    */
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: partially update a threat model via JSON Patch and sync cache and authorization (mutates shared state)
   patchThreatModel(
     threatModelId: string,
     updates: Partial<
@@ -1018,6 +1049,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a threat model
    */
+  // SEM@a130f0a1556ca72349c607e4b63c8fc829d1ee3c: delete a threat model via API and remove it from the local list cache (mutates shared state)
   deleteThreatModel(id: string): Observable<boolean> {
     // In a real implementation, this would call the API
     // this.logger.debugComponent(
@@ -1052,6 +1084,7 @@ export class ThreatModelService implements OnDestroy {
    * The backend returns string values like 'critical', 'high', 'low', etc.
    * The frontend uses numeric keys: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
    */
+  // SEM@750f4a1335b6c8222b9e2bc6c90915fba450dca8: convert legacy string severity/priority/status values to numeric keys (pure)
   private migrateLegacyThreatFieldValues(threat: Threat): Threat {
     const migratedThreat = { ...threat };
 
@@ -1114,6 +1147,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get threats for a threat model with optional filtering, sorting, and pagination
    */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: fetch a filtered, sorted, paginated list of threats for a threat model (reads DB)
   getThreatsForThreatModel(
     threatModelId: string,
     listParams?: ThreatListParams,
@@ -1135,6 +1169,7 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /** Build query parameter record from ThreatListParams */
+  // SEM@1cd05fb52ad1628a779738433156c42bb9c818a0: convert ThreatListParams to an API query parameter record (pure)
   private buildThreatQueryParams(p: ThreatListParams): Record<string, string | boolean | string[]> {
     const params: Record<string, string | boolean | string[]> = {};
 
@@ -1194,6 +1229,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new threat in a threat model
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create a new threat in a threat model and update the local cache (mutates shared state)
   createThreat(threatModelId: string, threat: Partial<ApiThreatInput>): Observable<Threat> {
     return this.apiService
       .post<Threat>(`threat_models/${threatModelId}/threats`, threat as Record<string, unknown>)
@@ -1218,6 +1254,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update a threat in a threat model
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: replace a threat via full PUT update and sync the local cache entry (mutates shared state)
   updateThreat(
     threatModelId: string,
     threatId: string,
@@ -1249,6 +1286,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a threat from a threat model
    */
+  // SEM@1b06f54a4dfc3c06e46a9e215d93c5772c365178: delete a threat from the API and evict it from the local cache (mutates shared state)
   deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
       map(() => true),
@@ -1269,6 +1307,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new document in a threat model
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: create a new document within a threat model via the API
   createDocument(
     threatModelId: string,
     document: Partial<ApiDocumentInput>,
@@ -1289,6 +1328,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update a document in a threat model
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: update an existing document in a threat model via the API
   updateDocument(
     threatModelId: string,
     documentId: string,
@@ -1311,6 +1351,7 @@ export class ThreatModelService implements OnDestroy {
    * Get a single document by ID. Useful for refreshing access diagnostics
    * without reloading the whole threat model.
    */
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: fetch a single document by ID from the API
   getDocument(threatModelId: string, documentId: string): Observable<TMDocument> {
     return this.apiService
       .get<TMDocument>(`threat_models/${threatModelId}/documents/${documentId}`)
@@ -1327,6 +1368,7 @@ export class ThreatModelService implements OnDestroy {
    * Server returns {status, message}; callers should follow up with getDocument
    * to read the new access state.
    */
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: re-send an access request for a document with pending_access status
   requestDocumentAccess(
     threatModelId: string,
     documentId: string,
@@ -1347,6 +1389,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a document from a threat model
    */
+  // SEM@f00078975a399e34498cd79dfc36d65d7f68c4a9: delete a document from a threat model via the API
   deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/documents/${documentId}`).pipe(
       map(() => true),
@@ -1360,6 +1403,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new repository in a threat model
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: create a new repository within a threat model via the API
   createRepository(
     threatModelId: string,
     repository: Partial<ApiRepositoryInput>,
@@ -1383,6 +1427,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update a repository in a threat model
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: update an existing repository in a threat model via the API
   updateRepository(
     threatModelId: string,
     repositoryId: string,
@@ -1404,6 +1449,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a repository from a threat model
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: delete a repository from a threat model via the API
   deleteRepository(threatModelId: string, repositoryId: string): Observable<boolean> {
     return this.apiService
       .delete(`threat_models/${threatModelId}/repositories/${repositoryId}`)
@@ -1419,6 +1465,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new diagram in a threat model
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create a new diagram within a threat model via the API
   createDiagram(threatModelId: string, diagram: Partial<ApiBaseDiagramInput>): Observable<Diagram> {
     return this.apiService
       .post<Diagram>(`threat_models/${threatModelId}/diagrams`, diagram as Record<string, unknown>)
@@ -1434,6 +1481,7 @@ export class ThreatModelService implements OnDestroy {
    * Update a diagram using PUT (full replacement).
    * Used during import to add cells after initial diagram creation.
    */
+  // SEM@927891249844e3e7afb3d58ade16df953f84bbdb: replace a diagram in full (PUT) within a threat model via the API
   updateDiagram(
     threatModelId: string,
     diagramId: string,
@@ -1461,6 +1509,7 @@ export class ThreatModelService implements OnDestroy {
    * instead of updating the entire threat model
    * NOTE: This should ONLY be called from the DFD editor
    */
+  // SEM@a130f0a1556ca72349c607e4b63c8fc829d1ee3c: patch the cells collection of a diagram via JSON Patch on the API
   patchDiagramCells(threatModelId: string, diagramId: string, cells: Cell[]): Observable<Diagram> {
     // Create JSON Patch operations for the cells update
     // Note: Do not include modified_at - the server manages timestamps automatically
@@ -1493,6 +1542,7 @@ export class ThreatModelService implements OnDestroy {
    * This method updates both cells and image data using JSON Patch operations
    * NOTE: This should ONLY be called from the DFD editor
    */
+  // SEM@a130f0a1556ca72349c607e4b63c8fc829d1ee3c: patch diagram cells and SVG image together via JSON Patch on the API
   patchDiagramWithImage(
     threatModelId: string,
     diagramId: string,
@@ -1539,6 +1589,7 @@ export class ThreatModelService implements OnDestroy {
    * Patch diagram properties (name, description) using JSON Patch operations.
    * Used to update diagram metadata from the DFD editor header.
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: patch diagram metadata fields (name, description, flags) via JSON Patch on the API
   patchDiagramProperties(
     threatModelId: string,
     diagramId: string,
@@ -1603,6 +1654,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a diagram from a threat model
    */
+  // SEM@f00078975a399e34498cd79dfc36d65d7f68c4a9: delete a diagram from a threat model via the API
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/diagrams/${diagramId}`).pipe(
       map(() => true),
@@ -1616,6 +1668,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a threat model
    */
+  // SEM@f14fec6272b6f26ecf3a67156a44b8adf5c11b9e: fetch all metadata entries for a threat model from the API
   getThreatModelMetadata(threatModelId: string): Observable<Metadata[]> {
     return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/metadata`).pipe(
       catchError(error => {
@@ -1628,6 +1681,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a threat model
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: bulk-replace all metadata entries for a threat model via the API
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
     return this.apiService
       .put<
@@ -1644,6 +1698,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a diagram
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: fetch all metadata entries for a diagram from the API
   getDiagramMetadata(threatModelId: string, diagramId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata`)
@@ -1658,6 +1713,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a diagram
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: bulk-replace all metadata entries for a diagram via the API
   updateDiagramMetadata(
     threatModelId: string,
     diagramId: string,
@@ -1683,6 +1739,7 @@ export class ThreatModelService implements OnDestroy {
    * @param format Output format: 'json', 'yaml', or 'graphml'
    * @returns Observable containing the model content as a string
    */
+  // SEM@c8b44d53aa73c272895d22bee4b90d835c0dcba0: fetch the diagram model for automated analysis in json, yaml, or graphml format
   getDiagramModel(
     threatModelId: string,
     diagramId: string,
@@ -1720,6 +1777,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a threat
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: fetch all metadata entries for a threat from the API
   getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/threats/${threatId}/metadata`)
@@ -1734,6 +1792,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a threat
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: bulk-replace all metadata entries for a threat via the API
   updateThreatMetadata(
     threatModelId: string,
     threatId: string,
@@ -1754,6 +1813,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a document
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: fetch all metadata entries for a document from the API
   getDocumentMetadata(threatModelId: string, documentId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/documents/${documentId}/metadata`)
@@ -1768,6 +1828,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a document
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: bulk-replace all metadata entries for a document via the API
   updateDocumentMetadata(
     threatModelId: string,
     documentId: string,
@@ -1788,6 +1849,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a repository
    */
+  // SEM@49eb7e7e833ee0ab440b0ac33b2873d626065d8e: fetch all metadata entries for a repository from the API
   getRepositoryMetadata(threatModelId: string, repositoryId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata`)
@@ -1802,6 +1864,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a repository
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: update bulk metadata for a threat model repository via the API
   updateRepositoryMetadata(
     threatModelId: string,
     repositoryId: string,
@@ -1822,6 +1885,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new note for a threat model
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create a new note on a threat model via the API
   createNote(threatModelId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
       .post<Note>(`threat_models/${threatModelId}/notes`, note as Record<string, unknown>)
@@ -1836,6 +1900,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get a single note by ID with full content
    */
+  // SEM@3f2ef70d50160b7e609c1ffc5884f66ac1ce3264: fetch a single threat model note by ID; returns undefined on error
   getNoteById(threatModelId: string, noteId: string): Observable<Note | undefined> {
     return this.apiService.get<Note>(`threat_models/${threatModelId}/notes/${noteId}`).pipe(
       catchError(error => {
@@ -1848,6 +1913,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update an existing note
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: update an existing threat model note via the API
   updateNote(threatModelId: string, noteId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
       .put<Note>(`threat_models/${threatModelId}/notes/${noteId}`, note as Record<string, unknown>)
@@ -1862,6 +1928,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete a note
    */
+  // SEM@21283931c91448ecb7cf01ca0b545369c3e2c20d: delete a threat model note via the API; emits true on success
   deleteNote(threatModelId: string, noteId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/notes/${noteId}`).pipe(
       map(() => true),
@@ -1875,6 +1942,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for a note
    */
+  // SEM@21283931c91448ecb7cf01ca0b545369c3e2c20d: fetch metadata entries for a threat model note via the API
   getNoteMetadata(threatModelId: string, noteId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/notes/${noteId}/metadata`)
@@ -1889,6 +1957,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for a note
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: update bulk metadata for a threat model note via the API
   updateNoteMetadata(
     threatModelId: string,
     noteId: string,
@@ -1909,6 +1978,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get assets for a threat model with optional pagination
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch a paginated asset list for a threat model; returns empty list on error
   getAssetsForThreatModel(
     threatModelId: string,
     limit?: number,
@@ -1934,6 +2004,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new asset for a threat model
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create a new asset on a threat model via the API
   createAsset(threatModelId: string, asset: Partial<ApiAssetInput>): Observable<Asset> {
     return this.apiService
       .post<Asset>(`threat_models/${threatModelId}/assets`, asset as Record<string, unknown>)
@@ -1948,6 +2019,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update an existing asset
    */
+  // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: update an existing threat model asset via the API
   updateAsset(
     threatModelId: string,
     assetId: string,
@@ -1969,6 +2041,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Delete an asset
    */
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: delete a threat model asset via the API; emits true on success
   deleteAsset(threatModelId: string, assetId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/assets/${assetId}`).pipe(
       map(() => true),
@@ -1982,6 +2055,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get metadata for an asset
    */
+  // SEM@54d0f3a2232e51902c498754f4e3f3b790df794e: fetch metadata entries for a threat model asset; returns empty list on error
   getAssetMetadata(threatModelId: string, assetId: string): Observable<Metadata[]> {
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/assets/${assetId}/metadata`)
@@ -1996,6 +2070,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update metadata for an asset
    */
+  // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: update bulk metadata for a threat model asset via the API
   updateAssetMetadata(
     threatModelId: string,
     assetId: string,
@@ -2016,6 +2091,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Clean up resources when the service is destroyed
    */
+  // SEM@e76f8b25fc95148874fb5211bdbe3450854792e0: complete subjects and clear cache on service destruction (mutates shared state)
   ngOnDestroy(): void {
     this._threatModelListSubject.complete();
     this._cachedThreatModels.clear();
@@ -2026,6 +2102,7 @@ export class ThreatModelService implements OnDestroy {
    * Note: TMListItem uses string for owner/created_by (email addresses),
    * Both ThreatModel and TMListItem now use User objects for owner/created_by.
    */
+  // SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: convert a full ThreatModel to a summary list item with counts (pure)
   private convertToListItem(threatModel: ThreatModel): TMListItem {
     return {
       id: threatModel.id,
@@ -2051,6 +2128,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Expire all cached threat models except the specified one
    */
+  // SEM@e2a977f3ac5871495f1b0d8d71c426f0b109bbc8: evict all cached threat models except one from the in-memory cache (mutates shared state)
   private expireAllCachedModelsExcept(keepId: string): void {
     const keysToDelete = Array.from(this._cachedThreatModels.keys()).filter(id => id !== keepId);
     keysToDelete.forEach(id => this._cachedThreatModels.delete(id));
@@ -2069,6 +2147,7 @@ export class ThreatModelService implements OnDestroy {
    * @param diagramId The diagram ID
    * @returns Observable<CollaborationSession>
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: start a new diagram collaboration session via the API; emits the session
   startDiagramCollaborationSession(
     threatModelId: string,
     diagramId: string,
@@ -2133,6 +2212,7 @@ export class ThreatModelService implements OnDestroy {
    * @param diagramId The diagram ID
    * @returns Observable<void>
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: delete the active diagram collaboration session via the API
   endDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<void> {
     this.logger.info('Ending diagram collaboration session', { threatModelId, diagramId });
 
@@ -2155,6 +2235,7 @@ export class ThreatModelService implements OnDestroy {
    * @param diagramId The diagram ID
    * @returns Observable<CollaborationSession | null>
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: fetch the active diagram collaboration session; returns null if none exists
   getDiagramCollaborationSession(
     threatModelId: string,
     diagramId: string,
@@ -2198,6 +2279,7 @@ export class ThreatModelService implements OnDestroy {
    * @param diagramId The diagram ID
    * @returns Observable<CollaborationSession> with isNewSession flag
    */
+  // SEM@100c6575bc9479b3c50fbce4efb07771c02e68cb: fetch or create a diagram collaboration session, handling race conditions (reads API)
   startOrJoinDiagramCollaborationSession(
     threatModelId: string,
     diagramId: string,
@@ -2289,6 +2371,7 @@ export class ThreatModelService implements OnDestroy {
    * @param operation Description of the operation for logging
    * @returns Observable for retry logic
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: build an exponential-backoff retry strategy for transient API failures (pure)
   private getRetryStrategy<T>(errors: Observable<T>, operation: string): Observable<unknown> {
     return errors.pipe(
       mergeMap((error, retryAttempt) => {
@@ -2328,6 +2411,7 @@ export class ThreatModelService implements OnDestroy {
    * @param error The error to check
    * @returns true if error is retryable, false otherwise
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: classify an API error as retryable (5xx, network, timeout) or not (pure)
   private isRetryableError(error: unknown): boolean {
     if (error instanceof HttpErrorResponse) {
       // Retry for server errors (5xx), timeout errors, or network errors

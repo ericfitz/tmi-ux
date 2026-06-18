@@ -38,6 +38,7 @@ interface Mocks {
   logger: { warn: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 }
 
+// SEM@f13904a7483e210c376e9ef5432cf35606829ea4: build test mock dependencies for the identities tab component (pure)
 function buildMocks(overrides: Partial<Mocks['identityLink']> = {}): Mocks {
   return {
     identityLink: {
@@ -56,6 +57,7 @@ function buildMocks(overrides: Partial<Mocks['identityLink']> = {}): Mocks {
   };
 }
 
+// SEM@f13904a7483e210c376e9ef5432cf35606829ea4: configure and compile identities tab test bed with provided mocks (pure)
 function buildFixture(mocks: Mocks): ComponentFixture<IdentitiesTabComponent> {
   const translocoTesting = TranslocoTestingModule.forRoot({
     langs: { en: {} },

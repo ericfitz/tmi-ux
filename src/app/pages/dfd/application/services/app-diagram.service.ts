@@ -45,7 +45,9 @@ export interface DiagramLoadResult {
  * Handles diagram loading, validation, and error scenarios
  */
 @Injectable()
+// SEM@5f881a84d0935fecd8e018eac99b16974e7641c9: fetch, validate, and load DFD diagram data and cells into the graph
 export class AppDiagramService {
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject diagram loading dependencies (infrastructure services, threat model service, logger)
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
@@ -59,6 +61,7 @@ export class AppDiagramService {
    * Load diagram data by ID
    * Returns observable with load result
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch diagram and parent threat model by ID, returning combined diagram data (reads DB)
   loadDiagram(diagramId: string, threatModelId?: string): Observable<DiagramLoadResult> {
     this.logger.debugComponent(
       'AppDiagramService',
@@ -132,6 +135,7 @@ export class AppDiagramService {
   /**
    * Validate if diagram exists and user has access
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: check whether a diagram exists and is accessible by the current user (reads DB)
   validateDiagramAccess(diagramId: string, threatModelId?: string): Observable<boolean> {
     return this.loadDiagram(diagramId, threatModelId).pipe(map(result => result.success));
   }
@@ -139,6 +143,7 @@ export class AppDiagramService {
   /**
    * Get fallback navigation path when diagram is not found
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a safe navigation path to the threat model or list when diagram is unavailable (pure)
   getFallbackNavigationPath(threatModelId: string | null): string {
     if (threatModelId) {
       return `/threat-models/${threatModelId}`;
@@ -149,6 +154,7 @@ export class AppDiagramService {
   /**
    * Validate diagram ID format
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that a diagram ID is non-null and non-empty (pure)
   isValidDiagramId(diagramId: string | null): boolean {
     return diagramId !== null && diagramId.trim().length > 0;
   }
@@ -157,6 +163,7 @@ export class AppDiagramService {
    * Load multiple diagram cells with proper history suppression and port visibility management
    * @returns Object indicating whether relationship fixes were applied
    */
+  // SEM@8996c6fe1b61f2fb121a27bd68e3d56e83bceba3: normalize, deduplicate, convert, and load diagram cells into the graph with history suppression (mutates shared state)
   loadDiagramCellsBatch(
     cells: any[],
     graph: Graph,
@@ -416,6 +423,7 @@ export class AppDiagramService {
    * Convert mock diagram cell data to proper X6 format
    * Handles both nodes and edges with proper conversion logic
    */
+  // SEM@8996c6fe1b61f2fb121a27bd68e3d56e83bceba3: dispatch a raw server cell to the appropriate node or edge X6 converter (pure)
   private convertMockCellToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
     // Handle edges - use isEdgeShape to handle both 'edge' (legacy) and 'flow' (canonical) shapes
     // Also check structural properties: cells with non-nil source/target are edges
@@ -434,6 +442,7 @@ export class AppDiagramService {
   /**
    * Convert mock node data to proper X6 format
    */
+  // SEM@8996c6fe1b61f2fb121a27bd68e3d56e83bceba3: convert a raw server node cell to an X6-compatible node configuration object (pure)
   private convertMockNodeToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
     const nodeType = mockCell.shape;
     const x6Shape = getX6ShapeForNodeType(nodeType);
@@ -470,6 +479,7 @@ export class AppDiagramService {
   }
 
   /** Extract position and size from various import format locations. */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: extract node position and size from multiple possible server import format locations (pure)
   private extractMockNodeGeometry(
     mockCell: any,
     nodeType: string,
@@ -498,6 +508,7 @@ export class AppDiagramService {
    * Resolve a geometry field from multiple possible import format locations.
    * Priority: nested (position/size) → flat → geometry (legacy) → fallback.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: resolve a geometry scalar from nested, flat, or legacy geometry location with fallback (pure)
   private _resolveGeometryField(
     mockCell: any,
     nestedKey: string,
@@ -510,11 +521,13 @@ export class AppDiagramService {
   }
 
   /** Check if a mock cell has no explicit x position in any format location. */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: detect whether a server cell has no explicit x position in any supported format (pure)
   private _lacksExplicitPosition(mockCell: any): boolean {
     return !mockCell.position?.x && !mockCell.x && !mockCell.geometry?.x;
   }
 
   /** Normalize mock node data to hybrid format. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: convert node metadata from array or object form to the canonical hybrid data format (pure)
   private normalizeMockNodeData(mockCell: any): Record<string, unknown> {
     if (!mockCell.data) {
       return {};
@@ -534,6 +547,7 @@ export class AppDiagramService {
    * and return empty attrs. This method strips those artefacts so downstream
    * classification and conversion work correctly.
    */
+  // SEM@8996c6fe1b61f2fb121a27bd68e3d56e83bceba3: strip nil-UUID source/target from a node cell received from the server (pure)
   private sanitizeCellFromServer(cell: any): any {
     // If the cell has a node shape but carries source/target with nil UUIDs,
     // strip those edge-only properties so the cell is treated as a node.
@@ -565,6 +579,7 @@ export class AppDiagramService {
    * Check whether a cell has non-nil source and target references,
    * indicating it is structurally an edge regardless of its shape value.
    */
+  // SEM@8996c6fe1b61f2fb121a27bd68e3d56e83bceba3: validate that a cell carries non-nil source and target references (pure)
   private hasNonNilSourceTarget(cell: any): boolean {
     if (!cell.source || !cell.target) return false;
     const sourceCell = cell.source?.cell || cell.source;
@@ -582,6 +597,7 @@ export class AppDiagramService {
   /**
    * Convert mock edge data to proper X6 format
    */
+  // SEM@5f881a84d0935fecd8e018eac99b16974e7641c9: convert a raw edge cell payload to a canonical X6 edge config (pure)
   private convertMockEdgeToX6Format(mockCell: any): any {
     // Handle different source/target formats
     let source: any;
@@ -678,6 +694,7 @@ export class AppDiagramService {
   /**
    * Get default label for node type
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch the default display label for a given node type (pure)
   private getDefaultLabelForType(nodeType: string): string {
     return NodeInfo.getDefaultLabel(nodeType);
   }
@@ -685,6 +702,7 @@ export class AppDiagramService {
   /**
    * Convert X6 node config to NodeInfo domain object
    */
+  // SEM@704ce8b8fccddd40919269a3ead052028da114d7: convert an X6 node config to a NodeInfo domain object (pure)
   private convertX6ConfigToNodeInfo(nodeConfig: any): NodeInfo {
     // Extract hybrid data format (metadata + custom data)
     const hybridData = nodeConfig.data || { _metadata: [] };
@@ -721,6 +739,7 @@ export class AppDiagramService {
   /**
    * Convert X6 edge config to EdgeInfo domain object
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: convert an X6 edge config to an EdgeInfo domain object (pure)
   private convertX6ConfigToEdgeInfo(edgeConfig: any): EdgeInfo {
     // Extract labels array directly if present, otherwise create from single label
     let labels: any[] = [];

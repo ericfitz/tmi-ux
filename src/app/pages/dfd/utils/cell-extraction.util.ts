@@ -25,6 +25,7 @@ import { CANONICAL_EDGE_SHAPE } from './cell-property-filter.util';
  * @param graph The X6 graph instance
  * @returns Array of cells in X6 v2 nested format
  */
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: extract all cells from an X6 graph preserving complete attrs (reads graph)
 export function extractCellsFromGraph(graph: Graph): Cell[] {
   const graphCells = graph.getCells();
   const cells: Cell[] = [];
@@ -47,6 +48,7 @@ export function extractCellsFromGraph(graph: Graph): Cell[] {
 /**
  * Extract a node cell with complete attrs and nested position/size format.
  */
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: extract a node cell with full attrs, position, size, and parent reference (pure)
 function extractNode(cell: any, allCells: any[]): Cell {
   const attrs = cell.getAttrs() || {};
   const pos = cell.position();
@@ -85,6 +87,7 @@ function extractNode(cell: any, allCells: any[]): Cell {
 /**
  * Extract an edge cell with source/target/vertices.
  */
+// SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: convert an X6 edge cell to a serializable Cell DTO (pure)
 function extractEdge(cell: any): Cell {
   const source = cell.getSource();
   const target = cell.getTarget();
@@ -122,6 +125,7 @@ function extractEdge(cell: any): Cell {
  * Convert cell data to hybrid format for API persistence.
  * Mirrors the logic from AppDiagramService.convertCellDataToArray().
  */
+// SEM@f05aaa4118cbde6b2cfc54e64a44cf907f1396bf: convert cell data to API hybrid format normalizing metadata field (pure)
 function convertCellData(cellData: any): any {
   if (!cellData) {
     return { _metadata: [] };
@@ -142,6 +146,7 @@ function convertCellData(cellData: any): any {
  * Strip runtime-only port state before saving.
  * Removes visibility toggles that are runtime-only state.
  */
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: strip runtime-only port visibility state before persistence (pure)
 function cleanPortsForSave(ports: any): any {
   if (!ports || !ports.items) {
     return undefined;

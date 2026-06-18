@@ -5,6 +5,7 @@
 /**
  * Object types that can be deleted via the confirmation dialog.
  */
+// SEM@6d9d66672763adecc482974841b300a67ef5a5ef: enumerate all domain entity types that support deletion (pure)
 export type DeleteObjectType =
   | 'threatModel'
   | 'diagram'

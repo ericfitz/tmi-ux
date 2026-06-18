@@ -61,6 +61,7 @@ export interface PortConnectionState {
  * Initialize X6 cell extensions by adding methods to prototypes
  * This must be called once during application initialization
  */
+// SEM@4b4d1bf7d365f081f736dd2852791d9e153e73f2: register label, metadata, and node-type methods on the X6 Cell prototype at startup (mutates shared state)
 export function initializeX6CellExtensions(): void {
   // Add setLabel method to Cell prototype
   (Cell.prototype as any).setLabel = function (label: string): void {

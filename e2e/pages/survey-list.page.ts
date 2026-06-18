@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: Playwright page object exposing locators for the survey list and draft items (pure)
 export class SurveyListPage {
+  // SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: bind Playwright page instance to the page object (pure)
   constructor(private page: Page) {}
 
   readonly myResponsesButton = () =>

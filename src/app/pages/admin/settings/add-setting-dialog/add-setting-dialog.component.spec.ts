@@ -20,6 +20,7 @@ describe('AddSettingDialogComponent', () => {
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let envInjector: EnvironmentInjector;
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build and initialize an AddSettingDialogComponent instance for testing (pure)
   function build(): AddSettingDialogComponent {
     const component = runInInjectionContext(
       envInjector,

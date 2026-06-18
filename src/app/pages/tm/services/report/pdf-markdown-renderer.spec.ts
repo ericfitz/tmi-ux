@@ -20,9 +20,13 @@ describe('PdfMarkdownRenderer', () => {
   };
 
   const mockLogger = {
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op logger stub for info-level messages in test context (pure)
     info: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op logger stub for warn-level messages in test context (pure)
     warn: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op logger stub for error-level messages in test context (pure)
     error: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op logger stub for debug-component messages in test context (pure)
     debugComponent: () => {},
   };
 

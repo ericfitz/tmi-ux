@@ -13,6 +13,7 @@
  * html2canvas is loaded lazily so it stays out of the main bundle. The
  * library is ~50 KB gzipped and only needed when feedback is invoked.
  */
+// SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: capture a JPEG screenshot of the visible viewport, excluding overlays (pure)
 export async function captureViewportScreenshot(): Promise<string | null> {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return null;

@@ -11,6 +11,7 @@ import { CANONICAL_EDGE_SHAPE } from '../../pages/dfd/utils/cell-property-filter
  * Interface for X6 Graph basic operations
  */
 interface X6Graph {
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: list all cells in an X6 graph (pure)
   getCells(): X6Cell[];
 }
 
@@ -19,10 +20,15 @@ interface X6Graph {
  */
 interface X6Cell {
   id: string;
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: check whether a diagram cell is a node (pure)
   isNode(): boolean;
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: check whether a diagram cell is an edge (pure)
   isEdge(): boolean;
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: fetch the primary label of a diagram cell (pure)
   getLabel?(): X6CellLabel;
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: list all labels on a diagram cell (pure)
   getLabels?(): X6CellLabel[];
+  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: fetch a cell attribute value at a given path (pure)
   getAttrByPath?(path: string): unknown;
 }
 
@@ -79,7 +85,9 @@ interface DiagramCellData {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: service that extracts diagram and cell options from threat models or live X6 graphs
 export class CellDataExtractionService {
+  // SEM@0f5b46881ccb144e2325cc70ec1c369253dc4aff: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
@@ -90,6 +98,7 @@ export class CellDataExtractionService {
    * @param diagramId - Optional diagram ID to filter cells by
    * @returns DiagramCellData containing diagrams and cells for dropdowns
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: extract diagram and cell options from a stored threat model for editor dropdowns (pure)
   extractFromThreatModel(threatModel: ThreatModel, diagramId?: string): DiagramCellData {
     this.logger.debugComponent(
       'CellDataExtractionService',
@@ -156,6 +165,7 @@ export class CellDataExtractionService {
    * @param diagramName - The current diagram name
    * @returns DiagramCellData containing current diagram and its cells
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: extract diagram and cell options from a live X6 graph instance (pure)
   extractFromX6Graph(x6Graph: X6Graph, diagramId: string, diagramName: string): DiagramCellData {
     this.logger.debugComponent('CellDataExtractionService', 'Extracting cell data from X6 graph', {
       diagramId,
@@ -214,6 +224,7 @@ export class CellDataExtractionService {
    * @param cellType - The type of cell to determine extraction method
    * @returns The cell label as a string
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: extract a human-readable label from a stored or runtime diagram cell (pure)
   private extractCellLabel(cell: X6Cell | StoredCell, cellType: 'stored' | 'x6'): string {
     if (!cell || !cell.id) {
       return 'Unknown Cell';
@@ -239,6 +250,7 @@ export class CellDataExtractionService {
   /**
    * Extracts label from an X6 runtime cell using getLabel() or manual fallback.
    */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: extract the display label from a live X6 cell object (pure)
   private extractX6CellLabel(x6Cell: X6Cell): string | null {
     if (typeof x6Cell.getLabel === 'function') {
       const extractedLabel = x6Cell.getLabel();
@@ -274,6 +286,7 @@ export class CellDataExtractionService {
    * 2. Node attrs.text.text (X6 node format)
    * 3. Generate friendly label from cell ID
    */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: extract the display label from a stored cell, falling back through multiple strategies (pure)
   private extractStoredCellLabel(storedCell: StoredCell): string | null {
     return (
       this.tryExtractEdgeLabel(storedCell) ??
@@ -283,6 +296,7 @@ export class CellDataExtractionService {
   }
 
   /** Extracts label from X6 edge labels array (labels[].attrs.text.text). */
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: extract the label text from a stored edge cell's labels array (pure)
   private tryExtractEdgeLabel(cell: StoredCell): string | null {
     if (
       cell.shape !== CANONICAL_EDGE_SHAPE ||
@@ -299,6 +313,7 @@ export class CellDataExtractionService {
   }
 
   /** Extracts label from X6 node attrs (attrs.text.text). */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: extract the label text from a stored node cell's attrs (pure)
   private tryExtractNodeAttrsLabel(cell: StoredCell): string | null {
     const text = cell.attrs?.text?.text;
     if (text && typeof text === 'string' && text.trim()) {
@@ -308,6 +323,7 @@ export class CellDataExtractionService {
   }
 
   /** Cleans up a label by collapsing newlines and trimming, falling back to cell ID. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: normalize a cell label by collapsing whitespace, falling back to cell ID (pure)
   private cleanLabel(label: string | null, cellId: string): string {
     if (typeof label === 'string') {
       const cleaned = label.replace(/\n/g, ' ').trim();
@@ -321,6 +337,7 @@ export class CellDataExtractionService {
   /**
    * Extracts text from an X6 cell label object
    */
+  // SEM@016cf91ed31dd9e800b8d2c22c26718ea531c7d4: extract a string value from an X6 cell label attrs object (pure)
   private extractLabelText(label: X6CellLabel | undefined): string | null {
     if (!label) return null;
 
@@ -340,6 +357,7 @@ export class CellDataExtractionService {
    * Generates a more user-friendly label from cell data when no proper label is available.
    * This is used as a fallback for stored cells that don't preserve label information.
    */
+  // SEM@016cf91ed31dd9e800b8d2c22c26718ea531c7d4: build a human-readable fallback label from a cell ID (pure)
   private generateFriendlyLabel(cell: X6Cell | StoredCell): string {
     // Try to create a more meaningful label based on cell properties
     const cellId = cell.id || 'unknown';

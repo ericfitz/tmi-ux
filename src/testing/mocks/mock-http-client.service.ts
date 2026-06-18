@@ -20,6 +20,7 @@ const DEFAULT_SUCCESS_RESPONSE = { id: 1, name: 'Test Data' };
  * @param defaultResponse - The default response for successful requests
  * @returns A mock HttpClient with vitest mock functions
  */
+// SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: build a mock HttpClient with spy methods returning a configurable default response (pure)
 export function createMockHttpClient(defaultResponse: any = DEFAULT_SUCCESS_RESPONSE): HttpClient {
   return {
     get: vi.fn().mockReturnValue(of(defaultResponse)),
@@ -54,6 +55,7 @@ export interface MockHttpClient {
  * @param defaultResponse - The default response for successful requests
  * @returns A typed mock HttpClient
  */
+// SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: build a typed mock HttpClient exposing spy methods for test assertions (pure)
 export function createTypedMockHttpClient(
   defaultResponse: any = DEFAULT_SUCCESS_RESPONSE,
 ): MockHttpClient {

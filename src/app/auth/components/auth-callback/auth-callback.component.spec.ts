@@ -117,6 +117,7 @@ describe('AuthCallbackComponent', () => {
     mockTransloco = { translate: vi.fn((key: string) => key) };
   });
 
+  // SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: build an AuthCallbackComponent instance with injected test mocks (pure)
   function createComponent(): AuthCallbackComponent {
     return new AuthCallbackComponent(
       mockAuthService as AuthService,

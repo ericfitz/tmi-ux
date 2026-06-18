@@ -66,6 +66,7 @@ test.describe.serial('DFD Node Properties', () => {
   /**
    * Helper: add a process node, wait for it to appear, and return its ID.
    */
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: add a process node to the DFD and return its ID (mutates shared state)
   async function addProcessAndGetId(): Promise<string> {
     const before = await dfdEditorPage.getNodeCount();
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
@@ -78,6 +79,7 @@ test.describe.serial('DFD Node Properties', () => {
   /**
    * Helper: open the style panel if not already open.
    */
+  // SEM@d8c442ac6106fc939b9fc2079f3ace9a207277f5: open the style panel if not already visible (mutates shared state)
   async function ensureStylePanelOpen(): Promise<void> {
     const isVisible = await dfdEditorPage.stylePanel().isVisible();
     if (!isVisible) {

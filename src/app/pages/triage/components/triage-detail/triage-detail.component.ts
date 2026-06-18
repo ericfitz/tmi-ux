@@ -81,6 +81,7 @@ interface StatusTimelineEntry {
   styleUrl: './triage-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,
 })
+// SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: display, approve, or return a single survey response for triage
 export class TriageDetailComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
@@ -129,6 +130,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Current locale for date formatting */
   currentLocale = 'en-US';
 
+  // SEM@198d9138cef09ed19e61938afc63adb0817f4bf2: inject routing, dialog, notification, and domain services for triage detail
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -142,6 +144,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     private languageService: LanguageService,
   ) {}
 
+  // SEM@198d9138cef09ed19e61938afc63adb0817f4bf2: fetch survey response by route param and initialize status timeline and notes (reads DB)
   ngOnInit(): void {
     this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
       this.currentLocale = language.code;
@@ -184,6 +187,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@47259dcc3bd1f66f245714931e1330a50558a80a: complete destroy$ subject to unsubscribe all active observables
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -192,6 +196,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Fallback: load the survey JSON definition from template service
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch survey JSON definition as a fallback and format responses for display (reads DB)
   private loadSurveyDefinition(surveyId: string): void {
     this.surveyService
       .getSurveyJson(surveyId)
@@ -216,6 +221,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Only recurses one level deep (panel > child); nested panels
    * within panels are treated as leaf elements.
    */
+  // SEM@5414175d8d18e4aa0cc5011d334154b703e2fb5d: flatten survey answers into labeled display rows using the schema definition (mutates shared state)
   private formatResponses(surveyJson: SurveyJsonSchema): void {
     if (!this.response?.answers) {
       this.formattedResponses = [];
@@ -252,6 +258,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * SurveyJS static panels are visual grouping only — child answers
    * are stored as flat top-level keys, not nested under the panel name.
    */
+  // SEM@5414175d8d18e4aa0cc5011d334154b703e2fb5d: flatten a static survey panel's child questions into grouped display rows (pure)
   private flattenPanel(
     element: SurveyQuestion,
     answers: Record<string, unknown>,
@@ -274,6 +281,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Flatten a dynamic panel's entries into numbered rows.
    * Dynamic panel answers are arrays of objects under answers[panelName].
    */
+  // SEM@5414175d8d18e4aa0cc5011d334154b703e2fb5d: flatten a dynamic panel's repeated entries into numbered grouped display rows (pure)
   private flattenDynamicPanel(
     element: SurveyQuestion,
     answers: Record<string, unknown>,
@@ -302,6 +310,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Format responses without a definition (raw key/value display).
    * Produces 2-column rows (no group) with raw keys as question names.
    */
+  // SEM@5414175d8d18e4aa0cc5011d334154b703e2fb5d: format survey answers as raw key-value rows when no schema is available (mutates shared state)
   private formatResponsesWithoutDefinition(): void {
     if (!this.response?.answers) {
       this.formattedResponses = [];
@@ -321,6 +330,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Format a single answer value for display
    */
+  // SEM@6fa9a4c346d195a42d77e8cbcbc53e47ec138c8a: convert a single survey answer value to a display string (pure)
   private formatAnswer(value: unknown): string {
     if (value === null || value === undefined) return '';
     if (Array.isArray(value))
@@ -336,6 +346,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Build status timeline
    */
+  // SEM@198d9138cef09ed19e61938afc63adb0817f4bf2: build the ordered status timeline with active and completed flags from a survey response (mutates shared state)
   private buildStatusTimeline(response: SurveyResponse): void {
     const statuses: { key: ResponseStatus; labelKey: string }[] = [
       { key: 'draft', labelKey: 'surveys.status.draft' },
@@ -366,6 +377,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Get timestamp for a status from the response
    */
+  // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: return the timestamp recorded on a survey response for the given status (pure)
   private getTimestampForStatus(response: SurveyResponse, status: ResponseStatus): string | null {
     switch (status) {
       case 'draft':
@@ -382,6 +394,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Approve a response (submitted → ready_for_review)
    */
+  // SEM@73937e4a1513478d01cfcb1f86ac74432d454fbc: update survey response status to ready_for_review and notify the user (reads DB)
   approveResponse(): void {
     if (!this.response) return;
 
@@ -417,6 +430,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Open the revision notes dialog, then return for revision if confirmed
    */
+  // SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: open revision notes dialog and return the response for revision on confirm
   openRevisionDialog(): void {
     const dialogRef = this.dialog.open<
       RevisionNotesDialogComponent,
@@ -440,6 +454,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Return a response for revision
    */
+  // SEM@73937e4a1513478d01cfcb1f86ac74432d454fbc: update survey response status to needs_revision with reviewer notes and notify the user (reads DB)
   private returnForRevision(notes: string): void {
     if (!this.response) return;
 
@@ -475,6 +490,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Create a threat model from this response
    */
+  // SEM@ced222e1fedd1f7ccd406f7e9b35d8dba604a9fb: create a threat model from the current survey response and navigate to triage list (reads DB)
   createThreatModel(): void {
     if (!this.response) return;
 
@@ -512,6 +528,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Load triage notes for the current response
    */
+  // SEM@68358605eac63a5552324a78969078da8f45c0cc: fetch triage notes for the current survey response and populate the notes list (reads DB)
   private loadTriageNotes(responseId: string): void {
     this.isLoadingNotes = true;
     this.triageNoteService
@@ -532,6 +549,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Toggle survey responses section
    */
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: toggle the expanded state of the survey responses section (mutates shared state)
   toggleSurveyResponsesSection(): void {
     this.surveyResponsesSectionExpanded = !this.surveyResponsesSectionExpanded;
   }
@@ -539,6 +557,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Toggle triage notes section
    */
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: toggle expanded/collapsed state of the triage notes section (mutates shared state)
   toggleTriageNotesSection(): void {
     this.triageNotesSectionExpanded = !this.triageNotesSectionExpanded;
   }
@@ -546,6 +565,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Open the note editor dialog to create a new triage note
    */
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: open dialog to create a new triage note for the current response
   openNoteEditor(): void {
     if (!this.response) return;
 
@@ -574,6 +594,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * View a triage note in the editor dialog (read-only)
    */
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: fetch full triage note content and display it read-only in a dialog (reads DB)
   viewNote(note: TriageNoteListItem): void {
     if (!this.response) return;
 
@@ -606,6 +627,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Create a new triage note via the service
    */
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: store a new triage note for the current response via the API (reads DB)
   private createNote(result: TriageNoteEditorResult): void {
     if (!this.response) return;
 
@@ -625,6 +647,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Copy text to clipboard with snackbar feedback
    */
+  // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: copy text to clipboard and show snackbar confirmation feedback
   copyToClipboard(text: string): void {
     copyToClipboardWithFeedback(text, {
       snackBar: this.snackBar,
@@ -636,6 +659,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Copy the response ID to clipboard
    */
+  // SEM@006e3c9f21127668752a5692b941d977698f43bd: copy the current survey response ID to clipboard
   copyResponseId(): void {
     if (this.response?.id) {
       this.copyToClipboard(this.response.id);
@@ -645,6 +669,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Navigate back to triage list
    */
+  // SEM@47259dcc3bd1f66f245714931e1330a50558a80a: navigate to the triage list route
   goBack(): void {
     void this.router.navigate(['/triage']);
   }
@@ -652,6 +677,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Convert snake_case status to camelCase i18n key
    */
+  // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: convert a response status to its camelCase i18n key (pure)
   getStatusKey(status: ResponseStatus): string {
     return getStatusKeyUtil(status);
   }
@@ -659,6 +685,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Get CSS class for a status
    */
+  // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: map a response status to its CSS class name (pure)
   getStatusClass(status: ResponseStatus): string {
     return getStatusClassUtil(status);
   }

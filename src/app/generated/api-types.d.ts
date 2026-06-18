@@ -4260,6 +4260,7 @@ export interface paths {
     trace?: never;
   };
 }
+// SEM@30a70f3b62a18926fe3bc0123659cd4db72ad22c: declare the API webhook registry as an empty record (pure)
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
@@ -11454,6 +11455,7 @@ export interface components {
   headers: never;
   pathItems: never;
 }
+// SEM@30a70f3b62a18926fe3bc0123659cd4db72ad22c: declare the API shared definitions registry as an empty record (pure)
 export type $defs = Record<string, never>;
 export interface operations {
   getApiInfo: {

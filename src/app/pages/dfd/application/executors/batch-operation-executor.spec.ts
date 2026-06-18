@@ -21,6 +21,7 @@ import {
 } from '../../types/graph-operation.types';
 
 /** Build a stub executor that returns a fixed result for one operation type. */
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a minimal test double that always executes and returns a fixed operation result (pure)
 function stubExecutor(result: OperationResult): OperationExecutor {
   return {
     priority: 100,
@@ -29,6 +30,7 @@ function stubExecutor(result: OperationResult): OperationExecutor {
   };
 }
 
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a minimal graph operation fixture with given id and type (pure)
 function makeChildOp(id: string, type: string): GraphOperation {
   return {
     id,
@@ -39,6 +41,7 @@ function makeChildOp(id: string, type: string): GraphOperation {
   };
 }
 
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a successful operation result fixture for a given operation and affected cell ids (pure)
 function successResult(op: GraphOperation, cellIds: string[]): OperationResult {
   return {
     success: true,
@@ -50,6 +53,7 @@ function successResult(op: GraphOperation, cellIds: string[]): OperationResult {
   };
 }
 
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a failed operation result fixture with an error message for a given operation (pure)
 function failureResult(op: GraphOperation, error: string): OperationResult {
   return {
     success: false,

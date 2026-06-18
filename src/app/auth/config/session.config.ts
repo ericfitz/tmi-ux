@@ -55,4 +55,5 @@ export const SESSION_CONFIG = {
 /**
  * Type for SESSION_CONFIG to enable type inference
  */
+// SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: type alias for the session configuration constants object (pure)
 export type SessionConfig = typeof SESSION_CONFIG;

@@ -43,6 +43,7 @@ import { environment } from '../../../../../environments/environment';
   styleUrl: './survey-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: display available survey templates and the user's in-progress drafts
 export class SurveyListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private currentLocale = 'en-US';
@@ -53,6 +54,7 @@ export class SurveyListComponent implements OnInit {
   error: string | null = null;
   private _deleteInProgress = false;
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject services needed to load surveys, manage drafts, and route (pure)
   constructor(
     private surveyService: SurveyService,
     private responseService: SurveyResponseService,
@@ -64,6 +66,7 @@ export class SurveyListComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  // SEM@9c800b8e11599d4cacaebf3db0b01bc0e8e5c25e: subscribe to locale changes and fetch initial survey and draft data
   ngOnInit(): void {
     this.languageService.currentLanguage$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -78,6 +81,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Load active templates and user's drafts
    */
+  // SEM@9c800b8e11599d4cacaebf3db0b01bc0e8e5c25e: fetch active survey templates then trigger draft loading (reads DB)
   loadData(): void {
     this.loading = true;
     this.error = null;
@@ -103,6 +107,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Load user's draft responses
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch the user's draft responses and group them by survey template (reads DB)
   private loadDrafts(): void {
     this.responseService
       .listMine({ status: 'draft' })
@@ -130,6 +135,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Get drafts for a specific template
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: return cached draft responses for a given survey template (pure)
   getDrafts(surveyId: string): SurveyResponseListItem[] {
     return this.drafts.get(surveyId) ?? [];
   }
@@ -138,6 +144,7 @@ export class SurveyListComponent implements OnInit {
    * Start a new survey
    * If confidential threat models feature is enabled, prompts for confidentiality first
    */
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: create a new draft response and navigate to the survey fill page
   startSurvey(survey: SurveyListItem): void {
     if (environment.enableConfidentialThreatModels) {
       const dialogRef = this.dialog.open(SurveyConfidentialDialogComponent, {
@@ -159,6 +166,7 @@ export class SurveyListComponent implements OnInit {
     }
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: create a draft survey response with confidentiality flag then navigate to fill it
   private createDraftAndNavigate(survey: SurveyListItem, isConfidential: boolean): void {
     this.responseService
       .createDraft({ survey_id: survey.id, is_confidential: isConfidential })
@@ -176,6 +184,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Continue an existing draft
    */
+  // SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: navigate to fill an existing draft response, guarded against concurrent deletes
   continueDraft(draft: SurveyResponseListItem): void {
     if (this._deleteInProgress) {
       return;
@@ -186,6 +195,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Delete a draft
    */
+  // SEM@784529f3f6b1e5e06e660d4dc5b92aebddd8ee23: delete a draft response and reload the draft list (mutates shared state)
   deleteDraft(draft: SurveyResponseListItem, event: Event): void {
     event.stopPropagation();
     this._deleteInProgress = true;
@@ -212,6 +222,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Navigate to my responses
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: navigate to the user's submitted survey responses page
   viewMyResponses(): void {
     void this.router.navigate(['/intake', 'my-responses']);
   }
@@ -220,6 +231,7 @@ export class SurveyListComponent implements OnInit {
    * Format relative time for drafts
    * Uses Intl.RelativeTimeFormat for proper internationalization
    */
+  // SEM@9c800b8e11599d4cacaebf3db0b01bc0e8e5c25e: convert a date string to a localized human-readable relative time label (pure)
   formatRelativeTime(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
@@ -242,6 +254,7 @@ export class SurveyListComponent implements OnInit {
   /**
    * Format relative time using Intl.RelativeTimeFormat with fallback
    */
+  // SEM@9c800b8e11599d4cacaebf3db0b01bc0e8e5c25e: format a numeric time delta as a localized relative time string with fallback (pure)
   private formatIntlRelativeTime(value: number, unit: 'minute' | 'hour' | 'day'): string {
     try {
       if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {

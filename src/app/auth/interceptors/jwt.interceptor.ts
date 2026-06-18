@@ -30,6 +30,7 @@ import { AuthError } from '../models/auth.models';
  * token refresh and retrying the original request.
  */
 @Injectable()
+// SEM@a0359eb0b6e1fd48cf64d58f74313645e64a3e46: handle auth errors on API requests; refresh session cookie and retry on 401 (mutates shared state)
 export class JwtInterceptor implements HttpInterceptor {
   // Public endpoints that don't require authentication
   private readonly publicEndpoints = [
@@ -46,6 +47,7 @@ export class JwtInterceptor implements HttpInterceptor {
   private _authService: AuthService | null = null;
   private _stepUpService: StepUpService | null = null;
 
+  // SEM@34d18ba2c1f88c2e9b650c912322cbc42588d59c: initialize interceptor with lazy-resolved DI injector and logger (mutates shared state)
   constructor(
     private injector: Injector,
     private logger: LoggerService,
@@ -72,6 +74,7 @@ export class JwtInterceptor implements HttpInterceptor {
    * Intercept HTTP requests to handle auth errors.
    * No token is attached — cookies are sent automatically by the browser.
    */
+  // SEM@a0359eb0b6e1fd48cf64d58f74313645e64a3e46: intercept API requests and handle 401 errors with step-up or token refresh (mutates shared state)
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Logout requests and session probes manage their own error handling.
     // Skip interceptor to prevent retry loops.
@@ -108,10 +111,12 @@ export class JwtInterceptor implements HttpInterceptor {
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, request)));
   }
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether a URL targets the configured API base (pure)
   private isApiRequest(url: string): boolean {
     return url.startsWith(environment.apiUrl);
   }
 
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate whether an API URL matches a public unauthenticated endpoint (pure)
   private isPublicEndpoint(url: string): boolean {
     if (!this.isApiRequest(url)) {
       return false;
@@ -138,6 +143,7 @@ export class JwtInterceptor implements HttpInterceptor {
    * original request is retried once; strong providers redirect (the page
    * unloads) or the user cancels — either way the original error propagates.
    */
+  // SEM@a0359eb0b6e1fd48cf64d58f74313645e64a3e46: handle step-up authentication challenge by escalating auth and retrying request (mutates shared state)
   private handleStepUpChallenge(
     request: HttpRequest<unknown>,
     next: HttpHandler,
@@ -177,6 +183,7 @@ export class JwtInterceptor implements HttpInterceptor {
    * Handle 401 errors with cookie-based token refresh.
    * Uses IS_AUTH_RETRY context to prevent infinite retry loops.
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: refresh session cookie on 401 and retry request; logout on repeated failure (mutates shared state)
   private handleUnauthorizedErrorWithRefresh(
     request: HttpRequest<unknown>,
     next: HttpHandler,
@@ -239,6 +246,7 @@ export class JwtInterceptor implements HttpInterceptor {
     );
   }
 
+  // SEM@04ef43aefdebc79041ccc78bc009f0d0d130c110: dispatch auth error notification for 401/403 responses and rethrow (mutates shared state)
   private handleError(error: HttpErrorResponse, _request: HttpRequest<unknown>): Observable<never> {
     if (error.status === 401) {
       const authError: AuthError = {

@@ -11,6 +11,7 @@ import type { ChatMessage, PreparationStatus } from '../../models/chat.model';
 describe('ChatMessagesComponent', () => {
   let component: ChatMessagesComponent;
 
+  // SEM@51c382750d093e404dff963030ab220a35b8fd1e: build a stub ChatMessage with default values and optional overrides (pure)
   function makeMessage(overrides: Partial<ChatMessage> = {}): ChatMessage {
     return {
       id: 'm1',
@@ -23,6 +24,7 @@ describe('ChatMessagesComponent', () => {
     };
   }
 
+  // SEM@51c382750d093e404dff963030ab220a35b8fd1e: build a stub PreparationStatus with default values and optional overrides (pure)
   function makePreparationStatus(overrides: Partial<PreparationStatus> = {}): PreparationStatus {
     return {
       phase: 'building_context',
@@ -201,6 +203,7 @@ describe('ChatMessagesComponent', () => {
 
   describe('ngOnChanges', () => {
     /** Attach a stub messages container so a flagged scroll is observable. */
+    // SEM@51c382750d093e404dff963030ab220a35b8fd1e: attach a stub messages container element to the component for scroll testing (mutates shared state)
     function attachContainer(): { scrollTop: number; scrollHeight: number } {
       const el = { scrollTop: 0, scrollHeight: 500 };
       component.messagesContainer = { nativeElement: el } as never;

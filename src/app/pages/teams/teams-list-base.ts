@@ -41,6 +41,7 @@ import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialo
  * context-specific {@link onClose} and {@link onDelete} behaviors.
  */
 @Directive()
+// SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: abstract base providing shared team list, filter, pagination, and dialog actions
 export abstract class TeamsListBase implements OnInit, AfterViewInit {
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly teamService = inject(TeamService);
@@ -64,6 +65,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   totalTeams = 0;
 
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: initialize pagination and filter state from URL, subscribe debounced filter, and load teams (mutates shared state)
   ngOnInit(): void {
     const urlState = parsePaginationFromUrl(this.route.snapshot.queryParams, DEFAULT_PAGE_SIZE);
     this.pageIndex = urlState.pageIndex;
@@ -83,16 +85,19 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
     this.loadTeams();
   }
 
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: wire the sort instance to the table data source (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
   /** Handle filter input changes with debounce. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: dispatch a filter value to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
   /** Handle paginator page changes. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: update page index and size then reload and sync the URL (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -101,9 +106,11 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Navigate away from the team list. Implemented per-subclass. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: navigate away from the team list; implemented per subclass
   abstract onClose(): void;
 
   /** Open the create team dialog. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: open create-team dialog, store the new team, and refresh the list (mutates shared state)
   onAddTeam(): void {
     const dialogRef = this.dialog.open(CreateTeamDialogComponent, {
       width: '500px',
@@ -126,6 +133,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the edit team details dialog for the given row. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a team and open the edit-details dialog, refreshing on save (mutates shared state)
   onEditDetails(team: TeamListItem): void {
     this.teamService
       .get(team.id)
@@ -153,6 +161,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the team members management dialog. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a team and open the members management dialog, refreshing on save (mutates shared state)
   onMembers(team: TeamListItem): void {
     this.teamService
       .get(team.id)
@@ -180,6 +189,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the responsible parties management dialog. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a team and open the responsible parties dialog, persisting changes on save (mutates shared state)
   onResponsibleParties(team: TeamListItem): void {
     this.teamService
       .get(team.id)
@@ -213,6 +223,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the related teams management dialog. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a team and open the related teams dialog, refreshing on save (mutates shared state)
   onRelatedTeams(team: TeamListItem): void {
     this.teamService
       .get(team.id)
@@ -240,6 +251,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the metadata dialog for the given team. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a team, open the metadata dialog, and persist updated metadata on save (mutates shared state)
   onMetadata(team: TeamListItem): void {
     this.teamService
       .get(team.id)
@@ -278,17 +290,20 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   /** Confirm and delete the given team. Implemented per-subclass. */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: confirm and delete a team; implemented per subclass (mutates shared state)
   abstract onDelete(team: TeamListItem): void;
 
   /**
    * Returns the i18n key for a team status label.
    * @param status - The team status value
    */
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: convert a team status value to its i18n key (pure)
   getStatusLabel(status: string | null | undefined): string {
     if (!status) return '—';
     return `teams.status.${status}`;
   }
 
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: fetch a paginated, filtered team list from the API and populate the table (reads DB)
   protected loadTeams(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -313,6 +328,7 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: sync the URL query params with current pagination and filter state (mutates shared state)
   protected updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalTeams },

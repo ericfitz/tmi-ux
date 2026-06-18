@@ -60,6 +60,7 @@ export interface UserDisplayInput {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: render a user's display name with optional email tooltip and profile hyperlink
 export class UserDisplayComponent implements OnChanges {
   @Input() user: UserDisplayInput | null = null;
   @Input() fallback = '';
@@ -69,17 +70,20 @@ export class UserDisplayComponent implements OnChanges {
   tooltipText = '';
   hyperlinkUrl: string | null = null;
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: inject branding config and auth service for display computation (pure)
   constructor(
     private brandingConfig: BrandingConfigService,
     private authService: AuthService,
   ) {}
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: recompute display text, tooltip, and hyperlink when input user changes (mutates shared state)
   ngOnChanges(): void {
     this.displayText = this.computeDisplayText();
     this.tooltipText = this.computeTooltipText();
     this.hyperlinkUrl = this.computeHyperlinkUrl();
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: resolve the best available display name for a user, with fallback (pure)
   private computeDisplayText(): string {
     if (!this.user) {
       return this.fallback;
@@ -87,6 +91,7 @@ export class UserDisplayComponent implements OnChanges {
     return this.user.display_name || this.user.name || this.user.email || this.fallback;
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: compute tooltip text showing the user's email when enabled (pure)
   private computeTooltipText(): string {
     if (!this.showEmailTooltip || !this.user?.email) {
       return '';
@@ -94,6 +99,7 @@ export class UserDisplayComponent implements OnChanges {
     return this.user.email;
   }
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: build a provider-gated hyperlink URL for a user from branding config (pure)
   private computeHyperlinkUrl(): string | null {
     const template = this.brandingConfig.userHyperlinkTemplate;
     const requiredProvider = this.brandingConfig.userHyperlinkProvider;

@@ -20,6 +20,7 @@ export interface ScreenshotOptions {
  *
  * Screenshot names: `{name}-{mode}.png`
  */
+// SEM@b63e497910f8ec54da2f8b7b3edfe80beb16c468: capture and assert screenshots for all theme modes, restore original theme
 export async function takeThemeScreenshots(
   page: Page,
   name: string,

@@ -34,12 +34,15 @@ import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 
 @Injectable()
+// SEM@345e65cbc4c1f4d9c7d04e2b8e8d52827d0b4ace: log and categorize all HTTP requests, responses, and errors with secret redaction
 export class HttpLoggingInterceptor implements HttpInterceptor {
+  // SEM@660ec8791a5c29b400be8ffc40e019c7a1c1d240: inject logger and server-connection service dependencies
   constructor(
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
   ) {}
 
+  // SEM@660ec8791a5c29b400be8ffc40e019c7a1c1d240: log HTTP request and response, categorize errors, trigger reactive health check on failures
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Log the outgoing request (if not excluded)
     if (!this.shouldExcludeFromLogging(request)) {
@@ -76,6 +79,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * - API server root path (health checks)
    * - Local asset files (i18n, etc.)
    */
+  // SEM@8d5240acbffdf622dce995270032dc09dd7b3688: filter out GET requests to local assets and API root health-check URLs from logging (pure)
   private shouldExcludeFromLogging(request: HttpRequest<unknown>): boolean {
     // Only exclude GET requests
     if (request.method !== 'GET') {
@@ -109,6 +113,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * Log API request details with secret redaction
    * Only logs when component-specific debug logging is enabled for 'api'
    */
+  // SEM@60a3cf007db78b58d220c9c871eb1162924ee121: log outgoing API request headers and body with sensitive data redacted
   private logApiRequest(request: HttpRequest<unknown>): void {
     // Extract headers as a plain object
     const headers: Record<string, string> = {};
@@ -133,6 +138,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * Log API response details with secret redaction
    * Only logs when component-specific debug logging is enabled for 'api'
    */
+  // SEM@345e65cbc4c1f4d9c7d04e2b8e8d52827d0b4ace: log API response status, headers, and body with sensitive data redacted
   private logApiResponse(request: HttpRequest<unknown>, response: HttpResponse<unknown>): void {
     // Extract response headers as a plain object
     const headers: Record<string, string> = {};
@@ -165,6 +171,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
   /**
    * Log and categorize HTTP errors based on status codes
    */
+  // SEM@3b9fe0ea557e93f339708df081074e775f172436: categorize HTTP error by status code and log a structured error message
   private logAndCategorizeError(error: HttpErrorResponse, request: HttpRequest<unknown>): void {
     let errorMessage: string;
 
@@ -208,6 +215,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * Determine if a request is a health check (API root path).
    * Used to avoid triggering reactive health checks from health check failures.
    */
+  // SEM@660ec8791a5c29b400be8ffc40e019c7a1c1d240: validate that a request targets the API root health-check path (pure)
   private isHealthCheckRequest(request: HttpRequest<unknown>): boolean {
     try {
       const urlObj = new URL(request.url);
@@ -220,6 +228,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
   /**
    * Extract URL parameters from a URL string
    */
+  // SEM@7253b0397e7799cbee646b57a44459c9c3a368d3: parse query parameters from a URL string into a key-value map (pure)
   private extractUrlParams(url: string): Record<string, string> | undefined {
     try {
       const urlObj = new URL(url);

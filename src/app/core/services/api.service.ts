@@ -38,6 +38,7 @@ import { extractHttpErrorDetails } from '@app/shared/utils/http-error.utils';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@ba5d0e1d381b7e38396c9091df6b2e69266a7a1d: HTTP client wrapper with retry, timeout, and error handling for all API calls
 export class ApiService {
   private apiUrl = environment.apiUrl;
   private readonly DEFAULT_TIMEOUT = 30000; // 30 seconds
@@ -45,6 +46,7 @@ export class ApiService {
   private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second fallback for 429 without Retry-After
   private readonly MAX_RETRY_DELAY = 30000; // Cap Retry-After at 30 seconds
 
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: inject HTTP, logger, router, and dialog dependencies
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -60,6 +62,7 @@ export class ApiService {
    * @param endpoint The API endpoint path
    * @returns Full URL with properly normalized slashes
    */
+  // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: build a normalized full API URL from base URL and endpoint path (pure)
   private buildUrl(endpoint: string): string {
     // Remove trailing slash from apiUrl if present
     const baseUrl = this.apiUrl.endsWith('/') ? this.apiUrl.slice(0, -1) : this.apiUrl;
@@ -75,6 +78,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
+  // SEM@1cd05fb52ad1628a779738433156c42bb9c818a0: fetch a JSON resource from the API with retry on transient errors
   get<T>(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
@@ -98,6 +102,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
+  // SEM@1cd05fb52ad1628a779738433156c42bb9c818a0: fetch a plain-text resource from the API with retry on transient errors
   getText(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
@@ -118,6 +123,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
+  // SEM@ba5d0e1d381b7e38396c9091df6b2e69266a7a1d: fetch a binary blob resource from the API for file export downloads
   getBlob(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
@@ -138,6 +144,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param body The request body
    */
+  // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: send a JSON POST request to the API and return the typed response
   post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
     const url = this.buildUrl(endpoint);
 
@@ -155,6 +162,7 @@ export class ApiService {
    * @param body The request body
    * @param context Optional HttpContext for advanced request configuration
    */
+  // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: send a JSON PUT request to the API and return the typed response
   put<T>(endpoint: string, body: Record<string, unknown>, context?: HttpContext): Observable<T> {
     const url = this.buildUrl(endpoint);
 
@@ -170,6 +178,7 @@ export class ApiService {
    * Generic DELETE request
    * @param endpoint The API endpoint (without the base URL)
    */
+  // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: send a DELETE request to the API endpoint
   delete<T>(endpoint: string): Observable<T> {
     const url = this.buildUrl(endpoint);
 
@@ -186,6 +195,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
+  // SEM@1cd05fb52ad1628a779738433156c42bb9c818a0: send a DELETE request with query parameters to the API endpoint
   deleteWithParams<T>(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
@@ -206,6 +216,7 @@ export class ApiService {
    * @param operations Array of JSON Patch operations
    * @param timeoutMs Optional timeout in milliseconds (defaults to SAVE_TIMEOUT for save operations)
    */
+  // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: send JSON Patch operations to the API with configurable timeout
   patch<T>(
     endpoint: string,
     operations: Array<{ op: string; path: string; value?: unknown }>,
@@ -234,6 +245,7 @@ export class ApiService {
    * Retries on transient errors (5xx, network failures) and 429 rate limiting.
    * For 429, respects the Retry-After header if present.
    */
+  // SEM@f71d7dbae93b082cb77599c8ad43af814aec2e72: compute retry delay for transient or rate-limited API errors, honoring Retry-After (pure)
   private getRetryDelay(error: HttpErrorResponse): Observable<number> {
     if (error.status >= 500 || error.status === 0) {
       return timer(0);
@@ -267,6 +279,7 @@ export class ApiService {
   /**
    * Standardized error handling with logging
    */
+  // SEM@04ef43aefdebc79041ccc78bc009f0d0d130c110: handle HTTP, timeout, and generic errors; log and rethrow (mutates shared state)
   private handleError(
     error: HttpErrorResponse | TimeoutError | Error,
     method: string,
@@ -327,6 +340,7 @@ export class ApiService {
   /**
    * Handle validation errors by showing a user-friendly dialog
    */
+  // SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: parse a 400 response and display a validation error dialog (mutates shared state)
   private handleValidationError(error: HttpErrorResponse): void {
     try {
       const { error: validationError, errorDescription } = extractHttpErrorDetails(error);

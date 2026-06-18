@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@6530b75ece9303425c632129eb9d7311de59d92b: page object exposing locators for the admin projects management UI
 export class AdminProjectsPage {
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: build page object bound to a Playwright page instance (pure)
   constructor(private page: Page) {}
 
   readonly closeButton = () => this.page.getByTestId('projects-close-button');
@@ -16,10 +18,12 @@ export class AdminProjectsPage {
   readonly rows = () => this.page.getByTestId('projects-row');
   readonly row = (name: string) => this.rows().filter({ hasText: name });
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: locate the edit action button for a named project row (pure)
   editButton(name: string) {
     return this.row(name).getByTestId('projects-edit-button');
   }
 
+  // SEM@6530b75ece9303425c632129eb9d7311de59d92b: locate the overflow menu button for a named project row (pure)
   moreButton(name: string) {
     return this.row(name).getByTestId('projects-more-button');
   }

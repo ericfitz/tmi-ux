@@ -28,12 +28,14 @@ import { IconPickerCellInfo } from '../../presentation/components/icon-picker-pa
  * the `executeOperation(...).subscribe(...)` dispatch plus `cdr.detectChanges()`.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: build style-panel view models and apply style mutations to DFD graph cells
 export class DfdStylingService {
   /**
    * Build the `CellStyleInfo[]` shown in the style panel from the currently
    * selected cells. Returns an empty array if the graph is absent. Selected
    * ids not present in the graph are skipped.
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: build CellStyleInfo view models for selected cells for the style panel (pure)
   buildStylePanelCells(graph: LayoutGraph, selectedCellIds: string[] = []): CellStyleInfo[] {
     return selectedCellIds
       .map(id => graph.getCellById(id))
@@ -84,6 +86,7 @@ export class DfdStylingService {
    * Build the `IconPickerCellInfo[]` shown in the icon-picker panel from the
    * currently selected cells. Non-node selections are excluded.
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: build IconPickerCellInfo view models for selected node cells (pure)
   buildIconPickerCells(graph: LayoutGraph, selectedCellIds: string[] = []): IconPickerCellInfo[] {
     return selectedCellIds
       .map(id => graph.getCellById(id))
@@ -102,6 +105,7 @@ export class DfdStylingService {
    * unknown label-position key (no mutation performed). The caller dispatches
    * the returned operation.
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: apply a node stroke/fill/label-position change and return the history operation (mutates shared state)
   applyNodeStyleChange(cell: LayoutCell, event: StyleChangeEvent): GraphOperation | null {
     const previousAttrs = cell.getAttrs() ?? {};
     const previousBody = (previousAttrs['body'] || {}) as Record<string, any>;
@@ -155,6 +159,7 @@ export class DfdStylingService {
    * `customStyles` data, and return the `GraphOperation` for history. Returns
    * `null` for an unknown position key (no mutation performed).
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: apply a label position change to a node cell and return the history operation (mutates shared state)
   private applyLabelPositionChange(
     cell: LayoutCell,
     event: StyleChangeEvent,
@@ -207,6 +212,7 @@ export class DfdStylingService {
    * return the `GraphOperation` describing the change for history. The caller
    * dispatches the returned operation.
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: apply an edge stroke-color change and return the history operation (mutates shared state)
   applyEdgeStyleChange(cell: LayoutCell, event: StyleChangeEvent): GraphOperation {
     const previousAttrs = cell.getAttrs() ?? {};
     const previousLine = (previousAttrs['line'] || {}) as Record<string, any>;
@@ -236,6 +242,7 @@ export class DfdStylingService {
    * for history. The caller loops over selected cells, dispatches each
    * returned operation, and triggers change detection.
    */
+  // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: reset a cell's style to type defaults and return the history operation (mutates shared state)
   clearCustomFormatting(cell: LayoutCell): GraphOperation | null {
     if (cell.isNode()) {
       const data = cell.getData() ?? {};

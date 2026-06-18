@@ -39,6 +39,7 @@ enum DeleteStage {
   templateUrl: './delete-user-data-dialog.component.html',
   styleUrls: ['./delete-user-data-dialog.component.scss'],
 })
+// SEM@920d1f36a81ae3539a7559620cae2b20f8a8c868: multi-stage dialog to confirm and execute user account deletion with email verification
 export class DeleteUserDataDialogComponent implements OnDestroy {
   currentStage: DeleteStage = DeleteStage.EXPLANATION;
   emailInput = '';
@@ -50,6 +51,7 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
   // Expose enum to template
   readonly DeleteStage = DeleteStage;
 
+  // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: inject dialog ref, user data, auth, user, and logger dependencies (pure)
   constructor(
     private dialogRef: MatDialogRef<DeleteUserDataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DeleteUserDataDialogData,
@@ -58,6 +60,7 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
     private logger: LoggerService,
   ) {}
 
+  // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: unsubscribe from active deletion request subscription on destroy (mutates shared state)
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -74,6 +77,7 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
   /**
    * Handle cancel button click
    */
+  // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: close the dialog with a rejected result (mutates shared state)
   onCancel(): void {
     this.dialogRef.close(false);
   }
@@ -81,6 +85,7 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
   /**
    * Handle continue button from explanation stage
    */
+  // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: advance to email-verification stage and fetch a server deletion challenge (reads DB)
   onContinue(): void {
     this.errorMessage = '';
     this.currentStage = DeleteStage.EMAIL_VERIFICATION;
@@ -107,6 +112,7 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
   /**
    * Handle delete confirmation with email verification
    */
+  // SEM@920d1f36a81ae3539a7559620cae2b20f8a8c868: submit account deletion request and logout on success (mutates shared state)
   onConfirmDelete(): void {
     if (!this.isEmailValid) {
       return;

@@ -26,6 +26,7 @@ describe('ResponsiblePartiesDialogComponent', () => {
   let patchFn: ReturnType<typeof vi.fn>;
   let envInjector: EnvironmentInjector;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct a ResponsiblePartiesDialogComponent under test injection context (pure)
   function build(
     overrides: Partial<ResponsiblePartiesDialogData> = {},
   ): ResponsiblePartiesDialogComponent {

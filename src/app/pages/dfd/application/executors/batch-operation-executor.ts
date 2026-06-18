@@ -19,15 +19,18 @@ import {
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 @Injectable()
+// SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: execute a batch of graph operations in parallel via registered child executors (mutates shared state)
 export class BatchOperationExecutor extends BaseOperationExecutor {
   readonly priority = 50; // Lower priority to ensure individual executors are tried first
 
   private _individualExecutors: Map<string, OperationExecutor> = new Map();
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: initialize the executor with a logger service dependency (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate that the operation is a batch-operation type (pure)
   canExecute(operation: GraphOperation): boolean {
     return operation.type === 'batch-operation';
   }
@@ -35,6 +38,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
   /**
    * Register individual executors for use in batch processing
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: register a child executor for a specific operation type for use in batch processing (mutates shared state)
   registerExecutor(operationType: string, executor: OperationExecutor): void {
     this._individualExecutors.set(operationType, executor);
     this.logger.debugComponent(
@@ -44,6 +48,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate graph then dispatch a batch operation's child operations, returning a combined result
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
     const batchOperation = operation as BatchOperation;
     this.logOperationStart(operation);
@@ -62,6 +67,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: execute all child operations in parallel and aggregate results into a single batch result
   private executeBatchOperations(
     batchOperation: BatchOperation,
     context: OperationContext,
@@ -99,6 +105,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: dispatch a single graph operation to its registered executor, returning a failure if none found
   private executeIndividualOperation(
     operation: GraphOperation,
     context: OperationContext,
@@ -124,6 +131,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: aggregate individual operation results into a single batch operation result with success/failure stats (pure)
   private createBatchResult(
     batchOperation: BatchOperation,
     individualResults: OperationResult[],

@@ -18,13 +18,21 @@ import { ReferenceRewriterService } from './reference-rewriter.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI threat model create-input schema (pure)
 type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI asset create-input schema (pure)
 type ApiAssetInput = components['schemas']['AssetInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI note create-input schema (pure)
 type ApiNoteInput = components['schemas']['NoteInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI diagram create-request schema (pure)
 type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI DFD diagram update-input schema (pure)
 type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI threat create-input schema (pure)
 type ApiThreatInput = components['schemas']['ThreatInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI document create-input schema (pure)
 type ApiDocumentInput = components['schemas']['DocumentInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the OpenAPI repository create-input schema (pure)
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 
 /**
@@ -115,7 +123,9 @@ export interface ImportDependencies {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: orchestrate full threat model import with dependency ordering and ID translation
 export class ImportOrchestratorService {
+  // SEM@6a4147f1cdd39d730dcaa36b63b6eb46b181e330: inject ID translation, field filter, reference rewriter, and logger dependencies (pure)
   constructor(
     private _idTranslation: IdTranslationService,
     private _fieldFilter: ReadonlyFieldFilterService,
@@ -136,6 +146,7 @@ export class ImportOrchestratorService {
    * 7. Create Threats (reference Assets, Diagrams, Cells)
    * 8. Update metadata for all objects
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: orchestrate full threat model import, creating all nested objects in dependency order (mutates shared state)
   orchestrateImport(
     importedData: Record<string, unknown>,
     deps: ImportDependencies,
@@ -192,6 +203,7 @@ export class ImportOrchestratorService {
   /**
    * Creates the threat model (step 1)
    */
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a new threat model via API, applying filtered fields and metadata
   private _createThreatModel(
     importedData: Record<string, unknown>,
     deps: ImportDependencies,
@@ -229,6 +241,7 @@ export class ImportOrchestratorService {
   /**
    * Imports all nested objects in dependency order
    */
+  // SEM@6a4147f1cdd39d730dcaa36b63b6eb46b181e330: store all nested threat model objects sequentially in dependency order
   private _importNestedObjects(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -268,6 +281,7 @@ export class ImportOrchestratorService {
   /**
    * Imports assets (step 2)
    */
+  // SEM@6a4147f1cdd39d730dcaa36b63b6eb46b181e330: store all assets for a threat model in parallel, updating import summary
   private _importAssets(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -302,6 +316,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a single asset via API, translating IDs and applying metadata
   private _importAsset(
     asset: Record<string, unknown>,
     threatModelId: string,
@@ -345,6 +360,7 @@ export class ImportOrchestratorService {
   /**
    * Imports notes (step 3)
    */
+  // SEM@15eef54597b62adf756d9438d5b4a6cebd00360f: store all notes for a threat model in parallel, updating import summary
   private _importNotes(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -379,6 +395,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a single note via API, translating IDs and applying metadata
   private _importNote(
     note: Record<string, unknown>,
     threatModelId: string,
@@ -427,6 +444,7 @@ export class ImportOrchestratorService {
   /**
    * Imports documents (step 4)
    */
+  // SEM@15eef54597b62adf756d9438d5b4a6cebd00360f: store all documents for a threat model in parallel, updating import summary
   private _importDocuments(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -461,6 +479,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a single document via API, translating IDs and applying metadata
   private _importDocument(
     document: Record<string, unknown>,
     threatModelId: string,
@@ -504,6 +523,7 @@ export class ImportOrchestratorService {
   /**
    * Imports repositories (step 5)
    */
+  // SEM@15eef54597b62adf756d9438d5b4a6cebd00360f: store all repositories for a threat model in parallel, updating import summary
   private _importRepositories(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -540,6 +560,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a single repository via API, translating IDs and applying metadata
   private _importRepository(
     repository: Record<string, unknown>,
     threatModelId: string,
@@ -583,6 +604,7 @@ export class ImportOrchestratorService {
   /**
    * Imports diagrams (step 6)
    */
+  // SEM@15eef54597b62adf756d9438d5b4a6cebd00360f: store all diagrams for a threat model in parallel, updating import summary
   private _importDiagrams(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -617,6 +639,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: store a single diagram via API, rewriting cell references and updating additional fields
   private _importDiagram(
     diagram: Record<string, unknown>,
     threatModelId: string,
@@ -752,6 +775,7 @@ export class ImportOrchestratorService {
   /**
    * Imports threats (step 7) - must run after Assets and Diagrams
    */
+  // SEM@15eef54597b62adf756d9438d5b4a6cebd00360f: store all threats for a threat model in parallel, updating import summary
   private _importThreats(
     importedData: Record<string, unknown>,
     threatModelId: string,
@@ -786,6 +810,7 @@ export class ImportOrchestratorService {
     );
   }
 
+  // SEM@ef11065455a66f5e49de4053f3feef176d69c205: store a single threat via API, rewriting diagram and asset references and applying metadata
   private _importThreat(
     threat: Record<string, unknown>,
     threatModelId: string,

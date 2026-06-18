@@ -25,6 +25,7 @@ import { StepUpConfirmDialogComponent } from '../components/step-up-confirm-dial
  * PkceService.retrieveVerifier(). No additional persistence is needed here.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: orchestrate OAuth2 step-up authentication flow with PKCE and dialog confirmation (mutates shared state)
 export class StepUpService {
   private _inFlight$: Observable<StepUpOutcome> | null = null;
 
@@ -33,6 +34,7 @@ export class StepUpService {
     window.location.href = url;
   };
 
+  // SEM@3f355e9ce773da83e165c65de3c84936c0293cb4: inject HTTP, router, dialog, PKCE, and logger dependencies (pure)
   constructor(
     private _http: HttpClient,
     private _router: Router,
@@ -54,6 +56,7 @@ export class StepUpService {
    *   - 'redirecting'    — user confirmed and browser is navigating to the IdP
    *   - 'cancelled'      — user dismissed the dialog, or an error occurred
    */
+  // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: initiate step-up auth for a provider, deduplicating concurrent calls; return outcome observable (mutates shared state)
   public beginStepUp(providerId: string): Observable<StepUpOutcome> {
     if (this._inFlight$) {
       return this._inFlight$;
@@ -92,6 +95,7 @@ export class StepUpService {
     return this._inFlight$;
   }
 
+  // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: dispatch step-up server response to weak-complete or user-confirmation dialog paths (mutates shared state)
   private _handleStepUpResponse(response: StepUpResponse): Observable<StepUpOutcome> {
     if (response.result === 'step_up_weak_complete') {
       this._logger.info('Step-up completed via weak short-circuit', {
@@ -130,6 +134,7 @@ export class StepUpService {
    * token exchange. Clearing on weak/cancel/error prevents a stale handoff from
    * colliding with a later login or identity-link flow that reuses these keys.
    */
+  // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: remove OAuth handoff state from storage on non-redirecting step-up outcomes (mutates shared state)
   private _clearStepUpStorage(): void {
     localStorage.removeItem('oauth_state');
     localStorage.removeItem('oauth_provider');

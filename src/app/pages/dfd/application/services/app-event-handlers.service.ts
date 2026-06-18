@@ -59,6 +59,7 @@ export interface ThreatChangeEvent {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: handle diagram UI events: keyboard, resize, selection, context menu, and threats (mutates shared state)
 export class AppEventHandlersService {
   private _rightClickedCell: Cell | null = null;
   private _selectedCells$ = new BehaviorSubject<Cell[]>([]);
@@ -75,6 +76,7 @@ export class AppEventHandlersService {
   // Context menu position
   contextMenuPosition = { x: '0px', y: '0px' };
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: inject dependencies for diagram event handling and dialog management (pure)
   constructor(
     private logger: LoggerService,
     private infraX6SelectionAdapter: InfraX6SelectionAdapter,
@@ -88,6 +90,7 @@ export class AppEventHandlersService {
   /**
    * Initialize event handlers
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: subscribe to graph adapter selection and context-menu events (mutates shared state)
   initialize(infraX6GraphAdapter: any): void {
     // Store reference to graph adapter for later use
     this._x6GraphAdapter = infraX6GraphAdapter;
@@ -119,6 +122,7 @@ export class AppEventHandlersService {
   /**
    * Cleanup subscriptions
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: unsubscribe all active event handler subscriptions (mutates shared state)
   dispose(): void {
     this._subscriptions.unsubscribe();
   }
@@ -133,6 +137,7 @@ export class AppEventHandlersService {
   /**
    * Handle keyboard events for delete functionality and undo/redo
    */
+  // SEM@160a659e86030f78df3b17de82201b3a5a792147: handle keyboard shortcuts for delete and undo/redo on the diagram (mutates shared state)
   onKeyDown(
     event: KeyboardEvent,
     _diagramId: string,
@@ -166,6 +171,7 @@ export class AppEventHandlersService {
   /**
    * Handle window resize events to update the graph size
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: debounce window resize events and update the graph canvas dimensions (mutates shared state)
   onWindowResize(
     graphContainer: ElementRef,
     resizeTimeout: number | null,
@@ -198,6 +204,7 @@ export class AppEventHandlersService {
   /**
    * Deletes the currently selected cell(s) using the selection adapter
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: delete selected diagram cells as an atomic collaborative operation (mutates shared state)
   onDeleteSelected(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot delete: Graph is not initialized');
@@ -226,6 +233,7 @@ export class AppEventHandlersService {
   /**
    * Opens the context menu for a cell at the specified position
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: record the right-clicked cell and open the context menu at screen coordinates (mutates shared state)
   openCellContextMenu(
     cell: Cell,
     x: number,
@@ -258,6 +266,7 @@ export class AppEventHandlersService {
   /**
    * Shows the cell properties dialog with the serialized JSON object definition
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: open the cell properties dialog for the last right-clicked diagram cell (mutates shared state)
   showCellProperties(): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for showing properties');
@@ -289,6 +298,7 @@ export class AppEventHandlersService {
   /**
    * Opens the threat editor dialog to create a new threat
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: open the threat editor dialog and persist a new threat to the threat model (mutates shared state)
   openThreatEditor(
     threatModelId: string | null,
     dfdId: string | null,
@@ -468,6 +478,7 @@ export class AppEventHandlersService {
   /**
    * Closes the diagram and navigates back to the threat model editor page
    */
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: navigate back to the threat model editor or dashboard when closing the diagram (mutates shared state)
   closeDiagram(threatModelId: string | null, _dfdId: string | null): void {
     this.logger.info('Closing diagram', { threatModelId, dfdId: _dfdId });
 
@@ -487,6 +498,7 @@ export class AppEventHandlersService {
   /**
    * Move selected cells forward in z-order
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: raise the right-clicked diagram cell one step in z-order (mutates shared state)
   moveForward(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move forward operation');
@@ -500,6 +512,7 @@ export class AppEventHandlersService {
   /**
    * Move selected cells backward in z-order
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: send the right-clicked diagram cell one step back in z-order (mutates shared state)
   moveBackward(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move backward operation');
@@ -513,6 +526,7 @@ export class AppEventHandlersService {
   /**
    * Move selected cells to front
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: send the right-clicked diagram cell to the topmost z-order position (mutates shared state)
   moveToFront(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move to front operation');
@@ -526,6 +540,7 @@ export class AppEventHandlersService {
   /**
    * Move selected cells to back
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: send the right-clicked diagram cell to the bottommost z-order position (mutates shared state)
   moveToBack(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for move to back operation');
@@ -539,6 +554,7 @@ export class AppEventHandlersService {
   /**
    * Check if the right-clicked cell is an edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether the right-clicked diagram cell is an edge (pure)
   isRightClickedCellEdge(): boolean {
     return this._rightClickedCell?.isEdge() ?? false;
   }
@@ -546,6 +562,7 @@ export class AppEventHandlersService {
   /**
    * Edit the text/label of the right-clicked cell by invoking the label editor
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: invoke the inline label editor on the right-clicked diagram cell (mutates shared state)
   editCellText(infraX6GraphAdapter: any): void {
     if (!this._rightClickedCell) {
       this.logger.warn('No cell selected for text editing');
@@ -571,6 +588,7 @@ export class AppEventHandlersService {
   /**
    * Undo the last action using X6 history addon
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: revert the last graph operation via the history addon (mutates shared state)
   undo(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot undo: Graph is not initialized');
@@ -584,6 +602,7 @@ export class AppEventHandlersService {
   /**
    * Redo the last undone action using X6 history addon
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: reapply the last undone graph operation via the history addon (mutates shared state)
   redo(isInitialized: boolean, infraX6GraphAdapter: any): void {
     if (!isInitialized) {
       this.logger.warn('Cannot redo: Graph is not initialized');
@@ -597,6 +616,7 @@ export class AppEventHandlersService {
   /**
    * Get the right-clicked cell
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the currently right-clicked diagram cell or null (pure)
   getRightClickedCell(): Cell | null {
     return this._rightClickedCell;
   }
@@ -629,6 +649,7 @@ export class AppEventHandlersService {
   /**
    * Get the label text for a cell
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label text for a diagram cell (pure)
   getCellLabel(cell: Cell): string {
     // Use X6 cell extensions for unified label handling
     return (cell as any).getLabel ? (cell as any).getLabel() : '';
@@ -637,6 +658,7 @@ export class AppEventHandlersService {
   /**
    * Set the label text for a cell with change detection and validation
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate and store a new label on a diagram cell, emitting change events (mutates shared state)
   setCellLabel(cell: Cell, text: string): boolean {
     const oldLabel = this.getCellLabel(cell);
 
@@ -697,6 +719,7 @@ export class AppEventHandlersService {
   /**
    * Check if a label change is valid
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: validate a proposed diagram cell label against type and length rules (pure)
   isLabelChangeValid(cell: Cell, newText: string, _oldText: string): boolean {
     // Basic validation rules
     if (typeof newText !== 'string') {
@@ -725,6 +748,7 @@ export class AppEventHandlersService {
   /**
    * Sanitize label text
    */
+  // SEM@6c0a7018dcd4ec9742007e03d736adfefc4f854f: strip control characters and normalize whitespace in a label string (pure)
   sanitizeLabelText(text: string): string {
     if (typeof text !== 'string') {
       return '';
@@ -749,6 +773,7 @@ export class AppEventHandlersService {
   /**
    * Check if a cell supports label editing
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: check whether a diagram cell supports label editing via its extension methods (pure)
   canEditCellLabel(cell: Cell): boolean {
     // Check if cell has the necessary extension methods
     return (
@@ -759,6 +784,7 @@ export class AppEventHandlersService {
   /**
    * Get label validation constraints for UI
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: return label validation constraints for UI display (pure)
   getLabelConstraints(): { maxLength: number; allowedCharacters: string } {
     return {
       maxLength: 100,
@@ -769,6 +795,7 @@ export class AppEventHandlersService {
   /**
    * Batch update multiple cell labels
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: apply multiple cell label updates atomically in a single history command (mutates shared state)
   batchUpdateLabels(
     graph: any,
     updates: Array<{ cell: Cell; label: string }>,
@@ -803,6 +830,7 @@ export class AppEventHandlersService {
   /**
    * Emit node info change event for history system integration
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: notify the history system of a node label change via observable (mutates shared state)
   private emitNodeInfoChangeForHistory(nodeId: string, oldLabel: string, newLabel: string): void {
     const oldData = { label: oldLabel };
     const newData = { label: newLabel };

@@ -5,16 +5,20 @@
 import { components } from '@app/generated/api-types';
 
 /** Admin user object with enriched data */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API schema type for an admin user with enriched data (pure)
 export type AdminUser = components['schemas']['AdminUser'];
 
 /** Response from list admin users endpoint */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for the list admin users endpoint (pure)
 export type ListAdminUsersResponse = components['schemas']['AdminUserListResponse'];
 
 /** Request to create an automation account */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API request type for creating an automation account (pure)
 export type CreateAutomationAccountRequest =
   components['schemas']['CreateAutomationAccountRequest'];
 
 /** Response from creating an automation account (includes user + credential) */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for creating an automation account, including credential (pure)
 export type CreateAutomationAccountResponse =
   components['schemas']['CreateAutomationAccountResponse'];
 

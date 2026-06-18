@@ -17,7 +17,9 @@ import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-grap
  * callback as method parameters rather than injecting the orchestrator.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: orchestrate post-dialog DFD commands: navigation, threat creation, and SVG thumbnail capture
 export class DfdCommandService {
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: inject router, logger, and threat model service dependencies (pure)
   constructor(
     private router: Router,
     private logger: LoggerService,
@@ -28,6 +30,7 @@ export class DfdCommandService {
    * Navigate back to the owning threat model, falling back to the dashboard if
    * navigation fails or no threat model id is available.
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: route to the owning threat model, falling back to the dashboard on failure (mutates shared state)
   navigateAway(threatModelId: string | null): void {
     if (threatModelId) {
       this.logger.info('Navigating back to threat model', { threatModelId });
@@ -51,6 +54,7 @@ export class DfdCommandService {
   /**
    * Create a new threat in the threat model from a threat editor dialog result.
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: store a new threat in the threat model via the API (reads DB)
   createThreat(threatModelId: string, threatData: any): void {
     if (!threatModelId) {
       this.logger.error('Cannot create threat: No threat model ID available');
@@ -92,6 +96,7 @@ export class DfdCommandService {
    * and a `clearSelection` callback (so selected cells are not highlighted in the
    * captured thumbnail) rather than this service depending on the orchestrator.
    */
+  // SEM@03c3db50d6e8e16f64af4f7a81d1e2e834b6231d: export the diagram graph as a base64-encoded SVG thumbnail string (pure)
   captureDiagramSvgThumbnail(
     graphAdapter: InfraX6GraphAdapter,
     exportService: AppExportService,

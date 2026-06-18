@@ -14,6 +14,7 @@ import {
  * Node types supported in the DFD diagram
  * Matches the OpenAPI specification node shape enum
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: union type of valid DFD node shape identifiers (pure)
 export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
 
 /**
@@ -21,7 +22,9 @@ export type NodeType = 'actor' | 'process' | 'store' | 'security-boundary' | 'te
  * This stores all properties and metadata for diagram nodes
  * Matches the OpenAPI Node schema structure
  */
+// SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: immutable domain value object representing a DFD diagram node (pure)
 export class NodeInfo {
+  // SEM@24260d6f2fbe25f47978ac154f6bfd67319aee07: construct a validated immutable node info from all node properties (pure)
   constructor(
     public readonly id: string,
     public readonly shape: NodeType,
@@ -73,6 +76,7 @@ export class NodeInfo {
   /**
    * Gets custom data (excluding reserved metadata namespace)
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: return node data excluding the reserved metadata namespace (pure)
   getCustomData(): Record<string, any> {
     const { _metadata: _, ...customData } = this.data;
     return customData;
@@ -82,6 +86,7 @@ export class NodeInfo {
    * Creates NodeInfo from a plain object in X6 v2 native nested format
    * Also accepts X6 v1 legacy flat format for backward compatibility
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: deserialize a NodeInfo from X6 v2 nested or v1 legacy flat JSON (pure)
   static fromJSON(data: {
     id: string;
     shape?: NodeType;
@@ -131,6 +136,7 @@ export class NodeInfo {
   /**
    * Resolves geometry from X6 v2 nested or v1 flat format
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: resolve node position and size from nested or flat format (pure)
   private static _resolveGeometry(data: {
     position?: { x: number; y: number };
     size?: { width: number; height: number };
@@ -150,6 +156,7 @@ export class NodeInfo {
   /**
    * Resolves hybrid data from data field or legacy metadata
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: resolve node hybrid data from structured data field or legacy metadata record (pure)
   private static _resolveHybridData(data: {
     data?: { [key: string]: any; _metadata: Metadata[] };
     metadata?: Record<string, string>;
@@ -168,6 +175,7 @@ export class NodeInfo {
    * Creates a new NodeInfo instance from a plain object.
    * This is a factory method for creating new instances.
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: build a new NodeInfo from a typed creation payload with defaults applied (pure)
   static create(data: {
     id: string;
     type: NodeType;
@@ -207,6 +215,7 @@ export class NodeInfo {
   /**
    * Creates a default NodeInfo for the given type
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: build a NodeInfo with type-appropriate defaults at a given position (pure)
   static createDefault(
     id: string,
     type: NodeType,
@@ -234,6 +243,7 @@ export class NodeInfo {
   /**
    * Gets default dimensions for a node type
    */
+  // SEM@752e6f045fbd196342e35c47ffee2398495149be: fetch the default width and height for a node type (pure)
   private static getDefaultDimensions(type: NodeType): { width: number; height: number } {
     return DFD_STYLING_HELPERS.getDefaultDimensions(type);
   }
@@ -241,6 +251,7 @@ export class NodeInfo {
   /**
    * Gets default zIndex for a node type
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch the default z-index for a node type (pure)
   private static getDefaultZIndex(type: NodeType): number {
     return DFD_STYLING_HELPERS.getDefaultZIndex(type);
   }
@@ -248,6 +259,7 @@ export class NodeInfo {
   /**
    * Gets default label for a node type
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: resolve the default display label for a node type, optionally translated (pure)
   static getDefaultLabel(type: string, translateFn?: (key: string) => string): string {
     if (!translateFn) {
       // Fallback to English labels if no translation function provided
@@ -287,6 +299,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated position
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a new NodeInfo with the position updated (pure)
   withPosition(position: Point | { x: number; y: number }): NodeInfo {
     const pos = position instanceof Point ? { x: position.x, y: position.y } : position;
     return new NodeInfo(
@@ -309,6 +322,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated label
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: return a new NodeInfo with the display label updated (pure)
   withLabel(label: string): NodeInfo {
     const newAttrs: NodeAttrs = {
       ...this.attrs,
@@ -339,6 +353,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated width
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a new NodeInfo with the width updated (pure)
   withWidth(width: number): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -360,6 +375,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated height
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a new NodeInfo with the height updated (pure)
   withHeight(height: number): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -381,6 +397,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated dimensions (width and height)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a new NodeInfo with both width and height updated (pure)
   withDimensions(width: number, height: number): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -402,6 +419,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated metadata (accepts both formats)
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: return a new NodeInfo with the metadata collection replaced (pure)
   withMetadata(metadata: Record<string, string> | Metadata[]): NodeInfo {
     let newMetadata: Metadata[];
 
@@ -440,6 +458,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated custom data
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: return a new NodeInfo with a single custom data key-value set (pure)
   withCustomData(key: string, value: any): NodeInfo {
     const newData = {
       ...this.data,
@@ -468,6 +487,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with multiple custom data updates
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: return a new NodeInfo with multiple custom data entries merged (pure)
   withCustomDataBatch(customData: Record<string, any>): NodeInfo {
     const newData = {
       ...this.data,
@@ -496,6 +516,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated attrs
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: return a new NodeInfo with visual attributes merged (pure)
   withAttrs(attrs: NodeAttrs): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -519,6 +540,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated angle
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: return a new NodeInfo with the rotation angle updated (pure)
   withAngle(angle: number): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -542,6 +564,7 @@ export class NodeInfo {
   /**
    * Creates a new NodeInfo with updated parent
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: return a new NodeInfo with the parent node ID updated (pure)
   withParent(parent: string | null): NodeInfo {
     return new NodeInfo(
       this.id,
@@ -565,6 +588,7 @@ export class NodeInfo {
   /**
    * Gets the center point of the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the center point of the node bounding box (pure)
   getCenter(): Point {
     return new Point(this.x + this.width / 2, this.y + this.height / 2);
   }
@@ -572,6 +596,7 @@ export class NodeInfo {
   /**
    * Gets the bounding box of the node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the top-left and bottom-right corner points of the node (pure)
   getBounds(): { topLeft: Point; bottomRight: Point } {
     return {
       topLeft: new Point(this.x, this.y),
@@ -582,6 +607,7 @@ export class NodeInfo {
   /**
    * Gets metadata as Record for backward compatibility
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: convert the metadata array to a flat key-value record (pure)
   getMetadataAsRecord(): Record<string, string> {
     return this.metadata.reduce(
       (acc, entry) => {
@@ -595,6 +621,7 @@ export class NodeInfo {
   /**
    * Checks if this node info equals another node info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: compare two NodeInfo instances for structural equality (pure)
   equals(other: NodeInfo): boolean {
     return (
       this.id === other.id &&
@@ -615,6 +642,7 @@ export class NodeInfo {
   /**
    * Returns a string representation of the node info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: format the node as a human-readable summary string (pure)
   toString(): string {
     return `NodeInfo(${this.id}, ${this.shape}, "${this.attrs?.text?.text || ''}")`;
   }
@@ -622,6 +650,7 @@ export class NodeInfo {
   /**
    * Converts to X6 v2 native nested format for API serialization
    */
+  // SEM@5c922ad031ad0fadb4090646ec76cc0897270890: serialize the node info to the X6 API wire format (pure)
   toJSON(): {
     id: string;
     shape: NodeType;
@@ -657,6 +686,7 @@ export class NodeInfo {
   /**
    * Validates the node info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: validate node id, shape, label, dimensions, and coordinates; throw on violation (pure)
   private _validate(): void {
     if (!this.id || this.id.trim().length === 0) {
       throw new Error('Node ID cannot be empty');
@@ -698,6 +728,7 @@ export class NodeInfo {
   /**
    * Validates X6-specific properties
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: validate X6-specific markup and tool properties; throw on violation (pure)
   private _validateX6Properties(): void {
     validateMarkupElements(this.markup);
     validateCellTools(this.tools);
@@ -706,6 +737,7 @@ export class NodeInfo {
   /**
    * Checks if the given shape is a valid node type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that a shape string is a recognized node type (pure)
   private isValidNodeType(shape: string): shape is NodeType {
     return ['actor', 'process', 'store', 'security-boundary', 'text-box'].includes(shape);
   }
@@ -713,6 +745,7 @@ export class NodeInfo {
   /**
    * Checks if metadata arrays are equal
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: compare metadata and custom data of two nodes for equality (pure)
   private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
     const otherMetadata = other._metadata || [];
     const otherCustomData = { ...other };

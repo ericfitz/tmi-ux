@@ -24,7 +24,9 @@ import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/u
 @Injectable({
   providedIn: 'root',
 })
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: manage API and webhook quota CRUD and enriched listings for admin users
 export class QuotaService {
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: inject API and logger dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -33,6 +35,7 @@ export class QuotaService {
   /**
    * Get user API quota for a specific user
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: fetch the API quota record for a user by internal UUID (reads DB)
   getUserAPIQuota(internalUuid: string): Observable<UserAPIQuota> {
     return this.apiService.get<UserAPIQuota>(`/admin/quotas/users/${internalUuid}`);
   }
@@ -40,6 +43,7 @@ export class QuotaService {
   /**
    * Update or create user API quota
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: update or create the API quota for a user by internal UUID (reads DB)
   updateUserAPIQuota(
     internalUuid: string,
     quota: Partial<Omit<UserAPIQuota, 'user_id' | 'created_at' | 'modified_at'>>,
@@ -50,6 +54,7 @@ export class QuotaService {
   /**
    * Delete user API quota (reverts to system defaults)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: delete a user's custom API quota, reverting to system defaults (reads DB)
   deleteUserAPIQuota(internalUuid: string): Observable<void> {
     return this.apiService.delete<void>(`/admin/quotas/users/${internalUuid}`);
   }
@@ -57,6 +62,7 @@ export class QuotaService {
   /**
    * Get webhook quota for a specific user
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: fetch the webhook quota record for a user by internal UUID (reads DB)
   getWebhookQuota(internalUuid: string): Observable<WebhookQuota> {
     return this.apiService.get<WebhookQuota>(`/admin/quotas/webhooks/${internalUuid}`);
   }
@@ -64,6 +70,7 @@ export class QuotaService {
   /**
    * Update or create webhook quota
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: update or create the webhook quota for a user by internal UUID (reads DB)
   updateWebhookQuota(
     internalUuid: string,
     quota: Partial<Omit<WebhookQuota, 'owner_id' | 'created_at' | 'modified_at'>>,
@@ -74,6 +81,7 @@ export class QuotaService {
   /**
    * Delete webhook quota (reverts to system defaults)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: delete a user's custom webhook quota, reverting to system defaults (reads DB)
   deleteWebhookQuota(internalUuid: string): Observable<void> {
     return this.apiService.delete<void>(`/admin/quotas/webhooks/${internalUuid}`);
   }
@@ -81,6 +89,7 @@ export class QuotaService {
   /**
    * List all user API quotas (only returns users with custom quotas)
    */
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: list paginated user API quota records with custom overrides (reads DB)
   listUserAPIQuotas(limit?: number, offset?: number): Observable<ListUserAPIQuotasResponse> {
     const params: Record<string, string> = {};
     if (limit !== undefined) params['limit'] = limit.toString();
@@ -91,6 +100,7 @@ export class QuotaService {
   /**
    * List all webhook quotas (only returns users with custom quotas)
    */
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: list paginated webhook quota records with custom overrides (reads DB)
   listWebhookQuotas(limit?: number, offset?: number): Observable<ListWebhookQuotasResponse> {
     const params: Record<string, string> = {};
     if (limit !== undefined) params['limit'] = limit.toString();
@@ -101,6 +111,7 @@ export class QuotaService {
   /**
    * List admin users with optional filtering
    */
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: list admin users with optional filter and pagination (reads DB)
   listUsers(filter?: AdminUserFilter): Observable<ListAdminUsersResponse> {
     const params: Record<string, string> = {};
 
@@ -117,6 +128,7 @@ export class QuotaService {
   /**
    * Get a single admin user by internal UUID
    */
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: fetch a single admin user record by internal UUID (reads DB)
   getUser(internalUuid: string): Observable<AdminUser> {
     return this.apiService.get<AdminUser>(`/admin/users/${internalUuid}`);
   }
@@ -124,6 +136,7 @@ export class QuotaService {
   /**
    * Enrich user API quota with user information
    */
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: merge user profile fields into a user API quota record (pure)
   private enrichUserAPIQuota(quota: UserAPIQuota, user: AdminUser): EnrichedUserAPIQuota {
     return {
       ...quota,
@@ -136,6 +149,7 @@ export class QuotaService {
   /**
    * Enrich webhook quota with user information
    */
+  // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: merge user profile fields into a webhook quota record (pure)
   private enrichWebhookQuota(quota: WebhookQuota, user: AdminUser): EnrichedWebhookQuota {
     return {
       ...quota,
@@ -148,6 +162,7 @@ export class QuotaService {
   /**
    * Get enriched user API quota (includes user information)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: fetch a user API quota enriched with user profile data (reads DB)
   getEnrichedUserAPIQuota(internalUuid: string): Observable<EnrichedUserAPIQuota> {
     return forkJoin({
       quota: this.getUserAPIQuota(internalUuid),
@@ -158,6 +173,7 @@ export class QuotaService {
   /**
    * Get enriched webhook quota (includes user information)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: fetch a webhook quota enriched with user profile data (reads DB)
   getEnrichedWebhookQuota(internalUuid: string): Observable<EnrichedWebhookQuota> {
     return forkJoin({
       quota: this.getWebhookQuota(internalUuid),
@@ -169,6 +185,7 @@ export class QuotaService {
    * List all enriched user API quotas (includes user information)
    * Returns pagination metadata along with enriched quotas
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: list paginated user API quotas each enriched with user profile data (reads DB)
   listEnrichedUserAPIQuotas(
     limit?: number,
     offset?: number,
@@ -206,6 +223,7 @@ export class QuotaService {
    * List all enriched webhook quotas (includes user information)
    * Returns pagination metadata along with enriched quotas
    */
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: list paginated webhook quotas each enriched with user profile data (reads DB)
   listEnrichedWebhookQuotas(
     limit?: number,
     offset?: number,

@@ -31,20 +31,29 @@ interface PickerCallbackData {
 }
 
 interface PickerBuilderApi {
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: store the OAuth access token on the picker builder (pure)
   setOAuthToken(token: string): PickerBuilderApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: store the developer API key on the picker builder (pure)
   setDeveloperKey(key: string): PickerBuilderApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: store the application ID on the picker builder (pure)
   setAppId(id: string): PickerBuilderApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: register a Drive view on the picker builder (pure)
   addView(view: unknown): PickerBuilderApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: register the selection callback on the picker builder (pure)
   setCallback(cb: (data: PickerCallbackData) => void): PickerBuilderApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: build and return the configured Google Picker instance (pure)
   build(): { setVisible(v: boolean): void };
 }
 
 interface DocsViewApi {
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: configure whether folders appear in the Google Docs view (pure)
   setIncludeFolders(v: boolean): DocsViewApi;
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: filter the Google Docs view to specific MIME types (pure)
   setMimeTypes(mimes: string): DocsViewApi;
 }
 
 interface GapiGlobal {
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: load a GAPI module asynchronously and invoke a callback on completion
   load(module: string, opts: { callback: () => void; onerror?: (e: unknown) => void }): void;
 }
 
@@ -69,6 +78,7 @@ interface GisTokenClientOpts {
 }
 
 interface GisTokenClient {
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: request a short-lived OAuth access token via the GIS token client
   requestAccessToken(opts?: { prompt?: string }): void;
 }
 
@@ -84,9 +94,11 @@ interface PickerBootstrap {
 }
 
 @Injectable({ providedIn: 'root' })
+// SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: open the Google Drive file picker and emit the selected file or cancellation
 export class GoogleDrivePickerService implements IContentPickerService {
   private _open = false;
 
+  // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: inject picker token service and logger dependencies (pure)
   constructor(
     private pickerToken: PickerTokenService,
     private logger: LoggerService,
@@ -99,6 +111,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
    * the browser instead — required for service-mode content providers like
    * google_drive.
    */
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: open the Google Drive picker and return an observable of the picker event (mutates shared state)
   pick(context?: PickerContext): Observable<PickerEvent> {
     const mode = context?.mode ?? 'delegated';
     return new Observable<PickerEvent>(subscriber => {
@@ -109,6 +122,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
       this._open = true;
       let cancelled = false;
 
+      // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: load scripts, mint an access token, and display the Google picker
       const run = async (): Promise<void> => {
         try {
           await loadScriptOnce(GAPI_URL);
@@ -139,6 +153,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
     });
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: fetch a server-minted delegated token and build picker bootstrap config
   private async _mintDelegatedMode(): Promise<PickerBootstrap> {
     const token = await this._mintDelegatedToken();
     return {
@@ -148,6 +163,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
     };
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: fetch a delegated OAuth access token from the TMI server for Google Workspace
   private _mintDelegatedToken(): Promise<PickerTokenResponse> {
     return new Promise((resolve, reject) => {
       this.pickerToken.mint('google_workspace').subscribe({
@@ -165,6 +181,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
    * Throws PickerLoadFailedError if pickerConfig is missing required keys
    * or if GIS fails to load / consent is denied.
    */
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: obtain a browser-minted GIS access token and build picker bootstrap config
   private async _mintServiceMode(
     pickerConfig: Record<string, string> | undefined,
   ): Promise<PickerBootstrap> {
@@ -180,6 +197,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
     return { accessToken, developerKey, appId };
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: request a Drive read-only OAuth token via Google Identity Services in the browser
   private _requestServiceModeToken(clientId: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const google = (window as unknown as { google?: GoogleGlobal }).google;
@@ -205,6 +223,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
     });
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: load the GAPI picker module, rejecting if the module fails to load
   private _loadPickerModule(): Promise<void> {
     return new Promise((resolve, reject) => {
       const gapi = (window as unknown as { gapi: GapiGlobal }).gapi;
@@ -215,6 +234,7 @@ export class GoogleDrivePickerService implements IContentPickerService {
     });
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: render the Google Picker UI and emit a picked or cancelled event (mutates shared state)
   private _showPicker(bootstrap: PickerBootstrap, emit: (e: PickerEvent) => void): void {
     const google = (window as unknown as { google: GoogleGlobal }).google;
     const view = new google.picker.DocsView();

@@ -21,6 +21,7 @@ userTest.describe('Google Workspace — link account via Document sources tab', 
   userTest.skip(!config, GOOGLE_DRIVE_SKIP_REASON);
 
   userTest('completes OAuth round trip and shows token row', async ({ userPage }) => {
+    // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: delete the user's Google Workspace OAuth token via the API (mutates shared state)
     const revokeToken = async () => {
       await userPage
         .evaluate(async () => {

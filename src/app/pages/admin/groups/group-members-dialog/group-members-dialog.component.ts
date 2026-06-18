@@ -47,6 +47,7 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
   templateUrl: './group-members-dialog.component.html',
   styleUrl: './group-members-dialog.component.scss',
 })
+// SEM@3b9fbbc9940aca7e6a4ff80594014408ee0b6582: dialog for viewing and managing members of an admin group (mutates shared state)
 export class GroupMembersDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -61,6 +62,7 @@ export class GroupMembersDialogComponent implements OnInit {
   userSearchControl = new FormControl('');
   filteredUsers$!: Observable<AdminUser[]>;
 
+  // SEM@3b9fbbc9940aca7e6a4ff80594014408ee0b6582: inject dependencies required to manage group members in the dialog (pure)
   constructor(
     private dialogRef: MatDialogRef<GroupMembersDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { group: AdminGroup },
@@ -71,12 +73,14 @@ export class GroupMembersDialogComponent implements OnInit {
     private translocoService: TranslocoService,
   ) {}
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: fetch providers and members, wire user autocomplete on dialog init (mutates shared state)
   ngOnInit(): void {
     this.loadProviders();
     this.loadMembers();
     this.setupUserAutocomplete();
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch available OAuth providers and store them for display (mutates shared state)
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
@@ -103,6 +107,7 @@ export class GroupMembersDialogComponent implements OnInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch group members from the API and store them for display (mutates shared state)
   loadMembers(): void {
     this.loading = true;
     this.groupAdminService
@@ -125,6 +130,7 @@ export class GroupMembersDialogComponent implements OnInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: wire a debounced user-search autocomplete stream from the user admin API (mutates shared state)
   setupUserAutocomplete(): void {
     this.filteredUsers$ = this.userSearchControl.valueChanges.pipe(
       startWith(''),
@@ -142,6 +148,7 @@ export class GroupMembersDialogComponent implements OnInit {
     );
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: format a user as a display string for the autocomplete field (pure)
   displayUser(user: AdminUser | null): string {
     if (!user) {
       return '';
@@ -149,12 +156,14 @@ export class GroupMembersDialogComponent implements OnInit {
     return `${user.name} (${user.email})`;
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: handle autocomplete selection by adding the user as a group member (mutates shared state)
   onUserSelected(event: MatAutocompleteSelectedEvent): void {
     const selectedUser = event.option.value as AdminUser;
     this.addMember(selectedUser);
     this.userSearchControl.setValue('');
   }
 
+  // SEM@3b9fbbc9940aca7e6a4ff80594014408ee0b6582: add a user to the group via the API, blocking automation users from administrators (mutates shared state)
   addMember(user: AdminUser): void {
     this.addingMember = true;
     this.errorMessage = '';
@@ -188,6 +197,7 @@ export class GroupMembersDialogComponent implements OnInit {
       });
   }
 
+  // SEM@3909264b66e2522d047d4a908c09e2a1d7a3afb8: return the display name for a group member, handling user and group subjects (pure)
   getMemberDisplayName(member: GroupMember): string {
     if (member.subject_type === 'group') {
       return member.member_group_name || '';
@@ -195,6 +205,7 @@ export class GroupMembersDialogComponent implements OnInit {
     return member.user_name || member.user_email || '';
   }
 
+  // SEM@42b37b76c1bd3acbcdef0b5996b338e0c647783a: remove a group member after confirmation and reload the member list (mutates shared state)
   onRemoveMember(member: GroupMember): void {
     const displayName = this.getMemberDisplayName(member);
     const confirmed = confirm(`Are you sure you want to remove ${displayName} from this group?`);
@@ -223,14 +234,17 @@ export class GroupMembersDialogComponent implements OnInit {
     }
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: close the group members dialog
   onClose(): void {
     this.dialogRef.close();
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the human-readable display name for the dialog's group (pure)
   getGroupDisplayName(): string {
     return this.data.group.name || this.data.group.group_name;
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the OAuth provider info for a given provider ID (pure)
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }

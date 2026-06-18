@@ -104,6 +104,7 @@ const mockTeamListItem: TeamListItem = {
 // ---------------------------------------------------------------------------
 // Helper to create a dialog afterClosed Subject and dialog ref stub
 // ---------------------------------------------------------------------------
+// SEM@f33f0330c6900d3f47bec390040eeeb576a34ee2: build a mock dialog ref with a controllable afterClosed subject (pure)
 function createDialogRef<T = unknown>(): {
   afterClosed$: Subject<T | undefined>;
   dialogRef: { afterClosed: () => Subject<T | undefined> };

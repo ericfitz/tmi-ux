@@ -41,9 +41,11 @@ export interface SseHttpError {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@7196e42d2530d6d9837ac1fc41d3f5208aa78e06: service that streams SSE events from a POST endpoint as an Observable
 export class SseClientService {
   private readonly baseUrl: string;
 
+  // SEM@27d4efda692a4a1467112e79bc4e5ccb0edf68ba: inject auth and logger dependencies, normalize the base API URL (pure)
   constructor(
     @Inject(AUTH_SERVICE) private readonly authService: IAuthService,
     private readonly logger: LoggerService,
@@ -58,6 +60,7 @@ export class SseClientService {
    * @param endpoint  API path, with or without a leading slash
    * @param body      Optional request body — will be JSON-serialised
    */
+  // SEM@2c7d08036f549add19746acc0168764402e0d031: POST to an endpoint and return an Observable of SSE events from the response stream
   post(endpoint: string, body?: unknown): Observable<SseEvent> {
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${this.baseUrl}${normalizedEndpoint}`;
@@ -77,6 +80,7 @@ export class SseClientService {
     });
   }
 
+  // SEM@2c7d08036f549add19746acc0168764402e0d031: fetch the SSE endpoint, handle 401 token refresh retry, and delegate to stream reader
   private async executeFetch(
     url: string,
     body: unknown,
@@ -148,6 +152,7 @@ export class SseClientService {
     }
   }
 
+  // SEM@2c7d08036f549add19746acc0168764402e0d031: consume a ReadableStream and emit parsed SSE events to a subscriber
   private async readStream(
     body: ReadableStream<Uint8Array>,
     url: string,
@@ -204,6 +209,7 @@ export class SseClientService {
    * Per the SSE specification, multiple `data:` lines within an event are
    * concatenated with newline separators.
    */
+  // SEM@7196e42d2530d6d9837ac1fc41d3f5208aa78e06: parse a single SSE event block and emit the typed event to the subscriber (pure)
   private parseAndEmit(raw: string, url: string, subscriber: Subscriber<SseEvent>): void {
     let event = 'message';
     const dataLines: string[] = [];

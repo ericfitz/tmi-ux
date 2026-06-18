@@ -15,9 +15,11 @@ import { of } from 'rxjs';
 
 import { AppDfdFacade } from './app-dfd.facade';
 
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: type alias for a vitest mock function used in facade test stubs (pure)
 type Mock = ReturnType<typeof vi.fn>;
 
 /** Build a mock X6 graph with the methods the facade calls. */
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: build a mock X6 graph stub with selection and clipboard methods for tests (pure)
 function createMockGraph(selectedCells: unknown[] = []): Record<string, Mock> {
   return {
     getSelectedCells: vi.fn(() => selectedCells),

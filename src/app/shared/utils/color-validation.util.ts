@@ -41,6 +41,7 @@ const HEX_COLOR_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
  * isValidColor('invalid');  // false
  * ```
  */
+// SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: validate a CSS color string as a hex value or common named color (pure)
 export function isValidColor(color: string): boolean {
   // Check for hex color
   if (HEX_COLOR_PATTERN.test(color)) {

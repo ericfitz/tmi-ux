@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@2ec44885144e6f679eace25e5ddb6c574a3dae6e: Playwright page object exposing triage list view locators and actions (pure)
 export class TriagePage {
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: bind the Playwright page for the triage list page object (pure)
   constructor(private page: Page) {}
 
   readonly searchInput = () => this.page.getByTestId('triage-search-input');

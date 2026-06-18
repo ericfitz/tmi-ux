@@ -216,6 +216,7 @@ const DEFAULT_PORT_CONFIGURATIONS: Record<string, PortConfiguration> = {
 /**
  * Creates default port configuration for a specific node type
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch the default port configuration for a diagram node type (pure)
 export function createDefaultPortConfiguration(nodeType: string): PortConfiguration {
   return DEFAULT_PORT_CONFIGURATIONS[nodeType] || DEFAULT_PORT_CONFIGURATIONS['process'];
 }

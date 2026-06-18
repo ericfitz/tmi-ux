@@ -65,6 +65,7 @@ import { buildStepUpRequestParams, buildStepUpUrl } from '../utils/step-up.utils
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: authenticate users, manage session lifecycle, and dispatch OAuth/SAML login flows (mutates shared state)
 export class AuthService {
   // Private subjects — userProfileSubject is the single source of truth for auth state
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
@@ -115,6 +116,7 @@ export class AuthService {
     stopExpiryTimers: () => void;
   } | null = null;
 
+  // SEM@34d18ba2c1f88c2e9b650c912322cbc42588d59c: register dependencies; defer auth check to APP_INITIALIZER (pure)
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -130,6 +132,7 @@ export class AuthService {
    * Set the session manager service (called by SessionManagerService to avoid circular dependency)
    * @param sessionManager SessionManagerService instance
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: register the session manager to break circular DI dependency (mutates shared state)
   setSessionManager(sessionManager: {
     onTokenRefreshed: () => void;
     stopExpiryTimers: () => void;
@@ -225,6 +228,7 @@ export class AuthService {
    * 2. Administrator (not reviewer) → /admin
    * 3. Neither → /intake
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: compute the role-based landing route for the current user (pure)
   getLandingPage(): string {
     const profile = this.userProfile;
     if (profile?.is_security_reviewer) return '/dashboard';
@@ -237,6 +241,7 @@ export class AuthService {
    * @param session Optional session to check, otherwise retrieves from memory
    * @returns True if the session is valid and not expired
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: validate that the session token has not expired (pure)
   isSessionValid(session?: AuthSession | null): boolean {
     const sessionToCheck = session || this.getSessionInfo();
     if (!sessionToCheck) {
@@ -258,6 +263,7 @@ export class AuthService {
    * Triggers full logout (including server-side session revocation and
    * cross-tab synchronization) when invalid state is detected.
    */
+  // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: validate session expiry and trigger logout if a zombie session is detected (mutates shared state)
   validateAndUpdateAuthState(): void {
     const session = this.getSessionInfo();
 
@@ -285,6 +291,7 @@ export class AuthService {
    * @param session Optional session to check, otherwise retrieves from memory
    * @returns True if session should be refreshed
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: check whether the session expires within the proactive refresh window (pure)
   private shouldRefreshSession(session?: AuthSession | null): boolean {
     const sessionToCheck = session || this.getSessionInfo();
     if (!sessionToCheck) {
@@ -301,6 +308,7 @@ export class AuthService {
    * If auth check is still in progress, waits for it to complete.
    * @returns Observable that resolves to a valid AuthSession
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: fetch a valid session, waiting for initial auth check or refreshing if near expiry
   ensureValidSession(): Observable<AuthSession> {
     const session = this.getSessionInfo();
 
@@ -329,6 +337,7 @@ export class AuthService {
   /**
    * @deprecated Use ensureValidSession() instead
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: fetch a valid session token; deprecated alias for ensureValidSession
   getValidToken(): Observable<JwtToken> {
     return this.ensureValidSession();
   }
@@ -336,6 +345,7 @@ export class AuthService {
   /**
    * Process a session - validate and refresh if needed
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: validate a session and refresh it if expiring soon, or error if expired
   private processValidSession(session: AuthSession): Observable<AuthSession> {
     const isValid = this.isSessionValid(session);
     const shouldRefresh = this.shouldRefreshSession(session);
@@ -362,6 +372,7 @@ export class AuthService {
   /**
    * Get session info if available, returns null if not authenticated
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: fetch the current session token if present, refreshing silently on near-expiry
   getValidTokenIfAvailable(): Observable<AuthSession | null> {
     const session = this.getSessionInfo();
     if (!session) {
@@ -389,6 +400,7 @@ export class AuthService {
    * If the server responds successfully (cookie is valid), we're authenticated.
    * Sets tokenReady$ to true when complete (even on error).
    */
+  // SEM@91b81ecee55238730ed4b9c67cebb8224ded0ea2: fetch user profile via GET /me to restore session on page load (mutates shared state)
   async checkAuthStatus(): Promise<void> {
     try {
       // If we already have a session in memory, use it
@@ -444,6 +456,7 @@ export class AuthService {
    * Get available OAuth authentication providers from TMI server
    * Uses caching to avoid repeated API calls
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch OAuth provider list from the server, returning cached results within TTL
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
     const now = Date.now();
@@ -494,6 +507,7 @@ export class AuthService {
    * Get available SAML authentication providers from TMI server
    * Uses caching to avoid repeated API calls
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch SAML provider list from the server, returning cached results within TTL
   getAvailableSAMLProviders(): Observable<SAMLProviderInfo[]> {
     // Check cache first
     const now = Date.now();
@@ -539,6 +553,7 @@ export class AuthService {
   /**
    * Check if server is configured based on environment
    */
+  // SEM@081dc985eee8ff7d9105cf1c4b26b11dec05c4bc: validate that the API URL is configured in the environment (pure)
   private isServerConfigured(): boolean {
     // Consider server not configured only if apiUrl is empty or whitespace
     // Any explicitly configured URL (including localhost) is considered a configured server
@@ -552,6 +567,7 @@ export class AuthService {
    * @param providerId Optional provider ID to use
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: dispatch an OAuth login redirect for the selected or default provider
   initiateLogin(providerId?: string, returnUrl?: string, loginHint?: string): void {
     this.getAvailableProviders().subscribe({
       next: providers => {
@@ -588,6 +604,7 @@ export class AuthService {
    * @param providerId Provider ID to use
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@7a4991539f0191a93ee57c2dee2dbe4ebda62ac0: dispatch a SAML login redirect for the specified provider
   initiateSAMLLogin(providerId: string, returnUrl?: string): void {
     this.getAvailableSAMLProviders().subscribe({
       next: providers => {
@@ -623,6 +640,7 @@ export class AuthService {
    * @param provider SAML provider information
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@099351dc527adf128f90a13218a6d13c78a787a6: redirect the browser to the TMI SAML endpoint with a client callback URL
   private initiateTMISAMLLogin(provider: SAMLProviderInfo, returnUrl?: string): void {
     try {
       // this.logger.info(`Initiating SAML login with ${provider.name}`);
@@ -663,6 +681,7 @@ export class AuthService {
    * @param provider OAuth provider information
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: redirect the browser to the TMI OAuth proxy with PKCE and state parameters
   private async initiateTMIOAuthLogin(
     provider: OAuthProviderInfo,
     returnUrl?: string,
@@ -748,6 +767,7 @@ export class AuthService {
    * @param returnUrl App URL to land on after step-up completes (e.g.
    *   '/dashboard?openPrefs=identities' or the link confirmation route).
    */
+  // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: redirect the browser to the step-up endpoint with PKCE for re-authentication
   async initiateStepUp(returnUrl: string): Promise<void> {
     try {
       const providerId = this.userProfile?.provider;
@@ -784,6 +804,7 @@ export class AuthService {
    * @param returnUrl Optional URL to return to after authentication
    * @returns State string (Base64 encoded JSON if returnUrl provided)
    */
+  // SEM@5e8253c321277efa7b749446fa74e14b362503f9: build a CSRF-safe OAuth state string, optionally embedding a return URL (pure)
   private generateRandomState(returnUrl?: string): string {
     const array = new Uint8Array(16);
     window.crypto.getRandomValues(array);
@@ -811,6 +832,7 @@ export class AuthService {
    * @param str String to check
    * @returns True if string appears to be Base64 encoded
    */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: detect whether a string is valid Base64-encoded content (pure)
   private isBase64(str: string): boolean {
     if (!str || str.length === 0) {
       return false;
@@ -829,6 +851,7 @@ export class AuthService {
    * @param state State parameter from OAuth callback
    * @returns Object containing csrf token and optional returnUrl and stepUp flag
    */
+  // SEM@4839f89d1c826686334535ef5cc8dc20dd91b71f: parse the OAuth callback state into CSRF token, return URL, and step-up flag (pure)
   decodeState(state: string): { csrf: string; returnUrl?: string; stepUp?: boolean } {
     try {
       // Check if state is Base64 encoded (structured state)
@@ -862,6 +885,7 @@ export class AuthService {
    * @param url URL to validate
    * @returns true if the URL is a safe relative path
    */
+  // SEM@099351dc527adf128f90a13218a6d13c78a787a6: validate a return URL is a safe relative path, not protocol-relative (pure)
   private isValidReturnUrl(url: string): boolean {
     if (!url) return false;
     // Only allow relative URLs starting with / but not // (protocol-relative)
@@ -874,6 +898,7 @@ export class AuthService {
    * @param response OAuth response containing tokens or error
    * @returns Observable that resolves to true if authentication is successful
    */
+  // SEM@f6f6e895ec2bcf860592506d3c52b4292eb78dc7: validate OAuth callback state, dispatch token or code flow, navigate on success
   handleOAuthCallback(response: OAuthResponse): Observable<boolean> {
     // this.logger.info('Handling OAuth callback from TMI proxy');
     // this.logger.debugComponent('Auth', 'Processing OAuth callback', {
@@ -970,6 +995,7 @@ export class AuthService {
    * @param providerId OAuth provider ID
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: store session from proxy token response, fetch user profile, navigate to landing page
   private handleTMITokenResponse(
     response: OAuthResponse,
     providerId: string | null,
@@ -1035,6 +1061,7 @@ export class AuthService {
    * @param providerId OAuth provider ID
    * @param returnUrl Optional URL to return to after authentication
    */
+  // SEM@f6d623610638c03079f785e4378d4d265f61cc90: exchange authorization code for session tokens via PKCE, then navigate
   private exchangeAuthorizationCode(
     response: OAuthResponse,
     providerId: string | null,
@@ -1163,6 +1190,7 @@ export class AuthService {
   /**
    * Handle OAuth errors from callback
    */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: map an OAuth error code to a user-facing auth error and dispatch it (mutates shared state)
   private handleOAuthError(error: string, errorDescription?: string): void {
     const errorMap: { [key: string]: string } = {
       access_denied: 'User cancelled authorization',
@@ -1189,6 +1217,7 @@ export class AuthService {
    * Calls GET /me directly to avoid circular dependency
    * @returns Observable that completes when profile is updated
    */
+  // SEM@91b81ecee55238730ed4b9c67cebb8224ded0ea2: fetch current user profile from the server and update the cached profile (reads DB)
   refreshUserProfile(): Observable<UserProfile> {
     this.logger.debugComponent('Auth', 'Fetching current user profile from server');
     return this.http.get<UserMeResponse>(`${environment.apiUrl}/me`).pipe(
@@ -1224,6 +1253,7 @@ export class AuthService {
   /**
    * Store session info in memory and notify SessionManager
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: store a session in memory and notify the session manager (mutates shared state)
   storeSessionInfo(session: AuthSession): void {
     this.sessionSubject.next(session);
 
@@ -1236,6 +1266,7 @@ export class AuthService {
   /**
    * @deprecated Use storeSessionInfo() instead
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: store session info in memory; deprecated alias for storeSessionInfo (mutates shared state)
   storeToken(token: JwtToken): void {
     this.storeSessionInfo(token);
   }
@@ -1244,6 +1275,7 @@ export class AuthService {
    * Get session info from memory
    * @returns Session info or null if not authenticated
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: fetch the current in-memory session or null if unauthenticated (pure)
   getSessionInfo(): AuthSession | null {
     return this.sessionSubject.value;
   }
@@ -1251,6 +1283,7 @@ export class AuthService {
   /**
    * @deprecated Use getSessionInfo() instead
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: fetch the current session; deprecated alias for getSessionInfo (pure)
   getStoredToken(): JwtToken | null {
     return this.getSessionInfo();
   }
@@ -1259,6 +1292,7 @@ export class AuthService {
    * Handle authentication errors
    * @param error Authentication error
    */
+  // SEM@f6d623610638c03079f785e4378d4d265f61cc90: record an auth error and broadcast it to subscribers (mutates shared state)
   handleAuthError(error: AuthError): void {
     this._lastAuthError = error;
     this.logger.error(`Auth error: ${error.code} - ${error.message}`);
@@ -1270,6 +1304,7 @@ export class AuthService {
    * The server reads the refresh token from the HttpOnly cookie.
    * @returns Observable that resolves to a new AuthSession
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: refresh the session via cookie-based server endpoint, return new session
   refreshToken(): Observable<AuthSession> {
     return this.http
       .post<{
@@ -1298,6 +1333,7 @@ export class AuthService {
    * Deduplicates concurrent refresh requests.
    * @returns Observable that resolves to a new AuthSession
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: force a deduplicated session refresh on server rejection, store new session
   forceRefreshToken(): Observable<AuthSession> {
     // If refresh already in progress, return the same observable (deduplication)
     if (this.refreshInProgress$) {
@@ -1328,6 +1364,7 @@ export class AuthService {
    * With HttpOnly cookies, the server clears cookies on logout.
    * This method clears in-memory state and broadcasts to other tabs.
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: clear in-memory auth state and broadcast logout to other browser tabs (mutates shared state)
   private clearAuthData(): void {
     // Clean up any legacy localStorage data from pre-HttpOnly migration
     localStorage.removeItem('auth_token');
@@ -1365,6 +1402,7 @@ export class AuthService {
    * Logout the current user
    * Clears all authentication data and redirects to home page
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: terminate the user session server-side and client-side, then navigate home
   logout(): void {
     // Re-entrancy guard: prevent multiple simultaneous logout calls
     if (this.isLoggingOut) {

@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@317e7eace5680fd59d8903cf838f9255699f65b7: page object exposing locators and helpers for the threat model dashboard (pure)
 export class DashboardPage {
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: bind a Playwright page instance to the dashboard page object (pure)
   constructor(private page: Page) {}
 
   /**
@@ -10,6 +12,7 @@ export class DashboardPage {
    * so networkidle often doesn't resolve before the Playwright internal
    * timeout.
    */
+  // SEM@317e7eace5680fd59d8903cf838f9255699f65b7: wait until the dashboard UI is interactive and ready for test actions
   async waitForReady(timeout = 10000): Promise<void> {
     await this.createTmButton().waitFor({ state: 'visible', timeout });
   }
@@ -20,10 +23,12 @@ export class DashboardPage {
   readonly tmCards = () =>
     this.page.getByTestId('threat-model-card');
 
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: locate a threat model card matching the given name (pure)
   tmCard(name: string) {
     return this.tmCards().filter({ hasText: name });
   }
 
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: locate the delete button on a named threat model card (pure)
   tmDeleteButton(name: string) {
     return this.tmCard(name).getByTestId('threat-model-delete-button');
   }
@@ -49,6 +54,7 @@ export class DashboardPage {
   readonly tableRows = () => this.page.getByTestId('dashboard-table-row');
   readonly paginator = () => this.page.getByTestId('dashboard-paginator');
 
+  // SEM@d6418ee027793dbc6ded296657f26e3651ccaf29: locate a table row matching the given threat model name (pure)
   tableRow(name: string) {
     return this.tableRows().filter({ hasText: name });
   }

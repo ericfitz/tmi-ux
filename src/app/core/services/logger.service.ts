@@ -74,6 +74,7 @@ export interface LogEntry {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@8f288a83acb36ce44c06dbc1d38400aa9da6f9a2: provide leveled, redacting application logging with a ring-buffer for export (mutates shared state)
 export class LoggerService {
   // Private members
   private logLevel: LogLevel;
@@ -82,6 +83,7 @@ export class LoggerService {
   private bufferIndex = 0;
   private bufferWrapped = false;
 
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: initialize log level and per-component debug set from environment config (pure)
   constructor() {
     // Get log level from environment, default to ERROR if not set
     this.logLevel = (environment.logLevel as LogLevel) || LogLevel.ERROR;
@@ -95,6 +97,7 @@ export class LoggerService {
   /**
    * Set the current log level
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: update the active log level threshold (mutates shared state)
   setLogLevel(level: LogLevel): void {
     this.logLevel = level;
     // this.info(`Log level changed to: ${level}`);
@@ -105,6 +108,7 @@ export class LoggerService {
   /**
    * Log a debug message
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: log a debug message after redacting sensitive params (mutates shared state)
   debug(message: string, ...optionalParams: unknown[]): void {
     const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
     this.bufferEntry(LogLevel.DEBUG, message, redactedParams);
@@ -118,6 +122,7 @@ export class LoggerService {
    * This will log at debug level if the component is in the debugComponents list,
    * regardless of the global log level
    */
+  // SEM@dd60250f56b07aced6695bdb54d9a253bb8312eb: log a component-scoped debug message with log-injection sanitization (mutates shared state)
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
     const sanitizedComponent = this.sanitizeForLog(component);
     const sanitizedMessage = this.sanitizeForLog(message);
@@ -139,6 +144,7 @@ export class LoggerService {
   /**
    * Log an info message
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: log an info message after redacting sensitive params (mutates shared state)
   info(message: string, ...optionalParams: unknown[]): void {
     const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
     this.bufferEntry(LogLevel.INFO, message, redactedParams);
@@ -150,6 +156,7 @@ export class LoggerService {
   /**
    * Log a warning message
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: log a warning message after redacting sensitive params (mutates shared state)
   warn(message: string, ...optionalParams: unknown[]): void {
     const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
     this.bufferEntry(LogLevel.WARN, message, redactedParams);
@@ -161,6 +168,7 @@ export class LoggerService {
   /**
    * Log an error message
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: log an error message after redacting sensitive params (mutates shared state)
   error(message: string, ...optionalParams: unknown[]): void {
     const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
     this.bufferEntry(LogLevel.ERROR, message, redactedParams);
@@ -172,6 +180,7 @@ export class LoggerService {
   /**
    * Returns a copy of the buffered log entries in chronological order
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: fetch buffered log entries in chronological order (pure)
   getLogEntries(): LogEntry[] {
     if (this.bufferWrapped) {
       return [...this.buffer.slice(this.bufferIndex), ...this.buffer.slice(0, this.bufferIndex)];
@@ -187,6 +196,7 @@ export class LoggerService {
    * partially serialized). The most recent records are kept; older records are
    * dropped from the front. If no records fit, an empty string is returned.
    */
+  // SEM@8f288a83acb36ce44c06dbc1d38400aa9da6f9a2: serialize buffered log entries to a JSONL string with optional size cap (pure)
   exportAsJsonl(maxChars?: number): string {
     const lines = this.getLogEntries().map(entry => JSON.stringify(entry));
 
@@ -211,6 +221,7 @@ export class LoggerService {
   /**
    * Downloads the buffered log entries as a JSONL file
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: download buffered log entries as a JSONL file to the user's browser
   downloadLog(): void {
     const jsonl = this.exportAsJsonl();
     const blob = new Blob([jsonl], { type: 'application/jsonl' });
@@ -227,6 +238,7 @@ export class LoggerService {
    * Appends a log entry to the ring buffer.
    * Always captures regardless of current console log level.
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: store a log entry into the ring buffer regardless of log level (mutates shared state)
   private bufferEntry(level: LogLevel, message: string, params: unknown[]): void {
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
@@ -249,6 +261,7 @@ export class LoggerService {
    * Determine if a message at the given level should be logged
    * based on the current log level setting
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: determine if the given log level meets the active threshold (pure)
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[this.logLevel];
   }
@@ -257,6 +270,7 @@ export class LoggerService {
    * Determine if a component-specific message should be logged
    * Component-specific debug logging overrides global log level for enabled components
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: determine if a component debug message should be emitted, overriding global level (pure)
   private shouldLogComponent(component: string, level: LogLevel): boolean {
     // If component-specific debug is enabled for this component and level is DEBUG, always log
     if (level === LogLevel.DEBUG && this.debugComponents.has(component)) {
@@ -269,6 +283,7 @@ export class LoggerService {
   /**
    * Format the log message with ISO8601 timestamp and level
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: format a log message with ISO8601 timestamp and level prefix (pure)
   private formatMessage(level: LogLevel, message: string): string {
     const timestamp = new Date().toISOString();
     return `${timestamp} [${level}] ${message}`;
@@ -278,6 +293,7 @@ export class LoggerService {
    * Sanitize a string to prevent log injection attacks
    * Removes control characters that could be used to forge log entries
    */
+  // SEM@ae1386fd5b08be51a49de3b138a087530606aee2: strip control characters from a string to prevent log injection (pure)
   private sanitizeForLog(input: string): string {
     // Remove ASCII control characters (0x00-0x1F and 0x7F) to prevent log injection
     // eslint-disable-next-line no-control-regex
@@ -289,11 +305,13 @@ export class LoggerService {
    * Shows first and last few characters of sensitive values with [...REDACTED...] in between
    * Handles both query parameters (after ?) and fragment parameters (after #)
    */
+  // SEM@d8388a111accec56eca1183066bc658a21f6feda: redact sensitive token parameters from a URL string (pure)
   private redactUrl(url: string): string {
     try {
       const urlObj = new URL(url);
 
       // Helper function to redact a parameter value
+      // SEM@d8388a111accec56eca1183066bc658a21f6feda: mask a sensitive credential value keeping only edge characters (pure)
       const redactValue = (value: string): string => {
         if (value.length > REDACTION_VISIBLE_CHARS * 2) {
           const start = value.substring(0, REDACTION_VISIBLE_CHARS);
@@ -342,6 +360,7 @@ export class LoggerService {
   /**
    * Redact sensitive information from parameters before logging
    */
+  // SEM@59f5d93b4f1834723d1c668f5cbd4d3b1220f954: sanitize and redact sensitive credentials from any log parameter (pure)
   private redactSensitiveData(param: unknown): unknown {
     if (typeof param === 'string') {
       // eslint-disable-next-line no-control-regex

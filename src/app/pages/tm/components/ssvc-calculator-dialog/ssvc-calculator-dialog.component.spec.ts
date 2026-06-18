@@ -34,6 +34,7 @@ describe('SsvcCalculatorDialogComponent', () => {
   let languageService: MockLanguageService;
   let destroyRef: MockDestroyRef;
 
+  // SEM@c41899eda324256307163e936a31a15d56e9963e: build an SsvcCalculatorDialogComponent with mocked dependencies for unit tests (mutates shared state)
   function createComponent(dialogData: SsvcCalculatorDialogData = {}): void {
     dialogRef = { close: vi.fn() };
     loggerService = {

@@ -81,6 +81,7 @@ describe('field-value-helpers', () => {
   };
 
   // Helper to get a nested value from translations object
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: fetch a nested object property by dot-notation path, returning undefined if missing (pure)
   function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
     return path.split('.').reduce((current: unknown, prop) => {
       if (current && typeof current === 'object' && prop in current) {

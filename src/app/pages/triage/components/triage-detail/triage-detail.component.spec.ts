@@ -44,6 +44,7 @@ describe('TriageDetailComponent', () => {
   });
 
   describe('formatResponses', () => {
+    // SEM@b9f5eb6aec2f406efb747b150a1a9367a170128d: build a stub survey response with given answers on the component under test (mutates shared state)
     const makeResponse = (answers: Record<string, unknown>): void => {
       component.response = {
         id: 'resp-1',

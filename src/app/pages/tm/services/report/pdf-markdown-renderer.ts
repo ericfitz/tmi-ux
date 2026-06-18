@@ -24,7 +24,9 @@ interface TextSegment {
  * Unsupported (gracefully skipped):
  * - image, markdown table, html, del (strikethrough)
  */
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: render markdown text blocks onto paginated PDF pages via layout engine (mutates shared state)
 export class PdfMarkdownRenderer {
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: build a markdown renderer bound to a layout engine and font manager (pure)
   constructor(
     private engine: PdfLayoutEngine,
     private fonts: PdfFontManager,
@@ -33,6 +35,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render markdown text to PDF starting at the given cursor.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: parse markdown and render all block tokens to PDF at cursor position
   render(cursor: Cursor, markdownText: string): Cursor {
     if (!markdownText || !markdownText.trim()) {
       return cursor;
@@ -45,6 +48,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render an array of block-level tokens.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render an ordered list of block tokens sequentially to PDF
   private renderBlockTokens(cursor: Cursor, tokens: Token[]): Cursor {
     for (const token of tokens) {
       cursor = this.renderBlockToken(cursor, token);
@@ -55,6 +59,7 @@ export class PdfMarkdownRenderer {
   /**
    * Dispatch a single block-level token to the appropriate renderer.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: dispatch a single markdown block token to its PDF renderer (pure)
   private renderBlockToken(cursor: Cursor, token: Token): Cursor {
     switch (token.type) {
       case 'heading':
@@ -80,6 +85,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a heading (h1-h6). Maps to mdH1, mdH2, or mdH3 styles.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a markdown heading at the appropriate h1-h3 style to PDF
   private renderHeading(cursor: Cursor, token: Tokens.Heading): Cursor {
     const styleMap: Record<number, keyof typeof REPORT_STYLES> = {
       1: 'mdH1',
@@ -122,6 +128,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a paragraph with mixed-style inline content.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a markdown paragraph with mixed inline styles to PDF
   private renderParagraph(cursor: Cursor, token: Tokens.Paragraph): Cursor {
     const style = REPORT_STYLES.body;
 
@@ -147,6 +154,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a fenced code block using monospace font.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a fenced code block in monospace font line-by-line to PDF
   private renderCodeBlock(cursor: Cursor, token: Tokens.Code): Cursor {
     const style = REPORT_STYLES.mdCode;
     const font = this.fonts.getFont('monospace');
@@ -173,6 +181,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a list (ordered or unordered) with support for nesting.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render an ordered or unordered list with inline formatting to PDF
   private renderList(cursor: Cursor, token: Tokens.List, depth: number): Cursor {
     const style = REPORT_STYLES.body;
     const indent = SPACING.listIndent * (depth + 1);
@@ -220,6 +229,7 @@ export class PdfMarkdownRenderer {
    * Flatten list item tokens, handling nested lists by recursively rendering them.
    * Non-list tokens are flattened to TextSegments.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: convert list item tokens into flat styled text segments (pure)
   private flattenListItemTokens(tokens: Token[]): TextSegment[] {
     const segments: TextSegment[] = [];
 
@@ -244,6 +254,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a blockquote (indented, italic).
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a blockquote indented with italic style to PDF
   private renderBlockquote(cursor: Cursor, token: Tokens.Blockquote): Cursor {
     const style = REPORT_STYLES.mdBlockquote;
 
@@ -273,6 +284,7 @@ export class PdfMarkdownRenderer {
   /**
    * Render a horizontal rule.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a horizontal divider line to the PDF page
   private renderHorizontalRule(cursor: Cursor): Cursor {
     cursor = this.engine.advanceCursor(cursor, 6);
     cursor = this.engine.drawHorizontalRule(cursor, STRUCTURAL_COLORS.cardSeparator, 0.5);
@@ -291,6 +303,7 @@ export class PdfMarkdownRenderer {
    *   { text: "italic", style: "italic" },
    * ]
    */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: convert inline markdown tokens into flat styled text segments (pure)
   flattenInlineTokens(tokens: Token[]): TextSegment[] {
     const segments: TextSegment[] = [];
 
@@ -370,6 +383,7 @@ export class PdfMarkdownRenderer {
    * For truly seamless mixed-style wrapping, we'd need word-level
    * font switching, which is deferred as a future enhancement.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render text segments with per-segment font styles wrapped to page width
   private drawMixedStyleText(
     cursor: Cursor,
     segments: TextSegment[],
@@ -416,6 +430,7 @@ export class PdfMarkdownRenderer {
   /**
    * Merge adjacent TextSegments that share the same style.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: merge consecutive text segments sharing the same style into one (pure)
   private mergeAdjacentSegments(segments: TextSegment[]): TextSegment[] {
     if (segments.length === 0) return [];
 
@@ -439,6 +454,7 @@ export class PdfMarkdownRenderer {
    * Splits each segment into words, then accumulates words into lines,
    * switching fonts as needed to measure widths correctly.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: wrap mixed-style text segments into per-line arrays respecting max width (pure)
   private buildWrappedLines(
     segments: TextSegment[],
     fontSize: number,
@@ -516,6 +532,7 @@ export class PdfMarkdownRenderer {
   /**
    * Remove trailing whitespace from the last segment of a line.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: remove trailing whitespace from the last segment of a text line (mutates shared state)
   private trimTrailingWhitespace(line: TextSegment[]): void {
     if (line.length > 0) {
       const last = line[line.length - 1];

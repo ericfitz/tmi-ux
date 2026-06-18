@@ -17,6 +17,7 @@ import { sanitizeCell, CANONICAL_EDGE_SHAPE } from './cell-property-filter.util'
  * Normalizes a single cell for persistence
  * Expects cell in X6 v2 nested format with position {x, y} and size {width, height}
  */
+// SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: sanitize and normalize a cell for persistence, rounding coordinates (pure)
 export function normalizeCell(cell: Cell): Cell {
   // First, sanitize the cell using the comprehensive property filter
   // This removes all excluded properties (visual effects, tools, zIndex, port visibility, etc.)
@@ -51,6 +52,7 @@ export function normalizeCell(cell: Cell): Cell {
 /**
  * Normalizes an array of cells for persistence
  */
+// SEM@81aa9c6235bc668ec41b8e26b5c7323c6c3df354: normalize an array of cells for persistence (pure)
 export function normalizeCells(cells: Cell[]): Cell[] {
   return cells.map(cell => normalizeCell(cell));
 }

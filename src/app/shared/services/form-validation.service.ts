@@ -29,6 +29,7 @@ interface ValidationContext {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: validate form fields and forms with throttled error logging (mutates shared state)
 export class FormValidationService {
   // Track validation contexts to manage logging
   private _validationContexts = new Map<string, ValidationContext>();
@@ -36,6 +37,7 @@ export class FormValidationService {
   // Cooldown period for logging the same validation error (in ms)
   private _loggingCooldown = 60000; // 1 minute
 
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
@@ -48,6 +50,7 @@ export class FormValidationService {
    * @param shouldLog Whether this validation should be logged (e.g., on explicit save)
    * @returns Validation result
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate a single form field against given validators, logging errors on demand (mutates shared state)
   validateField(
     formId: string,
     fieldName: string,
@@ -101,6 +104,7 @@ export class FormValidationService {
    * @param shouldLog Whether validation errors should be logged
    * @returns Overall validation result
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate all fields in a form against their validation rules and return aggregated result (mutates shared state)
   validateForm(
     formId: string,
     formData: Record<string, unknown>,
@@ -138,6 +142,7 @@ export class FormValidationService {
    * @param requiredFields Array of required field names
    * @returns True if all required fields have values
    */
+  // SEM@ac0adb03e4edbcb98601e3736cd190bd7839ff67: check that all required fields in form data have non-empty values (pure)
   validateRequiredFields(formData: Record<string, unknown>, requiredFields: string[]): boolean {
     return requiredFields.every(fieldName => {
       const value = formData[fieldName];
@@ -152,6 +157,7 @@ export class FormValidationService {
     /**
      * Validator for required fields
      */
+    // SEM@ac0adb03e4edbcb98601e3736cd190bd7839ff67: validate that a field value is non-null and non-empty (pure)
     required: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (value == null || value === '' || (typeof value === 'string' && value.trim() === '')) {
@@ -163,6 +169,7 @@ export class FormValidationService {
     /**
      * Validator for maximum length
      */
+    // SEM@ac0adb03e4edbcb98601e3736cd190bd7839ff67: validate that a string field does not exceed a maximum character length (pure)
     maxLength: (max: number): ValidatorFn => {
       return (control: AbstractControl): ValidationErrors | null => {
         const value = control.value as unknown;
@@ -176,6 +183,7 @@ export class FormValidationService {
     /**
      * Validator for minimum length
      */
+    // SEM@ac0adb03e4edbcb98601e3736cd190bd7839ff67: validate that a string field meets a minimum character length (pure)
     minLength: (min: number): ValidatorFn => {
       return (control: AbstractControl): ValidationErrors | null => {
         const value = control.value as unknown;
@@ -190,6 +198,7 @@ export class FormValidationService {
      * Validator for URL format (strict - requires absolute URL with protocol)
      * Note: This is stricter than RFC 3986 URI validation
      */
+    // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate that a field value is an absolute URL with a valid scheme (pure)
     url: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (!value) return null; // Allow empty URLs
@@ -208,6 +217,7 @@ export class FormValidationService {
      * Returns validation errors as suggestions, not blockers
      * @returns Validation error object with 'uriSuggestion' key if URI looks suspicious
      */
+    // SEM@6343cd0e57d6b0ed35952dd942aef5ce57de8096: validate a URI field per RFC 3986, returning non-blocking suggestions for suspicious patterns (pure)
     uriGuidance: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (!value || typeof value !== 'string') return null;
@@ -285,6 +295,7 @@ export class FormValidationService {
     /**
      * Validator for email format
      */
+    // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate that a field value matches basic email address format (pure)
     email: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (!value) return null; // Allow empty emails
@@ -299,6 +310,7 @@ export class FormValidationService {
     /**
      * Validator for numeric values
      */
+    // SEM@ac0adb03e4edbcb98601e3736cd190bd7839ff67: validate that a field value is a valid number (pure)
     numeric: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (value && isNaN(Number(value))) {
@@ -310,6 +322,7 @@ export class FormValidationService {
     /**
      * Validator for positive numbers
      */
+    // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate that a field value is a positive number greater than zero (pure)
     positiveNumber: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
       if (value != null && (isNaN(Number(value)) || Number(value) <= 0)) {
@@ -322,6 +335,7 @@ export class FormValidationService {
   /**
    * Get validation rules for threat model fields
    */
+  // SEM@30b448e41d8f263e63cf8b40fb27c6d4d6bab9b4: build the validation rule set for threat model fields (pure)
   getThreatModelValidationRules(): Record<string, ValidatorFn[]> {
     return {
       name: [
@@ -337,6 +351,7 @@ export class FormValidationService {
   /**
    * Get validation rules for threat fields
    */
+  // SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: build validator rule set for threat form fields (pure)
   getThreatValidationRules(): Record<string, ValidatorFn[]> {
     return {
       name: [
@@ -354,6 +369,7 @@ export class FormValidationService {
   /**
    * Get validation rules for document fields
    */
+  // SEM@30b448e41d8f263e63cf8b40fb27c6d4d6bab9b4: build validator rule set for document form fields (pure)
   getDocumentValidationRules(): Record<string, ValidatorFn[]> {
     return {
       name: [
@@ -368,6 +384,7 @@ export class FormValidationService {
   /**
    * Get validation rules for repository fields
    */
+  // SEM@30b448e41d8f263e63cf8b40fb27c6d4d6bab9b4: build validator rule set for repository form fields (pure)
   getRepositoryValidationRules(): Record<string, ValidatorFn[]> {
     return {
       name: [
@@ -383,6 +400,7 @@ export class FormValidationService {
   /**
    * Get validation rules for metadata fields
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: build validator rule set for metadata key/value form fields (pure)
   getMetadataValidationRules(): Record<string, ValidatorFn[]> {
     return {
       key: [
@@ -400,6 +418,7 @@ export class FormValidationService {
    * Clear validation context (call when form is destroyed)
    * @param formId Unique form identifier
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: delete all cached validation contexts for a given form (mutates shared state)
   clearValidationContext(formId: string): void {
     const keysToDelete = Array.from(this._validationContexts.keys()).filter(key =>
       key.startsWith(`${formId}:`),
@@ -413,6 +432,7 @@ export class FormValidationService {
   /**
    * Convert validation errors to user-friendly messages
    */
+  // SEM@6343cd0e57d6b0ed35952dd942aef5ce57de8096: convert raw validation errors to user-facing message strings (pure)
   private getErrorMessages(errors: ValidationErrors | null): string[] {
     if (!errors) return [];
 
@@ -465,6 +485,7 @@ export class FormValidationService {
   /**
    * Log validation error with smart spam prevention
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: log a validation error with cooldown-based spam prevention (mutates shared state)
   private logValidationError(
     context: ValidationContext,
     fieldName: string,

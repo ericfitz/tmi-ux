@@ -13,6 +13,7 @@ import {
 import { LoggerService } from './logger.service';
 
 // Mock WebSocket since JSDOM doesn't have a real implementation
+// SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: test double simulating a browser WebSocket for unit tests (pure)
 class MockWebSocket {
   static CONNECTING = 0;
   static OPEN = 1;
@@ -27,10 +28,12 @@ class MockWebSocket {
   private _handlers: Map<string, Array<{ handler: (event: unknown) => void; once: boolean }>> =
     new Map();
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: initialize mock WebSocket with a URL in CONNECTING state (pure)
   constructor(url: string) {
     this.url = url;
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: register an event handler on the mock WebSocket (mutates shared state)
   addEventListener(
     event: string,
     handler: (event: unknown) => void,
@@ -41,6 +44,7 @@ class MockWebSocket {
     this._handlers.set(event, handlers);
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: unregister an event handler from the mock WebSocket (mutates shared state)
   removeEventListener(event: string, handler: (event: unknown) => void): void {
     const handlers = this._handlers.get(event) || [];
     this._handlers.set(
@@ -51,6 +55,7 @@ class MockWebSocket {
 
   send = vi.fn();
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: close the mock WebSocket and emit a close event (mutates shared state)
   close(code?: number, _reason?: string): void {
     this.readyState = MockWebSocket.CLOSED;
     this._emit('close', { code: code || 1000, reason: _reason || '', wasClean: true });
@@ -58,6 +63,7 @@ class MockWebSocket {
 
   // Test helpers to simulate WebSocket events
   // Fires handlers in registration order (matching real browser behavior)
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: dispatch a named event to all registered handlers, removing one-time listeners (mutates shared state)
   _emit(event: string, data?: unknown): void {
     const handlers = this._handlers.get(event) || [];
     const remaining: Array<{ handler: (event: unknown) => void; once: boolean }> = [];
@@ -72,19 +78,23 @@ class MockWebSocket {
     this._handlers.set(event, remaining);
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: simulate a WebSocket open event for test scenarios (mutates shared state)
   _simulateOpen(): void {
     this.readyState = MockWebSocket.OPEN;
     this._emit('open', {});
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: simulate a WebSocket error event for test scenarios (mutates shared state)
   _simulateError(message?: string): void {
     this._emit('error', { message: message || 'WebSocket error occurred' });
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: simulate an inbound WebSocket message event for test scenarios (mutates shared state)
   _simulateMessage(data: string): void {
     this._emit('message', { data });
   }
 
+  // SEM@adc23c30192359abc0155c90f4af2ee91d2faa8e: simulate a WebSocket close event with code and reason for test scenarios (mutates shared state)
   _simulateClose(code: number, reason: string, wasClean: boolean): void {
     this.readyState = MockWebSocket.CLOSED;
     this._emit('close', { code, reason, wasClean });

@@ -4,14 +4,17 @@ import { Observable } from 'rxjs';
 import { version } from '../../../../package.json';
 import { ApiService } from './api.service';
 
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: classify user feedback direction as thumbs-up or thumbs-down (pure)
 export type ArtifactFeedbackSentiment = 'up' | 'down';
 
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: enumerate AI artifact types that can receive user feedback (pure)
 export type ArtifactFeedbackTargetType = 'note' | 'diagram' | 'threat' | 'threat_classification';
 
 /**
  * False-positive taxonomy (top-level). Allowed only when sentiment='down' and
  * target_type='threat'. Subreasons depend on the chosen reason.
  */
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: enumerate top-level reasons a threat detection is a false positive (pure)
 export type FalsePositiveReason =
   | 'detection_misfired'
   | 'real_but_mitigated'
@@ -22,6 +25,7 @@ export type FalsePositiveReason =
   | 'already_remediated'
   | 'detection_rule_flawed';
 
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: enumerate secondary qualifiers for a false-positive threat reason (pure)
 export type FalsePositiveSubreason =
   | 'code_does_not_exist'
   | 'trigger_conditions_not_met'
@@ -90,9 +94,12 @@ const CLIENT_ID = 'tmi-ux';
  * false-positive taxonomy; the client mirrors it for input validation only.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: submit user feedback on AI-generated threat model artifacts to the API
 export class AiArtifactFeedbackService {
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: inject API service dependency
   constructor(private readonly api: ApiService) {}
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: post user sentiment and optional false-positive details on a threat model artifact
   submit(
     threatModelId: string,
     input: ArtifactFeedbackInput,

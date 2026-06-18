@@ -15,6 +15,7 @@
  * @returns Uint8Array of random bytes
  * @throws Error if length is invalid
  */
+// SEM@6ace722cf67dd933c59840f9b211118d54bba7d6: generate cryptographically secure random bytes of given length (pure)
 export function generateRandomBytes(length: number = 32): Uint8Array {
   if (length < 1 || length > 1024) {
     throw new Error(`Invalid byte length: ${length}. Must be between 1 and 1024.`);
@@ -32,6 +33,7 @@ export function generateRandomBytes(length: number = 32): Uint8Array {
  * @param bytes Uint8Array to encode
  * @returns Base64url-encoded string
  */
+// SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: encode bytes as URL-safe base64 without padding (pure)
 export function base64UrlEncode(bytes: Uint8Array): string {
   // Convert bytes to base64
   const base64 = btoa(String.fromCharCode(...bytes));
@@ -48,6 +50,7 @@ export function base64UrlEncode(bytes: Uint8Array): string {
  * @returns Promise resolving to SHA-256 hash as Uint8Array
  * @throws Error if SubtleCrypto is not available
  */
+// SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: compute SHA-256 hash of a string via SubtleCrypto (pure)
 export async function sha256(input: string): Promise<Uint8Array> {
   if (!crypto.subtle) {
     throw new Error('SubtleCrypto API not available. HTTPS required.');
@@ -69,6 +72,7 @@ export async function sha256(input: string): Promise<Uint8Array> {
  *
  * @returns 43-character code verifier string
  */
+// SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: generate a PKCE RFC 7636 code verifier string (pure)
 export function generateCodeVerifier(): string {
   const bytes = generateRandomBytes(32); // 32 bytes = 256 bits
   return base64UrlEncode(bytes); // Results in 43 characters
@@ -84,6 +88,7 @@ export function generateCodeVerifier(): string {
  * @param verifier Code verifier string (43-128 characters)
  * @returns Promise resolving to 43-character code challenge string
  */
+// SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: compute PKCE S256 code challenge from a code verifier (pure)
 export async function computeCodeChallenge(verifier: string): Promise<string> {
   const hash = await sha256(verifier);
   return base64UrlEncode(hash); // Results in 43 characters

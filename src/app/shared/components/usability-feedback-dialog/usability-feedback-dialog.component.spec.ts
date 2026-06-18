@@ -21,6 +21,7 @@ describe('UsabilityFeedbackDialogComponent', () => {
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a UsabilityFeedbackDialogComponent with mock dependencies for unit tests (pure)
   function build(data: UsabilityFeedbackDialogData): UsabilityFeedbackDialogComponent {
     return new UsabilityFeedbackDialogComponent(
       mockDialogRef as never,

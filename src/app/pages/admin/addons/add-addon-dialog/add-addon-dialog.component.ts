@@ -25,6 +25,7 @@ import { LoggerService } from '@app/core/services/logger.service';
  * Custom validator for icon format
  * Validates Material Symbols and FontAwesome icon strings with length limits
  */
+// SEM@effd73204c37da0eb5aa2e8e0dd875a5a285522c: validate an icon field value against Material Symbols or FontAwesome format (pure)
 function iconFormatValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value as string;
 
@@ -256,6 +257,7 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
     `,
   ],
 })
+// SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: dialog for creating a new addon with webhook and object-type selection
 export class AddAddonDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -274,6 +276,7 @@ export class AddAddonDialogComponent implements OnInit {
   saving = false;
   errorMessage = '';
 
+  // SEM@2232d9288b6a3a6d9c17e100a4d04fdb902f92d5: inject addon, webhook, form, logger, and translation dependencies (pure)
   constructor(
     private dialogRef: MatDialogRef<AddAddonDialogComponent>,
     private addonService: AddonService,
@@ -283,6 +286,7 @@ export class AddAddonDialogComponent implements OnInit {
     private transloco: TranslocoService,
   ) {}
 
+  // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: build the addon form and fetch active webhooks for selection (reads DB)
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -306,6 +310,7 @@ export class AddAddonDialogComponent implements OnInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: validate the form and create the addon via the API, then close (mutates shared state)
   onSave(): void {
     if (this.form.valid && !this.saving) {
       this.saving = true;
@@ -343,6 +348,7 @@ export class AddAddonDialogComponent implements OnInit {
     }
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: dismiss the dialog without saving (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }
@@ -350,6 +356,7 @@ export class AddAddonDialogComponent implements OnInit {
   /**
    * Handles blur event on icon field to normalize and correct format
    */
+  // SEM@7bba5c9a1937f86d9d70c0401b6cd1bc78d164d0: normalize and correct the icon field value on blur (mutates shared state)
   onIconBlur(): void {
     const iconControl = this.form.get('icon');
     if (!iconControl) {

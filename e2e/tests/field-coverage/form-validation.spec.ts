@@ -30,10 +30,12 @@ import { AdminWebhooksPage } from '../../pages/admin-webhooks.page';
 const DIALOG = 'mat-dialog-container';
 const SEEDED_TM = 'Seed TM - Full Fields';
 
+// SEM@6fa3fce219642a9c97f0bcdcc8277343b905edff: wait for a dialog to become visible (pure)
 async function waitDialog(page: Page): Promise<void> {
   await page.locator(DIALOG).waitFor({ state: 'visible', timeout: 5000 });
 }
 
+// SEM@6fa3fce219642a9c97f0bcdcc8277343b905edff: dismiss a dialog via Escape and wait for it to hide (mutates shared state)
 async function closeDialog(page: Page): Promise<void> {
   // Cancel via Escape — avoids depending on a specific cancel button testid
   await page.keyboard.press('Escape');
@@ -44,6 +46,7 @@ async function closeDialog(page: Page): Promise<void> {
  * Focus the input, then blur it by focusing a neighbour. Marks the form
  * control as touched so the default ErrorStateMatcher will show mat-error.
  */
+// SEM@6fa3fce219642a9c97f0bcdcc8277343b905edff: focus an input then blur it to trigger form validation error state (mutates shared state)
 async function focusThenBlur(page: Page, input: Locator): Promise<void> {
   await input.click();
   await input.evaluate((el: HTMLElement) => el.blur());
@@ -51,6 +54,7 @@ async function focusThenBlur(page: Page, input: Locator): Promise<void> {
   await page.waitForTimeout(100);
 }
 
+// SEM@6fa3fce219642a9c97f0bcdcc8277343b905edff: assert a visible mat-error matching a pattern exists in the dialog (pure)
 async function expectErrorContaining(
   page: Page,
   pattern: RegExp,

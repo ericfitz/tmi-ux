@@ -26,6 +26,7 @@ describe('RemediationCardComponent', () => {
   let mockInjector: { get: ReturnType<typeof vi.fn> };
   let mockLogger: { error: ReturnType<typeof vi.fn>; warn: ReturnType<typeof vi.fn> };
 
+  // SEM@21df0284358e24c57c5fd991864d31e88af271f3: build a RemediationCardComponent with mocked dependencies for testing (pure)
   function createComponent(remediation: AccessRemediation): RemediationCardComponent {
     const c = new RemediationCardComponent(
       mockInjector as unknown as Injector,

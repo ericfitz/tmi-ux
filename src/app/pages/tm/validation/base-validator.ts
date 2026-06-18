@@ -7,10 +7,12 @@ import { ValidationError, ValidationContext, FieldValidationRule } from './types
 /**
  * Utility class for common validation operations
  */
+// SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: static helpers for building validation errors and checking field constraints (pure)
 export class ValidationUtils {
   /**
    * Create a validation error
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build a structured validation error from code, message, path, and severity (pure)
   static createError(
     code: string,
     message: string,
@@ -31,6 +33,7 @@ export class ValidationUtils {
    * Check if a value is a valid UUID
    * Supports UUID versions 0-F (including UUIDv7)
    */
+  // SEM@8204f18f96000bb3b226ff2185ce61a6f687dd6d: validate a string conforms to UUID format (pure)
   static isValidUUID(value: string): boolean {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(value);
@@ -39,6 +42,7 @@ export class ValidationUtils {
   /**
    * Check if a value is a valid email
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: validate a string conforms to email address format (pure)
   static isValidEmail(value: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(value);
@@ -47,6 +51,7 @@ export class ValidationUtils {
   /**
    * Check if a value is a valid URL
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: validate a string is a parseable URL (pure)
   static isValidURL(value: string): boolean {
     try {
       new URL(value);
@@ -59,6 +64,7 @@ export class ValidationUtils {
   /**
    * Check if a value is a valid RFC3339 date-time
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: validate a string is a well-formed RFC3339 date-time (pure)
   static isValidDateTime(value: string): boolean {
     const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
     if (!dateTimeRegex.test(value)) {
@@ -71,6 +77,7 @@ export class ValidationUtils {
   /**
    * Get the type of a value
    */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: return the canonical type name of a value, distinguishing null and array (pure)
   static getType(value: unknown): string {
     if (value === null) return 'null';
     if (Array.isArray(value)) return 'array';
@@ -80,6 +87,7 @@ export class ValidationUtils {
   /**
    * Build a JSONPath string
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: build a JSONPath string from a base path and child key (pure)
   static buildPath(basePath: string, key: string | number): string {
     if (basePath === '') return String(key);
     if (typeof key === 'number') return `${basePath}[${key}]`;
@@ -89,15 +97,20 @@ export class ValidationUtils {
 
   /** Format type validators keyed by type name. */
   private static readonly FORMAT_VALIDATORS: Record<string, (v: string) => boolean> = {
+    // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: format validator entry for UUID strings (pure)
     uuid: (v: string) => ValidationUtils.isValidUUID(v),
+    // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: format validator entry for email address strings (pure)
     email: (v: string) => ValidationUtils.isValidEmail(v),
+    // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: format validator entry for URL strings (pure)
     url: (v: string) => ValidationUtils.isValidURL(v),
+    // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: format validator entry for RFC3339 date-time strings (pure)
     'date-time': (v: string) => ValidationUtils.isValidDateTime(v),
   };
 
   /**
    * Validate a single field according to validation rules
    */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate a single field value against its rule, returning the first error or null (pure)
   static validateField(
     value: unknown,
     rule: FieldValidationRule,
@@ -128,6 +141,7 @@ export class ValidationUtils {
   }
 
   /** Validate field type, including format types (uuid, email, url, date-time). */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate a field value matches its declared type or format (pure)
   private static validateType(
     value: unknown,
     rule: FieldValidationRule,
@@ -155,6 +169,7 @@ export class ValidationUtils {
   }
 
   /** Validate field length (for strings and arrays). */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate a string or array field satisfies min/max length constraints (pure)
   private static validateLength(
     value: unknown,
     rule: FieldValidationRule,
@@ -185,6 +200,7 @@ export class ValidationUtils {
   }
 
   /** Validate field value against allowed enum values. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate a field value is among allowed enum values (pure)
   private static validateEnum(
     value: unknown,
     rule: FieldValidationRule,
@@ -205,6 +221,7 @@ export class ValidationUtils {
   }
 
   /** Validate field value against a regex pattern. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate a string field matches a required regex pattern (pure)
   private static validatePattern(
     value: unknown,
     rule: FieldValidationRule,
@@ -226,6 +243,7 @@ export class ValidationUtils {
 /**
  * Base validator class that provides common validation functionality
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: abstract base providing error accumulation and field/array validation helpers (mutates shared state)
 export abstract class BaseValidator {
   protected errors: ValidationError[] = [];
   protected warnings: ValidationError[] = [];
@@ -233,6 +251,7 @@ export abstract class BaseValidator {
   /**
    * Add an error to the validation results
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: accumulate a validation error or warning into instance state (mutates shared state)
   protected addError(error: ValidationError): void {
     if (error.severity === 'warning') {
       this.warnings.push(error);
@@ -244,6 +263,7 @@ export abstract class BaseValidator {
   /**
    * Validate an object against a set of field rules
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate an object against a set of field rules, accumulating errors (mutates shared state)
   protected validateFields(
     obj: unknown,
     rules: FieldValidationRule[],
@@ -261,6 +281,7 @@ export abstract class BaseValidator {
   /**
    * Get a nested value from an object using dot notation or array indices
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: fetch a nested property from an object via dot-notation path (pure)
   protected getNestedValue(obj: unknown, path: string): unknown {
     return path.split('.').reduce((current, key) => {
       if (current === null || current === undefined) return undefined;
@@ -280,6 +301,7 @@ export abstract class BaseValidator {
   /**
    * Validate that all items in an array pass validation
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate each item in an array, collecting errors per element (pure)
   protected validateArray<T>(
     array: T[] | undefined,
     path: string,
@@ -297,6 +319,7 @@ export abstract class BaseValidator {
   /**
    * Clear all errors and warnings
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: reset accumulated validation errors and warnings (mutates shared state)
   protected clearErrors(): void {
     this.errors = [];
     this.warnings = [];
@@ -305,6 +328,7 @@ export abstract class BaseValidator {
   /**
    * Get all errors and warnings
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: return a snapshot of current validation errors and warnings (pure)
   protected getResults(): { errors: ValidationError[]; warnings: ValidationError[] } {
     return {
       errors: [...this.errors],

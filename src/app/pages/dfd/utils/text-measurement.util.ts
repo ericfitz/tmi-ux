@@ -14,6 +14,7 @@
 let cachedContext: CanvasRenderingContext2D | null = null;
 let canvasUnavailable = false;
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: fetch or lazily initialize the offscreen canvas 2D context for text measurement (mutates shared state)
 function getContext(): CanvasRenderingContext2D | null {
   if (canvasUnavailable) return null;
   if (cachedContext) return cachedContext;
@@ -38,6 +39,7 @@ function getContext(): CanvasRenderingContext2D | null {
  * @param fontSize Font size in pixels (e.g., 12).
  * @param fontFamily Font family stack (e.g., `"'Roboto Condensed', Arial, sans-serif"`).
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: compute the rendered pixel width of a label string at a given font (pure)
 export function measureLabelWidth(
   text: string | null | undefined,
   fontSize: number,
@@ -56,6 +58,7 @@ export function measureLabelWidth(
  * Test-only: reset the cached context. Lets tests exercise both the
  * canvas and fallback branches independently.
  */
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: reset the canvas singleton cache to allow isolated test branches (mutates shared state)
 export function _resetTextMeasurementCacheForTesting(): void {
   cachedContext = null;
   canvasUnavailable = false;

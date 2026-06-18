@@ -967,6 +967,7 @@ interface CheckboxChangeEvent {
     `,
   ],
 })
+// SEM@c07ecf47f90167bcc4f52076397f41e91f0b904b: dialog for managing user display preferences, credentials, and linked accounts
 export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
@@ -993,6 +994,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     isLast: boolean;
   }> = [];
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject services and load initial user preferences snapshot (pure)
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: unknown,
@@ -1010,6 +1012,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     this.preferences = this.userPreferencesService.getPreferences();
   }
 
+  // SEM@84137caa3fd01addaff4b2fd3744ac097e158aba: load user profile, credentials access, and threat model role on init (reads DB)
   ngOnInit(): void {
     // Get user profile from synchronous property
     this.userProfile = this.authService.userProfile;
@@ -1034,6 +1037,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@c07ecf47f90167bcc4f52076397f41e91f0b904b: navigate to the initial tab specified in dialog data after view init
   ngAfterViewInit(): void {
     const initialTab = (this.data as { initialTab?: string } | null)?.initialTab;
     if (initialTab === 'document-sources' && this.tabGroup) {
@@ -1054,43 +1058,52 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated animation preference when the toggle changes (mutates shared state)
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
     this.preferences.animations = event.checked;
     this.userPreferencesService.updatePreferences({ animations: event.checked });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated theme mode preference when selection changes (mutates shared state)
   onThemeModeChange(): void {
     this.userPreferencesService.updatePreferences({ themeMode: this.preferences.themeMode });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated color-blind mode preference when toggle changes (mutates shared state)
   onColorBlindModeChange(event: CheckboxChangeEvent): void {
     this.preferences.colorBlindMode = event.checked;
     this.userPreferencesService.updatePreferences({ colorBlindMode: event.checked });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated page size preference when selection changes (mutates shared state)
   onPageSizeChange(): void {
     this.userPreferencesService.updatePreferences({ pageSize: this.preferences.pageSize });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated margin size preference (mutates shared state)
   onMarginSizeChange(): void {
     this.userPreferencesService.updatePreferences({ marginSize: this.preferences.marginSize });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated developer tools visibility preference (mutates shared state)
   onShowDeveloperToolsChange(event: CheckboxChangeEvent): void {
     this.preferences.showDeveloperTools = event.checked;
     this.userPreferencesService.updatePreferences({ showDeveloperTools: event.checked });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: store updated dashboard list-view preference (mutates shared state)
   onDashboardListViewChange(event: CheckboxChangeEvent): void {
     this.preferences.dashboardListView = event.checked;
     this.userPreferencesService.updatePreferences({ dashboardListView: event.checked });
   }
 
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: store updated hover-show-metadata preference (mutates shared state)
   onHoverShowMetadataChange(event: CheckboxChangeEvent): void {
     this.preferences.hoverShowMetadata = event.checked;
     this.userPreferencesService.updatePreferences({ hoverShowMetadata: event.checked });
   }
 
+  // SEM@3dad09fa78b3afe24e7940cf51dd3e6376413b03: store updated shape-borders-with-icons preference (mutates shared state)
   onShowShapeBordersWithIconsChange(event: CheckboxChangeEvent): void {
     this.preferences.showShapeBordersWithIcons = event.checked;
     this.userPreferencesService.updatePreferences({
@@ -1098,21 +1111,25 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: store updated auto-layout enabled preference (mutates shared state)
   onAutoLayoutEnabledChange(event: CheckboxChangeEvent): void {
     this.preferences.autoLayoutEnabled = event.checked;
     this.userPreferencesService.updatePreferences({ autoLayoutEnabled: event.checked });
   }
 
+  // SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: store updated auto-layout orientation preference (mutates shared state)
   onAutoLayoutOrientationChange(): void {
     this.userPreferencesService.updatePreferences({
       autoLayoutOrientation: this.preferences.autoLayoutOrientation,
     });
   }
 
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: trigger download of the application log file
   onExportLog(): void {
     this.logger.downloadLog();
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: open user picker and transfer ownership of data to selected user
   onTransferData(): void {
     const dialogData: UserPickerDialogData = {
       title: this.transloco.translate('userPreferences.transferData.dialogTitle'),
@@ -1163,6 +1180,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: open confirmation dialog and delete the current user's account data
   onDeleteData(): void {
     this.logger.info('Delete data button clicked');
 
@@ -1185,16 +1203,19 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@20f07620df60d6cb0702ab476f86bb23b1d8a4cd: close dialog and sign out the current user
   onSignOut(): void {
     this.dialogRef.close();
     this.authService.logout();
   }
 
+  // SEM@e6568f50507874e09b44d41f3644d7092742e80d: dismiss the preferences dialog without saving
   close(): void {
     this.dialogRef.close();
   }
 
   // Credentials methods
+  // SEM@84137caa3fd01addaff4b2fd3744ac097e158aba: authorize credential management and fetch credentials for admin/reviewer profiles (mutates shared state)
   private updateCredentialsAccess(profile: UserProfile | null): void {
     const hasAccess = profile?.is_admin === true || profile?.is_security_reviewer === true;
     this.canManageCredentials = hasAccess;
@@ -1203,6 +1224,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@9de4ee50d750e8376b885b3c46c5f447af57a574: fetch client credentials list and build display rows (reads DB)
   private loadCredentials(): void {
     this.credentialsLoading = true;
     this.clientCredentialService
@@ -1231,6 +1253,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@fdcfde4cf859b6e6665e54636f6c21ad15d596a1: open create-credential dialog and reveal the secret, then reload credentials list
   onAddCredential(): void {
     const dialogRef = this.dialog.open(CreateCredentialDialogComponent, {
       width: '500px',
@@ -1250,6 +1273,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: display the one-time client secret in a modal dialog
   private showCredentialSecretDialog(clientId: string, clientSecret: string): void {
     const dialogData: CredentialSecretDialogData = {
       clientId,
@@ -1262,6 +1286,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: confirm and delete a client credential, then reload credentials list
   onDeleteCredential(credential: ClientCredentialInfo): void {
     const confirmed = confirm(
       `Are you sure you want to delete the credential "${credential.name}"? This action cannot be undone.`,
@@ -1286,15 +1311,18 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
   isContentRow = (_index: number, row: { type: string }): boolean => row.type === 'content';
   isMetadataRow = (_index: number, row: { type: string }): boolean => row.type === 'metadata';
 
+  // SEM@9de4ee50d750e8376b885b3c46c5f447af57a574: return whether a date string represents a past expiry (pure)
   isExpired(dateString: string): boolean {
     return new Date(dateString) < new Date();
   }
 
+  // SEM@9de4ee50d750e8376b885b3c46c5f447af57a574: format a date string as a short localized date label (pure)
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
+  // SEM@9de4ee50d750e8376b885b3c46c5f447af57a574: format a last-used timestamp as a human-readable relative or absolute label (pure)
   formatLastUsed(dateString: string | null | undefined): string {
     if (!dateString) {
       return 'Never';
@@ -1320,6 +1348,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // SEM@9de4ee50d750e8376b885b3c46c5f447af57a574: format a credential expiry date string as a short localized date label (pure)
   formatExpires(dateString: string | null | undefined): string {
     if (!dateString) {
       return '';

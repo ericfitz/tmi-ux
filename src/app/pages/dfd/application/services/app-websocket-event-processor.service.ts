@@ -61,6 +61,7 @@ export interface ProcessedParticipantsUpdate {
 }
 
 @Injectable()
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: subscribe to WebSocket diagram events and emit typed application-layer event streams
 export class AppWebSocketEventProcessor implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
@@ -76,6 +77,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   public readonly diagramSyncs$ = this._diagramSync$.asObservable();
   public readonly participantsUpdates$ = this._participantsUpdate$.asObservable();
 
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: inject logger, WebSocket adapter, and collaboration service dependencies (pure)
   constructor(
     private _logger: LoggerService,
     private _webSocketService: InfraDfdWebsocketAdapter,
@@ -85,6 +87,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Initialize event processing subscriptions
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: subscribe to all WebSocket event streams and wire processing handlers (mutates shared state)
   initialize(): void {
     this._subscriptions.add(
       this._webSocketService.diagramOperations$
@@ -114,6 +117,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Process diagram operation from another user
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: filter own operations and emit remote diagram cell operations to subscribers
   private _processDiagramOperation(message: DiagramOperationEventMessage): void {
     // Skip our own operations
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
@@ -152,6 +156,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Process diagram state sync event
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: emit a full diagram state sync event with cells and update vector
   private _processDiagramStateSync(event: DiagramStateSyncEvent): void {
     this._logger.info('Processing diagram state sync', {
       diagramId: event.diagram_id,
@@ -169,6 +174,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Process sync status response event
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: emit server sync status response carrying the current update vector
   private _processSyncStatusResponse(event: SyncStatusResponseEvent): void {
     this._logger.info('Processing sync status response', {
       serverUpdateVector: event.update_vector,
@@ -182,6 +188,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Process participants update event
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: emit updated participant list, host, and current presenter to subscribers
   private _processParticipantsUpdate(event: ParticipantsUpdatedEvent): void {
     this._logger.debugComponent('AppWebSocketEventProcessor', 'Processing participants update', {
       participantCount: event.participants?.length,
@@ -196,6 +203,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
     });
   }
 
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: cancel all WebSocket subscriptions and complete event subjects on teardown
   ngOnDestroy(): void {
     this._logger.info('Destroying AppWebSocketEventProcessor');
     this._destroy$.next();

@@ -4,9 +4,11 @@ import { Locator, Page } from '@playwright/test';
  * The user preferences dialog hosted by the navbar avatar button. Includes
  * the "Document sources" tab where content provider tokens are managed.
  */
+// SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: page object wrapping the user-preferences dialog for E2E tests (pure)
 export class UserPreferencesDialog {
   private dialog: Locator;
 
+  // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: scope the dialog locator to the user-preferences mat-dialog-container (pure)
   constructor(private page: Page) {
     this.dialog = page.locator('mat-dialog-container').filter({
       has: page.getByTestId('user-preferences-dialog'),
@@ -49,10 +51,12 @@ export class UserPreferencesDialog {
   readonly unlinkCancelButton = () => this.page.getByTestId('unlink-cancel-button');
 
   /** Open the Document sources tab via tab label click. */
+  // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: navigate to the document-sources tab by clicking its tab label
   async openDocumentSourcesTab() {
     await this.documentSourcesTab().click();
   }
 
+  // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: dismiss the user-preferences dialog by clicking the close button
   async close() {
     await this.closeButton().click();
   }

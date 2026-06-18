@@ -1,16 +1,21 @@
 /** Short codes for Exploitation decision point */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: enumerate valid short codes for the SSVC Exploitation decision point (pure)
 export type SsvcExploitation = 'N' | 'P' | 'A';
 
 /** Short codes for Utility decision point */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: enumerate valid short codes for the SSVC Utility decision point (pure)
 export type SsvcUtility = 'L' | 'E' | 'S';
 
 /** Short codes for Technical Impact decision point */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: enumerate valid short codes for the SSVC Technical Impact decision point (pure)
 export type SsvcTechnicalImpact = 'P' | 'T';
 
 /** Short codes for Public Safety Impact decision point */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: enumerate valid short codes for the SSVC Public Safety Impact decision point (pure)
 export type SsvcPublicSafetyImpact = 'M' | 'S';
 
 /** SSVC Supplier decision outcomes */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: enumerate the four SSVC supplier patch-priority outcomes (pure)
 export type SsvcDecision = 'Defer' | 'Scheduled' | 'Out-of-Cycle' | 'Immediate';
 
 /** Parsed SSVC vector components */
@@ -175,6 +180,7 @@ export const SSVC_DECISION_POINTS: SsvcDecisionPoint[] = [
  * Look up the Supplier decision for a given combination of decision point values.
  * Returns null if inputs are invalid.
  */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: look up the SSVC supplier decision for four decision-point values (pure)
 export function getSupplierDecision(
   exploitation: SsvcExploitation,
   utility: SsvcUtility,
@@ -189,6 +195,7 @@ export function getSupplierDecision(
  * Build an SSVC vector string from decision point values.
  * Uses today's date if none provided.
  */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: build a canonical SSVCv2 vector string from decision-point values (pure)
 export function buildSsvcVector(
   exploitation: SsvcExploitation,
   utility: SsvcUtility,
@@ -204,6 +211,7 @@ export function buildSsvcVector(
  * Parse an SSVC vector string into its components.
  * Returns null if the string is invalid.
  */
+// SEM@697a4e12e6c7d2566057f8bdd018eea68c90a6bc: parse an SSVCv2 vector string into its decision-point components (pure)
 export function parseSsvcVector(vector: string): SsvcVectorComponents | null {
   if (!vector || !vector.startsWith('SSVCv2/')) return null;
 

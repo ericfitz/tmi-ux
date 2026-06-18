@@ -21,6 +21,7 @@ describe('AddWebhookDialogComponent', () => {
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let envInjector: EnvironmentInjector;
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build an AddWebhookDialogComponent with mocked dependencies for testing (pure)
   function build(): AddWebhookDialogComponent {
     const component = runInInjectionContext(
       envInjector,
@@ -109,6 +110,7 @@ describe('AddWebhookDialogComponent', () => {
   });
 
   describe('onSave', () => {
+    // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: populate the webhook form with valid name, url, and event values for testing (pure)
     function fillValidForm(component: AddWebhookDialogComponent, url: string): void {
       component.form.patchValue({
         name: 'My Hook',

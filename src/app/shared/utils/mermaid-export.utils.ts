@@ -5,6 +5,7 @@
 /**
  * Clone an SVG element for export, removing Angular-specific attributes.
  */
+// SEM@9c4c045a3f2a5e91f495ef3a62d7bb725da4fd8c: clone an SVG element with Angular-specific attributes stripped for export (pure)
 export function cloneSvgForExport(svgElement: SVGSVGElement): SVGSVGElement {
   const clone = svgElement.cloneNode(true) as SVGSVGElement;
 
@@ -33,6 +34,7 @@ export function cloneSvgForExport(svgElement: SVGSVGElement): SVGSVGElement {
  * text content. Browsers refuse to render SVGs with <foreignObject> when loaded
  * as an Image source (security restriction), so this is required for PNG export.
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: replace SVG foreignObject elements with text elements for PNG-safe rendering (mutates shared state)
 function replaceForeignObjects(svg: SVGSVGElement): void {
   const foreignObjects = Array.from(svg.querySelectorAll('foreignObject'));
   for (const fo of foreignObjects) {
@@ -65,6 +67,7 @@ function replaceForeignObjects(svg: SVGSVGElement): void {
  * Get the intrinsic dimensions of an SVG element.
  * Prefers viewBox, falls back to width/height attributes, then getBoundingClientRect.
  */
+// SEM@9c4c045a3f2a5e91f495ef3a62d7bb725da4fd8c: compute an SVG element's intrinsic dimensions from viewBox, attributes, or layout (pure)
 function getSvgDimensions(svg: SVGSVGElement): { width: number; height: number } {
   const viewBox = svg.getAttribute('viewBox');
   if (viewBox) {
@@ -87,6 +90,7 @@ function getSvgDimensions(svg: SVGSVGElement): { width: number; height: number }
 /**
  * Generate a timestamped filename.
  */
+// SEM@9c4c045a3f2a5e91f495ef3a62d7bb725da4fd8c: build a timestamped filename for a diagram export file (pure)
 function generateFilename(extension: string): string {
   const now = new Date();
   const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -96,6 +100,7 @@ function generateFilename(extension: string): string {
 /**
  * Serialize an SVG element to a Blob.
  */
+// SEM@9c4c045a3f2a5e91f495ef3a62d7bb725da4fd8c: serialize an SVG element to an SVG Blob (pure)
 function svgToBlob(svg: SVGSVGElement): Blob {
   const serializer = new XMLSerializer();
   const svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' + serializer.serializeToString(svg);
@@ -110,6 +115,7 @@ function svgToBlob(svg: SVGSVGElement): Blob {
  * (synchronously from a click handler) before any async work, otherwise the
  * browser rejects with SecurityError.
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: save a Blob to disk via native file picker or anchor download fallback
 async function saveBlob(blob: Blob, filename: string, mimeType: string): Promise<void> {
   if (typeof window.showSaveFilePicker === 'function') {
     try {
@@ -163,6 +169,7 @@ async function saveBlob(blob: Blob, filename: string, mimeType: string): Promise
  * since browsers block <foreignObject> in Image-loaded SVGs.
  * Scale factor: max(2, 2 * currentZoom) for retina quality.
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: convert an SVG element to a scaled canvas for raster export
 function renderSvgToCanvas(
   svgElement: SVGSVGElement,
   currentZoom: number,
@@ -206,6 +213,7 @@ function renderSvgToCanvas(
 /**
  * Convert a canvas to a PNG Blob.
  */
+// SEM@9c4c045a3f2a5e91f495ef3a62d7bb725da4fd8c: convert a canvas element to a PNG Blob (pure)
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
@@ -221,6 +229,7 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 /**
  * Export an SVG element as an SVG file.
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: export a diagram SVG element as a downloadable SVG file
 export async function exportAsSvg(svgElement: SVGSVGElement): Promise<void> {
   const clone = cloneSvgForExport(svgElement);
   const blob = svgToBlob(clone);
@@ -232,6 +241,7 @@ export async function exportAsSvg(svgElement: SVGSVGElement): Promise<void> {
  * @param svgElement - The SVG element to export.
  * @param currentZoom - Current zoom level (1.0 = 100%). PNG scale = max(2, 2 * currentZoom).
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: export a diagram SVG element as a downloadable PNG file
 export async function exportAsPng(svgElement: SVGSVGElement, currentZoom: number): Promise<void> {
   const canvas = await renderSvgToCanvas(svgElement, currentZoom);
   const blob = await canvasToBlob(canvas);
@@ -243,6 +253,7 @@ export async function exportAsPng(svgElement: SVGSVGElement, currentZoom: number
  * @param svgElement - The SVG element to copy.
  * @param currentZoom - Current zoom level for PNG resolution.
  */
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: copy a diagram SVG element to the clipboard as a PNG image
 export async function copyDiagramToClipboard(
   svgElement: SVGSVGElement,
   currentZoom: number,

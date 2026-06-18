@@ -27,10 +27,12 @@ export interface PortConfiguration {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@0c4b0e63a2f170695121de276aae1d8887c94516: provide visual and port configuration for all DFD node types (pure)
 export class InfraNodeConfigurationService {
   /**
    * Get node attributes configuration for a specific node type
    */
+  // SEM@35a2315496da5f569769b294cb213b0ebabe7569: return text and body styling attributes for a given node type (pure)
   getNodeAttrs(nodeType: string): NodeAttrs {
     // Since we now use custom shapes with their own predefined attributes,
     // we only need to provide minimal overrides for dynamic content like text
@@ -91,6 +93,7 @@ export class InfraNodeConfigurationService {
   /**
    * Get port configuration for a specific node type
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: return four-directional port configuration for a node type; empty for text-box (pure)
   getNodePorts(nodeType: string): PortConfiguration {
     // text-box shapes should not have ports
     if (nodeType === 'text-box') {
@@ -180,6 +183,7 @@ export class InfraNodeConfigurationService {
   /**
    * Get X6 shape name for a specific node type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the X6 shape name registered for a node type (pure)
   getNodeShape(nodeType: string): string {
     // Use centralized shape mapping from x6-shape-definitions
     return getX6ShapeForNodeType(nodeType);
@@ -188,6 +192,7 @@ export class InfraNodeConfigurationService {
   /**
    * Get default z-index for a specific node type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the default z-index for a node type (pure)
   getNodeZIndex(nodeType: string): number {
     switch (nodeType) {
       case 'security-boundary':
@@ -202,6 +207,7 @@ export class InfraNodeConfigurationService {
   /**
    * Check if a node type is a text-box
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether a node type is a text-box annotation node (pure)
   isTextboxNode(nodeType: string): boolean {
     return nodeType === 'text-box';
   }
@@ -209,6 +215,7 @@ export class InfraNodeConfigurationService {
   /**
    * Check if a node type is a security boundary
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether a node type is a security boundary (pure)
   isSecurityBoundary(nodeType: string): boolean {
     return nodeType === 'security-boundary';
   }
@@ -216,6 +223,7 @@ export class InfraNodeConfigurationService {
   /**
    * Get comprehensive node type information
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a NodeTypeInfo descriptor aggregating flags, shape, and z-index for a node type (pure)
   getNodeTypeInfo(nodeType: string): NodeTypeInfo {
     const isTextbox = this.isTextboxNode(nodeType);
     const isSecurityBoundary = this.isSecurityBoundary(nodeType);
@@ -234,6 +242,7 @@ export class InfraNodeConfigurationService {
   /**
    * Validate if a node type is supported
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether a string is a recognized DFD node type (pure)
   isValidNodeType(nodeType: string): boolean {
     const validTypes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
     return validTypes.includes(nodeType);
@@ -242,6 +251,7 @@ export class InfraNodeConfigurationService {
   /**
    * Get all supported node types
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all supported DFD node type identifiers (pure)
   getSupportedNodeTypes(): string[] {
     return ['process', 'store', 'actor', 'security-boundary', 'text-box'];
   }

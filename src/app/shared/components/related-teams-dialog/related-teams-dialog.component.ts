@@ -240,6 +240,7 @@ export interface RelatedTeamsDialogData {
     `,
   ],
 })
+// SEM@ebf138f377d49c842235dcc3663baacf32e0be86: dialog to manage a team's related teams list with add/remove and save (mutates shared state)
 export class RelatedTeamsDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -254,6 +255,7 @@ export class RelatedTeamsDialogComponent implements OnInit {
   readonly relationshipTypes = RELATIONSHIP_TYPES;
   addForm: FormGroup;
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: initialize dialog state and add-form from injected team data (pure)
   constructor(
     private dialogRef: MatDialogRef<RelatedTeamsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RelatedTeamsDialogData,
@@ -269,6 +271,7 @@ export class RelatedTeamsDialogComponent implements OnInit {
     });
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: subscribe search input to fetch matching team list from API (mutates shared state)
   ngOnInit(): void {
     this.filteredTeams$ = (
       this.addForm.get('teamSearch') as FormControl<string | TeamListItem>
@@ -289,10 +292,12 @@ export class RelatedTeamsDialogComponent implements OnInit {
   /** Display function for the autocomplete input — arrow form preserves `this` for [displayWith]. */
   displayTeam = (team: TeamListItem): string => team?.name || '';
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: store the autocomplete-selected team as the pending selection (mutates shared state)
   onTeamSelected(event: MatAutocompleteSelectedEvent): void {
     this.selectedTeam = event.option.value as TeamListItem;
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: add selected team with relationship type to local list, reject duplicates (mutates shared state)
   addRelated(): void {
     if (!this.selectedTeam) return;
     const relationship = this.addForm.get('relationship')?.value as RelationshipType;
@@ -319,12 +324,14 @@ export class RelatedTeamsDialogComponent implements OnInit {
     this.cancelAddForm();
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: hide and reset the add-related-team form without saving (mutates shared state)
   cancelAddForm(): void {
     this.showAddForm = false;
     this.selectedTeam = null;
     this.addForm.reset();
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: delete a related team entry from the local list and mark dirty (mutates shared state)
   removeRelated(related: RelatedTeam): void {
     this.relatedTeams = this.relatedTeams.filter(
       r => r.related_team_id !== related.related_team_id,
@@ -332,6 +339,7 @@ export class RelatedTeamsDialogComponent implements OnInit {
     this.dirty = true;
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: persist updated related teams list to API and close dialog on success (reads DB)
   onSave(): void {
     if (!this.dirty || this.saving) return;
     this.saving = true;
@@ -353,6 +361,7 @@ export class RelatedTeamsDialogComponent implements OnInit {
       });
   }
 
+  // SEM@ebf138f377d49c842235dcc3663baacf32e0be86: close dialog without saving, returning false to caller (pure)
   onCancel(): void {
     this.dialogRef.close(false);
   }

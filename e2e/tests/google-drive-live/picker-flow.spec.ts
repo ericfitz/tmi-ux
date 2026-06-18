@@ -27,6 +27,7 @@ userTest.describe('Google Drive — picker flow attaches with picker_registratio
     const tmFlow = new ThreatModelFlow(userPage);
     const tmName = `E2E Picker Flow ${Date.now()}`;
 
+    // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: delete the user's Google Workspace OAuth token via the API (mutates shared state)
     const revokeToken = async () => {
       await userPage
         .evaluate(async () => {

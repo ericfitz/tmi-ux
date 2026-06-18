@@ -22,6 +22,7 @@ interface SavePayload {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@460788d1a27cc01214df67533d368460b11f3568: manage auto-save and immediate persistence of survey draft responses
 export class SurveyDraftService implements OnDestroy {
   /** Debounce time in milliseconds */
   private readonly autoSaveDebounceMs = 2000;
@@ -48,6 +49,7 @@ export class SurveyDraftService implements OnDestroy {
   private hasUnsavedChangesSubject$ = new BehaviorSubject<boolean>(false);
   public hasUnsavedChanges$: Observable<boolean> = this.hasUnsavedChangesSubject$.asObservable();
 
+  // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: inject dependencies and initialize the auto-save pipeline (mutates shared state)
   constructor(
     private responseService: SurveyResponseService,
     private logger: LoggerService,
@@ -55,6 +57,7 @@ export class SurveyDraftService implements OnDestroy {
     this.initAutoSave();
   }
 
+  // SEM@47259dcc3bd1f66f245714931e1330a50558a80a: unsubscribe from auto-save and complete the save subject on teardown
   ngOnDestroy(): void {
     this.saveSubscription?.unsubscribe();
     this.saveSubject$.complete();
@@ -64,6 +67,7 @@ export class SurveyDraftService implements OnDestroy {
    * Queue a save operation (debounced)
    * Multiple calls within the debounce window will only result in one save
    */
+  // SEM@460788d1a27cc01214df67533d368460b11f3568: enqueue a debounced draft save, marking unsaved changes immediately (mutates shared state)
   public queueSave(
     responseId: string,
     answers: Record<string, unknown>,
@@ -78,6 +82,7 @@ export class SurveyDraftService implements OnDestroy {
    * Force an immediate save (bypasses debounce)
    * Use this when the user explicitly saves or before navigation
    */
+  // SEM@460788d1a27cc01214df67533d368460b11f3568: immediately persist a draft response, bypassing the debounce queue (reads DB)
   public saveNow(
     responseId: string,
     answers: Record<string, unknown>,
@@ -107,6 +112,7 @@ export class SurveyDraftService implements OnDestroy {
   /**
    * Clear the save state (call when starting a new survey or leaving)
    */
+  // SEM@47259dcc3bd1f66f245714931e1330a50558a80a: reset all save state observables to their initial idle values (mutates shared state)
   public clearState(): void {
     this.isSavingSubject$.next(false);
     this.lastSavedSubject$.next(null);
@@ -145,6 +151,7 @@ export class SurveyDraftService implements OnDestroy {
   /**
    * Initialize the auto-save subscription
    */
+  // SEM@460788d1a27cc01214df67533d368460b11f3568: subscribe to the save queue with debounce to persist drafts automatically (mutates shared state)
   private initAutoSave(): void {
     this.saveSubscription = this.saveSubject$
       .pipe(

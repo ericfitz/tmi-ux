@@ -69,6 +69,7 @@ export interface DfdDiagramState {
 }
 
 @Injectable()
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: manage diagram sync state and dispatch WebSocket-driven operation events (mutates shared state)
 export class AppStateService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
@@ -128,6 +129,7 @@ export class AppStateService implements OnDestroy {
   public readonly triggerResyncEvents$ = this._triggerResyncEvent$.asObservable();
   public readonly diagramStateSyncEvents$ = this._diagramStateSyncEvent$.asObservable();
 
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: inject dependencies for diagram state and WebSocket event coordination (pure)
   constructor(
     private _logger: LoggerService,
     private _webSocketService: InfraDfdWebsocketAdapter,
@@ -143,6 +145,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Initialize the state service and subscribe to WebSocket events
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: subscribe to WebSocket and operation-state streams to drive diagram state (mutates shared state)
   initialize(): void {
     // this._logger.info('Initializing DFD state management');
 
@@ -194,6 +197,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Get the current state synchronously
    */
+  // SEM@a9340b4ff80dfccfb6d08dd681f0b0becbdc0dba: return the current diagram state snapshot synchronously (pure)
   getCurrentState(): DfdDiagramState {
     return this._diagramState$.value;
   }
@@ -201,6 +205,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Block or unblock user operations (used during rollback/resync)
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: block or unblock user operations during rollback or resync (mutates shared state)
   setBlockOperations(blocked: boolean): void {
     this._operationsBlocked = blocked;
     this._logger.debugComponent(
@@ -212,6 +217,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Check if operations are currently blocked
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: return whether user operations are currently blocked (pure)
   areOperationsBlocked(): boolean {
     return this._operationsBlocked;
   }
@@ -219,6 +225,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Update the state
    */
+  // SEM@f2bb57ba89c5cc48041879bbe8d95d96f6f7ac5d: merge partial updates into the diagram state and emit the new value (mutates shared state)
   private _updateState(updates: Partial<DfdDiagramState>): void {
     const currentState = this._diagramState$.value;
     const newState = { ...currentState, ...updates };
@@ -236,6 +243,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Set whether we're applying a remote change
    */
+  // SEM@a9340b4ff80dfccfb6d08dd681f0b0becbdc0dba: flag the diagram state as currently applying a remote change (mutates shared state)
   setApplyingRemoteChange(isApplying: boolean): void {
     this._updateState({ isApplyingRemoteChange: isApplying });
   }
@@ -243,6 +251,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Set whether we're applying an undo/redo operation
    */
+  // SEM@a097ef91b09029135bba8168c0735f2e996f28f1: flag the diagram state as currently applying an undo or redo operation (mutates shared state)
   setApplyingUndoRedo(isApplying: boolean): void {
     this._updateState({ isApplyingUndoRedo: isApplying });
   }
@@ -250,6 +259,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Set whether the diagram is in read-only mode
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: set the diagram's read-only mode flag (mutates shared state)
   setReadOnly(readOnly: boolean): void {
     this._updateState({ readOnly });
     this._logger.debugComponent('AppStateService', 'Read-only mode state updated', { readOnly });
@@ -258,6 +268,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Handle operation state events from AppOperationStateManager
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: toggle the remote-change flag in response to operation-state lifecycle events (mutates shared state)
   private _handleOperationStateEvent(event: OperationStateEvent): void {
     switch (event.type) {
       case 'remote-operation-start':
@@ -279,6 +290,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Process a domain event from the WebSocket service
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: update sync counters and conflict count from an incoming WebSocket domain event (mutates shared state)
   private _processDomainEvent(event: WebSocketDomainEvent): void {
     this._logger.debugComponent('AppStateService', 'Processing domain event', { type: event.type });
 
@@ -299,6 +311,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Handle processed diagram operation from event processor
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: apply a processed remote diagram operation, update vector and pending-ops queue (mutates shared state)
   private _handleProcessedDiagramOperation(operation: ProcessedDiagramOperation): void {
     // Check if we've already processed this operation
     if (this.getCurrentState().lastOperationId === operation.operationId) {
@@ -355,6 +368,7 @@ export class AppStateService implements OnDestroy {
    * Handle processed diagram state sync from event processor
    * This message is sent immediately upon WebSocket connection
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: emit a diagram state sync event for the persistence layer to reconcile (mutates shared state)
   private _handleProcessedDiagramSync(sync: ProcessedDiagramSync): void {
     this._logger.info('Processing diagram state sync', {
       diagramId: sync.diagramId,
@@ -379,6 +393,7 @@ export class AppStateService implements OnDestroy {
    * Handle processed sync status response from event processor
    * Compare server's update_vector with local state to determine if resync is needed
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: compare server update vector to local and trigger resync if out of sync (mutates shared state)
   private _handleProcessedSyncStatusResponse(response: ProcessedSyncStatusResponse): void {
     const localVector = this._dfdStateStore.updateVector;
 
@@ -412,6 +427,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Handle processed participants update from event processor
    */
+  // SEM@254cd80b3579505276e9bbec070cbfc56fb169e6: delegate a participants update to the collaboration service (mutates shared state)
   private _handleProcessedParticipantsUpdate(update: ProcessedParticipantsUpdate): void {
     this._logger.debugComponent('AppStateService', 'Processing participants update', {
       participantCount: update.participants?.length,
@@ -435,6 +451,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Mark resync as complete
    */
+  // SEM@f2bb57ba89c5cc48041879bbe8d95d96f6f7ac5d: mark resync as finished and reset sync state and pending operations queue (mutates shared state)
   resyncComplete(): void {
     this._logger.info('Resync complete');
 
@@ -454,6 +471,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Update sync state
    */
+  // SEM@a9340b4ff80dfccfb6d08dd681f0b0becbdc0dba: merge partial updates into the sync sub-state of diagram state (mutates shared state)
   private _updateSyncState(updates: Partial<SyncState>): void {
     const currentState = this._diagramState$.value;
     this._updateState({
@@ -467,6 +485,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Clear a processed operation
    */
+  // SEM@f2bb57ba89c5cc48041879bbe8d95d96f6f7ac5d: remove a completed operation from the pending remote operations queue (mutates shared state)
   clearProcessedOperation(operationId: string): void {
     const currentState = this.getCurrentState();
     this._updateState({
@@ -479,6 +498,7 @@ export class AppStateService implements OnDestroy {
   /**
    * Clean up
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: complete the destroy subject and unsubscribe all subscriptions on teardown (mutates shared state)
   ngOnDestroy(): void {
     this._logger.info('Destroying AppStateService');
     this._destroy$.next();

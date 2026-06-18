@@ -6,9 +6,11 @@ import { angularFill } from '../helpers/angular-fill';
  * existing dialog, so we scope to `.last()` when multiple `mat-dialog-container`
  * elements are open.
  */
+// SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: page object wrapping the shared user-picker dialog for E2E tests (pure)
 export class UserPickerDialog {
   private dialog: Locator;
 
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: scope the dialog locator to the topmost mat-dialog-container (pure)
   constructor(private page: Page) {
     this.dialog = page.locator('mat-dialog-container').last();
   }
@@ -22,6 +24,7 @@ export class UserPickerDialog {
    * Type in the search, wait for the matching option to populate, click it,
    * and (optionally) pick a role, then confirm.
    */
+  // SEM@bb65e02191d3f75c13fdb0a10b75f2837d573933: search, select a user by email, optionally set a role, then confirm
   async pickUser(email: string, role?: string): Promise<void> {
     await this.searchInput().waitFor({ state: 'visible', timeout: 5000 });
     await angularFill(this.searchInput(), email);

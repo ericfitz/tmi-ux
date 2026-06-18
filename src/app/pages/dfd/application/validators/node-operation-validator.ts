@@ -17,17 +17,21 @@ import {
 } from '../../types/graph-operation.types';
 
 @Injectable()
+// SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate create, update, and delete node operations against graph context (pure)
 export class NodeOperationValidator extends BaseOperationValidator {
   readonly priority = 100;
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: register the logger dependency on the base validator (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: report whether this validator handles node-typed graph operations (pure)
   canValidate(operation: GraphOperation): boolean {
     return ['create-node', 'update-node', 'delete-node'].includes(operation.type);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: dispatch a node operation to the appropriate validation method and return the result (pure)
   validate(operation: GraphOperation, context: OperationContext): ValidationResult {
     this.logValidationStart(operation);
 
@@ -56,6 +60,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
     return result;
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate a create-node operation for ID conflicts, type, position, size, and style (pure)
   private validateCreateNode(
     operation: CreateNodeOperation,
     context: OperationContext,
@@ -134,6 +139,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate an update-node operation ensuring the node exists and proposed changes are legal (pure)
   private validateUpdateNode(
     operation: UpdateNodeOperation,
     context: OperationContext,
@@ -203,6 +209,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate a delete-node operation, warning about connected edges (pure)
   private validateDeleteNode(
     operation: DeleteNodeOperation,
     context: OperationContext,
@@ -245,6 +252,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate node dimensions are positive and within recommended min/max bounds (pure)
   private _validateNodeSize(
     size: { width: number; height: number },
     errors: string[],
@@ -269,6 +277,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: validate node style colors, stroke width, and font size are within acceptable ranges (pure)
   private validateNodeStyle(style: any, errors: string[], warnings: string[]): void {
     // Validate colors
     if (style.fill && !isValidColor(style.fill)) {

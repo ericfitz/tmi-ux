@@ -32,6 +32,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { COMMON_IMPORTS } from '@app/shared/imports';
 
 /** Port label position options supported by X6 */
+// SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: union type of valid port label positions relative to a port (pure)
 export type PortLabelPosition = 'outside' | 'inside' | 'top' | 'bottom' | 'left' | 'right';
 
 export const DEFAULT_PORT_LABEL_POSITION: PortLabelPosition = 'outside';
@@ -71,6 +72,7 @@ export interface PortLabelChangeEvent {
   styleUrl: './port-label-popover.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: popover for editing port label text and position on a diagram node
 export class PortLabelPopoverComponent implements OnInit, OnDestroy {
   @Input() portLabel: PortLabelData = {
     nodeId: '',
@@ -101,8 +103,10 @@ export class PortLabelPopoverComponent implements OnInit, OnDestroy {
     }
   };
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: inject element reference for click-outside detection (pure)
   constructor(private _elementRef: ElementRef) {}
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: initialize label state and register global click and keyboard listeners (mutates shared state)
   ngOnInit(): void {
     this.labelText = this.portLabel.text;
     this.labelPosition = this.portLabel.position;
@@ -114,25 +118,30 @@ export class PortLabelPopoverComponent implements OnInit, OnDestroy {
     });
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: remove global click and keyboard listeners on component teardown (mutates shared state)
   ngOnDestroy(): void {
     document.removeEventListener('mousedown', this._onClickOutside);
     document.removeEventListener('keydown', this._onKeydown);
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: update label text and emit change event (mutates shared state)
   onTextChange(value: string): void {
     this.labelText = value;
     this.emitChange();
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: update label position and emit change event (mutates shared state)
   onPositionChange(position: PortLabelPosition): void {
     this.labelPosition = position;
     this.emitChange();
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: emit closed event to dismiss the port label popover (mutates shared state)
   close(): void {
     this.closed.emit();
   }
 
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: emit port label change event with current text and position (mutates shared state)
   private emitChange(): void {
     this.labelChanged.emit({
       nodeId: this.portLabel.nodeId,

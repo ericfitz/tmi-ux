@@ -212,6 +212,7 @@ import {
     `,
   ],
 })
+// SEM@77de328ec08ed4de2710997cddc7c3163be40722: display and manage linked content-provider accounts for the current user
 export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
@@ -225,6 +226,7 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
   connectableProviders: ContentProviderMetadata[] = [];
   readonly tokens$: Observable<ContentTokenInfo[]>;
 
+  // SEM@77de328ec08ed4de2710997cddc7c3163be40722: initialize connected-accounts tab and bind content token stream (pure)
   constructor(
     private tokenService: ContentTokenService,
     private transloco: TranslocoService,
@@ -237,6 +239,7 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
     this.tokens$ = this.tokenService.contentTokens$;
   }
 
+  // SEM@77de328ec08ed4de2710997cddc7c3163be40722: fetch content tokens and build connectable provider list on init (reads DB)
   ngOnInit(): void {
     this.tokenService.refresh();
     this.contentProviders.selectableSources$
@@ -255,17 +258,20 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@9d9282a4131a5afdbcd3cfd14a6ca1992e4b8a24: complete the destroy subject to cancel all active subscriptions (mutates shared state)
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  // SEM@9d9282a4131a5afdbcd3cfd14a6ca1992e4b8a24: resolve a content provider ID to its localized display name observable (pure)
   providerName(id: ContentProviderId): Observable<string> {
     const meta = CONTENT_PROVIDERS[id];
     if (!meta) return of(id);
     return this.transloco.selectTranslate(meta.displayNameKey);
   }
 
+  // SEM@c062e63e1c7ebd9f5dc5a91928bc6af3b94776a5: fetch OAuth authorization URL for a content provider and redirect the user
   onConnect(providerId: ContentProviderId): void {
     const returnTo = `/dashboard?openPrefs=document-sources`;
     this.tokenService
@@ -286,6 +292,7 @@ export class ConnectedAccountsTabComponent implements OnInit, OnDestroy {
       });
   }
 
+  // SEM@9d9282a4131a5afdbcd3cfd14a6ca1992e4b8a24: confirm and unlink a content provider account after user confirmation (reads DB)
   onUnlink(providerId: ContentProviderId): void {
     const meta = CONTENT_PROVIDERS[providerId];
     const sourceName = meta ? this.transloco.translate(meta.displayNameKey) : providerId;

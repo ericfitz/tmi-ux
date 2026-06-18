@@ -14,6 +14,7 @@ describe('CreateDiagramDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockTransloco: TranslocoService;
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a CreateDiagramDialogComponent instance for testing (pure)
   function build(threatModelName = 'My TM'): CreateDiagramDialogComponent {
     return new CreateDiagramDialogComponent(
       mockDialogRef as never,

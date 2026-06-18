@@ -20,6 +20,7 @@ const mockMatrix = {
   d: 1,
   e: 0,
   f: 0,
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the identity matrix transform as a mock inverse (pure)
   inverse: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
   multiply: vi.fn().mockReturnThis(),
   translate: vi.fn().mockReturnThis(),

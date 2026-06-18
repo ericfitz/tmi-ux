@@ -51,6 +51,7 @@ export interface ProjectInput {
 }
 
 /** Project lifecycle statuses */
+// SEM@5a9d2f3bfe03111434c4842c8d160f2558af6a83: enumerate valid project lifecycle statuses (pure)
 export type ProjectStatus =
   | 'active'
   | 'planning'

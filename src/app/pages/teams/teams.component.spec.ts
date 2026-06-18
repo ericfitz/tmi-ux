@@ -50,6 +50,7 @@ interface MockDialog {
 
 // --- Fixture factories ---
 
+// SEM@9a91253417b1fbb375c5aea83db37c2baa396888: build a minimal TeamListItem fixture with optional field overrides (pure)
 const makeTeamListItem = (overrides: Partial<TeamListItem> = {}): TeamListItem => ({
   id: 'team-1',
   name: 'Alpha Team',
@@ -61,6 +62,7 @@ const makeTeamListItem = (overrides: Partial<TeamListItem> = {}): TeamListItem =
   ...overrides,
 });
 
+// SEM@9a91253417b1fbb375c5aea83db37c2baa396888: build a complete Team fixture with optional field overrides (pure)
 const makeFullTeam = (overrides: Partial<Team> = {}): Team => ({
   id: 'team-1',
   name: 'Alpha Team',
@@ -75,6 +77,7 @@ const makeFullTeam = (overrides: Partial<Team> = {}): Team => ({
   ...overrides,
 });
 
+// SEM@9a91253417b1fbb375c5aea83db37c2baa396888: build a paginated team list response fixture from a given team array (pure)
 const makeListResponse = (teams: TeamListItem[], total?: number): ListTeamsResponse => ({
   teams,
   total: total ?? teams.length,
@@ -84,6 +87,7 @@ const makeListResponse = (teams: TeamListItem[], total?: number): ListTeamsRespo
 
 // --- Helper to build component inside an injection context ---
 
+// SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: instantiate TeamsComponent with mock dependencies in an injection context (pure)
 function buildComponent(
   mockTeamService: MockTeamService,
   mockLocation: MockLocation,

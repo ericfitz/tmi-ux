@@ -23,6 +23,7 @@ describe('InternalReferenceValidator', () => {
   const threatId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
   const validDateTime = '2025-01-15T10:30:00Z';
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid principal fixture for reference-validator tests (pure)
   function validPrincipal(overrides: any = {}): any {
     return {
       principal_type: 'user',
@@ -32,6 +33,7 @@ describe('InternalReferenceValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid threat model fixture for reference-validator tests (pure)
   function validThreatModel(overrides: any = {}): any {
     return {
       id: tmId,
@@ -63,6 +65,7 @@ describe('InternalReferenceValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid threat fixture for reference-validator tests (pure)
   function validThreat(overrides: any = {}): any {
     return {
       id: threatId,
@@ -78,6 +81,7 @@ describe('InternalReferenceValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: check whether a validation error list contains a given error code (pure)
   function hasError(errors: ValidationError[], code: string): boolean {
     return errors.some(e => e.code === code);
   }

@@ -21,6 +21,7 @@ export interface AccessibilityOptions {
  *
  * Throws with failures grouped by theme mode.
  */
+// SEM@43653afecd5972f1ece8184a3345cb51490c213f: validate label coverage and duplicate IDs across all theme modes; throws on failure (pure)
 export async function assertAccessibility(
   page: Page,
   options?: AccessibilityOptions,
@@ -115,6 +116,7 @@ export async function assertAccessibility(
  * Scopes the scan to #main-content (or the full page when that selector
  * isn't present) to avoid flagging browser chrome.
  */
+// SEM@ff86419ff04973a5eee10baf9bfe82298f27c3e7: validate WCAG AA color-contrast across all theme modes via axe-core; throws on failure (pure)
 export async function assertColorContrast(
   page: Page,
   options?: { themes?: ThemeMode[]; include?: string },
@@ -184,6 +186,7 @@ export async function assertColorContrast(
  * Interactive element set: buttons, links (with href), inputs, selects,
  * textareas, mat-menu triggers, mat-select, mat-checkbox, mat-radio-group.
  */
+// SEM@ff86419ff04973a5eee10baf9bfe82298f27c3e7: validate every visible interactive element is keyboard-focusable; throws on failure (pure)
 export async function assertKeyboardFocusable(page: Page): Promise<void> {
   const failures = await page.evaluate((): { tag: string; selector: string }[] => {
     const selectors = [
@@ -245,6 +248,7 @@ export async function assertKeyboardFocusable(page: Page): Promise<void> {
  * Runs under both colorblind theme modes so regressions that depend on color
  * encoding surface in the colorblind palettes we ship.
  */
+// SEM@85adbeefe58b236757c5fae647e6d4c3546d37c0: validate status indicators carry non-color cues under colorblind themes; throws on failure (pure)
 export async function assertColorIndependentIndicators(
   page: Page,
   selectors: string[],

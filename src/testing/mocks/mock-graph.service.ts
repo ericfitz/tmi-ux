@@ -26,6 +26,7 @@ interface EdgeMetadata {
 /**
  * Mock implementation of a graph service for testing
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: in-memory graph service stub for controlling diagram state in tests (mutates shared state)
 export class MockGraphService {
   private _graph: Graph | null = null;
   private _nodes: Node[] = [];
@@ -35,6 +36,7 @@ export class MockGraphService {
   /**
    * Get the graph instance
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch or lazily build the backing AntV/X6 graph instance (mutates shared state)
   getGraph(): Graph {
     if (!this._graph) {
       // Create a minimal mock graph
@@ -53,6 +55,7 @@ export class MockGraphService {
    * @param nodeConfig The node configuration
    * @returns The created node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: add a node with the given config to the mock graph (mutates shared state)
   addNode(nodeConfig: NodeMetadata): Node {
     const graph = this.getGraph();
     const node = graph.addNode(nodeConfig);
@@ -65,6 +68,7 @@ export class MockGraphService {
    * @param edgeConfig The edge configuration
    * @returns The created edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: add an edge with the given config to the mock graph (mutates shared state)
   addEdge(edgeConfig: EdgeMetadata): Edge {
     const graph = this.getGraph();
     const edge = graph.addEdge(edgeConfig);
@@ -76,6 +80,7 @@ export class MockGraphService {
    * Remove a node from the graph
    * @param nodeId The ID of the node to remove
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: delete a node by ID from the mock graph (mutates shared state)
   removeNode(nodeId: string): void {
     const graph = this.getGraph();
     graph.removeNode(nodeId);
@@ -86,6 +91,7 @@ export class MockGraphService {
    * Remove an edge from the graph
    * @param edgeId The ID of the edge to remove
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: delete an edge by ID from the mock graph (mutates shared state)
   removeEdge(edgeId: string): void {
     const graph = this.getGraph();
     graph.removeEdge(edgeId);
@@ -96,6 +102,7 @@ export class MockGraphService {
    * Get all nodes in the graph
    * @returns Array of nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch all nodes currently tracked in the mock graph (pure)
   getNodes(): Node[] {
     return this._nodes;
   }
@@ -104,6 +111,7 @@ export class MockGraphService {
    * Get all edges in the graph
    * @returns Array of edges
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return all edges in the mock graph (pure)
   getEdges(): Edge[] {
     return this._edges;
   }
@@ -113,6 +121,7 @@ export class MockGraphService {
    * @param nodeId The ID of the node to get
    * @returns The node with the specified ID, or undefined if not found
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a mock graph node by its ID, or undefined if absent (pure)
   getNodeById(nodeId: string): Node | undefined {
     return this._nodes.find(node => node.id === nodeId);
   }
@@ -122,6 +131,7 @@ export class MockGraphService {
    * @param edgeId The ID of the edge to get
    * @returns The edge with the specified ID, or undefined if not found
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a mock graph edge by its ID, or undefined if absent (pure)
   getEdgeById(edgeId: string): Edge | undefined {
     return this._edges.find(edge => edge.id === edgeId);
   }
@@ -130,6 +140,7 @@ export class MockGraphService {
    * Select a cell in the graph
    * @param cellId The ID of the cell to select
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: add a cell to the mock selection set and mark it selected (mutates shared state)
   selectCell(cellId: string): void {
     const graph = this.getGraph();
     const cell = graph.getCellById(cellId);
@@ -146,6 +157,7 @@ export class MockGraphService {
    * Deselect a cell in the graph
    * @param cellId The ID of the cell to deselect
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove a cell from the mock selection set and clear its selected flag (mutates shared state)
   deselectCell(cellId: string): void {
     const graph = this.getGraph();
     const cell = graph.getCellById(cellId);
@@ -162,6 +174,7 @@ export class MockGraphService {
    * Get the currently selected cells
    * @returns Observable of selected cells
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return an observable stream of currently selected cells (pure)
   getSelectedCells$(): Observable<Cell[]> {
     return this._selectedCells.asObservable();
   }
@@ -169,6 +182,7 @@ export class MockGraphService {
   /**
    * Clear the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove all nodes, edges, and selections from the mock graph (mutates shared state)
   clear(): void {
     const graph = this.getGraph();
     graph.clearCells();
@@ -180,6 +194,7 @@ export class MockGraphService {
   /**
    * Dispose of the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: destroy the mock graph instance and reset all internal state (mutates shared state)
   dispose(): void {
     if (this._graph) {
       this._graph.dispose();

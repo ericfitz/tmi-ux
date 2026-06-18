@@ -33,6 +33,7 @@ interface FakeCell extends LayoutCell {
   __attrs: Record<string, unknown>;
 }
 
+// SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: set a nested value on an object by slash-delimited path, creating intermediate nodes (pure)
 function setByPath(target: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split('/');
   let node = target;
@@ -46,6 +47,7 @@ function setByPath(target: Record<string, unknown>, path: string, value: unknown
   node[parts[parts.length - 1]] = value;
 }
 
+// SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: retrieve a nested value from an object by slash-delimited path (pure)
 function getByPath(target: Record<string, unknown>, path: string): unknown {
   const parts = path.split('/');
   let node: unknown = target;
@@ -56,6 +58,7 @@ function getByPath(target: Record<string, unknown>, path: string): unknown {
   return node;
 }
 
+// SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: build a stub diagram cell with configurable attrs, size, position, and shape for tests (pure)
 function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   const cell: FakeCell = {
     id: overrides.id ?? 'cell-1',
@@ -119,6 +122,7 @@ function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
   return cell;
 }
 
+// SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: build a stub diagram graph with a fixed set of nodes for tests (pure)
 function fakeGraph(nodes: LayoutCell[] = []): LayoutGraph {
   const byId = new Map<string, LayoutCell>();
   for (const n of nodes) byId.set(n.id, n);
@@ -135,6 +139,7 @@ describe('DfdIconService', () => {
   let architectureIcon: { getIconPath: ReturnType<typeof vi.fn> };
   let dfdLayout: { applyAutoLayout: ReturnType<typeof vi.fn> };
 
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: configure mock user preferences with optional overrides for icon service tests (pure)
   function setPrefs(overrides: Record<string, unknown> = {}): void {
     userPrefs.getPreferences.mockReturnValue({
       autoLayoutEnabled: true,

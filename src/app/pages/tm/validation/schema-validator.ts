@@ -17,6 +17,7 @@ import { Diagram } from '../models/diagram.model';
 /**
  * Schema validator that validates ThreatModel objects against OpenAPI specification
  */
+// SEM@de32c6e2bb816be8b98cbdd5c31310be7afc44a8: validate a threat model object against the OpenAPI schema specification (pure)
 export class SchemaValidator extends BaseValidator {
   /**
    * Framework threat type mappings
@@ -181,6 +182,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate a ThreatModel object against the OpenAPI schema
    */
+  // SEM@c79a19c1ad822f1bf5be101c3a38dbd18347ccf0: validate a threat model's fields and nested arrays against the OpenAPI schema (pure)
   validateThreatModel(threatModel: ThreatModel, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
@@ -232,6 +234,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate a Principal object (owner or created_by)
    */
+  // SEM@c79a19c1ad822f1bf5be101c3a38dbd18347ccf0: validate a principal object's required fields against the OpenAPI schema (pure)
   private validatePrincipal(
     principal: unknown,
     fieldName: string,
@@ -260,6 +263,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate authorization array
    */
+  // SEM@3ba1b5ecbae8ba77016197b17800c120f1185e5c: validate authorization entries and enforce at least one owner role (pure)
   private validateAuthorizationArray(
     authorization: Authorization[] | null | undefined,
     context: ValidationContext,
@@ -304,6 +308,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate metadata array
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate metadata entries and flag duplicate keys (pure)
   private validateMetadataArray(
     metadata: Metadata[] | undefined,
     context: ValidationContext,
@@ -349,6 +354,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate documents array
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: validate document entries including nested metadata fields (pure)
   private validateDocumentArray(
     documents: Document[] | undefined,
     context: ValidationContext,
@@ -386,6 +392,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate threats array
    */
+  // SEM@51f6e500c621827649544d81c6c22b9ae6a5ee83: validate threat entries, parent ID match, and framework threat types (pure)
   private validateThreatArray(
     threats: Threat[] | undefined,
     context: ValidationContext,
@@ -507,6 +514,7 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate diagrams array
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate diagram entries including nested metadata fields (pure)
   private validateDiagramArray(diagrams: Diagram[] | undefined, context: ValidationContext): void {
     if (!diagrams) return;
 

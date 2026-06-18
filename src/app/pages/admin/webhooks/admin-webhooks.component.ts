@@ -65,6 +65,7 @@ import {
   styleUrl: './admin-webhooks.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: page component for listing, filtering, and managing webhook subscriptions
 export class AdminWebhooksComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -83,6 +84,7 @@ export class AdminWebhooksComponent implements OnInit {
   filterText = '';
   loading = false;
 
+  // SEM@16a12de16f46596ddb6d847a588d043dcdbea3f7: inject routing, dialog, and service dependencies for the webhooks admin page (pure)
   constructor(
     private webhookService: WebhookService,
     private router: Router,
@@ -94,6 +96,7 @@ export class AdminWebhooksComponent implements OnInit {
     private userAdminService: UserAdminService,
   ) {}
 
+  // SEM@bfb60b51b1f44fb69eb7f7fbac7656849e9750be: initialize pagination state from URL params and subscribe to filter changes (mutates shared state)
   ngOnInit(): void {
     // Initialize pagination state from URL query params
     this.route.queryParams.pipe(take(1)).subscribe(params => {
@@ -115,6 +118,7 @@ export class AdminWebhooksComponent implements OnInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: fetch paginated webhook subscriptions from the API and apply the current filter (reads DB)
   loadWebhooks(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -141,10 +145,12 @@ export class AdminWebhooksComponent implements OnInit {
       });
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: dispatch a filter text change to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle pagination event by updating page state and reloading webhooks (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -152,6 +158,7 @@ export class AdminWebhooksComponent implements OnInit {
     this.updateUrl();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: sync current pagination and filter state to URL query params (mutates shared state)
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalWebhooks },
@@ -167,6 +174,7 @@ export class AdminWebhooksComponent implements OnInit {
     });
   }
 
+  // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: filter the loaded webhook list by name, URL, or status text (mutates shared state)
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
@@ -182,6 +190,7 @@ export class AdminWebhooksComponent implements OnInit {
     );
   }
 
+  // SEM@16a12de16f46596ddb6d847a588d043dcdbea3f7: open the add-webhook dialog and handle HMAC secret and automation-user follow-up dialogs
   onAddWebhook(): void {
     const dialogRef = this.dialog.open(AddWebhookDialogComponent, {
       width: '700px',
@@ -208,6 +217,7 @@ export class AdminWebhooksComponent implements OnInit {
       );
   }
 
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: open a modal displaying the one-time HMAC secret after webhook creation
   private showHmacSecretDialog(secret: string): void {
     this.dialog.open(HmacSecretDialogComponent, {
       width: '600px',
@@ -216,6 +226,7 @@ export class AdminWebhooksComponent implements OnInit {
     });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: confirm and delete a webhook subscription, adjusting pagination if needed (reads DB)
   onDeleteWebhook(webhook: WebhookSubscription): void {
     const confirmed = confirm(`Are you sure you want to delete the webhook "${webhook.name}"?`);
 
@@ -246,6 +257,7 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
+  // SEM@8b0bb0df016a0e6d542fd365563a666e173d4ce6: open dialog to create an automation user and display its credential secret on success
   private openCreateAutomationUserDialog(webhookName: string): void {
     const dialogData: CreateAutomationUserDialogData = { suggestedName: webhookName };
     const dialogRef = this.dialog.open(CreateAutomationUserDialogComponent, {
@@ -271,6 +283,7 @@ export class AdminWebhooksComponent implements OnInit {
       });
   }
 
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: map a webhook status string to its Material icon name (pure)
   getStatusIcon(status: string): string {
     switch (status) {
       case 'active':
@@ -284,10 +297,12 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: format a webhook event list as a newline-delimited tooltip string (pure)
   getEventsTooltip(events: string[]): string {
     return events.join('\n');
   }
 
+  // SEM@2d3671257056c457e73337441c53ba77f18eb793: copy a text value to the system clipboard, logging on failure
   copyToClipboard(text: string): void {
     const success = this.clipboard.copy(text);
     if (!success) {
@@ -295,6 +310,7 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the admin webhooks page to the appropriate landing route
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }

@@ -8,6 +8,7 @@ import { LoggerService } from '@app/core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@c8dee1abe874e5b85fe25e7d3bbe1d4f26759478: cache SVG validation results and data URLs across threat model navigation (mutates shared state)
 export class SvgCacheService {
   // Cache for SVG validation results
   private svgValidationCache = new Map<string, boolean>();
@@ -15,6 +16,7 @@ export class SvgCacheService {
   // Cache for SVG data URLs to prevent recalculation
   private svgDataUrlCache = new Map<string, string>();
 
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: inject logger dependency
   constructor(private logger: LoggerService) {}
 
   /**
@@ -22,6 +24,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @returns True if validation result is cached
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: check if an SVG validation result is cached for a given key (pure)
   hasValidationCache(cacheKey: string): boolean {
     return this.svgValidationCache.has(cacheKey);
   }
@@ -31,6 +34,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @returns Cached validation result
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: fetch a cached SVG validation result by key (pure)
   getValidationCache(cacheKey: string): boolean | undefined {
     return this.svgValidationCache.get(cacheKey);
   }
@@ -40,6 +44,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @param isValid The validation result
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: store an SVG validation result in the cache (mutates shared state)
   setValidationCache(cacheKey: string, isValid: boolean): void {
     this.svgValidationCache.set(cacheKey, isValid);
   }
@@ -49,6 +54,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @returns True if data URL is cached
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: check if an SVG data URL is cached for a given key (pure)
   hasDataUrlCache(cacheKey: string): boolean {
     return this.svgDataUrlCache.has(cacheKey);
   }
@@ -58,6 +64,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @returns Cached data URL
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: fetch a cached SVG data URL by key (pure)
   getDataUrlCache(cacheKey: string): string | undefined {
     return this.svgDataUrlCache.get(cacheKey);
   }
@@ -67,6 +74,7 @@ export class SvgCacheService {
    * @param cacheKey The cache key
    * @param dataUrl The data URL
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: store an SVG data URL in the cache (mutates shared state)
   setDataUrlCache(cacheKey: string, dataUrl: string): void {
     this.svgDataUrlCache.set(cacheKey, dataUrl);
   }
@@ -75,6 +83,7 @@ export class SvgCacheService {
    * Clear all SVG-related caches
    * This should be called when navigating away from threat models or initializing dashboard
    */
+  // SEM@c8dee1abe874e5b85fe25e7d3bbe1d4f26759478: clear all SVG validation and data URL caches (mutates shared state)
   clearAllCaches(): void {
     // const validationCount = this.svgValidationCache.size;
     // const dataUrlCount = this.svgDataUrlCache.size;
@@ -92,6 +101,7 @@ export class SvgCacheService {
    * Get cache statistics for debugging
    * @returns Cache size information
    */
+  // SEM@fa838e60ffa1932bc800ea6767510da97633c1e8: return current SVG validation and data URL cache entry counts (pure)
   getCacheStats(): { validationCacheSize: number; dataUrlCacheSize: number } {
     return {
       validationCacheSize: this.svgValidationCache.size,

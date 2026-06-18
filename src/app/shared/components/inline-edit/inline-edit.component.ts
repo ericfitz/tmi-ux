@@ -27,6 +27,7 @@ import { TooltipAriaLabelDirective } from '@app/shared/imports';
   styleUrl: './inline-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: inline text field that toggles between display and edit mode, emitting on commit (pure)
 export class InlineEditComponent {
   /** The current value to display/edit */
   @Input() value: string | null = null;
@@ -54,8 +55,10 @@ export class InlineEditComponent {
   isEditing = false;
   editValue = '';
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: inject ChangeDetectorRef for manual view updates (pure)
   constructor(private cdr: ChangeDetectorRef) {}
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: switch to edit mode and focus the input field (mutates shared state)
   startEditing(): void {
     if (this.disabled) {
       return;
@@ -70,12 +73,14 @@ export class InlineEditComponent {
     });
   }
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: exit edit mode discarding any pending changes (mutates shared state)
   cancelEditing(): void {
     this.isEditing = false;
     this.editValue = '';
     this.cdr.detectChanges();
   }
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: commit trimmed edit value and emit valueChange if the value changed (pure)
   saveValue(): void {
     const trimmedValue = this.editValue.trim();
     this.isEditing = false;
@@ -89,6 +94,7 @@ export class InlineEditComponent {
     this.cdr.detectChanges();
   }
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: handle Enter to save and Escape to cancel inline editing (pure)
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -99,6 +105,7 @@ export class InlineEditComponent {
     }
   }
 
+  // SEM@98bc5be49f8f36357e8b2199a1a554b5bd5760ce: save the inline edit value when the input loses focus (pure)
   onBlur(): void {
     this.saveValue();
   }

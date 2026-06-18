@@ -54,6 +54,7 @@ describe('CwePickerDialogComponent', () => {
   let languageService: MockLanguageService;
   let data: CwePickerDialogData;
 
+  // SEM@dd4f585071231faa7be62ea453727e96148a393a: build a CwePickerDialogComponent with mocked dependencies for unit tests (pure)
   function createComponent(dialogData?: Partial<CwePickerDialogData>): void {
     data = { existingCweIds: [], ...dialogData };
     dialogRef = { close: vi.fn() };

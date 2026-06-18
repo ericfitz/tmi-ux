@@ -41,6 +41,7 @@ describe('BrandingConfigService', () => {
     },
   };
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: build a fake PNG fetch Response for test stubs (pure)
   const createPngResponse = (ok = true, contentType = 'image/png', size = 100): Response => {
     const buffer = new ArrayBuffer(size);
     return {
@@ -54,6 +55,7 @@ describe('BrandingConfigService', () => {
     } as unknown as Response;
   };
 
+  // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: build a fake JSON config fetch Response for test stubs (pure)
   const createConfigResponse = (config: unknown, ok = true): Response => {
     return {
       ok,

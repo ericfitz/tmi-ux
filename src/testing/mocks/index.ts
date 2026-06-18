@@ -42,6 +42,7 @@ export {
  * Factory function to create all commonly used mocks
  * Use this when you need multiple mocks in a single test file
  */
+// SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: build a set of all commonly used test mock service instances (pure)
 export function createCommonMocks(): {
   logger: ReturnType<typeof createMockLoggerService>;
   router: ReturnType<typeof createMockRouter>;
@@ -64,6 +65,7 @@ export function createCommonMocks(): {
  * Factory function to create typed mocks
  * Use this when you need to access mock functions directly for assertions
  */
+// SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: build typed test mock service instances exposing spy functions for assertions (pure)
 export function createTypedMocks(): {
   logger: ReturnType<typeof createTypedMockLoggerService>;
   router: ReturnType<typeof createTypedMockRouter>;

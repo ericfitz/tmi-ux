@@ -62,6 +62,7 @@ const BUG_REPORT_LOG_MAX_CHARS = 60000;
     TranslocoModule,
   ],
 })
+// SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: render top navigation bar with auth state, server status, and user actions (mutates shared state)
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   isAdmin = false;
@@ -125,6 +126,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   readonly logoImageUrl$ = this.brandingConfig.logoImageUrl$;
   readonly brandingOrgName$ = this.brandingConfig.organizationName$;
 
+  // SEM@a9c8199869c71a6a4b94e2341d3d1e5a8c80d310: inject dependencies and load available UI languages (pure)
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -143,6 +145,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.languages = this.languageService.getAvailableLanguages();
   }
 
+  // SEM@a9c8199869c71a6a4b94e2341d3d1e5a8c80d310: subscribe to auth, language, server, WebSocket, and route streams to drive navbar state (mutates shared state)
   ngOnInit(): void {
     // Initialize current page state
     this.isOnDfdPage = this.router.url.includes('/dfd');
@@ -206,6 +209,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
   }
 
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: unsubscribe all navbar subscriptions to prevent memory leaks (mutates shared state)
   ngOnDestroy(): void {
     // Clean up subscriptions
     if (this.languageSubscription) {
@@ -236,27 +240,32 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Update websocket status visibility based on current page and collaboration state
    */
+  // SEM@011eb81d2f0bd9b570d96bf8f02ff2f73ca83e0a: show WebSocket indicator only when on DFD page with active collaboration (mutates shared state)
   private updateWebSocketStatusVisibility(): void {
     const collaborationState = this.collaborationService.getCurrentState();
     this.showWebSocketStatus = this.isOnDfdPage && collaborationState.isActive;
   }
 
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: set home link to landing page for authenticated users, root otherwise (mutates shared state)
   updateHomeLink(): void {
     this.homeLink = this.isAuthenticated ? this.authService.getLandingPage() : '/';
   }
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: dispatch logout to end the current session (mutates shared state)
   logout(): void {
     // Use auth service for logout
     this.authService.logout();
   }
 
   // Switch language
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the active UI language if it differs from the current one (mutates shared state)
   switchLanguage(lang: Language): void {
     if (lang.code !== this.currentLanguage.code) {
       this.languageService.setLanguage(lang.code);
     }
   }
 
+  // SEM@ace7d2f488ece5bcc097510e2e66e56cb636bad3: open user preferences dialog, optionally navigating to an initial tab
   async openUserPreferences(initialTab?: string): Promise<void> {
     const { UserPreferencesDialogComponent } =
       await import('../user-preferences-dialog/user-preferences-dialog.component');
@@ -272,6 +281,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Handle right-click context menu on user profile button (development only)
    */
+  // SEM@2068237ec44fae73aea2c5dd285a2c0209d83a48: show dev-only user profile context menu at right-click position (mutates shared state)
   openUserProfileContextMenu(event: MouseEvent): void {
     if (!this.isDevelopmentMode) {
       return; // Do nothing in production
@@ -295,6 +305,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Copy user email to clipboard
    */
+  // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: copy the authenticated user's email address to the clipboard
   copyUserEmailToClipboard(): void {
     try {
       const userEmail = this.userEmail;
@@ -315,6 +326,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate Material icon for the current server connection status
    */
+  // SEM@47ce70d05fac7e4249a5edd37c5610830b39d803: map current server connection status to a Material icon name (pure)
   getServerStatusIcon(): string {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
@@ -334,6 +346,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate CSS class for the server connection status icon
    */
+  // SEM@47ce70d05fac7e4249a5edd37c5610830b39d803: map current server connection status to a CSS class name (pure)
   getServerStatusIconClass(): string {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
@@ -354,6 +367,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate tooltip text for the server connection status with additional details
    */
+  // SEM@47ce70d05fac7e4249a5edd37c5610830b39d803: build localized tooltip text for server status, appending API URL when configured (pure)
   getServerStatusTooltip(): string {
     const baseKey = this.getServerStatusTooltipKey();
     const baseText = this.translocoService.translate(baseKey);
@@ -374,6 +388,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate localization key for the server connection status tooltip
    */
+  // SEM@47ce70d05fac7e4249a5edd37c5610830b39d803: map current server connection status to its i18n tooltip key (pure)
   private getServerStatusTooltipKey(): string {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
@@ -394,6 +409,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate Material icon for the WebSocket connection status
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map WebSocket connection state to a Material icon name (pure)
   getWebSocketStatusIcon(): string {
     if (this.webSocketAdapter.isConnected) {
       return 'sensors';
@@ -405,6 +421,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate CSS class for the WebSocket connection status icon
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map WebSocket connection state to a CSS class name (pure)
   getWebSocketStatusIconClass(): string {
     if (this.webSocketAdapter.isConnected) {
       return 'websocket-status-connected';
@@ -416,6 +433,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate tooltip text for the WebSocket connection status
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: build localized tooltip text for WebSocket status, appending the WebSocket URL (pure)
   getWebSocketStatusTooltip(): string {
     let statusText: string;
     if (this.webSocketAdapter.isConnected) {
@@ -433,6 +451,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Open the server URL in a new browser window
    */
+  // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: open the configured API server URL in a new tab when connected
   openServerUrl(): void {
     if (this.serverConnectionStatus === ServerConnectionStatus.CONNECTED) {
       window.open(environment.apiUrl, '_blank');
@@ -445,6 +464,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * snapshot reflects what the user was looking at, not the feedback UI.
    * Posts to /usability_feedback via UsabilityFeedbackService.
    */
+  // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: capture viewport screenshot then open usability feedback dialog
   openFeedbackUrl(): void {
     // Wait one animation frame so the menu overlay finishes detaching, then
     // capture the page, then open the dialog. The capture is best-effort —
@@ -465,6 +485,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Copy application log to clipboard and open a pre-filled bug report issue
    */
+  // SEM@8f288a83acb36ce44c06dbc1d38400aa9da6f9a2: copy app log to clipboard and open a pre-filled GitHub bug report
   reportBug(): void {
     const jsonl = this.logger.exportAsJsonl(BUG_REPORT_LOG_MAX_CHARS);
 
@@ -501,6 +522,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /**
    * Open a pre-filled feature request issue
    */
+  // SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: open a new GitHub issue page for a feature request
   requestFeature(): void {
     window.open('https://github.com/ericfitz/tmi-ux/issues/new', '_blank');
   }

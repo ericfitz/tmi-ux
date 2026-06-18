@@ -1,5 +1,6 @@
 import { testConfig } from '../config/test.config';
 
+// SEM@48c7d463773c81c64114653681810aa76ac2f5ae: fetch a service URL and throw if unavailable within timeout (pure)
 async function checkService(url: string, label: string): Promise<void> {
   const controller = new AbortController();
   const timeoutId = setTimeout(
@@ -18,6 +19,7 @@ async function checkService(url: string, label: string): Promise<void> {
   }
 }
 
+// SEM@48c7d463773c81c64114653681810aa76ac2f5ae: validate frontend and backend services are reachable before e2e tests
 async function globalSetup(): Promise<void> {
   console.log('\n=== E2E Test Setup ===\n');
 

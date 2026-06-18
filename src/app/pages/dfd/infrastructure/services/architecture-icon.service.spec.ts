@@ -62,6 +62,7 @@ const MOCK_MANIFEST: ArchIconManifest = {
   ],
 };
 
+// SEM@c6d35660fc666b0e17375cbb89bd0aacd17697d4: stub the global fetch to return a successful mock icon manifest (mutates shared state)
 function mockFetchSuccess(): void {
   vi.stubGlobal(
     'fetch',

@@ -53,12 +53,14 @@ export interface GraphDataDialogData {
   styleUrls: ['./graph-data-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: display a read-only JSON view of diagram graph state for debugging
 export class GraphDataDialogComponent {
   /**
    * Serialized JSON representation of the graph
    */
   readonly graphJson: string;
 
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: serialize the injected graph to formatted JSON on dialog construction (pure)
   constructor(
     private _dialogRef: MatDialogRef<GraphDataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: GraphDataDialogData,
@@ -74,6 +76,7 @@ export class GraphDataDialogComponent {
    * Extract graph data from the graph
    * This method can be easily modified to include/exclude specific data
    */
+  // SEM@f5f00ddf5174525eb85b8acf7efbc836fa6268a4: extract serializable graph data, returning error metadata on failure (pure)
   private _extractGraphData(graph: Graph): any {
     try {
       // Use the graph's serialization method
@@ -92,6 +95,7 @@ export class GraphDataDialogComponent {
    * Get the graph serialization using the graph's toJSON method
    * This method can be modified to customize what data is included
    */
+  // SEM@f5f00ddf5174525eb85b8acf7efbc836fa6268a4: serialize a graph to a plain JSON object via its toJSON method (pure)
   private _getGraphSerialization(graph: Graph): any {
     try {
       // The graph provides a toJSON method that serializes the graph
@@ -107,6 +111,7 @@ export class GraphDataDialogComponent {
   /**
    * Copy the JSON content to clipboard
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: copy serialized graph JSON to the system clipboard
   onCopyToClipboard(): void {
     copyToClipboard(this.graphJson);
   }
@@ -114,6 +119,7 @@ export class GraphDataDialogComponent {
   /**
    * Close the dialog
    */
+  // SEM@114f449ea58e7e7dddb6a701699ff7b1d05a5876: close the graph data dialog
   onClose(): void {
     this._dialogRef.close();
   }

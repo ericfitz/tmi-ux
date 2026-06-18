@@ -30,6 +30,7 @@ describe('MyResponsesComponent', () => {
   let mockTransloco: TranslocoService;
   let envInjector: EnvironmentInjector;
 
+  // SEM@b85956bf69d53ab4f58f72df3590bd261494d825: build a stub survey response list item for testing (pure)
   function makeResponse(
     id: string,
     status: ResponseStatus,
@@ -46,6 +47,7 @@ describe('MyResponsesComponent', () => {
     } as SurveyResponseListItem;
   }
 
+  // SEM@b85956bf69d53ab4f58f72df3590bd261494d825: instantiate MyResponsesComponent with mock dependencies for testing (pure)
   function build(): MyResponsesComponent {
     return runInInjectionContext(
       envInjector,

@@ -52,6 +52,7 @@ describe('threatModelResolver', () => {
     metadata: [],
   };
 
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: build a stub ActivatedRouteSnapshot with given id and query params (pure)
   function createMockRoute(
     id: string | null,
     queryParams: Record<string, string> = {},
@@ -68,6 +69,7 @@ describe('threatModelResolver', () => {
     } as unknown as ActivatedRouteSnapshot;
   }
 
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: build a stub RouterStateSnapshot with the given URL (pure)
   function createMockState(url: string): RouterStateSnapshot {
     return { url } as RouterStateSnapshot;
   }
@@ -227,6 +229,7 @@ describe('threatModelResolver', () => {
   });
 
   describe('error handling', () => {
+    // SEM@9e058216aec7748060995df8d2c2aabb2d277666: run the threat model resolver under injection context and collect emitted values
     async function resolveWithError(): Promise<unknown[]> {
       return new Promise<unknown[]>((resolve, reject) => {
         runInInjectionContext(envInjector, () => {

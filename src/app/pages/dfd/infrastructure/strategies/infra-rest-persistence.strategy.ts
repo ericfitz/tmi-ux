@@ -19,9 +19,11 @@ import {
 } from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable()
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: persist and load DFD diagrams via the REST API
 export class InfraRestPersistenceStrategy {
   readonly type = 'rest' as const;
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: inject HTTP, logger, diagram service, and threat model service dependencies
   constructor(
     private readonly http: HttpClient,
     private readonly logger: LoggerService,
@@ -31,6 +33,7 @@ export class InfraRestPersistenceStrategy {
     this.logger.debugComponent('InfraRestPersistenceStrategy', 'initialized');
   }
 
+  // SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: serialize and store diagram cells to the REST API, optionally with SVG image (writes API)
   save(operation: SaveOperation): Observable<SaveResult> {
     this.logger.debugComponent('InfraRestPersistenceStrategy', 'save operation started', {
       diagramId: operation.diagramId,
@@ -106,6 +109,7 @@ export class InfraRestPersistenceStrategy {
     );
   }
 
+  // SEM@074c377f6c7e0c5dd5c12bc23b4ad7871a77bb81: fetch diagram cells and metadata for a threat model from the REST API (reads API)
   load(operation: LoadOperation): Observable<LoadResult> {
     this.logger.debugComponent('InfraRestPersistenceStrategy', 'load operation started', {
       diagramId: operation.diagramId,

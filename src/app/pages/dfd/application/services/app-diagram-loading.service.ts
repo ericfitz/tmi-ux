@@ -32,7 +32,9 @@ export interface CellLoadingOptions {
 }
 
 @Injectable()
+// SEM@05b80d9a004eff1290db53fc0ad28df3ac76ccbf: load diagram cells into the graph while suppressing collaboration broadcasts
 export class AppDiagramLoadingService {
+  // SEM@1a438c01a7162fd5c1fe5019e2c6f72f6e4a0fb8: register dependencies for diagram cell loading and history management
   constructor(
     private logger: LoggerService,
     private infraNodeConfigurationService: InfraNodeConfigurationService,
@@ -48,6 +50,7 @@ export class AppDiagramLoadingService {
    * Load diagram cells into the graph with proper history management
    * This is the shared implementation used by both initial loading and resync
    */
+  // SEM@05b80d9a004eff1290db53fc0ad28df3ac76ccbf: load a batch of diagram cells into the graph with broadcast suppression and z-order repair (mutates shared state)
   loadCellsIntoGraph(
     cells: any[],
     graph: Graph,

@@ -18,6 +18,7 @@ import {
 
 const PICKER_ORIGIN = 'https://contoso.sharepoint.com';
 
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: build a stub picker token response fixture for tests (pure)
 function makeTokenResponse(): {
   access_token: string;
   expires_at: string;
@@ -34,6 +35,7 @@ function makeTokenResponse(): {
   };
 }
 
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: drain the microtask queue a given number of times in tests (pure)
 function flush(times = 3): Promise<void> {
   // Allow several microtasks for chained promises/observables.
   return Array.from({ length: times }).reduce<Promise<void>>(
@@ -77,6 +79,7 @@ describe('MicrosoftFilePickerService', () => {
     document.body.querySelectorAll('.microsoft-picker-overlay').forEach(n => n.remove());
   });
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: dispatch a picker initialize postMessage event from the expected origin in tests
   function fireInitialize(channelId: string, port?: MessagePort): void {
     const evt = new MessageEvent('message', {
       origin: PICKER_ORIGIN,
@@ -86,6 +89,7 @@ describe('MicrosoftFilePickerService', () => {
     window.dispatchEvent(evt);
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: fetch the channel ID embedded in the mounted picker iframe name (pure)
   function getOverlayChannelId(): string {
     const iframe = document.querySelector('iframe[name^="microsoft-picker-iframe-"]');
     if (!iframe) throw new Error('iframe not mounted');

@@ -16,6 +16,7 @@ interface TranslationFailure {
  *
  * Throws with a descriptive error listing all missing translations.
  */
+// SEM@8adce298928d9f23cdfb395b5a1238224e3730bb: validate page DOM has no unresolved Transloco translation keys (pure)
 export async function assertNoMissingTranslations(
   page: Page,
   options?: { ignoreSelectors?: string[] },
@@ -28,6 +29,7 @@ export async function assertNoMissingTranslations(
       // Pattern: 3+ dot-separated segments, each alphanumeric/camelCase
       const keyPattern = /^[a-z][a-zA-Z0-9]*(\.[a-z][a-zA-Z0-9]*){2,}$/;
 
+      // SEM@8adce298928d9f23cdfb395b5a1238224e3730bb: filter whether an element matches any ignored CSS selector (pure)
       const isIgnored = (el: Element | null): boolean => {
         if (!el || ignored.length === 0) return false;
         return ignored.some(sel => el.closest(sel) !== null);

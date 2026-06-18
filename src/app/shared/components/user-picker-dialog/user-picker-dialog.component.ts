@@ -164,6 +164,7 @@ export interface UserPickerDialogResult {
     `,
   ],
 })
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog for searching and selecting a user with an optional role assignment
 export class UserPickerDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -173,16 +174,19 @@ export class UserPickerDialogComponent implements OnInit {
   selectedRole = '';
   customRole = '';
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject dialog reference, dialog data, and user admin service (pure)
   constructor(
     public dialogRef: MatDialogRef<UserPickerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserPickerDialogData,
     private userAdminService: UserAdminService,
   ) {}
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: initialize the user autocomplete stream on component startup
   ngOnInit(): void {
     this.setupUserAutocomplete();
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: build a debounced autocomplete stream fetching matching users from the API
   private setupUserAutocomplete(): void {
     this.filteredUsers$ = this.userSearchControl.valueChanges.pipe(
       startWith(''),
@@ -205,6 +209,7 @@ export class UserPickerDialogComponent implements OnInit {
     );
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: format a user as a name-and-email string for autocomplete display (pure)
   displayUser(user: AdminUser | null): string {
     if (!user) {
       return '';
@@ -212,10 +217,12 @@ export class UserPickerDialogComponent implements OnInit {
     return `${user.name} (${user.email})`;
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: store the user chosen from the autocomplete dropdown (mutates shared state)
   onUserSelected(event: MatAutocompleteSelectedEvent): void {
     this.selectedUser = event.option.value as AdminUser;
   }
 
+  // SEM@5cd42152ea247d32680ced31fbcc3bb083b12383: reset selected user, search input, and role fields (mutates shared state)
   onClearUser(): void {
     this.selectedUser = null;
     this.userSearchControl.setValue('');
@@ -223,6 +230,7 @@ export class UserPickerDialogComponent implements OnInit {
     this.customRole = '';
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: close the dialog returning the selected user and optional role assignment
   onConfirm(): void {
     if (this.selectedUser) {
       if (this.data.showRoleSelector) {
@@ -237,6 +245,7 @@ export class UserPickerDialogComponent implements OnInit {
     }
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: close the dialog without returning a selection
   onCancel(): void {
     this.dialogRef.close();
   }

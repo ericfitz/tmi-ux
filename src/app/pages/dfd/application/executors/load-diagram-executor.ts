@@ -19,17 +19,21 @@ import {
 } from '../../types/graph-operation.types';
 
 @Injectable()
+// SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: executor that loads a full diagram (nodes and edges) into the graph
 export class LoadDiagramExecutor extends BaseOperationExecutor {
   readonly priority = 150; // High priority for diagram loading
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: register the logger dependency for LoadDiagramExecutor (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether an operation is a load-diagram type (pure)
   canExecute(operation: GraphOperation): boolean {
     return operation.type === 'load-diagram';
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate the graph then dispatch a load-diagram operation, returning an observable result (mutates shared state)
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
     const loadOperation = operation as LoadDiagramOperation;
     this.logOperationStart(operation);
@@ -48,6 +52,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: load diagram nodes and edges into the graph, optionally clearing existing cells first (mutates shared state)
   private executeLoadDiagram(
     operation: LoadDiagramOperation,
     context: OperationContext,
@@ -127,6 +132,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
     }
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: add node data items to the graph, recording IDs and errors in the supplied accumulators (mutates shared state)
   private _loadNodes(
     graph: any,
     nodes: any[] | undefined,
@@ -150,6 +156,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
     });
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: add edge data items to the graph after validating endpoint nodes exist (mutates shared state)
   private _loadEdges(
     graph: any,
     edges: any[] | undefined,
@@ -180,6 +187,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
     });
   }
 
+  // SEM@e5ece2b788db1f1a17ccf71d0c23c1585b5606ba: build an X6 node config object from raw node data with default styling (pure)
   private createNodeConfig(nodeData: any): any {
     return {
       id: nodeData.id,
@@ -206,6 +214,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
     };
   }
 
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: build an X6 edge config object from raw edge data with default styling (pure)
   private createEdgeConfig(edgeData: any): any {
     return {
       id: edgeData.id,

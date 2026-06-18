@@ -30,6 +30,7 @@ describe('FrameworkMappingPickerDialogComponent', () => {
     { name: 'Elevation of Privilege', appliesTo: ['Process'] },
   ];
 
+  // SEM@7c0bd501c86019ace9bc6c5ce2c9b2f2666769f3: build a FrameworkMappingPickerDialogComponent with mock dependencies for unit tests (pure)
   function createComponent(data: FrameworkMappingPickerDialogData): void {
     dialogRef = { close: vi.fn() };
     languageService = {

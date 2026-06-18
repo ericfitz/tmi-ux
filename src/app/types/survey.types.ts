@@ -12,6 +12,7 @@ import { User, Authorization } from '@app/pages/tm/models/threat-model.model';
 /**
  * Status of a survey
  */
+// SEM@47259dcc3bd1f66f245714931e1330a50558a80a: enumerate valid lifecycle statuses for a survey (pure)
 export type SurveyStatus = 'active' | 'inactive' | 'archived';
 
 /**
@@ -87,6 +88,7 @@ export interface SurveyListItem {
 /**
  * Supported question types (SurveyJS compatible)
  */
+// SEM@47259dcc3bd1f66f245714931e1330a50558a80a: enumerate SurveyJS-compatible question input types (pure)
 export type QuestionType =
   | 'text'
   | 'comment'
@@ -100,6 +102,7 @@ export type QuestionType =
 /**
  * Input types for text questions
  */
+// SEM@47259dcc3bd1f66f245714931e1330a50558a80a: enumerate valid HTML input types for text survey questions (pure)
 export type TextInputType = 'text' | 'email' | 'url' | 'date' | 'number';
 
 /**
@@ -115,6 +118,7 @@ export interface ChoiceItem {
 /**
  * TM field paths that can be mapped from survey questions
  */
+// SEM@47259dcc3bd1f66f245714931e1330a50558a80a: enumerate valid threat model field paths for survey-to-TM mapping (pure)
 export type TmFieldPath =
   | 'name'
   | 'description'
@@ -265,6 +269,7 @@ export interface SurveyJsonSchema {
 /**
  * Status of a survey response in the triage workflow
  */
+// SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: enumerate lifecycle statuses of a survey response in the triage workflow (pure)
 export type ResponseStatus =
   | 'draft'
   | 'submitted'

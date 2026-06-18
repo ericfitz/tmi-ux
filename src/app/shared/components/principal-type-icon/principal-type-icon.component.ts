@@ -14,6 +14,7 @@ import { PrincipalType } from '@app/pages/tm/models/threat-model.model';
   template: '<mat-icon>{{ getIconName() }}</mat-icon>',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@13ad524189c94573aeee64a7185463714eeb6821: render a Material icon representing a principal type (user or group) (pure)
 export class PrincipalTypeIconComponent {
   /**
    * Principal type ('user' or 'group')
@@ -23,6 +24,7 @@ export class PrincipalTypeIconComponent {
   /**
    * Get the Material icon name for the principal type
    */
+  // SEM@13ad524189c94573aeee64a7185463714eeb6821: map a principal type to its Material icon name (pure)
   getIconName(): string {
     return this.principalType === 'group' ? 'group' : 'person';
   }

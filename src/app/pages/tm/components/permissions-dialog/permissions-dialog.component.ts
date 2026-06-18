@@ -557,6 +557,7 @@ export interface PermissionsDialogData {
     `,
   ],
 })
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: dialog for viewing and editing a resource's permission list and owner
 export class PermissionsDialogComponent implements OnInit, OnDestroy {
   permissionsDataSource = new MatTableDataSource<Authorization>([]);
   displayedColumns: string[] = [];
@@ -583,6 +584,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /** Index of the row currently being edited (for autocomplete context) */
   private _activeRowIndex = -1;
 
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: inject dialog, auth, provider adapter, and autocomplete dependencies
   constructor(
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
@@ -591,6 +593,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     private autocompleteService: PermissionsAutocompleteService,
   ) {}
 
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: initialize permission table, columns, providers, and autocomplete pipeline (mutates shared state)
   ngOnInit(): void {
     this.permissionsDataSource.data = this.data.permissions.map(auth => ({
       ...auth,
@@ -624,6 +627,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     );
   }
 
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: unsubscribe all subscriptions on component destruction (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
   }
@@ -631,6 +635,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Load OAuth providers from the authentication service
    */
+  // SEM@10a1c25477a868d41404f6284fb3ecb65aa29fd6: fetch available OAuth providers and merge with built-in providers (reads DB)
   private loadProviders(): void {
     this.providersLoading = true;
     const builtInProviders = this.providerAdapter.getBuiltInProviders();
@@ -655,6 +660,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param provider The provider identifier
    * @returns True if the provider is available
    */
+  // SEM@797a9fcb0f8bad241afdf69e64c72f2da0885671: check whether a provider ID exists in the loaded provider list (pure)
   isProviderAvailable(provider: string): boolean {
     return this.availableProviders.some(p => p.id === provider);
   }
@@ -664,6 +670,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param providerId The provider identifier
    * @returns The provider info object or null if not found
    */
+  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: look up OAuth provider metadata by provider ID, or null if absent (pure)
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }
@@ -674,6 +681,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param auth The authorization object
    * @returns Tooltip text or empty string
    */
+  // SEM@797a9fcb0f8bad241afdf69e64c72f2da0885671: return display name tooltip for an existing permission row (pure)
   getRowTooltip(auth: Authorization): string {
     if (this.isNewPermission(auth)) {
       return '';
@@ -686,6 +694,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param auth The authorization object
    * @returns True if this is a new permission
    */
+  // SEM@797a9fcb0f8bad241afdf69e64c72f2da0885671: check whether a permission was added after the dialog opened (pure)
   isNewPermission(auth: Authorization): boolean {
     return !this._originalPermissions.some(orig => this.principalsEqual(orig, auth));
   }
@@ -695,6 +704,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param auth The authorization object
    * @returns The subject value to display
    */
+  // SEM@6e377df107e25a9c6de25b7d8ea17defb185ee8b: resolve the display subject string from a permission entry (pure)
   getSubjectValue(auth: Authorization): string {
     return (auth as AuthorizationWithSubject)._subject ?? auth.email ?? auth.provider_id ?? '';
   }
@@ -704,6 +714,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param auth The authorization object
    * @returns Placeholder text
    */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return input placeholder text appropriate for the permission's principal type (pure)
   getSubjectPlaceholder(auth: Authorization): string {
     return auth.principal_type === 'group' ? 'Group name (e.g., everyone)' : 'Email or user ID';
   }
@@ -713,6 +724,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param index The index of the permission to update
    * @param event The selection change event containing the new principal type value
    */
+  // SEM@13ad524189c94573aeee64a7185463714eeb6821: update the principal type of a permission row and refresh the table (mutates shared state)
   updatePermissionPrincipalType(index: number, event: { value: 'user' | 'group' }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       this.permissionsDataSource.data[index].principal_type = event.value;
@@ -725,6 +737,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param index The index of the permission to update
    * @param event The selection change event containing the new provider value
    */
+  // SEM@6c8878fb5e0ec62d91e60e0de2293417ebc05238: update provider on a permission row, auto-adjusting principal type and default subject (mutates shared state)
   updatePermissionProvider(index: number, event: { value: string }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       const auth = this.permissionsDataSource.data[index];
@@ -760,6 +773,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param index The index of the permission to update
    * @param event The selection change event containing the new role value
    */
+  // SEM@df857842acb683048164ddc3b37030f666db756c: update the role of a permission row and refresh the table (mutates shared state)
   updatePermissionRole(index: number, event: { value: 'reader' | 'writer' | 'owner' }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       this.permissionsDataSource.data[index].role = event.value;
@@ -770,6 +784,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Adds a new permission to the list
    */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: append a blank permission entry with default provider to the permissions list (mutates shared state)
   addPermission(): void {
     const defaultProvider = this.availableProviders[0]?.id || 'google';
     this.permissionsDataSource.data.push({
@@ -788,6 +803,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Deletes a permission from the list
    * @param index The index of the permission to delete
    */
+  // SEM@0648dcbaf3095e0e174d61f4feb92ebd8069af56: remove a permission entry by index from the permissions list (mutates shared state)
   deletePermission(index: number): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       this.permissionsDataSource.data.splice(index, 1);
@@ -799,6 +815,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Sets the selected user as owner
    * @param index The index of the permission to set as owner
    */
+  // SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: promote a user permission entry to owner and notify the parent via callback (mutates shared state)
   setAsOwner(index: number): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       const selectedAuth = this.permissionsDataSource.data[index];
@@ -835,6 +852,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Saves the permissions and closes the dialog
    * Ensures _subject field is set for all permissions
    */
+  // SEM@481531368b0836c949ec773e0bf21ab13052d454: close the dialog returning the updated permissions list and owner
   save(): void {
     const permissions = this.permissionsDataSource.data.map(auth => {
       const authWithSubject = auth as AuthorizationWithSubject;
@@ -853,6 +871,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Closes the dialog without saving
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: dismiss the dialog without saving any permission changes
   close(): void {
     this.dialogRef.close();
   }
@@ -861,6 +880,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the add permission button
    * @returns The tabindex value after all table rows
    */
+  // SEM@13ad524189c94573aeee64a7185463714eeb6821: compute tab index for the add-permission button after all table rows (pure)
   getAddPermissionButtonTabIndex(): number {
     return this.permissionsDataSource.data.length * 8 + 1;
   }
@@ -869,6 +889,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the close button
    * @returns The tabindex value after the add button
    */
+  // SEM@13ad524189c94573aeee64a7185463714eeb6821: compute tab index for the close button based on row count (pure)
   getCloseButtonTabIndex(): number {
     return this.permissionsDataSource.data.length * 8 + 2;
   }
@@ -877,6 +898,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the save button
    * @returns The tabindex value after the close button
    */
+  // SEM@13ad524189c94573aeee64a7185463714eeb6821: compute tab index for the save button based on row count (pure)
   getSaveButtonTabIndex(): number {
     return this.permissionsDataSource.data.length * 8 + 3;
   }
@@ -886,6 +908,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param subjectType The subject type ('user' or 'group')
    * @returns The translation key for the subject type
    */
+  // SEM@9a6eb84ed5cddcc3f90da30e13b5dc21e9bcd188: map a subject type to its i18n translation key (pure)
   getSubjectTypeTranslationKey(subjectType: string): string {
     return `common.subjectTypes.${subjectType}`;
   }
@@ -895,6 +918,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param role The role ('owner', 'writer', or 'reader')
    * @returns The translation key for the role
    */
+  // SEM@9a6eb84ed5cddcc3f90da30e13b5dc21e9bcd188: map a permission role to its i18n translation key (pure)
   getRoleTranslationKey(role: string): string {
     return `common.roles.${role}`;
   }
@@ -903,6 +927,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Handle input events on the subject field for autocomplete
    * Only triggers search when the provider is TMI
    */
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: handle subject field input and dispatch autocomplete search for TMI provider (mutates shared state)
   onSubjectInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const auth = this.permissionsDataSource.data[index];
@@ -922,6 +947,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Handle autocomplete option selection
    */
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: update authorization row subject from autocomplete selection (mutates shared state)
   onAutocompleteSelected(index: number, event: MatAutocompleteSelectedEvent): void {
     const suggestion = event.option.value as AutocompleteSuggestion;
     const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
@@ -931,6 +957,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if autocomplete should be active for a given row
    */
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: determine if autocomplete is enabled for a given authorization row (pure)
   isAutocompleteActive(auth: Authorization): boolean {
     return auth.provider === 'tmi';
   }

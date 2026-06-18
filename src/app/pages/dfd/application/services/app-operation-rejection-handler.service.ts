@@ -59,6 +59,7 @@ const REJECTION_TITLE_MAP: Record<string, string> = {
 };
 
 @Injectable()
+// SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: handle server-rejected diagram operations by rolling back history and batching user notifications (mutates shared state)
 export class AppOperationRejectionHandler implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _subscription = new Subscription();
@@ -81,6 +82,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   private _notificationTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly NOTIFICATION_BATCH_DELAY_MS = 2000; // 2 seconds
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: inject required services for rejection handling, rollback, and resync (pure)
   constructor(
     private logger: LoggerService,
     private historyService: AppHistoryService,
@@ -95,6 +97,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Initialize the rejection handler
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: subscribe to WebSocket rejection and operation streams to activate the handler (mutates shared state)
   initialize(): void {
     if (this._initialized) {
       this.logger.warn('AppOperationRejectionHandler already initialized');
@@ -128,6 +131,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Cleanup
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: unsubscribe all streams and cancel pending notification timers on service destruction (mutates shared state)
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -143,6 +147,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Handle operation_rejected message from server
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: process a server rejection event, trigger rollback, and trip circuit breaker if threshold exceeded (mutates shared state)
   private _handleOperationRejected(event: RejectionEvent): void {
     this.logger.warn('Operation rejected by server', {
       operation_id: event.operation_id,
@@ -192,6 +197,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Perform rollback of rejected operation
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: undo diagram history to the rejected operation ID, or force resync if entry not found (mutates shared state)
   private _performRollback(event: RejectionEvent): Observable<number> {
     // Check if history entry exists
     const entry = this.historyService.findEntryByOperationId(event.operation_id);
@@ -218,6 +224,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Handle incoming diagram operation - queue if rolling back
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: queue incoming diagram operations during an active rollback to preserve ordering (mutates shared state)
   private _handleIncomingOperation(operation: DiagramOperationMessage): void {
     if (this._isRollingBack) {
       // Queue operation to apply after rollback
@@ -238,6 +245,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
    * Clear queued operations after rollback completes
    * Note: Operations are discarded as they will be handled by the normal WebSocket flow
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: clear the operation queue after rollback completes, deferring to normal WebSocket flow (mutates shared state)
   private _applyQueuedOperations(): void {
     if (this._operationQueue.length === 0) {
       return;
@@ -255,6 +263,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Add rejection to pending notifications for batching
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: buffer a rejection event and reset the debounce timer for batched notification display (mutates shared state)
   private _addPendingNotification(event: RejectionEvent): void {
     this._pendingNotifications.push(event);
 
@@ -272,6 +281,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Show batched rejection notifications
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: aggregate pending rejection events into a single user notification and clear the buffer (mutates shared state)
   private _showBatchedNotifications(): void {
     if (this._pendingNotifications.length === 0) {
       return;
@@ -297,6 +307,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Build notification object from rejection events
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: build a user notification object from rejection events (pure)
   private _buildNotification(
     count: number,
     firstEvent: RejectionEvent,
@@ -324,6 +335,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * User-initiated resync from notification
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: trigger a diagram resync on user request, blocking operations during sync (mutates shared state)
   private _userInitiatedResync(): void {
     this.logger.info('User initiated resync after rejection');
 
@@ -344,6 +356,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Force immediate resync (not user-initiated)
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: force an immediate diagram resync, tripping circuit breaker if resync rate exceeded (mutates shared state)
   private _forceResync(reason: string): Observable<void> {
     this.logger.warn('Forcing immediate resync', { reason });
 
@@ -386,6 +399,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Check if circuit breaker should trip
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: check if rejection or resync rate exceeds the circuit-breaker threshold (pure)
   private _shouldTripCircuitBreaker(): boolean {
     return (
       this._recentRejections.length > this.MAX_REJECTIONS_PER_MINUTE ||
@@ -396,6 +410,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Trip circuit breaker - exit collaboration due to repeated failures
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: exit collaboration session after too many rejection or resync failures (mutates shared state)
   private _tripCircuitBreaker(): void {
     this.logger.error('Circuit breaker tripped - too many rejections or resyncs', {
       rejectionCount: this._recentRejections.length,
@@ -421,6 +436,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Clean up old rejections outside the time window
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: purge rejection events older than the sliding time window (mutates shared state)
   private _cleanupOldRejections(): void {
     const cutoff = Date.now() - this.REJECTION_WINDOW_MS;
     this._recentRejections = this._recentRejections.filter(r => r.timestamp > cutoff);
@@ -429,6 +445,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Get notification severity based on rejection reason
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: map a rejection reason to a notification severity level (pure)
   private _getSeverity(reason: string): 'info' | 'warning' | 'error' {
     return REJECTION_SEVERITY_MAP[reason] ?? 'warning';
   }
@@ -436,6 +453,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   /**
    * Get notification title based on rejection reason
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: map a rejection reason to a human-readable notification title (pure)
   private _getTitle(reason: string): string {
     return REJECTION_TITLE_MAP[reason] ?? 'Operation Rejected';
   }

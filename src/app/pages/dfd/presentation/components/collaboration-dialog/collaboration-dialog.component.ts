@@ -34,6 +34,7 @@ import { AppNotificationService } from '../../../application/services/app-notifi
 import { WebSocketAdapter } from '../../../../../core/services/websocket.adapter';
 import { ScrollIndicatorDirective } from '../../../../../shared/directives/scroll-indicator.directive';
 
+// SEM@88d717bf273cf5a28cf136002cb7e9bb24b8285f: type alias for the data payload passed to the collaboration dialog (pure)
 export type CollaborationDialogData = object;
 
 @Component({
@@ -60,6 +61,7 @@ export type CollaborationDialogData = object;
   styleUrls: ['./collaboration-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@d4322784af04c286c6dd06c07662e27950dae791: manage real-time collaboration session users and permissions for a DFD diagram
 export class CollaborationDialogComponent implements OnInit, OnDestroy {
   // Collaboration state
   isCollaborating = false;
@@ -76,6 +78,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   // Periodic refresh timer
   private _refreshInterval: any = null;
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: inject collaboration, notification, and WebSocket services into the dialog (mutates shared state)
   constructor(
     private _dialogRef: MatDialogRef<CollaborationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CollaborationDialogData,
@@ -88,6 +91,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private _document: Document,
   ) {}
 
+  // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: subscribe to collaboration state and schedule periodic sync on WebSocket connect (mutates shared state)
   ngOnInit(): void {
     this._logger.info('CollaborationDialogComponent initialized');
 
@@ -184,6 +188,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
     this._syncWithServiceState();
   }
 
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: cancel the refresh interval and unsubscribe all subscriptions on destroy (mutates shared state)
   ngOnDestroy(): void {
     // Clear any running refresh interval
     if (this._refreshInterval) {
@@ -198,6 +203,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Close the dialog
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: close the collaboration dialog (mutates shared state)
   closeDialog(): void {
     this._dialogRef.close();
   }
@@ -205,6 +211,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Sync component state with service state
    */
+  // SEM@0db4bd6c8ebf3dc2d21d1b513db497ac9278af18: pull current collaboration state from the service into component fields (mutates shared state)
   private _syncWithServiceState(): void {
     this._logger.info('[CollaborationDialog] Performing initial state sync');
 
@@ -232,6 +239,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Set up or clear periodic refresh based on WebSocket connection state
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: schedule or cancel periodic state-verification ticks based on WebSocket connectivity (mutates shared state)
   private _setupPeriodicRefresh(): void {
     // Clear existing interval if any
     if (this._refreshInterval) {
@@ -268,6 +276,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Verify that component state is synchronized with service state
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: detect component-to-service state mismatches and trigger recovery sync (mutates shared state)
   private _verifyStateSync(): void {
     const serviceState = this._collaborationService.getCurrentState();
 
@@ -324,6 +333,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Toggle collaboration on/off
    */
+  // SEM@d4322784af04c286c6dd06c07662e27950dae791: start or stop the active collaboration session for the diagram (mutates shared state)
   toggleCollaboration(): void {
     this._logger.info('toggleCollaboration called', {
       isCollaborating: this.isCollaborating,
@@ -356,6 +366,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Copy the current URL to clipboard with collaboration join parameters
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: copy a collaboration join URL for the current diagram to the system clipboard (mutates shared state)
   copyLinkToClipboard(): void {
     try {
       const currentUrl = new URL(this._document.location.href);
@@ -383,6 +394,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Remove a user from the collaboration session
    */
+  // SEM@977419d6107921dd60430d6cecd8cb872c9ed1c2: remove a collaborator from the active session (mutates shared state)
   removeUser(user: CollaborationUser): void {
     this._collaborationService
       .removeUser({
@@ -410,6 +422,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Update a user's permission in the collaboration session
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: update a collaborator's read/write permission in the session (mutates shared state)
   updateUserPermission(userEmail: string, permission: 'writer' | 'reader'): void {
     this._collaborationService
       .updateUserPermission(userEmail, permission)
@@ -426,6 +439,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if the current user has a specific permission
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: check whether the current user holds a named collaboration permission (pure)
   hasPermission(permission: 'edit' | 'manageSession'): boolean {
     return this._collaborationService.hasPermission(permission);
   }
@@ -433,6 +447,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if the current user is the host of the collaboration session
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: return whether the current user is the collaboration session host (pure)
   isCurrentUserHost(): boolean {
     return this.isCurrentUserHostFlag;
   }
@@ -440,6 +455,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the color for the collaboration button based on current state
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map collaboration session state to a button color string (pure)
   getCollaborationButtonColor(): string {
     if (this.isCollaborating) {
       return 'primary';
@@ -453,6 +469,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if a specific user is the current user
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: validate whether a given email matches the authenticated user (pure)
   isCurrentUser(userEmail: string): boolean {
     return this._collaborationService.isCurrentUser(userEmail);
   }
@@ -460,6 +477,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if current user is the presenter
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: validate whether the authenticated user holds presenter privileges (pure)
   isCurrentUserPresenter(): boolean {
     return this._collaborationService.isCurrentUserPresenter();
   }
@@ -467,6 +485,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Request presenter privileges
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: dispatch a presenter-privilege request for the current user to the collaboration service
   requestPresenterPrivileges(): void {
     this._collaborationService
       .requestPresenterPrivileges()
@@ -484,6 +503,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Approve presenter request (host only)
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: approve a pending presenter-privilege request for a given user (host only)
   approvePresenterRequest(userEmail: string): void {
     this._collaborationService
       .approvePresenterRequest(userEmail)
@@ -501,6 +521,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Deny presenter request (host only)
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: deny a pending presenter-privilege request for a given user (host only)
   denyPresenterRequest(userEmail: string): void {
     this._collaborationService
       .denyPresenterRequest(userEmail)
@@ -518,6 +539,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Take back presenter privileges (host only)
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: revoke presenter privileges from the current presenter (host only)
   takeBackPresenterPrivileges(): void {
     this._collaborationService
       .takeBackPresenterPrivileges()
@@ -535,6 +557,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Clear presenter (host only)
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: unset the active presenter, clearing presenter role from the session (host only)
   clearPresenter(): void {
     this._collaborationService
       .setPresenter(null)
@@ -552,6 +575,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the status color for a user
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map a collaboration user's connection status to a CSS class name (pure)
   getStatusColor(status: 'active' | 'idle' | 'disconnected'): string {
     switch (status) {
       case 'active':
@@ -568,6 +592,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate Material icon for the current WebSocket connection status
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map WebSocket connection state to a Material icon name (pure)
   getWebSocketStatusIcon(): string {
     if (!this.isCollaborating) {
       return 'sensors';
@@ -583,6 +608,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate CSS class for the WebSocket connection status icon
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: map WebSocket connection state to a CSS class for icon styling (pure)
   getWebSocketStatusIconClass(): string {
     if (!this.isCollaborating) {
       return 'websocket-status-not-configured';
@@ -598,6 +624,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the name of the current presenter
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: resolve the current presenter's display name from the collaborator list (pure)
   getPresenterName(): string {
     if (!this.currentPresenterEmail) {
       return '';
@@ -611,6 +638,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the name of a user by their email
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: resolve a collaborator's display name from their email address (pure)
   getRequestUserName(userEmail: string): string {
     const user = this.collaborationUsers.find(u => u.email === userEmail);
     return user?.name || userEmail;
@@ -619,6 +647,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate tooltip text for the WebSocket connection status
    */
+  // SEM@b0c4b820c2575334e437219701331f3b664358de: build a localized tooltip describing the current WebSocket connection status (pure)
   getWebSocketStatusTooltip(): string {
     if (!this.isCollaborating) {
       const notConnectedText = this._translocoService.translate(
@@ -649,6 +678,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
    * Track users by composite key for efficient rendering
    * This ensures proper deduplication using the principal-based composite key (provider:provider_id)
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: compute a stable track-by key for a collaborator using provider identity (pure)
   trackByPrincipalKey(_index: number, user: CollaborationUser): string {
     return `${user.provider}:${user.provider_id}`;
   }
@@ -656,6 +686,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Check if a user has a pending presenter request
    */
+  // SEM@ed548734af3b22d467a74b7d53111db845c0379e: validate whether a user has a pending presenter-privilege request (pure)
   hasPresenterRequest(userEmail: string): boolean {
     return this.pendingPresenterRequests.includes(userEmail);
   }

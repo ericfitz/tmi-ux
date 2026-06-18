@@ -107,6 +107,7 @@ describe('copyToClipboardWithFeedback', () => {
   let logger: { error: ReturnType<typeof vi.fn> };
   const originalClipboard = navigator.clipboard;
 
+  // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: build test dependency stubs for clipboard utility unit tests (pure)
   const deps = (): {
     snackBar: MatSnackBar;
     transloco: TranslocoService;

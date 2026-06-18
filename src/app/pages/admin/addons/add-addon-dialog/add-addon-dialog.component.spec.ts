@@ -23,6 +23,7 @@ describe('AddAddonDialogComponent', () => {
   let mockTransloco: TranslocoService;
   let envInjector: EnvironmentInjector;
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build an initialized AddAddonDialogComponent for tests (pure)
   function build(): AddAddonDialogComponent {
     const component = runInInjectionContext(
       envInjector,

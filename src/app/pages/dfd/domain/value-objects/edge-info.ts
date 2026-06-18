@@ -16,7 +16,9 @@ import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
  * This stores all properties and metadata for diagram edges
  * Matches the OpenAPI Edge schema structure
  */
+// SEM@b543ab1383d78680d661e0dbb798e85a61258e1d: immutable value object holding all domain properties of a diagram edge
 export class EdgeInfo {
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: construct and validate an edge info value object from its domain fields (pure)
   constructor(
     public readonly id: string,
     public readonly shape: string = CANONICAL_EDGE_SHAPE,
@@ -47,6 +49,7 @@ export class EdgeInfo {
   /**
    * Gets custom data (excluding reserved metadata namespace)
    */
+  // SEM@59d014b875b85af28377dda6bfef40ba3531dcef: return edge data excluding the reserved metadata namespace (pure)
   getCustomData(): Record<string, unknown> {
     const { _metadata: _, ...customData } = this.data;
     return customData;
@@ -55,6 +58,7 @@ export class EdgeInfo {
   /**
    * Creates EdgeInfo from a plain object in X6 native format
    */
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: deserialize an edge info from a plain object, handling legacy terminal formats (pure)
   static fromJSON(data: {
     id: string;
     shape?: string;
@@ -144,6 +148,7 @@ export class EdgeInfo {
    * Creates a new EdgeInfo instance from a plain object.
    * This is a factory method for creating new instances.
    */
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: build an EdgeInfo from raw data fields with default ports and labels (pure)
   static create(data: {
     id: string;
     sourceNodeId: string;
@@ -210,6 +215,7 @@ export class EdgeInfo {
    * @param text - The label text
    * @param position - Position along the edge (0-1), defaults to 0.5 (middle)
    */
+  // SEM@6e5efd2b0a392451cdb3e9dd56023617e967c3e3: build a styled edge label with default position and font attrs (pure)
   static createDefaultLabel(text: string, position: number = 0.5): EdgeLabel {
     return {
       position,
@@ -228,6 +234,7 @@ export class EdgeInfo {
   /**
    * Creates a simple edge between two nodes
    */
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: build a minimal edge between two nodes with default ports (pure)
   static createSimple(
     id: string,
     sourceNodeId: string,
@@ -245,6 +252,7 @@ export class EdgeInfo {
   /**
    * Creates an edge with port connections
    */
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: build an edge connecting two nodes via explicit ports (pure)
   static createWithPorts(
     id: string,
     sourceNodeId: string,
@@ -263,6 +271,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated label (uses labels array - X6 native format)
    */
+  // SEM@6e5efd2b0a392451cdb3e9dd56023617e967c3e3: update the edge label text, preserving existing label styling (pure)
   withLabel(label: string): EdgeInfo {
     // Update labels array (X6 native format for edge labels)
     let newLabels: EdgeLabel[];
@@ -307,6 +316,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated vertices
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: update the edge routing waypoints, replacing all vertices (pure)
   withVertices(vertices: Point[] | Array<{ x: number; y: number }>): EdgeInfo {
     const pointVertices = vertices.map(v => (v instanceof Point ? v : new Point(v.x, v.y)));
     return new EdgeInfo(
@@ -331,6 +341,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with an added vertex
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: insert a waypoint into the edge route at an optional index (pure)
   withAddedVertex(vertex: Point | { x: number; y: number }, index?: number): EdgeInfo {
     const newVertices = [...this.vertices];
     const pointVertex = vertex instanceof Point ? vertex : new Point(vertex.x, vertex.y);
@@ -346,6 +357,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with a removed vertex
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove a waypoint from the edge route by index (pure)
   withRemovedVertex(index: number): EdgeInfo {
     if (index < 0 || index >= this.vertices.length) {
       throw new Error('Vertex index out of bounds');
@@ -360,6 +372,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated metadata (accepts both formats)
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: update the edge metadata key-value pairs, replacing all entries (pure)
   withMetadata(metadata: Record<string, string> | Metadata[]): EdgeInfo {
     let newMetadata: Metadata[];
 
@@ -398,6 +411,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated source
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: update the edge source node and optional port (pure)
   withSource(nodeId: string, portId?: string): EdgeInfo {
     const newSource: EdgeTerminal = { cell: nodeId, port: portId };
     return new EdgeInfo(
@@ -422,6 +436,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated target
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: update the edge target node and optional port (pure)
   withTarget(nodeId: string, portId?: string): EdgeInfo {
     const newTarget: EdgeTerminal = { cell: nodeId, port: portId };
     return new EdgeInfo(
@@ -446,6 +461,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated custom data
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: update a single custom data entry on the edge by key (pure)
   withCustomData(key: string, value: any): EdgeInfo {
     const newData = {
       ...this.data,
@@ -474,6 +490,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with multiple custom data updates
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: update multiple custom data entries on the edge at once (pure)
   withCustomDataBatch(customData: Record<string, any>): EdgeInfo {
     const newData = {
       ...this.data,
@@ -502,6 +519,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated attrs
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: merge visual attribute overrides into the edge attrs (pure)
   withAttrs(attrs: EdgeAttrs): EdgeInfo {
     return new EdgeInfo(
       this.id,
@@ -526,6 +544,7 @@ export class EdgeInfo {
    * Creates a new EdgeInfo with updated properties (partial update)
    * This is the consolidated method for all edge updates
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: apply a partial set of property updates to the edge value object (pure)
   update(updates: {
     source?: EdgeTerminal;
     target?: EdgeTerminal;
@@ -587,6 +606,7 @@ export class EdgeInfo {
   /**
    * Checks if this edge connects to the specified node
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: validate whether the edge has the given node as source or target (pure)
   connectsToNode(nodeId: string): boolean {
     return this.source.cell === nodeId || this.target.cell === nodeId;
   }
@@ -594,6 +614,7 @@ export class EdgeInfo {
   /**
    * Checks if this edge uses the specified port
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: validate whether the edge uses a specific node port (pure)
   usesPort(nodeId: string, portId: string): boolean {
     return (
       (this.source.cell === nodeId && this.source.port === portId) ||
@@ -604,6 +625,7 @@ export class EdgeInfo {
   /**
    * Gets the total length of the edge path
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute total Euclidean path length across all edge waypoints (pure)
   getPathLength(): number {
     if (this.vertices.length === 0) {
       return 0;
@@ -624,6 +646,7 @@ export class EdgeInfo {
   /**
    * Checks if this edge info equals another edge info
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate structural equality between two edge value objects (pure)
   equals(other: EdgeInfo): boolean {
     return (
       this.id === other.id &&
@@ -642,6 +665,7 @@ export class EdgeInfo {
   /**
    * Returns a string representation of the edge info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: format the edge as a human-readable source-to-target string (pure)
   toString(): string {
     return `EdgeInfo(${this.id}, ${this.source.cell} -> ${this.target.cell})`;
   }
@@ -649,6 +673,7 @@ export class EdgeInfo {
   /**
    * Converts to OpenAPI-compliant JSON format
    */
+  // SEM@24260d6f2fbe25f47978ac154f6bfd67319aee07: serialize the edge value object to an OpenAPI-compliant JSON shape (pure)
   toJSON(): {
     id: string;
     shape: string;
@@ -688,6 +713,7 @@ export class EdgeInfo {
   /**
    * Converts metadata array to Record format
    */
+  // SEM@b543ab1383d78680d661e0dbb798e85a61258e1d: convert the edge metadata array to a flat key-value record (pure)
   getMetadataAsRecord(): Record<string, string> {
     return metadataToRecord(this.metadata);
   }
@@ -695,6 +721,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated source terminal
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: update the edge source terminal with a full EdgeTerminal value (pure)
   withSourceTerminal(source: EdgeTerminal): EdgeInfo {
     return new EdgeInfo(
       this.id,
@@ -718,6 +745,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated target terminal
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: update the edge target terminal with a full EdgeTerminal value (pure)
   withTargetTerminal(target: EdgeTerminal): EdgeInfo {
     return new EdgeInfo(
       this.id,
@@ -741,6 +769,7 @@ export class EdgeInfo {
   /**
    * Creates a new EdgeInfo with updated labels
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: update the edge labels array, replacing all labels (pure)
   withLabels(labels: EdgeLabel[]): EdgeInfo {
     return new EdgeInfo(
       this.id,
@@ -764,6 +793,7 @@ export class EdgeInfo {
   /**
    * Helper method to compare source objects
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare edge source cell and port for equality (pure)
   private sourceEqual(other: EdgeTerminal): boolean {
     return this.source.cell === other.cell && this.source.port === other.port;
   }
@@ -771,6 +801,7 @@ export class EdgeInfo {
   /**
    * Helper method to compare target objects
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare edge target cell and port for equality (pure)
   private targetEqual(other: EdgeTerminal): boolean {
     return this.target.cell === other.cell && this.target.port === other.port;
   }
@@ -778,6 +809,7 @@ export class EdgeInfo {
   /**
    * Helper method to compare attrs objects
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare edge attribute objects for deep equality (pure)
   private attrsEqual(other: EdgeAttrs): boolean {
     return JSON.stringify(this.attrs) === JSON.stringify(other);
   }
@@ -785,6 +817,7 @@ export class EdgeInfo {
   /**
    * Helper method to compare labels arrays
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare edge label arrays for deep equality (pure)
   private labelsEqual(other: EdgeLabel[]): boolean {
     return JSON.stringify(this.labels) === JSON.stringify(other);
   }
@@ -792,6 +825,7 @@ export class EdgeInfo {
   /**
    * Validates the edge info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: validate edge id, shape, endpoints, vertices, and X6 properties; throw if invalid (pure)
   private _validate(): void {
     if (!this.id || this.id.trim().length === 0) {
       throw new Error('Edge ID cannot be empty');
@@ -839,6 +873,7 @@ export class EdgeInfo {
   /**
    * Validates X6-specific properties
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate edge markup, tools, router, connector, and default label (pure)
   private _validateX6Properties(): void {
     validateMarkupElements(this.markup, 'Edge markup element');
     validateCellTools(this.tools, 'Edge tool');
@@ -865,6 +900,7 @@ export class EdgeInfo {
   /**
    * Validates a string-or-object config (router or connector)
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate a named router or connector config against allowed names (pure)
   private _validateNamedConfig(
     config: string | { name: string; args?: any },
     validNames: string[],
@@ -895,6 +931,7 @@ export class EdgeInfo {
   /**
    * Validates the defaultLabel structure
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate edge default label position and attrs structure (pure)
   private _validateDefaultLabel(): void {
     if (!this.defaultLabel) return;
 
@@ -918,6 +955,7 @@ export class EdgeInfo {
   /**
    * Checks if vertices arrays are equal
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare vertex point arrays for coordinate equality (pure)
   private verticesEqual(other: Point[]): boolean {
     if (this.vertices.length !== other.length) {
       return false;
@@ -931,6 +969,7 @@ export class EdgeInfo {
   /**
    * Checks if metadata arrays are equal
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: compare hybrid metadata and custom data for equality (pure)
   private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
     const otherMetadata = other._metadata || [];
     const otherCustomData = { ...other };

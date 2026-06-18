@@ -6,12 +6,14 @@ import { Metadata, metadataToRecord, safeMetadataEntry } from './metadata';
  * Diagram type supported by the DFD component
  * Matches the OpenAPI specification diagram type enum
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: type alias constraining diagram type to the supported DFD version string (pure)
 export type DiagramType = 'DFD-1.0.0';
 
 /**
  * Cell union type representing nodes or edges in the diagram
  * Matches the OpenAPI cells oneOf schema
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: union type representing any diagram cell as a node or edge (pure)
 export type DiagramCell = NodeInfo | EdgeInfo;
 
 /**
@@ -19,7 +21,9 @@ export type DiagramCell = NodeInfo | EdgeInfo;
  * This stores all properties and metadata for diagrams
  * Matches the OpenAPI Diagram schema structure
  */
+// SEM@b543ab1383d78680d661e0dbb798e85a61258e1d: value object holding all metadata and cells for a DFD diagram (pure)
 export class DiagramInfo {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a validated diagram info from id, name, type, timestamps, and cells (pure)
   constructor(
     public readonly id: string,
     public readonly name: string,
@@ -50,6 +54,7 @@ export class DiagramInfo {
   /**
    * Creates DiagramInfo from a plain object (supports both new and legacy formats)
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: deserialize a diagram from a plain object, supporting legacy field names (pure)
   static fromJSON(data: {
     id: string;
     name: string;
@@ -107,6 +112,7 @@ export class DiagramInfo {
   /**
    * Creates a default DiagramInfo
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build a new empty diagram with default type and current timestamps (pure)
   static createDefault(id: string, name: string, description?: string): DiagramInfo {
     const now = new Date();
     return new DiagramInfo(id, name, 'DFD-1.0.0', now, now, description, [], []);
@@ -115,6 +121,7 @@ export class DiagramInfo {
   /**
    * Helper method to parse date from string or Date object
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: convert a date string or Date to a validated Date object (pure)
   private static parseDate(dateInput: string | Date | undefined): Date {
     if (!dateInput) {
       return new Date();
@@ -135,6 +142,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with updated name
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with a replaced name and updated modified timestamp (pure)
   withName(name: string): DiagramInfo {
     return new DiagramInfo(
       this.id,
@@ -151,6 +159,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with updated description
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with a replaced description and updated modified timestamp (pure)
   withDescription(description: string): DiagramInfo {
     return new DiagramInfo(
       this.id,
@@ -167,6 +176,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with updated metadata
    */
+  // SEM@3da38c2fadc977d37ce81cd8ad2a39fca34c9b91: build a new diagram with replaced metadata, accepting array or record form (pure)
   withMetadata(metadata: Metadata[] | Record<string, string>): DiagramInfo {
     let newMetadata: Metadata[];
 
@@ -193,6 +203,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with updated cells
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with a replaced cells collection and updated modified timestamp (pure)
   withCells(cells: DiagramCell[]): DiagramInfo {
     return new DiagramInfo(
       this.id,
@@ -209,6 +220,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with an added node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with the given node appended to cells (pure)
   withAddedNode(node: NodeInfo): DiagramInfo {
     const newCells = [...this.cells, node];
     return this.withCells(newCells);
@@ -217,6 +229,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with an added edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with the given edge appended to cells (pure)
   withAddedEdge(edge: EdgeInfo): DiagramInfo {
     const newCells = [...this.cells, edge];
     return this.withCells(newCells);
@@ -225,6 +238,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with a removed cell (node or edge)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a new diagram with the identified cell removed from cells (pure)
   withRemovedCell(cellId: string): DiagramInfo {
     const newCells = this.cells.filter(cell => cell.id !== cellId);
     return this.withCells(newCells);
@@ -233,6 +247,7 @@ export class DiagramInfo {
   /**
    * Creates a new DiagramInfo with an updated cell (node or edge)
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build a new diagram with a matching cell replaced by the updated cell (pure)
   withUpdatedCell(updatedCell: DiagramCell): DiagramInfo {
     const newCells = this.cells.map(cell => (cell.id === updatedCell.id ? updatedCell : cell));
     return this.withCells(newCells);
@@ -241,6 +256,7 @@ export class DiagramInfo {
   /**
    * Gets a specific node by ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a node by ID from the diagram's node collection (pure)
   getNode(nodeId: string): NodeInfo | undefined {
     return this.nodes.find(node => node.id === nodeId);
   }
@@ -248,6 +264,7 @@ export class DiagramInfo {
   /**
    * Gets a specific edge by ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch an edge by ID from the diagram's edge collection (pure)
   getEdge(edgeId: string): EdgeInfo | undefined {
     return this.edges.find(edge => edge.id === edgeId);
   }
@@ -255,6 +272,7 @@ export class DiagramInfo {
   /**
    * Gets a specific cell (node or edge) by ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a cell by ID from the diagram's cells collection (pure)
   getCell(cellId: string): DiagramCell | undefined {
     return this.cells.find(cell => cell.id === cellId);
   }
@@ -262,6 +280,7 @@ export class DiagramInfo {
   /**
    * Gets all edges connected to a specific node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter edges whose source or target connects to the given node (pure)
   getEdgesConnectedToNode(nodeId: string): EdgeInfo[] {
     return this.edges.filter(edge => edge.connectsToNode(nodeId));
   }
@@ -269,6 +288,7 @@ export class DiagramInfo {
   /**
    * Gets metadata as Record for backward compatibility
    */
+  // SEM@b543ab1383d78680d661e0dbb798e85a61258e1d: convert diagram metadata array to a key-value record for backward compatibility (pure)
   getMetadataAsRecord(): Record<string, string> {
     return metadataToRecord(this.metadata);
   }
@@ -276,6 +296,7 @@ export class DiagramInfo {
   /**
    * Gets diagram statistics
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute node count, edge count, and shape-type breakdown for the diagram (pure)
   getStatistics(): {
     nodeCount: number;
     edgeCount: number;
@@ -298,6 +319,7 @@ export class DiagramInfo {
   /**
    * Checks if this diagram equals another diagram
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare two diagrams for deep value equality across all fields (pure)
   equals(other: DiagramInfo): boolean {
     return (
       this.id === other.id &&
@@ -314,6 +336,7 @@ export class DiagramInfo {
   /**
    * Returns a string representation of the diagram
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: format a concise human-readable summary of the diagram (pure)
   toString(): string {
     const stats = this.getStatistics();
     return `DiagramInfo(${this.id}, "${this.name}", ${String(stats.nodeCount)} nodes, ${String(stats.edgeCount)} edges)`;
@@ -322,6 +345,7 @@ export class DiagramInfo {
   /**
    * Converts to OpenAPI-compliant JSON format
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: serialize diagram to an OpenAPI-compliant plain object with ISO date strings (pure)
   toJSON(): {
     id: string;
     name: string;
@@ -347,6 +371,7 @@ export class DiagramInfo {
   /**
    * Validates the diagram info
    */
+  // SEM@a31ab2e4c978de326750079b6beb589924901b63: validate diagram fields, cell ID uniqueness, and edge node references; throw on violation (pure)
   private _validate(): void {
     if (!this.id || this.id.trim().length === 0) {
       throw new Error('Diagram ID cannot be empty');
@@ -402,6 +427,7 @@ export class DiagramInfo {
   /**
    * Checks if metadata arrays are equal
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compare two metadata arrays for key-value equality regardless of order (pure)
   private metadataEquals(other: Metadata[]): boolean {
     if (this.metadata.length !== other.length) {
       return false;
@@ -420,6 +446,7 @@ export class DiagramInfo {
   /**
    * Checks if cells arrays are equal
    */
+  // SEM@4f53f09335e39c83f6b6fd99484ff29dfe1bdeab: compare two cell collections for deep equality by ID-sorted pair matching (pure)
   private cellsEquals(other: DiagramCell[]): boolean {
     if (this.cells.length !== other.length) {
       return false;

@@ -19,6 +19,7 @@ import { InfraEdgeService } from '../services/infra-edge.service';
  * Works with SelectionService for business logic
  */
 @Injectable()
+// SEM@033ebba3a4056ceb0b8d1a1e3c63450de42861d0: manage X6 diagram cell selection, visual effects, and transform interactions (mutates shared state)
 export class InfraX6SelectionAdapter {
   /**
    * Standard tool configurations for consistent behavior
@@ -31,6 +32,7 @@ export class InfraX6SelectionAdapter {
   private portStateManager: any = null;
   private infraNodeService: any = null; // Set via setNodeService to avoid circular dependency
 
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject collaborating services for selection, history, and edge management (pure)
   constructor(
     private logger: LoggerService,
     private selectionService: SelectionService,
@@ -42,6 +44,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Set node service for node deletion (injected to avoid circular dependency)
    */
+  // SEM@a308b1150dfa5b167f4dee3bbe64c1abea47daad: register node service reference to break circular dependency at runtime (mutates shared state)
   setNodeService(nodeService: any): void {
     this.infraNodeService = nodeService;
   }
@@ -49,6 +52,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Set port state manager for coordinating port visibility during hover
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register port state manager to coordinate port visibility during hover (mutates shared state)
   setPortStateManager(portStateManager: any): void {
     this.portStateManager = portStateManager;
   }
@@ -56,6 +60,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Set history controller for managing visual effects without history interference
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register a history controller for suppressing visual-effect history entries (mutates shared state)
   setHistoryController(controller: { disable: () => void; enable: () => void }): void {
     this.historyController = controller;
   }
@@ -63,6 +68,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Initialize selection and transform plugins
    */
+  // SEM@31e172d820a65e4d5bda2ae6c2dd752ccc9ccc07: register X6 selection and transform plugins on the graph (mutates shared state)
   initializePlugins(graph: Graph): void {
     // Configure selection plugin
     this.selectionPlugin = new Selection({
@@ -103,6 +109,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Setup selection event handlers for visual feedback
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: bind graph events for hover, selection change, and blank-click visual feedback (mutates shared state)
   setupSelectionEvents(graph: Graph, onCellDeletion?: (cell: Cell) => void): void {
     // Clear selection on blank click and update port visibility
     graph.on('blank:click', () => {
@@ -183,6 +190,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Get currently selected cells
    */
+  // SEM@fa22977d92c3fcda013a4769f9edd075e6c9de74: list currently selected diagram cells from internal tracking set (pure)
   getSelectedCells(graph: Graph): Cell[] {
     // Use our internal selectedCells set to get the actual selected cells
     const cells: Cell[] = [];
@@ -198,6 +206,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Get currently selected nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list currently selected diagram nodes (pure)
   getSelectedNodes(graph: Graph): Node[] {
     return graph.getSelectedCells().filter(cell => cell.isNode());
   }
@@ -205,6 +214,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Get currently selected edges
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list currently selected diagram edges (pure)
   getSelectedEdges(graph: Graph): Edge[] {
     return graph.getSelectedCells().filter(cell => cell.isEdge());
   }
@@ -212,6 +222,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Select specific cells
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: select the given diagram cells in the graph (mutates shared state)
   selectCells(graph: Graph, cells: Cell[]): void {
     graph.select(cells);
     this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected cells', {
@@ -222,6 +233,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Select all cells in the graph
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: select all diagram cells in the graph (mutates shared state)
   selectAll(graph: Graph): void {
     const allCells = graph.getCells();
     this.selectCells(graph, allCells);
@@ -233,6 +245,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Clear current selection
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: deselect all currently selected diagram cells (mutates shared state)
   clearSelection(graph: Graph): void {
     // Get selected cells using our helper method and unselect them
     const selectedCells = this.getSelectedCells(graph);
@@ -245,6 +258,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Delete selected cells
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: delete all selected diagram cells as an atomic history operation (mutates shared state)
   deleteSelected(graph: Graph): void {
     const selectedCells = this.getSelectedCells(graph);
     if (selectedCells.length === 0) {
@@ -282,6 +296,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Copy selected cells using SelectionService business logic
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: copy currently selected diagram cells to the clipboard buffer (pure)
   copySelected(graph: Graph): Cell[] {
     const selectedCells = this.getSelectedCells(graph);
     return this.selectionService.copySelectedCells(selectedCells);
@@ -290,6 +305,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Paste cells using SelectionService business logic
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: add clipboard cells to graph at offset position and select them (mutates shared state)
   pasteCells(graph: Graph, cells: Cell[], offsetX: number = 20, offsetY: number = 20): void {
     if (cells.length === 0) {
       this.logger.debugComponent('InfraX6SelectionAdapter', 'No cells to paste');
@@ -327,6 +343,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Group selected cells using SelectionService business logic
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: wrap selected nodes into a new group node and record in history (mutates shared state)
   groupSelected(graph: Graph): Node | null {
     const selectedNodes = this.getSelectedNodes(graph);
 
@@ -371,6 +388,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Ungroup selected group using SelectionService business logic
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: dissolve selected group nodes, releasing children, and record in history (mutates shared state)
   ungroupSelected(graph: Graph): void {
     const selectedNodes = this.getSelectedNodes(graph);
 
@@ -405,6 +423,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Align selected nodes using SelectionService business logic
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: reposition selected nodes to the specified alignment edge or axis (mutates shared state)
   alignNodes(
     graph: Graph,
     alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom',
@@ -431,6 +450,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Distribute selected nodes using SelectionService business logic
    */
+  // SEM@28cf8e02c0da051e6c101c28c88877b90ef6030b: space selected nodes evenly along a horizontal or vertical axis (mutates shared state)
   distributeNodes(graph: Graph, direction: 'horizontal' | 'vertical'): void {
     const selectedNodes = this.getSelectedNodes(graph);
 
@@ -454,6 +474,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Enable selection mode
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: activate the selection plugin, allowing cells to be selected (mutates shared state)
   enableSelection(graph: Graph): void {
     if (this.selectionPlugin) {
       this.selectionPlugin.enable();
@@ -465,6 +486,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Disable selection mode
    */
+  // SEM@fd85de89046cf53840424637275b588564e03d00: deactivate the selection plugin and clear any current selection (mutates shared state)
   disableSelection(graph: Graph): void {
     if (this.selectionPlugin) {
       this.selectionPlugin.disable();
@@ -477,6 +499,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Apply hover effect to a cell
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: apply a hover glow filter to a diagram cell's visual element (mutates shared state)
   private applyHoverEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -498,6 +521,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Remove hover effect from a cell
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the hover glow filter from a diagram cell's visual element (mutates shared state)
   private removeHoverEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -519,6 +543,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Apply selection effect to a cell
    */
+  // SEM@033ebba3a4056ceb0b8d1a1e3c63450de42861d0: apply a selection glow filter and stroke highlight to a diagram cell (mutates shared state)
   private applySelectionEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -553,6 +578,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Remove selection effect from a cell
    */
+  // SEM@033ebba3a4056ceb0b8d1a1e3c63450de42861d0: clear the selection glow filter and restore default stroke on a diagram cell (mutates shared state)
   private removeSelectionEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
@@ -578,6 +604,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Add tools to a cell based on its type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: dispatch to node or edge tool registration based on cell type (mutates shared state)
   private addCellTools(cell: Cell, onCellDeletion?: (cell: Cell) => void): void {
     if (cell.isNode()) {
       this.addNodeTools(cell, onCellDeletion);
@@ -589,6 +616,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Add tools to a selected node using X6's native tool system
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: attach interactive tools including delete button to a selected node (mutates shared state)
   private addNodeTools(node: Node, onCellDeletion?: (cell: Cell) => void): void {
     // Clone tools and add delete handler to button-remove
     const tools = NODE_TOOLS.map(tool => {
@@ -614,6 +642,7 @@ export class InfraX6SelectionAdapter {
   /**
    * Add tools to a selected edge using X6's native tool system
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: attach interactive tools including delete button to a selected edge (mutates shared state)
   private addEdgeTools(edge: Edge, onCellDeletion?: (cell: Cell) => void): void {
     // Clone tools and add delete handler to button-remove
     const tools = EDGE_TOOLS.map(tool => {

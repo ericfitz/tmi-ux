@@ -142,11 +142,13 @@ export const MARKDOWN_DOMPURIFY_CONFIG = {
  *
  * Exported for unit testing.
  */
+// SEM@90bfd73223379143315d69e22c3c6043b2e2532a: sanitize rendered markdown HTML via DOMPurify before it reaches the DOM (pure)
 export function sanitizeMarkdownHtml(html: string): string {
   return DOMPurify.sanitize(html, MARKDOWN_DOMPURIFY_CONFIG);
 }
 
 // Marked configuration with security and syntax highlighting
+// SEM@90bfd73223379143315d69e22c3c6043b2e2532a: build marked renderer options with sanitized heading IDs and safe external links (pure)
 function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
 
@@ -214,6 +216,7 @@ function markedOptionsFactory(): MarkedOptions {
 }
 
 // Mermaid configuration
+// SEM@d481741a967661e2c0181fd506331e5fe0784b37: build mermaid config with strict XSS security and register it globally (mutates shared state)
 function mermaidOptionsFactory(): MermaidConfig {
   const config: MermaidConfig = {
     theme: 'default',
@@ -238,6 +241,7 @@ function mermaidOptionsFactory(): MermaidConfig {
  * Include this in the `providers` array of a parent route to make
  * markdown rendering available to all child routes.
  */
+// SEM@90bfd73223379143315d69e22c3c6043b2e2532a: build Angular providers for markdown rendering with DOMPurify sanitization (pure)
 export function provideMarkdownConfig(): (Provider | EnvironmentProviders)[] {
   return [
     provideMarkdown({

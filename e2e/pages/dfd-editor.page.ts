@@ -26,7 +26,9 @@ export interface GraphEdgeData {
   labels: string[];
 }
 
+// SEM@23452d4b0c244e162aa7e3b871d29b0c81a18fda: page object exposing locators and graph helpers for the DFD editor (pure)
 export class DfdEditorPage {
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: bind a Playwright page instance to the DFD editor page object (pure)
   constructor(readonly page: Page) {}
 
   // --- Locators: existing ---
@@ -84,6 +86,7 @@ export class DfdEditorPage {
    * Select a node in the graph via the X6 graph API.
    * Uses graph.select() for stability over DOM clicks during layout animations.
    */
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: select a graph node by ordinal position via the X6 graph API
   async selectNodeByIndex(index: number): Promise<void> {
     // Select via the graph API to avoid SVG element stability issues
     // during X6 layout animations
@@ -103,6 +106,7 @@ export class DfdEditorPage {
    * serial tests that share graph state, where index-based lookup may pick
    * a leftover node from an earlier test.
    */
+  // SEM@23452d4b0c244e162aa7e3b871d29b0c81a18fda: select a graph node by its stable ID via the X6 graph API
   async selectNodeById(nodeId: string): Promise<void> {
     await this.page.evaluate((id) => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -117,6 +121,7 @@ export class DfdEditorPage {
 
   // --- Graph query methods (thin page.evaluate wrappers) ---
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch the total number of nodes in the diagram graph (pure)
   async getNodeCount(): Promise<number> {
     return this.page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -124,6 +129,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch the total number of edges in the diagram graph (pure)
   async getEdgeCount(): Promise<number> {
     return this.page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -131,6 +137,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch all diagram nodes with position, size, label, and parent (pure)
   async getNodes(): Promise<GraphNodeData[]> {
     return this.page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -149,6 +156,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch all diagram edges with source, target, and labels (pure)
   async getEdges(): Promise<GraphEdgeData[]> {
     return this.page.evaluate(() => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -162,6 +170,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch a single diagram node by ID, returning null if absent (pure)
   async getNodeById(nodeId: string): Promise<GraphNodeData | null> {
     return this.page.evaluate((id) => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -182,6 +191,7 @@ export class DfdEditorPage {
     }, nodeId);
   }
 
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: fetch IDs of child nodes embedded within a parent node (pure)
   async getEmbeddedChildren(parentId: string): Promise<string[]> {
     return this.page.evaluate((pid) => {
       const graph = (window as any).__e2e?.dfd?.graph;
@@ -198,6 +208,7 @@ export class DfdEditorPage {
     }, parentId);
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch IDs of currently selected diagram cells (pure)
   async getSelectedCells(): Promise<string[]> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -205,6 +216,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: check whether the diagram orchestrator has an undo operation available (pure)
   async canUndo(): Promise<boolean> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -212,6 +224,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: check whether the diagram orchestrator has a redo operation available (pure)
   async canRedo(): Promise<boolean> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -219,6 +232,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: check whether the diagram has unsaved changes pending (pure)
   async hasUnsavedChanges(): Promise<boolean> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -226,6 +240,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@730d3939c8add6cb89b4fd69c42938e4725d420f: fetch a serializable snapshot of the diagram orchestrator state (pure)
   async getState(): Promise<any> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -235,6 +250,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@730d3939c8add6cb89b4fd69c42938e4725d420f: fetch a serializable snapshot of the diagram undo/redo history state (pure)
   async getHistoryState(): Promise<any> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -246,6 +262,7 @@ export class DfdEditorPage {
 
   // --- Graph mutation methods (thin wrappers through orchestrator, for test setup) ---
 
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: add a diagram node of a given type via the orchestrator and return its ID (mutates shared state)
   async addNodeViaOrchestrator(nodeType: string): Promise<string> {
     const nodeId = await this.page.evaluate(async (type) => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -263,6 +280,7 @@ export class DfdEditorPage {
     return nodeId;
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: delete all currently selected diagram cells via the orchestrator (mutates shared state)
   async deleteSelectedViaOrchestrator(): Promise<void> {
     return this.page.evaluate(async () => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -276,6 +294,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: undo the last diagram operation via the orchestrator (mutates shared state)
   async undoViaOrchestrator(): Promise<void> {
     await this.page.evaluate(async () => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -291,6 +310,7 @@ export class DfdEditorPage {
     await this.page.waitForTimeout(500);
   }
 
+  // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: redo the previously undone diagram operation via the orchestrator (mutates shared state)
   async redoViaOrchestrator(): Promise<void> {
     await this.page.evaluate(async () => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -306,6 +326,7 @@ export class DfdEditorPage {
     await this.page.waitForTimeout(500);
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: select all diagram cells via the orchestrator (mutates shared state)
   async selectAllViaOrchestrator(): Promise<void> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -313,6 +334,7 @@ export class DfdEditorPage {
     });
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: clear the diagram cell selection via the orchestrator (mutates shared state)
   async clearSelectionViaOrchestrator(): Promise<void> {
     return this.page.evaluate(() => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
@@ -324,6 +346,7 @@ export class DfdEditorPage {
   // intercepted by the .dfd-container, and locator.dragTo() uses HTML5 DnD
   // events that X6 ignores. These helpers drive the same UpdateNodeOperation
   // that a real drag or resize produces at the app layer.
+  // SEM@1806fa624a4ed61d940b72150f00a316059fd393: update a diagram node's position via the orchestrator (mutates shared state)
   async moveNodeViaOrchestrator(
     nodeId: string,
     position: { x: number; y: number },
@@ -331,6 +354,7 @@ export class DfdEditorPage {
     await this._updateNodeViaOrchestrator(nodeId, { position });
   }
 
+  // SEM@1806fa624a4ed61d940b72150f00a316059fd393: update a diagram node's size via the orchestrator (mutates shared state)
   async resizeNodeViaOrchestrator(
     nodeId: string,
     size: { width: number; height: number },
@@ -338,6 +362,7 @@ export class DfdEditorPage {
     await this._updateNodeViaOrchestrator(nodeId, { size });
   }
 
+  // SEM@1806fa624a4ed61d940b72150f00a316059fd393: dispatch an update-node operation to the orchestrator for position or size changes (mutates shared state)
   private async _updateNodeViaOrchestrator(
     nodeId: string,
     updates: {
@@ -377,6 +402,7 @@ export class DfdEditorPage {
 
   // --- Utility methods ---
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: wait until the diagram node count matches the expected value or timeout (pure)
   async waitForGraphSettled(expectedNodeCount: number, timeoutMs = 10000): Promise<void> {
     const pollInterval = 200;
     const maxAttempts = Math.ceil(timeoutMs / pollInterval);
@@ -393,6 +419,7 @@ export class DfdEditorPage {
     }
   }
 
+  // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: map a node type string to its toolbar add-node button locator (pure)
   nodeButton(type: string) {
     const buttonMap: Record<string, () => ReturnType<typeof this.addActorButton>> = {
       actor: () => this.addActorButton(),

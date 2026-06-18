@@ -52,6 +52,7 @@ describe('SurveyListComponent', () => {
     modified_at: '2024-01-01',
   } as SurveyResponseListItem;
 
+  // SEM@b85956bf69d53ab4f58f72df3590bd261494d825: build a SurveyListComponent instance with mock dependencies for tests (pure)
   function build(): SurveyListComponent {
     return runInInjectionContext(
       envInjector,

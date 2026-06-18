@@ -26,6 +26,7 @@ describe('AddQuotaDialogComponent', () => {
     email: 'admin@example.com',
   } as AdminUser;
 
+  // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build a bare AddQuotaDialogComponent instance for testing (pure)
   function build(): AddQuotaDialogComponent {
     return runInInjectionContext(
       envInjector,

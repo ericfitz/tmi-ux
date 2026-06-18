@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@2ec44885144e6f679eace25e5ddb6c574a3dae6e: Playwright page object exposing triage detail view locators (pure)
 export class TriageDetailPage {
+  // SEM@2ec44885144e6f679eace25e5ddb6c574a3dae6e: bind the Playwright page for the triage detail page object (pure)
   constructor(private page: Page) {}
 
   readonly approveButton = () =>

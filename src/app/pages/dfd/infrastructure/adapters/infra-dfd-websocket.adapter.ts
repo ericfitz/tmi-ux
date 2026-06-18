@@ -137,6 +137,7 @@ export interface OperationRejectedEvent {
   timestamp: string;
 }
 
+// SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: union type of all domain events emitted by the WebSocket adapter (pure)
 export type WebSocketDomainEvent =
   | DiagramOperationEvent
   | AuthorizationDeniedEvent
@@ -155,6 +156,7 @@ export type WebSocketDomainEvent =
 @Injectable({
   providedIn: 'root',
 })
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: subscribe to DFD WebSocket messages and dispatch typed domain events (mutates shared state)
 export class InfraDfdWebsocketAdapter implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
@@ -223,6 +225,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   // General event stream for components that want all events
   public readonly domainEvents$ = this._domainEvents$.asObservable();
 
+  // SEM@936a346c681472453298a2d7abacd2e91d82243f: register dependencies and log adapter initialization (mutates shared state)
   constructor(
     private _logger: LoggerService,
     private _webSocketAdapter: WebSocketAdapter,
@@ -237,6 +240,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Initialize WebSocket subscriptions for DFD-related messages
    */
+  // SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: subscribe to all DFD WebSocket message types and route to domain event handlers (mutates shared state)
   initialize(): void {
     // this._logger.info('Initializing DFD WebSocket subscriptions');
 
@@ -339,6 +343,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Clean up subscriptions
    */
+  // SEM@65038fd12b209492c825f2240fc300cc6278b345: unsubscribe all WebSocket subscriptions and complete the destroy signal (mutates shared state)
   ngOnDestroy(): void {
     this._logger.info('Destroying WebSocketService');
     this._destroy$.next();
@@ -348,6 +353,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
   // Message handlers that transform WebSocket messages to domain events
 
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: dispatch an incoming diagram operation WebSocket message as a domain event (mutates shared state)
   private _handleDiagramOperation(message: DiagramOperationEventMessage): void {
     // Extract user identifier with fallback (provider_id primary, email fallback)
     const providerId =
@@ -367,6 +373,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
+  // SEM@a9340b4ff80dfccfb6d08dd681f0b0becbdc0dba: dispatch an authorization-denied WebSocket message as a domain event (mutates shared state)
   private _handleAuthorizationDenied(message: AuthorizationDeniedMessage): void {
     this._logger.warn('Authorization denied', {
       operationId: message.original_operation_id,
@@ -383,6 +390,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Handle diagram_state message - full diagram state from server
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: dispatch a full diagram state sync WebSocket message as a domain event (mutates shared state)
   private _handleDiagramState(message: DiagramStateMessage): void {
     const currentUpdateVector = this._dfdStateStore.updateVector;
 
@@ -404,6 +412,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Handle sync_status_response message - server's current update vector
    */
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: dispatch a sync status response WebSocket message as a domain event (mutates shared state)
   private _handleSyncStatusResponse(message: SyncStatusResponseMessage): void {
     this._logger.info('Sync status response received', {
       serverUpdateVector: message.update_vector,
@@ -415,6 +424,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: dispatch a presenter cursor position WebSocket message as a domain event (mutates shared state)
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
     // Per AsyncAPI spec, presenter_cursor does not include user field
     // The presenter is tracked separately via current_presenter message
@@ -431,6 +441,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: dispatch a presenter-selection domain event from an incoming WebSocket message (mutates shared state)
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     // Per AsyncAPI spec, presenter_selection does not include user field
     // The presenter is tracked separately via current_presenter message
@@ -447,6 +458,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: reconcile incoming participant list, emit join/leave/updated domain events (mutates shared state)
   private _handleParticipantsUpdate(message: ParticipantsUpdateMessage): void {
     this._logger.info('Participants update received', {
       participantCount: message?.participants?.length,
@@ -495,6 +507,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Handle system-initiated participant events (join/leave)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: notify and dispatch domain events for system-initiated participant join or leave (mutates shared state)
   private _handleSystemParticipantEvent(
     joinedUsers: Participant[],
     leftUsers: Participant[],
@@ -515,6 +528,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Handle user-initiated participant removal (kick)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: notify and dispatch participant-removed event when a host kicks a participant (mutates shared state)
   private _handleUserInitiatedRemoval(
     leftUsers: Participant[],
     initiatingUser: { provider_id: string; email?: string; display_name?: string },
@@ -551,6 +565,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Get display name from participant (handles both AsyncAPI and OpenAPI field names)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: resolve the best available display name for a participant (pure)
   private _getParticipantDisplayName(participant: Participant): string {
     return participant.user.name || participant.user.display_name || participant.user.email;
   }
@@ -558,6 +573,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Show notification for participant event
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: dispatch a session-event notification for a participant join, leave, or removal
   private _showParticipantNotification(
     eventType: 'userJoined' | 'userLeft' | 'userRemoved',
     displayName: string,
@@ -578,6 +594,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Emit participant-joined domain event
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: dispatch a participant-joined domain event onto the event stream (mutates shared state)
   private _emitParticipantJoinedEvent(participant: Participant, displayName: string): void {
     this._domainEvents$.next({
       type: 'participant-joined',
@@ -593,6 +610,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   /**
    * Emit participant-left domain event
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: dispatch a participant-left domain event onto the event stream (mutates shared state)
   private _emitParticipantLeftEvent(participant: Participant, displayName: string): void {
     this._domainEvents$.next({
       type: 'participant-left',
@@ -605,6 +623,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
+  // SEM@b929c01a4e6fe149a79e0d6a37b9398c67fb1d0e: dispatch an operation-rejected domain event with server rejection details (mutates shared state)
   private _handleOperationRejected(message: OperationRejectedMessage): void {
     this._logger.warn('Operation rejected', {
       operation_id: message.operation_id,

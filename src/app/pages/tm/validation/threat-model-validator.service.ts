@@ -22,15 +22,18 @@ import { DiagramValidator } from './types';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: orchestrate schema, diagram, reference, and custom rule validation for a threat model
 export class ThreatModelValidatorService implements ThreatModelValidator {
   private schemaValidator = new SchemaValidator();
   private referenceValidator = new InternalReferenceValidator();
 
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: inject logger dependency for the validator service (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Validate a complete ThreatModel object
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate a complete threat model through schema, diagram, reference, and custom rules
   validate(threatModel: ThreatModel, config: Partial<ValidationConfig> = {}): ValidationResult {
     const startTime = Date.now();
     const validationConfig = { ...DEFAULT_VALIDATION_CONFIG, ...config };
@@ -121,6 +124,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate just the schema (useful for quick validation)
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: validate only the threat model schema fields, skipping diagrams and references
   validateSchema(threatModel: ThreatModel): ValidationResult {
     const startTime = Date.now();
     const context: ValidationContext = {
@@ -147,6 +151,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate just the references (useful for incremental validation)
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: validate only internal reference consistency within a threat model
   validateReferences(threatModel: ThreatModel): ValidationResult {
     const startTime = Date.now();
     const context: ValidationContext = {
@@ -173,6 +178,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Register a custom diagram validator
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: register a diagram validator for a given diagram type (mutates shared state)
   registerDiagramValidator(validator: DiagramValidator): void {
     DiagramValidatorFactory.registerValidator(validator);
     this.logger.debugComponent('ThreatModelValidator', 'Registered custom diagram validator', {
@@ -184,6 +190,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Get supported diagram types
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: list registered diagram type identifiers supported by the factory (pure)
   getSupportedDiagramTypes(): string[] {
     return DiagramValidatorFactory.getSupportedTypes();
   }
@@ -191,6 +198,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Validate diagrams using type-specific validators
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: dispatch each diagram to its type-specific validator and collect errors (pure)
   private validateDiagrams(
     threatModel: ThreatModel,
     context: ValidationContext,
@@ -251,6 +259,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Apply custom validation rules
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: evaluate caller-supplied custom rules against threat model fields (pure)
   private applyCustomRules(
     threatModel: ThreatModel,
     context: ValidationContext,
@@ -272,6 +281,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Get nested value from object using dot notation
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: fetch a nested field value from an object using dot-notation path (pure)
   private getNestedValue(obj: unknown, path: string): unknown {
     return path.split('.').reduce((current: unknown, key: string) => {
       if (current === null || current === undefined) return undefined;
@@ -292,6 +302,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Categorize errors into errors and warnings
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: split validation errors into error and warning buckets by severity (pure)
   private categorizeErrors(
     errors: ValidationResult['errors'],
     allErrors: ValidationResult['errors'],
@@ -309,6 +320,7 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
   /**
    * Build the final validation result
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build a ValidationResult from errors, warnings, timing, and config (pure)
   private buildResult(
     valid: boolean,
     errors: ValidationResult['errors'],

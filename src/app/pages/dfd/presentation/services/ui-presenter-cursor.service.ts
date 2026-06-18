@@ -20,6 +20,7 @@ export interface CursorPosition {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: broadcast presenter cursor position to collaboration participants when presenter mode is active (mutates shared state)
 export class UiPresenterCursorService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _isTracking = false;
@@ -29,6 +30,7 @@ export class UiPresenterCursorService implements OnDestroy {
   private _intersectionObserver: IntersectionObserver | null = null;
   private _isGraphVisible = true;
 
+  // SEM@5e88aabadfaae05e8ef4c5de99d82329411466af: inject logger, collaboration, and websocket adapter dependencies (pure)
   constructor(
     private logger: LoggerService,
     private collaborationService: DfdCollaborationService,
@@ -40,6 +42,7 @@ export class UiPresenterCursorService implements OnDestroy {
    * @param graphContainer The HTML element containing the graph
    * @param graph The X6 graph instance
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: attach graph container and subscribe to presenter mode changes to start/stop cursor tracking (mutates shared state)
   initialize(graphContainer: HTMLElement, graph: Graph): void {
     this._graphContainer = graphContainer;
     this._graph = graph;
@@ -70,6 +73,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Setup mouse movement tracking within the graph container
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: register throttled mousemove listener on graph container for cursor broadcasting (mutates shared state)
   private _setupMouseTracking(): void {
     if (!this._graphContainer) {
       this.logger.error('Cannot setup mouse tracking: graph container not available');
@@ -102,6 +106,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Start cursor position tracking and broadcasting
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: enable cursor position tracking flag for the presenter (mutates shared state)
   private _startTracking(): void {
     if (this._isTracking) {
       return;
@@ -114,6 +119,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Stop cursor position tracking and broadcasting
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: disable cursor tracking and reset last known cursor position (mutates shared state)
   private _stopTracking(): void {
     if (!this._isTracking) {
       return;
@@ -127,6 +133,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Handle mouse move events and broadcast cursor position
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: convert mouse event to graph coordinates and broadcast if position changed significantly (mutates shared state)
   private _handleMouseMove(event: MouseEvent): void {
     if (!this._graphContainer || !this._graph) {
       return;
@@ -169,6 +176,7 @@ export class UiPresenterCursorService implements OnDestroy {
    * Convert client coordinates to X6 graph coordinates
    * Uses X6's clientToGraph method to handle all transformations automatically
    */
+  // SEM@0c313eb7fbacc28545a9712720f83a9d7abf9734: convert client screen coordinates to X6 graph coordinates accounting for pan and zoom (pure)
   private _convertToGraphCoordinates(clientX: number, clientY: number): CursorPosition | null {
     if (!this._graph) {
       this.logger.warn('Cannot convert coordinates - graph not available');
@@ -193,6 +201,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Check if cursor position should be broadcast (to avoid excessive messages)
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: filter cursor position updates to only those that moved at least 5 pixels (pure)
   private _shouldBroadcastPosition(newPosition: CursorPosition): boolean {
     if (!this._lastCursorPosition) {
       return true;
@@ -208,6 +217,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Broadcast cursor position via collaborative operation service
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: send presenter cursor position to all collaboration participants via websocket
   private _broadcastCursorPosition(position: CursorPosition): void {
     try {
       this.collaborativeOperationService.sendPresenterCursor(position).subscribe({
@@ -234,6 +244,7 @@ export class UiPresenterCursorService implements OnDestroy {
    * Validate mouse event is within presenter's viewport
    * Only broadcast cursor position if presenter cursor is within their viewport
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: validate mouse event is within viewport and graph container bounds (pure)
   private _isValidMouseEvent(event: MouseEvent): boolean {
     if (!this._graphContainer) {
       return false;
@@ -294,6 +305,7 @@ export class UiPresenterCursorService implements OnDestroy {
    * Setup IntersectionObserver to detect when graph is visible
    * Suppresses cursor broadcasts when graph is not in viewport
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: observe graph container visibility to suppress cursor broadcasts when off-screen (mutates shared state)
   private _setupIntersectionObserver(): void {
     if (!this._graphContainer) {
       this.logger.warn('Cannot setup IntersectionObserver - no graph container');
@@ -337,6 +349,7 @@ export class UiPresenterCursorService implements OnDestroy {
   /**
    * Cleanup resources and stop tracking
    */
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stop tracking, disconnect observer, and release all subscriptions and references
   ngOnDestroy(): void {
     this._stopTracking();
 

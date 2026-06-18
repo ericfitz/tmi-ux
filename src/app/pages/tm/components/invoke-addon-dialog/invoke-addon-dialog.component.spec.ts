@@ -24,6 +24,7 @@ describe('InvokeAddonDialogComponent', () => {
   let mockUserPreferences: { preferences$: ReturnType<typeof of> };
   let envInjector: EnvironmentInjector;
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a test addon fixture with optional parameter overrides (pure)
   function makeAddon(parameters: AddonParameter[] = []): Addon {
     return {
       id: 'addon-1',
@@ -35,6 +36,7 @@ describe('InvokeAddonDialogComponent', () => {
     };
   }
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a test invoke-addon dialog data fixture with optional overrides (pure)
   function makeData(overrides: Partial<InvokeAddonDialogData> = {}): InvokeAddonDialogData {
     return {
       addon: makeAddon(),
@@ -47,6 +49,7 @@ describe('InvokeAddonDialogComponent', () => {
   }
 
   /** Construct the component inside an injection context (it uses inject(DestroyRef)). */
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: construct InvokeAddonDialogComponent inside an injection context for tests (pure)
   function build(data: InvokeAddonDialogData): InvokeAddonDialogComponent {
     return runInInjectionContext(
       envInjector,

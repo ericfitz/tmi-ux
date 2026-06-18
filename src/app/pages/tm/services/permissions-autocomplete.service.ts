@@ -26,10 +26,12 @@ export interface AutocompleteSuggestion {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@b967c1adebe82f5390a22ee41b40d2b3c87e9870: fetch autocomplete suggestions for permission principal subjects; gates on admin role
 export class PermissionsAutocompleteService {
   private static readonly MIN_SEARCH_LENGTH = 2;
   private static readonly RESULT_LIMIT = 10;
 
+  // SEM@b967c1adebe82f5390a22ee41b40d2b3c87e9870: inject auth, user-admin, group-admin, and logger dependencies (pure)
   constructor(
     private authService: AuthService,
     private userAdminService: UserAdminService,
@@ -44,6 +46,7 @@ export class PermissionsAutocompleteService {
    * @param principalType - Whether to search users or groups
    * @returns Observable of matching suggestions, or empty array on error/non-admin
    */
+  // SEM@b967c1adebe82f5390a22ee41b40d2b3c87e9870: search users or groups by term; returns empty for non-admin or short input (pure)
   search(term: string, principalType: 'user' | 'group'): Observable<AutocompleteSuggestion[]> {
     if (!this.authService.isAdmin) {
       return of([]);
@@ -59,6 +62,7 @@ export class PermissionsAutocompleteService {
     return this.searchGroups(term);
   }
 
+  // SEM@b967c1adebe82f5390a22ee41b40d2b3c87e9870: fetch user suggestions matching search term from admin API
   private searchUsers(term: string): Observable<AutocompleteSuggestion[]> {
     return this.userAdminService
       .list({
@@ -80,6 +84,7 @@ export class PermissionsAutocompleteService {
       );
   }
 
+  // SEM@b967c1adebe82f5390a22ee41b40d2b3c87e9870: fetch group suggestions matching search term from admin API
   private searchGroups(term: string): Observable<AutocompleteSuggestion[]> {
     return this.groupAdminService
       .list({

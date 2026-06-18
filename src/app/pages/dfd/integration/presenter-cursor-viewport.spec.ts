@@ -73,18 +73,22 @@ Object.defineProperty(dom.window.SVGElement.prototype, 'getScreenCTM', {
 (global as any).ResizeObserver = class ResizeObserver {
   callback: ResizeObserverCallback;
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: store the resize callback for later invocation by the mock (pure)
   constructor(callback: ResizeObserverCallback) {
     this.callback = callback;
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub ResizeObserver observe call as no-op (pure)
   observe(_target: Element): void {
     // Mock implementation
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub ResizeObserver disconnect call as no-op (pure)
   disconnect(): void {
     // Mock implementation
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub ResizeObserver unobserve call as no-op (pure)
   unobserve(_target: Element): void {
     // Mock implementation
   }
@@ -95,23 +99,28 @@ Object.defineProperty(dom.window.SVGElement.prototype, 'getScreenCTM', {
   callback: IntersectionObserverCallback;
   options: IntersectionObserverInit | undefined;
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: store the intersection callback and options for later invocation by the mock (pure)
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
     this.callback = callback;
     this.options = options;
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub IntersectionObserver observe call as no-op (pure)
   observe(_target: Element): void {
     // Mock implementation
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub IntersectionObserver disconnect call as no-op (pure)
   disconnect(): void {
     // Mock implementation
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: no-op stub satisfying IntersectionObserver.unobserve contract (pure)
   unobserve(_target: Element): void {
     // Mock implementation
   }
 
+  // SEM@b19529bc349f89512b5602367599af913bd64479: stub returning empty intersection records list (pure)
   takeRecords(): IntersectionObserverEntry[] {
     return [];
   }

@@ -12,6 +12,7 @@ import { ExportDialogData, ExportDialogResult } from './export-dialog.types';
 // Re-export types for consumers importing from the component file
 export type { ExportDialogData, ExportDialogResult } from './export-dialog.types';
 
+// SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: enumerate the loading, ready, or error states of an export dialog (pure)
 type ExportState = 'loading' | 'ready' | 'error';
 
 @Component({
@@ -21,6 +22,7 @@ type ExportState = 'loading' | 'ready' | 'error';
   templateUrl: './export-dialog.component.html',
   styleUrls: ['./export-dialog.component.scss'],
 })
+// SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: dialog component that fetches, normalizes, and exports a threat model as JSON
 export class ExportDialogComponent implements OnInit, OnDestroy {
   state: ExportState = 'loading';
 
@@ -28,22 +30,26 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
   private _filename = '';
   private _destroy$ = new Subject<void>();
 
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: inject dialog ref, export data, and logger into the export dialog
   constructor(
     private _dialogRef: MatDialogRef<ExportDialogComponent, ExportDialogResult>,
     @Inject(MAT_DIALOG_DATA) public data: ExportDialogData,
     private logger: LoggerService,
   ) {}
 
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: trigger export data fetch on component initialization
   ngOnInit(): void {
     this.fetchData();
   }
 
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: complete the destroy subject to unsubscribe all active observables
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
   /** Trigger the fetch (used on init and retry). */
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: fetch threat model, serialize to JSON blob, and update export state (mutates shared state)
   fetchData(): void {
     this.state = 'loading';
     this._blob = null;
@@ -76,6 +82,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
   }
 
   /** User clicked Save — close with the prepared blob. */
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: close dialog returning the prepared export blob and filename
   onSave(): void {
     if (this._blob) {
       this._dialogRef.close({ blob: this._blob, filename: this._filename });
@@ -83,6 +90,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
   }
 
   /** User clicked Cancel or Retry failed. */
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: dismiss export dialog without returning a result
   onCancel(): void {
     this._dialogRef.close(undefined);
   }
@@ -90,6 +98,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
   /**
    * Generate filename: sanitized threat model name (max 63 chars) + "-threat-model.json"
    */
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: build a sanitized export filename from the threat model name (pure)
   private generateFilename(name: string): string {
     const sanitized = name
       .trim()
@@ -104,7 +113,9 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
   /**
    * Normalize date fields to ISO 8601 format for consistent export.
    */
+  // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: convert all date fields in a threat model to ISO 8601 strings (pure)
   private normalizeDates(threatModel: ThreatModel): ThreatModel {
+    // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: convert a date string to ISO 8601, defaulting to now if invalid (pure)
     const normalizeDate = (dateString: string): string => {
       if (!dateString) return new Date().toISOString();
       try {
@@ -115,6 +126,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
       }
     };
 
+    // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: map ISO 8601 date normalization over a collection of timestamped items (pure)
     const normalizeSub = <T extends { created_at: string; modified_at: string }>(
       items: T[] | undefined,
     ): T[] | undefined =>

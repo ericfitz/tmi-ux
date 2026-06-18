@@ -20,6 +20,8 @@ export interface StepUpMismatchDialogData {
   templateUrl: './step-up-mismatch-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: dialog shown when step-up re-authentication returns a mismatched identity
 export class StepUpMismatchDialogComponent {
+  // SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: inject mismatched identity data for display (pure)
   constructor(@Inject(MAT_DIALOG_DATA) public data: StepUpMismatchDialogData) {}
 }

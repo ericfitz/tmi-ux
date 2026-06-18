@@ -33,6 +33,7 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
+// SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: display available OAuth and SAML providers and initiate the selected login flow
 export class LoginComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
@@ -43,6 +44,7 @@ export class LoginComponent implements OnInit {
   private returnUrl: string | null = null;
   private providerLogos: Map<string, { type: 'image' | 'fontawesome'; value: string }> = new Map();
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: inject auth, routing, dialog, and logger dependencies (pure)
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -51,6 +53,7 @@ export class LoginComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: initialize login page: surface stored auth error and fetch providers
   ngOnInit(): void {
     // Check for error from callback redirect (stored in sessionStorage)
     const storedError = sessionStorage.getItem('auth_error');
@@ -83,6 +86,7 @@ export class LoginComponent implements OnInit {
   /**
    * Load OAuth and SAML providers from TMI server
    */
+  // SEM@7a4991539f0191a93ee57c2dee2dbe4ebda62ac0: fetch OAuth and SAML auth providers in parallel from the server
   private loadProviders(): void {
     this.providersLoading = true;
 
@@ -117,6 +121,7 @@ export class LoginComponent implements OnInit {
   /**
    * Sort providers alphabetically by name, with 'tmi' provider last
    */
+  // SEM@14740c594134dba27c570d9b30032cdd1fe13dd7: sort auth providers alphabetically, placing the tmi provider last (pure)
   private sortProviders<T extends { id: string; name: string }>(providers: T[]): T[] {
     const sorted = [...providers];
 
@@ -134,6 +139,7 @@ export class LoginComponent implements OnInit {
    * Initiate OAuth login with specified provider
    * Navigates to the interstitial page which will handle the OAuth flow
    */
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: dispatch OAuth login flow for a provider, opening dialog for tmi provider
   loginWithOAuth(providerId: string): void {
     const provider = this.oauthProviders.find(p => p.id === providerId);
     if (!provider) return;
@@ -149,6 +155,7 @@ export class LoginComponent implements OnInit {
   /**
    * Open the TMI login dialog to collect login hint before OAuth navigation
    */
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: open dialog to collect login hint before navigating to tmi OAuth flow
   private openTmiLoginDialog(provider: OAuthProviderInfo): void {
     const dialogRef = this.dialog.open<
       TmiLoginDialogComponent,
@@ -168,6 +175,7 @@ export class LoginComponent implements OnInit {
   /**
    * Navigate to the OAuth callback interstitial page
    */
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: route to the OAuth callback interstitial with provider and return URL
   private navigateToOAuth(provider: OAuthProviderInfo, loginHint?: string): void {
     void this.router.navigate(['/oauth2/callback'], {
       queryParams: {
@@ -185,6 +193,7 @@ export class LoginComponent implements OnInit {
    * Initiate SAML login with specified provider
    * Navigates to the interstitial page which will handle the SAML flow
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: route to the SAML callback interstitial to initiate SAML authentication
   loginWithSAML(providerId: string): void {
     const provider = this.samlProviders.find(p => p.id === providerId);
     if (!provider) return;
@@ -204,6 +213,7 @@ export class LoginComponent implements OnInit {
   /**
    * Cancel login and return to home page
    */
+  // SEM@840ca1c806242cf455ea83c3beda33317a5e8c33: abort login and navigate to the home page
   cancel(): void {
     void this.router.navigate(['/']);
   }
@@ -211,6 +221,7 @@ export class LoginComponent implements OnInit {
   /**
    * Load provider logos from server or use fallbacks
    */
+  // SEM@7a4991539f0191a93ee57c2dee2dbe4ebda62ac0: trigger logo loading for all OAuth and SAML providers (mutates shared state)
   private loadProviderLogos(): void {
     // Load OAuth provider logos
     this.oauthProviders.forEach(provider => {
@@ -226,6 +237,7 @@ export class LoginComponent implements OnInit {
   /**
    * Load a single provider logo from server or use fallback
    */
+  // SEM@14740c594134dba27c570d9b30032cdd1fe13dd7: fetch a provider logo from server or fall back to a bundled asset (mutates shared state)
   private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
     // Get provider name for logging
     const providerName =
@@ -295,6 +307,7 @@ export class LoginComponent implements OnInit {
   /**
    * Check if provider uses FontAwesome icon
    */
+  // SEM@3efa15a5c540d76150afd3158f1ec831707947c1: return whether a provider logo is a FontAwesome icon class (pure)
   isFontAwesomeIcon(providerId: string): boolean {
     const logo = this.providerLogos.get(providerId);
     return logo?.type === 'fontawesome';
@@ -303,6 +316,7 @@ export class LoginComponent implements OnInit {
   /**
    * Get the FontAwesome icon class for a given provider
    */
+  // SEM@3efa15a5c540d76150afd3158f1ec831707947c1: return the FontAwesome icon class for a provider (pure)
   getFontAwesomeIcon(providerId: string): string {
     const logo = this.providerLogos.get(providerId);
     return logo?.type === 'fontawesome' ? logo.value : '';
@@ -311,6 +325,7 @@ export class LoginComponent implements OnInit {
   /**
    * Get the logo path for a given provider
    */
+  // SEM@14740c594134dba27c570d9b30032cdd1fe13dd7: return the resolved image path or fallback asset path for a provider logo (pure)
   getProviderLogoPath(providerId: string, type: 'oauth' | 'saml' = 'oauth'): string {
     const logo = this.providerLogos.get(providerId);
     if (logo?.type === 'image') return logo.value;
@@ -323,6 +338,7 @@ export class LoginComponent implements OnInit {
   /**
    * Get the logo path for a given SAML provider
    */
+  // SEM@be89ab063e8c916c082e957acd07b2451f22636d: return the resolved logo path for a SAML provider (pure)
   getSAMLProviderLogoPath(providerId: string): string {
     return this.getProviderLogoPath(providerId, 'saml');
   }

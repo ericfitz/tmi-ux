@@ -11,6 +11,7 @@ import { LoggerService } from '../../../core/services/logger.service';
  * Resolver that loads threat model data before route activation
  * Ensures threat model is loaded and permissions are set before component initialization
  */
+// SEM@04ef43aefdebc79041ccc78bc009f0d0d130c110: fetch a threat model by route id before route activation; redirect on error or missing id
 export const threatModelResolver: ResolveFn<ThreatModel | null> = (
   route,
   state,

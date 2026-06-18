@@ -18,10 +18,12 @@ import { generateCodeVerifier, computeCodeChallenge } from '../utils/pkce-crypto
 @Injectable({
   providedIn: 'root',
 })
+// SEM@6ace722cf67dd933c59840f9b211118d54bba7d6: manage PKCE parameter generation, storage, and retrieval for OAuth 2.0 flows
 export class PkceService {
   private readonly VERIFIER_STORAGE_KEY = 'pkce_verifier';
   private readonly VERIFIER_MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
 
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
@@ -31,6 +33,7 @@ export class PkceService {
    * @returns Promise resolving to PKCE parameters
    * @throws PkceError if generation fails
    */
+  // SEM@6ace722cf67dd933c59840f9b211118d54bba7d6: build PKCE code verifier and challenge, store verifier in sessionStorage (mutates shared state)
   async generatePkceParameters(): Promise<PkceParameters> {
     try {
       // Generate code verifier (32 random bytes → 43 characters)
@@ -89,6 +92,7 @@ export class PkceService {
    * @returns Code verifier string
    * @throws PkceError if verifier not found or expired
    */
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: fetch stored PKCE verifier, validating expiry; throw if missing or expired (reads session storage)
   retrieveVerifier(): string {
     const stored = sessionStorage.getItem(this.VERIFIER_STORAGE_KEY);
 
@@ -141,6 +145,7 @@ export class PkceService {
    * Clear stored PKCE verifier
    * Should be called after successful token exchange or on error
    */
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: delete the PKCE verifier from sessionStorage (mutates shared state)
   clearVerifier(): void {
     const hadVerifier = sessionStorage.getItem(this.VERIFIER_STORAGE_KEY) !== null;
     sessionStorage.removeItem(this.VERIFIER_STORAGE_KEY);
@@ -156,6 +161,7 @@ export class PkceService {
    *
    * @returns True if verifier exists in storage
    */
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: check whether a PKCE verifier exists in sessionStorage (pure)
   hasStoredVerifier(): boolean {
     return sessionStorage.getItem(this.VERIFIER_STORAGE_KEY) !== null;
   }
@@ -166,6 +172,7 @@ export class PkceService {
    *
    * @param params PKCE parameters to store
    */
+  // SEM@66c1a41106b65651c5d96ff5caeea80a79a6346a: persist PKCE parameters to sessionStorage for later token exchange (mutates shared state)
   private storeVerifier(params: PkceParameters): void {
     try {
       sessionStorage.setItem(this.VERIFIER_STORAGE_KEY, JSON.stringify(params));

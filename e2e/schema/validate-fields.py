@@ -73,6 +73,7 @@ IGNORED_API_FIELDS = {
 }
 
 
+# SEM@ff77ac69c351fc45c303f33443eff511c453ed1f: fetch the OpenAPI spec from a local file path or URL (pure)
 def load_spec(spec_path: str) -> dict:
     """Load the OpenAPI spec from a local file or URL."""
     path = Path(spec_path)
@@ -85,6 +86,7 @@ def load_spec(spec_path: str) -> dict:
     return resp.json()
 
 
+# SEM@ff77ac69c351fc45c303f33443eff511c453ed1f: resolve a JSON $ref pointer within the OpenAPI spec (pure)
 def resolve_ref(spec: dict, ref: str) -> dict:
     """Resolve a $ref pointer within the spec."""
     parts = ref.lstrip("#/").split("/")
@@ -94,6 +96,7 @@ def resolve_ref(spec: dict, ref: str) -> dict:
     return obj
 
 
+# SEM@ff77ac69c351fc45c303f33443eff511c453ed1f: aggregate all property names from named schemas, resolving allOf (pure)
 def collect_api_fields(spec: dict, schema_names: list[str]) -> set[str]:
     """Collect all property names from the given schema(s), resolving allOf."""
     schemas = spec.get("components", {}).get("schemas", {})
@@ -116,6 +119,7 @@ def collect_api_fields(spec: dict, schema_names: list[str]) -> set[str]:
     return fields
 
 
+# SEM@8f672e3d5a0951bb9ced870249777100b581a01e: validate field definitions against the OpenAPI spec; report stale and missing fields
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate field definitions against OpenAPI spec"

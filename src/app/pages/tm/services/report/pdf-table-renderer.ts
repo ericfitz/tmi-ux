@@ -27,7 +27,9 @@ export interface TableRow {
  * - Page breaks between rows (never mid-row)
  * - Header row is repeated on new pages
  */
+// SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render proportional-column tables with word-wrap and page-break-safe rows into a PDF (pure)
 export class PdfTableRenderer {
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: initialize the table renderer with a layout engine and font manager (pure)
   constructor(
     private engine: PdfLayoutEngine,
     private fonts: PdfFontManager,
@@ -36,6 +38,7 @@ export class PdfTableRenderer {
   /**
    * Render a complete table with header and data rows.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a complete table with header and data rows, repeating header on page breaks (pure)
   drawTable(cursor: Cursor, columns: TableColumn[], rows: TableRow[]): Cursor {
     const columnWidths = this.computeColumnWidths(columns);
 
@@ -61,6 +64,7 @@ export class PdfTableRenderer {
   /**
    * Compute absolute column widths from proportions.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: convert proportional column definitions to absolute pixel widths (pure)
   private computeColumnWidths(columns: TableColumn[]): number[] {
     const contentWidth = this.engine.contentWidth;
     return columns.map(col => col.proportion * contentWidth);
@@ -69,6 +73,7 @@ export class PdfTableRenderer {
   /**
    * Pre-compute the height of a row by measuring all cells.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: compute the required height of a table row based on its tallest wrapped cell (pure)
   private measureRowHeight(row: TableRow, columnWidths: number[]): number {
     const font = this.fonts.getFont(REPORT_STYLES.tableCell.fontVariant);
     const fontSize = REPORT_STYLES.tableCell.fontSize;
@@ -96,6 +101,7 @@ export class PdfTableRenderer {
   /**
    * Draw the header row with word-wrapped cells and a horizontal line underneath.
    */
+  // SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render the table header row with wrapped text and an underline separator (pure)
   private drawHeaderRow(cursor: Cursor, columns: TableColumn[], columnWidths: number[]): Cursor {
     const font = this.fonts.getFont(REPORT_STYLES.tableHeader.fontVariant);
     const fontSize = REPORT_STYLES.tableHeader.fontSize;
@@ -156,6 +162,7 @@ export class PdfTableRenderer {
   /**
    * Draw a single data row with word-wrapped cells.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: render a single data row with word-wrapped cells aligned to column widths (pure)
   private drawDataRow(cursor: Cursor, row: TableRow, columnWidths: number[]): Cursor {
     const font = this.fonts.getFont(REPORT_STYLES.tableCell.fontVariant);
     const fontSize = REPORT_STYLES.tableCell.fontSize;

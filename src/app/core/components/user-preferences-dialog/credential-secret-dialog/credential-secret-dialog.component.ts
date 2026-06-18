@@ -131,7 +131,9 @@ export interface CredentialSecretDialogData {
     `,
   ],
 })
+// SEM@0e8a2c3202f571b575f8e65a19a5a5837acf95d8: display newly created client credential secret and allow copy or download
 export class CredentialSecretDialogComponent {
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: inject dialog ref, credential data, clipboard, and logger (pure)
   constructor(
     public dialogRef: MatDialogRef<CredentialSecretDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CredentialSecretDialogData,
@@ -139,6 +141,7 @@ export class CredentialSecretDialogComponent {
     private logger: LoggerService,
   ) {}
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: copy the client ID to the clipboard (mutates shared state)
   onCopyClientId(): void {
     const success = this.clipboard.copy(this.data.clientId);
     if (success) {
@@ -148,6 +151,7 @@ export class CredentialSecretDialogComponent {
     }
   }
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: copy the client secret to the clipboard (mutates shared state)
   onCopyClientSecret(): void {
     const success = this.clipboard.copy(this.data.clientSecret);
     if (success) {
@@ -157,6 +161,7 @@ export class CredentialSecretDialogComponent {
     }
   }
 
+  // SEM@0e8a2c3202f571b575f8e65a19a5a5837acf95d8: download client credentials as a shell env-var script file
   onDownload(): void {
     const content =
       [
@@ -175,6 +180,7 @@ export class CredentialSecretDialogComponent {
     this.logger.info('Client credentials downloaded');
   }
 
+  // SEM@e78c11b8340cb7b602f0e3b20931ef81c1f65216: close the credential secret dialog (pure)
   onClose(): void {
     this.dialogRef.close();
   }

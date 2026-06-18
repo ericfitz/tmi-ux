@@ -90,6 +90,7 @@ import {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: select an existing project or create a new one via a dropdown and dialog
 export class ProjectPickerComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
@@ -100,6 +101,7 @@ export class ProjectPickerComponent implements OnInit {
   projects: ProjectListItem[] = [];
   loading = true;
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: inject dialog, project service, logger, and change detector dependencies (pure)
   constructor(
     private dialog: MatDialog,
     private projectService: ProjectService,
@@ -107,10 +109,12 @@ export class ProjectPickerComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: fetch the project list on component initialization (reads DB)
   ngOnInit(): void {
     this.loadProjects();
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: fetch the project list from the API and populate the picker (reads DB)
   private loadProjects(): void {
     this.loading = true;
     this.projectService
@@ -129,10 +133,12 @@ export class ProjectPickerComponent implements OnInit {
       });
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: emit the selected project ID when the dropdown selection changes (pure)
   onSelectionChange(event: MatSelectChange): void {
     this.projectChange.emit(event.value as string | null);
   }
 
+  // SEM@a30ab0ed0d92d3e5c1845cd361839fd8ad1843d0: open the create-project dialog, persist the result, and add it to the project list
   openCreateProject(): void {
     const dialogRef = this.dialog.open(CreateProjectDialogComponent, {
       width: '500px',

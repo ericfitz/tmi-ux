@@ -163,6 +163,7 @@ describe('SecurityConfigService', () => {
   });
 
   describe('fixed-list CSP', () => {
+    // SEM@338c179e5efb196ff54ba21d43c47c6330789216: instantiate SecurityConfigService with a mock document and return the injected CSP value (pure)
     function instantiateAndGetCsp(): string {
       const meta = { httpEquiv: '', content: '' };
       const doc = {

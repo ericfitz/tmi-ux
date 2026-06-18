@@ -5,7 +5,9 @@
  * Icons are stored in cell.data._arch and resolved to SVG asset paths.
  */
 
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: union type of supported cloud architecture icon providers (pure)
 export type ArchIconProvider = 'aws' | 'azure' | 'gcp' | 'oci';
+// SEM@dc084b634928b55911a21b811b60f0cd404fa989: union type of architecture icon classification categories (pure)
 export type ArchIconType = 'services' | 'resources' | 'groups' | 'categories';
 
 export interface ArchIconPlacement {

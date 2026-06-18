@@ -13,6 +13,7 @@ import type { LoggerService } from '../../app/core/services/logger.service';
  *
  * @returns A mock LoggerService with vitest mock functions
  */
+// SEM@bb560366c986bbf9e3ba0bd83967d224db35ffe3: build a mock LoggerService with all logging methods as spies (pure)
 export function createMockLoggerService(): LoggerService {
   return {
     info: vi.fn(),
@@ -48,6 +49,7 @@ export interface MockLoggerService {
  *
  * @returns A typed mock LoggerService
  */
+// SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: build a typed mock LoggerService exposing spy methods for test assertions (pure)
 export function createTypedMockLoggerService(): MockLoggerService {
   return createMockLoggerService() as unknown as MockLoggerService;
 }

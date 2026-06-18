@@ -54,6 +54,7 @@ export interface TriageNoteEditorResult {
   templateUrl: './triage-note-editor-dialog.component.html',
   styleUrls: ['./triage-note-editor-dialog.component.scss'],
 })
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: dialog for creating or viewing a triage note with markdown editor and preview
 export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('contentTextarea') contentTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('markdownPreview') markdownPreview?: ElementRef<HTMLDivElement>;
@@ -71,6 +72,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
   private mermaidViewersInitialized = false;
   private mermaidCleanup?: () => void;
 
+  // SEM@955e86c38b8b27985a838cc5a692ed3a5fbc0eb9: inject dependencies and set dialog mode from input data (pure)
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<TriageNoteEditorDialogComponent>,
@@ -82,6 +84,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     this.mode = data.mode;
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: initialize the note form and set preview mode based on dialog mode and existing content (mutates shared state)
   ngOnInit(): void {
     this.noteForm = this.fb.group({
       name: [this.data.name || '', [Validators.required, Validators.maxLength(this.maxNameLength)]],
@@ -100,6 +103,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     }
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: initialize task list checkboxes, anchor links, and mermaid viewers when preview is active (mutates shared state)
   ngAfterViewChecked(): void {
     if (this.previewMode && !this.taskListCheckboxesInitialized) {
       this.initializeTaskListCheckboxes();
@@ -122,6 +126,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     }
   }
 
+  // SEM@955e86c38b8b27985a838cc5a692ed3a5fbc0eb9: clean up mermaid viewer resources on component destruction (mutates shared state)
   ngOnDestroy(): void {
     this.mermaidCleanup?.();
   }
@@ -146,15 +151,18 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     return content;
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: toggle between markdown edit and rendered preview modes (mutates shared state)
   togglePreview(): void {
     this.previewMode = !this.previewMode;
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: track whether the textarea has an active text selection (mutates shared state)
   onTextareaSelect(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     this.hasSelection = textarea.selectionStart !== textarea.selectionEnd;
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: cut selected textarea text to the clipboard and update the note form content (mutates shared state)
   async onCut(): Promise<void> {
     if (this.previewMode || !this.hasSelection) return;
     const textarea = this.contentTextarea?.nativeElement;
@@ -177,6 +185,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     }
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: copy selected or full markdown content to the clipboard
   async onCopy(): Promise<void> {
     if (this.previewMode) {
       try {
@@ -199,6 +208,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     }
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: paste clipboard text into the textarea at the cursor position (mutates shared state)
   async onPaste(): Promise<void> {
     if (this.previewMode) return;
     const textarea = this.contentTextarea?.nativeElement;
@@ -220,6 +230,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     }
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: validate the note form and close the dialog returning the trimmed note result (pure)
   onSave(): void {
     if (!this.noteForm.valid) return;
 
@@ -230,10 +241,12 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     this.dialogRef.close(result);
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: dismiss the dialog without saving any changes (pure)
   onCancel(): void {
     this.dialogRef.close();
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: display a translated snack bar notification, styled as error if requested
   private showMessage(key: string, isError = false): void {
     const message = this.translocoService.translate(key);
     this.snackBar.open(message, '', {
@@ -242,6 +255,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     });
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: disable task list checkboxes in the rendered markdown preview when in read-only mode (mutates shared state)
   private initializeTaskListCheckboxes(): void {
     if (!this.markdownPreview) return;
 
@@ -256,6 +270,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     });
   }
 
+  // SEM@c46bcff0d3d2a0ad3d2aeed9d402365d1b1e8a83: register a click handler that smooth-scrolls to in-page anchor targets in the markdown preview (mutates shared state)
   private initializeAnchorLinks(): void {
     if (!this.markdownPreview) return;
 

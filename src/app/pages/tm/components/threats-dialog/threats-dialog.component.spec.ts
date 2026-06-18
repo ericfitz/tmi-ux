@@ -17,6 +17,7 @@ describe('ThreatsDialogComponent', () => {
   let mockFrameworkService: Record<string, ReturnType<typeof vi.fn>>;
   let mockTransloco: TranslocoService;
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a minimal Threat fixture with optional field overrides (pure)
   function makeThreat(id: string, overrides: Partial<Threat> = {}): Threat {
     return {
       id,
@@ -30,6 +31,7 @@ describe('ThreatsDialogComponent', () => {
     };
   }
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: instantiate and initialize ThreatsDialogComponent with mocked dependencies for testing (pure)
   function build(data: ThreatsDialogData): ThreatsDialogComponent {
     const component = new ThreatsDialogComponent(
       mockDialogRef as never,

@@ -51,6 +51,7 @@ describe('ImportOrchestratorService', () => {
     debug: ReturnType<typeof vi.fn>;
   };
 
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: build a complete set of stub import dependency callbacks for tests (pure)
   function createMockDeps(overrides: Partial<ImportDependencies> = {}): ImportDependencies {
     return {
       createThreatModel: vi.fn().mockReturnValue(of({ id: 'new-tm-1', name: 'Imported' })),
@@ -76,6 +77,7 @@ describe('ImportOrchestratorService', () => {
     };
   }
 
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: build a filter result fixture with no metadata for tests (pure)
   function defaultFilterResult(data: Record<string, unknown> = {}): {
     filtered: Record<string, unknown>;
     metadata: undefined;
@@ -83,6 +85,7 @@ describe('ImportOrchestratorService', () => {
     return { filtered: data, metadata: undefined };
   }
 
+  // SEM@9e058216aec7748060995df8d2c2aabb2d277666: build a filter result fixture including metadata entries for tests (pure)
   function filterResultWithMetadata(
     data: Record<string, unknown> = {},
     metadata: unknown[] = [{ key: 'k', value: 'v' }],

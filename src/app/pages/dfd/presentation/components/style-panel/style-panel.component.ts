@@ -90,6 +90,7 @@ export interface StyleChangeEvent {
   styleUrl: './style-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@ca308fb03ad87332d0865bc40ee7c392e48f78a1: panel for editing stroke, fill, opacity, and label position of selected diagram cells
 export class StylePanelComponent implements OnChanges {
   @Input() selectedCells: CellStyleInfo[] = [];
   @Input() diagramPalette: ColorPaletteEntry[] = [];
@@ -123,8 +124,10 @@ export class StylePanelComponent implements OnChanges {
   /** Horizontal position values for template iteration */
   readonly horizontalPositions = HORIZONTAL_POSITIONS;
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: inject ChangeDetectorRef for OnPush change detection (pure)
   constructor(private cdr: ChangeDetectorRef) {}
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: refresh displayed style values when selected cells input changes (mutates shared state)
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedCells']) {
       this.updateDisplayedValues();
@@ -154,6 +157,7 @@ export class StylePanelComponent implements OnChanges {
     return this.selectedCells.filter(c => c.isNode && c.nodeType !== 'text-box' && !c.hasArchIcon);
   }
 
+  // SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: compute and store current color, opacity, and label position from selected cells (mutates shared state)
   private updateDisplayedValues(): void {
     const strokeCells = this.strokeApplicableCells;
     const fillCells = this.fillApplicableCells;
@@ -203,6 +207,7 @@ export class StylePanelComponent implements OnChanges {
     this.cdr.markForCheck();
   }
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: emit stroke color change for applicable selected cells (mutates shared state)
   onStrokeColorSelected(color: string): void {
     if (this.disabled || !this.strokeEnabled) return;
     const applicableIds = this.strokeApplicableCells.map(c => c.cellId);
@@ -214,6 +219,7 @@ export class StylePanelComponent implements OnChanges {
     });
   }
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: emit fill color change for applicable selected cells (mutates shared state)
   onFillColorSelected(color: string): void {
     if (this.disabled || !this.fillEnabled) return;
     const applicableIds = this.fillApplicableCells.map(c => c.cellId);
@@ -225,6 +231,7 @@ export class StylePanelComponent implements OnChanges {
     });
   }
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: emit fill opacity change as a 0-1 value for applicable selected cells (mutates shared state)
   onOpacityChange(value: number): void {
     if (this.disabled || !this.fillEnabled) return;
     const applicableIds = this.fillApplicableCells.map(c => c.cellId);
@@ -236,6 +243,7 @@ export class StylePanelComponent implements OnChanges {
     });
   }
 
+  // SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: emit a label position style change for all applicable diagram cells (mutates shared state)
   onLabelPositionSelected(
     vertical: LabelVerticalPosition,
     horizontal: LabelHorizontalPosition,
@@ -251,6 +259,7 @@ export class StylePanelComponent implements OnChanges {
     });
   }
 
+  // SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: check whether a given vertical/horizontal position matches the current label position (pure)
   isActivePosition(vertical: LabelVerticalPosition, horizontal: LabelHorizontalPosition): boolean {
     if (!this.currentLabelPosition) return false;
     return (
@@ -259,12 +268,14 @@ export class StylePanelComponent implements OnChanges {
     );
   }
 
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: emit clear-formatting event for all selected diagram cells (mutates shared state)
   onClearCustomFormatting(): void {
     if (this.disabled || this.noSelection) return;
     const allIds = this.selectedCells.map(c => c.cellId);
     this.clearCustomFormatting.emit(allIds);
   }
 
+  // SEM@2c555798bd2125fe80100290956defed1b05474e: forward a diagram color palette change to the parent component (mutates shared state)
   onDiagramPaletteChanged(palette: ColorPaletteEntry[]): void {
     this.diagramPaletteChanged.emit(palette);
   }

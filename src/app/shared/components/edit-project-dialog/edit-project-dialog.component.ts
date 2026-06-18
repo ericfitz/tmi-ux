@@ -299,6 +299,7 @@ export interface EditProjectDialogData {
     `,
   ],
 })
+// SEM@0044214fdc57a3ef5cd64987b680cab157eedffc: dialog component to edit project metadata and manage project notes (mutates shared state)
 export class EditProjectDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   form!: FormGroup;
@@ -317,6 +318,7 @@ export class EditProjectDialogComponent implements OnInit {
   notesLoading = false;
   private notesLoaded = false;
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: inject dialog ref, project data, and services for project editing (pure)
   constructor(
     private dialogRef: MatDialogRef<EditProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: EditProjectDialogData,
@@ -327,6 +329,7 @@ export class EditProjectDialogComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  // SEM@9903b4ae4ff58eea97ff4a610b17450da1531d17: initialize project edit form and fetch team list from API (reads DB)
   ngOnInit(): void {
     const project = this.data.project;
     this.form = this.fb.group({
@@ -353,6 +356,7 @@ export class EditProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@0044214fdc57a3ef5cd64987b680cab157eedffc: validate form and patch project via API, closing dialog on success (reads DB)
   onSave(): void {
     if (!this.form.valid || this.saving) return;
     this.saving = true;
@@ -388,10 +392,12 @@ export class EditProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@9903b4ae4ff58eea97ff4a610b17450da1531d17: close project edit dialog without saving changes (mutates shared state)
   onCancel(): void {
     this.dialogRef.close(false);
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: handle tab switch and lazy-load notes on first visit to notes tab (reads DB)
   onTabChange(event: { index: number }): void {
     this.selectedTabIndex = event.index;
     if (event.index === 1 && !this.notesLoaded) {
@@ -399,6 +405,7 @@ export class EditProjectDialogComponent implements OnInit {
     }
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: fetch paginated project notes from API and update component state (reads DB)
   private loadNotes(): void {
     this.notesLoading = true;
     this.projectService
@@ -418,12 +425,14 @@ export class EditProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: update notes pagination state and reload current page from API (reads DB)
   onNotesPageChange(event: PageEvent): void {
     this.notesPageIndex = event.pageIndex;
     this.notesPageSize = event.pageSize;
     this.loadNotes();
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: open note editor dialog and create or update a project note via API (reads DB)
   addNote(): void {
     const dialogData: NoteEditorDialogData = {
       mode: 'create',
@@ -474,6 +483,7 @@ export class EditProjectDialogComponent implements OnInit {
     });
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: fetch a project note then open editor dialog to update it via API (reads DB)
   editNote(noteListItem: ProjectNoteListItem): void {
     this.projectService
       .getNoteById(this.data.project.id, noteListItem.id)
@@ -522,6 +532,7 @@ export class EditProjectDialogComponent implements OnInit {
       });
   }
 
+  // SEM@ab12930d6e0bde01fba6795e8239f10f1efb75a3: confirm and delete a note from the current project (mutates shared state)
   deleteNote(noteListItem: ProjectNoteListItem): void {
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
       data: {

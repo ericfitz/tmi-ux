@@ -9,6 +9,7 @@ import { of, throwError, Subject } from 'rxjs';
 
 // Mock X6 Graph before importing AppDfdOrchestrator
 vi.mock('@antv/x6', () => {
+  // SEM@faf26e51f9a4c3b94f330f513b6fedb73fc8b031: build a vitest mock of the X6 graph API for unit test use (pure)
   const createMockGraph = () => ({
     // Core graph methods
     dispose: vi.fn(),

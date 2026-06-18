@@ -6,7 +6,9 @@
  * to X6 text attributes (refX, refY, textAnchor, textVerticalAnchor).
  */
 
+// SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: enumerate valid horizontal positions for a diagram node label (pure)
 export type LabelHorizontalPosition = 'left' | 'center' | 'right';
+// SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: enumerate valid vertical positions for a diagram node label (pure)
 export type LabelVerticalPosition = 'top' | 'middle' | 'bottom';
 
 export interface LabelPosition {
@@ -56,6 +58,7 @@ export const HORIZONTAL_POSITIONS: LabelHorizontalPosition[] = ['left', 'center'
 /**
  * Build a position key string from a LabelPosition.
  */
+// SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: convert a label position to its string lookup key (pure)
 export function getLabelPositionKey(position: LabelPosition): string {
   return `${position.vertical}-${position.horizontal}`;
 }
@@ -67,6 +70,7 @@ export function getLabelPositionKey(position: LabelPosition): string {
  * Handles the store shape's special refY: '55%' by treating it as '50%'
  * for the purpose of position detection.
  */
+// SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: reverse-map X6 text attrs to a label position, or null if unrecognized (pure)
 export function getLabelPositionFromAttrs(attrs: Record<string, unknown>): LabelPosition | null {
   const refX = typeof attrs['refX'] === 'string' ? attrs['refX'] : '50%';
   // Store shapes use refY: '55%' as their default center; treat as '50%'

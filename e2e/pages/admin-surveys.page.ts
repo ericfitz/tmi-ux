@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: page object exposing locators for the admin surveys management page (pure)
 export class AdminSurveysPage {
+  // SEM@ca1d0abed3756a76ed4ddd81d7daf443a65eacdf: bind a Playwright page instance to the admin surveys page object (pure)
   constructor(private page: Page) {}
 
   readonly searchInput = () =>

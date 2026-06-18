@@ -4,11 +4,13 @@ import { Point } from './point';
 /**
  * DiagramEdge entity representing an edge in the diagram domain
  */
+// SEM@6e5efd2b0a392451cdb3e9dd56023617e967c3e3: domain entity wrapping an edge with selection, highlight, and mutation methods
 export class DiagramEdge {
   private _data: EdgeInfo;
   private _isSelected: boolean = false;
   private _isHighlighted: boolean = false;
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: initialize a diagram edge from an EdgeInfo object or raw JSON (pure)
   constructor(data: EdgeInfo | Parameters<typeof EdgeInfo.fromJSON>[0]) {
     if (data instanceof EdgeInfo) {
       this._data = data;
@@ -107,6 +109,7 @@ export class DiagramEdge {
   /**
    * Creates a DiagramEdge from a plain object
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: deserialize a diagram edge including selection and highlight state (pure)
   static fromJSON(data: {
     data: Parameters<typeof EdgeInfo.fromJSON>[0];
     isSelected?: boolean;
@@ -128,6 +131,7 @@ export class DiagramEdge {
   /**
    * Updates the edge data
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: replace the edge's EdgeInfo, rejecting any ID change (mutates shared state)
   updateData(data: EdgeInfo): void {
     if (data.id !== this._data.id) {
       throw new Error('Cannot change edge ID');
@@ -138,6 +142,7 @@ export class DiagramEdge {
   /**
    * Updates the edge label
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the edge label text immutably via EdgeInfo (mutates shared state)
   updateLabel(label: string): void {
     this._data = this._data.withLabel(label);
   }
@@ -145,6 +150,7 @@ export class DiagramEdge {
   /**
    * Updates the edge vertices
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: replace the edge routing vertices from a Point array (mutates shared state)
   updateVertices(vertices: Point[]): void {
     const vertexCoords = vertices.map(v => ({ x: v.x, y: v.y }));
     this._data = this._data.withVertices(vertexCoords);
@@ -153,6 +159,7 @@ export class DiagramEdge {
   /**
    * Adds a vertex to the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: insert a waypoint into the edge path at an optional index (mutates shared state)
   addVertex(vertex: Point, index?: number): void {
     const vertexCoord = { x: vertex.x, y: vertex.y };
     this._data = this._data.withAddedVertex(vertexCoord, index);
@@ -161,6 +168,7 @@ export class DiagramEdge {
   /**
    * Removes a vertex from the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: delete a waypoint from the edge path by index (mutates shared state)
   removeVertex(index: number): void {
     this._data = this._data.withRemovedVertex(index);
   }
@@ -168,6 +176,7 @@ export class DiagramEdge {
   /**
    * Updates the edge metadata
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: replace the edge metadata key-value map (mutates shared state)
   updateMetadata(metadata: Record<string, string>): void {
     this._data = this._data.withMetadata(metadata);
   }
@@ -175,6 +184,7 @@ export class DiagramEdge {
   /**
    * Updates the source connection
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the edge source node and optional port connection (mutates shared state)
   updateSource(nodeId: string, portId?: string): void {
     this._data = this._data.withSource(nodeId, portId);
   }
@@ -182,6 +192,7 @@ export class DiagramEdge {
   /**
    * Updates the target connection
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update the edge target node and optional port connection (mutates shared state)
   updateTarget(nodeId: string, portId?: string): void {
     this._data = this._data.withTarget(nodeId, portId);
   }
@@ -189,6 +200,7 @@ export class DiagramEdge {
   /**
    * Selects the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: mark the edge as selected (mutates shared state)
   select(): void {
     this._isSelected = true;
   }
@@ -196,6 +208,7 @@ export class DiagramEdge {
   /**
    * Deselects the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the edge selected state (mutates shared state)
   deselect(): void {
     this._isSelected = false;
   }
@@ -203,6 +216,7 @@ export class DiagramEdge {
   /**
    * Highlights the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: mark the edge as highlighted (mutates shared state)
   highlight(): void {
     this._isHighlighted = true;
   }
@@ -210,6 +224,7 @@ export class DiagramEdge {
   /**
    * Removes highlight from the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clear the edge highlighted state (mutates shared state)
   unhighlight(): void {
     this._isHighlighted = false;
   }
@@ -217,6 +232,7 @@ export class DiagramEdge {
   /**
    * Checks if this edge connects to the specified node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether the edge connects to a given node as source or target (pure)
   connectsToNode(nodeId: string): boolean {
     return this._data.connectsToNode(nodeId);
   }
@@ -224,6 +240,7 @@ export class DiagramEdge {
   /**
    * Checks if this edge uses the specified port
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether the edge connects through a specific node port (pure)
   usesPort(nodeId: string, portId: string): boolean {
     return this._data.usesPort(nodeId, portId);
   }
@@ -231,6 +248,7 @@ export class DiagramEdge {
   /**
    * Gets the total length of the edge path
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute total Euclidean length of the edge path through all waypoints (pure)
   getPathLength(): number {
     return this._data.getPathLength();
   }
@@ -238,6 +256,7 @@ export class DiagramEdge {
   /**
    * Checks if the edge has any vertices
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return whether the edge path has any intermediate waypoints (pure)
   hasVertices(): boolean {
     return this.vertices.length > 0;
   }
@@ -245,6 +264,7 @@ export class DiagramEdge {
   /**
    * Gets the number of vertices
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the number of waypoints in the edge path (pure)
   getVertexCount(): number {
     return this.vertices.length;
   }
@@ -252,6 +272,7 @@ export class DiagramEdge {
   /**
    * Gets a vertex at the specified index
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a waypoint by index, returning undefined if out of bounds (pure)
   getVertex(index: number): Point | undefined {
     return this.vertices[index];
   }
@@ -259,6 +280,7 @@ export class DiagramEdge {
   /**
    * Checks if a point is near the edge path (within tolerance)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a point falls within tolerance distance of the edge path (pure)
   isPointNearPath(point: Point, tolerance: number = 5): boolean {
     if (this.vertices.length < 2) {
       return false;
@@ -280,6 +302,7 @@ export class DiagramEdge {
   /**
    * Gets the midpoint of the edge path
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the geometric midpoint along the edge path (pure)
   getMidpoint(): Point | undefined {
     if (this.vertices.length < 2) {
       return undefined;
@@ -314,6 +337,7 @@ export class DiagramEdge {
   /**
    * Creates a copy of this edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a deep copy of the edge preserving selection and highlight state (pure)
   clone(): DiagramEdge {
     const cloned = new DiagramEdge(this._data);
     cloned._isSelected = this._isSelected;
@@ -324,6 +348,7 @@ export class DiagramEdge {
   /**
    * Converts the edge to a plain object for serialization
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: serialize the edge to a plain object for persistence (pure)
   toJSON(): {
     data: ReturnType<EdgeInfo['toJSON']>;
     isSelected: boolean;
@@ -339,6 +364,7 @@ export class DiagramEdge {
   /**
    * Returns a string representation of the edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: format a human-readable edge identifier with source and target node IDs (pure)
   toString(): string {
     return `DiagramEdge(${this.id}, ${this.sourceNodeId} -> ${this.targetNodeId})`;
   }
@@ -346,6 +372,7 @@ export class DiagramEdge {
   /**
    * Calculates the distance from a point to a line segment
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute shortest distance from a point to a line segment (pure)
   private distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): number {
     const A = point.x - lineStart.x;
     const B = point.y - lineStart.y;

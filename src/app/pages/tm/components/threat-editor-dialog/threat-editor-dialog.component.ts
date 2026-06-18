@@ -120,6 +120,7 @@ export interface ThreatEditorDialogData {
   styleUrls: ['./threat-editor-dialog.component.scss'],
   providers: [],
 })
+// SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: dialog for creating, editing, or viewing a threat with form validation and i18n
 export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterViewInit {
   threatForm: FormGroup;
   dialogTitle: string = '';
@@ -144,6 +145,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   private _subscriptions: Subscription = new Subscription();
   private _originalThreat: Threat | null = null;
 
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: initialize the threat editor reactive form with all field controls (mutates shared state)
   constructor(
     private dialogRef: MatDialogRef<ThreatEditorDialogComponent>,
     private fb: FormBuilder,
@@ -175,6 +177,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Initialize threat type options based on the framework and optional shape type
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: populate threat-type dropdown from the active framework, filtered by shape type (mutates shared state)
   private initializeThreatTypeOptions(): void {
     this.threatTypeOptions = [];
 
@@ -236,6 +239,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Initialize field options for severity dropdown
    */
+  // SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: populate the severity dropdown options from i18n translations (mutates shared state)
   private initializeFieldOptions(): void {
     this.severityOptions = getFieldOptions('threatEditor.threatSeverity', this.translocoService);
   }
@@ -243,6 +247,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Initialize asset options for the dropdown
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: build the asset dropdown list with current asset first and remainder sorted (mutates shared state)
   private initializeAssetOptions(): void {
     // Initialize with "Not associated" option
     this.assetOptions = [
@@ -285,6 +290,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     });
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: bootstrap dialog mode, load translations, wire language subscriptions, and populate form (mutates shared state)
   ngOnInit(): void {
     // Set dialog mode - use isReadOnly if provided, otherwise check mode
     this.isViewOnly = this.data.isReadOnly || this.data.mode === 'view';
@@ -358,6 +364,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Sets the dialog title and initializes default threat data for create mode.
    */
+  // SEM@d47739de2acf5e281b60be208f2dfa034ea03423: set dialog title and create a default threat stub when mode is create (mutates shared state)
   private _initializeDialogTitleAndDefaults(): void {
     if (this.data.mode === 'create') {
       this.dialogTitle = 'threatEditor.createNewThreat';
@@ -392,6 +399,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Sets the form to default empty/null values.
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: reset all form controls to blank or default values (mutates shared state)
   private _initializeFormValues(): void {
     this.threatForm.patchValue({
       name: '',
@@ -415,6 +423,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Populates the form from existing threat data (for edit/view modes).
    */
+  // SEM@bc74129e94a2260f653a8dcd396dd786eec59d08: patch form controls from existing threat data, migrating legacy field values (mutates shared state)
   private _populateFormFromThreat(): void {
     if (!this.data.threat) return;
 
@@ -501,6 +510,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Loads translations (English first, then current language) and initializes all dropdown options.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: load English translations then current-language translations before initializing dropdowns
   private _loadTranslationsAndInitialize(currentLang: string): void {
     this.translocoService.load('en-US').subscribe({
       next: () => {
@@ -527,6 +537,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Loads a non-English language translation and initializes dropdown options.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: load translations for a locale and initialize all dropdown options (mutates shared state)
   private _loadLanguageAndInitialize(lang: string): void {
     this.translocoService.load(lang).subscribe({
       next: () => {
@@ -549,6 +560,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Initializes all dropdown option lists from translations.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: initialize all dropdown option lists from current locale translations (mutates shared state)
   private _initializeAllDropdownOptions(): void {
     this.initializeAssetOptions();
     this.initializeThreatTypeOptions();
@@ -558,6 +570,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Forces a dialog size update to refresh translations in the UI.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: trigger a dialog size update to force a UI translation refresh (mutates shared state)
   private _refreshDialogSize(): void {
     setTimeout(() => {
       this.dialogRef.updateSize();
@@ -568,6 +581,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Initialize enhanced save behavior services
    */
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: snapshot the original threat for change detection on save (mutates shared state)
   private initializeEnhancedSaveBehavior(): void {
     // Store original threat for change detection
     this._originalThreat = this.data.threat ? { ...this.data.threat } : null;
@@ -576,6 +590,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * After view initialization, force translation update
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: force translation update and log form field state after view initialization (mutates shared state)
   ngAfterViewInit(): void {
     // Force translation update after view is initialized
     this.forceTranslationUpdate();
@@ -612,6 +627,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * Force translation update by triggering a dialog resize
    * This helps ensure translations are properly applied
    */
+  // SEM@f156eddc40615f5c90ac9f12cf77eb8a00cb3f22: re-translate all dialog i18n keys and resize dialog to flush stale translations (mutates shared state)
   private forceTranslationUpdate(): void {
     // Use setTimeout to ensure this runs after Angular's change detection cycle
     setTimeout(() => {
@@ -664,6 +680,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
    * Force translation update for a specific key
    * @param key The translation key to update
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: resolve an i18n key and reload the locale if the translation is missing (mutates shared state)
   private translateKey(key: string): void {
     try {
       // Get the translation
@@ -698,6 +715,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Clean up subscriptions when component is destroyed
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: unsubscribe all active subscriptions on component teardown (mutates shared state)
   ngOnDestroy(): void {
     if (this.langSubscription) {
       this.langSubscription.unsubscribe();
@@ -716,6 +734,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Get validation rules for threat fields
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: return field validator functions for name, description, and threat type (pure)
   private getThreatValidationRules(): Record<string, unknown[]> {
     return {
       name: [(value: string) => (value && value.trim().length > 0 ? null : { required: true })],
@@ -734,6 +753,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Close the dialog with the threat data
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: validate and close the dialog with the threat form payload
   onSubmit(): void {
     if (this.threatForm.invalid) {
       return;
@@ -776,6 +796,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Close the dialog without creating or updating a threat
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: close the dialog without saving threat changes
   onCancel(): void {
     this.dialogRef.close();
   }
@@ -791,6 +812,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   /**
    * Open the AI artifact feedback dialog pre-seeded with the given sentiment.
    */
+  // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: open the AI artifact feedback dialog pre-seeded with the given sentiment
   openFeedback(sentiment: ArtifactFeedbackSentiment): void {
     if (!this.data.threat) return;
     this.dialog.open<AiFeedbackDialogComponent, AiFeedbackDialogData>(AiFeedbackDialogComponent, {

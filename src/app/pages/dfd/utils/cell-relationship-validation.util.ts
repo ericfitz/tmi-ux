@@ -81,6 +81,7 @@ interface ValidationContext {
  * @param logger - Logger service for warning messages
  * @returns ValidationResult with corrected cells and issue details
  */
+// SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate and repair parent-child cell relationships, removing invalid references (mutates shared state)
 export function validateAndFixParentChildRelationships(
   cells: Cell[],
   logger: LoggerService,
@@ -117,6 +118,7 @@ export function validateAndFixParentChildRelationships(
  * Validate parent references from each cell
  * Ensures referenced parents exist and embedding rules are satisfied
  */
+// SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: validate each cell's parent reference exists and obeys embedding rules (mutates shared state)
 function validateParentReferences(cells: Cell[], context: ValidationContext): void {
   cells.forEach(cell => {
     const parent = cell['parent'] as string | null | undefined;
@@ -160,6 +162,7 @@ function validateParentReferences(cells: Cell[], context: ValidationContext): vo
 /**
  * Validate embedding rules based on shape types
  */
+// SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate that a cell's parent shape is permitted to contain that child shape (mutates shared state)
 function validateEmbeddingRules(cell: Cell, parentCell: Cell, context: ValidationContext): void {
   const childShape = cell.shape;
   const parentShape = parentCell.shape;
@@ -206,6 +209,7 @@ function validateEmbeddingRules(cell: Cell, parentCell: Cell, context: Validatio
  * Validate child references from parent cells
  * Ensures children exist and reference the parent back
  */
+// SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate children arrays on parent cells, repairing missing back-references (mutates shared state)
 function validateChildReferences(cells: Cell[], context: ValidationContext): void {
   cells.forEach(cell => {
     const children = cell['children'] as string[] | undefined;
@@ -260,6 +264,7 @@ function validateChildReferences(cells: Cell[], context: ValidationContext): voi
 /**
  * Add an issue to the context and increment fix count
  */
+// SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: record a validation issue and increment the fix counter in the validation context (mutates shared state)
 function addIssueAndFix(
   context: ValidationContext,
   issue: ValidationIssue,
@@ -278,6 +283,7 @@ function addIssueAndFix(
 /**
  * Log validation summary
  */
+// SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: log a summary of parent-child validation results at warn or debug level
 function logValidationSummary(cells: Cell[], context: ValidationContext): void {
   if (context.fixCount > 0) {
     context.logger.warn('Fixed parent-child relationship issues in diagram cells', {
@@ -315,6 +321,7 @@ function logValidationSummary(cells: Cell[], context: ValidationContext): void {
  * @param cellMap - Map of all cells by ID
  * @returns true if circular relationship detected
  */
+// SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: detect a circular parent chain starting from a given cell and parent (pure)
 function hasCircularRelationship(
   cellId: string,
   parentId: string,
@@ -364,6 +371,7 @@ function hasCircularRelationship(
  * @param logger - Logger service
  * @returns ValidationResult with any fixes applied
  */
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: validate parent-child relationships for cells affected by a patch, scoping issues to changed cells (mutates shared state)
 export function validateAffectedCellRelationships(
   affectedCellIds: string[],
   allCells: Cell[],

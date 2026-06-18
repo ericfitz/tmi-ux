@@ -48,6 +48,7 @@ const ENTRY_2: AuditEntry = {
   created_at: '2026-01-02T08:00:00Z',
 };
 
+// SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: build a stub threat-model audit list response for tests (pure)
 function makeListResponse(
   entries: AuditEntry[] = [ENTRY_1],
   opts: { total?: number; next_cursor?: string | null; prev_cursor?: string | null } = {},
@@ -69,6 +70,7 @@ function makeListResponse(
 
 // ── Build mocks / injector helper ─────────────────────────────────────────────
 
+// SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: build a configured Angular injector with audit service mocks for tests (pure)
 function buildMocks(
   options: {
     queryParams?: Record<string, string>;
@@ -130,6 +132,7 @@ function buildMocks(
   };
 }
 
+// SEM@b99716f33ee6efd415a66383b4bfaa3794f153c3: instantiate and initialize TmAuditViewComponent in an injection context (pure)
 function createComponent(injector: Injector): TmAuditViewComponent {
   const comp = runInInjectionContext(injector, () => new TmAuditViewComponent());
   comp.ngOnInit();

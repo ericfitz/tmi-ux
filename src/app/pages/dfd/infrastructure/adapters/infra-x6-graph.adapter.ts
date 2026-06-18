@@ -69,6 +69,7 @@ import { registerCustomShapes } from './infra-x6-shape-definitions';
  * while maintaining direct access to X6's native capabilities.
  */
 @Injectable()
+// SEM@e99bb98ad3ad07b8d4047d771022c542c89d8e39: adapt the AntV X6 graph library to the DFD graph port, managing lifecycle and events (mutates shared state)
 export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Standard tool configurations for consistent behavior
@@ -158,6 +159,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   // Track node state for parent change history (full cell state for accurate history tracking)
   private readonly _nodePreviousStates = new Map<string, WebSocketCell>();
 
+  // SEM@6774bae2f845efae6c7636f13727d462e9fb9e6d: inject infrastructure dependencies and register X6 custom shapes and cell extensions (mutates shared state)
   constructor(
     private logger: LoggerService,
     private readonly _edgeQueryService: InfraEdgeQueryService,
@@ -344,6 +346,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Initialize the graph with the given container element
    */
+  // SEM@5f881a84d0935fecd8e018eac99b16974e7641c9: build and configure the X6 graph instance in a DOM container with plugins and event listeners (mutates shared state)
   initialize(container: HTMLElement): void {
     if (this._graph) {
       this.dispose();
@@ -539,6 +542,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Set the graph instance and initialize adapters (for orchestrator-created graphs)
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: store a graph instance and wire up event listeners and sub-adapters (mutates shared state)
   setGraph(graph: Graph): void {
     if (this._graph) {
       this.dispose();
@@ -573,6 +577,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Check if the graph has been initialized
    */
+  // SEM@714482026f8e81ee4eb03d4a4c6cdd71b87cc603: report whether the graph instance has been set (pure)
   isInitialized(): boolean {
     return this._graph !== null;
   }
@@ -580,6 +585,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get the underlying X6 Graph instance for direct access when needed
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch the underlying X6 graph instance; throw if uninitialized (pure)
   getGraph(): Graph {
     if (!this._graph) {
       throw new Error('Graph not initialized. Call initialize() first.');
@@ -590,6 +596,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Add a node to the graph
    */
+  // SEM@6774bae2f845efae6c7636f13727d462e9fb9e6d: build and register a diagram node in the graph with validated shape and z-order (mutates shared state)
   addNode(node: DiagramNode): Node {
     const graph = this.getGraph();
     const nodeType = node.type;
@@ -642,6 +649,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Remove a node from the graph
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: delete a diagram node from the graph by ID (mutates shared state)
   removeNode(nodeId: string): void {
     const graph = this.getGraph();
     const node = graph.getCellById(nodeId) as Node;
@@ -654,6 +662,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Move a node to a new position
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: update a diagram node's position in the graph (mutates shared state)
   moveNode(nodeId: string, position: Point): void {
     const graph = this.getGraph();
     const node = graph.getCellById(nodeId) as Node;
@@ -667,6 +676,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Add an edge to the graph from a DiagramEdge
    * Uses atomic operation for proper history management
    */
+  // SEM@e99bb98ad3ad07b8d4047d771022c542c89d8e39: build and register a diagram edge with metadata and port visibility (mutates shared state)
   addEdge(diagramEdge: DiagramEdge): Edge {
     const graph = this.getGraph();
     const edgeData = diagramEdge.data;
@@ -715,6 +725,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Remove an edge from the graph using X6's native operations
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: delete a diagram edge from the graph by ID (mutates shared state)
   removeEdge(edgeId: string): void {
     const graph = this.getGraph();
     const edge = graph.getCellById(edgeId) as Edge;
@@ -728,6 +739,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get all nodes in the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all diagram nodes currently in the graph (pure)
   getNodes(): Node[] {
     const graph = this.getGraph();
     return graph.getNodes();
@@ -736,6 +748,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get all edges in the graph using X6's native operations
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all diagram edges currently in the graph (pure)
   getEdges(): Edge[] {
     const graph = this.getGraph();
     return graph.getEdges();
@@ -744,6 +757,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get a node by ID
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a single diagram node by ID; return null if absent (pure)
   getNode(nodeId: string): Node | null {
     const graph = this.getGraph();
     const cell = graph.getCellById(nodeId);
@@ -753,6 +767,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get an edge by ID using X6's native operations
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a single diagram edge by ID; return null if absent (pure)
   getEdge(edgeId: string): Edge | null {
     const graph = this.getGraph();
     const cell = graph.getCellById(edgeId);
@@ -762,6 +777,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get selected cells from the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all currently selected diagram cells from the graph (pure)
   getSelectedCells(): Cell[] {
     const graph = this.getGraph();
     if (graph && typeof graph.getSelectedCells === 'function') {
@@ -773,6 +789,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Clear all nodes and edges from the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: delete all nodes and edges from the graph (mutates shared state)
   clear(): void {
     const graph = this.getGraph();
     graph.clearCells();
@@ -781,6 +798,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Fit the graph to the viewport
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: scale the graph viewport to fit all content with padding (mutates shared state)
   fitToContent(): void {
     const graph = this.getGraph();
     graph.zoomToFit({ padding: 20 });
@@ -789,6 +807,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Center the graph in the viewport
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: scroll the graph viewport so all content is centered (mutates shared state)
   centerContent(): void {
     const graph = this.getGraph();
     graph.centerContent();
@@ -798,6 +817,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Remove visual properties from a cell (filters, tools)
    * Modifies the cell in-place to remove visual interaction properties
    */
+  // SEM@5627b1a2f5cec4c268eaa29da9d69aad1872f4d8: strip transient visual properties (tools, filters) from a diagram cell (mutates shared state)
   private _removeVisualProperties(cell: Cell): void {
     // Remove tools property (runtime UI controls)
     cell.removeProp('tools');
@@ -825,6 +845,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Cut selected cells to clipboard
    * Normalizes cells to remove visual properties before cutting
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: move selected diagram cells to the clipboard, stripped of visual properties (mutates shared state)
   cut(): void {
     if (!this._graph) {
       this.logger.warn('Cannot cut: Graph not initialized');
@@ -852,6 +873,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Copy selected cells to clipboard
    * Normalizes cells to remove visual properties before copying
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: copy selected diagram cells to the clipboard, stripped of visual properties (mutates shared state)
   copy(): void {
     if (!this._graph) {
       this.logger.warn('Cannot copy: Graph not initialized');
@@ -880,6 +902,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Paste cells from clipboard
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: insert clipboard diagram cells into the graph and clear selection styling (mutates shared state)
   paste(): void {
     if (!this._graph) {
       this.logger.warn('Cannot paste: Graph not initialized');
@@ -899,6 +922,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Check if clipboard is empty
    */
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: report whether the diagram clipboard holds any cells (pure)
   isClipboardEmpty(): boolean {
     if (!this._graph) {
       return true;
@@ -909,6 +933,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Clear the clipboard
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: empty all diagram cells from the clipboard (mutates shared state)
   clearClipboard(): void {
     if (!this._graph) {
       this.logger.warn('Cannot clear clipboard: Graph not initialized');
@@ -921,6 +946,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get clipboard cells (for debugging/display)
    */
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: list all diagram cells currently held in the clipboard (pure)
   getClipboardCells(): Cell[] {
     if (!this._graph) {
       return [];
@@ -932,6 +958,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Update embedding appearances for all nodes in the graph
    * Applies proper fill/shading to embedded nodes based on their embedding depth
    */
+  // SEM@b2c55af5f943e48e06db149c7188997119a9fe71: apply embedding depth shading to all diagram nodes in the graph (mutates shared state)
   updateAllEmbeddingAppearances(): void {
     if (!this._graph) {
       this.logger.warn('Cannot update embedding appearances - graph not initialized');
@@ -946,6 +973,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Clear all active visual effects (highlights, temporary styling)
    * Should be called after undo/redo or other state-changing operations
    */
+  // SEM@e998388db08b5e64ee6c7d7db6d728eeddaa5e31: remove all active highlight and temporary visual effects from the graph (mutates shared state)
   clearAllVisualEffects(): void {
     if (!this._graph) {
       this.logger.warn('Cannot clear visual effects - graph not initialized');
@@ -961,6 +989,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Hides unconnected ports, ensures connected ports are visible
    * Should be called after undo/redo or other operations that affect edges
    */
+  // SEM@8f38bfd1b82538ca7f8d7835cea7f148dd56bda1: hide unconnected ports and show connected ports on all graph nodes (mutates shared state)
   updateAllPortVisibility(): void {
     if (!this._graph) {
       this.logger.warn('Cannot update port visibility - graph not initialized');
@@ -975,6 +1004,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Recalculate z-order for all cells in the graph
    * Uses iterative algorithm to fix cascading z-index violations
    */
+  // SEM@d9b90af4d6dde8edf7ca0cfd5fc0840d565aa5be: recompute z-order for all graph cells to fix stacking violations (mutates shared state)
   recalculateZOrder(): void {
     if (!this._graph) {
       this.logger.warn('Cannot recalculate z-order - graph not initialized');
@@ -989,6 +1019,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: log edge rendering details to the debug console for diagnostics (reads graph state)
   debugEdgeRendering(): void {
     if (!this._graph) {
       this.logger.debugComponent('X6Graph', 'No graph instance');
@@ -1012,6 +1043,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Dispose of the graph and clean up resources
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: teardown the graph adapter and release all held resources (mutates shared state)
   dispose(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -1044,6 +1076,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Move selected cells forward in z-order (increase z-index to move above next nearest unselected cell)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: increase z-index of selected cells one step above nearest unselected cell (mutates shared state)
   moveSelectedCellsForward(): void {
     const graph = this.getGraph();
     this._zOrderAdapter.moveSelectedCellsForward(graph);
@@ -1052,6 +1085,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Move selected cells backward in z-order (decrease z-index to move below next nearest unselected cell)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: decrease z-index of selected cells one step below nearest unselected cell (mutates shared state)
   moveSelectedCellsBackward(): void {
     const graph = this.getGraph();
     this._zOrderAdapter.moveSelectedCellsBackward(graph);
@@ -1060,6 +1094,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Move selected cells to front (highest z-index among cells of the same type)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: move selected cells to the highest z-index among same-type cells (mutates shared state)
   moveSelectedCellsToFront(): void {
     const graph = this.getGraph();
     this._zOrderAdapter.moveSelectedCellsToFront(graph);
@@ -1068,6 +1103,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Move selected cells to back (lowest z-index among cells of the same type)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: move selected cells to the lowest z-index among same-type cells (mutates shared state)
   moveSelectedCellsToBack(): void {
     const graph = this.getGraph();
     this._zOrderAdapter.moveSelectedCellsToBack(graph);
@@ -1076,6 +1112,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get the standardized label text from a cell
    */
+  // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label text from a graph cell (pure)
   getCellLabel(cell: Cell): string {
     // Use X6 cell extensions for unified label handling
     return (cell as any).getLabel ? (cell as any).getLabel() : '';
@@ -1084,6 +1121,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Set the standardized label text for a cell
    */
+  // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: update a cell's label text and emit a history-tracked label-change event (mutates shared state)
   setCellLabel(cell: Cell, text: string): void {
     if (!this._graph) {
       this.logger.warn('Cannot set cell label: Graph is not initialized');
@@ -1128,6 +1166,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Capture the current state of a cell for history tracking
    * Returns a normalized WebSocket Cell format
    */
+  // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: serialize a graph cell's current state into a normalized WebSocket cell snapshot (pure)
   private _captureCellState(cell: Cell): WebSocketCell | null {
     if (!cell) {
       return null;
@@ -1169,6 +1208,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Start label editing for a cell (public method to access private _addLabelEditor)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: open the inline label editor for a cell at the triggering mouse position (mutates shared state)
   startLabelEditing(cell: Cell, event: MouseEvent): void {
     this._addLabelEditor(cell, event);
   }
@@ -1176,6 +1216,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get the initial position of a node when drag started (for history tracking)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a node's recorded drag-start position for history tracking (pure)
   getInitialNodePosition(nodeId: string): Point | null {
     return this._keyboardHandler.getInitialNodePosition(nodeId);
   }
@@ -1183,6 +1224,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Public method to validate and correct z-order - can be called externally
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate and repair z-order violations across all graph cells (mutates shared state)
   validateAndCorrectZOrder(): void {
     const graph = this.getGraph();
     this._zOrderAdapter.validateAndCorrectZOrder(graph);
@@ -1191,6 +1233,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Setup event listeners for X6 graph events
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: register all X6 graph event handlers for node, edge, and selection lifecycle (mutates shared state)
   private _setupEventListeners(): void {
     if (!this._graph) return;
 
@@ -1587,6 +1630,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Debug method to check CSS rules affecting edges
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: log CSS rules and SVG styles affecting edge rendering to the debug console (reads DOM)
   private _debugEdgeStyles(): void {
     if (!this._graph) return;
 
@@ -1644,6 +1688,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Setup X6 plugins for enhanced functionality
    */
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: register X6 plugins for snapline, resize, export, and clipboard on the graph (mutates shared state)
   private _setupPlugins(): void {
     if (!this._graph) return;
 
@@ -1696,6 +1741,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Inject node service into selection adapter (called externally to avoid circular dependency)
    */
+  // SEM@a308b1150dfa5b167f4dee3bbe64c1abea47daad: supply the node service to the selection adapter to break a circular dependency (mutates shared state)
   injectNodeService(nodeService: any): void {
     this._selectionAdapter.setNodeService(nodeService);
   }
@@ -1703,6 +1749,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Setup selection event handlers - delegates to InfraX6SelectionAdapter
    */
+  // SEM@6d6dbe91dde90d5e20a40442e6bc1b9b3ff66f04: initialize selection plugins and wire selection event handlers via the selection adapter (mutates shared state)
   private _setupSelectionEvents(): void {
     if (!this._graph) return;
 
@@ -1724,6 +1771,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Helper function to safely extract node type from node data
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch the domain type string from a graph node's metadata (pure)
   private _getNodeType(node: Node | null | undefined): string | undefined {
     if (!node) return undefined;
 
@@ -1735,6 +1783,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Show embedding validation error notification to user
    */
+  // SEM@98bf9546a1fa99e7b4209fedfbc1204e9beaa03e: notify the user of an invalid node embedding attempt via a translated snackbar (mutates shared state)
   private _showEmbeddingValidationError(reason?: string): void {
     if (!reason) {
       return;
@@ -1771,6 +1820,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Emit a cell deletion request for the presentation layer to handle.
    * Called by the button-remove tool on selected cells.
    */
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: emit a cell deletion request to the presentation layer for confirmation handling (mutates shared state)
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
     this.logger.info(`[DFD] Delete tool clicked for ${cellType}`, { cellId: cell.id });
@@ -1782,6 +1832,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Called by the presentation layer after any confirmation has been obtained.
    * Node deletion delegates to InfraNodeService.removeNode() for proper embedding cleanup.
    */
+  // SEM@ffa374dd1c9de88fc1c583a4695e280597118d74: delete a confirmed cell from the graph with history tracking and port visibility cleanup (mutates shared state)
   executeCellDeletion(cell: Cell): void {
     if (!this._graph) return;
 
@@ -1834,10 +1885,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Set up tracking for vertex changes on an edge
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: register an edge vertex-change listener to track drag history and emit vertex events (mutates shared state)
   private _setupVertexChangeTracking(edge: Edge): void {
     if (!this._graph) return;
 
     // Listen for vertex changes on this specific edge
+    // SEM@e20ef0678046778c0115f405eebd065716672b88: handle edge vertex changes by updating drag tracking and emitting the vertices-changed event (mutates shared state)
     const vertexChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
         const vertices = changedEdge.getVertices();
@@ -1889,6 +1942,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Set up tracking for source/target connection changes on an edge
    * Also stores initial edge state for history tracking
    */
+  // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: register source/target change listeners on an edge for history tracking (mutates shared state)
   private _setupEdgeConnectionChangeTracking(edge: Edge): void {
     if (!this._graph) return;
 
@@ -1899,6 +1953,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
 
     // Listen for source changes on this specific edge
+    // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: handle edge source reconnection, emit history event, update port visibility (mutates shared state)
     const sourceChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
         const newSourceId = changedEdge.getSourceCellId();
@@ -1948,6 +2003,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     };
 
     // Listen for target changes on this specific edge
+    // SEM@f1a8439186f60fcf8608f7d2a53484dec27c1d1b: handle edge target reconnection, emit history event, update port visibility (mutates shared state)
     const targetChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
         const newTargetId = changedEdge.getTargetCellId();
@@ -2006,6 +2062,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Add custom label editor to a cell for inline editing
    */
+  // SEM@91e600a4c7ac4e20f0bacb847902b678566401a1: attach an inline textarea label editor overlay to a graph cell (mutates shared state)
   private _addLabelEditor(cell: Cell, _e: MouseEvent): void {
     if (!this._graph) return;
 
@@ -2107,6 +2164,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     `;
 
     // Add event handlers
+    // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: persist textarea label value to cell and dismiss the editor (mutates shared state)
     const commitEdit = (): void => {
       const newText = textarea.value.trim();
       if (newText !== this.getCellLabel(cell)) {
@@ -2119,6 +2177,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._removeExistingEditor();
     };
 
+    // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: dismiss the label editor without saving changes (mutates shared state)
     const cancelEdit = (): void => {
       this.logger.debugComponent('X6Graph', 'Label edit canceled', { cellId: cell.id });
       this._removeExistingEditor();
@@ -2162,6 +2221,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Remove any existing custom editor
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove and clear the current label editor DOM element (mutates shared state)
   private _removeExistingEditor(): void {
     if (this._currentEditor && this._currentEditor.parentNode) {
       this._currentEditor.parentNode.removeChild(this._currentEditor);
@@ -2172,6 +2232,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Update port visibility for connected nodes after edge creation
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: update port visibility and z-order for nodes connected by a new edge (mutates shared state)
   private _updatePortVisibilityAfterEdgeCreation(edge: Edge): void {
     const graph = this.getGraph();
 
@@ -2205,6 +2266,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Check if port data changes are only visibility-related (should be excluded from history)
    */
+  // SEM@f670c0df72840778e6cd2e4f9a51583bcbd5e036: check whether port attribute changes are visibility-only and should be excluded from history (pure)
   private _isOnlyPortVisibilityChanges(portData: any): boolean {
     // Navigate through the nested structure: attrs -> circle -> style -> visibility
     if (portData.attrs && typeof portData.attrs === 'object') {
@@ -2242,6 +2304,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Schedule initial resize to ensure graph fits container properly
    */
+  // SEM@3d6e88ab6055c2e5493011c1bdff43e1f3bb8e24: schedule a deferred resize of the graph to fit its container (mutates shared state)
   private _scheduleInitialResize(container: HTMLElement): void {
     setTimeout(() => {
       if (this._graph) {
@@ -2259,6 +2322,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Handle drag completion events by recording final state in history
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: record the final drag state of a cell as an atomic history operation (mutates shared state)
   private _handleDragCompletion(completion: any): void {
     if (!this._graph) return;
 
@@ -2327,6 +2391,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Get current state of a cell for history recording
    */
+  // SEM@e20ef0678046778c0115f405eebd065716672b88: fetch the current position/size or vertex state of a cell for history capture (pure)
   private _getCellState(cell: any): any {
     if (cell.isNode()) {
       const node = cell as Node;
@@ -2346,9 +2411,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Find the actual paths of attributes that changed between current and previous
    */
+  // SEM@f670c0df72840778e6cd2e4f9a51583bcbd5e036: compute the attribute paths that differ between two cell state objects (pure)
   private _findActualAttributeChanges(current: any, previous: any): string[] {
     const changes: string[] = [];
 
+    // SEM@f670c0df72840778e6cd2e4f9a51583bcbd5e036: recursively collect changed key paths between two objects (pure)
     const findChangesInObject = (curr: any, prev: any, path = '') => {
       if (!curr || !prev || typeof curr !== 'object' || typeof prev !== 'object') {
         // If either is not an object, compare directly
@@ -2396,6 +2463,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Uses graph.updateInteracting() to block local user gestures while allowing
    * programmatic updates from remote collaborators
    */
+  // SEM@132e282d744fee45d8036a4d636573fd319dd635: toggle graph edit/read-only mode by enabling or disabling user interactions (mutates shared state)
   setReadOnlyMode(readOnly: boolean): void {
     const graph = this.getGraph();
     if (!graph) {

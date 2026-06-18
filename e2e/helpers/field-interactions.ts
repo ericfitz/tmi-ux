@@ -5,6 +5,7 @@ import { FieldDef } from '../schema/field-definitions';
 /**
  * Verify a field displays the expected value.
  */
+// SEM@af061892e6a50f3d1743a570b24732c7581ca394: validate a form field displays the expected value by field type (pure)
 export async function verifyFieldValue(
   page: Page,
   field: FieldDef,
@@ -44,6 +45,7 @@ export async function verifyFieldValue(
 /**
  * Edit a field to a new value.
  */
+// SEM@e4174ec5cf6766ca536e56619ce271101e2c9b46: update a form field to a new value dispatching appropriate UI interactions (mutates shared state)
 export async function editField(
   page: Page,
   field: FieldDef,

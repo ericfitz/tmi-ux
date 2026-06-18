@@ -51,6 +51,7 @@ test.describe.serial('DFD Seeded Diagram Verification', () => {
   });
 
   /** Navigate to the seeded TM edit page */
+  // SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: navigate to the seeded threat model via dashboard name filter (mutates shared state)
   async function openSeededTm() {
     await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');

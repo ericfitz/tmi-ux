@@ -2,13 +2,16 @@ import { Page } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 import { testConfig } from '../config/test.config';
 
+// SEM@cbe04d1beae39fd5d2c0e2717ee7a1eddf67271c: E2E flow for authenticating a test user via OAuth login
 export class AuthFlow {
   private loginPage: LoginPage;
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: initialize login page reference for auth flow
   constructor(private page: Page) {
     this.loginPage = new LoginPage(page);
   }
 
+  // SEM@cbe04d1beae39fd5d2c0e2717ee7a1eddf67271c: authenticate as a test user and wait for OAuth redirect to complete
   async loginAs(userId: string): Promise<void> {
     await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
 

@@ -36,6 +36,7 @@ interface MockTranslocoService {
   translate: ReturnType<typeof vi.fn>;
 }
 
+// SEM@96c34d433bdf8694a9679b9d7e88dddcc1d5563f: build a minimal Survey fixture with optional property overrides for tests (pure)
 const createMockSurvey = (overrides?: Partial<Survey>): Survey => ({
   id: 'survey-1',
   name: 'Test Survey',
@@ -310,6 +311,7 @@ describe('TemplateBuilderComponent - Builder', () => {
   });
 
   describe('moveQuestionUp / moveQuestionDown', () => {
+    // SEM@87bdf21713c98745c8ea939f87881e738726650a: add three text questions to the component under test as a shared test helper (mutates shared state)
     function addThree(): void {
       component.addQuestion('text');
       component.addQuestion('text');

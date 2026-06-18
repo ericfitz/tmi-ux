@@ -118,6 +118,7 @@ export interface WebSocketMessage {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@91aa3dc8d6a025eb3f597622966132a070135e6f: manage a WebSocket connection with reconnect, message routing, and auth ticket exchange
 export class WebSocketAdapter {
   private _socket: WebSocket | null = null;
   private _url: string | null = null;
@@ -133,11 +134,13 @@ export class WebSocketAdapter {
   // Auth service for token refresh on WebSocket activity
   private _authService: IAuthService | null = null;
 
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: initialize the adapter with a logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Set the auth service (called by app initialization to avoid circular dependency)
    */
+  // SEM@5323baea0030c704988b20904c9c987b1a5fb0f1: register the auth service to break circular dependency at startup (mutates shared state)
   setAuthService(authService: IAuthService): void {
     this._authService = authService;
   }
@@ -224,6 +227,7 @@ export class WebSocketAdapter {
    * `?ticket=<...>` query parameter fetched from `GET /ws/ticket`; the JWT
    * itself must never appear in the WebSocket URL.
    */
+  // SEM@91aa3dc8d6a025eb3f597622966132a070135e6f: connect to a WebSocket URL using a ticket param, stripping any JWT from the URL
   connect(url: string): Observable<void> {
     return new Observable(observer => {
       try {
@@ -256,6 +260,7 @@ export class WebSocketAdapter {
         this._setupEventListeners();
 
         // Wait for connection to open
+        // SEM@91aa3dc8d6a025eb3f597622966132a070135e6f: handle WebSocket open event, updating connection state and resetting retry count (mutates shared state)
         const openHandler = (): void => {
           this._connectionState$.next(WebSocketState.CONNECTED);
           this._reconnectAttempts = 0;
@@ -271,6 +276,7 @@ export class WebSocketAdapter {
           observer.complete();
         };
 
+        // SEM@91aa3dc8d6a025eb3f597622966132a070135e6f: handle WebSocket error event, classify it, and propagate to error stream (mutates shared state)
         const errorHandler = (
           event: Event | ErrorEvent | { message?: string; error?: { message?: string } },
         ): void => {
@@ -321,6 +327,7 @@ export class WebSocketAdapter {
   /**
    * Disconnect from WebSocket server
    */
+  // SEM@dc5902cbca2aba1397d5a67c7ab5a112f19b62ae: close the WebSocket connection and clear pending acknowledgments (mutates shared state)
   disconnect(): void {
     if (this._socket) {
       // Log WebSocket disconnection with component debug logging
@@ -341,6 +348,7 @@ export class WebSocketAdapter {
   /**
    * Send a message through WebSocket
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: send a WebSocket message, optionally awaiting server acknowledgment
   sendMessage(message: Omit<WebSocketMessage, 'id' | 'timestamp'>): Observable<void> {
     return new Observable(observer => {
       try {
@@ -388,6 +396,7 @@ export class WebSocketAdapter {
   /**
    * Send a message and wait for a specific response
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: send a WebSocket message and return the matching typed response with timeout
   sendMessageWithResponse<T = unknown>(
     message: Omit<WebSocketMessage, 'id' | 'timestamp'>,
     responseType: MessageType,
@@ -451,6 +460,7 @@ export class WebSocketAdapter {
   /**
    * Get messages of a specific type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter the message stream to a specific message type, returning typed payloads (pure)
   getMessagesOfType<T = unknown>(messageType: MessageType): Observable<T> {
     return this.messages$.pipe(
       filter(message => message.type === messageType),
@@ -461,6 +471,7 @@ export class WebSocketAdapter {
   /**
    * Get TMI collaborative messages of a specific type
    */
+  // SEM@2fb459bfea8ffc473399802e22771d803b684cd9: filter the TMI collaborative message stream to a specific message type (pure)
   getTMIMessagesOfType<T extends TMIWebSocketMessage>(messageType: TMIMessageType): Observable<T> {
     // Set up the single TMI message handler if not already set up
     this._setupTMIMessageHandler();
@@ -480,6 +491,7 @@ export class WebSocketAdapter {
   /**
    * Set up a single message handler for all TMI messages
    */
+  // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: register the TMI message handler on connect and unregister on close (mutates shared state)
   private _setupTMIMessageHandler(): void {
     if (this._tmiMessageHandlerSetup) {
       return;
@@ -491,6 +503,7 @@ export class WebSocketAdapter {
     this.connectionState$.pipe(takeUntil(this._destroy$)).subscribe(state => {
       if (state === WebSocketState.CONNECTED && this._socket) {
         // Set up message handler
+        // SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: parse, validate, and dispatch an inbound TMI WebSocket message (mutates shared state)
         const messageHandler = (event: MessageEvent): void => {
           try {
             const rawData: unknown = event.data;
@@ -581,6 +594,7 @@ export class WebSocketAdapter {
         this._socket.addEventListener('message', messageHandler);
 
         // Clean up handler when disconnected
+        // SEM@827ea6d8e6a3abc3e5daf897922e129cbbfac604: remove the TMI message listener from the socket on close (mutates shared state)
         const closeHandler = (): void => {
           if (this._socket) {
             this._socket.removeEventListener('message', messageHandler);
@@ -594,6 +608,7 @@ export class WebSocketAdapter {
   /**
    * Send TMI collaborative message with automatic chunking for large messages
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: serialize and send a TMI collaborative message over the WebSocket
   sendTMIMessage(message: TMIWebSocketMessage): Observable<void> {
     return new Observable(observer => {
       try {
@@ -649,6 +664,7 @@ export class WebSocketAdapter {
   /**
    * Get messages for a specific session
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter the message stream to messages belonging to a specific session (pure)
   getSessionMessages(sessionId: string): Observable<WebSocketMessage> {
     return this.messages$.pipe(filter(message => message.sessionId === sessionId));
   }
@@ -656,6 +672,7 @@ export class WebSocketAdapter {
   /**
    * Dispose of the adapter and clean up resources
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: tear down the adapter, disconnect, and reject pending acknowledgments (mutates shared state)
   dispose(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -666,6 +683,7 @@ export class WebSocketAdapter {
   /**
    * Setup WebSocket event listeners
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: register message, close, and error handlers on the active WebSocket (mutates shared state)
   private _setupEventListeners(): void {
     if (!this._socket) return;
 
@@ -853,6 +871,7 @@ export class WebSocketAdapter {
   /**
    * Wait for message acknowledgment
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: await an acknowledgment for a sent message, reject on timeout (mutates shared state)
   private _waitForAcknowledgment(messageId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -871,6 +890,7 @@ export class WebSocketAdapter {
   /**
    * Handle acknowledgment for sent message
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: resolve and remove a pending acknowledgment entry by message ID (mutates shared state)
   private _handleAcknowledgment(messageId: string): void {
     const pending = this._pendingAcks.get(messageId);
     if (pending) {
@@ -883,6 +903,7 @@ export class WebSocketAdapter {
   /**
    * Send acknowledgment for received message
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: send an acknowledgment message to the server for a received message ID
   private _sendAcknowledgment(messageId: string): void {
     if (this.isConnected) {
       const ackMessage: WebSocketMessage = {
@@ -899,6 +920,7 @@ export class WebSocketAdapter {
   /**
    * Clear all pending acknowledgments
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: reject and discard all pending acknowledgment entries on disconnect (mutates shared state)
   private _clearPendingAcks(): void {
     for (const [, pending] of Array.from(this._pendingAcks.entries())) {
       clearTimeout(pending.timeout);
@@ -910,6 +932,7 @@ export class WebSocketAdapter {
   /**
    * Generate unique message ID
    */
+  // SEM@94f68d7fee2c7372bc00137ee2e1031b3e48fe89: generate a unique message ID from timestamp and random suffix (pure)
   private _generateMessageId(): string {
     return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
@@ -921,6 +944,7 @@ export class WebSocketAdapter {
    * leak the bearer to URL-capturing observers (proxy logs, browser
    * extensions, NEL reports). See tmi-ux#661.
    */
+  // SEM@91aa3dc8d6a025eb3f597622966132a070135e6f: remove the token query parameter from a WebSocket URL to prevent JWT leakage (pure)
   private _stripTokenParam(url: string): string {
     if (!/[?&]token=/i.test(url)) {
       return url;
@@ -946,6 +970,7 @@ export class WebSocketAdapter {
   /**
    * Classify connection errors for appropriate recovery strategy
    */
+  // SEM@2fb459bfea8ffc473399802e22771d803b684cd9: classify a connection error as auth failure, network error, or generic failure (pure)
   private _classifyConnectionError(event: unknown, errorMessage: string): WebSocketError {
     // Check for authentication errors
     if (
@@ -1007,11 +1032,13 @@ export class WebSocketAdapter {
   /**
    * Send message with retry mechanism
    */
+  // SEM@2fb459bfea8ffc473399802e22771d803b684cd9: send a WebSocket message with exponential-backoff retry up to a limit
   sendMessageWithRetry(
     message: Omit<WebSocketMessage, 'id' | 'timestamp'>,
     maxRetries: number = 3,
   ): Observable<void> {
     return new Observable(observer => {
+      // SEM@2fb459bfea8ffc473399802e22771d803b684cd9: send a single message attempt and retry with backoff on retryable error
       const attemptSend = (attempt: number): void => {
         this.sendMessage(message).subscribe({
           next: () => {
@@ -1043,6 +1070,7 @@ export class WebSocketAdapter {
   /**
    * Check if an error is retryable
    */
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: determine whether a send error is retryable, excluding auth errors (pure)
   private _isRetryableError(error: unknown): boolean {
     const errorMessage = getErrorMessage(error);
     return (
@@ -1075,6 +1103,7 @@ export class WebSocketAdapter {
   /**
    * Validate WebSocket message structure
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate internal WebSocket message structure and known type (pure)
   private _validateWebSocketMessage(message: unknown): { isValid: boolean; error?: string } {
     // Check if message is an object
     if (!message || typeof message !== 'object') {
@@ -1143,6 +1172,7 @@ export class WebSocketAdapter {
   /**
    * Validate TMI collaborative message structure
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate a TMI collaborative message has required type and common fields (pure)
   private _validateTMIMessage(message: unknown): { isValid: boolean; error?: string } {
     if (!message || typeof message !== 'object') {
       return { isValid: false, error: 'TMI message must be an object' };
@@ -1172,6 +1202,7 @@ export class WebSocketAdapter {
   }
 
   /** Validate common optional fields shared across all TMI message types. */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate optional fields shared across all TMI message types (pure)
   private _validateTMICommonFields(msg: Record<string, unknown>): string | null {
     // Validate user object if present
     if (msg['user'] !== undefined) {
@@ -1199,6 +1230,7 @@ export class WebSocketAdapter {
   }
 
   /** Validate type-specific payload requirements. */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: validate type-specific payload requirements for a TMI message type (pure)
   private _validateTMIMessageType(
     messageType: string,
     msg: Record<string, unknown>,
@@ -1233,6 +1265,7 @@ export class WebSocketAdapter {
   /**
    * Handle malformed messages with proper error reporting
    */
+  // SEM@dc5902cbca2aba1397d5a67c7ab5a112f19b62ae: log and emit a parse error for a malformed incoming WebSocket message (mutates shared state)
   private _handleMalformedMessage(reason: string, originalError: unknown, rawData: unknown): void {
     const truncatedData =
       typeof rawData === 'string' && rawData.length > 200

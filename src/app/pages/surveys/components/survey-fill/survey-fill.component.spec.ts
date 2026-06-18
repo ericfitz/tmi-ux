@@ -34,6 +34,7 @@ describe('SurveyFillComponent', () => {
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
   let injector: Injector;
 
+  // SEM@b85956bf69d53ab4f58f72df3590bd261494d825: construct a SurveyFillComponent with injected mocks for testing (pure)
   function build(params: Record<string, string | null>): SurveyFillComponent {
     mockRoute = {
       snapshot: { paramMap: { get: vi.fn((key: string) => params[key] ?? null) } },

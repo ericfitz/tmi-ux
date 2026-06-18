@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@cbe04d1beae39fd5d2c0e2717ee7a1eddf67271c: Playwright page object exposing threat edit form locators and actions (pure)
 export class ThreatPage {
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: bind the Playwright page for the threat page object (pure)
   constructor(private page: Page) {}
 
   readonly nameInput = () => this.page.getByTestId('threat-page-name-input');
@@ -18,14 +20,17 @@ export class ThreatPage {
   readonly threatTypeChips = () => this.page.getByTestId('threat-page-threat-type-chip');
   readonly addMappingButton = () => this.page.getByTestId('threat-page-add-mapping-button');
 
+  // SEM@cbe04d1beae39fd5d2c0e2717ee7a1eddf67271c: fill the threat name input with the given value
   async fillName(name: string) {
     await this.nameInput().fill(name);
   }
 
+  // SEM@cbe04d1beae39fd5d2c0e2717ee7a1eddf67271c: fill the threat description input with the given value
   async fillDescription(desc: string) {
     await this.descriptionInput().fill(desc);
   }
 
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: click the save button to submit the threat form
   async save() {
     await this.saveButton().click();
   }

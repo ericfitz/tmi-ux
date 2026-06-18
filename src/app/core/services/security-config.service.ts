@@ -29,6 +29,7 @@ export interface SecurityConfig {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: detect secure context and publish recommended HTTP security headers on init (mutates shared state)
 export class SecurityConfigService {
   private readonly defaultConfig: SecurityConfig = {
     enableHSTS: true,
@@ -52,6 +53,7 @@ export class SecurityConfigService {
     return this._recommendedHeaders$.value;
   }
 
+  // SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: detect security context, build recommended headers, and inject CSP meta tag (mutates shared state)
   constructor(
     private logger: LoggerService,
     @Inject(DOCUMENT) private document: Document,
@@ -61,6 +63,7 @@ export class SecurityConfigService {
     this.injectDynamicCSP();
   }
 
+  // SEM@09238db58b545db15a3e191b245ccc5b527642c0: detect whether the browser is in a secure context and emit a warning if not (mutates shared state)
   private detectSecurityContext(): void {
     const isSecure = window.isSecureContext;
     // const protocol = window.location.protocol;
@@ -82,6 +85,7 @@ export class SecurityConfigService {
     }
   }
 
+  // SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: build and publish the recommended HTTP security response headers (mutates shared state)
   private generateRecommendedHeaders(): void {
     const config = this.getSecurityConfig();
     const headers: SecurityHeaders = {
@@ -107,6 +111,7 @@ export class SecurityConfigService {
     this._recommendedHeaders$.next(headers);
   }
 
+  // SEM@17ea5e2433175c5b660d4a31535e1749d0305f70: return the effective security config merging defaults with environment overrides (pure)
   public getSecurityConfig(): SecurityConfig {
     // Allow environment-based overrides
     const env = environment;
@@ -117,6 +122,7 @@ export class SecurityConfigService {
     };
   }
 
+  // SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: build security header config text for a given deployment scenario (pure)
   public getDeploymentRecommendations(scenario: 'standalone' | 'proxy' | 'loadbalancer'): string {
     const headers = this._recommendedHeaders$.value;
     let recommendations = '';
@@ -169,6 +175,7 @@ ${Object.entries(headers)
     return recommendations;
   }
 
+  // SEM@8f0f951ced397491c24e8004c6a6658e39fefb7b: validate current security headers and return missing entries and warnings (pure)
   public validateCurrentHeaders(): { missing: string[]; warnings: string[] } {
     const missing: string[] = [];
     const warnings: string[] = [];
@@ -189,6 +196,7 @@ ${Object.entries(headers)
     return { missing, warnings };
   }
 
+  // SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: build a CSP violation event handler that logs and optionally reports violations (pure)
   public getCspViolationHandler(): (event: SecurityPolicyViolationEvent) => void {
     return (event: SecurityPolicyViolationEvent) => {
       this.logger.warn('CSP Violation detected', {
@@ -208,6 +216,7 @@ ${Object.entries(headers)
     };
   }
 
+  // SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: subscribe to CSP violation events and log security header warnings (mutates shared state)
   public monitorSecurityViolations(): void {
     // Listen for CSP violations
     window.addEventListener('securitypolicyviolation', this.getCspViolationHandler());
@@ -221,6 +230,7 @@ ${Object.entries(headers)
     }
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: aggregate CSP directives from all known content providers (pure)
   private collectProviderCspDirectives(): {
     frameSrc: string[];
     formAction: string[];
@@ -245,6 +255,7 @@ ${Object.entries(headers)
     };
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: build and inject a CSP meta tag into the document head (mutates shared state)
   private injectDynamicCSP(): void {
     // Extract API URL components
     const apiUrl = new URL(environment.apiUrl);

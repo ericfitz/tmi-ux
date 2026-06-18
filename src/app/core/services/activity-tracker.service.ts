@@ -11,6 +11,7 @@ import { SESSION_CONFIG } from '../../auth/config/session.config';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: track user input events and expose last-activity timestamp as an observable (mutates shared state)
 export class ActivityTrackerService implements OnDestroy {
   // Time window for considering user "active"
   private readonly activityWindow = SESSION_CONFIG.ACTIVITY_WINDOW_MS;
@@ -34,6 +35,7 @@ export class ActivityTrackerService implements OnDestroy {
   // Track the current activity state to detect state changes
   private currentActiveState = true; // Start as active since we just loaded
 
+  // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: initialize activity tracking by starting DOM event listeners (mutates shared state)
   constructor(
     private logger: LoggerService,
     private ngZone: NgZone,
@@ -41,6 +43,7 @@ export class ActivityTrackerService implements OnDestroy {
     this.startTracking();
   }
 
+  // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: stop DOM event listeners and release subscriptions on service destroy (mutates shared state)
   ngOnDestroy(): void {
     this.stopTracking();
   }
@@ -49,6 +52,7 @@ export class ActivityTrackerService implements OnDestroy {
    * Start tracking user activity
    * Sets up event listeners for mouse, keyboard, touch, and scroll events
    */
+  // SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: subscribe to DOM input events outside Angular zone and update last-activity on each event (mutates shared state)
   private startTracking(): void {
     if (this.isTracking) {
       return;
@@ -86,6 +90,7 @@ export class ActivityTrackerService implements OnDestroy {
   /**
    * Stop tracking user activity
    */
+  // SEM@52f1d038d7a612c8e8827fe1da4a5bee64f7b5aa: unsubscribe from DOM input events and mark tracking as stopped (mutates shared state)
   private stopTracking(): void {
     if (!this.isTracking) {
       return;
@@ -105,6 +110,7 @@ export class ActivityTrackerService implements OnDestroy {
   /**
    * Update the last activity time to now
    */
+  // SEM@dd193f1c86f0f5c66e5f7e6af070d51813c13577: record the current time as last activity and emit to subscribers (mutates shared state)
   private updateLastActivity(): void {
     this.lastActivityTime = new Date();
     this.lastActivitySubject$.next(this.lastActivityTime);
@@ -122,6 +128,7 @@ export class ActivityTrackerService implements OnDestroy {
    * Check if user is currently active
    * User is considered active if they performed an action within the activity window
    */
+  // SEM@dd193f1c86f0f5c66e5f7e6af070d51813c13577: return whether user activity occurred within the configured window (pure)
   public isUserActive(): boolean {
     const now = new Date();
     const timeSinceActivity = now.getTime() - this.lastActivityTime.getTime();
@@ -142,6 +149,7 @@ export class ActivityTrackerService implements OnDestroy {
   /**
    * Get time since last user activity in milliseconds
    */
+  // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: return elapsed milliseconds since the last recorded user activity (pure)
   public getTimeSinceLastActivity(): number {
     const now = new Date();
     return now.getTime() - this.lastActivityTime.getTime();
@@ -150,6 +158,7 @@ export class ActivityTrackerService implements OnDestroy {
   /**
    * Manually mark user as active (useful for programmatic activity)
    */
+  // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: programmatically record current time as last user activity (mutates shared state)
   public markActive(): void {
     this.updateLastActivity();
   }

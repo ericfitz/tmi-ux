@@ -13,6 +13,7 @@ import { Point } from '../domain/value-objects/point';
 /**
  * Types of operations that can be performed on the graph
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate all graph mutation operation types (pure)
 export type GraphOperationType =
   | 'create-node'
   | 'update-node'
@@ -26,6 +27,7 @@ export type GraphOperationType =
 /**
  * Source/context of the operation
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate originating contexts for a graph operation (pure)
 export type OperationSource =
   | 'user-interaction' // Direct user interaction
   | 'remote-collaboration' // WebSocket from other user
@@ -37,6 +39,7 @@ export type OperationSource =
 /**
  * Priority level for operations
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate scheduling priority levels for a graph operation (pure)
 export type OperationPriority = 'low' | 'normal' | 'high' | 'critical';
 
 /**
@@ -241,7 +244,9 @@ export interface ValidationResult {
  * Interface for operation validators
  */
 export interface OperationValidator {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate a graph operation against the current execution context (pure)
   validate(operation: GraphOperation, context: OperationContext): ValidationResult;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether this validator handles the given operation type (pure)
   canValidate(operation: GraphOperation): boolean;
 }
 
@@ -249,7 +254,9 @@ export interface OperationValidator {
  * Interface for operation executors
  */
 export interface OperationExecutor {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: execute a graph operation and return its result observable (mutates shared state)
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether this executor handles the given operation type (pure)
   canExecute(operation: GraphOperation): boolean;
   readonly priority: number; // Higher priority executors run first
 }
@@ -258,6 +265,7 @@ export interface OperationExecutor {
  * Interface for operation interceptors (middleware)
  */
 export interface OperationInterceptor {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: intercept and transform a graph operation before execution (pure)
   intercept(operation: GraphOperation, context: OperationContext): Observable<GraphOperation>;
   readonly priority: number; // Higher priority interceptors run first
 }
@@ -324,32 +332,46 @@ export interface OperationCompletedEvent {
  */
 export interface IGraphOperationManager {
   // Configuration
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch the current operation manager configuration (pure)
   getConfiguration(): Partial<OperationConfig>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: update operation manager configuration settings (mutates shared state)
   configure(config: Partial<OperationConfig>): void;
 
   // Operation execution
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: execute a single graph operation via the manager (mutates shared state)
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: execute multiple graph operations as a batch (mutates shared state)
   executeBatch(
     operations: GraphOperation[],
     context: OperationContext,
   ): Observable<OperationResult[]>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate a graph operation and return a boolean result observable (pure)
   validate(operation: GraphOperation, context: OperationContext): Observable<boolean>;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether the manager can execute the given operation (pure)
   canExecute(operation: GraphOperation, context: OperationContext): boolean;
 
   // Executor management
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: register an operation executor with the manager (mutates shared state)
   addExecutor(executor: OperationExecutor): void;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: unregister an operation executor from the manager (mutates shared state)
   removeExecutor(executor: OperationExecutor): void;
 
   // Statistics and monitoring
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch accumulated operation processing statistics (pure)
   getStats(): OperationStats;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: clear accumulated operation processing statistics (mutates shared state)
   resetStats(): void;
   readonly operationCompleted$: Observable<OperationCompletedEvent>;
 
   // Pending operations
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: check whether a given operation ID is currently pending (pure)
   isPending(operationId: string): boolean;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: list all currently pending graph operations (pure)
   getPendingOperations(): GraphOperation[];
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: cancel a pending graph operation by ID (mutates shared state)
   cancelOperation(operationId: string): boolean;
 
   // Cleanup
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: release all manager resources and cancel pending operations (mutates shared state)
   dispose(): void;
 }

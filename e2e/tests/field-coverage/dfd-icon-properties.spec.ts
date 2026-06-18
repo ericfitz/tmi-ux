@@ -66,6 +66,7 @@ test.describe.serial('DFD Icon Properties', () => {
   /**
    * Helper: open the icon picker panel if not already open.
    */
+  // SEM@fcf7495db321fefb669fe44f9ebc37b2233810cd: open the icon picker panel if not already visible (mutates shared state)
   async function ensureIconPickerOpen(): Promise<void> {
     const isVisible = await dfdEditorPage.iconPickerPanel().isVisible();
     if (!isVisible) {

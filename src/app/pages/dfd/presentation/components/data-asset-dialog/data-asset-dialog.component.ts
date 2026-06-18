@@ -61,6 +61,7 @@ interface AssetOption {
   styleUrls: ['./data-asset-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: dialog for selecting or viewing a data asset associated with a diagram cell
 export class DataAssetDialogComponent implements OnInit {
   /**
    * Constant for "None" option value
@@ -86,6 +87,7 @@ export class DataAssetDialogComponent implements OnInit {
       : this.translocoService.translate('dataAssetDialog.title.select');
   }
 
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: initialize the asset form control from dialog data, disable in read-only mode (pure)
   constructor(
     private _dialogRef: MatDialogRef<DataAssetDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DataAssetDialogData,
@@ -101,6 +103,7 @@ export class DataAssetDialogComponent implements OnInit {
     }
   }
 
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: populate the asset dropdown options on component init (mutates shared state)
   ngOnInit(): void {
     this._initializeAssetOptions();
   }
@@ -108,6 +111,7 @@ export class DataAssetDialogComponent implements OnInit {
   /**
    * Validates the current asset ID and returns it if valid, otherwise returns NONE_VALUE
    */
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: validate the current asset id exists in available assets, return NONE_VALUE if not (pure)
   private _getValidatedAssetId(): string {
     if (!this.data.currentDataAssetId) {
       return this.NONE_VALUE;
@@ -124,6 +128,7 @@ export class DataAssetDialogComponent implements OnInit {
   /**
    * Initialize asset options for the dropdown
    */
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: build sorted data asset dropdown options with a leading None entry (mutates shared state)
   private _initializeAssetOptions(): void {
     // Start with "None" option
     this.assetOptions = [
@@ -151,6 +156,7 @@ export class DataAssetDialogComponent implements OnInit {
   /**
    * Handle cancel button click
    */
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: close the dialog without returning a selection (mutates shared state)
   onCancel(): void {
     this._dialogRef.close();
   }
@@ -158,6 +164,7 @@ export class DataAssetDialogComponent implements OnInit {
   /**
    * Handle save button click
    */
+  // SEM@4094ea94b5d38d2a7aa0e222aa9c73030c8b528a: close the dialog returning the selected asset id, or null for None (mutates shared state)
   onSave(): void {
     const selectedValue = this.assetControl.value;
     const result = selectedValue === this.NONE_VALUE ? null : selectedValue;

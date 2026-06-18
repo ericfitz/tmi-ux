@@ -22,10 +22,12 @@ import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-
 @Injectable({
   providedIn: 'root',
 })
+// SEM@c72f61f510fd5a824cc78cb85d5637dd3de2def0: coordinate presenter-mode cursor broadcast, display, and selection sync via WebSocket
 export class UiPresenterCoordinatorService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _isInitialized = false;
 
+  // SEM@c72f61f510fd5a824cc78cb85d5637dd3de2def0: register collaboration state listener to clear presenter visuals on session end (mutates shared state)
   constructor(
     private logger: LoggerService,
     private webSocketAdapter: WebSocketAdapter,
@@ -59,6 +61,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    * @param graph The X6 graph instance
    * @param selectionAdapter The X6 selection adapter instance
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: initialize all presenter services and subscribe to WebSocket presenter messages (mutates shared state)
   initialize(
     graphContainer: HTMLElement,
     graph: Graph,
@@ -79,6 +82,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Subscribe to presenter-related WebSocket messages
    */
+  // SEM@231f337d5a6dc4b69daf54737065b5732ad91b1b: subscribe to presenter cursor and selection WebSocket messages and dispatch to handlers (mutates shared state)
   private _subscribeToPresenterMessages(): void {
     // Subscribe to presenter cursor messages
     this._subscriptions.add(
@@ -106,6 +110,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Handle incoming presenter cursor messages
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: dispatch a validated presenter cursor message to the cursor display service (mutates shared state)
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
     // Guard against missing cursor position
     if (!message.cursor_position) {
@@ -142,6 +147,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Handle incoming presenter selection messages
    */
+  // SEM@6139f6cfb7b219f0caf748fc0d1464fc55587fd1: dispatch a validated presenter selection message to the selection service (mutates shared state)
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     // Guard against missing selected cells
     if (!message.selected_cells) {
@@ -180,6 +186,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    * Force cleanup of presenter cursor for non-presenters
    * Called when presenter mode is disabled or presenter changes
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: remove presenter cursor and clear mirrored selection from all non-presenter views (mutates shared state)
   cleanupPresenterDisplay(): void {
     this.uiPresenterCursorDisplayService.forceRemovePresenterCursor();
     this.uiPresenterSelectionService.clearSelectionForNonPresenters();
@@ -189,6 +196,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Get status of all presenter services
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: return initialization and active-display status of all presenter sub-services (pure)
   getStatus(): {
     coordinatorInitialized: boolean;
     cursorTracking: boolean;
@@ -206,6 +214,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Cleanup resources
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: unsubscribe all subscriptions and reset initialization state on destroy (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
     this._isInitialized = false;

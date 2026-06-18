@@ -108,6 +108,7 @@ const DEFAULT_NODE_ATTRS: NodeAttrs = {
 /**
  * Creates default node attributes for a specific node type
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build default visual attributes for a node type with optional label (pure)
 export function createDefaultNodeAttrs(nodeType: string, label?: string): NodeAttrs {
   const attrs: NodeAttrs = {
     body: { ...DEFAULT_NODE_ATTRS.body },

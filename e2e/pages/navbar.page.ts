@@ -1,6 +1,8 @@
 import { Page } from '@playwright/test';
 
+// SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: Playwright page object exposing locators for the navigation bar (pure)
 export class NavbarPage {
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: bind Playwright page instance to the page object (pure)
   constructor(private page: Page) {}
 
   readonly homeMenu = () => this.page.getByTestId('navbar-home-menu');

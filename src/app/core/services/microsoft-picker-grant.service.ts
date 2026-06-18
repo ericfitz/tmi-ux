@@ -19,12 +19,15 @@ import {
  * document editor dialog.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@338c179e5efb196ff54ba21d43c47c6330789216: request a Microsoft Graph picker grant for a selected drive item and map HTTP errors to typed errors
 export class MicrosoftPickerGrantService {
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: build the grant service with API and logger dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
   ) {}
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: fetch a Microsoft picker grant permission for a drive item (reads API)
   grant(driveId: string, itemId: string): Observable<MicrosoftPickerGrantResponse> {
     const body: MicrosoftPickerGrantRequest = { drive_id: driveId, item_id: itemId };
     return this.apiService
@@ -42,6 +45,7 @@ export class MicrosoftPickerGrantService {
       );
   }
 
+  // SEM@338c179e5efb196ff54ba21d43c47c6330789216: convert an HTTP error response to a typed Microsoft picker grant error (pure)
   private _mapError(err: unknown): Error {
     if (err instanceof HttpErrorResponse) {
       switch (err.status) {

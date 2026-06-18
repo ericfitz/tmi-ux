@@ -11,6 +11,7 @@ import { isEdgeShape } from '../../dfd/utils/cell-property-filter.util';
 /**
  * Abstract base class for diagram validators
  */
+// SEM@aff573e78d5f3a14a35b7a8d4d24446160a13c67: abstract base class enforcing diagram type check and delegating cell validation
 abstract class BaseDiagramValidator extends BaseValidator implements DiagramValidator {
   abstract diagramType: string;
   abstract versionPattern: RegExp;
@@ -18,6 +19,7 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
   /**
    * Validate a diagram object
    */
+  // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate a diagram object, its type, and all cells; return validation errors (pure)
   validate(diagram: Diagram, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
@@ -64,6 +66,7 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
   /**
    * Check if this validator supports the given diagram type
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: check whether the diagram type string matches this validator's version pattern (pure)
   protected supportsType(type: string): boolean {
     return this.versionPattern.test(type);
   }
@@ -71,11 +74,13 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
   /**
    * Validate cells within the diagram (to be implemented by subclasses)
    */
+  // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate all cells in a diagram and return collected errors (pure)
   abstract validateCells(cells: Cell[], context: ValidationContext): ValidationError[];
 
   /**
    * Perform diagram type-specific validation (to be implemented by subclasses)
    */
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: apply diagram-type-specific validation rules beyond generic structure (pure)
   protected abstract validateDiagramSpecific(diagram: Diagram, context: ValidationContext): void;
 }
 
@@ -83,6 +88,7 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
  * Data Flow Diagram (DFD) validator
  * Supports DFD-1.0.0 and future minor versions (1.0.x)
  */
+// SEM@5e8dcdb8812ff7af6f749c95d9d665a4931de86f: validate DFD-1.0.x diagrams including cells, positions, sizes, and edge references
 export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Valid cell shapes for DFD diagrams
@@ -99,6 +105,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   diagramType = 'DFD-1.0.0';
   versionPattern = /^DFD-1\.0\.\d+$/;
 
+  // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate each DFD cell and cross-cell relationships; return all errors (pure)
   validateCells(cells: Cell[], context: ValidationContext): ValidationError[] {
     const errors: ValidationError[] = [];
 
@@ -123,6 +130,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     return errors;
   }
 
+  // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: apply DFD-specific diagram-level validation rules (pure)
   protected validateDiagramSpecific(_diagram: Diagram, _context: ValidationContext): void {
     // No additional validation needed for base DFD structure
     // Future versions could add specific validation rules here
@@ -131,6 +139,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate a single DFD cell
    */
+  // SEM@5e8dcdb8812ff7af6f749c95d9d665a4931de86f: validate a single DFD cell's id, shape, and type-specific properties (pure)
   private validateDfdCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
@@ -213,6 +222,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
    * Validate node cell properties
    * Accepts both X6 native flat format (x, y, width, height) and nested format (position, size)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate a node cell's position and size properties (pure)
   private validateNodeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
@@ -225,6 +235,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate position properties (supports both nested and flat formats)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate a node cell's position in nested or flat coordinate format (pure)
   private _validatePosition(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
     const hasNestedPosition = cell.position && typeof cell.position === 'object';
@@ -272,6 +283,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate size properties (supports both nested and flat formats)
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate a node cell's size in nested or flat format and check minimum dimensions (pure)
   private _validateSize(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
     const hasNestedSize = cell.size && typeof cell.size === 'object';
@@ -329,6 +341,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate dimension values meet requirements
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate that node width and height meet positive minimum requirements (pure)
   private _validateDimensions(width: number, height: number, path: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
@@ -360,6 +373,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate edge cell properties
    */
+  // SEM@09847cd4553457ec41071df30a274f86e87f378d: validate an edge cell's source, target, and self-reference constraint (pure)
   private validateEdgeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
@@ -427,6 +441,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate relationships between cells
    */
+  // SEM@5e8dcdb8812ff7af6f749c95d9d665a4931de86f: validate cross-cell constraints: duplicate IDs and edge reference integrity (pure)
   private validateCellRelationships(cells: Cell[], basePath: string): ValidationError[] {
     const errors: ValidationError[] = [];
     const cellIds = new Set<string>();
@@ -471,6 +486,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   /**
    * Validate an edge reference (source or target) exists in the cell set
    */
+  // SEM@039da791df117d9bc4b69690d0f68f7e50ad5dd6: validate that an edge source or target references an existing cell (pure)
   private _validateEdgeReference(
     ref: string | { cell: string },
     refType: 'source' | 'target',
@@ -500,6 +516,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 /**
  * Factory for creating diagram validators
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: register and resolve diagram validators by type string (mutates shared state)
 export class DiagramValidatorFactory {
   private static validators: DiagramValidator[] = [
     new DfdDiagramValidator(),
@@ -509,6 +526,7 @@ export class DiagramValidatorFactory {
   /**
    * Get a validator for the specified diagram type
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: fetch the registered diagram validator matching a given diagram type (pure)
   static getValidator(diagramType: string): DiagramValidator | null {
     return this.validators.find(validator => validator.versionPattern.test(diagramType)) || null;
   }
@@ -516,6 +534,7 @@ export class DiagramValidatorFactory {
   /**
    * Register a custom diagram validator
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: register a custom diagram validator, replacing any existing one for the same type (mutates shared state)
   static registerValidator(validator: DiagramValidator): void {
     // Remove existing validator for the same type pattern
     this.validators = this.validators.filter(
@@ -527,6 +546,7 @@ export class DiagramValidatorFactory {
   /**
    * Get all supported diagram types
    */
+  // SEM@959a96b7f5f6dcedf8de21fc57c1e98b75d19a98: list all registered diagram type names (pure)
   static getSupportedTypes(): string[] {
     return this.validators.map(v => v.diagramType);
   }

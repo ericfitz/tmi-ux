@@ -11,12 +11,15 @@ import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@fa402b2f2a4a64946fb4201c8bde6185adc6650d: service encapsulating z-order business rules and calculations for DFD diagram cells
 export class ZOrderService {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject the logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Check if a cell is a security boundary (business rule)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a diagram cell is a security boundary node type (pure)
   isSecurityBoundaryCell(cell: Cell): boolean {
     if (cell.isNode()) {
       const nodeType = (cell as any).getNodeTypeInfo
@@ -30,6 +33,7 @@ export class ZOrderService {
   /**
    * Get default z-index for a node type (business rule)
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: fetch the default z-index for a given diagram node type (pure)
   getDefaultZIndex(nodeType: string): number {
     return DFD_STYLING_HELPERS.getDefaultZIndex(nodeType);
   }
@@ -37,6 +41,7 @@ export class ZOrderService {
   /**
    * Calculate next z-index for moving forward (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the next z-index one step above the cell's same-category peers (pure)
   calculateMoveForwardZIndex(
     cell: Cell,
     allCells: Cell[],
@@ -74,6 +79,7 @@ export class ZOrderService {
   /**
    * Calculate next z-index for moving backward (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the next z-index one step below the cell's same-category peers (pure)
   calculateMoveBackwardZIndex(
     cell: Cell,
     allCells: Cell[],
@@ -112,6 +118,7 @@ export class ZOrderService {
    * Calculate z-index for moving to front (business logic)
    * Respects embedding hierarchy constraints
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: compute the topmost valid z-index for a cell respecting embedding hierarchy (pure)
   calculateMoveToFrontZIndex(cell: Cell, allCells: Cell[]): number | null {
     const isSecurityBoundary = this.isSecurityBoundaryCell(cell);
     const currentZIndex = cell.getZIndex() ?? 1;
@@ -179,6 +186,7 @@ export class ZOrderService {
    * Calculate z-index for moving to back (business logic)
    * Respects embedding hierarchy constraints
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: compute the rearmost valid z-index for a cell respecting embedding hierarchy (pure)
   calculateMoveToBackZIndex(cell: Cell, allCells: Cell[]): number | null {
     const isSecurityBoundary = this.isSecurityBoundaryCell(cell);
     const currentZIndex = cell.getZIndex() ?? 1;
@@ -245,6 +253,7 @@ export class ZOrderService {
   /**
    * Calculate z-index for edge based on connected nodes (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute an edge z-index as the max of its two endpoint node z-indexes (pure)
   calculateEdgeZIndex(sourceZIndex: number, targetZIndex: number): number {
     return Math.max(sourceZIndex, targetZIndex);
   }
@@ -252,6 +261,7 @@ export class ZOrderService {
   /**
    * Validate z-order invariants and return corrections (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate security boundaries stay behind regular nodes; return corrections (pure)
   validateZOrderInvariants(nodes: Node[]): Array<{ node: Node; correctedZIndex: number }> {
     const corrections: Array<{ node: Node; correctedZIndex: number }> = [];
     const securityBoundaries: Node[] = [];
@@ -304,6 +314,7 @@ export class ZOrderService {
   /**
    * Comprehensive z-order validation for all nodes (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate all z-order invariants across node groups; return violations and summary (pure)
   validateComprehensiveZOrder(nodes: Node[]): {
     violations: Array<{ node: Node; issue: string; correctedZIndex: number }>;
     summary: {
@@ -378,6 +389,7 @@ export class ZOrderService {
    * Get z-index for new security boundary shapes (lower than default)
    * Rule: New security boundary shapes are created with a lower zIndex than the default zIndex for nodes and edges
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the lowest z-index assigned to new security boundary nodes (pure)
   getNewSecurityBoundaryZIndex(): number {
     return 1; // Security boundaries always start at the lowest z-index
   }
@@ -386,6 +398,7 @@ export class ZOrderService {
    * Get z-index for new nodes (higher than security boundaries)
    * Rule: New nodes (other than security boundaries) get a higher default zIndex than security boundary nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return the default z-index for a new diagram node by type (pure)
   getNewNodeZIndex(nodeType: string): number {
     if (nodeType === 'security-boundary') {
       return this.getNewSecurityBoundaryZIndex();
@@ -398,6 +411,7 @@ export class ZOrderService {
    * Rule: The zIndex of new edges gets set to the higher value of either the zIndex for the source node
    * they connect to, or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return z-index for a new edge as the max of source and target node z-indexes (pure)
   getNewEdgeZIndex(sourceNode: Node, targetNode: Node): number {
     const sourceZIndex = sourceNode.getZIndex() ?? this.getDefaultZIndex('process');
     const targetZIndex = targetNode.getZIndex() ?? this.getDefaultZIndex('process');
@@ -409,6 +423,7 @@ export class ZOrderService {
    * Rule: On reconnecting an edge, the zIndex of the edge is recalculated and set to the higher value
    * of either the zIndex for the source node they connect to, or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute updated edge z-index after reconnection to new source/target nodes (pure)
   updateEdgeZIndexOnReconnection(edge: Edge, sourceNode: Node, targetNode: Node): number {
     const newZIndex = this.getNewEdgeZIndex(sourceNode, targetNode);
 
@@ -430,6 +445,7 @@ export class ZOrderService {
    * recalculated and set to the higher value of either the zIndex for the source node they connect to,
    * or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list edges connected to a node that need z-index recalculation (pure)
   getConnectedEdgesForZIndexUpdate(
     node: Node,
     allEdges: Edge[],
@@ -468,6 +484,7 @@ export class ZOrderService {
    * edges connected to the new child node, and then recursively to child nodes of that node and their
    * connected edges, until there are no child nodes left
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the minimum z-index for a child node embedded into a parent node (pure)
   calculateEmbeddedNodeZIndex(parentNode: Node, childNode: Node): number {
     const parentZIndex = parentNode.getZIndex() ?? this.getDefaultZIndex('process');
     const childType = (childNode as any).getNodeTypeInfo
@@ -500,6 +517,7 @@ export class ZOrderService {
    * Get all descendant nodes for cascading z-index updates
    * Helper method to support recursive z-index updates during embedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all descendant nodes of a node recursively for cascading z-index updates (pure)
   getDescendantNodesForCascadingUpdate(node: Node): Node[] {
     const descendants: Node[] = [];
     const children = node.getChildren() || [];
@@ -520,6 +538,7 @@ export class ZOrderService {
    * Validate that embedded nodes have higher z-index than their parents
    * Business rule validation for embedding hierarchy
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate embedded nodes have higher z-index than their parents; return violations (pure)
   validateEmbeddingZOrderHierarchy(
     nodes: Node[],
   ): Array<{ node: Node; issue: string; correctedZIndex: number }> {
@@ -550,6 +569,7 @@ export class ZOrderService {
    * Calculate z-indexes for both parent and child during embedding
    * Encapsulates the business logic for embedding z-index assignment
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: compute both parent and child z-indexes for an embedding operation (pure)
   calculateEmbeddingZIndexes(
     parent: Node,
     child: Node,
@@ -595,6 +615,7 @@ export class ZOrderService {
   /**
    * Helper to get node type safely
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: return the node type string from a node's type info, defaulting to process (pure)
   private getNodeType(node: Node): string {
     return (node as any).getNodeTypeInfo ? (node as any).getNodeTypeInfo().type : 'process';
   }
@@ -604,6 +625,7 @@ export class ZOrderService {
    * Rule: When a security boundary node is unembedded and is no longer the child of any other object,
    * its zIndex is set back to the default zIndex for security boundary nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the default z-index when a security boundary node is unembedded (pure)
   calculateUnembeddedSecurityBoundaryZIndex(node: Node): number {
     const nodeType = (node as any).getNodeTypeInfo
       ? (node as any).getNodeTypeInfo().type
@@ -636,6 +658,7 @@ export class ZOrderService {
    * @param cells All cells in the graph (nodes and edges)
    * @returns Number of iterations performed
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: iteratively fix z-index violations across all diagram cells until convergence (mutates shared state)
   recalculateZOrder(cells: Cell[]): number {
     const nodeCount = cells.filter(c => c.isNode()).length;
 
@@ -697,6 +720,7 @@ export class ZOrderService {
    * Fixes a node's z-index if it violates the parent > child rule.
    * Returns true if a change was made.
    */
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: enforce parent-child z-index ordering on a node, mutating if violated (mutates shared state)
   private _fixNodeParentViolation(node: Cell, iteration: number): boolean {
     const parent = node.getParent();
     if (!parent || !parent.isNode()) return false;
@@ -724,6 +748,7 @@ export class ZOrderService {
    * Fixes an edge's z-index if it's below its source/target nodes.
    * Returns true if a change was made.
    */
+  // SEM@fa402b2f2a4a64946fb4201c8bde6185adc6650d: enforce edge z-index >= its endpoint nodes, mutating the edge if violated (mutates shared state)
   private _fixEdgeEndpointViolation(edge: Cell, cells: Cell[], _iteration: number): boolean {
     const sourceId = (edge as Edge).getSourceCellId();
     const targetId = (edge as Edge).getTargetCellId();

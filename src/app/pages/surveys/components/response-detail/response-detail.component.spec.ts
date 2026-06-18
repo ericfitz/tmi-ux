@@ -31,6 +31,7 @@ interface MockProjectService {
   get: ReturnType<typeof vi.fn>;
 }
 
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: build a stub SurveyResponse with default fields for testing (pure)
 function createMockResponse(overrides: Partial<SurveyResponse> = {}): SurveyResponse {
   return {
     id: 'response-1',
@@ -47,6 +48,7 @@ function createMockResponse(overrides: Partial<SurveyResponse> = {}): SurveyResp
   } as SurveyResponse;
 }
 
+// SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: build a stub Project with default fields for testing (pure)
 function createMockProject(overrides: Partial<Project> = {}): Project {
   return {
     id: 'project-uuid-123',

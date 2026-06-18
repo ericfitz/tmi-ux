@@ -109,6 +109,7 @@ describe('TmEditFormattingService', () => {
   });
 
   describe('isValidBase64Svg', () => {
+    // SEM@e10974a550c7464d646b0a0cf36b94f9123ad5d8: encode a UTF-8 string as base64 for test fixture setup (pure)
     const toB64 = (s: string): string => Buffer.from(s, 'utf-8').toString('base64');
 
     it('returns false for empty input', () => {

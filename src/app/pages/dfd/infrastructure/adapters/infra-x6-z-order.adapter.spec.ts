@@ -16,6 +16,7 @@ import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Helper to add getNodeTypeInfo extension mock to nodes
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: attach a mock getNodeTypeInfo extension to a test node (mutates shared state)
 function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
   // Mock the getNodeTypeInfo extension that's added in the real application
   (node as any).getNodeTypeInfo = vi.fn(() => ({
@@ -26,6 +27,7 @@ function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
 }
 
 // Helper to create a node with proper mocks
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build and add a graph node with a mocked node type extension for tests (mutates shared state)
 function createTestNode(graph: Graph, config: any, nodeType: string = 'process'): Node {
   const node = graph.addNode(config);
   return addNodeTypeInfoExtension(node, nodeType);

@@ -22,6 +22,7 @@ const DEFAULT_PADDING = {
   gap: AUTO_LAYOUT_DEFAULTS.gap,
 } as const;
 
+// SEM@8d11f33679dbe57f2877a8858c52d771eec3313a: build a ChildBox fixture with default dimensions and ports (pure)
 function child(
   id: string,
   width = 100,

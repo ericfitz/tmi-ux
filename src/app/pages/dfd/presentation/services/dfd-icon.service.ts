@@ -34,7 +34,9 @@ import { DfdLayoutService } from './dfd-layout.service';
  * delegate the per-cell mutations here.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: apply, restore, and sync icon visual state across diagram cells (mutates shared state)
 export class DfdIconService {
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: inject user preferences, architecture icon, and layout service dependencies (pure)
   constructor(
     private userPreferences: UserPreferencesService,
     private architectureIcon: ArchitectureIconService,
@@ -47,6 +49,7 @@ export class DfdIconService {
    * own previousState capture runs after the mutation, so it would record
    * the post-mutation state. metadata.previousCellState overrides that.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: deep-clone a cell's full state snapshot for undo history (pure)
   captureCellStateForHistory(cell: LayoutCell): unknown {
     const parent = cell.getParent();
     return JSON.parse(
@@ -70,6 +73,7 @@ export class DfdIconService {
    * icon href/size/ref attrs and the label ref/anchor attrs derived from the
    * icon's placement.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: apply icon href and label placement attrs to a diagram cell (mutates shared state)
   applyIconToCell(cell: LayoutCell, arch: ArchIconData): void {
     const iconPath = this.architectureIcon.getIconPath(arch);
     const placementKey = getIconPlacementKey(arch.placement);
@@ -98,6 +102,7 @@ export class DfdIconService {
    * Restore a cell's label attrs to the shape's default placement. Used when
    * an icon is removed and the label should return to centered.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: restore cell label attrs to shape-default centered placement (mutates shared state)
   restoreLabelDefaults(cell: LayoutCell): void {
     const defaults = DEFAULT_LABEL_ATTRS_BY_SHAPE[cell.shape];
     if (!defaults) return;
@@ -113,6 +118,7 @@ export class DfdIconService {
    * Hide a cell's border when the user preference says icons should be shown
    * without borders and the shape supports border hiding.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: hide cell border per user preference when showing icon without border (mutates shared state)
   applyBorderPreference(cell: LayoutCell): void {
     const prefs = this.userPreferences.getPreferences();
     if (
@@ -131,6 +137,7 @@ export class DfdIconService {
    * Restore a cell's border (stroke/fill) to its shape default. Used when an
    * icon is removed or the border preference flips back on.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: restore cell border stroke and fill to shape default styling (mutates shared state)
   restoreBorder(cell: LayoutCell): void {
     const shape = cell.shape;
     const nodeStyles = DFD_STYLING.NODES as Record<string, any>;
@@ -150,6 +157,7 @@ export class DfdIconService {
    * Apply persisted icons, border preferences, auto-layout, and lock badges
    * to every node in a graph. Used on diagram load.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: apply persisted icons, borders, auto-layout, and lock badges to all nodes on diagram load (mutates shared state)
   applyIconsOnLoad(graph: LayoutGraph): void {
     for (const node of graph.getNodes()) {
       const data = node.getData<{ _arch?: ArchIconData }>();
@@ -170,6 +178,7 @@ export class DfdIconService {
    * Re-apply the border preference to every iconned cell. Used when a global
    * preference flips: `showBorders` true restores borders, false hides them.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: update border visibility on all iconned cells when global border preference changes (mutates shared state)
   reapplyBorderPreferenceToAllIconnedCells(graph: LayoutGraph, showBorders: boolean): void {
     for (const node of graph.getNodes()) {
       const data = node.getData<{ _arch?: ArchIconData }>();
@@ -188,6 +197,7 @@ export class DfdIconService {
    * user has resized the cell since, leave size alone and just clear the
    * flag. Returns true if the cell carried an auto-fit flag to clear.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: reverse a prior auto-fit resize on a cell if size is unchanged by user (mutates shared state)
   revertAutoFit(cell: LayoutCell): boolean {
     const data = cell.getData<Record<string, unknown>>() ?? {};
     const previousAutoFit = data['_archAutoFit'] as
@@ -221,6 +231,7 @@ export class DfdIconService {
    * Revert auto-fit on every cell that has an `_archAutoFit` tag.
    * Used when a global preference flips the auto-layout system off.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: revert auto-fit on every tagged cell when auto-layout is disabled globally (mutates shared state)
   revertAutoFitOnAllAutoFitCells(graph: LayoutGraph): void {
     for (const node of graph.getNodes()) {
       if (isCellLayoutLocked(node)) continue;
@@ -239,6 +250,7 @@ export class DfdIconService {
    * attrs to cells whose markup doesn't have that selector — those writes
    * would still land in the cell's attrs data and bloat patch payloads.
    */
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: sync lock badge visibility on a cell from its layout-locked data flag (mutates shared state)
   applyLockBadge(cell: LayoutCell): void {
     if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return;
     const locked = isCellLayoutLocked(cell);

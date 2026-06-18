@@ -10,12 +10,15 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: compute embedding depth, fill color, validation, and z-index rules for diagram nodes
 export class InfraEmbeddingService {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Calculate the embedding depth of a node (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute how many ancestor nodes deep a node is embedded (pure)
   calculateEmbeddingDepth(node: Node): number {
     let depth = 0;
     let currentNode = node;
@@ -48,6 +51,7 @@ export class InfraEmbeddingService {
    * Level 2: slightly darker (#F0F2FF)
    * Level 3+: progressively darker bluish tints
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: map embedding depth to a progressively darker bluish fill color (pure)
   calculateEmbeddingFillColor(depth: number): string {
     if (depth === 0) {
       return '#FFFFFF'; // Pure white for non-embedded nodes
@@ -71,6 +75,7 @@ export class InfraEmbeddingService {
   /**
    * Get embedding configuration for a node based on its depth (business logic)
    */
+  // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: compute depth, fill color, and color-update eligibility for an embedded node (pure)
   getEmbeddingConfiguration(node: Node): {
     depth: number;
     fillColor: string;
@@ -110,6 +115,7 @@ export class InfraEmbeddingService {
    * @param parent The potential parent node
    * @returns true if child is 100% within parent bounds
    */
+  // SEM@0fec693d78149361bea2c5dfddad004cc6e43548: check whether a child node's bounding box is fully inside the parent's bounds (pure)
   isCompletelyContained(child: Node, parent: Node): boolean {
     // Use getBBox() for absolute coordinates (works correctly with embedded nodes)
     const childBBox = child.getBBox();
@@ -128,6 +134,7 @@ export class InfraEmbeddingService {
   /**
    * Check if a node is a descendant of another node (for circular embedding detection)
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: check whether a node is an ancestor of another to detect circular embedding (pure)
   isDescendant(potentialChild: Node, potentialAncestor: Node): boolean {
     if (potentialChild.id === potentialAncestor.id) {
       return true;
@@ -160,6 +167,7 @@ export class InfraEmbeddingService {
   /**
    * Validate embedding rules (business logic)
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: validate node type embedding rules and reject circular or forbidden combinations (pure)
   validateEmbedding(
     parent: Node,
     child: Node,
@@ -209,6 +217,7 @@ export class InfraEmbeddingService {
   /**
    * Calculate z-index for unembedding (business logic)
    */
+  // SEM@98bf9546a1fa99e7b4209fedfbc1204e9beaa03e: compute the default z-index to restore when a node is unembedded, by node type (pure)
   calculateUnembeddingZIndex(node: Node): number {
     const nodeType = (node as any).getNodeTypeInfo
       ? (node as any).getNodeTypeInfo().type
@@ -227,6 +236,7 @@ export class InfraEmbeddingService {
   /**
    * Get temporary z-index for embedding operation (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute a temporary elevated z-index for a node during an embedding drag operation (pure)
   getTemporaryEmbeddingZIndex(node: Node): number {
     const nodeType = (node as any).getNodeTypeInfo
       ? (node as any).getNodeTypeInfo().type

@@ -22,6 +22,7 @@ export const LOCK_BADGE_ICON_HREF = `data:image/svg+xml,${encodeURIComponent(LOC
  * Tolerates null/undefined cells, cells without getData, and cells with empty data.
  * Used at every auto-layout entry point and cascade walk to gate layout effects.
  */
+// SEM@6669d4d013fdcc4367a137b4ddc96f104ae80a2a: check whether a cell's data carries the layout-lock flag (pure)
 export function isCellLayoutLocked(cell: unknown): boolean {
   if (!cell || typeof (cell as { getData?: unknown }).getData !== 'function') {
     return false;

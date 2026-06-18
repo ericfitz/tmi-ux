@@ -29,7 +29,9 @@ export interface HmacSecretDialogData {
   templateUrl: './hmac-secret-dialog.component.html',
   styleUrl: './hmac-secret-dialog.component.scss',
 })
+// SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: display the one-time HMAC secret after webhook creation with copy support
 export class HmacSecretDialogComponent {
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: inject dialog reference, HMAC secret data, clipboard service, and logger
   constructor(
     public dialogRef: MatDialogRef<HmacSecretDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: HmacSecretDialogData,
@@ -37,6 +39,7 @@ export class HmacSecretDialogComponent {
     private logger: LoggerService,
   ) {}
 
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: copy the HMAC secret to the clipboard, logging success or failure
   onCopySecret(): void {
     const success = this.clipboard.copy(this.data.secret);
     if (success) {
@@ -46,6 +49,7 @@ export class HmacSecretDialogComponent {
     }
   }
 
+  // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: close the HMAC secret dialog
   onClose(): void {
     this.dialogRef.close();
   }

@@ -26,6 +26,7 @@ const mockMatrix = {
   d: 1,
   e: 0,
   f: 0,
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return an identity SVGMatrix inverse for test mocking (pure)
   inverse: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
   multiply: vi.fn().mockReturnThis(),
   translate: vi.fn().mockReturnThis(),
@@ -104,6 +105,7 @@ describe('InfraEmbeddingService', () => {
   });
 
   // Helper function to create a mock node with node type info
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node with a stubbed node-type for embedding service tests (pure)
   function createMockNodeWithType(
     id: string,
     type: string,

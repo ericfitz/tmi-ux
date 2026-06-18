@@ -14,6 +14,7 @@ describe('NoteEditorDialogComponent', () => {
   let mockSnackBar: { open: ReturnType<typeof vi.fn> };
   let mockTransloco: TranslocoService;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build and initialize a NoteEditorDialogComponent for unit testing (pure)
   function build(data: NoteEditorDialogData): NoteEditorDialogComponent {
     const component = new NoteEditorDialogComponent(
       new FormBuilder(),

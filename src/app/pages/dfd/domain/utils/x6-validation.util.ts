@@ -10,6 +10,7 @@ import { MarkupElement, CellTool } from '../value-objects/x6-types';
  * Validates an array of X6 markup elements.
  * Throws on invalid structure.
  */
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: validate X6 markup element array structure, throwing on malformed entries (pure)
 export function validateMarkupElements(
   markup: MarkupElement[] | undefined,
   errorPrefix: string = 'Markup element',
@@ -38,6 +39,7 @@ export function validateMarkupElements(
  * Validates an array of X6 cell tools.
  * Throws on invalid structure.
  */
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: validate X6 cell tools array structure, throwing on malformed entries (pure)
 export function validateCellTools(
   tools: CellTool[] | undefined,
   errorPrefix: string = 'Tool',
@@ -58,6 +60,7 @@ export function validateCellTools(
  * Compares metadata arrays and custom data for equality.
  * Used by both NodeInfo and EdgeInfo metadataEquals methods.
  */
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: compare two sets of metadata entries and custom data for deep equality (pure)
 export function hybridDataEquals(
   thisMetadata: Metadata[],
   otherMetadata: Metadata[],

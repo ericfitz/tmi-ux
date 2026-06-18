@@ -11,12 +11,15 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@35a2315496da5f569769b294cb213b0ebabe7569: compute selection layout operations: copy, paste, align, distribute, and group nodes (pure)
 export class SelectionService {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Copy selected cells (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: clone a set of selected diagram cells and return the copies (pure)
   copySelectedCells(selectedCells: Cell[]): Cell[] {
     if (selectedCells.length === 0) {
       this.logger.info('No cells selected for copying');
@@ -32,6 +35,7 @@ export class SelectionService {
   /**
    * Calculate paste position with offset (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute offset paste positions for each cloned cell (pure)
   calculatePastePositions(
     cells: Cell[],
     offsetX: number = 20,
@@ -57,6 +61,7 @@ export class SelectionService {
   /**
    * Calculate bounding box for grouping (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute bounding box enclosing all given diagram nodes with padding (pure)
   calculateGroupBoundingBox(nodes: Node[]): {
     x: number;
     y: number;
@@ -91,6 +96,7 @@ export class SelectionService {
   /**
    * Calculate alignment positions (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute target positions to align diagram nodes along a given axis (pure)
   calculateAlignmentPositions(
     nodes: Node[],
     alignment: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom',
@@ -199,6 +205,7 @@ export class SelectionService {
   /**
    * Calculate distribution positions (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute evenly spaced positions for diagram nodes along a given axis (pure)
   calculateDistributionPositions(
     nodes: Node[],
     direction: 'horizontal' | 'vertical',
@@ -270,6 +277,7 @@ export class SelectionService {
   /**
    * Validate if nodes can be grouped (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that a node selection meets the minimum count to form a group (pure)
   canGroupNodes(nodes: Node[]): boolean {
     return nodes.length >= 2;
   }
@@ -277,6 +285,7 @@ export class SelectionService {
   /**
    * Validate if a node can be ungrouped (business logic)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate that a diagram node has children and can be ungrouped (pure)
   canUngroupNode(node: Node): boolean {
     const children = node.getChildren();
     return children !== null && children.length > 0;
@@ -285,6 +294,7 @@ export class SelectionService {
   /**
    * Get group configuration for creating a group node (business logic)
    */
+  // SEM@35a2315496da5f569769b294cb213b0ebabe7569: build a styled group node config object from a bounding box (pure)
   getGroupConfiguration(boundingBox: { x: number; y: number; width: number; height: number }): any {
     return {
       x: boundingBox.x,

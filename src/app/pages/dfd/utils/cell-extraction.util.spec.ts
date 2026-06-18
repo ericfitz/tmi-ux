@@ -5,12 +5,14 @@ import { extractCellsFromGraph } from './cell-extraction.util';
  * Creates a mock X6 graph with configurable cells for testing.
  * Each mock cell supports the X6 Cell API methods used by extractCellsFromGraph.
  */
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: build a minimal X6 graph mock that returns configurable cells (pure)
 function createMockGraph(cells: any[]) {
   return {
     getCells: () => cells,
   };
 }
 
+// SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: build a mock X6 node with overridable geometry and attrs (pure)
 function createMockNode(
   overrides: Partial<{
     id: string;
@@ -59,6 +61,7 @@ function createMockNode(
   };
 }
 
+// SEM@2abd567f93788a2e83e975e730e74b979c228b09: build a mock X6 edge with overridable source, target, and attrs (pure)
 function createMockEdge(
   overrides: Partial<{
     id: string;

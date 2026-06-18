@@ -20,9 +20,11 @@ vi.mock('../../../environments/environment', () => ({
 }));
 
 /** Build a ReadableStream from raw SSE text */
+// SEM@27d4efda692a4a1467112e79bc4e5ccb0edf68ba: build a ReadableStream of encoded bytes from raw SSE text for tests (pure)
 function makeStream(text: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   return new ReadableStream<Uint8Array>({
+    // SEM@27d4efda692a4a1467112e79bc4e5ccb0edf68ba: enqueue encoded SSE text and close the stream controller (pure)
     start(controller) {
       controller.enqueue(encoder.encode(text));
       controller.close();
@@ -31,6 +33,7 @@ function makeStream(text: string): ReadableStream<Uint8Array> {
 }
 
 /** Build a mock Response object */
+// SEM@27d4efda692a4a1467112e79bc4e5ccb0edf68ba: build a mock HTTP Response with given status, body, and headers for tests (pure)
 function makeResponse(
   ok: boolean,
   status: number,

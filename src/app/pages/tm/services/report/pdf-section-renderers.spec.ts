@@ -40,9 +40,13 @@ const config: LayoutConfig = {
 };
 
 const mockLogger = {
+  // SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: no-op logger info stub for test isolation (pure)
   info: () => undefined,
+  // SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: no-op logger warn stub for test isolation (pure)
   warn: () => undefined,
+  // SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: no-op logger error stub for test isolation (pure)
   error: () => undefined,
+  // SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: no-op logger debugComponent stub for test isolation (pure)
   debugComponent: () => undefined,
 };
 
@@ -51,6 +55,7 @@ const mockLogger = {
  * (with the params object appended when present) so assertions can inspect
  * both the output and the call record; getActiveLang() returns a fixed locale.
  */
+// SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: build a TranslocoService test double that echoes translation keys (pure)
 function createMockTransloco(): TranslocoService {
   return {
     translate: vi.fn((key: string, params?: Record<string, unknown>) =>
@@ -65,6 +70,7 @@ function createMockTransloco(): TranslocoService {
 }
 
 /** Build a threat model with only the fields the renderers read. */
+// SEM@2642c33b79db7cce0d4e58508ffe94f2a946e4e2: build a minimal threat model fixture with optional field overrides (pure)
 function makeThreatModel(overrides: Partial<ThreatModel> = {}): ThreatModel {
   return {
     id: 'tm-1',

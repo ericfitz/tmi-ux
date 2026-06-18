@@ -11,10 +11,12 @@ import { Diagram } from '../models/diagram.model';
 /**
  * Validates internal reference consistency within a ThreatModel
  */
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate all internal reference consistency within a threat model (pure)
 export class InternalReferenceValidator extends BaseValidator implements ReferenceValidator {
   /**
    * Validate that all references are consistent within the threat model
    */
+  // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate all internal references within a threat model and return errors (pure)
   validateReferences(threatModel: ThreatModel, context: ValidationContext): ValidationError[] {
     this.clearErrors();
 
@@ -50,6 +52,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Build a map of all available references in the threat model
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: build an index of all entity IDs and principal keys in a threat model (pure)
   private buildReferenceMap(threatModel: ThreatModel, _context: ValidationContext): ReferenceMap {
     const referenceMap: ReferenceMap = {
       threatModelId: threatModel.id,
@@ -125,6 +128,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate threat references to diagrams and cells
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate that each threat's diagram and cell references exist in the threat model (pure)
   private validateThreatReferences(
     threatModel: ThreatModel,
     referenceMap: ReferenceMap,
@@ -208,6 +212,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate document references (if any custom linking exists)
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate metadata references within each document against known entity IDs (pure)
   private validateDocumentReferences(
     threatModel: ThreatModel,
     referenceMap: ReferenceMap,
@@ -238,6 +243,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate diagram internal references and consistency
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate metadata references within each diagram against known entity IDs (pure)
   private validateDiagramInternalReferences(
     threatModel: ThreatModel,
     referenceMap: ReferenceMap,
@@ -268,6 +274,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate cross-references between different entity types
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate that owner and creator principals appear in the authorization list (pure)
   private validateCrossReferences(
     threatModel: ThreatModel,
     referenceMap: ReferenceMap,
@@ -318,6 +325,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Validate metadata for potential references to other entities
    */
+  // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate metadata values that look like entity UUIDs against known threat IDs (pure)
   private validateMetadataReferences(
     metadata: Metadata[],
     referenceMap: ReferenceMap,
@@ -359,6 +367,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
   /**
    * Check for threats that don't reference any diagram
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: report threats not associated with any diagram when diagrams exist (pure)
   private validateOrphanedThreats(
     threatModel: ThreatModel,
     referenceMap: ReferenceMap,

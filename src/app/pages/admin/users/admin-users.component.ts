@@ -74,6 +74,7 @@ import {
   styleUrl: './admin-users.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@913973c2390b7180140950023b498e5c44ca2678: admin page component for listing, filtering, and managing application users
 export class AdminUsersComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
@@ -96,6 +97,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   loading = false;
   currentLocale = 'en-US';
 
+  // SEM@493ed2f6ef7ce78cf3855ee1434c1a0f649bfe24: inject services required for user admin page (pure)
   constructor(
     private userAdminService: UserAdminService,
     private router: Router,
@@ -108,6 +110,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     private languageService: LanguageService,
   ) {}
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: bind the paginator sort accessor to the user data source (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item: AdminUser, property: string): string | number => {
@@ -128,6 +131,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     };
   }
 
+  // SEM@493ed2f6ef7ce78cf3855ee1434c1a0f649bfe24: initialize locale, providers, pagination from URL, and debounced filter subscription
   ngOnInit(): void {
     this.languageService.currentLanguage$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -157,6 +161,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch available OAuth providers and prepend the built-in TMI provider (reads DB)
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
@@ -183,6 +188,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@128557a704761ac4174b3d237c0a60561acb8119: fetch a paginated, optionally filtered user list from the API (reads DB)
   loadUsers(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -213,10 +219,12 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: dispatch a debounced filter value to the user search subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
   }
 
+  // SEM@128557a704761ac4174b3d237c0a60561acb8119: toggle automation-only filter and reload the user list (mutates shared state)
   onAutomationFilterChange(checked: boolean): void {
     this.automationOnly = checked;
     this.pageIndex = 0;
@@ -224,6 +232,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     this.updateUrl();
   }
 
+  // SEM@6cf31dc241d9ad5d9ddd4021f00dc2f87db833ab: open the credential management dialog for a given user
   onManageCredentials(user: AdminUser): void {
     const dialogData: ManageCredentialsDialogData = {
       internalUuid: user.internal_uuid,
@@ -236,6 +245,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@a3fe1642d528f79a9c8370fc884021654b79b431: open dialog to create an automation user, then display the generated credential secret
   onCreateAutomationUser(): void {
     const dialogData: CreateAutomationUserDialogData = {};
     const dialogRef = this.dialog.open(CreateAutomationUserDialogComponent, {
@@ -268,6 +278,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle paginator page change, reload the user list, and update the URL
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -275,6 +286,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     this.updateUrl();
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: sync pagination and filter state into the current URL (mutates shared state)
   private updateUrl(): void {
     const queryParams = buildPaginationQueryParams(
       { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalUsers },
@@ -290,6 +302,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: filter the displayed user list by the current filter text (mutates shared state)
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
@@ -306,6 +319,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     );
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: delete a user after confirmation, then reload the user list
   onDeleteUser(user: AdminUser): void {
     const warningMessage = `Are you sure you want to delete user ${user.email}?
 
@@ -347,6 +361,7 @@ This action cannot be undone.`;
     }
   }
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: transfer all owned resources from one user to another via picker dialog
   onTransferOwnership(user: AdminUser): void {
     const dialogRef = this.dialog.open(UserPickerDialogComponent, {
       data: {
@@ -396,10 +411,12 @@ This action cannot be undone.`;
       });
   }
 
+  // SEM@913973c2390b7180140950023b498e5c44ca2678: navigate away from the admin page back to the home route
   onClose(): void {
     navigateFromAdminPage(this.router, this.authService);
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: format a user's group list as a comma-separated string (pure)
   formatGroups(groups: string[] | undefined): string {
     if (!groups || groups.length === 0) {
       return 'None';
@@ -407,6 +424,7 @@ This action cannot be undone.`;
     return groups.join(', ');
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: format a last-login timestamp, returning 'Never' if absent (pure)
   formatLastLogin(lastLogin: string | null | undefined): string {
     if (!lastLogin) {
       return 'Never';
@@ -414,6 +432,7 @@ This action cannot be undone.`;
     return lastLogin;
   }
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: look up OAuth provider metadata by provider ID (pure)
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }

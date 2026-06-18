@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { LoggerService } from '../services/logger.service';
 import { SecurityConfigService } from '../services/security-config.service';
 
+// SEM@9878a4d13d50d4c9e56a27c119f4d4c8b0c5e145: validate API response security headers in development and log missing or insecure headers
 export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
   const logger = inject(LoggerService);
   const securityConfig = inject(SecurityConfigService);

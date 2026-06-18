@@ -41,7 +41,9 @@ export interface UnlinkConfirmDialogData {
     </mat-dialog-actions>
   `,
 })
+// SEM@9d9282a4131a5afdbcd3cfd14a6ca1992e4b8a24: confirm dialog that asks user to confirm unlinking a content provider account
 export class UnlinkConfirmDialogComponent {
+  // SEM@9d9282a4131a5afdbcd3cfd14a6ca1992e4b8a24: initialize unlink-confirm dialog with its dialog ref and provider name data (pure)
   constructor(
     public ref: MatDialogRef<UnlinkConfirmDialogComponent, boolean>,
     @Inject(MAT_DIALOG_DATA) public data: UnlinkConfirmDialogData,

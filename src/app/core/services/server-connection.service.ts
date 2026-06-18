@@ -65,6 +65,7 @@ interface ServerHealthResponse {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: monitor and expose server reachability status with periodic health checks
 export class ServerConnectionService implements OnDestroy {
   private readonly _connectionStatus$ = new BehaviorSubject<ServerConnectionStatus>(
     ServerConnectionStatus.NOT_CONFIGURED,
@@ -92,6 +93,7 @@ export class ServerConnectionService implements OnDestroy {
    */
   private _healthCheckNeeded = true;
 
+  // SEM@daa946e21bdd85c21feca54e25a06848591aaf11: initialize connection monitoring and browser online/offline event listeners (mutates shared state)
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -132,6 +134,7 @@ export class ServerConnectionService implements OnDestroy {
    * Get raw server version from last successful health check
    * @returns Server version string or null if not yet retrieved
    */
+  // SEM@939a337d0af80505f5ac0e75993867e7cbe6d815: fetch the raw server version string from the last successful health check (pure)
   getServerVersion(): string | null {
     return this._serverVersion;
   }
@@ -142,6 +145,7 @@ export class ServerConnectionService implements OnDestroy {
    * (e.g., "1.3.0 (5011053f)"). Returns the raw string if it doesn't match the expected pattern.
    * @returns Formatted server version string, or empty string if not yet retrieved
    */
+  // SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: format server version from semver-commitId to display-friendly semver (commitId) (pure)
   getFormattedServerVersion(): string {
     if (!this._serverVersion) {
       return '';
@@ -153,6 +157,7 @@ export class ServerConnectionService implements OnDestroy {
     return this._serverVersion;
   }
 
+  // SEM@daa946e21bdd85c21feca54e25a06848591aaf11: cancel health check subscription and stop monitoring on service destroy (mutates shared state)
   ngOnDestroy(): void {
     if (this._healthCheckSubscription) {
       this._healthCheckSubscription.unsubscribe();
@@ -163,6 +168,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Start monitoring connection status (for save operations)
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: activate connection monitoring for save operations if not already running (mutates shared state)
   startMonitoring(): void {
     if (this._isMonitoring) return;
 
@@ -181,6 +187,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Stop monitoring connection status
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: deactivate connection monitoring flag (mutates shared state)
   stopMonitoring(): void {
     this._isMonitoring = false;
     // this.logger.debugComponent('ServerConnection', 'Stopping connection monitoring');
@@ -190,6 +197,7 @@ export class ServerConnectionService implements OnDestroy {
    * Force an immediate server connectivity check
    * @returns Observable that emits the updated connection status
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: fetch current server reachability and schedule the next health check
   checkServerConnectivity(): Observable<DetailedConnectionStatus> {
     return this.performDetailedHealthCheck().pipe(
       tap(() => {
@@ -204,6 +212,7 @@ export class ServerConnectionService implements OnDestroy {
    * Based on connection state and whether we've already shown one recently
    * @returns true if notification should be shown
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: determine if a connection error notification should be displayed to the user (pure)
   shouldShowConnectionError(): boolean {
     const status = this._detailedConnectionStatus$.value;
 
@@ -217,6 +226,7 @@ export class ServerConnectionService implements OnDestroy {
    * Check if connection was recently restored (useful for auto-retry logic)
    * @returns true if connection was recently restored
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: determine if the server connection was restored after a prior failure (pure)
   wasConnectionRecentlyRestored(): boolean {
     const status = this._detailedConnectionStatus$.value;
 
@@ -231,6 +241,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Initialize browser online/offline event listeners
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: register browser online/offline event listeners to react to network changes (mutates shared state)
   private initializeBrowserEventListeners(): void {
     // Listen for browser online/offline events
     window.addEventListener('online', () => {
@@ -246,6 +257,7 @@ export class ServerConnectionService implements OnDestroy {
    * Handle browser online/offline events
    * @param isOnline Whether browser is online
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: update connection status and trigger a health check when browser network state changes (mutates shared state)
   private handleBrowserOnlineChange(isOnline: boolean): void {
     const currentStatus = this._detailedConnectionStatus$.value;
 
@@ -280,6 +292,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Initialize connection monitoring based on environment configuration
    */
+  // SEM@93bad2aec249e272774fbe2addcb34ee0615c847: start periodic health checks if the server is configured (mutates shared state)
   private initializeConnectionMonitoring(): void {
     // Check if server is configured
     if (!this.isServerConfigured()) {
@@ -299,6 +312,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Stop health check monitoring
    */
+  // SEM@081dc985eee8ff7d9105cf1c4b26b11dec05c4bc: cancel the active health check subscription (mutates shared state)
   private stopHealthChecks(): void {
     if (this._healthCheckSubscription) {
       this._healthCheckSubscription.unsubscribe();
@@ -309,6 +323,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Check if server is configured based on environment
    */
+  // SEM@081dc985eee8ff7d9105cf1c4b26b11dec05c4bc: determine whether the API URL is configured in the environment (pure)
   private isServerConfigured(): boolean {
     // Consider server not configured only if apiUrl is empty or whitespace
     // Any explicitly configured URL (including localhost) is considered a configured server
@@ -321,6 +336,7 @@ export class ServerConnectionService implements OnDestroy {
    * Returns false if:
    * - Server is not configured (empty apiUrl)
    */
+  // SEM@5cf5885c74a030f8c823e9e6b34c6ff2405967e6: determine whether the service should attempt server connectivity (pure)
   private shouldConnectToServer(): boolean {
     return this.isServerConfigured();
   }
@@ -328,6 +344,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Start periodic health check monitoring with exponential backoff
    */
+  // SEM@931d5291247003011aeec3bf214c492c29a852bb: schedule an immediate health check to begin periodic monitoring (mutates shared state)
   private startHealthChecks(): void {
     // Perform initial health check
     this.scheduleNextHealthCheck(0); // Start immediately
@@ -336,6 +353,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Schedule the next health check with appropriate delay
    */
+  // SEM@d88a0ec8335a516ab7e753dfa3ca39d9a6ad08af: schedule a delayed health check and re-schedule on completion (mutates shared state)
   private scheduleNextHealthCheck(delay: number): void {
     // Clean up any existing subscription
     if (this._healthCheckSubscription) {
@@ -363,6 +381,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Perform a single health check against the server
    */
+  // SEM@2a492b6a05aad641d4ce31ae471f8294d7d26157: fetch server health endpoint and update connection status with backoff on failure
   private performHealthCheck(): Observable<void> {
     // Check if we should connect to server
     if (!this.shouldConnectToServer()) {
@@ -468,6 +487,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Perform a detailed health check for save operations (with skip-auth option)
    */
+  // SEM@660ec8791a5c29b400be8ffc40e019c7a1c1d240: ping the server and update detailed connection status with result (mutates shared state)
   private performDetailedHealthCheck(): Observable<DetailedConnectionStatus> {
     // Check if we should connect to server
     if (!this.shouldConnectToServer()) {
@@ -562,6 +582,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Manually trigger a connection check
    */
+  // SEM@5cf5885c74a030f8c823e9e6b34c6ff2405967e6: trigger a manual server health check if server is configured (mutates shared state)
   public checkConnection(): void {
     if (this.shouldConnectToServer()) {
       this.performHealthCheck().subscribe({
@@ -589,6 +610,7 @@ export class ServerConnectionService implements OnDestroy {
    * concurrent API failures. The flag is set to true only after a successful
    * health check, so at most one reactive check runs per outage.
    */
+  // SEM@660ec8791a5c29b400be8ffc40e019c7a1c1d240: dispatch a health check on API failure, guarded to one check per outage (mutates shared state)
   triggerReactiveHealthCheck(): void {
     if (!this._healthCheckNeeded || !this.shouldConnectToServer()) {
       return;
@@ -608,6 +630,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Calculate the next backoff delay using exponential backoff
    */
+  // SEM@931d5291247003011aeec3bf214c492c29a852bb: compute the next exponential backoff delay, capped at maximum (pure)
   private getNextBackoffDelay(): number {
     return Math.min(this._currentBackoffDelay * 2, this.MAX_BACKOFF_DELAY);
   }
@@ -615,6 +638,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Reset backoff delay to minimum when connection is successful
    */
+  // SEM@931d5291247003011aeec3bf214c492c29a852bb: reset the backoff delay to the minimum on successful connection (mutates shared state)
   private resetBackoffDelay(): void {
     this._currentBackoffDelay = this.MIN_BACKOFF_DELAY;
   }
@@ -622,6 +646,7 @@ export class ServerConnectionService implements OnDestroy {
   /**
    * Get the appropriate delay for the next health check based on current status
    */
+  // SEM@2a492b6a05aad641d4ce31ae471f8294d7d26157: return the appropriate health check interval based on current connection status (pure)
   private getHealthCheckDelay(): number {
     const currentStatus = this._connectionStatus$.value;
     if (currentStatus === ServerConnectionStatus.OFFLINE) {
@@ -637,6 +662,7 @@ export class ServerConnectionService implements OnDestroy {
    * Update detailed connection status and notify subscribers
    * @param newStatus New detailed connection status
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: store new detailed connection status and log reachability state transitions (mutates shared state)
   private updateDetailedConnectionStatus(newStatus: DetailedConnectionStatus): void {
     const previousStatus = this._detailedConnectionStatus$.value;
     this._detailedConnectionStatus$.next(newStatus);

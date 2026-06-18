@@ -42,6 +42,7 @@ describe('ExportDialogComponent', () => {
   };
   let dialogData: ExportDialogData;
 
+  // SEM@a21af50df0a97230abf86eaf7084a18f4dbc1537: build an ExportDialogComponent instance with mock dependencies for unit tests (pure)
   function createComponent(data: ExportDialogData): ExportDialogComponent {
     return new ExportDialogComponent(
       mockDialogRef as unknown as MatDialogRef<ExportDialogComponent>,

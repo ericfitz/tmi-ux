@@ -48,6 +48,7 @@ import { environment } from '../../../../../environments/environment';
   styleUrl: './response-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@bda57c14c5f510b4c12a35bf845e1041df812b78: fetch and display a submitted survey response with its associated project
 export class ResponseDetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private themeService = inject(ThemeService);
@@ -65,6 +66,7 @@ export class ResponseDetailComponent implements OnInit {
 
   private responseId: string | null = null;
 
+  // SEM@71aee0a369e6c4b7bc5f57e42795e1944b0ff573: inject routing, survey, response, project, logger, and change detection dependencies (pure)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -75,6 +77,7 @@ export class ResponseDetailComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  // SEM@6533b8b7b0c6db3a5ea574f65396fc0685f97573: resolve route response ID and trigger response load (mutates shared state)
   ngOnInit(): void {
     this.responseId = this.route.snapshot.paramMap.get('responseId');
 
@@ -90,6 +93,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Load the response and survey
    */
+  // SEM@71aee0a369e6c4b7bc5f57e42795e1944b0ff573: fetch a survey response by ID and populate the view model (reads DB)
   private loadResponse(): void {
     this.loading = true;
     this.error = null;
@@ -129,6 +133,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Fallback: load the survey JSON from template service
    */
+  // SEM@bda57c14c5f510b4c12a35bf845e1041df812b78: fetch survey JSON template as fallback when response snapshot is absent (reads DB)
   private loadSurveyJson(surveyId: string): void {
     loadSurveyJson(
       { surveyService: this.surveyService, destroyRef: this.destroyRef, logger: this.logger },
@@ -150,6 +155,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Resolve project name from project ID
    */
+  // SEM@71aee0a369e6c4b7bc5f57e42795e1944b0ff573: fetch project name by ID and store it for display (reads DB)
   private loadProjectName(projectId: string): void {
     this.projectService
       .get(projectId)
@@ -170,6 +176,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Initialize the SurveyJS model in read-only mode
    */
+  // SEM@3fe8590dd363fe4c1feac493886a2b5bc0610e88: build a read-only SurveyJS model from response data and apply the active theme (mutates shared state)
   private initializeSurvey(): void {
     if (!this.surveyJson || !this.response) return;
 
@@ -211,6 +218,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Navigate back to my responses
    */
+  // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: route the user back to the my-responses list (pure)
   goBack(): void {
     void this.router.navigate(['/intake', 'my-responses']);
   }
@@ -218,6 +226,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Get status display info
    */
+  // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: map a response status to its display label, color, and icon (pure)
   getStatusInfo(status: ResponseStatus): { label: string; color: string; icon: string } {
     const statusMap: Record<ResponseStatus, { label: string; color: string; icon: string }> = {
       draft: { label: 'Draft', color: 'default', icon: 'edit_note' },
@@ -232,6 +241,7 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Format date for display
    */
+  // SEM@b54b9814f8416ab22896148fea0d97a28da8f795: format a date string into a localized short date-time string (pure)
   formatDate(dateString: string | undefined): string {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);

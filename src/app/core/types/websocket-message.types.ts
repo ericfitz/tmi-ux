@@ -95,6 +95,7 @@ export interface DiagramOperationEventMessage {
  * @deprecated Use DiagramOperationEventMessage for received messages
  * Kept for backward compatibility during transition
  */
+// SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: deprecated alias for DiagramOperationEventMessage kept for backward compatibility (pure)
 export type DiagramOperationMessage = DiagramOperationEventMessage;
 
 /**
@@ -320,6 +321,7 @@ export interface OperationRejectedMessage {
   timestamp: string;
 }
 
+// SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: union type of all valid TMI WebSocket message shapes (pure)
 export type TMIWebSocketMessage =
   | DiagramOperationRequestMessage
   | DiagramOperationEventMessage
@@ -345,6 +347,7 @@ export type TMIWebSocketMessage =
   | WebSocketErrorMessage
   | OperationRejectedMessage;
 
+// SEM@7fbb3c1a3740e861de8654901d8b1692cb99727a: union of all valid TMI WebSocket message type string literals (pure)
 export type TMIMessageType =
   | 'diagram_operation_request'
   | 'diagram_operation_event'

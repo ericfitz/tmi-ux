@@ -48,6 +48,7 @@ export const DEFAULT_LANGUAGE = 'en-US';
  * @param urlSearchParams Optional URL search params (pass `null` to skip URL detection)
  * @returns A supported language code
  */
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: detect the user's preferred language from URL, storage, or browser signals (pure)
 export function detectPreferredLanguage(urlSearchParams?: URLSearchParams | null): string {
   // 1. Check URL query parameter
   if (urlSearchParams) {

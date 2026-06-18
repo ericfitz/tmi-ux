@@ -44,6 +44,7 @@ import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialo
  * hooks on the base class.
  */
 @Directive()
+// SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: abstract base providing shared project list, filter, pagination, and CRUD handlers
 export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   protected destroyRef = inject(DestroyRef);
   protected projectService = inject(ProjectService);
@@ -74,6 +75,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   totalProjects = 0;
 
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: restore filter and pagination state from URL, wire debounce streams, and fetch projects (reads DB)
   ngOnInit(): void {
     const urlState = parsePaginationFromUrl(this.route.snapshot.queryParams, DEFAULT_PAGE_SIZE);
     this.pageIndex = urlState.pageIndex;
@@ -122,16 +124,19 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
     this.loadProjects();
   }
 
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: bind the MatSort instance to the table data source (mutates shared state)
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
   /** Handle name filter input changes with debounce. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: dispatch a debounced name filter value to trigger project reload (mutates shared state)
   onNameFilterChange(value: string): void {
     this.filterNameSubject$.next(value);
   }
 
   /** Handle team filter input for autocomplete search. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: update team filter text and dispatch autocomplete search when input is long enough (mutates shared state)
   onTeamFilterInput(value: string): void {
     this.filterTeamName = value;
     if (value.length >= 2) {
@@ -140,6 +145,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Handle team selection from autocomplete. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: apply selected team filter and reload projects from the first page (reads DB)
   onTeamSelected(event: MatAutocompleteSelectedEvent): void {
     const team = event.option.value as TeamListItem;
     this.filterTeamId = team.id;
@@ -150,6 +156,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Clear the team filter. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: clear the team filter and reload the project list from the first page (reads DB)
   clearTeamFilter(): void {
     this.filterTeamId = null;
     this.filterTeamName = '';
@@ -159,6 +166,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Handle status filter changes. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: apply a status filter and reload projects from the first page (reads DB)
   onStatusFilterChange(value: string | null): void {
     this.filterStatus = value;
     this.pageIndex = 0;
@@ -167,11 +175,13 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Returns true if any filter is active. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: return true if any project filter is currently active (pure)
   hasActiveFilters(): boolean {
     return !!(this.filterName || this.filterTeamId || this.filterStatus);
   }
 
   /** Clear all filters and reload. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: reset all project filters and reload the list from the first page (reads DB)
   clearFilters(): void {
     this.filterName = '';
     this.filterTeamId = null;
@@ -186,6 +196,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   displayTeam = (team: TeamListItem): string => team?.name || '';
 
   /** Handle paginator page changes. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: update pagination state and reload the project list page (reads DB)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -194,6 +205,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the create project dialog. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: open create-project dialog and persist a new project on confirmation (reads DB)
   onAddProject(): void {
     const dialogRef = this.dialog.open(CreateProjectDialogComponent, {
       width: '500px',
@@ -216,6 +228,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the edit project details dialog. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: fetch full project and open edit-details dialog, refreshing list on save (reads DB)
   onEditDetails(project: ProjectListItem): void {
     this.projectService
       .get(project.id)
@@ -243,6 +256,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the responsible parties dialog. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: open responsible-parties dialog and patch project parties on confirmation (reads DB)
   onResponsibleParties(project: ProjectListItem): void {
     this.projectService
       .get(project.id)
@@ -276,6 +290,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the related projects dialog. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: open related-projects dialog and refresh list on confirmation (reads DB)
   onRelatedProjects(project: ProjectListItem): void {
     this.projectService
       .get(project.id)
@@ -303,6 +318,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   /** Open the metadata dialog. */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: open metadata dialog and patch project metadata on confirmation (reads DB)
   onMetadata(project: ProjectListItem): void {
     this.projectService
       .get(project.id)
@@ -344,6 +360,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
    * Returns the i18n key for a project status label.
    * @param status - The project status value
    */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: convert a project status value to its i18n key (pure)
   getStatusLabel(status: string | null | undefined): string {
     if (!status) return '—';
     return `projects.status.${status}`;
@@ -353,6 +370,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
    * Navigate away from the list. The destination differs per page
    * (previous page for the user view, admin landing for the admin view).
    */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: navigate away from the project list; destination determined by subclass
   abstract onClose(): void;
 
   /**
@@ -360,8 +378,10 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
    * post-deletion page handling differ per page, so each subclass implements it.
    * @param project - The project to delete
    */
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: confirm and delete a project; confirmation and post-deletion handling per subclass (reads DB)
   abstract onDelete(project: ProjectListItem): void;
 
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: fetch a paginated, filtered project list and populate the table data source (reads DB)
   protected loadProjects(): void {
     this.loading = true;
     const offset = calculateOffset(this.pageIndex, this.pageSize);
@@ -388,6 +408,7 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
       });
   }
 
+  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: sync current pagination and filter state into the URL query params (mutates shared state)
   protected updateUrl(): void {
     const params: Record<string, string> = {};
     if (this.pageIndex > 0) params['page'] = String(this.pageIndex);

@@ -24,17 +24,21 @@ import { Cell } from '../../../../core/types/websocket-message.types';
 import { normalizeCell } from '../../utils/cell-normalization.util';
 
 @Injectable()
+// SEM@16e70871be30dfa1d3a516313196a38ca75845db: execute create, update, and delete edge operations against the DFD graph (mutates shared state)
 export class EdgeOperationExecutor extends BaseOperationExecutor {
   readonly priority = 100;
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: initialize the executor with a logger service dependency (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate that the operation is a create-, update-, or delete-edge type (pure)
   canExecute(operation: GraphOperation): boolean {
     return ['create-edge', 'update-edge', 'delete-edge'].includes(operation.type);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate graph then route an edge operation to the appropriate create/update/delete handler
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
     this.logOperationStart(operation);
 
@@ -64,6 +68,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     );
   }
 
+  // SEM@ee583904417fd0db6ebd1a851011d104aa8a87b4: add a new edge between two validated nodes, capturing current state for history (mutates shared state)
   private executeCreateEdge(
     operation: CreateEdgeOperation,
     context: OperationContext,
@@ -152,6 +157,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
    * Handle retroactive edge creation where the edge was already created by X6 drag-connect.
    * Captures state for history without re-creating the edge.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: capture state of an already-existing edge without re-adding it, for history tracking (pure)
   private _handleRetroactiveCreation(
     graph: Graph,
     operation: CreateEdgeOperation,
@@ -187,6 +193,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
    * Build edge labels from edgeInfo.
    * Uses labels directly if available, otherwise creates from legacy label string.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: convert edge label info into an X6 label config array, falling back to the legacy label string (pure)
   private _buildEdgeLabels(edgeInfo: any): any[] {
     if (edgeInfo.labels && edgeInfo.labels.length > 0) {
       return edgeInfo.labels;
@@ -213,6 +220,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     return [];
   }
 
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: update an edge's label, style, endpoints, and data; return previous and current state (mutates shared state)
   private executeUpdateEdge(
     operation: UpdateEdgeOperation,
     context: OperationContext,
@@ -272,6 +280,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
    * Apply all update fields to an edge. Returns a failure result if an endpoint
    * node is not found, or null on success.
    */
+  // SEM@16e70871be30dfa1d3a516313196a38ca75845db: apply all pending field updates to an edge; return failure result if endpoint node is missing (mutates shared state)
   private _applyEdgeUpdates(
     graph: Graph,
     edge: any,
@@ -354,6 +363,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
    * result if the referenced node is not found, or null otherwise (including
    * when the endpoint is not being updated).
    */
+  // SEM@16e70871be30dfa1d3a516313196a38ca75845db: reassign one endpoint of an edge to a new node and port; return failure if node is missing (mutates shared state)
   private _applyEndpointUpdate(
     graph: Graph,
     edge: any,
@@ -395,6 +405,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
   /**
    * Collect names of changed properties from an updates object.
    */
+  // SEM@16e70871be30dfa1d3a516313196a38ca75845db: list which property keys are present in an edge updates object (pure)
   private _collectChangedProperties(updates: EdgeUpdates): string[] {
     const changed: string[] = [];
 
@@ -411,6 +422,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     return changed;
   }
 
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: delete an edge from the graph, capturing previous state for undo (mutates shared state)
   private executeDeleteEdge(
     operation: DeleteEdgeOperation,
     context: OperationContext,
@@ -476,6 +488,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
    * Capture the current state of an edge for history tracking
    * Uses normalizeCell to ensure consistency with persistence filtering
    */
+  // SEM@547348ac544c6347e52c6335ffcaec13987c4e9c: snapshot a normalized edge cell for history tracking; returns null if absent (pure)
   private _captureEdgeState(graph: Graph, edgeId: string): Cell | null {
     const edge = this.getEdge(graph, edgeId);
     if (!edge) {

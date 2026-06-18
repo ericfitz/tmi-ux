@@ -26,6 +26,7 @@ describe('EditTeamDialogComponent', () => {
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let envInjector: EnvironmentInjector;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a stub Team fixture with optional field overrides (pure)
   function makeTeam(overrides: Partial<Team> = {}): Team {
     return {
       id: 'team-1',
@@ -35,6 +36,7 @@ describe('EditTeamDialogComponent', () => {
     } as Team;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build an initialized EditTeamDialogComponent under test injection context (pure)
   function build(data: EditTeamDialogData): EditTeamDialogComponent {
     const component = runInInjectionContext(
       envInjector,

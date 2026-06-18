@@ -52,6 +52,7 @@ import { CollaborationDialogComponent } from '../collaboration-dialog/collaborat
   styleUrls: ['./collaboration.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@d4322784af04c286c6dd06c07662e27950dae791: collaboration toolbar button managing session join, leave, and participant dialog
 export class DfdCollaborationComponent implements OnInit, OnDestroy {
   // Collaboration state
   isCollaborating = false;
@@ -73,6 +74,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   // Subscription management
   private _subscriptions = new Subscription();
 
+  // SEM@1ea48eccb10ecbaae0fdd5bf09ebddccc1e9fb72: initialize collaboration state and presenter-mode observable from the collaboration service
   constructor(
     private _logger: LoggerService,
     private _cdr: ChangeDetectorRef,
@@ -86,6 +88,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     );
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: subscribe to collaboration state and sync user list and session status to the component
   ngOnInit(): void {
     this._logger.debugComponent(
       'DfdCollaborationComponent',
@@ -129,6 +132,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     );
   }
 
+  // SEM@2af7b39f77fe3806eadb73bafca4ce95e37168be: unsubscribe all active subscriptions to prevent memory leaks on destroy
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this._subscriptions.unsubscribe();
@@ -137,6 +141,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Handle collaboration button click - performs the appropriate action based on current state
    */
+  // SEM@d4322784af04c286c6dd06c07662e27950dae791: toggle the collaboration session on button click, joining or leaving as appropriate
   handleCollaborationAction(): void {
     this._logger.info('[CollaborationComponent] Collaboration button clicked', {
       isCollaborating: this.isCollaborating,
@@ -164,6 +169,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Open the collaboration dialog
    */
+  // SEM@a4ab59267ee4a9b91ae8ed45c6cd52c615bc5cb1: open the collaboration participant dialog and clear button hover state on close
   private _openDialog(): void {
     const dialogRef = this._dialog.open(CollaborationDialogComponent, {
       width: '600px',
@@ -220,6 +226,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Get the CSS class for the collaboration icon based on current state
    * @returns The CSS class to apply to the icon for coloring
    */
+  // SEM@3ed96c33670136f56abd692bd9c9510ae0d52edd: map collaboration session state to a CSS icon class for color feedback (pure)
   getCollaborationIconClass(): string {
     if (this.isCollaborating) {
       return 'icon-active'; // Green - currently participating in session
@@ -234,6 +241,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Get the tooltip text for the collaboration button
    * @returns The tooltip text
    */
+  // SEM@1ea48eccb10ecbaae0fdd5bf09ebddccc1e9fb72: build a localized tooltip for the collaboration button based on session state (pure)
   getCollaborationButtonTooltip(): string {
     if (!this.isContextReady) {
       return this._transloco.translate('collaboration.loadingDiagramContext');
@@ -255,6 +263,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    * Check if the current user is the host of the collaboration session
    * @returns True if current user is host, false otherwise
    */
+  // SEM@3ed96c33670136f56abd692bd9c9510ae0d52edd: validate whether the authenticated user is the collaboration session host (pure)
   isCurrentUserHost(): boolean {
     return this._collaborationService.isCurrentUserHost();
   }
@@ -262,6 +271,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Copy the collaboration link to clipboard
    */
+  // SEM@812ccfc25aaf928ab97760f41c7b7c7814e36415: build and copy the collaboration invite URL to the clipboard (mutates shared state)
   copyCollaborationLink(): void {
     this._logger.info('[CollaborationComponent] Copying collaboration link');
 
@@ -285,6 +295,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Open the participants dialog (collaboration dialog)
    */
+  // SEM@234dd7e4268dca49cc0bf7029c2b9a59503d70c5: dispatch the participants dialog, stopping event propagation (mutates shared state)
   openParticipantsDialog(event?: Event): void {
     this._logger.info('[CollaborationComponent] Opening participants dialog');
 
@@ -299,6 +310,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Request presenter privileges
    */
+  // SEM@812ccfc25aaf928ab97760f41c7b7c7814e36415: send a request to the collaboration service for presenter role (mutates shared state)
   requestPresenterPrivileges(): void {
     this._logger.info('[CollaborationComponent] Requesting presenter privileges');
     this._collaborationService
@@ -317,6 +329,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Check if current user is the presenter
    */
+  // SEM@812ccfc25aaf928ab97760f41c7b7c7814e36415: check whether the current user holds the presenter role (pure)
   isCurrentUserPresenter(): boolean {
     return this._collaborationService.isCurrentUserPresenter();
   }
@@ -324,6 +337,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Get the appropriate icon for the collaboration button based on current state
    */
+  // SEM@812ccfc25aaf928ab97760f41c7b7c7814e36415: return the icon name for the collaboration toggle button based on active state (pure)
   getCollaborationButtonIcon(): string {
     if (this.isCollaborating) {
       return 'stop_circle'; // End collaboration mode
@@ -334,6 +348,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   /**
    * Toggle presenter mode on/off for the current presenter
    */
+  // SEM@85fb64fd0796dc749de7b5a0bfd25d0aa102929f: toggle presenter mode on or off via the collaboration service (mutates shared state)
   togglePresenterMode(): void {
     const newState = this._collaborationService.togglePresenterMode();
     this._logger.info('Presenter mode toggled', { isActive: newState });

@@ -28,12 +28,15 @@ import { TranslocoModule } from '@jsverse/transloco';
   styleUrls: ['./help-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@6d984cf45eb9ae42a5507b92d4440679f24902af: display animated pan and zoom gesture instructions for the DFD editor
 export class HelpDialogComponent {
+  // SEM@6d984cf45eb9ae42a5507b92d4440679f24902af: inject dialog ref for the help dialog (pure)
   constructor(private _dialogRef: MatDialogRef<HelpDialogComponent>) {}
 
   /**
    * Close the dialog
    */
+  // SEM@6d984cf45eb9ae42a5507b92d4440679f24902af: close the help dialog
   onClose(): void {
     this._dialogRef.close();
   }

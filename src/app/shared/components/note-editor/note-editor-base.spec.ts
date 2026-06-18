@@ -13,6 +13,7 @@ import { NoteEditorBase } from './note-editor-base';
  * Minimal concrete subclass exercising the shared clipboard logic. It supplies
  * the abstract members the base consumes and records snackbar messages.
  */
+// SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: concrete test double implementing NoteEditorBase to record snackbar messages (pure)
 class TestNoteEditor extends NoteEditorBase {
   contentTextarea?: ElementRef<HTMLTextAreaElement>;
   markdownPreview?: ElementRef<HTMLDivElement>;
@@ -23,6 +24,7 @@ class TestNoteEditor extends NoteEditorBase {
 
   messages: { key: string; isError: boolean }[] = [];
 
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: initialize test note editor with an optional initial markdown content (pure)
   constructor(initialContent = '') {
     super();
     this.noteForm = new FormBuilder().group({ content: [initialContent] });
@@ -32,12 +34,14 @@ class TestNoteEditor extends NoteEditorBase {
     return (this.noteForm.get('content')?.value as string | undefined) || '';
   }
 
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: capture snackbar message key and error flag into the messages log (mutates shared state)
   showMessage(key: string, isError = false): void {
     this.messages.push({ key, isError });
   }
 }
 
 /** Build a fake textarea element with a controllable selection range. */
+// SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: build a fake textarea element with a controllable selection range for tests (pure)
 function fakeTextarea(value: string, start: number, end: number): HTMLTextAreaElement {
   const el = {
     value,

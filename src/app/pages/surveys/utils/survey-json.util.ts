@@ -26,6 +26,7 @@ export interface LoadSurveyJsonDeps {
  * @param onLoaded Invoked with the fetched schema on success.
  * @param onError Invoked on failure, after the error has been logged.
  */
+// SEM@bda57c14c5f510b4c12a35bf845e1041df812b78: fetch a survey JSON schema and deliver it via callbacks with lifecycle teardown (reads DB)
 export function loadSurveyJson(
   deps: LoadSurveyJsonDeps,
   surveyId: string,

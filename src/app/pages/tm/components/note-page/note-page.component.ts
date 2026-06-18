@@ -83,6 +83,7 @@ interface NoteFormValues {
   templateUrl: './note-page.component.html',
   styleUrls: ['./note-page.component.scss'],
 })
+// SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: page component for viewing and editing a threat model note with markdown support
 export class NotePageComponent
   extends NoteEditorBase
   implements OnInit, OnDestroy, AfterViewChecked
@@ -123,6 +124,7 @@ export class NotePageComponent
   readonly maxNameLength = 256;
   readonly maxDescriptionLength = 2048;
 
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: initialize the note form group with validation constraints (mutates shared state)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -153,10 +155,12 @@ export class NotePageComponent
    * Helper to conditionally apply takeUntilDestroyed
    * Returns identity operator when destroyRef is not available (tests)
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: return a takeUntilDestroyed operator, or identity when destroyRef is absent (pure)
   private untilDestroyed<T>(): MonoTypeOperatorFunction<T> {
     return this.destroyRef ? takeUntilDestroyed<T>(this.destroyRef) : identity;
   }
 
+  // SEM@c1e06937ecde01209831669d215f9ed6b624ee37: fetch note from API, set up auth and language subscriptions, load addons (reads DB)
   ngOnInit(): void {
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id') || '';
@@ -251,6 +255,7 @@ export class NotePageComponent
   /**
    * Initialize component after note data is loaded
    */
+  // SEM@3f2ef70d50160b7e609c1ffc5884f66ac1ce3264: populate form and apply edit permissions once note data is available (mutates shared state)
   private initializeAfterNoteLoaded(): void {
     this.logger.info('Note page loaded', {
       threatModelId: this.threatModelId,
@@ -266,6 +271,7 @@ export class NotePageComponent
     this.updateFormEditability();
   }
 
+  // SEM@955e86c38b8b27985a838cc5a692ed3a5fbc0eb9: remove anchor click handler and clean up mermaid viewers on teardown (mutates shared state)
   ngOnDestroy(): void {
     // Remove anchor click handler if present
     if (this.anchorClickHandler && this.markdownPreview) {
@@ -282,6 +288,7 @@ export class NotePageComponent
   /**
    * Populate form with note data
    */
+  // SEM@ca308fb03ad87332d0865bc40ee7c392e48f78a1: patch form fields from loaded note data and set initial preview mode (mutates shared state)
   private populateForm(): void {
     if (!this.note) return;
 
@@ -305,6 +312,7 @@ export class NotePageComponent
   /**
    * Update form editability based on permissions
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: enable or disable the note form based on edit permission (mutates shared state)
   private updateFormEditability(): void {
     if (this.canEdit) {
       this.noteForm.enable();
@@ -316,6 +324,7 @@ export class NotePageComponent
   /**
    * Navigate back to threat model page
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: route back to the parent threat model page
   navigateBack(): void {
     void this.router.navigate(['/tm', this.threatModelId]);
   }
@@ -323,6 +332,7 @@ export class NotePageComponent
   /**
    * Cancel and navigate back
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: discard note edits and navigate back, prompting if there are unsaved changes
   cancel(): void {
     if (this.noteForm.dirty) {
       const confirmed = window.confirm(
@@ -340,6 +350,7 @@ export class NotePageComponent
   /**
    * Save the note
    */
+  // SEM@ca308fb03ad87332d0865bc40ee7c392e48f78a1: update the note via API and navigate back on success (reads DB)
   save(): void {
     if (this.noteForm.invalid || !this.canEdit || this.isSaving) return;
 
@@ -383,6 +394,7 @@ export class NotePageComponent
   /**
    * Delete the note
    */
+  // SEM@6f6a3c38fe60c48b7e5f30344fd306519e169b05: confirm and delete the current note via API, then navigate back (reads DB)
   deleteNote(): void {
     if (!this.canEdit || !this.note) return;
 
@@ -430,6 +442,7 @@ export class NotePageComponent
   /**
    * Open metadata dialog
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the metadata dialog for the note and apply returned changes (mutates shared state)
   openMetadataDialog(): void {
     if (!this.note) return;
 
@@ -457,6 +470,7 @@ export class NotePageComponent
   /**
    * Load addons from server and filter for note type
    */
+  // SEM@d790b8bd7f1bf990d1aec2d3118089a501ee6f98: fetch addon list and filter to addons applicable to note objects (reads DB)
   private loadAddons(): void {
     this.addonService
       .list()
@@ -477,6 +491,7 @@ export class NotePageComponent
   /**
    * Gets the icon name for display, handling material-symbols: prefix
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: resolve an addon's icon name, stripping the material-symbols prefix (pure)
   getAddonIcon(addon: Addon): string {
     if (!addon.icon) {
       return 'extension';
@@ -487,6 +502,7 @@ export class NotePageComponent
   /**
    * Invoke addon for this note
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: dispatch an addon dialog for the current note and handle the result
   invokeAddon(addon: Addon): void {
     if (!this.threatModel || !this.note) {
       this.logger.error('Cannot invoke addon: no threat model or note loaded');
@@ -543,6 +559,7 @@ export class NotePageComponent
   /**
    * Toggle preview mode
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: toggle markdown preview mode on and off (mutates shared state)
   togglePreview(): void {
     this.previewMode = !this.previewMode;
   }
@@ -550,6 +567,7 @@ export class NotePageComponent
   /**
    * Handle textarea selection changes
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: track whether the user has an active text selection in the editor (mutates shared state)
   onTextareaSelect(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     this.hasSelection = textarea.selectionStart !== textarea.selectionEnd;
@@ -558,6 +576,7 @@ export class NotePageComponent
   /**
    * Show a snackbar message
    */
+  // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: display a localized snackbar notification, styled as error if requested
   showMessage(key: string, isError = false): void {
     const message = this.translocoService.translate(key);
     this.snackBar.open(message, '', {

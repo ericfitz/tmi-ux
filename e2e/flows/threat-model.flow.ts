@@ -4,12 +4,14 @@ import { TmEditPage } from '../pages/tm-edit.page';
 import { CreateTmDialog } from '../dialogs/create-tm.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
+// SEM@13b76c5ab4901ec8f70a703f94076e186a33c951: E2E page-object facade orchestrating threat model CRUD flows
 export class ThreatModelFlow {
   private dashboardPage: DashboardPage;
   private tmEditPage: TmEditPage;
   private createTmDialog: CreateTmDialog;
   private deleteConfirmDialog: DeleteConfirmDialog;
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: build all page-object and dialog handles for the threat model flow (pure)
   constructor(private page: Page) {
     this.dashboardPage = new DashboardPage(page);
     this.tmEditPage = new TmEditPage(page);
@@ -17,6 +19,7 @@ export class ThreatModelFlow {
     this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
+  // SEM@317e7eace5680fd59d8903cf838f9255699f65b7: build a threat model from the dashboard and navigate to the edit page
   async createFromDashboard(name: string) {
     await this.page.goto('/dashboard');
     await this.dashboardPage.waitForReady();
@@ -26,11 +29,13 @@ export class ThreatModelFlow {
     await this.page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
   }
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: navigate to a threat model's edit page by clicking its dashboard card
   async openFromDashboard(name: string) {
     await this.dashboardPage.tmCard(name).click();
     await this.page.waitForURL(/\/tm\/[a-f0-9-]+(\?.*)?$/, { timeout: 10000 });
   }
 
+  // SEM@24593ac1fd9e4021fa8762c985f77832560c8ebb: delete a threat model via the dashboard delete button and confirm dialog
   async deleteFromDashboard(name: string) {
     await this.dashboardPage.tmDeleteButton(name).click();
     await this.deleteConfirmDialog.confirmDeletion();
@@ -45,6 +50,7 @@ export class ThreatModelFlow {
    * Uses the browser's authenticated fetch so cookies/bearer tokens
    * flow automatically.
    */
+  // SEM@13b76c5ab4901ec8f70a703f94076e186a33c951: delete a threat model by name using the authenticated browser fetch API
   async deleteByNameViaApi(name: string): Promise<void> {
     await this.page.evaluate(async (tmName: string) => {
       const list = await fetch(

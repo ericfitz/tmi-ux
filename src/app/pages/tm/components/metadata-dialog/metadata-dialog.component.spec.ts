@@ -11,6 +11,7 @@ import type { Metadata } from '../../models/threat-model.model';
 describe('MetadataDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
+  // SEM@417a9151d82d6abf834b61ca217dace46154b149: construct and initialize MetadataDialogComponent with given data for tests (pure)
   function build(data: MetadataDialogData): MetadataDialogComponent {
     const component = new MetadataDialogComponent(mockDialogRef as never, data);
     component.ngOnInit();

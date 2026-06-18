@@ -26,6 +26,7 @@ export interface X6GraphEvents {
  * Centralized event management and coordination for X6 graph operations
  */
 @Injectable()
+// SEM@0c4b0e63a2f170695121de276aae1d8887c94516: bridge X6 graph events to typed RxJS observables for the DFD domain
 export class X6EventHandlers {
   private eventSubjects: { [K in keyof X6GraphEvents]: Subject<X6GraphEvents[K]> } = {
     nodeAdded: new Subject(),
@@ -40,6 +41,7 @@ export class X6EventHandlers {
     validationError: new Subject(),
   };
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: inject logger, core operations, and edge service dependencies
   constructor(
     private logger: LoggerService,
     private x6CoreOps: InfraX6CoreOperationsService,
@@ -49,6 +51,7 @@ export class X6EventHandlers {
   /**
    * Get observable for specific event type
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a typed observable stream for a named graph event (pure)
   getEvent<K extends keyof X6GraphEvents>(eventType: K) {
     return this.eventSubjects[eventType].asObservable();
   }
@@ -56,6 +59,7 @@ export class X6EventHandlers {
   /**
    * Emit an event
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: publish a typed graph event to the corresponding RxJS subject (mutates shared state)
   emitEvent<K extends keyof X6GraphEvents>(eventType: K, data: X6GraphEvents[K]): void {
     this.eventSubjects[eventType].next(data);
     this.logger.info(`Event emitted: ${eventType}`, data);
@@ -64,6 +68,7 @@ export class X6EventHandlers {
   /**
    * Setup core graph event listeners
    */
+  // SEM@8237d8e74353eda527b22553a6566e865318bff6: register node, edge, and selection lifecycle event handlers on the graph (mutates shared state)
   setupGraphEvents(graph: Graph): void {
     // Node events
     graph.on('node:added', ({ node }) => {
@@ -127,6 +132,7 @@ export class X6EventHandlers {
   /**
    * Setup connection validation events
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: register edge connection validation and lifecycle event handlers on the graph (mutates shared state)
   setupConnectionEvents(graph: Graph): void {
     // Connection validation
     graph.on('edge:connecting', ({ edge }: { edge: Edge }) => {
@@ -185,6 +191,7 @@ export class X6EventHandlers {
   /**
    * Setup interaction events
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: register mouse, drag, and resize interaction event handlers on the graph (mutates shared state)
   setupInteractionEvents(graph: Graph): void {
     // Mouse events
     graph.on('blank:click', ({ e: _e }) => {
@@ -271,6 +278,7 @@ export class X6EventHandlers {
   /**
    * Setup error handling events
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register graph error and cell validation failure event handlers (mutates shared state)
   setupErrorEvents(graph: Graph): void {
     // Handle graph errors
     graph.on('graph:error', ({ error }: { error: unknown }) => {
@@ -297,6 +305,7 @@ export class X6EventHandlers {
   /**
    * Setup performance monitoring events
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: register render and batch operation performance monitoring event handlers (mutates shared state)
   setupPerformanceEvents(graph: Graph): void {
     graph.on('render:start', () => {
       this.logger.debugComponent('X6EventHandlers', 'Render started');
@@ -321,6 +330,7 @@ export class X6EventHandlers {
   /**
    * Setup all event handlers
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register all graph event handler groups on the graph in one call (mutates shared state)
   setupAllEvents(graph: Graph): void {
     this.setupGraphEvents(graph);
     this.setupConnectionEvents(graph);
@@ -334,6 +344,7 @@ export class X6EventHandlers {
   /**
    * Cleanup event listeners
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: complete and dispose all graph event subjects, releasing subscriptions (mutates shared state)
   cleanup(): void {
     Object.values(this.eventSubjects).forEach(subject => {
       subject.complete();
@@ -344,6 +355,7 @@ export class X6EventHandlers {
   /**
    * Get event statistics
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return observer counts per graph event type (pure)
   getEventStats(): Record<string, number> {
     const stats: Record<string, number> = {};
 
@@ -358,6 +370,7 @@ export class X6EventHandlers {
   /**
    * Enable/disable event logging
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: enable or disable event logging verbosity for graph events (mutates shared state)
   setEventLogging(enabled: boolean): void {
     if (enabled) {
       this.logger.info('Event logging enabled');
@@ -371,6 +384,7 @@ export class X6EventHandlers {
    * Basic connection validation (simplified version)
    * This would typically delegate to X6EdgeOperations
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a DFD edge connection between two nodes against shape rules (pure)
   private validateConnection(sourceNode: Node, targetNode: Node): boolean {
     const sourceShape = sourceNode.shape;
     const targetShape = targetNode.shape;

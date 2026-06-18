@@ -4,6 +4,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 
+// SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: redirect authenticated users to their role-based landing page (pure)
 export const homeGuard: CanActivateFn = (_route, _state) => {
   const authService = inject(AuthService);
   const router = inject(Router);

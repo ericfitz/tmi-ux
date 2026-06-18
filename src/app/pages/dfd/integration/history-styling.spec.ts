@@ -47,6 +47,7 @@ import { DFD_STYLING, NodeType } from '../constants/styling-constants';
 import { StylingVerifier, TestHelpers } from './test-helpers/styling-helpers';
 
 // Mock event handlers service to avoid Angular Material dependencies
+// SEM@19c70fdb173818dda68c02efbfeac2d382411f98: stub DfdEventHandlersService for testing without Angular Material dependencies (pure)
 class MockDfdEventHandlersService {
   selectedCells$ = { subscribe: vi.fn() };
   initialize = vi.fn();
@@ -71,6 +72,7 @@ class MockDfdEventHandlersService {
 }
 
 // Mock edge service to avoid Angular Material dependencies
+// SEM@19c70fdb173818dda68c02efbfeac2d382411f98: stub DfdEdgeService edge-handling and validation methods for tests (pure)
 class MockDfdEdgeService {
   handleEdgeAdded = vi.fn();
   handleEdgeVerticesChanged = vi.fn();
@@ -555,6 +557,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
   });
 
   // Helper functions
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build and add a typed diagram node at a given position for testing (mutates shared state)
   function createTestNode(
     nodeType: NodeType,
     label: string,
@@ -573,6 +576,7 @@ describe.skip('DFD Integration - History and Styling Interaction', () => {
     return adapter.addNode(diagramNode);
   }
 
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build and add a diagram edge between two nodes for testing (mutates shared state)
   function createTestEdge(source: Node, target: Node): Edge {
     const edgeInfo = EdgeInfo.create({
       id: `test-edge-${Date.now()}-${Math.random()}`,

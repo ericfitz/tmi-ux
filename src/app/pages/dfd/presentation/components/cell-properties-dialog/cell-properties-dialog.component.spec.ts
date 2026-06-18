@@ -13,6 +13,7 @@ describe('CellPropertiesDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
   /** Build an X6-cell stub whose toJSON returns the given object. */
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a minimal X6 cell stub that serializes to a given JSON object (pure)
   function cellStub(json: object): Cell {
     return { toJSON: () => json } as unknown as Cell;
   }

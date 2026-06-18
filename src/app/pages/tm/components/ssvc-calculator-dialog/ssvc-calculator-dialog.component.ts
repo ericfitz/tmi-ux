@@ -39,6 +39,7 @@ import {
   styleUrl: './ssvc-calculator-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: dialog for stepping through SSVC decision points and computing a prioritization decision
 export class SsvcCalculatorDialogComponent implements OnInit {
   /** All decision points for template rendering */
   decisionPoints: SsvcDecisionPoint[] = SSVC_DECISION_POINTS;
@@ -64,6 +65,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   /** Total number of decision point steps (not counting summary) */
   readonly totalSteps = SSVC_DECISION_POINTS.length;
 
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: inject dialog ref, data, and services for SSVC calculator (mutates shared state)
   constructor(
     public dialogRef: MatDialogRef<SsvcCalculatorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: SsvcCalculatorDialogData,
@@ -73,6 +75,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
     private _destroyRef: DestroyRef,
   ) {}
 
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: subscribe to text direction and initialize selections from an existing SSVC entry (mutates shared state)
   ngOnInit(): void {
     // Watch for text direction changes
     this._languageService.direction$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(dir => {
@@ -97,6 +100,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Handle value selection on the current step */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: record decision point selection and clear downstream steps on change (mutates shared state)
   onValueSelect(shortName: string): void {
     const previousValue = this.selections[this.currentStep];
     this.selections[this.currentStep] = shortName;
@@ -112,6 +116,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Advance to the next step */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: advance the wizard to the next SSVC decision point step (mutates shared state)
   next(): void {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
@@ -119,6 +124,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Go back to the previous step */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: navigate the wizard to the previous SSVC decision point step (mutates shared state)
   back(): void {
     if (this.currentStep > 0) {
       this.currentStep--;
@@ -126,6 +132,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Navigate directly to a specific step (only if that step or earlier steps are complete) */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: navigate directly to a wizard step if it is reachable (mutates shared state)
   goToStep(index: number): void {
     // Allow navigating to any step up to and including the first incomplete step
     if (index <= this._firstIncompleteStep()) {
@@ -134,6 +141,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Apply the result and close the dialog */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: build SSVC vector from selections and close dialog with the prioritization result
   apply(): void {
     if (!this.isAllComplete || !this.decision) return;
 
@@ -156,17 +164,20 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Close the dialog without saving */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: dismiss the dialog without saving any SSVC selections (pure)
   cancel(): void {
     this.dialogRef.close();
   }
 
   /** Find the index of the first step without a selection (public for template access) */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: return index of the first unanswered decision point step (pure)
   _firstIncompleteStep(): number {
     const idx = this.selections.findIndex(s => s === null);
     return idx === -1 ? this.totalSteps : idx;
   }
 
   /** Recalculate decision from current selections */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: compute the SSVC supplier decision from current selections and refresh UI (mutates shared state)
   private _recalculate(): void {
     if (this.isAllComplete) {
       this.decision = getSupplierDecision(
@@ -183,6 +194,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Map decision to CSS class for color coding */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: map the SSVC decision outcome to its CSS color class (mutates shared state)
   private _updateDecisionClass(): void {
     switch (this.decision) {
       case 'Defer':
@@ -203,6 +215,7 @@ export class SsvcCalculatorDialogComponent implements OnInit {
   }
 
   /** Initialize selections from an existing SSVC entry */
+  // SEM@e7227d9b60843c76e0c78548d18a5661c290d76f: populate selections and switch to edit mode from an existing SSVC score (mutates shared state)
   private _initializeFromEntry(entry: SSVCScore): void {
     const parsed = parseSsvcVector(entry.vector);
     if (!parsed) {

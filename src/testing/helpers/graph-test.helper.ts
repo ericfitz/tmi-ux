@@ -10,6 +10,7 @@ import { Graph, Node, Edge } from '@antv/x6';
  * @param nodeId The ID of the node to check for
  * @returns True if the graph has a node with the specified ID, false otherwise
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a graph contains a node with the given ID (pure)
 export function hasNode(graph: Graph, nodeId: string): boolean {
   const node = graph.getCellById(nodeId);
   return node !== null && node.isNode();
@@ -21,6 +22,7 @@ export function hasNode(graph: Graph, nodeId: string): boolean {
  * @param edgeId The ID of the edge to check for
  * @returns True if the graph has an edge with the specified ID, false otherwise
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a graph contains an edge with the given ID (pure)
 export function hasEdge(graph: Graph, edgeId: string): boolean {
   const edge = graph.getCellById(edgeId);
   return edge !== null && edge.isEdge();
@@ -31,6 +33,7 @@ export function hasEdge(graph: Graph, edgeId: string): boolean {
  * @param graph The graph to check
  * @returns The number of nodes in the graph
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the total number of nodes in a graph (pure)
 export function getNodeCount(graph: Graph): number {
   return graph.getNodes().length;
 }
@@ -40,6 +43,7 @@ export function getNodeCount(graph: Graph): number {
  * @param graph The graph to check
  * @returns The number of edges in the graph
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the total number of edges in a graph (pure)
 export function getEdgeCount(graph: Graph): number {
   return graph.getEdges().length;
 }
@@ -51,6 +55,7 @@ export function getEdgeCount(graph: Graph): number {
  * @param targetId The ID of the target node
  * @returns True if the graph has a connection from the source node to the target node, false otherwise
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a graph has a directed edge from source node to target node (pure)
 export function hasConnection(graph: Graph, sourceId: string, targetId: string): boolean {
   const edges = graph.getEdges();
   return edges.some(
@@ -64,6 +69,7 @@ export function hasConnection(graph: Graph, sourceId: string, targetId: string):
  * @param label The label to check for
  * @returns True if the graph has a node with the specified label, false otherwise
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a graph contains a node whose label matches the given text (pure)
 export function hasNodeWithLabel(graph: Graph, label: string): boolean {
   const nodes = graph.getNodes();
   return nodes.some(node => {
@@ -79,6 +85,7 @@ export function hasNodeWithLabel(graph: Graph, label: string): boolean {
  * @param nodeId The ID of the node to check for selection
  * @returns True if the node is selected, false otherwise
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a node is in the selected state within a graph (pure)
 export function isNodeSelected(graph: Graph, nodeId: string): boolean {
   const node = graph.getCellById(nodeId) as Node;
   if (!node || !node.isNode()) {
@@ -97,6 +104,7 @@ export function isNodeSelected(graph: Graph, nodeId: string): boolean {
  * @param nodeId The ID of the node to get
  * @returns The node with the specified ID, or null if not found
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a graph node by its ID, returning null if absent (pure)
 export function getNodeById(graph: Graph, nodeId: string): Node | null {
   const node = graph.getCellById(nodeId);
   return node && node.isNode() ? node : null;
@@ -108,6 +116,7 @@ export function getNodeById(graph: Graph, nodeId: string): Node | null {
  * @param edgeId The ID of the edge to get
  * @returns The edge with the specified ID, or null if not found
  */
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch a graph edge by its ID, returning null if absent (pure)
 export function getEdgeById(graph: Graph, edgeId: string): Edge | null {
   const edge = graph.getCellById(edgeId);
   return edge && edge.isEdge() ? edge : null;

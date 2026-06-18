@@ -21,10 +21,12 @@ import { buildHttpParams } from '@app/shared/utils/http-params.util';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@ec780ca190b16e9c25b3170baee0b36ce8194495: manage admin group CRUD and membership via the API, caching groups in a reactive stream
 export class GroupAdminService {
   private groupsSubject$ = new BehaviorSubject<AdminGroup[]>([]);
   public groups$: Observable<AdminGroup[]> = this.groupsSubject$.asObservable();
 
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: inject API service and logger dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -33,6 +35,7 @@ export class GroupAdminService {
   /**
    * List all groups with optional filtering
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: fetch admin groups with optional filter and update the cached groups stream (reads DB)
   public list(filter?: GroupFilter): Observable<ListGroupsResponse> {
     const params = buildHttpParams(filter);
     return this.apiService.get<ListGroupsResponse>('admin/groups', params).pipe(
@@ -53,6 +56,7 @@ export class GroupAdminService {
   /**
    * Get a specific group by internal UUID
    */
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: fetch a single admin group by internal UUID from the API (reads DB)
   public get(internal_uuid: string): Observable<AdminGroup> {
     return this.apiService.get<AdminGroup>(`admin/groups/${internal_uuid}`).pipe(
       tap(group => {
@@ -68,6 +72,7 @@ export class GroupAdminService {
   /**
    * Create a new provider-independent group (TMI provider)
    */
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: create a TMI-managed group via the API and refresh the cached groups list (reads DB)
   public create(request: CreateGroupRequest): Observable<AdminGroup> {
     return this.apiService
       .post<AdminGroup>('admin/groups', request as unknown as Record<string, unknown>)
@@ -87,6 +92,7 @@ export class GroupAdminService {
   /**
    * List members of a group
    */
+  // SEM@ec780ca190b16e9c25b3170baee0b36ce8194495: fetch paginated members of a group from the API (reads DB)
   public listMembers(
     internal_uuid: string,
     limit?: number,
@@ -116,6 +122,7 @@ export class GroupAdminService {
   /**
    * Add a member to a group
    */
+  // SEM@3909264b66e2522d047d4a908c09e2a1d7a3afb8: add a user or group member to an admin group via the API (reads DB)
   public addMember(internal_uuid: string, request: AddGroupMemberRequest): Observable<GroupMember> {
     return this.apiService
       .post<GroupMember>(
@@ -139,6 +146,7 @@ export class GroupAdminService {
   /**
    * Remove a member from a group
    */
+  // SEM@42b37b76c1bd3acbcdef0b5996b338e0c647783a: delete a member from an admin group by UUID and subject type via the API (reads DB)
   public removeMember(
     internal_uuid: string,
     member_uuid: string,
@@ -168,6 +176,7 @@ export class GroupAdminService {
    * Deletes a TMI-managed group and handles threat model cleanup.
    * Protected groups like 'everyone' cannot be deleted.
    */
+  // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: delete an admin group by UUID and refresh the cached groups list (reads DB)
   public delete(internal_uuid: string): Observable<void> {
     return this.apiService.delete<void>(`admin/groups/${internal_uuid}`).pipe(
       tap(() => {

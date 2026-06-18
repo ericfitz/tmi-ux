@@ -12,6 +12,7 @@ describe('StylePanelComponent - Label Position', () => {
     component = new StylePanelComponent(mockCdr);
   });
 
+  // SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: build a default node CellStyleInfo fixture with optional overrides (pure)
   function makeNodeCell(overrides: Partial<CellStyleInfo> = {}): CellStyleInfo {
     return {
       cellId: 'node-1',
@@ -27,6 +28,7 @@ describe('StylePanelComponent - Label Position', () => {
     };
   }
 
+  // SEM@76e72cb799162ca7a0e8cabbd6c432a6194fd6dc: set selected cells on the component and trigger ngOnChanges (mutates shared state)
   function triggerSelectionChange(cells: CellStyleInfo[]): void {
     component.selectedCells = cells;
     component.ngOnChanges({

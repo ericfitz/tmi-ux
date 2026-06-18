@@ -13,11 +13,13 @@ import { TOOL_HELPERS } from '../../constants/tool-constants';
 /**
  * Main styling verification class with static methods for testing
  */
+// SEM@033ebba3a4056ceb0b8d1a1e3c63450de42861d0: validate DFD cell styling attributes against expected constants (pure)
 export class StylingVerifier {
   /**
    * Verify a cell has default (clean) styling with no visual effects
    * This is critical for verifying restored cells after undo operations
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a cell has default styling with no tools or effects (pure)
   static verifyCleanStyling(cell: Cell, nodeType: NodeType | 'edge'): void {
     if (nodeType === 'edge') {
       this.verifyCleanEdgeStyling(cell as Edge);
@@ -32,6 +34,7 @@ export class StylingVerifier {
   /**
    * Verify a node has clean default styling
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a node has default stroke, fill, and no filter effects (pure)
   static verifyCleanNodeStyling(node: Node, nodeType: NodeType): void {
     // Verify shape-specific defaults
     const expectedStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType);
@@ -62,6 +65,7 @@ export class StylingVerifier {
   /**
    * Verify an edge has clean default styling
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate an edge has default stroke and no filter effects (pure)
   static verifyCleanEdgeStyling(edge: Edge): void {
     // Verify default edge styling
     expect(edge.attr('line/stroke')).toBe(DFD_STYLING.EDGES.DEFAULT_STROKE);
@@ -74,6 +78,7 @@ export class StylingVerifier {
   /**
    * Verify a cell has correct selection styling applied
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a cell has correct selection styling applied (pure)
   static verifySelectionStyling(cell: Cell, nodeType: NodeType | 'edge'): void {
     if (nodeType === 'edge') {
       this.verifyEdgeSelectionStyling(cell as Edge);
@@ -85,6 +90,7 @@ export class StylingVerifier {
   /**
    * Verify a node has correct selection styling
    */
+  // SEM@033ebba3a4056ceb0b8d1a1e3c63450de42861d0: validate a node has the expected selection filter attribute (pure)
   static verifyNodeSelectionStyling(node: Node, nodeType: NodeType): void {
     const expectedFilter = DFD_STYLING_HELPERS.getSelectionFilter(nodeType);
 
@@ -105,6 +111,7 @@ export class StylingVerifier {
   /**
    * Verify an edge has correct selection styling
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate an edge has correct selection filter and stroke width (pure)
   static verifyEdgeSelectionStyling(edge: Edge): void {
     const expectedFilter = DFD_STYLING_HELPERS.getSelectionFilter('edge');
     expect(edge.attr('line/filter')).toBe(expectedFilter);
@@ -114,6 +121,7 @@ export class StylingVerifier {
   /**
    * Verify a cell has correct hover styling applied
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a cell has the expected hover filter applied (pure)
   static verifyHoverStyling(cell: Cell, nodeType: NodeType | 'edge'): void {
     const expectedFilter = DFD_STYLING_HELPERS.getHoverFilter(nodeType);
 
@@ -129,6 +137,7 @@ export class StylingVerifier {
   /**
    * Verify a cell has correct creation effect styling with specific opacity
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a cell has the expected creation fade filter at given opacity (pure)
   static verifyCreationEffect(
     cell: Cell,
     nodeType: NodeType | 'edge',
@@ -154,6 +163,7 @@ export class StylingVerifier {
   /**
    * Verify a cell has the correct tools applied
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a cell has all required interaction tools attached (pure)
   static verifyToolsPresent(cell: Cell, cellType: 'node' | 'edge'): void {
     expect(cell.hasTools()).toBe(true);
 
@@ -174,6 +184,7 @@ export class StylingVerifier {
   /**
    * Verify a specific tool is present with correct configuration
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a named tool is present with configuration matching constants (pure)
   static verifySpecificTool(cell: Cell, toolName: string, cellType: 'node' | 'edge'): void {
     const actualTools = cell.getTools();
     const foundTool = actualTools.items.find((tool: any) => tool.name === toolName);
@@ -198,6 +209,7 @@ export class StylingVerifier {
   /**
    * Verify Z-index values match expected constants
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a cell's z-index matches the expected constant for its type (pure)
   static verifyZIndex(cell: Cell, nodeType: NodeType | 'edge'): void {
     const actualZIndex = cell.getZIndex();
 
@@ -214,6 +226,7 @@ export class StylingVerifier {
   /**
    * Verify port configuration matches constants
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a node's port count, positions, and styling against constants (pure)
   static verifyPortConfiguration(node: Node): void {
     const ports = node.getPorts();
 
@@ -244,6 +257,7 @@ export class StylingVerifier {
   /**
    * Verify default node styling matches constants
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate a node has default styling, z-index, ports, and font (pure)
   static verifyDefaultNodeStyling(node: Node, nodeType: NodeType): void {
     // Verify basic styling
     this.verifyCleanNodeStyling(node, nodeType);
@@ -262,6 +276,7 @@ export class StylingVerifier {
   /**
    * Verify default edge styling matches constants
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: validate an edge has default styling, arrowhead, and label (pure)
   static verifyDefaultEdgeStyling(edge: Edge): void {
     // Verify basic styling
     this.verifyCleanEdgeStyling(edge);
@@ -275,10 +290,12 @@ export class StylingVerifier {
 /**
  * Test utility functions for common operations
  */
+// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: utility class of static test helpers for timing and event creation (pure)
 export class TestHelpers {
   /**
    * Get node type from a cell (with fallback)
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: resolve node type from a cell with fallback to unknown (pure)
   static getNodeTypeFromCell(cell: Cell): NodeType | 'edge' {
     if (cell.isEdge()) return 'edge';
 
@@ -290,6 +307,7 @@ export class TestHelpers {
   /**
    * Wait for animation to complete
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: delay until a full animation cycle has elapsed (pure)
   static async waitForAnimationComplete(
     durationMs: number = DFD_STYLING.CREATION.FADE_DURATION_MS,
   ): Promise<void> {
@@ -299,6 +317,7 @@ export class TestHelpers {
   /**
    * Wait for a specific number of animation frames
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: delay for a given number of animation frame intervals (pure)
   static async waitForAnimationFrames(frameCount: number): Promise<void> {
     const frameTime = DFD_STYLING.CREATION.ANIMATION_FRAME_INTERVAL;
     return new Promise(resolve => setTimeout(resolve, frameTime * frameCount + 10));
@@ -307,6 +326,7 @@ export class TestHelpers {
   /**
    * Create a mock event for testing interactions
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a bubbling DOM event with additional properties for testing (pure)
   static createMockEvent(type: string, properties: Record<string, any> = {}): Event {
     const event = new Event(type, { bubbles: true, cancelable: true });
     Object.assign(event, properties);
@@ -319,12 +339,14 @@ export class TestHelpers {
  */
 declare global {
   interface Matchers<R> {
+    // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: declare custom matcher type extending Vitest/Jest Matchers interface (pure)
     toBeOneOf(expected: any[]): R;
   }
 }
 
 // Extend expect with custom matcher
 expect.extend({
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate a value is a member of an expected array (pure)
   toBeOneOf(received: any, expected: any[]) {
     const pass = expected.includes(received);
     return {

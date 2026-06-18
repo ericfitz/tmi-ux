@@ -39,6 +39,7 @@ export interface ResyncResult {
 }
 
 @Injectable()
+// SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: debounce and retry diagram re-fetch from server to resync stale graph state
 export class AppDiagramResyncService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _resyncTrigger$ = new Subject<void>();
@@ -61,6 +62,7 @@ export class AppDiagramResyncService implements OnDestroy {
   public readonly resyncStarted$ = this._resyncStarted$.asObservable();
   public readonly resyncCompleted$ = this._resyncCompleted$.asObservable();
 
+  // SEM@1a438c01a7162fd5c1fe5019e2c6f72f6e4a0fb8: register dependencies and initialize the debounced resync pipeline
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
@@ -75,6 +77,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Initialize the service with diagram context
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: register diagram context (ID, threat model, graph) for resync operations (mutates shared state)
   initialize(
     diagramId: string,
     threatModelId: string,
@@ -96,6 +99,7 @@ export class AppDiagramResyncService implements OnDestroy {
    * Trigger a debounced resynchronization
    * Multiple calls within the debounce window will be collapsed into a single resync
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: schedule a debounced diagram resync, collapsing rapid calls into one (mutates shared state)
   triggerResync(): void {
     if (
       !this._currentDiagramId ||
@@ -114,6 +118,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Get current resync configuration
    */
+  // SEM@f5160ea345376fd2280db5417c273a12a4e3434f: return a copy of the current resync debounce and retry configuration (pure)
   getConfig(): ResyncConfig {
     return { ...this._config };
   }
@@ -121,6 +126,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Update resync configuration
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: merge partial resync configuration overrides into the service config (mutates shared state)
   updateConfig(config: Partial<ResyncConfig>): void {
     Object.assign(this._config, config);
     this.logger.debugComponent(
@@ -133,6 +139,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Check if resync is currently in progress
    */
+  // SEM@f5160ea345376fd2280db5417c273a12a4e3434f: return whether a diagram resync operation is currently running (pure)
   isResyncInProgress(): boolean {
     return this._isResyncInProgress;
   }
@@ -140,6 +147,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Setup the debounced resync pipeline
    */
+  // SEM@f5160ea345376fd2280db5417c273a12a4e3434f: wire debounced resync pipeline from trigger stream to retry-aware execution (mutates shared state)
   private _setupDebouncedResync(): void {
     this._resyncTrigger$
       .pipe(
@@ -166,6 +174,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Perform resynchronization with retry logic
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: execute diagram resync guarding against concurrent runs, with retry on failure
   private _performResyncWithRetries(): Observable<ResyncResult> {
     if (this._isResyncInProgress) {
       this.logger.debugComponent(
@@ -185,6 +194,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Retry resync operation with exponential backoff
    */
+  // SEM@f5160ea345376fd2280db5417c273a12a4e3434f: retry a failed resync with exponential backoff up to the configured attempt limit
   private _retryResync(error: any, attempt: number): Observable<ResyncResult> {
     if (attempt >= this._config.maxRetries) {
       this.logger.error('Resync failed after maximum retries', {
@@ -212,6 +222,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Perform the actual resynchronization
    */
+  // SEM@4bb91c7e90f5fe785639bc0673bd800dcfb4628b: fetch latest diagram from server and apply it to the local graph (reads DB, mutates shared state)
   private _performResync(): Observable<ResyncResult> {
     if (
       !this._currentDiagramId ||
@@ -263,6 +274,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Update the local diagram with fetched data without triggering WebSocket operations
    */
+  // SEM@5e1fd6e6ac2d9a2f579856ae3da966256fa3610e: replace graph cells with server data without triggering outbound WebSocket operations (mutates shared state)
   private _updateLocalDiagram(diagram: any): Observable<ResyncResult> {
     return new Observable<ResyncResult>(observer => {
       try {
@@ -329,6 +341,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Reset the service state
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: clear all diagram context and resync in-progress state (mutates shared state)
   reset(): void {
     this._currentDiagramId = null;
     this._currentThreatModelId = null;
@@ -341,6 +354,7 @@ export class AppDiagramResyncService implements OnDestroy {
   /**
    * Cleanup
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: complete destroy subject to unsubscribe all service observables on destruction
   ngOnDestroy(): void {
     this.logger.info('Destroying AppDiagramResyncService');
     this._destroy$.next();

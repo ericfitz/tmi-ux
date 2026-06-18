@@ -24,12 +24,14 @@ interface SaveErrorNotification {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: dispatch user-visible error and connection snackbar notifications with spam prevention
 export class NotificationService {
   // Track shown notifications to prevent spam
   private _shownNotifications = new Set<string>();
   private _lastConnectionErrorTime?: Date;
   private _connectionErrorCooldown = 30000; // 30 seconds
 
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: inject snack bar and logger dependencies
   constructor(
     private snackBar: MatSnackBar,
     private logger: LoggerService,
@@ -41,6 +43,7 @@ export class NotificationService {
    * @param context Additional context about what was being saved
    * @param retryAction Optional retry function
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: notify the user of a save failure with server error detail and optional retry
   showSaveError(
     error: HttpErrorResponse | Error,
     context: string = 'data',
@@ -79,6 +82,7 @@ export class NotificationService {
    * @param isServerError Whether this is a server connectivity issue vs general network
    * @param retryAction Optional retry function
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: notify the user of a connectivity failure with cooldown-based spam prevention
   showConnectionError(isServerError: boolean = true, retryAction?: () => void): void {
     const now = new Date();
 
@@ -119,6 +123,7 @@ export class NotificationService {
   /**
    * Show connection restored notification
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: notify the user that the connection is restored (mutates shared state)
   showConnectionRestored(): void {
     this.logger.debugComponent('Notification', 'Showing connection restored notification');
 
@@ -138,6 +143,7 @@ export class NotificationService {
    * @param message Success message to display
    * @param duration Duration in milliseconds (default 3000)
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: dispatch a transient success notification to the user (mutates shared state)
   showSuccess(message: string, duration: number = 3000): void {
     this.logger.debugComponent('Notification', 'Showing success notification', { message });
 
@@ -154,6 +160,7 @@ export class NotificationService {
    * @param message Warning message to display
    * @param duration Duration in milliseconds (default 5000)
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: dispatch a transient warning notification to the user (mutates shared state)
   showWarning(message: string, duration: number = 5000): void {
     this.logger.debugComponent('Notification', 'Showing warning notification', { message });
 
@@ -170,6 +177,7 @@ export class NotificationService {
    * @param fieldName Name of the field with validation error
    * @param errorMessage Validation error message
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: dispatch a form field validation error notification to the user (mutates shared state)
   showValidationError(fieldName: string, errorMessage: string): void {
     const message = `${fieldName}: ${errorMessage}`;
 
@@ -189,6 +197,7 @@ export class NotificationService {
   /**
    * Dismiss all current notifications
    */
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: dismiss all currently visible snackbar notifications (mutates shared state)
   dismissAll(): void {
     this.snackBar.dismiss();
   }
@@ -200,6 +209,7 @@ export class NotificationService {
    * @param retryAction Optional retry function
    * @returns SaveErrorNotification configuration
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: build a save-error notification config from an HTTP or JS error (pure)
   private createSaveErrorNotification(
     error: Error | HttpErrorResponse,
     context: string,
@@ -231,6 +241,7 @@ export class NotificationService {
   /**
    * Map an HTTP error status to a user-facing title and message.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: map an HTTP error status to a user-facing title and message (pure)
   private getHttpErrorDetails(error: HttpErrorResponse): { title: string; message: string } {
     const STATUS_MAP: Record<number, { title: string; message: string | null }> = {
       400: { title: 'Validation Error', message: 'Please check your input and try again' },
@@ -283,6 +294,7 @@ export class NotificationService {
   /**
    * Map a JavaScript Error to a user-facing title and message.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: map a JavaScript Error to a user-facing title and message (pure)
   private getJsErrorDetails(error: Error): { title: string; message: string } {
     if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
       return {

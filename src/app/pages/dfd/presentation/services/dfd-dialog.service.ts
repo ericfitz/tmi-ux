@@ -53,13 +53,16 @@ import {
  * consumes the confirmation result directly as a boolean.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: dispatch all DFD-owned dialogs through a single MatDialog facade
 export class DfdDialogService {
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: inject MatDialog dependency (pure)
   constructor(private dialog: MatDialog) {}
 
   /**
    * Open the metadata-loss confirmation dialog used before deleting cells.
    * Returns the mapped afterClosed() observable — true if the user confirmed.
    */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open a deletion confirmation dialog and return an observable boolean result
   confirmDeletion(): Observable<boolean> {
     const dialogRef = this.dialog.open<
       ConfirmActionDialogComponent,
@@ -82,6 +85,7 @@ export class DfdDialogService {
   }
 
   /** Open the diagram history dialog. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the diagram history dialog and return its dialog reference
   openHistory(data: HistoryDialogData): MatDialogRef<HistoryDialogComponent> {
     return this.dialog.open<HistoryDialogComponent, HistoryDialogData>(HistoryDialogComponent, {
       width: '800px',
@@ -91,6 +95,7 @@ export class DfdDialogService {
   }
 
   /** Open the graph data inspector dialog. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the graph data inspector dialog and return its dialog reference
   openGraphData(data: GraphDataDialogData): MatDialogRef<GraphDataDialogComponent> {
     return this.dialog.open<GraphDataDialogComponent, GraphDataDialogData>(
       GraphDataDialogComponent,
@@ -103,6 +108,7 @@ export class DfdDialogService {
   }
 
   /** Open the DFD help dialog. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the DFD help dialog and return its dialog reference
   openHelp(): MatDialogRef<HelpDialogComponent> {
     return this.dialog.open<HelpDialogComponent>(HelpDialogComponent, {
       width: '800px',
@@ -112,6 +118,7 @@ export class DfdDialogService {
   }
 
   /** Open the clipboard contents dialog. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the clipboard contents dialog and return its dialog reference
   openClipboard(data: ClipboardDialogData): MatDialogRef<ClipboardDialogComponent> {
     return this.dialog.open<ClipboardDialogComponent, ClipboardDialogData>(
       ClipboardDialogComponent,
@@ -124,6 +131,7 @@ export class DfdDialogService {
   }
 
   /** Open the cell properties inspector dialog. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the cell properties inspector dialog and return its dialog reference
   openCellProperties(data: CellPropertiesDialogData): MatDialogRef<CellPropertiesDialogComponent> {
     return this.dialog.open<CellPropertiesDialogComponent, CellPropertiesDialogData>(
       CellPropertiesDialogComponent,
@@ -138,6 +146,7 @@ export class DfdDialogService {
   }
 
   /** Open the shared metadata dialog for the selected cell. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the cell metadata editor dialog and return its dialog reference
   openMetadata(data: MetadataDialogData): MatDialogRef<MetadataDialogComponent> {
     return this.dialog.open<MetadataDialogComponent, MetadataDialogData>(MetadataDialogComponent, {
       width: '600px',
@@ -146,6 +155,7 @@ export class DfdDialogService {
   }
 
   /** Open the threat editor dialog (create mode) for a cell. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the threat editor dialog in create mode and return its dialog reference
   openThreatEditor(data: ThreatEditorDialogData): MatDialogRef<ThreatEditorDialogComponent> {
     return this.dialog.open<ThreatEditorDialogComponent, ThreatEditorDialogData>(
       ThreatEditorDialogComponent,
@@ -159,6 +169,7 @@ export class DfdDialogService {
   }
 
   /** Open the threats management dialog for a cell. */
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: open the threats management dialog for a cell and return its dialog reference
   openThreats(data: ThreatsDialogData): MatDialogRef<ThreatsDialogComponent> {
     return this.dialog.open<ThreatsDialogComponent, ThreatsDialogData>(ThreatsDialogComponent, {
       width: '800px',

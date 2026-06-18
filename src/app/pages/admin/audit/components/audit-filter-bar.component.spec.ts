@@ -18,6 +18,7 @@ describe('AuditFilterBarComponent', () => {
   let mockDestroyRef: { onDestroy: ReturnType<typeof vi.fn> };
   let injector: Injector;
 
+  // SEM@d368370d5de391e14b74abc17cfad02c02f1a4c0: instantiate AuditFilterBarComponent with optional stream override for testing (pure)
   function createComponent(
     overrides?: Partial<{ stream: 'system' | 'tm' }>,
   ): AuditFilterBarComponent {

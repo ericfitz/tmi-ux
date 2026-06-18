@@ -16,6 +16,7 @@ describe('GeneralOperationValidator', () => {
   let validator: GeneralOperationValidator;
   let loggerService: MockLoggerService;
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid graph operation fixture with optional overrides (pure)
   function baseOperation(overrides: any = {}): any {
     return {
       id: 'op-1',
@@ -27,6 +28,7 @@ describe('GeneralOperationValidator', () => {
     };
   }
 
+  // SEM@55f3ff4b17d436ad024147d9d67d05c38d834198: build a minimal valid operation context fixture with optional overrides (pure)
   function baseContext(overrides: any = {}): any {
     return {
       graph: {}, // Non-null graph

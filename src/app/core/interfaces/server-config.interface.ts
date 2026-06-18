@@ -1,6 +1,7 @@
 import type { components } from '@app/generated/api-types';
 
 /** A content provider entry as advertised by the server's /config response. */
+// SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: alias for the OpenAPI ContentProvider schema as advertised by the server config (pure)
 export type ServerContentProvider = components['schemas']['ContentProvider'];
 
 /**

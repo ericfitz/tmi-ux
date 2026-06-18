@@ -33,6 +33,7 @@ describe('IconPickerPanelComponent', () => {
     component = new IconPickerPanelComponent(mockCdr, mockIconService as ArchitectureIconService);
   });
 
+  // SEM@ac69f0effcd8fc5782001c0391d2ae6a4e41e963: build an IconPickerCellInfo fixture with optional overrides (pure)
   function makeCell(overrides: Partial<IconPickerCellInfo> = {}): IconPickerCellInfo {
     return {
       cellId: 'node-1',
@@ -42,6 +43,7 @@ describe('IconPickerPanelComponent', () => {
     };
   }
 
+  // SEM@ac69f0effcd8fc5782001c0391d2ae6a4e41e963: simulate a selectedCells input change on the component under test (mutates shared state)
   function triggerSelectionChange(cells: IconPickerCellInfo[]): void {
     component.selectedCells = cells;
     component.ngOnChanges({

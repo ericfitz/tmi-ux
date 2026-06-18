@@ -50,6 +50,7 @@ describe('ConnectedAccountsTabComponent', () => {
     },
   ];
 
+  // SEM@77de328ec08ed4de2710997cddc7c3163be40722: build a ConnectedAccountsTabComponent with mock dependencies for testing (pure)
   function createComponent(): ConnectedAccountsTabComponent {
     return new ConnectedAccountsTabComponent(
       mockTokenSvc as unknown as ContentTokenService,

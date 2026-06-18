@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 /**
  * Field type definitions for threat model and threat fields
  */
+// SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: enumerate valid threat model and threat field type identifiers (pure)
 export type FieldType =
   | 'threatModels.status'
   | 'threatEditor.threatStatus'
@@ -22,6 +23,7 @@ export interface FieldOption {
  * Returns the ordered array of valid camelCase keys for a field type.
  * The array order defines the canonical sort/display order.
  */
+// SEM@bc246638296101120ee12c9a3cdb6b0f93f13e71: list valid canonical keys for a field type in display order (pure)
 export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
   switch (keyPrefix) {
     case 'threatModels.status':
@@ -67,6 +69,7 @@ export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
  * @param translocoService The Transloco service for accessing translations
  * @returns The camelCase key, or null if no match found
  */
+// SEM@d47739de2acf5e281b60be208f2dfa034ea03423: convert a legacy field value (numeric or localized string) to its canonical key (pure)
 export function migrateFieldValue(
   value: string | null | undefined,
   keyPrefix: FieldType,
@@ -119,6 +122,7 @@ export function migrateFieldValue(
  * @param translocoService The Transloco service
  * @returns Array of field options with keys, labels, and tooltips
  */
+// SEM@d47739de2acf5e281b60be208f2dfa034ea03423: build the localized dropdown options list for a field type (pure)
 export function getFieldOptions(
   keyPrefix: FieldType,
   translocoService: TranslocoService,
@@ -148,6 +152,7 @@ export function getFieldOptions(
  * @param translocoService The Transloco service
  * @returns The translated label, the raw value as fallback, or empty string if null/undefined
  */
+// SEM@a9878a701a7dd9c267ccc2dc9292958bb05e1fcd: fetch the localized display label for a stored field value, migrating legacy formats (pure)
 export function getFieldLabel(
   value: string | null | undefined,
   keyPrefix: FieldType,
@@ -182,6 +187,7 @@ export function getFieldLabel(
  * @param translocoService The Transloco service
  * @returns The translated tooltip/description
  */
+// SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: fetch the localized tooltip text for a field value by type (pure)
 export function getFieldTooltip(
   value: string | null | undefined,
   keyPrefix: FieldType,
@@ -199,6 +205,7 @@ export function getFieldTooltip(
 /**
  * Gets the tooltip suffix for a field type
  */
+// SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: map a field type to its translation key tooltip suffix (pure)
 function getTooltipSuffixForFieldType(keyPrefix: FieldType): string {
   switch (keyPrefix) {
     case 'threatModels.status':
@@ -215,6 +222,7 @@ function getTooltipSuffixForFieldType(keyPrefix: FieldType): string {
 /**
  * Helper to get nested property from object using dot notation
  */
+// SEM@141c5177a23d03d5e9457daee40e8526092d1e5f: fetch a nested object property by dot-notation path, returning undefined if missing (pure)
 function getNestedProperty(obj: unknown, path: string): unknown {
   return path.split('.').reduce((current: unknown, prop) => {
     if (current && typeof current === 'object' && prop in current) {

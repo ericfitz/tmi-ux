@@ -12,6 +12,7 @@ import {
 } from './language-config';
 
 // This function initializes Transloco during app startup
+// SEM@aff573e78d5f3a14a35b7a8d4d24446160a13c67: build an APP_INITIALIZER factory that preloads English and the preferred locale
 function preloadTranslations(transloco: TranslocoService): () => Promise<unknown> {
   return () => {
     // Get preferred language (skip URL params — LanguageService handles those)
@@ -65,4 +66,5 @@ function preloadTranslations(transloco: TranslocoService): () => Promise<unknown
     },
   ],
 })
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register Transloco with supported locales and the translation preload initializer
 export class TranslocoRootModule {}

@@ -45,6 +45,7 @@ interface MockAuthService {
   isAdmin: boolean;
 }
 
+// SEM@96c34d433bdf8694a9679b9d7e88dddcc1d5563f: build a stub SurveyListItem with default values and optional overrides (pure)
 const createMockTemplate = (overrides?: Partial<SurveyListItem>): SurveyListItem => ({
   id: 'survey-1',
   name: 'Test Survey',

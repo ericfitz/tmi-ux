@@ -615,6 +615,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
   });
 
   // Helper functions for test setup
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build and register a diagram node on the test graph
   function createTestNode(
     nodeType: NodeType,
     label: string,
@@ -633,6 +634,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
     return adapter.addNode(diagramNode);
   }
 
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: build and register a diagram edge between two test nodes
   function createTestEdge(source: Node, target: Node): Edge {
     const edgeInfo = EdgeInfo.create({
       id: `test-edge-${Date.now()}-${Math.random()}`,
@@ -649,6 +651,7 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
    * Clean up selection styling artifacts from restored cells
    * This is needed because selection styling gets saved in history and restored with cells
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: reset selection styling artifacts on a restored cell (mutates shared state)
   function cleanupRestoredCellStyling(cell: any): void {
     if (!cell) return;
 

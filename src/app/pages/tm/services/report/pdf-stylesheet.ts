@@ -12,6 +12,7 @@ interface TextStyle {
   spaceAfter: number;
 }
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: enumerate the four named font weight and style variants used by report styles (pure)
 export type FontVariant = 'regular' | 'bold' | 'italic' | 'monospace';
 
 /**

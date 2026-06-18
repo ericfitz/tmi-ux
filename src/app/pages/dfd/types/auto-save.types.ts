@@ -8,6 +8,7 @@ import { GraphOperation } from './graph-operation.types';
 /**
  * Auto-save trigger types
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: union type of events that can initiate an auto-save (pure)
 export type AutoSaveTrigger =
   | 'history-modified'
   | 'metadata-changed'
@@ -19,6 +20,7 @@ export type AutoSaveTrigger =
 /**
  * Auto-save policy modes
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: union type of auto-save policy aggressiveness modes (pure)
 export type AutoSaveMode =
   | 'aggressive' // Save immediately on any change
   | 'normal' // Save after debounce period
@@ -29,6 +31,7 @@ export type AutoSaveMode =
 /**
  * Auto-save evaluation result
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: union type of outcomes from an auto-save eligibility evaluation (pure)
 export type AutoSaveDecision =
   | 'save-immediately'
   | 'save-debounced'
@@ -41,6 +44,7 @@ export type AutoSaveDecision =
 /**
  * Change significance levels
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: union type ranking diagram change importance for save prioritization (pure)
 export type ChangeSignificance =
   | 'critical' // Data loss prevention (should always save)
   | 'significant' // Important changes (should save with debounce)
@@ -111,7 +115,9 @@ export interface AutoSaveStats {
  * Interface for auto-save change analyzers
  */
 export interface ChangeAnalyzer {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: evaluate a trigger event and return its change analysis (pure)
   analyze(event: AutoSaveTriggerEvent): ChangeAnalysis;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this analyzer handles a given trigger type (pure)
   canAnalyze(trigger: AutoSaveTrigger): boolean;
 }
 
@@ -129,6 +135,7 @@ export interface ChangeAnalysis {
  * Interface for auto-save decision makers
  */
 export interface SaveDecisionMaker {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: compute the auto-save decision from an event, analysis, and policy (pure)
   decide(
     event: AutoSaveTriggerEvent,
     analysis: ChangeAnalysis,
@@ -153,6 +160,7 @@ export interface AutoSaveContext {
 /**
  * Auto-save event types
  */
+// SEM@00558ec66867848e260e04954f555ab98f64f0e4: union type of lifecycle event names in the auto-save pipeline (pure)
 export type AutoSaveEventType =
   | 'trigger-received'
   | 'analysis-completed'
@@ -182,7 +190,9 @@ export interface AutoSaveEvent {
  * Interface for auto-save event handlers
  */
 export interface AutoSaveEventHandler {
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: dispatch an auto-save event to this handler for processing
   handle(event: AutoSaveEvent): void;
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this handler processes a given auto-save event type (pure)
   canHandle(eventType: AutoSaveEventType): boolean;
 }
 

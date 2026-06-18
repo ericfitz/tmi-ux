@@ -52,12 +52,14 @@ export interface ClipboardDialogData {
   styleUrls: ['./clipboard-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: display, copy, and clear the DFD graph clipboard contents
 export class ClipboardDialogComponent {
   /**
    * Serialized JSON representation of the clipboard
    */
   readonly clipboardJson: string;
 
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: initialize dialog and serialize graph clipboard cells to JSON (mutates shared state)
   constructor(
     private _dialogRef: MatDialogRef<ClipboardDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ClipboardDialogData,
@@ -72,6 +74,7 @@ export class ClipboardDialogComponent {
   /**
    * Extract clipboard data from the graph
    */
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: extract and map clipboard cells from the graph instance (pure)
   private _extractClipboardData(graph: Graph): any {
     try {
       const clipboardData: any = {
@@ -109,6 +112,7 @@ export class ClipboardDialogComponent {
   /**
    * Copy the JSON content to clipboard
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: copy the clipboard JSON to the system clipboard (mutates shared state)
   onCopyToClipboard(): void {
     copyToClipboard(this.clipboardJson);
   }
@@ -116,6 +120,7 @@ export class ClipboardDialogComponent {
   /**
    * Clear the X6 graph clipboard
    */
+  // SEM@e9ca914ffc3220cf3f567742e85cd2757a0e3ef5: clear the graph clipboard and close the dialog (mutates shared state)
   onClearClipboard(): void {
     if (this.data.graph.cleanClipboard) {
       this.data.graph.cleanClipboard();
@@ -126,6 +131,7 @@ export class ClipboardDialogComponent {
   /**
    * Close the dialog
    */
+  // SEM@6465757ffb4bb55e54153b12a4bb58e0ca0d9a05: close the clipboard dialog without changes (mutates shared state)
   onClose(): void {
     this._dialogRef.close();
   }

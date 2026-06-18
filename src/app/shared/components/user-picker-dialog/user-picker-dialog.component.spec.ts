@@ -26,6 +26,7 @@ describe('UserPickerDialogComponent', () => {
     email: 'alice@example.com',
   } as AdminUser;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct and initialize a UserPickerDialogComponent for testing (pure)
   function build(data: UserPickerDialogData): UserPickerDialogComponent {
     const component = runInInjectionContext(
       envInjector,

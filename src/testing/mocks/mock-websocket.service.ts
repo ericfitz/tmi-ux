@@ -28,6 +28,7 @@ export interface ConnectedUser {
 /**
  * Mock implementation of a WebSocket service for testing collaborative features
  */
+// SEM@4de8eeb93111afab18f841a678c535ce9e7011dd: test double for WebSocketService simulating connection, messaging, and user presence
 export class MockWebSocketService {
   private _connected = new BehaviorSubject<boolean>(false);
   private _messages = new Subject<WebSocketMessage>();
@@ -89,6 +90,7 @@ export class MockWebSocketService {
    * @param url The URL to connect to
    * @param authToken The authentication token
    */
+  // SEM@4de8eeb93111afab18f841a678c535ce9e7011dd: simulate a WebSocket connection and emit the current user joined event (mutates shared state)
   connect(_url: string, _authToken: string): void {
     // Simulate connection
     setTimeout(() => {
@@ -102,6 +104,7 @@ export class MockWebSocketService {
   /**
    * Disconnect from the WebSocket server
    */
+  // SEM@4de8eeb93111afab18f841a678c535ce9e7011dd: simulate a WebSocket disconnection and remove the current user from the session (mutates shared state)
   disconnect(): void {
     this._connected.next(false);
 
@@ -114,6 +117,7 @@ export class MockWebSocketService {
    * Send a message to the WebSocket server
    * @param message The message to send
    */
+  // SEM@4de8eeb93111afab18f841a678c535ce9e7011dd: dispatch a WebSocket message, echoing it back after a short delay if connected (mutates shared state)
   send(message: WebSocketMessage): void {
     if (!this._connected.value) {
       console.warn('Cannot send message: not connected');
@@ -138,6 +142,7 @@ export class MockWebSocketService {
    * Simulate receiving a message from another user
    * @param message The message to simulate
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject a test WebSocket message as if received from a remote user (mutates shared state)
   simulateIncomingMessage(message: WebSocketMessage): void {
     // Ensure the message has a user ID, name, and timestamp
     const fullMessage: WebSocketMessage = {
@@ -156,6 +161,7 @@ export class MockWebSocketService {
    * @param userName The name of the user
    * @param role The role of the user
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: add a user to the connected-user list and emit a userJoined message (mutates shared state)
   simulateUserJoined(userId: string, userName: string, role: 'owner' | 'writer' | 'reader'): void {
     // Add user to connected users
     const users = [...this._connectedUsers.value];
@@ -199,6 +205,7 @@ export class MockWebSocketService {
    * Simulate a user leaving the collaboration
    * @param userId The ID of the user
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: remove a user from the connected-user list and emit a userLeft message (mutates shared state)
   simulateUserLeft(userId: string): void {
     // Remove user from connected users
     const users = this._connectedUsers.value.filter(user => user.id !== userId);

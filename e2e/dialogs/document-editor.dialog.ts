@@ -1,9 +1,11 @@
 import { Locator, Page } from '@playwright/test';
 import { angularFill } from '../helpers/angular-fill';
 
+// SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: E2E page object wrapping the document editor dialog
 export class DocumentEditorDialog {
   private dialog: Locator;
 
+  // SEM@bece9afbb4283fefea5c408379d798698a5459d8: bind page and locate dialog container locator (pure)
   constructor(private page: Page) {
     this.dialog = page.locator('mat-dialog-container');
   }
@@ -34,22 +36,27 @@ export class DocumentEditorDialog {
     this.dialog.getByTestId(`remediation-${action}`);
   readonly checkNowButton = () => this.dialog.getByTestId('check-now-btn');
 
+  // SEM@e4174ec5cf6766ca536e56619ce271101e2c9b46: fill the document name field with the given value
   async fillName(name: string) {
     await angularFill(this.nameInput(), name);
   }
 
+  // SEM@e4174ec5cf6766ca536e56619ce271101e2c9b46: fill the document URI field with the given value
   async fillUri(uri: string) {
     await angularFill(this.uriInput(), uri);
   }
 
+  // SEM@e4174ec5cf6766ca536e56619ce271101e2c9b46: fill the document description field with the given value
   async fillDescription(desc: string) {
     await angularFill(this.descriptionInput(), desc);
   }
 
+  // SEM@bece9afbb4283fefea5c408379d798698a5459d8: click the save button to submit the document editor dialog
   async save() {
     await this.saveButton().click();
   }
 
+  // SEM@bece9afbb4283fefea5c408379d798698a5459d8: click the cancel button to dismiss the document editor dialog
   async cancel() {
     await this.cancelButton().click();
   }
@@ -59,6 +66,7 @@ export class DocumentEditorDialog {
    * 'google_workspace', 'microsoft'). Matches the radio interaction
    * precedent in `survey-fill.flow.ts`.
    */
+  // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: select the document source radio button by provider value
   async selectSource(value: string) {
     await this.sourceRadio(value).locator('input[type="radio"]').check({ force: true });
   }

@@ -15,9 +15,13 @@ interface FontConfig {
 
 /** Logger interface matching the subset used by the font manager */
 interface FontManagerLogger {
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: log an informational message with optional context (pure)
   info(message: string, context?: Record<string, unknown>): void;
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: log a warning message with optional context (pure)
   warn(message: string, context?: Record<string, unknown>): void;
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: log an error message with optional context (pure)
   error(message: string, context?: unknown): void;
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: log a component-scoped debug message with optional context (pure)
   debugComponent(component: string, message: string, context?: Record<string, unknown>): void;
 }
 
@@ -105,11 +109,13 @@ const DEFAULT_FONT_CONFIGS: Map<string, FontConfig> = new Map([
  * - `bold`: HelveticaBold (Latin-only limitation; CJK/Arabic/Hebrew use regular weight)
  * - `monospace`: Courier (for code blocks)
  */
+// SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: manage font loading, embedding, and variant resolution for PDF generation
 export class PdfFontManager {
   private fonts: Map<FontVariant, PDFFont> = new Map();
   private loadedFontData: Map<string, Uint8Array> = new Map();
   private fontConfigs: Map<string, FontConfig>;
 
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: initialize PDF document, logger, and optional font config overrides (pure)
   constructor(
     private doc: PDFDocument,
     private logger: FontManagerLogger,
@@ -122,6 +128,7 @@ export class PdfFontManager {
    * Load and embed all required font variants for the given language.
    * Must be called before any getFont() calls.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: fetch and embed all font variants for a given language into the PDF document (mutates shared state)
   async loadFonts(language: string): Promise<void> {
     const fontConfig = this.fontConfigs.get(language) || this.fontConfigs.get('en-US')!;
 
@@ -147,6 +154,7 @@ export class PdfFontManager {
    * Get the embedded PDFFont for a specific variant.
    * Throws if fonts have not been loaded yet.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: fetch an embedded PDF font by variant; throw if not yet loaded (pure)
   getFont(variant: FontVariant): PDFFont {
     const font = this.fonts.get(variant);
     if (!font) {
@@ -158,10 +166,12 @@ export class PdfFontManager {
   /**
    * Check whether a specific font variant has been loaded.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: check whether a font variant has been loaded (pure)
   hasFont(variant: FontVariant): boolean {
     return this.fonts.has(variant);
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: embed regular font into PDF document; fall back to Helvetica on failure (mutates shared state)
   private async loadRegularFont(fontConfig: FontConfig): Promise<void> {
     try {
       const fontData = await this.fetchFont(fontConfig.fontPath);
@@ -177,6 +187,7 @@ export class PdfFontManager {
     }
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: embed italic font into PDF document; fall back to HelveticaOblique on failure (mutates shared state)
   private async loadItalicFont(fontConfig: FontConfig): Promise<void> {
     if (fontConfig.italicFontPath) {
       try {
@@ -198,6 +209,7 @@ export class PdfFontManager {
     this.fonts.set('italic', font);
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: embed bold font into PDF document; fall back to regular on failure (mutates shared state)
   private async loadBoldFont(): Promise<void> {
     try {
       const font = await this.doc.embedFont(StandardFonts.HelveticaBold);
@@ -214,6 +226,7 @@ export class PdfFontManager {
     }
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: embed monospace font into PDF document; fall back to regular on failure (mutates shared state)
   private async loadMonospaceFont(): Promise<void> {
     try {
       const font = await this.doc.embedFont(StandardFonts.Courier);
@@ -232,6 +245,7 @@ export class PdfFontManager {
   /**
    * Fetch font data from a URL path, with caching.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: fetch font binary data from a URL path, with in-memory cache
   private async fetchFont(fontPath: string): Promise<Uint8Array> {
     if (this.loadedFontData.has(fontPath)) {
       return this.loadedFontData.get(fontPath)!;

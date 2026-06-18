@@ -14,18 +14,22 @@ import {
 } from '../../types/graph-operation.types';
 
 @Injectable()
+// SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate common structure, context, timing, and collaboration constraints on any graph operation (pure)
 export class GeneralOperationValidator extends BaseOperationValidator {
   readonly priority = 10; // Low priority - runs after specific validators
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: inject logger dependency into the general operation validator (pure)
   constructor(logger: LoggerService) {
     super(logger);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: accept any graph operation type for general validation (pure)
   canValidate(_operation: GraphOperation): boolean {
     // This validator applies to all operations
     return true;
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: run all general validation checks on a graph operation and return a validation result (pure)
   validate(_operation: GraphOperation, context: OperationContext): ValidationResult {
     this.logValidationStart(_operation);
 
@@ -57,6 +61,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     return result;
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate required fields, priority, and timestamp on a graph operation (pure)
   private validateOperationStructure(
     operation: GraphOperation,
     errors: string[],
@@ -110,6 +115,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate graph, provider ID, diagram ID, permissions, and collaboration mode in an operation context (pure)
   private validateContext(context: OperationContext, errors: string[], warnings: string[]): void {
     // Validate graph
     if (!context.graph) {
@@ -141,6 +147,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: warn if a graph operation is stale, in the future, or follows too quickly after the previous (pure)
   private validateTiming(
     operation: GraphOperation,
     context: OperationContext,
@@ -170,6 +177,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: validate write permission and session metadata for collaborative graph operations (pure)
   private validateCollaboration(
     operation: GraphOperation,
     context: OperationContext,

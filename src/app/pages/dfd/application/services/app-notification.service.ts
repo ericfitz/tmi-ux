@@ -59,6 +59,7 @@ interface NotificationPresets {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5deda796fbe196aef97863cd250f9f8803bf972d: display snackbar notifications for diagram collaboration and WebSocket events
 export class AppNotificationService implements OnDestroy, ICollaborationNotificationService {
   private readonly _destroy$ = new Subject<void>();
   private _activeNotifications = new Map<string, MatSnackBarRef<SimpleSnackBar>>();
@@ -182,6 +183,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     },
   };
 
+  // SEM@27209cc10f874b2be106e2c0a4061d96882296bc: inject snackbar, logger, and translation services (mutates shared state)
   constructor(
     private _snackBar: MatSnackBar,
     private _logger: LoggerService,
@@ -197,6 +199,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param overrides Optional configuration overrides
    * @returns Observable that completes when notification is dismissed
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: display a snackbar notification using a named preset configuration
   showPreset(
     presetKey: string,
     message: string,
@@ -217,6 +220,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param config Optional configuration
    * @returns Observable that completes when notification is dismissed
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: display a snackbar notification with custom config and return a dismissal observable
   show(message: string, config: NotificationConfig = {}): Observable<void> {
     return new Observable(observer => {
       try {
@@ -280,6 +284,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param state The WebSocket state
    * @param retryCallback Optional callback for retry action
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: display a snackbar notification for a WebSocket connection state change
   showWebSocketStatus(state: WebSocketState, retryCallback?: () => void): Observable<void> {
     let message: string;
     let presetKey: string;
@@ -340,6 +345,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param error The WebSocket error
    * @param retryCallback Optional callback for retry action
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: display a snackbar notification for a typed WebSocket error with optional retry action
   showWebSocketError(error: WebSocketError, retryCallback?: () => void): Observable<void> {
     let message: string;
     let presetKey: string;
@@ -397,6 +403,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param eventType The session event type
    * @param displayName Additional details (e.g., user name)
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: notify user of a collaboration session event, suppressing redundant UI-indicated events (mutates shared state)
   showSessionEvent(eventType: SessionEventType, displayName?: string): Observable<void> {
     // Only show notifications for events that aren't already indicated by UI state
     // Session start/end are already visible via collaboration icon state
@@ -473,6 +480,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param event The presenter event type
    * @param displayName Optional user name for context
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: notify user of a presenter mode lifecycle event with localized message (mutates shared state)
   showPresenterEvent(eventType: PresenterEventType, displayName?: string): Observable<void> {
     let message: string;
     let presetKey: string;
@@ -529,6 +537,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param operation The operation that failed
    * @param errorMessage The error message
    */
+  // SEM@3ef763ce1be090dd1c2afae22eddae83f0ad8ea0: notify user that a diagram operation failed with a localized error message (mutates shared state)
   showOperationError(operation: string, errorMessage: string): Observable<void> {
     const message = this._transloco.translate('notifications.operationError', {
       operation,
@@ -541,6 +550,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * Show success notification
    * @param message The success message
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dispatch a success-level snackbar notification to the user (mutates shared state)
   showSuccess(message: string): Observable<void> {
     return this.showPreset('success', message);
   }
@@ -549,6 +559,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * Show info notification
    * @param message The info message
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dispatch an info-level snackbar notification to the user (mutates shared state)
   showInfo(message: string): Observable<void> {
     return this.showPreset('info', message);
   }
@@ -557,6 +568,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * Show warning notification
    * @param message The warning message
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dispatch a warning-level snackbar notification to the user (mutates shared state)
   showWarning(message: string): Observable<void> {
     return this.showPreset('warning', message);
   }
@@ -566,6 +578,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param message The error message
    * @param retryCallback Optional retry callback
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dispatch an error-level snackbar notification with optional retry action (mutates shared state)
   showError(message: string, retryCallback?: () => void): Observable<void> {
     return this.showPreset('error', message, { actionCallback: retryCallback });
   }
@@ -574,6 +587,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * Show embedding validation error notification
    * @param translationKey The translation key for the error message
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: notify user of a diagram embedding validation failure with localized message (mutates shared state)
   showEmbeddingValidationError(translationKey: string): Observable<void> {
     const message = this._transloco.translate(translationKey);
     return this.showPreset('embeddingValidationError', message);
@@ -582,6 +596,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
   /**
    * Dismiss all active notifications
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dismiss all active snackbar notifications and clear the notification registry (mutates shared state)
   dismissAll(): void {
     this._snackBar.dismiss();
     this._activeNotifications.clear();
@@ -592,6 +607,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * Dismiss notifications by key pattern
    * @param keyPattern Pattern to match notification keys
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dismiss active notifications whose registry key matches a regex pattern (mutates shared state)
   dismissByPattern(keyPattern: RegExp): void {
     const keysToRemove: string[] = [];
 
@@ -615,6 +631,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param type The notification type
    * @returns Array of CSS classes
    */
+  // SEM@133199eb741b5d2b2e32918d6b65d7bd13269158: map a notification severity type to its CSS panel class array (pure)
   private _getPanelClassForType(type?: NotificationType): string[] {
     switch (type) {
       case NotificationType.SUCCESS:
@@ -632,6 +649,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
   /**
    * Dismiss WebSocket-related notifications to avoid duplication
    */
+  // SEM@57394346339d21b4055bda04efd4d869626327c2: dismiss all active WebSocket-related notifications to prevent duplication (mutates shared state)
   private _dismissWebSocketNotifications(): void {
     this.dismissByPattern(/websocket/i);
   }
@@ -642,6 +660,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param displayName The display name of the user
    * @returns Observable that emits 'approve' or 'deny' based on user action
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: show a persistent snackbar requesting approval or denial of a presenter privilege request (mutates shared state)
   showPresenterRequestReceived(
     userEmail: string,
     displayName: string,
@@ -706,6 +725,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param reason Why the session ended
    * @returns Observable that completes when notification is shown
    */
+  // SEM@5deda796fbe196aef97863cd250f9f8803bf972d: notify user they are now working solo after a collaboration session ended (mutates shared state)
   showSoloTransition(reason: SoloTransitionReason): Observable<void> {
     const keyByReason: Record<SoloTransitionReason, string> = {
       left: 'collaboration.soloTransition.left',
@@ -727,6 +747,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     return this.showInfo(message);
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: tear down subscriptions and dismiss all notifications on service destruction (mutates shared state)
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();

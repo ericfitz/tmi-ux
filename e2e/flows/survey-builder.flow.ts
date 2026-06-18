@@ -2,13 +2,16 @@ import { Page } from '@playwright/test';
 import { TemplateBuilderPage } from '../pages/template-builder.page';
 import { angularFill } from '../helpers/angular-fill';
 
+// SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: E2E page-object flow for survey builder question and page actions (pure)
 export class SurveyBuilderFlow {
   private builder: TemplateBuilderPage;
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: initialize the template builder page object for the flow (pure)
   constructor(private page: Page) {
     this.builder = new TemplateBuilderPage(page);
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: add a question of a given type with the specified title to the survey
   async addQuestion(type: string, title: string) {
     await this.builder.addQuestionButton(type).scrollIntoViewIfNeeded();
     await this.page.waitForTimeout(500);
@@ -17,10 +20,12 @@ export class SurveyBuilderFlow {
     await angularFill(this.builder.questionTitle(), title);
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: select a question by name in the survey builder panel
   async selectQuestion(name: string) {
     await this.builder.questionItem(name).click();
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: update one or more question property fields in the builder editor
   async editQuestionProperties(fields: {
     name?: string;
     title?: string;
@@ -69,10 +74,12 @@ export class SurveyBuilderFlow {
     }
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: set conditional visibility rule on the current survey question (pure)
   async setConditionalLogic(visibleIf: string) {
     await this.editQuestionProperties({ visibleIf });
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: select and delete a survey question by name via the builder UI
   async deleteQuestion(name: string) {
     await this.selectQuestion(name);
     await this.builder.questionDelete().scrollIntoViewIfNeeded();
@@ -80,14 +87,17 @@ export class SurveyBuilderFlow {
     await this.builder.questionDelete().click();
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: add a new page to the survey via the builder UI
   async addPage() {
     await this.builder.pageAdd().click();
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: delete the current page from the survey via the builder UI
   async deletePage() {
     await this.builder.pageDelete().click();
   }
 
+  // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: save the survey and wait for a successful API response
   async saveSurvey() {
     await this.builder.saveButton().click();
     await this.page.waitForResponse(

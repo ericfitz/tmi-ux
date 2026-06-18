@@ -13,20 +13,24 @@ import { Directive, ElementRef, OnInit, OnDestroy, Renderer2, AfterViewInit } fr
   selector: '[appScrollIndicator]',
   standalone: true,
 })
+// SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: directive that appends an animated scroll indicator when content overflows
 export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestroy {
   private _indicator: HTMLElement | null = null;
   private _resizeObserver: ResizeObserver | null = null;
   private _scrollListener: (() => void) | null = null;
 
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: inject host element reference and renderer (pure)
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
     private _renderer: Renderer2,
   ) {}
 
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: build and attach the scroll indicator DOM element on init
   ngOnInit(): void {
     this._createIndicator();
   }
 
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: register scroll and resize listeners and perform initial visibility check
   ngAfterViewInit(): void {
     this._setupScrollListener();
     this._setupResizeObserver();
@@ -43,6 +47,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
     }, 300);
   }
 
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: remove listeners, observers, and indicator element on teardown
   ngOnDestroy(): void {
     this._cleanup();
   }
@@ -50,6 +55,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
   /**
    * Creates the scroll indicator element
    */
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: build and append the indicator DOM element to the host (mutates shared state)
   private _createIndicator(): void {
     const element = this._elementRef.nativeElement;
 
@@ -75,6 +81,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
   /**
    * Sets up scroll event listener
    */
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: register a scroll event listener to update indicator visibility (mutates shared state)
   private _setupScrollListener(): void {
     const element = this._elementRef.nativeElement;
 
@@ -86,6 +93,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
   /**
    * Sets up ResizeObserver to detect content changes
    */
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: register a ResizeObserver on host and children to recheck overflow (mutates shared state)
   private _setupResizeObserver(): void {
     const element = this._elementRef.nativeElement;
 
@@ -108,6 +116,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
   /**
    * Updates indicator visibility based on scroll position
    */
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: show or hide the indicator based on remaining scrollable content (mutates shared state)
   private _updateIndicatorVisibility(): void {
     if (!this._indicator) {
       return;
@@ -131,6 +140,7 @@ export class ScrollIndicatorDirective implements OnInit, AfterViewInit, OnDestro
   /**
    * Cleanup listeners and observers
    */
+  // SEM@b45fcc259874666aebc8f6e9494a3357aba9fc8c: detach scroll listener, disconnect resize observer, and remove indicator element
   private _cleanup(): void {
     if (this._scrollListener) {
       this._scrollListener();

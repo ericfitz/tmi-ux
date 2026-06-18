@@ -56,6 +56,7 @@ import { TokenValidityGuardService } from './auth/services/token-validity-guard.
 import { BrandingConfigService } from './core/services/branding-config.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
+// SEM@bb45011ce0669ca0e59b0f729627aa9f7068a67a: resolve the user's preferred locale from storage, defaulting to en-US (pure)
 function getBasicLocale(): string {
   const storedLang = localStorage.getItem('preferredLanguage');
   const supportedLocales = ['en-US', 'de', 'zh', 'ar', 'th'];
@@ -69,6 +70,7 @@ function getBasicLocale(): string {
 }
 
 // Security initialization function
+// SEM@896d21bdf917cd1b5cbe94fb4c4daf05ed4c2f74: return an APP_INITIALIZER factory that starts security violation monitoring (pure)
 function initializeSecurityMonitoring(securityConfig: SecurityConfigService): () => void {
   return () => {
     securityConfig.monitorSecurityViolations();
@@ -76,6 +78,7 @@ function initializeSecurityMonitoring(securityConfig: SecurityConfigService): ()
 }
 
 // Dialog direction initialization function
+// SEM@5a81a4e6d4936cb8b7a71fada1f5e6e3c73391e9: return an APP_INITIALIZER factory that triggers dialog direction service init (pure)
 function initializeDialogDirection(_dialogDirection: DialogDirectionService): () => void {
   return () => {
     // Service initialization happens in constructor
@@ -83,6 +86,7 @@ function initializeDialogDirection(_dialogDirection: DialogDirectionService): ()
 }
 
 // Material Icons initialization function
+// SEM@96bfe8da61b5343fe0c953128a1143a44c53a5a2: register Material Symbols Outlined as the default icon font set (mutates shared state)
 function initializeMaterialIcons(
   iconRegistry: MatIconRegistry,
   _sanitizer: DomSanitizer,
@@ -97,6 +101,7 @@ function initializeMaterialIcons(
 }
 
 // User preferences initialization function
+// SEM@494d9a65acb7b0317f72e488eeb137c3729aa1e4: load and apply saved user preferences on app startup (mutates shared state)
 function initializeUserPreferences(
   userPreferencesService: UserPreferencesService,
   _brandingConfigService: BrandingConfigService,
@@ -108,6 +113,7 @@ function initializeUserPreferences(
 }
 
 // Theme initialization function
+// SEM@f345afedad08561c58323a139ef27f2821b84d1c: trigger theme service construction to apply saved theme on startup (mutates shared state)
 function initializeTheme(_themeService: ThemeService): () => void {
   return () => {
     // Theme service automatically loads and applies saved theme preference in constructor
@@ -115,6 +121,7 @@ function initializeTheme(_themeService: ThemeService): () => void {
 }
 
 // WebSocket-Auth integration initialization function
+// SEM@5323baea0030c704988b20904c9c987b1a5fb0f1: wire WebSocket adapter to auth service for token refresh on activity (mutates shared state)
 function initializeWebSocketAuth(
   websocketAdapter: WebSocketAdapter,
   authService: AuthService,
@@ -129,11 +136,13 @@ function initializeWebSocketAuth(
 // Calls GET /me to detect an existing session cookie on page load.
 // Runs via APP_INITIALIZER so the HTTP call happens after DI is complete,
 // not during AuthService construction (which would cause circular deps).
+// SEM@34d18ba2c1f88c2e9b650c912322cbc42588d59c: check existing session cookie to restore auth state on page load (reads DB)
 function initializeAuthStatus(authService: AuthService): () => Promise<void> {
   return () => authService.checkAuthStatus();
 }
 
 // Token validity guard initialization function
+// SEM@da0060051d2e642429c7d95549638e7c4afb741c: start monitoring for token expiry across visibility changes and cross-tab events (mutates shared state)
 function initializeTokenValidityGuard(tokenValidityGuard: TokenValidityGuardService): () => void {
   return () => {
     // Start monitoring for token expiry across visibility changes, timer drift, and cross-tab events
@@ -142,6 +151,7 @@ function initializeTokenValidityGuard(tokenValidityGuard: TokenValidityGuardServ
 }
 
 // Branding configuration initialization function
+// SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: fetch and apply branding configuration on app startup (reads DB)
 function initializeBrandingConfig(
   brandingConfigService: BrandingConfigService,
 ): () => Promise<void> {

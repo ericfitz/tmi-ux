@@ -127,6 +127,7 @@ const REASON_KEYS: Record<string, string> = {
     `,
   ],
 })
+// SEM@21df0284358e24c57c5fd991864d31e88af271f3: display document access status and trigger recheck action (mutates shared state)
 export class AccessDiagnosticsPanelComponent {
   @Input({ required: true }) document!: Document;
   @Output() recheck = new EventEmitter<void>();
@@ -135,10 +136,12 @@ export class AccessDiagnosticsPanelComponent {
     return this.document?.access_status === 'pending_access';
   }
 
+  // SEM@414984dadc9232b9a98bc7dcc3c927eb0d907dfe: dispatch recheck event to parent when user requests access re-verification (pure)
   onCheckNow(): void {
     this.recheck.emit();
   }
 
+  // SEM@21df0284358e24c57c5fd991864d31e88af271f3: inject translation service for localized access diagnostics messages (pure)
   constructor(private transloco: TranslocoService) {}
 
   get message(): string {
@@ -152,6 +155,7 @@ export class AccessDiagnosticsPanelComponent {
     return this.transloco.translate(key, { source: sourceParam });
   }
 
+  // SEM@fad1d9c9fa7381e39fa2b4ca04ae89c63647ae94: resolve localized content provider display name from access diagnostics (pure)
   private _sourceName(diag: DocumentAccessDiagnostics): string {
     const link = diag.remediations.find(r => r.params?.['provider_id']);
     const id = link?.params?.['provider_id'] as ContentProviderId | undefined;

@@ -43,6 +43,7 @@ export interface RedactOptions {
  * @param options Redaction options
  * @returns Object with sensitive values redacted
  */
+// SEM@319bb278ad87b8d27e1ac628520adf035bc5c1a8: redact sensitive fields from an object, guarding against prototype pollution (pure)
 export function redactSensitiveData(data: unknown, options: RedactOptions = {}): unknown {
   if (!data || typeof data !== 'object') {
     return data;
@@ -58,6 +59,7 @@ export function redactSensitiveData(data: unknown, options: RedactOptions = {}):
 }
 
 /** Determine the redacted value for a single key-value pair. */
+// SEM@319bb278ad87b8d27e1ac628520adf035bc5c1a8: redact a single key-value pair based on sensitive key matching (pure)
 function redactValue(key: string, value: unknown, options: RedactOptions): unknown {
   const lowerKey = key.toLowerCase();
   const isAuthorizationField = lowerKey === 'authorization';
@@ -89,6 +91,7 @@ function redactValue(key: string, value: unknown, options: RedactOptions): unkno
  * @param token The token string to redact
  * @returns Redacted token string (e.g., "abcd************wxyz")
  */
+// SEM@e19c6684da148f53fab89e000721a9721f83d6d2: mask a credential token, preserving first and last four characters (pure)
 export function redactToken(token: string): string {
   if (token.length <= 8) {
     return '[REDACTED]';

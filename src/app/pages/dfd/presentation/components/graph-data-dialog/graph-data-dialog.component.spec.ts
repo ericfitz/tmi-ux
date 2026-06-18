@@ -13,6 +13,7 @@ describe('GraphDataDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
   /** Build an X6-graph stub whose toJSON returns the given object. */
+  // SEM@e81349f7ea7bf60d484b2d87b1182fd5bd360a1f: build a minimal Graph test stub returning the given JSON object (pure)
   function graphStub(json: object): Graph {
     return { toJSON: () => json } as unknown as Graph;
   }

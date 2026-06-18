@@ -29,6 +29,7 @@ const PAGE_SIZES = {
   A4: { width: 595, height: 842 },
 } as const;
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: enumerate supported PDF page size keys (US Letter, A4) (pure)
 type PageSize = keyof typeof PAGE_SIZES;
 
 /**
@@ -40,6 +41,7 @@ const MARGINS = {
   wide: 54, // 0.75 inch
 } as const;
 
+// SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: union type of valid PDF margin size keys (pure)
 type MarginSize = keyof typeof MARGINS;
 
 /**
@@ -51,12 +53,14 @@ type MarginSize = keyof typeof MARGINS;
 @Injectable({
   providedIn: 'root',
 })
+// SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: build and download a PDF report for a threat model
 export class ThreatModelReportService {
   private pageSize: PageSize = 'usLetter';
   private marginSize: MarginSize = 'standard';
 
   private readonly userPreferencesService = inject(UserPreferencesService);
 
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: inject logger, translation, language, and branding dependencies
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
@@ -67,6 +71,7 @@ export class ThreatModelReportService {
   /**
    * Generate a PDF report for the given threat model.
    */
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: build and trigger download of a PDF threat model report
   async generateReport(threatModel: ThreatModel): Promise<void> {
     try {
       this.loadUserPreferences();
@@ -167,6 +172,7 @@ export class ThreatModelReportService {
     }
   }
 
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: fetch and apply user page-size and margin preferences (mutates shared state)
   private loadUserPreferences(): void {
     const preferences = this.userPreferencesService.getPreferences();
 
@@ -183,6 +189,7 @@ export class ThreatModelReportService {
     });
   }
 
+  // SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render the threat model name as a centered title on the PDF page (pure)
   private addTitle(
     cursor: Cursor,
     title: string,
@@ -198,6 +205,7 @@ export class ThreatModelReportService {
     return engine.advanceCursor(cursor, 30);
   }
 
+  // SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render a confidentiality warning text block on the PDF title page (pure)
   private addConfidentialityWarning(
     cursor: Cursor,
     warning: string,
@@ -213,6 +221,7 @@ export class ThreatModelReportService {
     return engine.advanceCursor(cursor, 25);
   }
 
+  // SEM@f8104de88552a4dfddc56d5f7839c36cbe0aa074: render the data classification label on the PDF title page (pure)
   private addTitlePageClassification(
     cursor: Cursor,
     classification: string,
@@ -228,6 +237,7 @@ export class ThreatModelReportService {
     return engine.advanceCursor(cursor, 25);
   }
 
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: embed and center the branding logo image on the PDF title page
   private async addLogo(
     doc: PDFDocument,
     cursor: Cursor,
@@ -261,6 +271,7 @@ export class ThreatModelReportService {
     }
   }
 
+  // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: serialize a PDF document and trigger a browser download
   private async savePdf(doc: PDFDocument, filename: string): Promise<void> {
     try {
       const pdfBytes = await doc.save();

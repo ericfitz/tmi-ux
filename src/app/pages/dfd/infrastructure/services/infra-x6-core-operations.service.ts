@@ -69,7 +69,9 @@ export interface CoreOperationOptions {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@0c4b0e63a2f170695121de276aae1d8887c94516: service wrapping X6 graph CRUD operations for nodes, edges, and cells with error handling
 export class InfraX6CoreOperationsService {
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: inject the logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   // ===============================
@@ -79,6 +81,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Add a node to the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: add a node to the X6 graph from a creation config, returning the node or null on error (mutates shared state)
   addNode(
     graph: Graph,
     config: NodeCreationConfig,
@@ -121,6 +124,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Remove a node from the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: delete a node by ID from the X6 graph, returning success or false if not found (mutates shared state)
   removeNode(graph: Graph, nodeId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
@@ -165,6 +169,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Add an edge to the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: add an edge to the X6 graph from a creation config, returning the edge or null on error (mutates shared state)
   addEdge(
     graph: Graph,
     config: EdgeCreationConfig,
@@ -207,6 +212,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Remove an edge from the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: delete an edge by ID from the X6 graph, returning success or false if not found (mutates shared state)
   removeEdge(graph: Graph, edgeId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
@@ -251,6 +257,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Remove a cell (node or edge) from the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: delete a cell by ID from the X6 graph regardless of type, returning success (mutates shared state)
   removeCell(graph: Graph, cellId: string, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
@@ -294,6 +301,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Remove a cell object directly from the X6 graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: delete a cell object reference from the X6 graph, returning success (mutates shared state)
   removeCellObject(graph: Graph, cell: Cell, options: CoreOperationOptions = {}): boolean {
     const { suppressErrors = false, logOperation = true } = options;
 
@@ -334,6 +342,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Check if a cell exists in the graph
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: check whether a cell with the given ID exists in the graph (pure)
   cellExists(graph: Graph, cellId: string): boolean {
     const cell = graph.getCellById(cellId);
     return !!cell;
@@ -342,6 +351,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Get a cell by ID with type checking
    */
+  // SEM@30f828164ac850acd8c5327d89735462337b332b: fetch a cell by ID from the graph, returning null if absent (pure)
   getCell(graph: Graph, cellId: string): Cell | null {
     return graph.getCellById(cellId) || null;
   }
@@ -349,6 +359,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Get a node by ID with type safety
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: fetch a node by ID with type safety, returning null if absent or not a node (pure)
   getNode(graph: Graph, nodeId: string): Node | null {
     const cell = graph.getCellById(nodeId);
     return cell && cell.isNode() ? cell : null;
@@ -357,6 +368,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Get an edge by ID with type safety
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: fetch an edge by ID with type safety, returning null if absent or not an edge (pure)
   getEdge(graph: Graph, edgeId: string): Edge | null {
     const cell = graph.getCellById(edgeId);
     return cell && cell.isEdge() ? cell : null;
@@ -365,6 +377,7 @@ export class InfraX6CoreOperationsService {
   /**
    * Clear all cells from the graph
    */
+  // SEM@dbbf1c37e47ee156c049a3311a025acd5d4d111c: delete all cells from the graph (mutates shared state)
   clearGraph(graph: Graph, options: CoreOperationOptions = {}): void {
     const { logOperation = true } = options;
 

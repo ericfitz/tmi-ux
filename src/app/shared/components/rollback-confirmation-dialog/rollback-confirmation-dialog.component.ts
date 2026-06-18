@@ -22,9 +22,11 @@ export type {
   templateUrl: './rollback-confirmation-dialog.component.html',
   styleUrls: ['./rollback-confirmation-dialog.component.scss'],
 })
+// SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: dialog requiring typed confirmation before allowing a rollback to proceed
 export class RollbackConfirmationDialogComponent {
   confirmationInput = '';
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: inject dialog ref, rollback data, and translation service (pure)
   constructor(
     private _dialogRef: MatDialogRef<
       RollbackConfirmationDialogComponent,
@@ -57,10 +59,12 @@ export class RollbackConfirmationDialogComponent {
     return this.isConfirmationValid;
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: dismiss the rollback dialog with a declined result (pure)
   onCancel(): void {
     this._dialogRef.close({ confirmed: false });
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: close the rollback dialog with confirmed result if validation passes (pure)
   onConfirmRollback(): void {
     if (this.canRollback) {
       this._dialogRef.close({ confirmed: true });

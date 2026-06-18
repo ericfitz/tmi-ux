@@ -23,6 +23,7 @@ export interface CursorPosition {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: render presenter cursor overlay and hover effects on the diagram for non-presenter collaborators (mutates shared state)
 export class UiPresenterCursorDisplayService implements OnDestroy {
   private _subscriptions = new Subscription();
   private _graphContainer: HTMLElement | null = null;
@@ -37,6 +38,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   private _intersectionObserver: IntersectionObserver | null = null;
   private _isGraphVisible = true;
 
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: inject logger and collaboration service dependencies (pure)
   constructor(
     private logger: LoggerService,
     private collaborationService: DfdCollaborationService,
@@ -47,6 +49,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * @param graphContainer The HTML element containing the graph
    * @param graph The X6 graph instance
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: bind graph container and register viewport change observers for cursor repositioning (mutates shared state)
   initialize(graphContainer: HTMLElement, graph: Graph): void {
     this._graphContainer = graphContainer;
     this._graph = graph;
@@ -64,6 +67,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Called when a PresenterCursorMessage is received
    * @param position The cursor position in X6 graph coordinates
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: apply presenter cursor style and synthetic hover events for a received graph-coordinate position (mutates shared state)
   handlePresenterCursorUpdate(position: CursorPosition): void {
     // Only apply cursor if current user is not the presenter
     if (this.collaborationService.isCurrentUserPresenter()) {
@@ -139,6 +143,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Called when a PresenterSelectionMessage is received
    * Also resets the cursor timeout to keep presenter cursor active
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: keep presenter cursor active when a selection update arrives without a cursor position (mutates shared state)
   handlePresenterSelectionUpdate(): void {
     // Only apply if current user is not the presenter
     if (this.collaborationService.isCurrentUserPresenter()) {
@@ -165,6 +170,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Convert X6 graph coordinates to participant client coordinates
    * Uses X6's coordinate transformation to handle participant's pan/zoom state
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: convert graph coordinates to client viewport coordinates; return null if outside viewport (pure)
   private _convertToViewportCoordinates(graphPosition: CursorPosition): CursorPosition | null {
     if (!this._graph) {
       this.logger.warn('Cannot convert coordinates - graph not available');
@@ -221,6 +227,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Apply presenter cursor styling to the graph container
    */
+  // SEM@ee3185920be400dac8b7a46167609890b756266f: apply presenter cursor CSS class and inline style to the graph container and its children (mutates shared state)
   private _applyPresenterCursor(): void {
     if (!this._graphContainer) {
       this.logger.warn('Cannot apply presenter cursor - no graph container');
@@ -271,6 +278,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Remove presenter cursor styling and revert to normal cursor
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: revert graph container cursor styling and clear hover state after presenter cursor hides (mutates shared state)
   private _removePresenterCursor(): void {
     if (!this._graphContainer) {
       return;
@@ -303,6 +311,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Clear last hovered element and generate mouseout event
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch mouseout and mouseleave on the last hovered element to clear hover state (mutates shared state)
   private _clearLastHoveredElement(): void {
     if (this._lastHoveredElement && this._graphContainer?.contains(this._lastHoveredElement)) {
       try {
@@ -342,6 +351,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Generate synthetic mouse event to trigger X6 hover effects
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch synthetic mousemove, mouseover, and mouseout events to trigger X6 hover effects (mutates shared state)
   private _generateSyntheticMouseEvent(position: CursorPosition): void {
     if (!this._graphContainer) {
       return;
@@ -487,6 +497,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Reset the timeout for reverting to normal cursor
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: restart the inactivity timer that auto-hides the presenter cursor on expiry (mutates shared state)
   private _resetCursorTimeout(): void {
     // Clear existing timeout
     if (this._cursorTimeout) {
@@ -504,6 +515,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Force removal of presenter cursor (e.g., when presenter mode is disabled)
    */
+  // SEM@18b0c3773100d213891b30ceba933ddc2984bc76: immediately cancel the cursor timeout and remove presenter cursor styling (mutates shared state)
   forceRemovePresenterCursor(): void {
     if (this._cursorTimeout) {
       window.clearTimeout(this._cursorTimeout);
@@ -517,6 +529,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Setup window resize and scroll event handlers
    * Monitors viewport changes to recalculate cursor position
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: subscribe to window resize and scroll events to recalculate cursor position on viewport change (mutates shared state)
   private _setupViewportChangeHandling(): void {
     if (typeof window === 'undefined') {
       this.logger.warn('Window not available - skipping viewport change handling');
@@ -551,6 +564,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Setup ResizeObserver to monitor graph container size changes
    * Detects layout shifts, sidebar collapses, etc.
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: register a ResizeObserver on the graph container to recalculate cursor on layout shifts (mutates shared state)
   private _setupResizeObserver(): void {
     if (!this._graphContainer) {
       this.logger.warn('Cannot setup ResizeObserver - no graph container');
@@ -589,6 +603,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Setup IntersectionObserver to detect when graph is visible
    * Pauses cursor updates when graph is not in viewport
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: register an IntersectionObserver to pause cursor updates when the graph leaves the viewport (mutates shared state)
   private _setupIntersectionObserver(): void {
     if (!this._graphContainer) {
       this.logger.warn('Cannot setup IntersectionObserver - no graph container');
@@ -643,6 +658,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
    * Handle viewport changes by recalculating cursor position
    * Called when window resizes, scrolls, or container size changes
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: recalculate and reposition the presenter cursor after a viewport size or scroll change (mutates shared state)
   private _handleViewportChange(): void {
     if (!this._lastGraphPosition) {
       return;
@@ -688,6 +704,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   /**
    * Cleanup resources
    */
+  // SEM@b19529bc349f89512b5602367599af913bd64479: cancel timers, disconnect observers, remove cursor styling, and release references on destroy (mutates shared state)
   ngOnDestroy(): void {
     if (this._cursorTimeout) {
       window.clearTimeout(this._cursorTimeout);

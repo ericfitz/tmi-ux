@@ -9,6 +9,7 @@
 // it without violating the feature-module import restriction.
 export type { SseEvent } from '../../../core/interfaces/sse.interface';
 
+// SEM@0d2745da4e8e3843cd65f62979270c63dc57e657: union of valid chat entity kind literals (pure)
 export type EntityType = 'document' | 'repository' | 'diagram' | 'note' | 'asset' | 'threat';
 
 export interface ChatMessage {

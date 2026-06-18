@@ -53,6 +53,7 @@ export const NON_TERMINAL_TM_STATUSES: readonly string[] = [
 ];
 
 /** Factory for a default (empty) filter state */
+// SEM@4839694781b597b553d09d3892002a8098fcb0e5: build an empty dashboard filter state with all fields cleared (pure)
 export function createDefaultFilters(): DashboardFilters {
   return {
     name: '',
@@ -82,6 +83,7 @@ export function createDefaultFilters(): DashboardFilters {
  * @param userEmail Current user's email (partial-match key for owner/reviewer filter)
  * @param isSecurityReviewer Whether the current user is a security reviewer
  */
+// SEM@4839694781b597b553d09d3892002a8098fcb0e5: build role-based default filters scoping non-terminal threat models by user identity (pure)
 export function computeDefaultFilters(
   userEmail: string,
   isSecurityReviewer: boolean,
@@ -97,6 +99,7 @@ export function computeDefaultFilters(
 }
 
 /** Check whether any server-side filters are active */
+// SEM@4839694781b597b553d09d3892002a8098fcb0e5: check whether any server-side filter field is set (pure)
 export function hasActiveFilters(filters: DashboardFilters): boolean {
   return (
     filters.name.trim() !== '' ||
@@ -123,6 +126,7 @@ export function hasActiveFilters(filters: DashboardFilters): boolean {
  *
  * `name` is always advanced (moved from primary in #640 — less frequently used).
  */
+// SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: check whether any non-primary filter field is active for the user's role (pure)
 export function hasAdvancedFilters(
   filters: DashboardFilters,
   isSecurityReviewer: boolean,

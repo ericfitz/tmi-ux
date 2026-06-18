@@ -15,7 +15,9 @@ import {
  * Uses X6's standard 'shape' property for node type determination.
  */
 @Injectable()
+// SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: manage z-order operations for DFD graph cells via X6 and history tracking
 export class InfraX6ZOrderAdapter {
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: inject logger, z-order service, and history coordinator dependencies (pure)
   constructor(
     private logger: LoggerService,
     private zOrderService: ZOrderService,
@@ -25,6 +27,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move selected cells forward in z-order
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: increment z-order of all selected graph cells by one step atomically (mutates shared state)
   moveSelectedCellsForward(graph: Graph): void {
     const selectedCells = graph.getSelectedCells();
     if (selectedCells.length === 0) {
@@ -51,6 +54,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move selected cells backward in z-order
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: decrement z-order of all selected graph cells by one step atomically (mutates shared state)
   moveSelectedCellsBackward(graph: Graph): void {
     const selectedCells = graph.getSelectedCells();
     if (selectedCells.length === 0) {
@@ -77,6 +81,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move selected cells to front
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: move all selected graph cells to the highest z-order position atomically (mutates shared state)
   moveSelectedCellsToFront(graph: Graph): void {
     const selectedCells = graph.getSelectedCells();
     if (selectedCells.length === 0) {
@@ -103,6 +108,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move selected cells to back
    */
+  // SEM@a96b1b1f05df303c6b32b62e7a2b222e11785ee8: move all selected graph cells to the lowest z-order position atomically (mutates shared state)
   moveSelectedCellsToBack(graph: Graph): void {
     const selectedCells = graph.getSelectedCells();
     if (selectedCells.length === 0) {
@@ -132,6 +138,7 @@ export class InfraX6ZOrderAdapter {
    * recalculated and set to the higher value of either the zIndex for the source node they connect to,
    * or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: recalculate and apply z-order of all edges connected to a node (mutates shared state)
   updateConnectedEdgesZOrder(graph: Graph, node: Node, _nodeZIndex: number): void {
     const edges = graph.getConnectedEdges(node) || [];
 
@@ -165,6 +172,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Set the z-order of an edge to the higher of its source or target node z-orders
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: set an edge z-order to the higher of its source or target node z-orders (mutates shared state)
   setEdgeZOrderFromConnectedNodes(graph: Graph, edge: Edge): void {
     const sourceId = edge.getSourceCellId();
     const targetId = edge.getTargetCellId();
@@ -216,6 +224,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Enforce z-order invariants to ensure security boundaries are always behind other nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate and correct z-order so security boundaries stay behind other nodes (mutates shared state)
   enforceZOrderInvariants(graph: Graph): void {
     const nodes = graph.getNodes();
     const corrections = this.zOrderService.validateZOrderInvariants(nodes);
@@ -244,6 +253,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Validate and correct z-order for all nodes in the graph
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate all diagram node z-indexes and correct violations (mutates shared state)
   validateAndCorrectZOrder(graph: Graph): void {
     this.logger.info('Starting comprehensive z-order validation and correction');
 
@@ -284,6 +294,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Handle z-order restoration after node movement without embedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: restore a node's z-index after drag without embedding, enforce invariants (mutates shared state)
   handleNodeMovedZOrderRestoration(graph: Graph, node: Node): void {
     // Safety check for test environment where getData might not exist
     if (typeof node.getData !== 'function') {
@@ -336,6 +347,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Set temporary z-index for embedding operation
    */
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: store original z-index and apply temporary embedding z-index to a node (mutates shared state)
   setTemporaryEmbeddingZIndex(node: Node): void {
     // Store the original z-index before temporarily changing it using metadata
     const originalZIndex = node.getZIndex();
@@ -352,6 +364,7 @@ export class InfraX6ZOrderAdapter {
    * Apply z-index changes for embedding
    * Delegates to service for business logic
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: apply calculated z-indexes to parent and child nodes on embedding (mutates shared state)
   applyEmbeddingZIndexes(parent: Node, child: Node): void {
     // Use service to calculate proper z-indexes
     const zIndexes = this.zOrderService.calculateEmbeddingZIndexes(parent, child);
@@ -371,6 +384,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Apply z-index for unembedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: reset a node and its edges to default z-index after unembedding (mutates shared state)
   applyUnembeddingZIndex(graph: Graph, node: Node): void {
     const nodeType = (node as any).getNodeTypeInfo
       ? (node as any).getNodeTypeInfo().type
@@ -395,6 +409,7 @@ export class InfraX6ZOrderAdapter {
    * Rule: When a security boundary node is unembedded and is no longer the child of any other object,
    * its zIndex is set back to the default zIndex for security boundary nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: restore a security boundary's default z-index after it is unembedded (mutates shared state)
   applyUnembeddedSecurityBoundaryZIndex(graph: Graph, node: Node): void {
     const nodeZIndex = this.zOrderService.calculateUnembeddedSecurityBoundaryZIndex(node);
     node.setZIndex(nodeZIndex);
@@ -413,6 +428,7 @@ export class InfraX6ZOrderAdapter {
    * Rule: New nodes get z-index based on their shape - security boundaries (1), regular nodes (10), text-boxes (20)
    * Uses X6's standard 'shape' property for type determination
    */
+  // SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: assign the default z-index to a newly created diagram node by type (mutates shared state)
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
     // Get node type using getNodeTypeInfo for reliable node type detection
     // Default to 'unknown' for nodes without type info or when getNodeTypeInfo fails
@@ -453,6 +469,7 @@ export class InfraX6ZOrderAdapter {
    * Validate and correct all z-order relationships after diagram load
    * Runs comprehensive validation and fixes any violations
    */
+  // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: validate and fix all z-order violations in a freshly loaded diagram (mutates shared state)
   validateAndCorrectLoadedDiagram(graph: Graph): {
     fixed: number;
     violations: Array<{ nodeId: string; issue: string; oldZIndex: number; newZIndex: number }>;
@@ -531,6 +548,7 @@ export class InfraX6ZOrderAdapter {
    * Set z-index for new security boundary
    * Rule: New security boundary shapes are created with a lower zIndex than the default zIndex for nodes and edges
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: assign the default low z-index to a new security boundary node (mutates shared state)
   setNewSecurityBoundaryZIndex(node: Node): void {
     const zIndex = this.zOrderService.getDefaultZIndex('security-boundary');
     node.setZIndex(zIndex);
@@ -545,6 +563,7 @@ export class InfraX6ZOrderAdapter {
    * Set z-index for new node
    * Rule: New nodes (other than security boundaries) get a higher default zIndex than security boundary nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: assign the type-appropriate default z-index to a new non-boundary node (mutates shared state)
   setNewNodeZIndex(node: Node, nodeType: string): void {
     const zIndex = this.zOrderService.getDefaultZIndex(nodeType);
     node.setZIndex(zIndex);
@@ -561,6 +580,7 @@ export class InfraX6ZOrderAdapter {
    * Rule: The zIndex of new edges gets set to the higher value of either the zIndex for the source node
    * they connect to, or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: assign a new edge's z-index as the max of its two connected nodes' z-indexes (mutates shared state)
   setNewEdgeZIndex(edge: Edge, sourceNode: Node, targetNode: Node): void {
     const zIndex = this.zOrderService.getNewEdgeZIndex(sourceNode, targetNode);
     edge.setZIndex(zIndex);
@@ -580,6 +600,7 @@ export class InfraX6ZOrderAdapter {
    * Rule: On reconnecting an edge, the zIndex of the edge is recalculated and set to the higher value
    * of either the zIndex for the source node they connect to, or the zIndex for the target node they connect to
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: recalculate and update an edge's z-index after it is reconnected to new nodes (mutates shared state)
   updateEdgeZIndexOnReconnection(edge: Edge, sourceNode: Node, targetNode: Node): void {
     const newZIndex = this.zOrderService.updateEdgeZIndexOnReconnection(
       edge,
@@ -602,6 +623,7 @@ export class InfraX6ZOrderAdapter {
    * of the new parent node. This triggers cascading recalculation of zIndex values for edges connected
    * to the new child node, and then recursively to child nodes of that node and their connected edges
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: apply child z-index on embedding and cascade updates to all descendants and edges (mutates shared state)
   applyEmbeddingZIndexWithCascading(graph: Graph, parent: Node, child: Node): void {
     // Calculate and set the child's z-index
     const childZIndex = this.zOrderService.calculateEmbeddedNodeZIndex(parent, child);
@@ -624,6 +646,7 @@ export class InfraX6ZOrderAdapter {
    * Validate and correct embedding z-order hierarchy
    * Ensures embedded nodes have higher z-index than their parents
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate embedded nodes have higher z-index than parents and correct violations (mutates shared state)
   validateAndCorrectEmbeddingHierarchy(graph: Graph): void {
     const nodes = graph.getNodes();
     const violations = this.zOrderService.validateEmbeddingZOrderHierarchy(nodes);
@@ -654,6 +677,7 @@ export class InfraX6ZOrderAdapter {
    * Recursively update z-index for descendant nodes and their connected edges
    * Supporting method for cascading z-index updates during embedding
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: recursively update z-indexes for all descendant nodes and their connected edges (mutates shared state)
   private updateDescendantNodesZIndex(graph: Graph, parentNode: Node): void {
     const descendants = this.zOrderService.getDescendantNodesForCascadingUpdate(parentNode);
 
@@ -681,8 +705,10 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move a single cell forward in z-order
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: increment a diagram cell's z-index by one step forward past non-selected cells (mutates shared state)
   private moveCellForward(graph: Graph, cell: Cell): void {
     const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a diagram cell is currently selected in the graph (pure)
     const isSelected = (c: Cell) => graph.isSelected(c);
 
     const newZIndex = this.zOrderService.calculateMoveForwardZIndex(cell, allCells, isSelected);
@@ -704,8 +730,10 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move a single cell backward in z-order
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: decrement a diagram cell's z-index by one step backward past non-selected cells (mutates shared state)
   private moveCellBackward(graph: Graph, cell: Cell): void {
     const allCells = [...graph.getNodes(), ...graph.getEdges()];
+    // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a diagram cell is currently selected in the graph (pure)
     const isSelected = (c: Cell) => graph.isSelected(c);
 
     const newZIndex = this.zOrderService.calculateMoveBackwardZIndex(cell, allCells, isSelected);
@@ -727,6 +755,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move a single cell to the front
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: set a diagram cell's z-index to the maximum across all cells (mutates shared state)
   private moveCellToFront(graph: Graph, cell: Cell): void {
     const allCells = [...graph.getNodes(), ...graph.getEdges()];
 
@@ -746,6 +775,7 @@ export class InfraX6ZOrderAdapter {
   /**
    * Move a single cell to the back
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: set a diagram cell's z-index to the minimum across all cells (mutates shared state)
   private moveCellToBack(graph: Graph, cell: Cell): void {
     const allCells = [...graph.getNodes(), ...graph.getEdges()];
 
@@ -769,6 +799,7 @@ export class InfraX6ZOrderAdapter {
    *
    * @param graph The X6 graph instance
    */
+  // SEM@de544147454a028d516f46db42c16b0ca0b3a9a5: recompute z-indexes for all graph cells outside history, fixing all violations (mutates shared state)
   recalculateZOrder(graph: Graph): void {
     // Temporarily disable history recording
     const historyEnabled = (graph as any).isHistoryEnabled

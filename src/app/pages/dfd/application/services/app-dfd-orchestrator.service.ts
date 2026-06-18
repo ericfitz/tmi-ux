@@ -99,6 +99,7 @@ export interface ExportFormat {
 }
 
 @Injectable()
+// SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: orchestrate DFD state, operations, persistence, collaboration, and history (mutates shared state)
 export class AppDfdOrchestrator {
   private readonly _state$ = new BehaviorSubject<DfdState>(this._createInitialState());
   private readonly _stateChanged$ = new Subject<DfdState>();
@@ -126,6 +127,7 @@ export class AppDfdOrchestrator {
 
   private _totalErrors = 0;
 
+  // SEM@669c7f6fde976a12f0c634c95e5eff802d8934aa: inject all orchestrator dependencies and register event integration (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly authService: AuthService,
@@ -156,6 +158,7 @@ export class AppDfdOrchestrator {
   /**
    * Initialize the DFD system
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: bootstrap the DFD graph system with diagram params and set initialized state (mutates shared state)
   initialize(params: DfdInitializationParams): Observable<boolean> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Initializing DFD system', {
       diagramId: params.diagramId,
@@ -201,6 +204,7 @@ export class AppDfdOrchestrator {
   /**
    * Execute a single graph operation
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch a single graph operation and mark unsaved changes on success (mutates shared state)
   executeOperation(operation: GraphOperation): Observable<OperationResult> {
     if (!this._operationContext) {
       return throwError(() => new Error('DFD system not initialized'));
@@ -243,6 +247,7 @@ export class AppDfdOrchestrator {
   /**
    * Execute multiple operations as a batch
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispatch multiple graph operations atomically and mark unsaved changes on partial success (mutates shared state)
   executeBatch(operations: GraphOperation[]): Observable<OperationResult[]> {
     if (!this._operationContext) {
       return throwError(() => new Error('DFD system not initialized'));
@@ -288,6 +293,7 @@ export class AppDfdOrchestrator {
    * In collaboration mode: sends WebSocket undo message and waits for server response
    * In solo mode: executes local undo operation
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: reverse the last diagram operation, local or via WebSocket in collaboration mode (mutates shared state)
   undo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Undo requested');
     return this._executeUndoRedo('undo');
@@ -298,6 +304,7 @@ export class AppDfdOrchestrator {
    * In collaboration mode: sends WebSocket redo message and waits for server response
    * In solo mode: executes local redo operation
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: reapply the last undone diagram operation, local or via WebSocket in collaboration mode (mutates shared state)
   redo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Redo requested');
     return this._executeUndoRedo('redo');
@@ -306,6 +313,7 @@ export class AppDfdOrchestrator {
   /**
    * Check if undo is available
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return whether an undo operation is available in the history (pure)
   canUndo(): boolean {
     return this.appHistoryService.canUndo();
   }
@@ -313,6 +321,7 @@ export class AppDfdOrchestrator {
   /**
    * Check if redo is available
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return whether a redo operation is available in the history (pure)
   canRedo(): boolean {
     return this.appHistoryService.canRedo();
   }
@@ -320,6 +329,7 @@ export class AppDfdOrchestrator {
   /**
    * Get the current history state
    */
+  // SEM@dcc26636484a107ea066ba46529d1006c50fff37: fetch current undo/redo history state snapshot (pure)
   getHistoryState(): Readonly<import('../../types/history.types').HistoryState> {
     return this.appHistoryService.getHistoryState();
   }
@@ -327,6 +337,7 @@ export class AppDfdOrchestrator {
   /**
    * Get the history service instance
    */
+  // SEM@e9ca914ffc3220cf3f567742e85cd2757a0e3ef5: return the history service instance for external access (pure)
   getHistoryService(): AppHistoryService {
     return this.appHistoryService;
   }
@@ -334,6 +345,7 @@ export class AppDfdOrchestrator {
   /**
    * Manually save the diagram
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: persist the diagram to the API, using WebSocket if collaborating (mutates shared state)
   save(): Observable<boolean> {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return throwError(() => new Error('DFD system not initialized'));
@@ -385,6 +397,7 @@ export class AppDfdOrchestrator {
    * Load diagram data
    * Delegates to loadDiagram() and returns a boolean indicating success
    */
+  // SEM@0664e75572fc35c806bbb77be7084355fbc9e2df: fetch and restore diagram data from the API, returning success flag
   load(diagramId?: string): Observable<boolean> {
     // Delegate to loadDiagram with forceLoad=true to skip unsaved changes check
     // (load() is used during initialization when there are no unsaved changes to protect)
@@ -397,6 +410,7 @@ export class AppDfdOrchestrator {
   /**
    * Export diagram in various formats
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: serialize the diagram to a Blob in the requested format (SVG, PNG, JPEG, or JSON)
   export(format: ExportFormat): Observable<Blob> {
     const graph = this.getGraph;
     if (!graph) {
@@ -510,6 +524,7 @@ export class AppDfdOrchestrator {
   /**
    * Auto-save management
    */
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: return current auto-save configuration and unsaved-changes status snapshot (pure)
   getAutoSaveState(): any {
     return {
       enabled: this._autoSaveEnabled,
@@ -519,11 +534,13 @@ export class AppDfdOrchestrator {
     };
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: activate automatic diagram saving on changes (mutates shared state)
   enableAutoSave(): void {
     this._autoSaveEnabled = true;
     this.logger.debugComponent('AppDfdOrchestrator', 'Auto-save enabled');
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: deactivate automatic diagram saving on changes (mutates shared state)
   disableAutoSave(): void {
     this._autoSaveEnabled = false;
     this.logger.debugComponent('AppDfdOrchestrator', 'Auto-save disabled');
@@ -538,6 +555,7 @@ export class AppDfdOrchestrator {
   /**
    * Selection management
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: select all cells in the diagram graph (mutates shared state)
   selectAll(): void {
     const graph = this.getGraph;
     if (graph) {
@@ -550,6 +568,7 @@ export class AppDfdOrchestrator {
     }
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: deselect all currently selected diagram cells (mutates shared state)
   clearSelection(): void {
     const graph = this.getGraph;
     if (graph) {
@@ -565,6 +584,7 @@ export class AppDfdOrchestrator {
     }
   }
 
+  // SEM@dfe56e975b9e789625d7d71cc24336dd69b5d3a7: return the IDs of all currently selected diagram cells (pure)
   getSelectedCells(): string[] {
     const graph = this.getGraph;
     if (!graph) {
@@ -579,6 +599,7 @@ export class AppDfdOrchestrator {
   /**
    * Viewport management
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: scale and center the diagram viewport to fit all content (mutates shared state)
   zoomToFit(): void {
     const graph = this.getGraph;
     if (graph) {
@@ -591,6 +612,7 @@ export class AppDfdOrchestrator {
   /**
    * State management
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: toggle diagram edit-lock and propagate read-only flag to graph and state (mutates shared state)
   setReadOnlyMode(readOnly: boolean): void {
     this._updateState({ readOnly });
     // Propagate to app state service for broadcaster and other services
@@ -600,14 +622,17 @@ export class AppDfdOrchestrator {
     this.logger.debugComponent('AppDfdOrchestrator', 'Read-only mode changed', { readOnly });
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: delegate read-only flag to setReadOnlyMode (mutates shared state)
   setReadOnly(readOnly: boolean): void {
     this.setReadOnlyMode(readOnly);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: return the current diagram orchestrator state snapshot (pure)
   getState(): DfdState {
     return this._state$.value;
   }
 
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: store diagram name, description, and report/AI flags into orchestrator state (mutates shared state)
   updateDiagramMetadata(metadata: {
     diagramName?: string;
     diagramDescription?: string;
@@ -662,6 +687,7 @@ export class AppDfdOrchestrator {
   /**
    * Event handling
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: notify the diagram graph to recalculate its dimensions on window resize (mutates shared state)
   handleWindowResize(): void {
     const graph = this.getGraph;
     if (graph) {
@@ -669,6 +695,7 @@ export class AppDfdOrchestrator {
     }
   }
 
+  // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: dispatch diagram actions for recognized keyboard shortcuts and return handled flag (mutates shared state)
   handleKeyboardShortcut(shortcut: string): boolean {
     switch (shortcut) {
       case 'ctrl+s':
@@ -718,6 +745,7 @@ export class AppDfdOrchestrator {
     }
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: suppress default browser context menu on diagram canvas (pure)
   handleContextMenu(event: MouseEvent): boolean {
     this.logger.debugComponent('AppDfdOrchestrator', 'Context menu handled', {
       x: event.clientX,
@@ -739,8 +767,11 @@ export class AppDfdOrchestrator {
   /**
    * High-level user actions
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build and dispatch a create-node operation for the diagram graph (mutates shared state)
   addNode(nodeData: NodeData): Observable<OperationResult>;
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build and dispatch a create-node operation for the diagram graph (mutates shared state)
   addNode(nodeType: string, position?: { x: number; y: number }): Observable<OperationResult>;
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build and dispatch a create-node operation for the diagram graph (mutates shared state)
   addNode(
     nodeDataOrType: NodeData | string,
     position?: { x: number; y: number },
@@ -872,6 +903,7 @@ export class AppDfdOrchestrator {
     }
   }
 
+  // SEM@c907a138ac7dbff649533567f8f27d3bb53e1895: delete all currently selected diagram cells and mark diagram as unsaved (mutates shared state)
   deleteSelectedCells(): Observable<OperationResult> {
     const graph = this.getGraph;
     if (!graph) {
@@ -912,6 +944,7 @@ export class AppDfdOrchestrator {
   /**
    * Save/Load aliases
    */
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: trigger a user-initiated diagram save (mutates shared state)
   saveManually(): Observable<any> {
     return this.save();
   }
@@ -919,6 +952,7 @@ export class AppDfdOrchestrator {
   /**
    * Save diagram manually with image data (for thumbnails)
    */
+  // SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: save the diagram with an SVG thumbnail to persistence (mutates shared state)
   saveManuallyWithImage(imageData: { svg?: string }): Observable<any> {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return throwError(() => new Error('DFD system not initialized'));
@@ -963,8 +997,11 @@ export class AppDfdOrchestrator {
     );
   }
 
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
   loadDiagram(forceLoad?: boolean): Observable<any>;
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
   loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
   loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {
     let targetDiagramId: string | undefined;
     let shouldForceLoad: boolean;
@@ -1082,6 +1119,7 @@ export class AppDfdOrchestrator {
   /**
    * Export aliases
    */
+  // SEM@e727b5931f6efd6cf61c25837601eff84c732dac: export the diagram to a blob in the requested format (pure)
   exportDiagram(format: string): Observable<Blob> {
     return this.export({ format: format as any });
   }
@@ -1089,19 +1127,23 @@ export class AppDfdOrchestrator {
   /**
    * Event handling aliases
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: handle a window resize event by delegating to the resize handler (mutates shared state)
   onWindowResize(): void {
     this.handleWindowResize();
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: dispatch a keyboard shortcut from a keydown event (pure)
   onKeyDown(event: KeyboardEvent): boolean {
     const shortcut = this._getKeyboardShortcut(event);
     return this.handleKeyboardShortcut(shortcut);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: handle a context menu event and suppress the default browser menu (pure)
   onContextMenu(event: MouseEvent): boolean {
     return this.handleContextMenu(event);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: convert a keyboard event to a canonical shortcut string (pure)
   private _getKeyboardShortcut(event: KeyboardEvent): string {
     const parts = [];
     if (event.ctrlKey) parts.push('ctrl');
@@ -1114,10 +1156,12 @@ export class AppDfdOrchestrator {
   /**
    * Statistics and monitoring
    */
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: return a snapshot copy of current diagram operation statistics (pure)
   getStats(): DfdStats {
     return { ...this._stats };
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: reset all diagram operation statistics counters to zero (mutates shared state)
   resetStats(): void {
     this._stats = {
       totalOperations: 0,
@@ -1136,6 +1180,7 @@ export class AppDfdOrchestrator {
   /**
    * Cleanup and destruction
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: dispose the graph infrastructure and reset orchestrator to initial state (mutates shared state)
   destroy(): Observable<boolean> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Destroying DFD system');
 
@@ -1151,6 +1196,7 @@ export class AppDfdOrchestrator {
     return of(true);
   }
 
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: destroy and reinitialize the DFD system with existing params (mutates shared state)
   reset(): Observable<boolean> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Resetting DFD system');
 
@@ -1167,6 +1213,7 @@ export class AppDfdOrchestrator {
   /**
    * Private implementation methods
    */
+  // SEM@443bb2baf6804860c314efdbf2540a0fd6dee8f2: initialize graph infrastructure, WebSocket, and collaboration services (mutates shared state)
   private _performInitialization(params: DfdInitializationParams): Observable<boolean> {
     // Initialize the graph through the infrastructure facade instead of creating our own
     this.dfdInfrastructure.initializeGraph(params.containerElement);
@@ -1200,6 +1247,7 @@ export class AppDfdOrchestrator {
     return this._continueInitialization(params);
   }
 
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: build operation context and load existing diagram data after graph setup (mutates shared state)
   private _continueInitialization(params: DfdInitializationParams): Observable<boolean> {
     // Graph is now properly initialized by the facade with history filtering
     // Create operation context using the facade's graph
@@ -1276,6 +1324,7 @@ export class AppDfdOrchestrator {
     );
   }
 
+  // SEM@99432db5bab9519af796a5c794b160d0fbad7d0a: wire internal event streams for history, autosave, and resync (mutates shared state)
   private _setupEventIntegration(): void {
     // Subscribe to operation completion events for history recording
     this.appGraphOperationManager.operationCompleted$.subscribe(event => {
@@ -1315,6 +1364,7 @@ export class AppDfdOrchestrator {
   /**
    * Handle operation completed event - record history for user interactions
    */
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: record a completed user-interaction operation into the undo history (mutates shared state)
   private _handleOperationCompleted(event: OperationCompletedEvent): void {
     const { operation, result, context } = event;
 
@@ -1349,6 +1399,7 @@ export class AppDfdOrchestrator {
   /**
    * Check if operation should be recorded in history
    */
+  // SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: filter whether an operation qualifies for undo history recording (pure)
   private _shouldRecordInHistory(operation: GraphOperation, result: OperationResult): boolean {
     // Explicit opt-in required
     if (!operation.includeInHistory) {
@@ -1418,6 +1469,7 @@ export class AppDfdOrchestrator {
   /**
    * Get cells by their IDs from the graph
    */
+  // SEM@81aa9c6235bc668ec41b8e26b5c7323c6c3df354: fetch and normalize graph cells by their IDs from the graph (reads DB)
   private _getCellsById(cellIds: string[]): any[] {
     const graph = this.dfdInfrastructure.getGraph();
     if (!graph) {
@@ -1437,6 +1489,7 @@ export class AppDfdOrchestrator {
   /**
    * Create a history entry from an operation
    */
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: build a history entry from a graph operation and its result (pure)
   private _createHistoryEntry(
     operation: GraphOperation,
     result: OperationResult,
@@ -1477,6 +1530,7 @@ export class AppDfdOrchestrator {
   /**
    * Handle drag completion events - record final drag state in history and broadcast to collaborators
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: record a completed drag operation as a history entry (mutates shared state)
   private _handleDragCompletion(dragCompletion: any): void {
     const graph = this.dfdInfrastructure.getGraph();
     if (!graph) {
@@ -1547,6 +1601,7 @@ export class AppDfdOrchestrator {
   }
 
   /** Check whether a drag operation actually changed the cell state. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: validate whether a drag operation produced a measurable cell state change (pure)
   private _hasDragChanged(
     dragType: string,
     initialState: any,
@@ -1581,6 +1636,7 @@ export class AppDfdOrchestrator {
   }
 
   /** Build the previous-state payload for a drag history entry. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: build the pre-drag cell state snapshot for a history entry (pure)
   private _buildDragPreviousState(dragType: string, initialState: any): Record<string, unknown> {
     switch (dragType) {
       case 'move':
@@ -1595,6 +1651,7 @@ export class AppDfdOrchestrator {
   }
 
   /** Build the current-state payload for a drag history entry. */
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: build the post-drag cell state snapshot for a history entry (pure)
   private _buildDragCurrentState(
     dragType: string,
     cell: any,
@@ -1629,10 +1686,12 @@ export class AppDfdOrchestrator {
     vertex: 'change-vertices',
   };
 
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: map a drag type to its human-readable history label (pure)
   private _dragDescription(dragType: string): string {
     return AppDfdOrchestrator.DRAG_DESCRIPTIONS[dragType] || 'Unknown Operation';
   }
 
+  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: convert a drag type string to its HistoryOperationType enum value (pure)
   private _dragOperationType(dragType: string): HistoryOperationType {
     return AppDfdOrchestrator.DRAG_OPERATION_TYPES[dragType] || 'move-node';
   }
@@ -1641,6 +1700,7 @@ export class AppDfdOrchestrator {
    * Handle diagram_state_sync event from WebSocket when joining collaboration
    * This loads the initial diagram state without triggering any broadcasts
    */
+  // SEM@45bebd666a6507589bf129e5a99c6d8232350abd: load initial diagram state from a collaboration sync WebSocket event (mutates shared state)
   private _handleDiagramStateSync(event: {
     diagram_id: string;
     update_vector: number | null;
@@ -1689,6 +1749,7 @@ export class AppDfdOrchestrator {
   /**
    * Generate human-readable description for operation
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: format a human-readable label for a graph operation and cell count (pure)
   private _generateOperationDescription(operation: GraphOperation, cellCount: number): string {
     // Try to infer a specific description from update operations
     const specific = this._describeUpdateOperation(operation, cellCount);
@@ -1715,6 +1776,7 @@ export class AppDfdOrchestrator {
    * Infer a specific description from node/edge update operations based on what changed.
    * Returns null if no specific description applies.
    */
+  // SEM@9bbddd20c1a355788e020707ed179a55cd0de167: infer a specific operation label from node/edge update field changes (pure)
   private _describeUpdateOperation(operation: GraphOperation, cellCount: number): string | null {
     if (operation.type === 'update-node') {
       const { updates } = operation as UpdateNodeOperation;
@@ -1742,6 +1804,7 @@ export class AppDfdOrchestrator {
    * Map GraphOperation type to HistoryOperationType
    * Provides detailed mapping including inference from update operations
    */
+  // SEM@81920bff00dd19b31802843dfe3f0faef4005667: convert a graph operation type to a fine-grained HistoryOperationType (pure)
   private _mapToHistoryOperationType(opType: string, operation?: GraphOperation): string {
     // For node update operations, infer more specific history type from what changed
     if (opType === 'update-node' && operation) {
@@ -1801,6 +1864,7 @@ export class AppDfdOrchestrator {
   /**
    * Simplified autosave logic - no queue, no complex tracking
    */
+  // SEM@e7dd6955882ba4be469447e879cf0576655cd710: persist diagram changes via REST or WebSocket autosave after each history step
   private _triggerAutoSave(historyIndex: number, _isUndo: boolean, _isRedo: boolean): void {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
@@ -1909,6 +1973,7 @@ export class AppDfdOrchestrator {
   /**
    * Check if we're using local provider without server connection
    */
+  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: validate whether the local auth provider is offline from the server (pure)
   private _isLocalProviderOffline(): boolean {
     const isLocalProvider = (this.authService as any).isUsingLocalProvider;
     const isServerReachable = this.serverConnectionService.currentDetailedStatus.isServerReachable;
@@ -1916,6 +1981,7 @@ export class AppDfdOrchestrator {
     return isLocalProvider && !isServerReachable;
   }
 
+  // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: fetch normalized nodes and edges from the live graph for persistence
   private _getGraphData(): { nodes: any[]; edges: any[] } | null {
     const graph = this.dfdInfrastructure.getGraph();
     if (!graph) {
@@ -1941,6 +2007,7 @@ export class AppDfdOrchestrator {
   /**
    * Convert data URI to Blob for image exports
    */
+  // SEM@e727b5931f6efd6cf61c25837601eff84c732dac: convert a base64 data URI to a typed Blob for image export (pure)
   private _dataUriToBlob(dataUri: string, mimeType: string): Blob {
     const byteString = atob(dataUri.split(',')[1]);
     const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -1957,6 +2024,7 @@ export class AppDfdOrchestrator {
    * Shared undo/redo implementation
    * Handles collaboration check, WebSocket vs solo branching, and post-operation cleanup
    */
+  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: dispatch undo or redo via WebSocket in collaboration mode or local history service
   private _executeUndoRedo(direction: 'undo' | 'redo'): Observable<OperationResult> {
     // Check if in active collaboration session
     const isCollaborating = this.collaborationService.isCollaborating();
@@ -2000,12 +2068,14 @@ export class AppDfdOrchestrator {
     );
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: flag the diagram as having unsaved changes in orchestrator state (mutates shared state)
   private _markUnsavedChanges(): void {
     if (!this._state$.value.hasUnsavedChanges) {
       this._updateState({ hasUnsavedChanges: true });
     }
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: merge a partial DfdState patch into the orchestrator state stream (mutates shared state)
   private _updateState(partialState: Partial<DfdState>): void {
     const currentState = this._state$.value;
     const newState = { ...currentState, ...partialState };
@@ -2013,6 +2083,7 @@ export class AppDfdOrchestrator {
     this._stateChanged$.next(newState);
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: recompute uptime, operations-per-minute, and error-rate metrics (mutates shared state)
   private _updateStats(): void {
     const uptimeMs = Date.now() - this._startTime;
     const uptimeMinutes = uptimeMs / (1000 * 60);
@@ -2026,6 +2097,7 @@ export class AppDfdOrchestrator {
     };
   }
 
+  // SEM@00558ec66867848e260e04954f555ab98f64f0e4: build the default zeroed DfdState for orchestrator initialization (pure)
   private _createInitialState(): DfdState {
     return {
       initialized: false,

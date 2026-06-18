@@ -124,6 +124,7 @@ import { getErrorMessage } from '@app/shared/utils/http-error.utils';
     ]),
   ],
 })
+// SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: list, filter, search, and manage threat models on the main dashboard
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModels: TMListItem[] = [];
   dataSource = new MatTableDataSource<TMListItem>([]);
@@ -184,6 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private collaborationSessionsSubscription: Subscription | null = null;
   private currentLocale: string = 'en-US';
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject dashboard dependencies including router, services, and dialog (mutates shared state)
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -201,6 +203,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private userPreferencesService: UserPreferencesService,
   ) {}
 
+  // SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: initialize filters, subscriptions, and data load from URL params and user role (mutates shared state)
   ngOnInit(): void {
     // Load view preference from localStorage
     this.loadViewPreference();
@@ -311,6 +314,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: unsubscribe all subscriptions and stop collaboration session polling
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -329,6 +333,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.collaborationSessionService.unsubscribeFromSessionPolling();
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: wire sort and custom sort ordering that pins active-session threat models first
   ngAfterViewInit(): void {
     // Set up sorting after view is initialized
     this.dataSource.sort = this.sort;
@@ -363,11 +368,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   // --- Search and filter handlers ---
 
   /** Handle client-side search input changes */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: dispatch debounced client-side search text change (mutates shared state)
   onSearchChange(value: string): void {
     this.searchChanged$.next(value);
   }
 
   /** Clear just the client-side search text */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: reset client-side search text and refresh the filtered list (mutates shared state)
   clearSearch(): void {
     this.searchText = '';
     this.applyLocalSearch();
@@ -376,27 +383,33 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Handle debounced server-side text filter input changes */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: dispatch a name filter value change to the debounced server filter stream (mutates shared state)
   onNameFilterChange(value: string): void {
     this.nameFilterChanged$.next(value);
   }
 
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: dispatch a description filter value change to the debounced server filter stream (mutates shared state)
   onDescriptionFilterChange(value: string): void {
     this.descriptionFilterChanged$.next(value);
   }
 
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: dispatch an owner filter value change to the debounced server filter stream (mutates shared state)
   onOwnerFilterChange(value: string): void {
     this.ownerFilterChanged$.next(value);
   }
 
+  // SEM@4839694781b597b553d09d3892002a8098fcb0e5: dispatch a security reviewer filter value change to the debounced server filter stream (mutates shared state)
   onSecurityReviewerFilterChange(value: string): void {
     this.securityReviewerFilterChanged$.next(value);
   }
 
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: dispatch an issue URI filter value change to the debounced server filter stream (mutates shared state)
   onIssueUriFilterChange(value: string): void {
     this.issueUriFilterChanged$.next(value);
   }
 
   /** Handle immediate server-side filter changes (dropdowns, date pickers) */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: handle an immediate server filter change by reloading the first page and syncing the URL (mutates shared state)
   onServerFilterChange(): void {
     this.pageIndex = 0;
     this.loadData();
@@ -404,6 +417,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Clear all server-side filters and client-side search */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: reset all filters and search text, reload the first page, and sync the URL (mutates shared state)
   clearAllFilters(): void {
     this.searchText = '';
     this.filters = createDefaultFilters();
@@ -434,6 +448,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // --- Threat model operations ---
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: open a creation dialog and navigate to the new threat model on confirmation
   createThreatModel(): void {
     const dialogRef = this.dialog.open(CreateThreatModelDialogComponent, {
       width: '500px',
@@ -468,6 +483,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: navigate to the threat model editor for a given threat model ID
   openThreatModel(id: string): void {
     void this.router.navigate(['/tm', id]);
   }
@@ -475,6 +491,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Format a date according to the current locale
    */
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: format a date string as a locale-aware date, returning an em dash for null (pure)
   formatDate(date: string | null | undefined): string {
     if (!date) {
       return '—';
@@ -497,6 +514,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Format session start time as a relative time string
    */
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: format a session start time as a human-readable relative or absolute time (pure)
   formatSessionTime(startedAt: Date): string {
     const now = new Date();
     const diffMs = now.getTime() - startedAt.getTime();
@@ -519,6 +537,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: format a numeric time offset as a locale-aware relative time string (pure)
   private formatRelativeTime(value: number, unit: 'minute' | 'hour'): string {
     try {
       if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
@@ -538,6 +557,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return `${absValue} ${unitText}${pluralSuffix} ago`;
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: confirm and delete a threat model, adjusting pagination and reloading the list
   deleteThreatModel(id: string, event: MouseEvent): void {
     event.stopPropagation();
 
@@ -599,19 +619,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@58199797d1f701be76b302f0560d7259f90f6825: return active collaboration sessions for a given threat model (pure)
   getSessionsForTm(tmId: string): CollaborationSession[] {
     return this.currentSessionMap.get(tmId) || [];
   }
 
+  // SEM@58199797d1f701be76b302f0560d7259f90f6825: return whether a threat model has any active collaboration sessions (pure)
   hasActiveSessions(tmId: string): boolean {
     return this.currentSessionMap.has(tmId);
   }
 
+  // SEM@58199797d1f701be76b302f0560d7259f90f6825: toggle expanded row state for a threat model in the list (mutates shared state)
   toggleRowExpansion(tmId: string, event: MouseEvent): void {
     event.stopPropagation();
     this.expandedTmId = this.expandedTmId === tmId ? null : tmId;
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: reload the current page of threat models from the server
   refreshThreatModels(): void {
     this.loadData();
   }
@@ -623,6 +647,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Pagination params (PAGE, SIZE) do NOT count — only filter/search presence
    * determines whether defaults apply on fresh visit.
    */
+  // SEM@81a32062eea63fd38be41293a7faaafddd14eef1: return whether URL query params contain any filter or search value, excluding pagination (pure)
   private hasAnyFilterOrSearchParam(params: Params): boolean {
     const keys = [
       PAGINATION_QUERY_PARAMS.SEARCH,
@@ -646,6 +671,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Apply role-based default filters and push them into the URL so refresh is stable.
    * No-op if the user profile is not yet available.
    */
+  // SEM@4839694781b597b553d09d3892002a8098fcb0e5: set default filters based on the current user's role and sync to the URL (mutates shared state)
   private applyRoleBasedDefaults(): void {
     const userEmail = this.authService.userEmail;
     if (!userEmail) {
@@ -655,7 +681,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateUrl();
   }
 
+  // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: extract a sortable scalar value from a threat model list item for a given column (pure)
   private _getSortValue(item: TMListItem, property: string): string | number {
+    // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: convert a nullable date string to a numeric timestamp for sorting (pure)
     const dateAccessor = (field: string | null | undefined): number =>
       field ? new Date(field).getTime() : 0;
 
@@ -676,6 +704,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Set up a debounced subscription for a server-side text filter input.
    */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: subscribe a subject to debounced server filter updates, reloading data and syncing URL on change (mutates shared state)
   private setupDebouncedServerFilter(
     subject: Subject<string>,
     setter: (value: string) => void,
@@ -693,6 +722,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Load threat models data with pagination and server-side filters.
    */
+  // SEM@4839694781b597b553d09d3892002a8098fcb0e5: fetch a paginated, filtered page of threat models from the server and update component state
   private loadData(): void {
     this.isLoadingThreatModels = true;
     this.cdr.detectChanges();
@@ -730,6 +760,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: handle pagination change by updating page state, reloading data, and syncing the URL (mutates shared state)
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -741,6 +772,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Update URL query parameters to reflect current pagination, search, and filter state.
    * Only includes non-default values to keep URLs clean.
    */
+  // SEM@4839694781b597b553d09d3892002a8098fcb0e5: sync current pagination, search, and filter state into the URL query parameters (mutates shared state)
   private updateUrl(): void {
     const queryParams: Params = {};
 
@@ -803,6 +835,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: navigate to a diagram's collaboration session by diagram ID
   openCollaborationSession(diagramId: string): void {
     this.collaborationSessions$
       .pipe(
@@ -823,6 +856,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  // SEM@0bcd08b2b9d7e58cab0d45d983d79c4a0aebe381: prompt user to select a JSON file and import a threat model
   async import(): Promise<void> {
     try {
       let fileHandle: FileSystemFileHandle;
@@ -867,6 +901,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: fetch a user-selected JSON file via a hidden file input element (pure)
   private selectFileViaInput(): Promise<File> {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input');
@@ -890,6 +925,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: validate and store a threat model payload, then navigate to it (reads DB)
   private async importThreatModel(data: Record<string, unknown>): Promise<void> {
     this.isImporting = true;
     try {
@@ -932,6 +968,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // SEM@0bcd08b2b9d7e58cab0d45d983d79c4a0aebe381: notify the user of import success and route to the new threat model
   private navigateToImportedModel(model: ThreatModel): void {
     this.snackBar.open(
       this.transloco.translate('threatModels.importSuccess', { name: model.name }),
@@ -942,6 +979,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     void this.router.navigate(['/tm', model.id]);
   }
 
+  // SEM@0bcd08b2b9d7e58cab0d45d983d79c4a0aebe381: display an error message to the user via snack bar
   private showError(message: string): void {
     this.snackBar.open(message, this.transloco.translate('common.close'), {
       duration: 5000,
@@ -949,11 +987,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: fetch the saved dashboard view preference and apply it (reads DB)
   private loadViewPreference(): void {
     const prefs = this.userPreferencesService.getPreferences();
     this.dashboardListView = prefs.dashboardListView;
   }
 
+  // SEM@475447f9dd60d5ee2995b4b85ea1a4cf4d3972b7: toggle between list and grid view, persisting the preference (mutates shared state)
   toggleViewMode(): void {
     this.dashboardListView = !this.dashboardListView;
 
@@ -968,6 +1008,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Apply client-side search and collaboration-session-first sorting.
    * This operates on the already-fetched (server-filtered) threat models.
    */
+  // SEM@2878e13b8ddba5a0430504d19654a3570f619a6c: filter and sort threat models by search text, active sessions first (mutates shared state)
   private applyLocalSearch(): void {
     const search = this.searchText.toLowerCase().trim();
     let filtered: TMListItem[];

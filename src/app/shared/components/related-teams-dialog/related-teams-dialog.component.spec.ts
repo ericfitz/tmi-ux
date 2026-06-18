@@ -27,10 +27,12 @@ describe('RelatedTeamsDialogComponent', () => {
 
   const otherTeam: TeamListItem = { id: 'team-9', name: 'Other Team' } as TeamListItem;
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build a test Team fixture with optional related teams list (pure)
   function makeTeam(related: RelatedTeam[] = []): Team {
     return { id: 'team-1', name: 'Team A', related_teams: related } as Team;
   }
 
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct and initialize a RelatedTeamsDialogComponent under test injection context (pure)
   function build(data: RelatedTeamsDialogData): RelatedTeamsDialogComponent {
     const component = runInInjectionContext(
       envInjector,

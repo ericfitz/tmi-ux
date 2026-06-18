@@ -19,9 +19,13 @@ describe('PdfTableRenderer', () => {
   };
 
   const mockLogger = {
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op stub for logger info method in test doubles (pure)
     info: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op stub for logger warn method in test doubles (pure)
     warn: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op stub for logger error method in test doubles (pure)
     error: () => {},
+    // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: no-op stub for logger debugComponent method in test doubles (pure)
     debugComponent: () => {},
   };
 

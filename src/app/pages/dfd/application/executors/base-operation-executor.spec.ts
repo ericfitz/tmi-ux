@@ -16,13 +16,16 @@ import { GraphOperation, OperationResult } from '../../types/graph-operation.typ
 /**
  * Concrete subclass that surfaces the protected helpers for testing.
  */
+// SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: test double exposing protected executor methods for unit testing (pure)
 class TestExecutor extends BaseOperationExecutor {
   readonly priority = 1;
 
+  // SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: report that this test executor can handle any operation (pure)
   canExecute(): boolean {
     return true;
   }
 
+  // SEM@6c7c587ae74d8557ebdb352ebc28243df819dc5a: execute a graph operation and return a success result observable (pure)
   execute(operation: GraphOperation): ReturnType<BaseOperationExecutor['execute']> {
     return of(this.createSuccessResult(operation, []));
   }

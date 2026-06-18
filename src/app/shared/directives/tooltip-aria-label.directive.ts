@@ -16,14 +16,17 @@ import { MatTooltip } from '@angular/material/tooltip';
   selector: '[matTooltip]',
   standalone: true,
 })
+// SEM@a2718c6639d2663815853956081172a283078b34: directive that syncs aria-label to the matTooltip message each change detection cycle
 export class TooltipAriaLabelDirective implements DoCheck {
   private _lastMessage = '';
 
+  // SEM@a2718c6639d2663815853956081172a283078b34: inject the MatTooltip and host element reference (pure)
   constructor(
     private _tooltip: MatTooltip,
     private _elementRef: ElementRef<HTMLElement>,
   ) {}
 
+  // SEM@a2718c6639d2663815853956081172a283078b34: sync aria-label attribute to tooltip message on each change detection cycle (mutates shared state)
   ngDoCheck(): void {
     const message = this._tooltip.message;
     if (message !== this._lastMessage) {

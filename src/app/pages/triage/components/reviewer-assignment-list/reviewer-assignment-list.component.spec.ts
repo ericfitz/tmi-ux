@@ -67,6 +67,7 @@ describe('ReviewerAssignmentListComponent', () => {
     display_name: 'Current User',
   };
 
+  // SEM@bc246638296101120ee12c9a3cdb6b0f93f13e71: build a default TMListItem fixture with optional field overrides (pure)
   const makeTMListItem = (overrides: Partial<TMListItem> = {}): TMListItem => ({
     id: 'tm-1',
     name: 'Test Threat Model',
@@ -98,6 +99,7 @@ describe('ReviewerAssignmentListComponent', () => {
     ...overrides,
   });
 
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: build a paginated list-threat-models API response fixture (pure)
   const makeApiResponse = (items: TMListItem[], total?: number): ListThreatModelsResponse => ({
     threat_models: items,
     total: total ?? items.length,

@@ -11,6 +11,7 @@ import { Cell } from '../../../core/types/websocket-message.types';
 /**
  * Types of operations that can be tracked in history
  */
+// SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: enumerate all diagram edit actions trackable in undo/redo history (pure)
 export type HistoryOperationType =
   | 'add-node' // User adds a new node
   | 'add-edge' // User creates a new edge
@@ -230,6 +231,7 @@ export const DEFAULT_HISTORY_CONFIG: Required<HistoryConfig> = {
 /**
  * Helper function to create an empty history state
  */
+// SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: build an empty undo/redo history state with a bounded stack size (pure)
 export function createEmptyHistoryState(maxStackSize: number = 50): HistoryState {
   return {
     undoStack: [],

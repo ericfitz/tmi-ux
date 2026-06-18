@@ -35,9 +35,11 @@ interface CallbackFragmentParams {
   styleUrls: ['./auth-callback.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: handle OAuth/SAML callback redirect, dispatch auth tokens, and navigate to destination
 export class AuthCallbackComponent implements OnInit {
   providerName: string | null = null;
 
+  // SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: inject auth, routing, UI, and step-up dependencies (pure)
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -49,6 +51,7 @@ export class AuthCallbackComponent implements OnInit {
     private transloco: TranslocoService,
   ) {}
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: route OAuth callback query params or fragment to the appropriate auth handler
   ngOnInit(): void {
     this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
       const action = queryParams['action'] as string | undefined;
@@ -127,6 +130,7 @@ export class AuthCallbackComponent implements OnInit {
     });
   }
 
+  // SEM@d85264ea077414c23e2fda6cd4a13de1e746c66f: parse a URL fragment string into a callback params map (pure)
   private parseFragment(fragment: string | null): CallbackFragmentParams {
     const params: CallbackFragmentParams = {};
     if (fragment) {
@@ -141,6 +145,7 @@ export class AuthCallbackComponent implements OnInit {
     return params;
   }
 
+  // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: redirect the browser to an OAuth or SAML provider to begin login
   private initiateLogin(
     providerId: string,
     providerType: 'oauth' | 'saml',
@@ -155,6 +160,7 @@ export class AuthCallbackComponent implements OnInit {
     // AuthService will redirect the browser to the OAuth/SAML provider
   }
 
+  // SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: complete OAuth token exchange and navigate on success or dispatch step-up mismatch
   private handleOAuthCallback(response: OAuthResponse): void {
     const decodedState = response.state ? this.authService.decodeState(response.state) : null;
     const isStepUp = decodedState?.stepUp === true;
@@ -196,6 +202,7 @@ export class AuthCallbackComponent implements OnInit {
    * valid: return the user to where they were, then explain and offer retry.
    * Navigate BEFORE opening the dialog — MatDialog closes on navigation by default.
    */
+  // SEM@93cdce70b08a93f3b99cf3ce5aa90fb4cee5e068: navigate to return URL then prompt user to retry step-up with correct identity
   private handleIdentityMismatch(returnUrl?: string): void {
     const target =
       returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/';
@@ -216,6 +223,7 @@ export class AuthCallbackComponent implements OnInit {
     });
   }
 
+  // SEM@d85264ea077414c23e2fda6cd4a13de1e746c66f: store auth error in session storage and redirect to login page (mutates shared state)
   private handleError(authError: AuthError): void {
     this.logger.error('OAuth callback error:', authError);
 

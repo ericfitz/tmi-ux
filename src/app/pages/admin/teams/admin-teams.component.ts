@@ -36,15 +36,18 @@ import { TeamsListBase } from '@app/pages/teams/teams-list-base';
   templateUrl: './admin-teams.component.html',
   styleUrl: './admin-teams.component.scss',
 })
+// SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: admin page component for listing, navigating, and deleting teams
 export class AdminTeamsComponent extends TeamsListBase {
   private translocoService = inject(TranslocoService);
 
   /** Navigate back to admin landing page. */
+  // SEM@7ff922e246a547db210c7210681afb5c1d4ba170: navigate back to the admin landing page
   onClose(): void {
     void this.router.navigate(['/admin']);
   }
 
   /** Confirm and delete the given team. */
+  // SEM@7ff922e246a547db210c7210681afb5c1d4ba170: confirm and delete a team, then reload the team list
   onDelete(team: TeamListItem): void {
     const message = this.translocoService.translate('teams.deleteDialog.message', {
       name: team.name,

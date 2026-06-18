@@ -61,6 +61,7 @@ export interface RepositoryEditorDialogData {
   templateUrl: './repository-editor-dialog.component.html',
   styleUrls: ['./repository-editor-dialog.component.scss'],
 })
+// SEM@23d2e9645a0d6cce61ba5b795b2751498771352d: dialog for creating, editing, or viewing a repository entry
 export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   repositoryForm: FormGroup;
   mode: 'create' | 'edit';
@@ -68,6 +69,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
 
   private _subscriptions: Subscription = new Subscription();
 
+  // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: initialize repository form from dialog data and disable if read-only (mutates shared state)
   constructor(
     private dialogRef: MatDialogRef<RepositoryEditorDialogComponent>,
     private fb: FormBuilder,
@@ -82,6 +84,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // SEM@23d2e9645a0d6cce61ba5b795b2751498771352d: build a validated reactive form pre-populated with repository data (pure)
   private buildForm(data: RepositoryEditorDialogData): FormGroup {
     const repo = data.repository;
     const params = repo?.parameters;
@@ -105,10 +108,12 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
     });
   }
 
+  // SEM@df857842acb683048164ddc3b37030f666db756c: Angular lifecycle hook; no-op initialization placeholder
   ngOnInit(): void {
     // Component initialization complete
   }
 
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: unsubscribe all subscriptions on component teardown (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
   }
@@ -116,6 +121,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Get URI validation suggestion message (if any)
    */
+  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: return URI validation suggestion message from the form control, or null (pure)
   getUriSuggestion(): string | null {
     return getUriSuggestionFromControl(this.repositoryForm.get('uri'));
   }
@@ -123,6 +129,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Close the dialog with the repository data
    */
+  // SEM@a5d47afbe751f0027d056ced66949574212e626e: validate form and close dialog with repository data on success
   onSubmit(): void {
     // Only check for blocking errors (required, maxLength)
     // Allow submission even with URI suggestions
@@ -172,6 +179,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   /**
    * Close the dialog without saving
    */
+  // SEM@bb45011ce0669ca0e59b0f729627aa9f7068a67a: close the dialog without returning any repository data
   onCancel(): void {
     this.dialogRef.close();
   }

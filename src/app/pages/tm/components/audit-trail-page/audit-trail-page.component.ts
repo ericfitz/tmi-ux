@@ -41,6 +41,7 @@ const RELATIVE_TIME_THRESHOLD_DAYS = 30;
   styleUrls: ['./audit-trail-page.component.scss'],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
+// SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: display paginated audit trail entries for a threat model with filtering
 export class AuditTrailPageComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -90,6 +91,7 @@ export class AuditTrailPageComponent implements OnInit {
     'changeSummary',
   ];
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: inject audit trail, routing, language, and logger dependencies (pure)
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -99,6 +101,7 @@ export class AuditTrailPageComponent implements OnInit {
     private destroyRef: DestroyRef,
   ) {}
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: resolve threat model from route, read entity filter params, and load audit entries (reads DB)
   ngOnInit(): void {
     this.threatModel = this.route.snapshot.data['threatModel'] as ThreatModel | undefined;
 
@@ -121,6 +124,7 @@ export class AuditTrailPageComponent implements OnInit {
     this.loadEntries();
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: fetch a page of audit entries for the threat model applying active filters (reads DB)
   loadEntries(): void {
     if (!this.threatModel) return;
 
@@ -150,12 +154,14 @@ export class AuditTrailPageComponent implements OnInit {
     });
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: update page index and size then reload audit entries (reads DB)
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadEntries();
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: reset to first page and reload audit entries with current filter values (reads DB)
   applyFilters(): void {
     this.pageIndex = 0;
     if (this.paginator) {
@@ -164,6 +170,7 @@ export class AuditTrailPageComponent implements OnInit {
     this.loadEntries();
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: reset object-type and change-type filters to defaults and reload audit entries (reads DB)
   clearFilters(): void {
     this.filterObjectType = this.entityType || '';
     this.filterChangeType = '';
@@ -171,6 +178,7 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Format timestamp as relative or absolute depending on age */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: format a timestamp as relative or absolute based on age (pure)
   formatTimestamp(isoString: string): string {
     const date = new Date(isoString);
     const now = new Date();
@@ -191,6 +199,7 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Format absolute timestamp for tooltip */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: format a timestamp as a full locale-aware absolute datetime string (pure)
   formatAbsoluteTimestamp(isoString: string): string {
     const date = new Date(isoString);
     return date.toLocaleString(this.currentLocale, {
@@ -205,6 +214,7 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Navigate back to the threat model editor */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: navigate to the threat model editor for the current threat model
   goBack(): void {
     if (this.threatModel) {
       void this.router.navigate(['/tm', this.threatModel.id]);
@@ -212,15 +222,18 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Get the translation key for an object type */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: convert an audit object type to its i18n translation key (pure)
   getObjectTypeKey(objectType: AuditObjectType): string {
     return `common.objectTypes.${this.objectTypeToKey(objectType)}`;
   }
 
   /** Get the translation key for a change type */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: convert an audit change type to its i18n translation key (pure)
   getChangeTypeKey(changeType: AuditChangeType): string {
     return `auditTrail.changeTypes.${changeType}`;
   }
 
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: format a millisecond duration as a human-readable relative time string (pure)
   private formatRelativeTime(diffMs: number): string {
     const minutes = Math.floor(diffMs / (1000 * 60));
     const hours = Math.floor(minutes / 60);
@@ -239,6 +252,7 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Format relative time using Intl.RelativeTimeFormat with fallback */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: format a relative time value using Intl.RelativeTimeFormat with fallback (pure)
   private intlRelativeTime(value: number, unit: 'minute' | 'hour' | 'day'): string {
     try {
       if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
@@ -257,6 +271,7 @@ export class AuditTrailPageComponent implements OnInit {
   }
 
   /** Map AuditObjectType to camelCase key for translation lookup */
+  // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: map an audit object type enum to its camelCase translation key (pure)
   private objectTypeToKey(objectType: AuditObjectType): string {
     const keyMap: Record<AuditObjectType, string> = {
       threat_model: 'threatModel',

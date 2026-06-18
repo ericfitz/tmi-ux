@@ -7,6 +7,7 @@ import { Diagram } from '../models/diagram.model';
 import { Repository, Threat } from '../models/threat-model.model';
 
 /** Supported diagram model export formats. */
+// SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: union type of supported diagram model export format identifiers (pure)
 export type DiagramModelFormat = 'json' | 'yaml' | 'graphml';
 
 /**
@@ -17,7 +18,9 @@ export type DiagramModelFormat = 'json' | 'yaml' | 'graphml';
  * label lookup — they do not introduce side-effects on the outputs.
  */
 @Injectable({ providedIn: 'root' })
+// SEM@384da63391fdb7be917bbe163eee1e687d263bdf: stateless presentation helpers for diagram formatting, icons, filenames, and threat migration (pure)
 export class TmEditFormattingService {
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: inject logger and transloco dependencies for formatting service
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
@@ -90,6 +93,7 @@ export class TmEditFormattingService {
    * @param format - The export format identifier
    * @returns MIME type string
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: map a diagram export format to its MIME type string (pure)
   getMimeTypeForFormat(format: DiagramModelFormat): string {
     switch (format) {
       case 'json':
@@ -110,6 +114,7 @@ export class TmEditFormattingService {
    * @param format - The export format identifier
    * @returns File extension string (e.g. '.json')
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: map a diagram export format to its file extension string (pure)
   getExtensionForFormat(format: DiagramModelFormat): string {
     switch (format) {
       case 'json':
@@ -130,6 +135,7 @@ export class TmEditFormattingService {
    * @param diagram - The diagram whose icon should be determined
    * @returns Material icon name string
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: map a diagram type to its Material icon name (pure)
   getDiagramIcon(diagram: Diagram): string {
     if (!diagram.type) {
       return 'indeterminate_question_box';
@@ -149,6 +155,7 @@ export class TmEditFormattingService {
    * @param diagram - The diagram whose tooltip should be determined
    * @returns The diagram type string, or 'Unknown Type' when absent
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: return tooltip text for a diagram's type icon (pure)
   getDiagramTooltip(diagram: Diagram): string {
     return diagram.type || 'Unknown Type';
   }
@@ -159,6 +166,7 @@ export class TmEditFormattingService {
    * @param repository - The repository to generate tooltip for
    * @returns Formatted tooltip text with URI, description, and ref parameters
    */
+  // SEM@384da63391fdb7be917bbe163eee1e687d263bdf: format a repository's URI, description, and ref parameters as tooltip text (pure)
   getRepositoryTooltip(repository: Repository): string {
     let tooltip = repository.uri;
     if (repository.description) {
@@ -179,6 +187,7 @@ export class TmEditFormattingService {
    * @param type - Asset type string (e.g. 'data', 'software')
    * @returns Material icon name, defaulting to 'diamond' for unknown types
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: map an asset type string to its Material icon name (pure)
   getAssetTypeIcon(type?: string): string {
     if (!type) {
       return 'diamond';
@@ -207,11 +216,13 @@ export class TmEditFormattingService {
    * @param extension - File extension including leading dot (e.g. '.json')
    * @returns Sanitized filename string
    */
+  // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: build a sanitized download filename from threat model and diagram names (pure)
   generateDiagramModelFilename(
     threatModelName: string | undefined,
     diagramName: string,
     extension: string,
   ): string {
+    // SEM@f57e50cfc2d4d6a8dd5bfdcb297dd096727188ca: strip filesystem-unsafe characters and truncate a name segment (pure)
     const sanitizeAndTruncate = (name: string, maxLength: number): string => {
       const sanitized = name
         .replace(/[<>:"/\\|?*]/g, '-')
@@ -239,6 +250,7 @@ export class TmEditFormattingService {
    * @param base64Svg Base64-encoded SVG string.
    * @returns True if the decoded content is well-formed SVG, false otherwise.
    */
+  // SEM@e10974a550c7464d646b0a0cf36b94f9123ad5d8: validate that a base64 string decodes to well-formed SVG markup (pure)
   isValidBase64Svg(base64Svg: string): boolean {
     try {
       if (!base64Svg || base64Svg.length === 0) {
@@ -272,6 +284,7 @@ export class TmEditFormattingService {
    * @param severity The threat severity value (camelCase key, numeric, or legacy string).
    * @returns The CSS class string, e.g. 'severity-high'.
    */
+  // SEM@8ce527710785f547d639734901d5ca517fa01c19: map a threat severity value to its CSS class string (pure)
   getThreatSeverityClass(severity: string | null | undefined): string {
     const key = severity
       ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'unknown')
@@ -285,6 +298,7 @@ export class TmEditFormattingService {
    * @param threat The threat to migrate.
    * @returns A new threat object with migrated field values.
    */
+  // SEM@8ce527710785f547d639734901d5ca517fa01c19: convert legacy threat field values to canonical camelCase keys (pure)
   migrateThreatFieldValues(threat: Threat): Threat {
     const migratedThreat = { ...threat };
 

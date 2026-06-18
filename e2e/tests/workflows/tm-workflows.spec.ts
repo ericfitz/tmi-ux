@@ -17,6 +17,7 @@ import { DashboardFilterFlow } from '../../flows/dashboard-filter.flow';
  * its `.action-buttons` container. This avoids matching the many other
  * `more_vert` buttons in assets, documents, threats, and diagram row sections.
  */
+// SEM@f2e648f9c85f76dbaa3505b2f83b82d8c5d92ce3: click the details card overflow menu button (mutates shared state)
 async function openDetailsKebab(page: import('@playwright/test').Page) {
   await page
     .locator('.details-card .action-buttons button')

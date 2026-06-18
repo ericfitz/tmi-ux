@@ -52,13 +52,17 @@ import {
     `,
   ],
 })
+// SEM@6b35da8ffade83ef6579f36d41c97823a2565785: dialog that prompts the user to mark a submission as confidential
 export class SurveyConfidentialDialogComponent {
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject the dialog reference for closing with a result (pure)
   constructor(public dialogRef: MatDialogRef<SurveyConfidentialDialogComponent>) {}
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: close the dialog signaling the user confirmed confidential marking (pure)
   onYes(): void {
     this.dialogRef.close(true);
   }
 
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: close the dialog signaling the user declined confidential marking (pure)
   onNo(): void {
     this.dialogRef.close(false);
   }

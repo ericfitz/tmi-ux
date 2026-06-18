@@ -34,6 +34,7 @@ import {
 } from '../../types/graph-operation.types';
 
 @Injectable()
+// SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: manage undo/redo history for diagram cell operations, coordinating with collaboration and operation dispatch (mutates shared state)
 export class AppHistoryService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
 
@@ -59,6 +60,7 @@ export class AppHistoryService implements OnDestroy {
     redoCount: 0,
   };
 
+  // SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: initialize history state and configuration with injected dependencies (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
     private readonly collaborationService: DfdCollaborationService,
@@ -74,6 +76,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Initialize the history service with operation context
    */
+  // SEM@04acfab5a37895d16553208db945b87adaf83b71: register diagram context and optional history config (mutates shared state)
   initialize(
     operationContext: OperationContext,
     diagramId: string,
@@ -118,6 +121,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Check if undo is currently available
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return whether undo is available and history is enabled (pure)
   canUndo(): boolean {
     return this._config.enabled && this._historyState.undoStack.length > 0;
   }
@@ -125,6 +129,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Check if redo is currently available
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return whether redo is available and history is enabled (pure)
   canRedo(): boolean {
     return this._config.enabled && this._historyState.redoStack.length > 0;
   }
@@ -133,6 +138,7 @@ export class AppHistoryService implements OnDestroy {
    * Get the current history state (read-only)
    * Returns a copy to prevent external mutation
    */
+  // SEM@dcc26636484a107ea066ba46529d1006c50fff37: return a snapshot copy of current undo/redo stacks (pure)
   getHistoryState(): Readonly<HistoryState> {
     return {
       undoStack: [...this._historyState.undoStack],
@@ -146,6 +152,7 @@ export class AppHistoryService implements OnDestroy {
    * Clear all history (undo and redo stacks)
    * This resets the history state without triggering auto-save
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: reset undo and redo stacks and notify subscribers (mutates shared state)
   clearHistory(): void {
     this.logger.info('Clearing history', {
       undoStackSize: this._historyState.undoStack.length,
@@ -162,6 +169,7 @@ export class AppHistoryService implements OnDestroy {
    * Add a new history entry
    * This also triggers broadcast or auto-save based on session state
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: push a diagram change entry onto the undo stack, clearing redo (mutates shared state)
   addHistoryEntry(entry: HistoryEntry): void {
     if (!this._config.enabled) {
       this.logger.debugComponent('AppHistoryService', 'History disabled, skipping entry', {
@@ -215,6 +223,7 @@ export class AppHistoryService implements OnDestroy {
    * Perform undo operation
    * Pops entry from undo stack, executes reverse operation, pushes to redo stack
    */
+  // SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: reverse the most recent diagram operation and move it to the redo stack
   undo(): Observable<OperationResult> {
     if (!this.canUndo()) {
       return throwError(() => new Error('Cannot undo: no operations in undo stack'));
@@ -306,6 +315,7 @@ export class AppHistoryService implements OnDestroy {
    * Perform redo operation
    * Pops entry from redo stack, executes forward operation, pushes to undo stack
    */
+  // SEM@2d78ad378264ee3df3e83048ffd58a6b775adbbe: reapply the most recently undone diagram operation and move it to the undo stack
   redo(): Observable<OperationResult> {
     if (!this.canRedo()) {
       return throwError(() => new Error('Cannot redo: no operations in redo stack'));
@@ -396,6 +406,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Clear all history
    */
+  // SEM@8294eb0ceb86972a190978a2c5ebe31eebacf980: reset undo and redo stacks and notify subscribers (mutates shared state)
   clear(): void {
     this._historyState.undoStack = [];
     this._historyState.redoStack = [];
@@ -407,6 +418,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Get current undo stack (read-only)
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return a copy of the current undo stack entries (pure)
   getUndoStack(): ReadonlyArray<HistoryEntry> {
     return [...this._historyState.undoStack];
   }
@@ -414,6 +426,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Get current redo stack (read-only)
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return a copy of the current redo stack entries (pure)
   getRedoStack(): ReadonlyArray<HistoryEntry> {
     return [...this._historyState.redoStack];
   }
@@ -421,6 +434,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Get history statistics
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: return a snapshot of undo/redo operation counters (pure)
   getStats() {
     return { ...this._stats };
   }
@@ -429,6 +443,7 @@ export class AppHistoryService implements OnDestroy {
    * Find history entry by WebSocket operation_id
    * Searches the undo stack from most recent to oldest
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: search undo stack for a history entry by WebSocket operation ID (pure)
   findEntryByOperationId(operationId: string): HistoryEntry | null {
     // Search undo stack from most recent to oldest
     for (let i = this._historyState.undoStack.length - 1; i >= 0; i--) {
@@ -443,6 +458,7 @@ export class AppHistoryService implements OnDestroy {
    * Undo all operations from the most recent back to and including the specified operation_id
    * Returns number of operations undone
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: sequentially undo all diagram operations back to the specified operation ID
   undoUntilOperationId(operationId: string): Observable<{ undoCount: number; success: boolean }> {
     // First, scan to verify the operation exists
     const targetEntry = this.findEntryByOperationId(operationId);
@@ -471,6 +487,7 @@ export class AppHistoryService implements OnDestroy {
    * Perform multiple undo operations sequentially
    * @private
    */
+  // SEM@0016eca28248334bbfa1ef6a9471800cd54d3122: execute a batch of undo operations and aggregate success result
   private _performMultipleUndos(
     count: number,
   ): Observable<{ undoCount: number; success: boolean }> {
@@ -498,6 +515,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Update configuration
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: apply partial history configuration overrides at runtime (mutates shared state)
   updateConfig(config: Partial<HistoryConfig>): void {
     this._config = { ...this._config, ...config };
     this._historyState.maxStackSize = this._config.maxHistorySize;
@@ -507,6 +525,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Cleanup
    */
+  // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: complete all observables and release subscriptions on service teardown
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -520,6 +539,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Emit history state change event
    */
+  // SEM@8294eb0ceb86972a190978a2c5ebe31eebacf980: broadcast updated undo/redo availability and stack sizes to subscribers (mutates shared state)
   private _emitHistoryStateChange(changeType: 'entry-added' | 'cleared' | 'undo' | 'redo'): void {
     const canUndo = this.canUndo();
     const canRedo = this.canRedo();
@@ -542,6 +562,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Execute multiple operations
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: dispatch one or more graph operations and aggregate the combined result
   private _executeOperations(operations: GraphOperation[]): Observable<OperationResult> {
     if (!this._operationContext) {
       return throwError(() => new Error('Operation context not initialized'));

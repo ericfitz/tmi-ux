@@ -23,6 +23,7 @@ export interface AuthSession {
 /**
  * @deprecated Use AuthSession instead. Alias kept during migration.
  */
+// SEM@a7d070cec042b44aeb8938d8dbe3942da8ee7dcf: deprecated alias for AuthSession; maps JWT token to auth session type (pure)
 export type JwtToken = AuthSession;
 
 /**

@@ -22,10 +22,12 @@ import {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@88e6a889c33276e0b9d96b4698fbf7d39d4a382b: manage survey templates: CRUD, status transitions, and cloning for admin and intake (reads DB)
 export class SurveyService {
   private surveysSubject$ = new BehaviorSubject<SurveyListItem[]>([]);
   public surveys$: Observable<SurveyListItem[]> = this.surveysSubject$.asObservable();
 
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: inject API and logger dependencies (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
@@ -37,6 +39,7 @@ export class SurveyService {
    * template in small deployments without pagination; callers that need
    * explicit paging can override via the filter.
    */
+  // SEM@88e6a889c33276e0b9d96b4698fbf7d39d4a382b: fetch all surveys via the admin endpoint and update shared state (mutates shared state)
   public listAdmin(filter?: SurveyFilter): Observable<ListSurveysResponse> {
     const params = buildHttpParams({ limit: 100, ...filter });
     return this.apiService.get<ListSurveysResponse>('admin/surveys', params).pipe(
@@ -60,6 +63,7 @@ export class SurveyService {
    * dozens of templates (including seeded ones) fit on a single page
    * without needing client-side pagination UI.
    */
+  // SEM@7d15676e6515d2204812ab979ef311a92f77019c: fetch active (published) surveys available to respondents (reads DB)
   public listActive(): Observable<ListSurveysResponse> {
     return this.apiService.get<ListSurveysResponse>('intake/surveys?limit=100').pipe(
       tap(response => {
@@ -77,6 +81,7 @@ export class SurveyService {
   /**
    * Get a specific survey by ID (respondent access)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch a survey by ID via the respondent intake endpoint (reads DB)
   public getById(surveyId: string): Observable<Survey> {
     return this.apiService.get<Survey>(`intake/surveys/${surveyId}`).pipe(
       tap(survey => {
@@ -92,6 +97,7 @@ export class SurveyService {
   /**
    * Get a specific survey by ID (admin access)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch a survey by ID via the admin endpoint (reads DB)
   public getByIdAdmin(surveyId: string): Observable<Survey> {
     return this.apiService.get<Survey>(`admin/surveys/${surveyId}`).pipe(
       tap(survey => {
@@ -107,6 +113,7 @@ export class SurveyService {
   /**
    * Get the survey JSON from a survey, with survey_id embedded
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch a survey's JSON schema with its ID embedded (reads DB)
   public getSurveyJson(surveyId: string): Observable<SurveyJsonSchema> {
     return this.getById(surveyId).pipe(
       map(survey => ({ ...survey.survey_json, survey_id: survey.id })),
@@ -116,6 +123,7 @@ export class SurveyService {
   /**
    * Create a new survey (admin only)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: store a new survey via admin API and refresh the list (mutates shared state)
   public create(request: CreateSurveyRequest): Observable<Survey> {
     return this.apiService
       .post<Survey>('admin/surveys', request as unknown as Record<string, unknown>)
@@ -134,6 +142,7 @@ export class SurveyService {
   /**
    * Update a survey (admin only, full PUT)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: update an existing survey via admin API full PUT and refresh the list (mutates shared state)
   public update(surveyId: string, request: UpdateSurveyRequest): Observable<Survey> {
     return this.apiService
       .put<Survey>(`admin/surveys/${surveyId}`, request as unknown as Record<string, unknown>)
@@ -152,6 +161,7 @@ export class SurveyService {
   /**
    * Set survey status via PATCH (admin only)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: update a survey's status field via admin PATCH and refresh the list (mutates shared state)
   public setStatus(surveyId: string, status: SurveyStatus): Observable<Survey> {
     return this.apiService
       .patch<Survey>(`admin/surveys/${surveyId}`, [
@@ -175,6 +185,7 @@ export class SurveyService {
   /**
    * Update a single field on a survey via JSON Patch (admin only)
    */
+  // SEM@6297e6cb099bef2dccad14f9ce7b634369834014: update a single named field on a survey via admin JSON Patch (mutates shared state)
   public patchField(surveyId: string, field: string, value: string): Observable<Survey> {
     return this.apiService
       .patch<Survey>(`admin/surveys/${surveyId}`, [{ op: 'replace', path: `/${field}`, value }])
@@ -193,6 +204,7 @@ export class SurveyService {
   /**
    * Archive a survey (admin only)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: set a survey's status to archived (mutates shared state)
   public archive(surveyId: string): Observable<Survey> {
     return this.setStatus(surveyId, 'archived');
   }
@@ -200,6 +212,7 @@ export class SurveyService {
   /**
    * Unarchive a survey, returning it to inactive status (admin only)
    */
+  // SEM@caa1041df66e2fa2f3c3e3ef2691199ec0930e66: restore an archived survey to inactive status (mutates shared state)
   public unarchive(surveyId: string): Observable<Survey> {
     return this.setStatus(surveyId, 'inactive');
   }
@@ -207,6 +220,7 @@ export class SurveyService {
   /**
    * Delete a survey (admin only)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: delete a survey via admin API and refresh the list (mutates shared state)
   public deleteSurvey(surveyId: string): Observable<void> {
     return this.apiService.delete<void>(`admin/surveys/${surveyId}`).pipe(
       tap(() => {
@@ -223,6 +237,7 @@ export class SurveyService {
   /**
    * Clone a survey (client-side: fetch original, create new)
    */
+  // SEM@f650732a10e522d28e3c52ea94237d13f4fe5ec1: fetch a survey and store a new copy with an inactive status (mutates shared state)
   public clone(surveyId: string, newName: string): Observable<Survey> {
     return this.getByIdAdmin(surveyId).pipe(
       switchMap(original =>

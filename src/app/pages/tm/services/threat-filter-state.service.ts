@@ -25,6 +25,7 @@ interface ThreatCardState {
  * when the user navigates to the dashboard (page refresh also clears it).
  */
 @Injectable({ providedIn: 'root' })
+// SEM@6e22d874fca2906477bada6894288c7d35ac6298: store and retrieve threat card filter, sort, and pagination state across navigation (mutates shared state)
 export class ThreatFilterStateService {
   private state: ThreatCardState | null = null;
 
@@ -32,6 +33,7 @@ export class ThreatFilterStateService {
    * Retrieve stored state if it matches the given threat model ID.
    * Returns null if no state is stored or the ID doesn't match.
    */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: fetch stored threat card state if it matches the given threat model ID (pure)
   getState(threatModelId: string): ThreatCardState | null {
     if (this.state && this.state.threatModelId === threatModelId) {
       return this.state;
@@ -40,16 +42,19 @@ export class ThreatFilterStateService {
   }
 
   /** Save the current threat card state */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: store the current threat card filter and pagination state (mutates shared state)
   saveState(state: ThreatCardState): void {
     this.state = { ...state, filters: { ...state.filters } };
   }
 
   /** Clear all stored state */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: discard all stored threat card filter state (mutates shared state)
   clear(): void {
     this.state = null;
   }
 
   /** Create a default state for a given threat model ID and page size */
+  // SEM@6e22d874fca2906477bada6894288c7d35ac6298: build a default threat card state for a given threat model and page size (pure)
   static createDefault(threatModelId: string, defaultPageSize: number): ThreatCardState {
     return {
       threatModelId,

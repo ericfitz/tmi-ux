@@ -68,6 +68,7 @@ test.describe.serial('DFD Edge Properties', () => {
    * Setup: creates edges directly via X6 graph API — the orchestrator doesn't expose
    * a direct edge creation method (edges are created via port interactions in the UI).
    */
+  // SEM@38825d5b1f74ab2614157cd169abaeb8088fd09b: build two DFD nodes and a connecting edge in the live graph (mutates shared state)
   async function createNodesAndEdge(options?: {
     label?: string;
     labels?: string[];

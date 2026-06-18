@@ -33,10 +33,12 @@ import { AppOperationStateManager } from '../../application/services/app-operati
 @Injectable({
   providedIn: 'root',
 })
+// SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: manage port visibility and connection-state tracking for DFD graph nodes (mutates shared state)
 export class InfraPortStateService {
   private readonly _portStates = new Map<string, PortConnectionState>();
   private _historyCoordinator: AppOperationStateManager | null = null;
 
+  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: inject edge-query and logger dependencies (pure)
   constructor(
     private readonly _edgeQueryService: InfraEdgeQueryService,
     private readonly _logger: LoggerService,
@@ -45,6 +47,7 @@ export class InfraPortStateService {
   /**
    * Set the history coordinator for proper history suppression during port operations
    */
+  // SEM@8902c3506b8553f7ac8aaedab9ff2ba264e06c93: register the operation-state manager for history suppression during port ops (mutates shared state)
   setHistoryCoordinator(historyCoordinator: AppOperationStateManager): void {
     this._historyCoordinator = historyCoordinator;
   }
@@ -52,6 +55,7 @@ export class InfraPortStateService {
   /**
    * Execute port visibility operation with proper history suppression
    */
+  // SEM@13bb9d4f1414f961a4cc60bec30b4d4c95249431: run a port visibility callback inside history suppression if coordinator is available
   private _executePortOperation(graph: Graph, operationName: string, operation: () => void): void {
     if (this._historyCoordinator) {
       this._historyCoordinator.executeVisualEffect(graph, operation);
@@ -66,6 +70,7 @@ export class InfraPortStateService {
    * Safely set port visibility with history suppression
    * This ensures ALL port visibility changes go through proper history management
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: set a port's visibility, wrapped in history suppression (mutates shared state)
   private _setPortVisibility(
     graph: Graph,
     node: any,
@@ -82,6 +87,7 @@ export class InfraPortStateService {
    * Set visibility on both the port circle and port label text elements.
    * This must be called inside an executePortOperation wrapper.
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: apply visibility to a port's circle and label elements on the node (mutates shared state)
   private _setPortElementVisibility(
     node: any,
     portId: string,
@@ -94,6 +100,7 @@ export class InfraPortStateService {
   /**
    * Update port visibility for a specific node based on connection status
    */
+  // SEM@6d6dbe91dde90d5e20a40442e6bc1b9b3ff66f04: update all ports on a node, showing connected and hiding unconnected (mutates shared state)
   updateNodePortVisibility(graph: Graph, node: Node): void {
     if (!graph || !node) {
       return;
@@ -112,6 +119,7 @@ export class InfraPortStateService {
   /**
    * Internal method to update port visibility without additional history suppression
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: show connected ports and hide unconnected ones for a node, updating the cache (mutates shared state)
   private _updateNodePortVisibilityInternal(graph: Graph, node: Node): void {
     const ports = node.getPorts();
     if (!ports || ports.length === 0) {
@@ -154,6 +162,7 @@ export class InfraPortStateService {
   /**
    * Show all ports on all nodes (used during edge creation)
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: show every port on every graph node, e.g. during edge creation (mutates shared state)
   showAllPorts(graph: Graph): void {
     if (!graph) {
       return;
@@ -187,6 +196,7 @@ export class InfraPortStateService {
   /**
    * Hide only unconnected ports on all nodes
    */
+  // SEM@411aabf9dba17a2fbd7e5cd5eb1cb12028dfc550: hide all unconnected ports across every node in the graph (mutates shared state)
   hideUnconnectedPorts(graph: Graph): void {
     if (!graph) {
       return;
@@ -208,6 +218,7 @@ export class InfraPortStateService {
   /**
    * Ensure that the ports connected by a specific edge remain visible
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: ensure the source and target ports of an edge remain visible (mutates shared state)
   ensureConnectedPortsVisible(graph: Graph, edge: Edge): void {
     if (!graph || !edge) {
       return;
@@ -290,6 +301,7 @@ export class InfraPortStateService {
   /**
    * Check if a specific port is connected to any edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a port has at least one connected edge (reads graph state)
   isPortConnected(graph: Graph, nodeId: string, portId: string): boolean {
     if (!graph) {
       return false;
@@ -300,6 +312,7 @@ export class InfraPortStateService {
   /**
    * Get port connection state for a specific node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: fetch cached connection state for a node's ports, or null if absent (pure)
   getPortConnectionState(nodeId: string): PortConnectionState | null {
     return this._portStates.get(nodeId) || null;
   }
@@ -307,6 +320,7 @@ export class InfraPortStateService {
   /**
    * Handle connection changes by updating port visibility for all affected nodes
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: refresh port visibility for all nodes after an edge connection change (mutates shared state)
   onConnectionChange(graph: Graph): void {
     if (!graph) {
       return;
@@ -333,6 +347,7 @@ export class InfraPortStateService {
   /**
    * Clear all cached port states
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: delete all cached port-connection state entries (mutates shared state)
   clearPortStates(): void {
     this._portStates.clear();
     this._logger.debugComponent('DfdPortStateManager', 'Cleared all port state cache');
@@ -341,6 +356,7 @@ export class InfraPortStateService {
   /**
    * Get all cached port states (for debugging)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: return a snapshot copy of all cached port-connection states for debugging (pure)
   getAllPortStates(): Map<string, PortConnectionState> {
     return new Map(this._portStates);
   }
@@ -348,6 +364,7 @@ export class InfraPortStateService {
   /**
    * Setup port visibility behavior for connection interactions
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: register hover event handlers to show/hide ports on mouse enter and leave
   setupPortVisibility(graph: Graph): void {
     if (!graph) {
       return;
@@ -383,6 +400,7 @@ export class InfraPortStateService {
    * Show all ports for a specific node (called by InfraX6SelectionAdapter during hover)
    * Now properly wrapped with history suppression for consistency
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: show all ports on a single node within history suppression (mutates shared state)
   showNodePorts(graph: Graph, node: any): void {
     if (!graph || !node) return;
 
@@ -400,6 +418,7 @@ export class InfraPortStateService {
    * Hide unconnected ports for a specific node (called by InfraX6SelectionAdapter during hover leave)
    * Now properly wrapped with history suppression for consistency
    */
+  // SEM@60a5d6c9a7aa5e7316c4f81f4222ad8ae5e332bd: hide unconnected ports on a single node within history suppression (mutates shared state)
   hideUnconnectedNodePorts(graph: Graph, node: any): void {
     if (!graph || !node) return;
 
@@ -419,6 +438,7 @@ export class InfraPortStateService {
   /**
    * Update port state cache for a specific node and port
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: upsert a port's connected and visible flags in the node's cached state (mutates shared state)
   private _updatePortStateCache(
     nodeId: string,
     portId: string,

@@ -28,12 +28,15 @@ const SECURITY_REVIEWERS_GROUP = 'security-reviewers';
  * Result from loading security reviewer options.
  * Components use the `mode` discriminator to decide how to render the UI.
  */
+// SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: discriminated union indicating dropdown reviewer list or user-picker fallback mode (pure)
 export type SecurityReviewerResult = { mode: 'dropdown'; reviewers: User[] } | { mode: 'picker' };
 
 @Injectable({
   providedIn: 'root',
 })
+// SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: fetch security reviewer options using tiered group-membership fallback strategy
 export class SecurityReviewerService {
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: inject auth, group, and logger dependencies (mutates shared state)
   constructor(
     private authService: AuthService,
     private userGroupService: UserGroupService,
@@ -47,6 +50,7 @@ export class SecurityReviewerService {
    * @param currentReviewer Optional current reviewer to ensure is included in the list
    * @returns Observable emitting either dropdown options or picker mode indicator
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: fetch available security reviewers using tiered group membership fallback (reads DB)
   loadReviewerOptions(currentReviewer?: User | null): Observable<SecurityReviewerResult> {
     const profile = this.authService.userProfile;
 
@@ -83,6 +87,7 @@ export class SecurityReviewerService {
    *
    * @returns User object or null if no profile is available
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: build a reviewer User from the authenticated user's profile (pure)
   getCurrentUserAsReviewer(): User | null {
     const profile = this.authService.userProfile;
     if (!profile) return null;
@@ -99,6 +104,7 @@ export class SecurityReviewerService {
   /**
    * Map a GroupMember to the User interface used by threat models.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: convert a group member to the threat-model User type (pure)
   mapGroupMemberToUser(member: GroupMember): User {
     return {
       principal_type: 'user',
@@ -112,6 +118,7 @@ export class SecurityReviewerService {
   /**
    * Compare function for mat-select to match User objects by provider identity.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: compare two reviewer Users by provider identity for mat-select binding (pure)
   compareReviewers(a: User | null, b: User | null): boolean {
     if (a === b) return true;
     if (!a || !b) return false;
@@ -121,6 +128,7 @@ export class SecurityReviewerService {
   /**
    * Load security reviewers via admin groups API (tier 2 fallback).
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: fetch security reviewers via the admin groups API as a fallback (reads DB)
   private loadViaAdmin(currentReviewer?: User | null): Observable<SecurityReviewerResult> {
     return this.groupAdminService.list({ group_name: SECURITY_REVIEWERS_GROUP }).pipe(
       switchMap(response => {
@@ -147,6 +155,7 @@ export class SecurityReviewerService {
   /**
    * Build a dropdown result from group members, ensuring the current reviewer is included.
    */
+  // SEM@c6b6df846b0cda2a62a673463fd38771ec98b377: build a dropdown reviewer list from group members, ensuring the current reviewer is included (pure)
   private buildDropdownResult(
     members: GroupMember[],
     currentReviewer?: User | null,

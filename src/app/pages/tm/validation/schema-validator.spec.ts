@@ -18,6 +18,7 @@ describe('SchemaValidator', () => {
   const validUUID = '550e8400-e29b-41d4-a716-446655440000';
   const validDateTime = '2025-01-15T10:30:00Z';
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid principal fixture for schema-validator tests (pure)
   function validPrincipal(overrides: any = {}): any {
     return {
       principal_type: 'user',
@@ -27,6 +28,7 @@ describe('SchemaValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid authorization fixture for schema-validator tests (pure)
   function validAuthorization(overrides: any = {}): any {
     return {
       principal_type: 'user',
@@ -37,6 +39,7 @@ describe('SchemaValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid threat model fixture for schema-validator tests (pure)
   function validThreatModel(overrides: any = {}): any {
     return {
       id: validUUID,
@@ -51,6 +54,7 @@ describe('SchemaValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid threat fixture for schema-validator tests (pure)
   function validThreat(overrides: any = {}): any {
     return {
       id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
@@ -64,10 +68,12 @@ describe('SchemaValidator', () => {
     };
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: check whether a validation error list contains a given error code (pure)
   function hasError(errors: ValidationError[], code: string): boolean {
     return errors.some(e => e.code === code);
   }
 
+  // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: check whether any validation error message contains a given substring (pure)
   function hasErrorContaining(errors: ValidationError[], text: string): boolean {
     return errors.some(e => e.message.includes(text));
   }

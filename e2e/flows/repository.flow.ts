@@ -2,15 +2,18 @@ import { Page } from '@playwright/test';
 import { RepositoryEditorDialog } from '../dialogs/repository-editor.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
 
+// SEM@b040dc0c1400a4a5bfc238295aa021aa0a18c4a7: E2E flow helper for CRUD actions on repositories from the TM edit page
 export class RepositoryFlow {
   private repositoryEditorDialog: RepositoryEditorDialog;
   private deleteConfirmDialog: DeleteConfirmDialog;
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: build RepositoryFlow and initialize dialog wrappers (pure)
   constructor(private page: Page) {
     this.repositoryEditorDialog = new RepositoryEditorDialog(page);
     this.deleteConfirmDialog = new DeleteConfirmDialog(page);
   }
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: create a repository via the TM edit add button and fill in its fields
   async createFromTmEdit(fields: {
     name: string;
     type: string;
@@ -39,6 +42,7 @@ export class RepositoryFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
   }
 
+  // SEM@b8199819fceead93915fadf869c3a2ed425e042b: open and update repository fields via the TM edit row click
   async editFromTmEdit(name: string, updates: Record<string, string>) {
     const repositoryRow = this.page.getByTestId('repository-row').filter({ hasText: name });
     await repositoryRow.click();
@@ -66,6 +70,7 @@ export class RepositoryFlow {
     await this.page.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
   }
 
+  // SEM@b040dc0c1400a4a5bfc238295aa021aa0a18c4a7: delete a named repository entry via kebab menu and confirm dialog
   async deleteFromTmEdit(name: string) {
     const repositoryRow = this.page.getByTestId('repository-row').filter({ hasText: name });
     const kebabButton = repositoryRow.locator('button[mat-icon-button]').filter({

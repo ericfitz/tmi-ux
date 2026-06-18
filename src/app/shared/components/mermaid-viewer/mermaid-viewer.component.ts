@@ -31,6 +31,7 @@ const ZOOM_STEP = 0.25;
   styleUrls: ['./mermaid-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: render a Mermaid diagram with inline zoom, context menu, and fullscreen overlay
 export class MermaidViewerComponent {
   @ViewChild('contextMenuTrigger') contextMenuTrigger?: MatMenuTrigger;
 
@@ -39,6 +40,7 @@ export class MermaidViewerComponent {
 
   currentZoom = 1;
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: inject overlay, injector, i18n, snackbar, and logger dependencies (pure)
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private overlay: Overlay,
@@ -61,14 +63,17 @@ export class MermaidViewerComponent {
     return this.mermaidElement?.querySelector('svg') ?? null;
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: show the diagram toolbar when the pointer enters the viewer (mutates shared state)
   onMouseEnter(): void {
     this.toolbarElement?.classList.add('mermaid-toolbar-visible');
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: hide the diagram toolbar when the pointer leaves the viewer (mutates shared state)
   onMouseLeave(): void {
     this.toolbarElement?.classList.remove('mermaid-toolbar-visible');
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: open the context menu at the pointer position on right-click (mutates shared state)
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
     // Update context menu trigger position via direct DOM (Angular bindings
@@ -82,25 +87,30 @@ export class MermaidViewerComponent {
     this.contextMenuTrigger?.openMenu();
   }
 
+  // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: open the fullscreen overlay when the diagram is double-clicked
   onDoubleClick(): void {
     this.openOverlay();
   }
 
+  // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: increase diagram zoom level by one step and apply to SVG (mutates shared state)
   zoomIn(): void {
     this.currentZoom = Math.min(MAX_ZOOM, this.currentZoom + ZOOM_STEP);
     this.applyInlineZoom();
   }
 
+  // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: decrease diagram zoom level by one step and apply to SVG (mutates shared state)
   zoomOut(): void {
     this.currentZoom = Math.max(MIN_ZOOM, this.currentZoom - ZOOM_STEP);
     this.applyInlineZoom();
   }
 
+  // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: reset diagram zoom to 1:1 and apply to the inline SVG (mutates shared state)
   resetZoom(): void {
     this.currentZoom = 1;
     this.applyInlineZoom();
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: build and attach a fullscreen overlay portal displaying the diagram SVG
   openOverlay(): void {
     const svg = this.svgElement;
     if (!svg) return;
@@ -123,6 +133,7 @@ export class MermaidViewerComponent {
     componentRef.instance.overlayRef = overlayRef;
     componentRef.instance.onClose = (): void => previouslyFocused?.focus();
 
+    // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: return keyboard focus to the element that was active before the overlay opened
     const restoreFocus = (): void => {
       previouslyFocused?.focus();
     };
@@ -139,6 +150,7 @@ export class MermaidViewerComponent {
     });
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: export the rendered diagram SVG to a downloadable file
   async onExportSvg(): Promise<void> {
     const svg = this.svgElement;
     if (!svg) return;
@@ -150,6 +162,7 @@ export class MermaidViewerComponent {
     }
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: export the rendered diagram as a PNG at the current zoom level
   async onExportPng(): Promise<void> {
     const svg = this.svgElement;
     if (!svg) return;
@@ -161,6 +174,7 @@ export class MermaidViewerComponent {
     }
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: copy the rendered diagram image to the system clipboard
   async copyToClipboard(): Promise<void> {
     const svg = this.svgElement;
     if (!svg) return;
@@ -175,6 +189,7 @@ export class MermaidViewerComponent {
     }
   }
 
+  // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: apply CSS scale transform to the SVG element at current zoom (mutates shared state)
   private applyInlineZoom(): void {
     const svg = this.svgElement;
     if (svg) {
@@ -183,6 +198,7 @@ export class MermaidViewerComponent {
     }
   }
 
+  // SEM@06a4092abccd8f89fbdc19c676d5362526585d95: notify the user of a diagram export failure via snackbar
   private showExportError(): void {
     this.snackBar.open(this.translocoService.translate('mermaidViewer.exportFailed'), '', {
       duration: 4000,

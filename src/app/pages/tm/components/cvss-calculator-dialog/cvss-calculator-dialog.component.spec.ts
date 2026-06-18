@@ -44,6 +44,7 @@ describe('CvssCalculatorDialogComponent', () => {
   let translocoService: MockTranslocoService;
   let data: CvssCalculatorDialogData;
 
+  // SEM@c23cc7e70122a37b8bcd6a41648007380e6e4ddc: instantiate CvssCalculatorDialogComponent with mock dependencies for testing (mutates shared state)
   function createComponent(dialogData: CvssCalculatorDialogData): void {
     data = dialogData;
     dialogRef = { close: vi.fn() };

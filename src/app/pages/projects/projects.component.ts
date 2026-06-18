@@ -46,15 +46,18 @@ import { ProjectsListBase } from './projects-list-base';
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',
 })
+// SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: list and delete review projects with pagination, filtering, and navigation
 export class ProjectsComponent extends ProjectsListBase {
   private location = inject(Location);
 
   /** Navigate back to the previous page. */
+  // SEM@8db6257476daf93c4ae175dacbecf11d2f5f2671: navigate back to the previous page in browser history (mutates shared state)
   onClose(): void {
     this.location.back();
   }
 
   /** Open the delete confirmation dialog and delete the project on confirm. */
+  // SEM@6d9d66672763adecc482974841b300a67ef5a5ef: confirm and delete a review project, then reload the project list
   onDelete(project: ProjectListItem): void {
     const dialogData: DeleteConfirmationDialogData = {
       id: project.id,

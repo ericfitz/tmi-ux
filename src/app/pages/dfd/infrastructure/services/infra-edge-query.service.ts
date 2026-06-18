@@ -37,12 +37,15 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@0c4b0e63a2f170695121de276aae1d8887c94516: query graph edges by node, port, and metadata; compute node edge statistics
 export class InfraEdgeQueryService {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject logger service (mutates shared state)
   constructor(private readonly _logger: LoggerService) {}
 
   /**
    * Find edges connected to a specific node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges to those connected to a given node (pure)
   findEdgesConnectedToNode(graph: any, nodeId: string): Edge[] {
     if (!graph || !nodeId) {
       return [];
@@ -58,6 +61,7 @@ export class InfraEdgeQueryService {
   /**
    * Find edges connected to a specific port
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges to those connected to a specific node port (pure)
   findEdgesConnectedToPort(graph: any, nodeId: string, portId: string): Edge[] {
     if (!graph || !nodeId || !portId) {
       return [];
@@ -79,6 +83,7 @@ export class InfraEdgeQueryService {
   /**
    * Check if a specific port is connected to any edge
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a specific port has any connected edges (pure)
   isPortConnected(graph: any, nodeId: string, portId: string): boolean {
     const connectedEdges = this.findEdgesConnectedToPort(graph, nodeId, portId);
     return connectedEdges.length > 0;
@@ -87,6 +92,7 @@ export class InfraEdgeQueryService {
   /**
    * Get all connected ports for a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: list all connected ports for a node with edge ID and direction (pure)
   getConnectedPorts(
     graph: any,
     nodeId: string,
@@ -127,6 +133,7 @@ export class InfraEdgeQueryService {
   /**
    * Find edges between two specific nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges connecting two specific nodes in either direction (pure)
   findEdgesBetweenNodes(graph: any, sourceNodeId: string, targetNodeId: string): Edge[] {
     if (!graph || !sourceNodeId || !targetNodeId) {
       return [];
@@ -145,6 +152,7 @@ export class InfraEdgeQueryService {
   /**
    * Get edge statistics for a node
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute incoming, outgoing, and port connection counts for a node (pure)
   getNodeEdgeStatistics(
     graph: any,
     nodeId: string,
@@ -207,6 +215,7 @@ export class InfraEdgeQueryService {
   /**
    * Find edges by metadata criteria
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges whose metadata matches all given key-value criteria (pure)
   findEdgesByMetadata(graph: any, criteria: Record<string, string>): Edge[] {
     const edges = graph.getEdges();
     return edges.filter((edge: Edge) => {
@@ -222,6 +231,7 @@ export class InfraEdgeQueryService {
   /**
    * Find edge between specific ports on nodes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: search for an edge connecting two nodes, optionally constrained to specific ports (pure)
   findEdgeBetweenPorts(
     graph: any,
     sourceNodeId: string,
@@ -265,6 +275,7 @@ export class InfraEdgeQueryService {
   /**
    * Validate edge connection integrity
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: validate all graph edges have existing source and target nodes and ports (pure)
   validateEdgeConnections(graph: any): Array<{
     edgeId: string;
     issues: string[];
@@ -342,6 +353,7 @@ export class InfraEdgeQueryService {
   /**
    * Get edge connection summary for debugging
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: aggregate graph edge connection statistics and details for debugging (pure)
   getConnectionSummary(graph: any): {
     totalEdges: number;
     edgesWithPorts: number;

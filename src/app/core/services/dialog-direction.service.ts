@@ -15,9 +15,11 @@ import { Subscription, pairwise, startWith } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@5f21322946cee8531992ab77eb4473eea155981c: service that syncs document and dialog directionality with the active language (mutates shared state)
 export class DialogDirectionService implements OnDestroy {
   private subscription: Subscription;
 
+  // SEM@5f21322946cee8531992ab77eb4473eea155981c: subscribe to language direction changes and close open dialogs when direction flips (mutates shared state)
   constructor(
     private languageService: LanguageService,
     private directionality: Directionality,
@@ -47,6 +49,7 @@ export class DialogDirectionService implements OnDestroy {
       });
   }
 
+  // SEM@5a81a4e6d4936cb8b7a71fada1f5e6e3c73391e9: unsubscribe from language direction changes on service teardown
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();

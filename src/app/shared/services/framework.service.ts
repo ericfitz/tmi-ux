@@ -7,6 +7,7 @@ import { LoggerService } from '../../core/services/logger.service';
 @Injectable({
   providedIn: 'root',
 })
+// SEM@645eb84233150889b73c2c94cbb443998221b2e4: fetch and convert threat framework JSON assets into in-memory models
 export class FrameworkService {
   private readonly _frameworkAssetPath = '/assets/frameworks/';
   private readonly _frameworkFiles = [
@@ -17,6 +18,7 @@ export class FrameworkService {
     'plot4ai.json',
   ];
 
+  // SEM@803b1d8eb3f22b9f4413abf177f94ae872078cc0: inject HTTP client and logger dependencies
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -25,6 +27,7 @@ export class FrameworkService {
   /**
    * Load all framework JSON files and convert them to in-memory models
    */
+  // SEM@645eb84233150889b73c2c94cbb443998221b2e4: fetch all threat framework assets in parallel and return as models
   loadAllFrameworks(): Observable<FrameworkModel[]> {
     // this.logger.info('Loading all framework files from assets');
 
@@ -42,6 +45,7 @@ export class FrameworkService {
   /**
    * Load a specific framework by name
    */
+  // SEM@803b1d8eb3f22b9f4413abf177f94ae872078cc0: fetch a single named threat framework asset and convert to model
   loadFramework(frameworkName: string): Observable<FrameworkModel | null> {
     const fileName = this._getFrameworkFileName(frameworkName);
     if (!fileName) {
@@ -60,6 +64,7 @@ export class FrameworkService {
   /**
    * Convert Framework JSON structure to FrameworkModel
    */
+  // SEM@803b1d8eb3f22b9f4413abf177f94ae872078cc0: convert raw framework JSON structure to a FrameworkModel (pure)
   private _convertToFrameworkModel(framework: Framework): FrameworkModel {
     return {
       name: framework['framework-name'],
@@ -73,6 +78,7 @@ export class FrameworkService {
   /**
    * Get the appropriate JSON filename for a framework name
    */
+  // SEM@803b1d8eb3f22b9f4413abf177f94ae872078cc0: map a framework name to its asset filename; return null if unknown (pure)
   private _getFrameworkFileName(frameworkName: string): string | null {
     const normalizedName = frameworkName.toLowerCase();
     const fileMap: Record<string, string> = {

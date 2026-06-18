@@ -18,6 +18,7 @@ import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { map, catchError, of } from 'rxjs';
 
+// SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: authorize route access for admin users; redirect non-admins to landing (reads DB)
 export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

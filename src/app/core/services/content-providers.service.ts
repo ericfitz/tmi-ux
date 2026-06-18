@@ -33,6 +33,7 @@ export interface SelectableSource {
 }
 
 @Injectable({ providedIn: 'root' })
+// SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: expose server-advertised content providers joined with client capability registry
 export class ContentProvidersService {
   /** Raw server-advertised list, unfiltered. Empty until config resolves. */
   readonly providers$: Observable<ServerContentProvider[]>;
@@ -40,11 +41,13 @@ export class ContentProvidersService {
   /** Selectable non-direct providers, joined with client capability registry. */
   readonly selectableSources$: Observable<SelectableSource[]>;
 
+  // SEM@0f1a86480dbd48d5a06eac5ad50319694e9b6f04: initialize provider and selectable-source observables from the server config stream (pure)
   constructor(private readonly branding: BrandingConfigService) {
     this.providers$ = this.branding.serverConfig$.pipe(map(c => c?.content_providers ?? []));
     this.selectableSources$ = this.providers$.pipe(map(list => this._toSelectable(list)));
   }
 
+  // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: filter and map server content providers to selectable source view models, excluding direct providers (pure)
   private _toSelectable(list: ServerContentProvider[]): SelectableSource[] {
     return list
       .filter(p => p.kind === 'delegated' || p.kind === 'service')

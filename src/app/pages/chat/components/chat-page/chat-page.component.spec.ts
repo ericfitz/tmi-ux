@@ -130,6 +130,7 @@ describe('ChatPageComponent', () => {
   });
 
   describe('session creation happy path', () => {
+    // SEM@10445b985e4a14c82cc09a9148db120351514fe9: build a session_created SSE event fixture with a given session id and source snapshot size (pure)
     function sessionCreatedEvent(sessionId: string, sourceCount: number): SseEvent {
       const snapshot = Array.from({ length: sourceCount }, (_, i) => ({
         entity_id: `entity-${i}`,
@@ -149,6 +150,7 @@ describe('ChatPageComponent', () => {
       };
     }
 
+    // SEM@10445b985e4a14c82cc09a9148db120351514fe9: build a ready SSE event fixture signaling session readiness (pure)
     function readyEvent(): SseEvent {
       return {
         event: 'ready',
@@ -561,6 +563,7 @@ describe('ChatPageComponent', () => {
   });
 
   describe('message streaming reconciliation', () => {
+    // SEM@7196e42d2530d6d9837ac1fc41d3f5208aa78e06: set up a mock session stream and send a test message through full session creation flow (mutates shared state)
     function setupSessionAndSendMessage(): Subject<SseEvent> {
       const sessionStream = new Subject<SseEvent>();
       const messageStream = new Subject<SseEvent>();

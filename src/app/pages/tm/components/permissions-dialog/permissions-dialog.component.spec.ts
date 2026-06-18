@@ -49,6 +49,7 @@ describe('PermissionsDialogComponent', () => {
     { id: 'github', name: 'GitHub', icon: 'github' } as OAuthProviderInfo,
   ];
 
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: build a test Authorization fixture with optional field overrides (pure)
   function createPermission(overrides: Partial<Authorization> = {}): Authorization {
     return {
       principal_type: 'user',

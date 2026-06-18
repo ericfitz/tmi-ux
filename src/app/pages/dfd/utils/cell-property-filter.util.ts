@@ -66,11 +66,13 @@ export const SANITIZE_FROM_CELLS = [
  * - Object wildcards: $.ports.groups.*.attrs
  * - Prefix matching: $.tools[*] matches tools[0], tools[0].name, etc.
  */
+// SEM@995ab845b9ceb5559017adb7a615abe220bc344f: match property paths against JSONPath patterns with wildcard support (pure)
 export class JSONPathMatcher {
   /**
    * Convert JSON path to regex pattern
    * If pattern ends with a wildcard, it matches any path starting with that prefix
    */
+  // SEM@995ab845b9ceb5559017adb7a615abe220bc344f: convert a JSONPath pattern string to a matching regex (pure)
   private static pathToRegex(path: string, allowPrefixMatch: boolean = true): RegExp {
     // Remove leading $. if present
     let pattern = path.replace(/^\$\./, '');
@@ -108,6 +110,7 @@ export class JSONPathMatcher {
   /**
    * Check if a property path matches a JSON path pattern
    */
+  // SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: check if a property path matches a single JSONPath pattern (pure)
   static matches(propertyPath: string, jsonPathPattern: string): boolean {
     const regex = this.pathToRegex(jsonPathPattern);
     return regex.test(propertyPath);
@@ -116,6 +119,7 @@ export class JSONPathMatcher {
   /**
    * Check if any of multiple patterns match
    */
+  // SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: check if a property path matches any of a list of JSONPath patterns (pure)
   static matchesAny(propertyPath: string, jsonPathPatterns: readonly string[]): boolean {
     return jsonPathPatterns.some(pattern => this.matches(propertyPath, pattern));
   }
@@ -126,6 +130,7 @@ export class JSONPathMatcher {
  * Flattens nested object into dot-notation paths
  * @param onlyLeafPaths If true, only returns leaf paths (actual changed values), not intermediate paths
  */
+// SEM@2eb446269a91d26a3d401a7c06a33fbf524a4a57: flatten a nested object into a set of dot-notation property paths (pure)
 export function extractPropertyPaths(
   obj: Record<string, any>,
   prefix = '',
@@ -181,6 +186,7 @@ export function extractPropertyPaths(
  * Returns false if ALL changed properties are in the exclusion list.
  * Returns true if ANY changed property is NOT in the exclusion list.
  */
+// SEM@2eb446269a91d26a3d401a7c06a33fbf524a4a57: determine if cell property changes should trigger history or persistence (pure)
 export function shouldTriggerHistoryOrPersistence(previousCell: Cell, currentCell: Cell): boolean {
   // Build a change object containing only changed properties
   const changes = buildChangeObject(previousCell, currentCell);
@@ -207,6 +213,7 @@ export function shouldTriggerHistoryOrPersistence(previousCell: Cell, currentCel
  * Build an object containing only the changed properties between two cells
  * Recursively compares nested objects to only include actually changed leaf values
  */
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: build a diff object of changed properties between two cell snapshots (pure)
 function buildChangeObject(
   previous: Cell | Record<string, any>,
   current: Cell | Record<string, any>,
@@ -243,6 +250,7 @@ function buildChangeObject(
  * Compare two non-equal values and return the change representation.
  * Returns undefined if there's no meaningful change to record.
  */
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: compute the change representation between two non-equal values (pure)
 function compareValues(previousValue: any, currentValue: any): any {
   // Handle arrays - compare element by element
   if (Array.isArray(currentValue) && Array.isArray(previousValue)) {
@@ -263,6 +271,7 @@ function compareValues(previousValue: any, currentValue: any): any {
  * Compare two arrays element by element, returning only changed elements.
  * Returns undefined if no elements changed.
  */
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: diff two arrays element by element, returning changed positions (pure)
 function compareArrayElements(previousArr: any[], currentArr: any[]): any[] | undefined {
   const arrayChanges: any[] = [];
   const maxLength = Math.max(currentArr.length, previousArr.length);
@@ -285,6 +294,7 @@ function compareArrayElements(previousArr: any[], currentArr: any[]): any[] | un
 /**
  * Check if both values are non-null, non-array objects (plain objects).
  */
+// SEM@9bbddd20c1a355788e020707ed179a55cd0de167: check if both values are non-null, non-array plain objects (pure)
 function areBothPlainObjects(a: any, b: any): boolean {
   return (
     a != null &&
@@ -299,6 +309,7 @@ function areBothPlainObjects(a: any, b: any): boolean {
 /**
  * Deep equality check for objects
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: recursively compare two values for deep structural equality (pure)
 function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
   if (a == null || b == null) return false;
@@ -328,6 +339,7 @@ function deepEqual(a: any, b: any): boolean {
  * Creates a new cell object with excluded properties removed based on
  * SANITIZE_FROM_CELLS configuration.
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: deep-clone a cell and remove excluded runtime properties (pure)
 export function sanitizeCell(cell: Cell): Cell {
   // Deep clone the cell
   const sanitized = JSON.parse(JSON.stringify(cell)) as Cell;
@@ -343,6 +355,7 @@ export function sanitizeCell(cell: Cell): Cell {
 /**
  * Remove a property from an object by JSON path pattern
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: delete a property from an object by JSONPath pattern (mutates shared state)
 function removePropertyByPath(obj: any, jsonPathPattern: string): void {
   // Remove leading $. if present
   const path = jsonPathPattern.replace(/^\$\./, '');
@@ -356,6 +369,7 @@ function removePropertyByPath(obj: any, jsonPathPattern: string): void {
 /**
  * Recursively remove properties matching a path pattern
  */
+// SEM@2eb446269a91d26a3d401a7c06a33fbf524a4a57: recursively delete properties matching a path pattern from an object (mutates shared state)
 function removePropertyRecursive(
   obj: any,
   segments: string[],
@@ -403,6 +417,7 @@ function removePropertyRecursive(
 /**
  * Sanitize an array of cells
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: deep-clone and remove excluded runtime properties from an array of cells (pure)
 export function sanitizeCells(cells: Cell[]): Cell[] {
   return cells.map(cell => sanitizeCell(cell));
 }
@@ -410,6 +425,7 @@ export function sanitizeCells(cells: Cell[]): Cell[] {
 /**
  * Check if a specific property path should be excluded from triggers
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: check if a property path is excluded from history and persistence triggers (pure)
 export function isPropertyExcludedFromTriggers(propertyPath: string): boolean {
   return JSONPathMatcher.matchesAny(propertyPath, EXCLUDE_FROM_HISTORY_TRIGGERS);
 }
@@ -417,6 +433,7 @@ export function isPropertyExcludedFromTriggers(propertyPath: string): boolean {
 /**
  * Check if a specific property path should be sanitized
  */
+// SEM@0a67b9a67611e3f83e79aa9a869abed3e6e57dd2: check if a property path matches the sanitization exclusion list (pure)
 export function isPropertySanitized(propertyPath: string): boolean {
   return JSONPathMatcher.matchesAny(propertyPath, SANITIZE_FROM_CELLS);
 }
@@ -503,6 +520,7 @@ export const CANONICAL_EDGE_SHAPE = 'flow' as const;
  * Check if a shape value represents an edge (X6 Edge).
  * Returns true for both 'flow' (canonical) and 'edge' (legacy).
  */
+// SEM@d53281fb3bf4a52e7eeab3b867f86300c3fbf591: validate a shape string as a known edge shape, including legacy aliases (pure)
 export function isEdgeShape(shape: string | undefined): boolean {
   return shape !== undefined && (EDGE_SHAPES as readonly string[]).includes(shape);
 }
@@ -567,6 +585,7 @@ const EDGE_ATTRS_SCHEMA: Record<string, readonly string[] | Record<string, reado
  * Logger interface for warning about unknown properties.
  */
 interface ApiSanitizationLogger {
+  // SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: notify caller of an unknown property removed during API sanitization (pure)
   warn(message: string, context?: Record<string, unknown>): void;
 }
 
@@ -574,6 +593,7 @@ interface ApiSanitizationLogger {
  * Filter an attrs object to match NodeAttrs schema.
  * Removes any properties not in the schema.
  */
+// SEM@6a2a2eed4c2f7de5b5415d297960349ccb688aa7: filter a node attrs object to only schema-allowed selectors and properties (pure)
 function filterNodeAttrs(
   attrs: Record<string, unknown>,
   logger?: ApiSanitizationLogger,
@@ -627,6 +647,7 @@ function filterNodeAttrs(
  * Filter an attrs object to match EdgeAttrs schema.
  * Removes any properties not in the schema.
  */
+// SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: filter an edge attrs object to only schema-allowed line properties and markers (pure)
 function filterEdgeAttrs(
   attrs: Record<string, unknown>,
   logger?: ApiSanitizationLogger,
@@ -715,6 +736,7 @@ function filterEdgeAttrs(
  * @param logger Optional logger for warning about unknown properties
  * @returns Sanitized cell ready for API submission
  */
+// SEM@d53281fb3bf4a52e7eeab3b867f86300c3fbf591: sanitize a single diagram cell for API submission, stripping non-schema fields (pure)
 export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): Cell {
   const cellId = cell.id;
   const isEdge = isEdgeShape(cell.shape);
@@ -769,6 +791,7 @@ export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): 
  * @param cells Array of cells to process
  * @returns Cells with children converted to parent references
  */
+// SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: convert X6 children arrays on parent cells to parent references on child cells (pure)
 function convertChildrenToParent(cells: Cell[]): Cell[] {
   // Build a map of cell ID -> parent ID from children arrays
   const parentMap = new Map<string, string>();
@@ -806,6 +829,7 @@ function convertChildrenToParent(cells: Cell[]): Cell[] {
  * @param logger Optional logger for warning about unknown properties
  * @returns Array of sanitized cells ready for API submission
  */
+// SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: sanitize an array of diagram cells for API submission with parent-ref conversion (pure)
 export function sanitizeCellsForApi(cells: Cell[], logger?: ApiSanitizationLogger): Cell[] {
   // First convert children to parent references
   const withParentRefs = convertChildrenToParent(cells);
@@ -821,6 +845,7 @@ export function sanitizeCellsForApi(cells: Cell[], logger?: ApiSanitizationLogge
  * @param cell The cell to normalize
  * @returns Cell with normalized shape (edge → flow)
  */
+// SEM@d53281fb3bf4a52e7eeab3b867f86300c3fbf591: convert a legacy 'edge' shape value to canonical 'flow' on a single cell (pure)
 export function normalizeEdgeShape<T extends { shape?: string }>(cell: T): T {
   if (cell.shape === 'edge') {
     return { ...cell, shape: CANONICAL_EDGE_SHAPE };
@@ -835,6 +860,7 @@ export function normalizeEdgeShape<T extends { shape?: string }>(cell: T): T {
  * @param cells Array of cells to normalize
  * @returns Array of cells with normalized shapes
  */
+// SEM@d53281fb3bf4a52e7eeab3b867f86300c3fbf591: convert legacy 'edge' shape values to canonical 'flow' across a cell array (pure)
 export function normalizeCellShapes<T extends { shape?: string }>(cells: T[]): T[] {
   return cells.map(normalizeEdgeShape);
 }

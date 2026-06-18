@@ -16,12 +16,15 @@ interface PortObject {
  * Contains business logic for tooltip data extraction and formatting
  */
 @Injectable()
+// SEM@003cf465e4def28cd84b3d18e926a98731eff98f: extract and format tooltip content for graph nodes, ports, and cell metadata (pure)
 export class UiTooltipService {
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject logger dependency (pure)
   constructor(private logger: LoggerService) {}
 
   /**
    * Get tooltip content for a port
    */
+  // SEM@cd1e8083a933e71b69d89d729371e93ca3104dcd: fetch label text for a graph node port, falling back to port ID (pure)
   getPortTooltipContent(node: Node, portId: string): string {
     if (!node || !portId) {
       this.logger.warn('[TooltipService] Invalid input for port tooltip', { node: !!node, portId });
@@ -63,6 +66,7 @@ export class UiTooltipService {
   /**
    * Calculate tooltip position relative to mouse event
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: compute viewport-clamped tooltip position from a mouse event (pure)
   calculateTooltipPosition(
     mouseEvent: MouseEvent,
     options: { offsetX?: number; offsetY?: number } = {},
@@ -101,6 +105,7 @@ export class UiTooltipService {
   /**
    * Format tooltip content for display
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: trim, truncate, and normalize whitespace in tooltip text (pure)
   formatTooltipContent(content: string, maxLength: number = 50): string {
     if (!content || typeof content !== 'string') {
       return '';
@@ -123,6 +128,7 @@ export class UiTooltipService {
   /**
    * Validate if tooltip should be shown
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether tooltip content is long enough to display (pure)
   shouldShowTooltip(content: string): boolean {
     if (!content || typeof content !== 'string') {
       return false;
@@ -140,6 +146,7 @@ export class UiTooltipService {
   /**
    * Get tooltip content for a node (can be extended for node tooltips)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build tooltip label from a graph node's type and label (pure)
   getNodeTooltipContent(node: Node): string {
     if (!node) {
       return '';
@@ -167,6 +174,7 @@ export class UiTooltipService {
    * Get tooltip content for a cell's metadata.
    * Returns null if the cell has no metadata, suppressing the tooltip.
    */
+  // SEM@003cf465e4def28cd84b3d18e926a98731eff98f: format a graph cell's metadata entries as tooltip text, null if none (pure)
   getCellMetadataTooltipContent(cell: Cell): string | null {
     if (!cell) {
       return null;
@@ -188,6 +196,7 @@ export class UiTooltipService {
   /**
    * Extract label text from port attributes
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: parse label text from a port's attribute map (pure)
   private extractPortLabelText(portObj: PortObject): string {
     if (!portObj?.attrs) {
       return '';

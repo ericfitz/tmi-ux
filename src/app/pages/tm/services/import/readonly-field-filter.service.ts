@@ -8,12 +8,19 @@ import {
 import type { Cell } from '../../../../core/types/websocket-message.types';
 import type { components } from '@app/generated/api-types';
 
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API ThreatModelInput schema (pure)
 type ApiThreatModelInput = components['schemas']['ThreatModelInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API ThreatInput schema (pure)
 type ApiThreatInput = components['schemas']['ThreatInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API AssetInput schema (pure)
 type ApiAssetInput = components['schemas']['AssetInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API NoteInput schema (pure)
 type ApiNoteInput = components['schemas']['NoteInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API DocumentInput schema (pure)
 type ApiDocumentInput = components['schemas']['DocumentInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API RepositoryInput schema (pure)
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API CreateDiagramRequest schema (pure)
 type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
 
 /**
@@ -24,7 +31,9 @@ type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
 @Injectable({
   providedIn: 'root',
 })
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: filter server-managed read-only fields from API request payloads before submission (pure)
 export class ReadonlyFieldFilterService {
+  // SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: inject logger dependency (pure)
   constructor(private readonly _logger: LoggerService) {}
 
   /**
@@ -38,6 +47,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiThreatModelInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter raw data to allowed threat model fields, extracting metadata separately (pure)
   filterThreatModel(data: Record<string, unknown>): {
     filtered: ApiThreatModelInput;
     metadata: Metadata[] | undefined;
@@ -63,6 +73,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiThreatInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a threat object to only API-writable fields, split out metadata (pure)
   filterThreat(data: Record<string, unknown>): {
     filtered: ApiThreatInput;
     metadata: Metadata[] | undefined;
@@ -98,6 +109,7 @@ export class ReadonlyFieldFilterService {
    * Extracts fields that belong in the subsequent PUT
    * (BaseDiagramInput / DfdDiagramInput) for separate handling.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a diagram object to CreateDiagramRequest fields, extract deferred fields (pure)
   filterDiagram(data: Record<string, unknown>): {
     filtered: ApiCreateDiagramRequest;
     metadata: Metadata[] | undefined;
@@ -138,6 +150,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiNoteInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a note object to only API-writable fields, split out metadata (pure)
   filterNote(data: Record<string, unknown>): {
     filtered: ApiNoteInput;
     metadata: Metadata[] | undefined;
@@ -160,6 +173,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiAssetInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter an asset object to only API-writable fields, split out metadata (pure)
   filterAsset(data: Record<string, unknown>): {
     filtered: ApiAssetInput;
     metadata: Metadata[] | undefined;
@@ -186,6 +200,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiDocumentInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a document object to only API-writable fields, split out metadata (pure)
   filterDocument(data: Record<string, unknown>): {
     filtered: ApiDocumentInput;
     metadata: Metadata[] | undefined;
@@ -208,6 +223,7 @@ export class ReadonlyFieldFilterService {
    * Constructs a typed ApiRepositoryInput from the input data, picking only
    * allowed fields. Metadata is extracted separately for the metadata endpoint.
    */
+  // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a repository object to only API-writable fields, split out metadata (pure)
   filterRepository(data: Record<string, unknown>): {
     filtered: ApiRepositoryInput;
     metadata: Metadata[] | undefined;
@@ -236,6 +252,7 @@ export class ReadonlyFieldFilterService {
    * @param authorization The authorization object to filter
    * @returns Filtered authorization object ready for API submission
    */
+  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: strip server-managed read-only fields from an authorization object (pure)
   filterAuthorization(authorization: Record<string, unknown>): Record<string, unknown> {
     return this._filterFields(authorization, this._authorizationReadOnlyFields);
   }
@@ -246,6 +263,7 @@ export class ReadonlyFieldFilterService {
    * @param authorizations Array of authorizations to filter
    * @returns Array of filtered authorizations
    */
+  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: strip server-managed read-only fields from an array of authorization objects (pure)
   filterAuthorizations(authorizations: unknown[]): unknown[] {
     return authorizations.map(auth => {
       if (typeof auth === 'object' && auth !== null) {
@@ -267,6 +285,7 @@ export class ReadonlyFieldFilterService {
    * @param cell The cell object to filter
    * @returns Filtered cell object ready for API submission
    */
+  // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: filter a diagram cell to API schema-compliant fields for submission (pure)
   filterCell(cell: Record<string, unknown>): Record<string, unknown> {
     return sanitizeCellForApi(cell as Cell, this._logger);
   }
@@ -282,6 +301,7 @@ export class ReadonlyFieldFilterService {
    * @param cells Array of cells to filter
    * @returns Array of filtered cells ready for API submission
    */
+  // SEM@a91514ef0d60c68d539e3d6ba9a8e2fdd27bc815: filter an array of diagram cells to API schema-compliant fields (pure)
   filterCells(cells: unknown[]): unknown[] {
     // Filter out non-object cells and cast to Cell[]
     const validCells = cells.filter(
@@ -294,6 +314,7 @@ export class ReadonlyFieldFilterService {
   /**
    * Generic field filtering helper (block-list)
    */
+  // SEM@6a4147f1cdd39d730dcaa36b63b6eb46b181e330: remove a block-listed set of field names from an object (pure)
   private _filterFields(
     data: Record<string, unknown>,
     fieldsToRemove: readonly string[],

@@ -244,6 +244,7 @@ export interface MetadataDialogData {
     `,
   ],
 })
+// SEM@135fa8eb21fe2891960ebea73eb878df8790d442: dialog component for viewing and editing a threat model object's metadata entries
 export class MetadataDialogComponent implements OnInit, OnDestroy {
   dataSource = new MatTableDataSource<Metadata>([]);
   displayedColumns: string[] = [];
@@ -253,16 +254,19 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
 
   private _subscriptions: Subscription = new Subscription();
 
+  // SEM@df857842acb683048164ddc3b37030f666db756c: inject dialog reference and metadata dialog data (pure)
   constructor(
     public dialogRef: MatDialogRef<MetadataDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: MetadataDialogData,
   ) {}
 
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: initialize metadata table data source and displayed columns (mutates shared state)
   ngOnInit(): void {
     this.dataSource.data = [...this.data.metadata];
     this.displayedColumns = this.data.isReadOnly ? ['key', 'value'] : ['key', 'value', 'actions'];
   }
 
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: unsubscribe all active subscriptions on component teardown (mutates shared state)
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
   }
@@ -271,6 +275,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Gets filtered metadata - removes empty entries and validates
    * @returns Valid metadata entries (both key and value must be non-empty)
    */
+  // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: filter metadata entries to those with non-empty key and value (pure)
   private getValidMetadata(): Metadata[] {
     return this.dataSource.data.filter(
       item => item.key && item.key.trim() !== '' && item.value && item.value.trim() !== '',
@@ -280,6 +285,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   /**
    * Adds a new metadata item to the list
    */
+  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: append a blank metadata entry to the editable list (mutates shared state)
   addItem(): void {
     const newData = [
       ...this.dataSource.data,
@@ -295,6 +301,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Deletes a metadata item from the list
    * @param index The index of the metadata item to delete
    */
+  // SEM@1c60feb77d5158d6acbef502ab228af191d1bb4c: delete a metadata entry at the given index from the list (mutates shared state)
   deleteItem(index: number): void {
     if (index >= 0 && index < this.dataSource.data.length) {
       const newData = [...this.dataSource.data];
@@ -307,6 +314,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Saves the metadata and closes the dialog
    * Only saves valid metadata entries (non-empty key and value pairs)
    */
+  // SEM@0b80acf835f1ad7f9fc0e5cbaf2bc4f125615152: validate and close the metadata dialog, returning valid entries to caller
   save(): void {
     const validMetadata = this.getValidMetadata();
     this.dialogRef.close(validMetadata);
@@ -315,6 +323,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   /**
    * Closes the dialog without saving (cancel)
    */
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: close the metadata dialog without saving any changes
   cancel(): void {
     this.dialogRef.close();
   }
@@ -323,6 +332,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the add button
    * @returns The tabindex value after all table rows
    */
+  // SEM@135fa8eb21fe2891960ebea73eb878df8790d442: compute tab index for the add button after all table rows (pure)
   getAddButtonTabIndex(): number {
     return this.dataSource.data.length * 3 + 1;
   }
@@ -331,6 +341,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the cancel button
    * @returns The tabindex value after the add button
    */
+  // SEM@135fa8eb21fe2891960ebea73eb878df8790d442: compute tab index for the cancel button after the add button (pure)
   getCancelButtonTabIndex(): number {
     return this.dataSource.data.length * 3 + 2;
   }
@@ -339,6 +350,7 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
    * Gets the tabindex for the save button
    * @returns The tabindex value after the cancel button
    */
+  // SEM@135fa8eb21fe2891960ebea73eb878df8790d442: compute tab index for the save button after the cancel button (pure)
   getSaveButtonTabIndex(): number {
     return this.dataSource.data.length * 3 + 3;
   }

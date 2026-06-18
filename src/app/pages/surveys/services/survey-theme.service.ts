@@ -304,6 +304,7 @@ const DARK_COLORBLIND_THEME: ITheme = {
 @Injectable({
   providedIn: 'root',
 })
+// SEM@dfd1e58a42f93148397e28d790ce39f064d27194: map the app theme configuration to the matching SurveyJS ITheme reactively (pure)
 export class SurveyThemeService {
   /**
    * Observable that emits the appropriate SurveyJS ITheme whenever
@@ -311,6 +312,7 @@ export class SurveyThemeService {
    */
   readonly theme$: Observable<ITheme>;
 
+  // SEM@dfd1e58a42f93148397e28d790ce39f064d27194: subscribe to theme changes and build the reactive SurveyJS theme observable (pure)
   constructor(private themeService: ThemeService) {
     this.theme$ = this.themeService.observeTheme().pipe(map(config => this.getTheme(config)));
   }
@@ -318,6 +320,7 @@ export class SurveyThemeService {
   /**
    * Returns the SurveyJS ITheme for the given TMI theme configuration.
    */
+  // SEM@dfd1e58a42f93148397e28d790ce39f064d27194: convert a theme configuration to the corresponding SurveyJS ITheme (pure)
   getTheme(config: ThemeConfig): ITheme {
     if (config.colorScheme === 'dark') {
       return config.palette === 'colorblind' ? DARK_COLORBLIND_THEME : DARK_NORMAL_THEME;

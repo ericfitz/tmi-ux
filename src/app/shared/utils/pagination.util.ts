@@ -23,6 +23,7 @@ import {
  * calculateOffset(2, 10); // 20 (third page with 10 items per page)
  * ```
  */
+// SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: compute the API offset from a page index and page size (pure)
 export function calculateOffset(pageIndex: number, pageSize: number): number {
   return pageIndex * pageSize;
 }
@@ -41,6 +42,7 @@ export function calculateOffset(pageIndex: number, pageSize: number): number {
  * calculatePageIndex(20, 10); // 2
  * ```
  */
+// SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: compute the page index from an API offset and page size (pure)
 export function calculatePageIndex(offset: number, pageSize: number): number {
   if (pageSize <= 0) {
     return 0;
@@ -62,6 +64,7 @@ export function calculatePageIndex(offset: number, pageSize: number): number {
  * // { pageIndex: 2, pageSize: 50 }
  * ```
  */
+// SEM@bfb60b51b1f44fb69eb7f7fbac7656849e9750be: parse pagination state from URL query parameters (pure)
 export function parsePaginationFromUrl(
   params: Params,
   defaultPageSize: number = DEFAULT_PAGE_SIZE,
@@ -98,6 +101,7 @@ export function parsePaginationFromUrl(
  * // {} (all defaults, empty params)
  * ```
  */
+// SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: build URL query params from pagination state, omitting defaults (pure)
 export function buildPaginationQueryParams(
   state: PaginationState,
   filterText?: string,
@@ -144,6 +148,7 @@ export function buildPaginationQueryParams(
  * adjustPageAfterDeletion(0, 0, 0); // 0
  * ```
  */
+// SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: compute the adjusted page index after an item is deleted (pure)
 export function adjustPageAfterDeletion(
   currentPageIndex: number,
   itemsOnPage: number,

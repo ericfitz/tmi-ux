@@ -14,6 +14,7 @@ import { ThreatsDialogComponent } from '../../../tm/components/threats-dialog/th
 import { ConfirmActionDialogComponent } from '../../../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
 
 describe('DfdDialogService', () => {
+  // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: build a DfdDialogService with a mocked MatDialog for unit tests (pure)
   function setup(): {
     service: DfdDialogService;
     matDialog: { open: ReturnType<typeof vi.fn> };
