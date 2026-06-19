@@ -2,8 +2,7 @@ name: Dependency Bump (Claude)
 
 on:
   schedule:
-    - cron: '0 16 * * 1'   # weekly full run, Mon 16:00 UTC (after the Monday Dependabot run)
-    - cron: '0 13 * * *'   # daily Dependabot-alert poll
+    - cron: '0 13 * * *'   # daily Dependabot-alert check (bumps only when open alerts exist)
   workflow_dispatch:
     inputs:
       branch:
@@ -25,9 +24,15 @@ jobs:
     outputs:
       branches: ${{ steps.set.outputs.branches }}
     steps:
+      - name: Mint GitHub App token (reads Dependabot alerts)
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
       - id: set
         env:
-          GH_TOKEN: ${{ secrets.DEPS_ALERTS_TOKEN || github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}
           SCHED: ${{ github.event.schedule }}
@@ -45,7 +50,7 @@ jobs:
           elif [ "$EVENT" = "schedule" ] && [ "$SCHED" = "0 13 * * *" ]; then
             CNT="$(open_alerts_count)"
             if [ "$CNT" = "ERR" ]; then
-              echo "::warning::Could not read Dependabot alerts (token scope). Daily poll is a no-op until DEPS_ALERTS_TOKEN is set."
+              echo "::warning::Could not read Dependabot alerts. Ensure the GitHub App has 'Dependabot alerts: read' and the installation re-accepted the updated permission."
               LIST=""
             elif [ "$CNT" -gt 0 ] 2>/dev/null; then
               echo "Open Dependabot alerts present — running the full branch set."
