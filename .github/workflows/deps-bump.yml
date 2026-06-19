@@ -1,23 +1,88 @@
 name: Dependency Bump (Claude)
 
 on:
-  # Iteration trigger only. workflow_dispatch & schedule fire only from the
-  # default branch, so while developing on this feature branch we trigger on
-  # pushes to it. This block is replaced by workflow_dispatch + schedule
-  # before the workflow is merged to main.
+  schedule:
+    - cron: '0 16 * * 1'   # weekly full run, Mon 16:00 UTC (after the Monday Dependabot run)
+    - cron: '0 13 * * *'   # daily Dependabot-alert poll
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to bump (a branch name, or "all")'
+        default: 'main'
+        type: string
   push:
+    # TEMPORARY dev self-test trigger. Removed before merge to main — schedule and
+    # workflow_dispatch only fire from the default branch.
     branches: [feature/deps-bump-automation]
 
 permissions:
-  contents: read   # the job's own GITHUB_TOKEN only reads (checkout). All writes
-                   # go through the ephemeral GitHub App token minted after the agent step.
+  contents: read
+
+concurrency:
+  group: deps-bump-${{ github.workflow }}-${{ github.event_name }}
+  cancel-in-progress: false
 
 jobs:
-  bump:
+  discover:
+    if: ${{ github.repository == 'ericfitz/tmi-ux' }}
     runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.set.outputs.branches }}
+    steps:
+      - id: set
+        env:
+          GH_TOKEN: ${{ secrets.DEPS_ALERTS_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          SCHED: ${{ github.event.schedule }}
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          all_branches() {
+            gh api "repos/$REPO/branches" --paginate --jq '.[].name' | grep -E '^(main|dev/.*)$' || true
+          }
+          open_alerts_count() {
+            gh api "repos/$REPO/dependabot/alerts?state=open&per_page=1" --jq 'length' 2>/dev/null || echo "ERR"
+          }
+          if [ "$EVENT" = "push" ]; then
+            LIST="$REF_NAME"                                  # dev self-test: just this branch
+          elif [ "$EVENT" = "workflow_dispatch" ] && [ "$INPUT_BRANCH" != "all" ]; then
+            LIST="$INPUT_BRANCH"
+          elif [ "$EVENT" = "schedule" ] && [ "$SCHED" = "0 13 * * *" ]; then
+            CNT="$(open_alerts_count)"
+            if [ "$CNT" = "ERR" ]; then
+              echo "::warning::Could not read Dependabot alerts (token scope). Daily poll is a no-op until DEPS_ALERTS_TOKEN is set."
+              LIST=""
+            elif [ "$CNT" -gt 0 ] 2>/dev/null; then
+              echo "Open Dependabot alerts present — running the full branch set."
+              LIST="$(all_branches)"
+            else
+              echo "No open Dependabot alerts — nothing to do."
+              LIST=""
+            fi
+          else
+            LIST="$(all_branches)"                            # weekly schedule, or dispatch with branch=all
+          fi
+          BRANCHES="$(printf '%s\n' "$LIST" | grep -v '^$' | jq -R . | jq -cs .)"
+          echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+          echo "Discovered branches: $BRANCHES"
+
+  bump:
+    needs: discover
+    if: ${{ needs.discover.outputs.branches != '[]' && needs.discover.outputs.branches != '' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.discover.outputs.branches) }}
+    concurrency:
+      group: deps-bump-run-${{ matrix.branch }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ matrix.branch }}
           fetch-depth: 0
           # The headless agent runs with --dangerously-skip-permissions; do NOT
           # leave a push credential in its reach. The "Open PR" step authenticates
@@ -55,7 +120,7 @@ jobs:
       - name: Create working branch
         id: wb
         env:
-          BASE: ${{ github.ref_name }}
+          BASE: ${{ matrix.branch }}
         run: |
           set -euo pipefail
           WB="deps/auto-bump/${BASE}/${{ github.run_id }}"
