@@ -10,10 +10,6 @@ on:
         description: 'Branch to bump (a branch name, or "all")'
         default: 'main'
         type: string
-  push:
-    # TEMPORARY dev self-test trigger. Removed before merge to main — schedule and
-    # workflow_dispatch only fire from the default branch.
-    branches: [feature/deps-bump-automation]
 
 permissions:
   contents: read
@@ -36,7 +32,6 @@ jobs:
           EVENT: ${{ github.event_name }}
           SCHED: ${{ github.event.schedule }}
           INPUT_BRANCH: ${{ github.event.inputs.branch }}
-          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           all_branches() {
@@ -45,9 +40,7 @@ jobs:
           open_alerts_count() {
             gh api "repos/$REPO/dependabot/alerts?state=open&per_page=1" --jq 'length' 2>/dev/null || echo "ERR"
           }
-          if [ "$EVENT" = "push" ]; then
-            LIST="$REF_NAME"                                  # dev self-test: just this branch
-          elif [ "$EVENT" = "workflow_dispatch" ] && [ "$INPUT_BRANCH" != "all" ]; then
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$INPUT_BRANCH" != "all" ]; then
             LIST="$INPUT_BRANCH"
           elif [ "$EVENT" = "schedule" ] && [ "$SCHED" = "0 13 * * *" ]; then
             CNT="$(open_alerts_count)"
