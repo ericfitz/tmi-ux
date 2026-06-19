@@ -1,0 +1,181 @@
+name: Dependency Bump (Claude)
+
+on:
+  schedule:
+    - cron: '0 16 * * 1'   # weekly full run, Mon 16:00 UTC (after the Monday Dependabot run)
+    - cron: '0 13 * * *'   # daily Dependabot-alert poll
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to bump (a branch name, or "all")'
+        default: 'main'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deps-bump-${{ github.workflow }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    if: ${{ github.repository == 'ericfitz/tmi-ux' }}
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.set.outputs.branches }}
+    steps:
+      - id: set
+        env:
+          GH_TOKEN: ${{ secrets.DEPS_ALERTS_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          SCHED: ${{ github.event.schedule }}
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+        run: |
+          set -euo pipefail
+          all_branches() {
+            gh api "repos/$REPO/branches" --paginate --jq '.[].name' | grep -E '^(main|dev/.*)$' || true
+          }
+          open_alerts_count() {
+            gh api "repos/$REPO/dependabot/alerts?state=open&per_page=1" --jq 'length' 2>/dev/null || echo "ERR"
+          }
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$INPUT_BRANCH" != "all" ]; then
+            LIST="$INPUT_BRANCH"
+          elif [ "$EVENT" = "schedule" ] && [ "$SCHED" = "0 13 * * *" ]; then
+            CNT="$(open_alerts_count)"
+            if [ "$CNT" = "ERR" ]; then
+              echo "::warning::Could not read Dependabot alerts (token scope). Daily poll is a no-op until DEPS_ALERTS_TOKEN is set."
+              LIST=""
+            elif [ "$CNT" -gt 0 ] 2>/dev/null; then
+              echo "Open Dependabot alerts present — running the full branch set."
+              LIST="$(all_branches)"
+            else
+              echo "No open Dependabot alerts — nothing to do."
+              LIST=""
+            fi
+          else
+            LIST="$(all_branches)"                            # weekly schedule, or dispatch with branch=all
+          fi
+          BRANCHES="$(printf '%s\n' "$LIST" | grep -v '^$' | jq -R . | jq -cs .)"
+          echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+          echo "Discovered branches: $BRANCHES"
+
+  bump:
+    needs: discover
+    if: ${{ needs.discover.outputs.branches != '[]' && needs.discover.outputs.branches != '' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.discover.outputs.branches) }}
+    concurrency:
+      group: deps-bump-run-${{ matrix.branch }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+          # The headless agent runs with --dangerously-skip-permissions; do NOT
+          # leave a push credential in its reach. The "Open PR" step authenticates
+          # explicitly with the App token instead.
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false   # version is read from package.json "packageManager"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Vendor the bump skill into the runner
+        env:
+          # Pin ericfitz/skills to a reviewed commit so the high-privilege agent
+          # run below cannot execute an unreviewed change to the skill. Bump this
+          # SHA deliberately when adopting skill updates.
+          SKILL_SHA: "804ee39f7d594e896f6dab8501b59cb92556b8df"
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          git clone --filter=blob:none https://github.com/ericfitz/skills "$tmp/skills"
+          git -C "$tmp/skills" checkout -q "$SKILL_SHA"
+          mkdir -p .claude/skills/bump
+          cp -R "$tmp/skills/deps/skills/bump/." .claude/skills/bump/
+          test -f .claude/skills/bump/SKILL.md && echo "skill vendored @ $SKILL_SHA"
+
+      - name: Create working branch
+        id: wb
+        env:
+          BASE: ${{ matrix.branch }}
+        run: |
+          set -euo pipefail
+          WB="deps/auto-bump/${BASE}/${{ github.run_id }}"
+          git config user.name "deps-bot"
+          git config user.email "deps-bot@users.noreply.github.com"
+          git checkout -b "$WB"
+          {
+            echo "base=$BASE"
+            echo "wb=$WB"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run headless bump (commit only — no push, no PR, no session-completion)
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Intentionally NO GH_TOKEN: the agent must not perform GitHub writes.
+        run: |
+          set -euo pipefail
+          if [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN is empty (secret missing on this ref)."
+            exit 1
+          fi
+          claude -p "Run the dependency bump skill (/bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
+            --dangerously-skip-permissions \
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep" | tee /tmp/bump-plan.txt
+
+      # Minted AFTER the agent step so the write-capable token never exists while
+      # the --dangerously-skip-permissions agent is running. Ephemeral (~1h),
+      # scoped to this App's Contents + Pull-requests permissions on this repo.
+      - name: Mint GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
+
+      - name: Open PR if there are changes
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BASE: ${{ steps.wb.outputs.base }}
+          WB: ${{ steps.wb.outputs.wb }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "$(git rev-list --count "origin/${BASE}..HEAD")" -eq 0 ]; then
+            echo "No commits relative to ${BASE} — no safe updates. Skipping PR."
+            exit 0
+          fi
+          # persist-credentials was false, so push with the App token explicitly.
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/${WB}"
+          {
+            echo "Automated dependency bump for \`${BASE}\` (safe patch/minor only)."
+            echo
+            echo "Generated by the \`deps:bump\` skill running headless in CI. Review before merging."
+            echo
+            echo '<details><summary>Skill output / manual-review plan</summary>'
+            echo
+            echo '```'
+            tail -c 60000 /tmp/bump-plan.txt
+            echo '```'
+            echo '</details>'
+          } > /tmp/pr-body.md
+          gh pr create --repo "${REPO}" --base "${BASE}" --head "${WB}" \
+            --title "chore(deps): automated bump for ${BASE}" \
+            --body-file /tmp/pr-body.md \
+            --label dependencies
