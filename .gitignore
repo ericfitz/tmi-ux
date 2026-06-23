@@ -80,3 +80,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+
+# dedupe skill local DB
+.dedupe/
+
+# local-only settings
+.local/**
