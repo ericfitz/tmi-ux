@@ -366,7 +366,7 @@ export class CollaborationSessionService implements OnDestroy {
    * AuthService is in the auth module which depends on core services
    * We use late binding via Injector to get it without static import
    */
-   
+
   // SEM@5cf5885c74a030f8c823e9e6b34c6ff2405967e6: lazy-load AuthService via injector to break circular dependency at module level (mutates shared state)
   private getAuthProvider(): any {
     if (!this._authProvider) {
