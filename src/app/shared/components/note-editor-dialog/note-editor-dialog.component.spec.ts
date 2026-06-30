@@ -22,6 +22,7 @@ describe('NoteEditorDialogComponent', () => {
       mockSnackBar as never,
       mockTransloco,
       data,
+      { markForCheck: vi.fn() } as never,
     );
     component.ngOnInit();
     return component;

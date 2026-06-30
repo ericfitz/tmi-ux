@@ -7,6 +7,7 @@ import {
   ElementRef,
   AfterViewChecked,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -53,7 +54,7 @@ export interface TriageNoteEditorResult {
     ScrollIndicatorDirective,
   ],
   templateUrl: './triage-note-editor-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./triage-note-editor-dialog.component.scss'],
 })
 // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: dialog for creating or viewing a triage note with markdown editor and preview
@@ -81,6 +82,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     private snackBar: MatSnackBar,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: TriageNoteEditorDialogData,
+    private cdr: ChangeDetectorRef,
     private mermaidViewerService?: MermaidViewerService,
   ) {
     this.mode = data.mode;
@@ -182,6 +184,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
       textarea.focus();
       textarea.setSelectionRange(start, start);
       this.hasSelection = false;
+      this.cdr.markForCheck();
     } catch {
       this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
     }
@@ -227,6 +230,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
       textarea.focus();
       const newPosition = start + clipboardText.length;
       textarea.setSelectionRange(newPosition, newPosition);
+      this.cdr.markForCheck();
     } catch {
       this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
     }

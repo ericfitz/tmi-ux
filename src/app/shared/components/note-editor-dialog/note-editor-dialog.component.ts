@@ -9,6 +9,7 @@ import {
   ElementRef,
   AfterViewChecked,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -82,7 +83,7 @@ export interface NoteFormResult {
     MarkdownModule,
   ],
   templateUrl: './note-editor-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
 // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: dialog component for creating or editing a markdown note on a domain entity
@@ -121,9 +122,10 @@ export class NoteEditorDialogComponent
     private snackBar: MatSnackBar,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: NoteEditorDialogData,
+    cdr: ChangeDetectorRef,
     protected mermaidViewerService?: MermaidViewerService,
   ) {
-    super();
+    super(cdr);
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
     this.entityType = data.entityType;
@@ -294,6 +296,7 @@ export class NoteEditorDialogComponent
   setCreatedNoteId(noteId: string): void {
     this.createdNoteId = noteId;
     this.mode = 'edit';
+    this.cdr?.markForCheck();
   }
 
   // SEM@f8bb7d452669751727661321f30812abe4b1566b: extract and normalize form values, filtering fields by entity type (pure)

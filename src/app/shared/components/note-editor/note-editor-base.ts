@@ -1,4 +1,4 @@
-import { Directive, ElementRef } from '@angular/core';
+import { Directive, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { MermaidViewerService } from '@app/shared/services/mermaid-viewer.service';
@@ -51,6 +51,14 @@ export abstract class NoteEditorBase {
   protected anchorClickHandler?: (event: Event) => void;
   protected mermaidViewersInitialized = false;
   protected mermaidCleanup?: () => void;
+
+  /**
+   * Optional ChangeDetectorRef supplied by OnPush subclasses so the view
+   * re-renders after the clipboard / task-list mutations below, which run in
+   * `await`/raw-DOM-`onclick` callbacks outside Angular's event system. Default
+   * (CheckAlways) subclasses pass nothing and the `markForCheck()` calls no-op.
+   */
+  constructor(protected cdr?: ChangeDetectorRef) {}
 
   /**
    * Shared `AfterViewChecked` body: (re)initializes task-list checkboxes,
@@ -111,6 +119,7 @@ export abstract class NoteEditorBase {
       textarea.focus();
       textarea.setSelectionRange(start, start);
       this.hasSelection = false;
+      this.cdr?.markForCheck();
     } catch {
       this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
     }
@@ -180,6 +189,7 @@ export abstract class NoteEditorBase {
       textarea.focus();
       const newPosition = start + clipboardText.length;
       textarea.setSelectionRange(newPosition, newPosition);
+      this.cdr?.markForCheck();
     } catch {
       this.showMessage('noteEditor.errors.clipboardAccessDenied', true);
     }
@@ -198,6 +208,7 @@ export abstract class NoteEditorBase {
       // Clipboard access might be denied, that's okay
       this.clipboardHasContent = false;
     }
+    this.cdr?.markForCheck();
   }
 
   /**
@@ -254,6 +265,7 @@ export abstract class NoteEditorBase {
 
     // Reset initialization flag to re-initialize checkboxes after re-render
     this.taskListCheckboxesInitialized = false;
+    this.cdr?.markForCheck();
   }
 
   /**
