@@ -27,7 +27,7 @@ import { SessionManagerService } from './auth/services/session-manager.service';
   standalone: true,
   imports: [RouterOutlet, CommonModule, NavbarComponent, FooterComponent],
   templateUrl: './app.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.component.scss',
 })
 // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: root application shell; bootstraps injector and session manager (mutates shared state)

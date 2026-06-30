@@ -60,7 +60,7 @@ export interface AssetEditorDialogData {
     TranslocoModule,
   ],
   templateUrl: './asset-editor-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./asset-editor-dialog.component.scss'],
 })
 // SEM@a5d47afbe751f0027d056ced66949574212e626e: dialog for creating, editing, or viewing a threat model asset

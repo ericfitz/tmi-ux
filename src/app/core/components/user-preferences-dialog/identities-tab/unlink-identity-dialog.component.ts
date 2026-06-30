@@ -13,7 +13,7 @@ export interface UnlinkIdentityDialogData {
   selector: 'app-unlink-identity-dialog',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatDialogModule, TranslocoModule],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h2 mat-dialog-title>
       {{ 'identities.unlink.confirmTitle' | transloco: { identity: data.identityLabel } }}

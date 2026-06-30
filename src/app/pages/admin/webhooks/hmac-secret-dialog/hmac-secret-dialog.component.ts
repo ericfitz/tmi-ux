@@ -27,7 +27,7 @@ export interface HmacSecretDialogData {
     TranslocoModule,
   ],
   templateUrl: './hmac-secret-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './hmac-secret-dialog.component.scss',
 })
 // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: display the one-time HMAC secret after webhook creation with copy support

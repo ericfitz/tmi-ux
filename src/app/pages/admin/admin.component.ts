@@ -15,7 +15,7 @@ import { AuthService } from '../../auth/services/auth.service';
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './admin.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './admin.component.scss',
 })
 // SEM@ad7267a2dd7fbf341955a732f42557d735bad83b: root admin landing page listing all administrative sections for navigation

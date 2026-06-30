@@ -12,7 +12,7 @@ import { gitCommit } from '../../../build-info.json';
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './about.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './about.component.scss',
 })
 // SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: display application version, operator info, and open-source attributions

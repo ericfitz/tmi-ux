@@ -118,7 +118,7 @@ export interface CreateTeamDialogResult {
       </button>
     </mat-dialog-actions>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .create-form {

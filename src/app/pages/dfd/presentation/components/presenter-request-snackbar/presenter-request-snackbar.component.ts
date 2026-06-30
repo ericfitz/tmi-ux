@@ -73,7 +73,7 @@ export interface PresenterRequestSnackbarData {
       </div>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .presenter-request-snackbar {

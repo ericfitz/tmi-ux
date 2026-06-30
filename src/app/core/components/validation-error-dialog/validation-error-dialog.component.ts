@@ -14,7 +14,7 @@ export interface ValidationErrorData {
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, TranslocoModule],
   templateUrl: './validation-error-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./validation-error-dialog.component.scss'],
 })
 // SEM@105f247a2ed33bcaaf1812a1fda2e3b366669528: display a validation error code and description; allows dismissal

@@ -9,7 +9,7 @@ import { BrandingConfigService } from '../../services/branding-config.service';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [...COMMON_IMPORTS, TranslocoModule],
 })
 // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: render footer with branding links and data classification label (pure)

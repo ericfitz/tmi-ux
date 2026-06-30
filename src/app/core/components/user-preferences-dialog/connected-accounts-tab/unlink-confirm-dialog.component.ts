@@ -12,7 +12,7 @@ export interface UnlinkConfirmDialogData {
   selector: 'app-unlink-confirm-dialog',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatDialogModule, TranslocoModule],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h2 mat-dialog-title>
       {{ 'documentSources.tabConfirmUnlink.title' | transloco: { source: data.sourceName } }}

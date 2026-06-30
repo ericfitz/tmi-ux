@@ -104,7 +104,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
       </button>
     </mat-dialog-actions>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .create-form {

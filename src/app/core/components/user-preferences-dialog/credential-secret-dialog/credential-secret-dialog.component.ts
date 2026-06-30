@@ -83,7 +83,7 @@ export interface CredentialSecretDialogData {
       </button>
     </mat-dialog-actions>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .warning-text {

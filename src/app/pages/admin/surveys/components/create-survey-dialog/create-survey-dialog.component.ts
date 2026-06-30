@@ -77,7 +77,7 @@ export interface CreateSurveyDialogResult {
       </button>
     </mat-dialog-actions>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .create-survey-form {

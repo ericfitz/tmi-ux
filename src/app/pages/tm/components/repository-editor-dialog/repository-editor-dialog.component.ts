@@ -59,7 +59,7 @@ export interface RepositoryEditorDialogData {
     TranslocoModule,
   ],
   templateUrl: './repository-editor-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./repository-editor-dialog.component.scss'],
 })
 // SEM@23d2e9645a0d6cce61ba5b795b2751498771352d: dialog for creating, editing, or viewing a repository entry

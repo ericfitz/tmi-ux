@@ -37,7 +37,7 @@ interface CreateDiagramDialogData {
     TranslocoModule,
   ],
   templateUrl: './create-diagram-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./create-diagram-dialog.component.scss'],
 })
 // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: dialog component for naming and creating a new diagram within a threat model

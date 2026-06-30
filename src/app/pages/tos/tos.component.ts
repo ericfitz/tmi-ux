@@ -8,7 +8,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './tos.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './tos.component.scss',
 })
 // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: render the terms-of-service page with a back-navigation action (pure)

@@ -31,7 +31,7 @@ export interface MetadataDialogData {
   standalone: true,
   imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule, ScrollIndicatorDirective],
   templateUrl: './metadata-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .metadata-dialog {

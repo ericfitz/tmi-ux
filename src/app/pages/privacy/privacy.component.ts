@@ -8,7 +8,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './privacy.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './privacy.component.scss',
 })
 // SEM@79de3a4af9d9b9c63efe276cb3ddce7b2c1dc038: display the privacy policy page with back navigation
