@@ -4496,11 +4496,7 @@ export interface components {
        * @enum {string}
        */
       readonly access_status:
-        | 'accessible'
-        | 'pending_access'
-        | 'auth_required'
-        | 'extraction_failed'
-        | 'unknown';
+        'accessible' | 'pending_access' | 'auth_required' | 'extraction_failed' | 'unknown';
       /**
        * @description Content provider that handles this documents URI (e.g., google_drive, http)
        * @example google_drive
@@ -9629,13 +9625,7 @@ export interface components {
        * @enum {string}
        */
       object_type:
-        | 'threat_model'
-        | 'diagram'
-        | 'threat'
-        | 'asset'
-        | 'document'
-        | 'note'
-        | 'repository';
+        'threat_model' | 'diagram' | 'threat' | 'asset' | 'document' | 'note' | 'repository';
       /**
        * Format: uuid
        * @description ID of the entity that was mutated
@@ -9880,13 +9870,7 @@ export interface components {
      * @enum {string}
      */
     TeamStatus:
-      | 'active'
-      | 'on_hold'
-      | 'winding_down'
-      | 'archived'
-      | 'forming'
-      | 'merging'
-      | 'splitting';
+      'active' | 'on_hold' | 'winding_down' | 'archived' | 'forming' | 'merging' | 'splitting';
     /**
      * @description Request body for creating an automation (service) account
      * @example {
@@ -11399,13 +11383,7 @@ export interface components {
     AuditEntryId: string;
     /** @description Filter by object type */
     AuditObjectType:
-      | 'threat_model'
-      | 'diagram'
-      | 'threat'
-      | 'asset'
-      | 'document'
-      | 'note'
-      | 'repository';
+      'threat_model' | 'diagram' | 'threat' | 'asset' | 'document' | 'note' | 'repository';
     /** @description Filter by change type */
     AuditChangeType: 'created' | 'updated' | 'patched' | 'deleted' | 'rolled_back' | 'restored';
     /** @description Filter by actor email */

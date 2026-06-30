@@ -32,11 +32,7 @@ export interface ValidationResult {
  */
 export interface ValidationIssue {
   type:
-    | 'missing-parent'
-    | 'missing-child'
-    | 'circular'
-    | 'invalid-parent-type'
-    | 'invalid-child-type';
+    'missing-parent' | 'missing-child' | 'circular' | 'invalid-parent-type' | 'invalid-child-type';
   childId: string;
   parentId?: string;
   message: string;

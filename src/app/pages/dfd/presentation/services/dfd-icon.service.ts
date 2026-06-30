@@ -201,8 +201,7 @@ export class DfdIconService {
   revertAutoFit(cell: LayoutCell): boolean {
     const data = cell.getData<Record<string, unknown>>() ?? {};
     const previousAutoFit = data['_archAutoFit'] as
-      | { kind: 'icon-only' | 'container'; width: number; height: number }
-      | undefined;
+      { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
     if (!previousAutoFit) return false;
 
     const { width, height } = cell.getSize();

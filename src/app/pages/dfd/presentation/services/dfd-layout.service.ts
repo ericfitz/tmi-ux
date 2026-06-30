@@ -94,8 +94,7 @@ export class DfdLayoutService {
 
     const data = cell.getData() ?? {};
     const previousAutoFit = data['_archAutoFit'] as
-      | { kind: 'icon-only' | 'container'; width: number; height: number }
-      | undefined;
+      { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
     const { width: currentWidth, height: currentHeight } = cell.getSize();
     const atDefaultSize = currentWidth === defaultWidth && currentHeight === defaultHeight;
     const stillAtPreviousAutoFit =
@@ -150,8 +149,7 @@ export class DfdLayoutService {
 
     const data = cell.getData() ?? {};
     const previousAutoFit = data['_archAutoFit'] as
-      | { kind: 'icon-only' | 'container'; width: number; height: number }
-      | undefined;
+      { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
     const { width: currentWidth, height: currentHeight } = cell.getSize();
     const atDefaultSize = currentWidth === defaultWidth && currentHeight === defaultHeight;
     const stillAtPreviousAutoFit =
@@ -307,8 +305,7 @@ export class DfdLayoutService {
       if (isCellLayoutLocked(parent)) break;
       const data = parent.getData?.() ?? {};
       const autoFit = data['_archAutoFit'] as
-        | { kind: 'icon-only' | 'container'; width: number; height: number }
-        | undefined;
+        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
       if (!autoFit || autoFit.kind !== 'container') break;
       const allChildren = parent.getChildren() ?? [];
       const layoutChildren = allChildren.filter(c => c.shape !== 'text-box');

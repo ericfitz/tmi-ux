@@ -41,15 +41,7 @@ export interface FieldValidationRule {
   required?: boolean;
   /** Expected type */
   type?:
-    | 'string'
-    | 'number'
-    | 'boolean'
-    | 'object'
-    | 'array'
-    | 'uuid'
-    | 'email'
-    | 'url'
-    | 'date-time';
+    'string' | 'number' | 'boolean' | 'object' | 'array' | 'uuid' | 'email' | 'url' | 'date-time';
   /** Minimum length for strings/arrays */
   minLength?: number;
   /** Maximum length for strings/arrays */

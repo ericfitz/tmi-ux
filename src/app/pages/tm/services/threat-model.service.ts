@@ -1684,9 +1684,10 @@ export class ThreatModelService implements OnDestroy {
   // SEM@f13ec757be108a4f5d813a807a4438208391aaa5: bulk-replace all metadata entries for a threat model via the API
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat model ID: ${threatModelId}`, error);
@@ -1720,9 +1721,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for diagram ID: ${diagramId}`, error);
@@ -1799,9 +1801,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat ID: ${threatId}`, error);
@@ -1835,9 +1838,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for document ID: ${documentId}`, error);
@@ -1871,9 +1875,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for repository ID: ${repositoryId}`, error);
@@ -1964,9 +1969,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for note ID: ${noteId}`, error);
@@ -2077,9 +2083,10 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     return this.apiService
-      .put<
-        Metadata[]
-      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
+      .put<Metadata[]>(
+        `threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`,
+        (metadata || []) as unknown as Record<string, unknown>,
+      )
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for asset ID: ${assetId}`, error);

@@ -1962,8 +1962,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         // Get previous edge state
         const previousCellState = this._edgePreviousStates.get(edge.id);
         const prevSource = previousCellState?.source as
-          | { cell?: string; port?: string }
-          | undefined;
+          { cell?: string; port?: string } | undefined;
 
         this.logger.info('[DFD] Edge source changed', {
           edgeId: edge.id,
@@ -2012,8 +2011,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         // Get previous edge state
         const previousCellState = this._edgePreviousStates.get(edge.id);
         const prevTarget = previousCellState?.target as
-          | { cell?: string; port?: string }
-          | undefined;
+          { cell?: string; port?: string } | undefined;
 
         this.logger.info('[DFD] Edge target changed', {
           edgeId: edge.id,

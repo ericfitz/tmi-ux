@@ -207,8 +207,7 @@ export class NoteEditorDialogComponent
       (this.noteForm.get('description')?.value as string | undefined) || '';
 
     const currentIncludeInReport = this.noteForm.get('include_in_report')?.value as
-      | boolean
-      | undefined;
+      boolean | undefined;
     const currentTimmyEnabled = this.noteForm.get('timmy_enabled')?.value as boolean | undefined;
     const currentSharable = this.noteForm.get('sharable')?.value as boolean | undefined;
 

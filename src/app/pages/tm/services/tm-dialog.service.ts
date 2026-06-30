@@ -79,11 +79,10 @@ export class TmDialogService {
     data: DocumentEditorDialogData,
   ): Observable<DocumentEditorDialogResult | undefined> {
     return this.dialog
-      .open<
+      .open<DocumentEditorDialogComponent, DocumentEditorDialogData, DocumentEditorDialogResult>(
         DocumentEditorDialogComponent,
-        DocumentEditorDialogData,
-        DocumentEditorDialogResult
-      >(DocumentEditorDialogComponent, { width: '600px', data, disableClose: true })
+        { width: '600px', data, disableClose: true },
+      )
       .afterClosed();
   }
 
@@ -121,11 +120,10 @@ export class TmDialogService {
     data: DiagramCreateDialogData,
   ): Observable<DiagramCreateDialogResult | undefined> {
     return this.dialog
-      .open<
+      .open<CreateDiagramDialogComponent, DiagramCreateDialogData, DiagramCreateDialogResult>(
         CreateDiagramDialogComponent,
-        DiagramCreateDialogData,
-        DiagramCreateDialogResult
-      >(CreateDiagramDialogComponent, { width: '400px', data })
+        { width: '400px', data },
+      )
       .afterClosed();
   }
 
@@ -151,11 +149,10 @@ export class TmDialogService {
     data: RepositoryEditorDialogData,
   ): Observable<RepositoryFormResult | undefined> {
     return this.dialog
-      .open<
+      .open<RepositoryEditorDialogComponent, RepositoryEditorDialogData, RepositoryFormResult>(
         RepositoryEditorDialogComponent,
-        RepositoryEditorDialogData,
-        RepositoryFormResult
-      >(RepositoryEditorDialogComponent, { width: '700px', data })
+        { width: '700px', data },
+      )
       .afterClosed();
   }
 
@@ -182,11 +179,10 @@ export class TmDialogService {
   // SEM@456cc9b53ddc807635721b7b663f457ccd72029d: open the asset editor dialog and return the submitted asset observable
   openAssetEditor(data: AssetEditorDialogData): Observable<Partial<Asset> | undefined> {
     return this.dialog
-      .open<
+      .open<AssetEditorDialogComponent, AssetEditorDialogData, Partial<Asset>>(
         AssetEditorDialogComponent,
-        AssetEditorDialogData,
-        Partial<Asset>
-      >(AssetEditorDialogComponent, { width: '600px', maxHeight: '90vh', data })
+        { width: '600px', maxHeight: '90vh', data },
+      )
       .afterClosed();
   }
 }

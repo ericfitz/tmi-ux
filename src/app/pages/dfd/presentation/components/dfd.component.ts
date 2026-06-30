@@ -1898,8 +1898,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (isCellLayoutLocked(ancestor)) break;
       const ancData = ancestor.getData?.() ?? {};
       const autoFit = ancData._archAutoFit as
-        | { kind: 'icon-only' | 'container'; width: number; height: number }
-        | undefined;
+        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
       if (!autoFit || autoFit.kind !== 'container') break;
       captureCell(ancestor);
       for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
@@ -2334,8 +2333,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!parent) return;
       const parentData = parent.getData?.() ?? {};
       const autoFit = parentData._archAutoFit as
-        | { kind: 'icon-only' | 'container'; width: number; height: number }
-        | undefined;
+        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
       if (!autoFit || autoFit.kind !== 'container') return;
       this.dfdLayout.clearVerticesOfConnectedEdges(graph, node);
       this._runLayoutCycle(parent, 'position');
@@ -2348,8 +2346,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!parent) return;
       const parentData = parent.getData?.() ?? {};
       const autoFit = parentData._archAutoFit as
-        | { kind: 'icon-only' | 'container'; width: number; height: number }
-        | undefined;
+        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
       if (!autoFit || autoFit.kind !== 'container') return;
       this._runLayoutCycle(parent, 'ports');
     };
@@ -3001,8 +2998,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         if (isCellLayoutLocked(ancestor)) break;
         const ancData = ancestor.getData?.() ?? {};
         const autoFit = ancData._archAutoFit as
-          | { kind: 'icon-only' | 'container'; width: number; height: number }
-          | undefined;
+          { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
         if (!autoFit || autoFit.kind !== 'container') break;
         captureCell(ancestor);
         for (const child of (ancestor.getChildren?.() ?? []) as any[]) {

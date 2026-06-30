@@ -271,11 +271,7 @@ export interface SurveyJsonSchema {
  */
 // SEM@feaf765d0e4f372d17e38da0bcda6854583b55f8: enumerate lifecycle statuses of a survey response in the triage workflow (pure)
 export type ResponseStatus =
-  | 'draft'
-  | 'submitted'
-  | 'needs_revision'
-  | 'ready_for_review'
-  | 'review_created';
+  'draft' | 'submitted' | 'needs_revision' | 'ready_for_review' | 'review_created';
 
 /**
  * SurveyJS UI state for draft restoration

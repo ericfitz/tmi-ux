@@ -91,13 +91,7 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 /** Team lifecycle statuses */
 // SEM@36bc8ee45670471d2a2b21d8b4183b460c81557c: enumerate valid lifecycle statuses for a team (pure)
 export type TeamStatus =
-  | 'active'
-  | 'on_hold'
-  | 'winding_down'
-  | 'archived'
-  | 'forming'
-  | 'merging'
-  | 'splitting';
+  'active' | 'on_hold' | 'winding_down' | 'archived' | 'forming' | 'merging' | 'splitting';
 
 /** All valid TeamStatus values, for use in dropdowns */
 export const TEAM_STATUSES: TeamStatus[] = [

@@ -53,12 +53,7 @@ export interface ProjectInput {
 /** Project lifecycle statuses */
 // SEM@5a9d2f3bfe03111434c4842c8d160f2558af6a83: enumerate valid project lifecycle statuses (pure)
 export type ProjectStatus =
-  | 'active'
-  | 'planning'
-  | 'on_hold'
-  | 'completed'
-  | 'archived'
-  | 'cancelled';
+  'active' | 'planning' | 'on_hold' | 'completed' | 'archived' | 'cancelled';
 
 /** All valid ProjectStatus values, for use in dropdowns */
 export const PROJECT_STATUSES: ProjectStatus[] = [

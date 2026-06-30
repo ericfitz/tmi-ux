@@ -7,23 +7,12 @@ import { PaginationMetadata } from '@app/types/api-responses.types';
 /** Object types that can appear in audit trail entries */
 // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: enumerate domain entity types that can appear in audit trail entries (pure)
 export type AuditObjectType =
-  | 'threat_model'
-  | 'diagram'
-  | 'threat'
-  | 'asset'
-  | 'document'
-  | 'note'
-  | 'repository';
+  'threat_model' | 'diagram' | 'threat' | 'asset' | 'document' | 'note' | 'repository';
 
 /** Change types recorded by the audit trail */
 // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: enumerate change operation types recorded by the audit trail (pure)
 export type AuditChangeType =
-  | 'created'
-  | 'updated'
-  | 'patched'
-  | 'deleted'
-  | 'rolled_back'
-  | 'restored';
+  'created' | 'updated' | 'patched' | 'deleted' | 'rolled_back' | 'restored';
 
 /** Denormalized user information stored with audit entries */
 export interface AuditActor {

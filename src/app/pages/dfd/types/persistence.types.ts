@@ -29,13 +29,7 @@ export type SaveContext = 'auto-save' | 'manual-save' | 'collaboration' | 'expor
  */
 // SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate lifecycle states of a diagram save operation (pure)
 export type SaveStatus =
-  | 'idle'
-  | 'pending'
-  | 'saving'
-  | 'success'
-  | 'error'
-  | 'conflict'
-  | 'offline';
+  'idle' | 'pending' | 'saving' | 'success' | 'error' | 'conflict' | 'offline';
 
 /**
  * Cache synchronization status
@@ -82,13 +76,7 @@ export interface SaveResult {
  */
 // SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate outcome actions resulting from a diagram save operation (pure)
 export type SaveAction =
-  | 'saved'
-  | 'queued'
-  | 'cached'
-  | 'retry'
-  | 'resync'
-  | 'permission_error'
-  | 'conflict';
+  'saved' | 'queued' | 'cached' | 'retry' | 'resync' | 'permission_error' | 'conflict';
 
 /**
  * Load operation interface
@@ -219,11 +207,7 @@ export type PersistenceEventType =
  */
 // SEM@00558ec66867848e260e04954f555ab98f64f0e4: enumerate conflict resolution strategies for diagram save conflicts (pure)
 export type ConflictResolutionStrategy =
-  | 'server-wins'
-  | 'client-wins'
-  | 'manual-resolution'
-  | 'merge-automatic'
-  | 'create-version';
+  'server-wins' | 'client-wins' | 'manual-resolution' | 'merge-automatic' | 'create-version';
 
 /**
  * Conflict information
