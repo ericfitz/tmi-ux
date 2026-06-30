@@ -1,4 +1,12 @@
-import { Component, Inject, Injector, OnInit, OnDestroy, DOCUMENT } from '@angular/core';
+import {
+  Component,
+  Inject,
+  Injector,
+  OnInit,
+  OnDestroy,
+  DOCUMENT,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -137,6 +145,7 @@ type DialogPhase = 'form' | 'creating' | 'post-create';
     AccessDiagnosticsPanelComponent,
   ],
   templateUrl: './document-editor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./document-editor-dialog.component.scss'],
 })
 // SEM@a5cbec52a3608482d242f3356edf06fef2fdcf32: dialog for creating or editing a threat-model document with third-party picker support

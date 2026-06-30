@@ -1,4 +1,11 @@
-import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -348,6 +355,7 @@ export interface PermissionsDialogData {
       </mat-dialog-actions>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .permissions-dialog {

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,6 +60,7 @@ export interface AssetEditorDialogData {
     TranslocoModule,
   ],
   templateUrl: './asset-editor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./asset-editor-dialog.component.scss'],
 })
 // SEM@a5d47afbe751f0027d056ced66949574212e626e: dialog for creating, editing, or viewing a threat model asset

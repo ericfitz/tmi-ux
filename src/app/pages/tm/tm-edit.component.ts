@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -132,6 +133,7 @@ import { environment } from '../../../environments/environment';
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: route component for editing a threat model and all its child artifacts (mutates shared state)

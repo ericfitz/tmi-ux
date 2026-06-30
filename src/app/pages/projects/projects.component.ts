@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -44,6 +44,7 @@ import { ProjectsListBase } from './projects-list-base';
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
   templateUrl: './projects.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './projects.component.scss',
 })
 // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: list and delete review projects with pagination, filtering, and navigation

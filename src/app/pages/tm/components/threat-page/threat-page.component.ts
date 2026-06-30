@@ -1,4 +1,11 @@
-import { Component, DestroyRef, OnDestroy, OnInit, Optional } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -114,6 +121,7 @@ interface ThreatFormValues {
     UrlDropZoneDirective,
   ],
   templateUrl: './threat-page.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./threat-page.component.scss'],
 })
 // SEM@6bd0ad493b306df4d08509f291361497b92a7a2d: full-page standalone component for viewing and editing an individual threat

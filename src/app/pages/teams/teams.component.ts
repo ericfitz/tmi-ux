@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -38,6 +38,7 @@ import { TeamsListBase } from './teams-list-base';
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
   templateUrl: './teams.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './teams.component.scss',
 })
 // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: display and manage the team list with delete and navigation actions

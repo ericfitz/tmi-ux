@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -45,6 +52,7 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
     ProviderDisplayComponent,
   ],
   templateUrl: './group-members-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './group-members-dialog.component.scss',
 })
 // SEM@3b9fbbc9940aca7e6a4ff80594014408ee0b6582: dialog for viewing and managing members of an admin group (mutates shared state)

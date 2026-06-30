@@ -1,4 +1,11 @@
-import { Component, DestroyRef, Inject, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -123,6 +130,7 @@ export interface CreateAutomationUserDialogData {
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .automation-user-form {

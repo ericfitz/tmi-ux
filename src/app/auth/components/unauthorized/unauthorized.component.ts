@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +19,7 @@ interface UnauthorizedQueryParams {
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatCardModule, TranslocoPipe],
   templateUrl: './unauthorized.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./unauthorized.component.scss'],
 })
 // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: page component shown when the user lacks the required role or token

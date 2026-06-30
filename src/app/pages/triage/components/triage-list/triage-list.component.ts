@@ -66,7 +66,7 @@ interface TriageFilters {
   ],
   templateUrl: './triage-list.component.html',
   styleUrl: './triage-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: list, filter, and triage survey responses with pagination and bulk actions
 export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {

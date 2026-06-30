@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
@@ -39,6 +39,7 @@ const RELATIVE_TIME_THRESHOLD_DAYS = 30;
   ],
   templateUrl: './audit-trail-page.component.html',
   styleUrls: ['./audit-trail-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 // SEM@1b37d30bbd47f44c71c4f078fb23f0e15f6bbc24: display paginated audit trail entries for a threat model with filtering

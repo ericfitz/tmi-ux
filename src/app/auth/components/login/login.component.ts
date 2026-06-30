@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,7 @@ import { environment } from '../../../../environments/environment';
     TranslocoModule,
   ],
   templateUrl: './login.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./login.component.scss'],
 })
 // SEM@e272ed8bab654ac3ad855604d60b1df437d8c319: display available OAuth and SAML providers and initiate the selected login flow

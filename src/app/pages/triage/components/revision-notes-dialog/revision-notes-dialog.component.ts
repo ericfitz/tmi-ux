@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -30,6 +30,7 @@ export type { RevisionNotesDialogResult } from './revision-notes-dialog.types';
   standalone: true,
   imports: [...DIALOG_IMPORTS, TranslocoModule],
   templateUrl: './revision-notes-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./revision-notes-dialog.component.scss'],
 })
 // SEM@7bfe234f7ba9c41ac14cd1af5922df9366576f17: dialog for capturing reviewer revision notes before returning a survey response

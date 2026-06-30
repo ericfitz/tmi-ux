@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -203,6 +203,7 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .addon-form {

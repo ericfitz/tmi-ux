@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -118,6 +125,7 @@ export interface UserPickerDialogResult {
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .full-width {

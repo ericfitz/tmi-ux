@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -59,6 +59,7 @@ export interface RepositoryEditorDialogData {
     TranslocoModule,
   ],
   templateUrl: './repository-editor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./repository-editor-dialog.component.scss'],
 })
 // SEM@23d2e9645a0d6cce61ba5b795b2751498771352d: dialog for creating, editing, or viewing a repository entry

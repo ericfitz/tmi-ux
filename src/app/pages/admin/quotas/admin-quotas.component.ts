@@ -7,6 +7,7 @@ import {
   ViewChild,
   ViewChildren,
   QueryList,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -90,6 +91,7 @@ interface EditableWebhookQuota extends EnrichedWebhookQuota {
   ],
   templateUrl: './admin-quotas.component.html',
   styleUrl: './admin-quotas.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 // SEM@913973c2390b7180140950023b498e5c44ca2678: admin page listing, filtering, and editing user API and webhook quotas

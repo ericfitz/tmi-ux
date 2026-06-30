@@ -1,4 +1,12 @@
-import { Component, DestroyRef, inject, Inject, OnInit, Optional } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -138,6 +146,7 @@ export interface CreateCredentialDialogData {
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .credential-form {

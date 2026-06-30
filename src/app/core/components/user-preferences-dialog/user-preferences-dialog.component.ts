@@ -6,6 +6,7 @@ import {
   Inject,
   OnInit,
   ViewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatTabGroup } from '@angular/material/tabs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -613,6 +614,7 @@ interface CheckboxChangeEvent {
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       mat-dialog-content {

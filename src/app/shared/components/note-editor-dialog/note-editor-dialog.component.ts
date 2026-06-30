@@ -8,6 +8,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -81,6 +82,7 @@ export interface NoteFormResult {
     MarkdownModule,
   ],
   templateUrl: './note-editor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
 // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: dialog component for creating or editing a markdown note on a domain entity

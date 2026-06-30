@@ -36,7 +36,7 @@ interface QuestionTypeConfig {
   imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './template-builder.component.html',
   styleUrl: './template-builder.component.scss',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: build and edit survey templates with question palette and page management (mutates shared state)
 export class TemplateBuilderComponent implements OnInit, OnDestroy {

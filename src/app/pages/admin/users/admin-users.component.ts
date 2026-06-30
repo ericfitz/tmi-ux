@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -72,6 +80,7 @@ import {
   ],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 // SEM@913973c2390b7180140950023b498e5c44ca2678: admin page component for listing, filtering, and managing application users

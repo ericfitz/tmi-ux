@@ -6,6 +6,7 @@ import {
   ViewChild,
   ChangeDetectorRef,
   inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -55,6 +56,7 @@ const BUG_REPORT_LOG_MAX_CHARS = 60000;
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ...COMMON_IMPORTS,
     ...CORE_MATERIAL_IMPORTS,

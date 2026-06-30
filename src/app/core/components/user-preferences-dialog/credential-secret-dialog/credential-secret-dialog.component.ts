@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -83,6 +83,7 @@ export interface CredentialSecretDialogData {
       </button>
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .warning-text {

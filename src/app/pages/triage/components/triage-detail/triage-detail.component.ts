@@ -79,7 +79,7 @@ interface StatusTimelineEntry {
   ],
   templateUrl: './triage-detail.component.html',
   styleUrl: './triage-detail.component.scss',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: display, approve, or return a single survey response for triage
 export class TriageDetailComponent implements OnInit, OnDestroy {

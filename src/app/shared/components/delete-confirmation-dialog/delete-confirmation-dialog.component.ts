@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -48,6 +48,7 @@ export type {
   standalone: true,
   imports: [...DIALOG_IMPORTS, TranslocoModule],
   templateUrl: './delete-confirmation-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./delete-confirmation-dialog.component.scss'],
 })
 // SEM@de3e89ecb32ed70c4f53c656b67f960454b5176a: dialog component to confirm destructive delete with optional typed confirmation (mutates shared state)

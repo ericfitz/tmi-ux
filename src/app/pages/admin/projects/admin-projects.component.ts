@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -39,6 +39,7 @@ import { ProjectsListBase } from '@app/pages/projects/projects-list-base';
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
   templateUrl: './admin-projects.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-projects.component.scss',
 })
 // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: admin page component for listing and managing review projects

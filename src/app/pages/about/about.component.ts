@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
@@ -12,6 +12,7 @@ import { gitCommit } from '../../../build-info.json';
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './about.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './about.component.scss',
 })
 // SEM@8e8067ac0f613206ff3fd978a3a11a6565ecff68: display application version, operator info, and open-source attributions

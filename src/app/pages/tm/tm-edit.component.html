@@ -174,7 +174,8 @@
                   threatModelForm.get('status')?.value !== 'none'
                 ) {
                   <span class="summary-value">{{
-                    'threatModels.status.' + threatModelForm.get('status')?.value | transloco
+                    'threatModels.status.' +
+                      $safeNavigationMigration(threatModelForm.get('status')?.value) | transloco
                   }}</span>
                 } @else {
                   <span class="summary-value">—</span>
@@ -233,7 +234,8 @@
                     threatModelForm.get('status')?.value !== 'none'
                   ) {
                     <span class="info-value">{{
-                      'threatModels.status.' + threatModelForm.get('status')?.value | transloco
+                      'threatModels.status.' +
+                        $safeNavigationMigration(threatModelForm.get('status')?.value) | transloco
                     }}</span>
                   } @else {
                     <span class="info-value">—</span>
@@ -340,11 +342,15 @@
                 mat-icon-button
                 type="button"
                 class="issue-uri-icon-button"
-                [disabled]="!isValidUrl(threatModelForm.get('issue_uri')?.value)"
-                (click)="openUriInNewTab(threatModelForm.get('issue_uri')?.value)"
+                [disabled]="
+                  !isValidUrl($safeNavigationMigration(threatModelForm.get('issue_uri')?.value))
+                "
+                (click)="
+                  openUriInNewTab($safeNavigationMigration(threatModelForm.get('issue_uri')?.value))
+                "
                 [matTooltip]="
-                  isValidUrl(threatModelForm.get('issue_uri')?.value)
-                    ? threatModelForm.get('issue_uri')?.value
+                  isValidUrl($safeNavigationMigration(threatModelForm.get('issue_uri')?.value))
+                    ? $safeNavigationMigration(threatModelForm.get('issue_uri')?.value)
                     : ('common.issueUriOpenHint' | transloco)
                 "
                 matTooltipPosition="above"

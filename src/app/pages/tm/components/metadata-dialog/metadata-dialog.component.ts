@@ -1,4 +1,11 @@
-import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -24,6 +31,7 @@ export interface MetadataDialogData {
   standalone: true,
   imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule, ScrollIndicatorDirective],
   templateUrl: './metadata-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .metadata-dialog {

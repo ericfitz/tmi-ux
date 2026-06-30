@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -42,6 +42,7 @@ export type {
   standalone: true,
   imports: [...DIALOG_IMPORTS, TranslocoModule],
   templateUrl: './confirm-action-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./confirm-action-dialog.component.scss'],
 })
 // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: dialog component that prompts the user to confirm or cancel a destructive action

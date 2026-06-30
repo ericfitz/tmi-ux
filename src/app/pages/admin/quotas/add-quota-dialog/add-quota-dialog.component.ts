@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -34,6 +34,7 @@ import { DEFAULT_USER_API_QUOTA, DEFAULT_WEBHOOK_QUOTA } from '@app/types/quota.
     ReactiveFormsModule,
   ],
   templateUrl: './add-quota-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-quota-dialog.component.scss',
 })
 // SEM@e7dd6955882ba4be469447e879cf0576655cd710: dialog for selecting a user and setting API and webhook quotas

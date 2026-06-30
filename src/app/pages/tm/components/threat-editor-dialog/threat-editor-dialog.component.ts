@@ -1,4 +1,11 @@
-import { Component, Inject, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MAT_DIALOG_DATA,
@@ -118,6 +125,7 @@ export interface ThreatEditorDialogData {
   ],
   templateUrl: './threat-editor-dialog.component.html',
   styleUrls: ['./threat-editor-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [],
 })
 // SEM@77253a3829b48ef313d35aaf87fe4e4f489d18b2: dialog for creating, editing, or viewing a threat with form validation and i18n

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,6 +37,7 @@ interface CreateDiagramDialogData {
     TranslocoModule,
   ],
   templateUrl: './create-diagram-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./create-diagram-dialog.component.scss'],
 })
 // SEM@8ad43e58ae86a57581df9b84b3533a52b4228ae8: dialog component for naming and creating a new diagram within a threat model

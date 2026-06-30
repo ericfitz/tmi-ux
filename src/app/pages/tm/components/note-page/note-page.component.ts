@@ -7,6 +7,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -81,6 +82,7 @@ interface NoteFormValues {
     ...FEEDBACK_MATERIAL_IMPORTS,
   ],
   templateUrl: './note-page.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./note-page.component.scss'],
 })
 // SEM@7cd21c172e244e77769f5fd8fef3256dc42149dc: page component for viewing and editing a threat model note with markdown support

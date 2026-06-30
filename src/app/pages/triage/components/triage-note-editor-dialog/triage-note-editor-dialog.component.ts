@@ -6,6 +6,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -52,6 +53,7 @@ export interface TriageNoteEditorResult {
     ScrollIndicatorDirective,
   ],
   templateUrl: './triage-note-editor-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./triage-note-editor-dialog.component.scss'],
 })
 // SEM@eb3174f04be92bbc0ec920476550d99e36c3dcc3: dialog for creating or viewing a triage note with markdown editor and preview

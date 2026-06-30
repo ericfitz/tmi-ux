@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -34,6 +34,7 @@ import { TeamsListBase } from '@app/pages/teams/teams-list-base';
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
   templateUrl: './admin-teams.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-teams.component.scss',
 })
 // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: admin page component for listing, navigating, and deleting teams

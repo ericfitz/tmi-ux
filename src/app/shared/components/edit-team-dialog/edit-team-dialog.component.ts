@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -249,6 +256,7 @@ export interface EditTeamDialogData {
       }
     </mat-dialog-actions>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .admin-form {

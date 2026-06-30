@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, FormControl, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -74,6 +81,7 @@ const STRING_PARAM_PATTERN = /^[a-zA-Z0-9 \-.,/]*$/;
     TranslocoModule,
   ],
   templateUrl: './invoke-addon-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./invoke-addon-dialog.component.scss'],
 })
 // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: dialog component for configuring and invoking an addon against a threat model object

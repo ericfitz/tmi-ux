@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { COMMON_IMPORTS } from '@app/shared/imports';
 import { environment } from '../../../../environments/environment';
@@ -9,6 +9,7 @@ import { BrandingConfigService } from '../../services/branding-config.service';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [...COMMON_IMPORTS, TranslocoModule],
 })
 // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: render footer with branding links and data classification label (pure)

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ export interface SessionExpiryDialogData {
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './session-expiry-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./session-expiry-dialog.component.scss'],
 })
 // SEM@90a716ed2a998adc01cf92b2f2b7e7ef13582a4a: display session expiry countdown and let the user extend or logout (mutates shared state)

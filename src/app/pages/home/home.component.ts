@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from '../../core/rxjs-imports';
@@ -15,6 +15,7 @@ import { BrandingConfigService } from '../../core/services/branding-config.servi
   standalone: true,
   imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.component.scss',
 })
 // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: display the unauthenticated landing page and redirect authenticated users to their role's home

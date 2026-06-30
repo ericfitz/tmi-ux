@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subject, takeUntil } from 'rxjs';
@@ -20,6 +20,7 @@ type ExportState = 'loading' | 'ready' | 'error';
   standalone: true,
   imports: [...DIALOG_IMPORTS, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './export-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./export-dialog.component.scss'],
 })
 // SEM@51d6cdf67b255ee3beedffa5972e7db48f191519: dialog component that fetches, normalizes, and exports a threat model as JSON

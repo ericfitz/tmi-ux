@@ -64,7 +64,7 @@ interface ReviewerFilters {
   ],
   templateUrl: './reviewer-assignment-list.component.html',
   styleUrl: './reviewer-assignment-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('detailExpand', [
       state('void', style({ height: '0', opacity: '0', overflow: 'hidden' })),

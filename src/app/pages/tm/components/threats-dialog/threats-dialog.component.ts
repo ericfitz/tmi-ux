@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -55,6 +55,7 @@ export interface ThreatsDialogData {
   standalone: true,
   imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './threats-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./threats-dialog.component.scss'],
 })
 // SEM@0c2bd0b0fb53372a6287ea6eadbe0b56824bab8f: dialog component listing, editing, adding, and deleting threats for a threat model

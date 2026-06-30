@@ -14,7 +14,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { FooterComponent } from './core/components/footer/footer.component';
@@ -27,6 +27,7 @@ import { SessionManagerService } from './auth/services/session-manager.service';
   standalone: true,
   imports: [RouterOutlet, CommonModule, NavbarComponent, FooterComponent],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss',
 })
 // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: root application shell; bootstraps injector and session manager (mutates shared state)

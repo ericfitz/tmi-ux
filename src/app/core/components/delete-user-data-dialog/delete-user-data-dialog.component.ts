@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -37,6 +37,7 @@ enum DeleteStage {
   standalone: true,
   imports: [...DIALOG_IMPORTS, TranslocoModule, MatProgressSpinnerModule],
   templateUrl: './delete-user-data-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./delete-user-data-dialog.component.scss'],
 })
 // SEM@920d1f36a81ae3539a7559620cae2b20f8a8c868: multi-stage dialog to confirm and execute user account deletion with email verification
