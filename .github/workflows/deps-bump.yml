@@ -62,7 +62,7 @@ jobs:
           else
             LIST="$(all_branches)"                            # weekly schedule, or dispatch with branch=all
           fi
-          BRANCHES="$(printf '%s\n' "$LIST" | grep -v '^$' | jq -R . | jq -cs .)"
+          BRANCHES="$(printf '%s\n' "$LIST" | jq -R . | jq -cs 'map(select(length > 0))')"
           echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
           echo "Discovered branches: $BRANCHES"
 
