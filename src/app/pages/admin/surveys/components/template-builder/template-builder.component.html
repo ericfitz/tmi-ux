@@ -518,7 +518,7 @@
                       }}</mat-label>
                       <input
                         matInput
-                        [ngModel]="selectedQuestion.mapsToTmField?.metadataKey ?? ''"
+                        [ngModel]="selectedQuestion.mapsToTmField.metadataKey ?? ''"
                         (ngModelChange)="updateTmFieldMetadataKey($event)"
                       />
                       <mat-hint>{{

@@ -118,7 +118,7 @@ interface CheckboxChangeEvent {
                     >
                       Identity Provider
                     </span>
-                    <span class="profile-value">{{ userProfile?.provider }}</span>
+                    <span class="profile-value">{{ userProfile.provider }}</span>
                   </div>
                 }
 
@@ -130,7 +130,7 @@ interface CheckboxChangeEvent {
                     >
                       Provider ID
                     </span>
-                    <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                    <span class="profile-value user-id">{{ userProfile.provider_id }}</span>
                   </div>
                 }
 
@@ -141,9 +141,9 @@ interface CheckboxChangeEvent {
                   >
                     Group Memberships
                   </span>
-                  @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
+                  @if (userProfile?.groups && userProfile.groups.length > 0) {
                     <div class="profile-value groups-list">
-                      @for (group of userProfile?.groups; track group.internal_uuid) {
+                      @for (group of userProfile.groups; track group.internal_uuid) {
                         <span class="group-badge">{{ group.name ?? group.group_name }}</span>
                       }
                     </div>

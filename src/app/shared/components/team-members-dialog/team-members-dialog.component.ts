@@ -41,7 +41,7 @@ export interface TeamMembersDialogData {
             <div class="member-info">
               <span class="member-name">{{ member.user?.display_name || member.user_id }}</span>
               @if (member.user?.email) {
-                <span class="member-email">{{ member.user?.email }}</span>
+                <span class="member-email">{{ member.user.email }}</span>
               }
             </div>
             <div class="member-role">

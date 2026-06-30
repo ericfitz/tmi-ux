@@ -109,14 +109,14 @@
                 type="button"
                 class="issue-uri-open-button"
                 [disabled]="
-                  !isValidUrl($safeNavigationMigration(threatForm.get('issue_uri')?.value))
+                  !isValidUrl(threatForm.get('issue_uri')?.value)
                 "
                 (click)="
-                  openUriInNewTab($safeNavigationMigration(threatForm.get('issue_uri')?.value))
+                  openUriInNewTab(threatForm.get('issue_uri')?.value)
                 "
                 [matTooltip]="
-                  isValidUrl($safeNavigationMigration(threatForm.get('issue_uri')?.value))
-                    ? $safeNavigationMigration(threatForm.get('issue_uri')?.value)
+                  isValidUrl(threatForm.get('issue_uri')?.value)
+                    ? threatForm.get('issue_uri')?.value
                     : ('common.issueUriOpenHint' | transloco)
                 "
                 matTooltipPosition="above"

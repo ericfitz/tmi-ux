@@ -48,7 +48,7 @@ export interface ResponsiblePartiesDialogData {
             <div class="party-info">
               <span class="party-name">{{ party.user?.display_name || party.user_id }}</span>
               @if (party.user?.email) {
-                <span class="party-email">{{ party.user?.email }}</span>
+                <span class="party-email">{{ party.user.email }}</span>
               }
             </div>
             <div class="party-role">
