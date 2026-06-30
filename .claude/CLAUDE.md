@@ -272,7 +272,7 @@ GitHub repo and Project (v2) metadata used by `file-github-bug` and `verify-migr
 ## Code Style
 
 - 2 spaces, single quotes, max 100 chars, strict TypeScript
-- Standalone components with OnPush change detection
+- Standalone components; prefer OnPush change detection for new and performance-sensitive components (large lists, frequently re-rendered or deep trees). Default (CheckAlways) is acceptable for the rest — don't convert existing components to OnPush without a perf reason and runtime verification
 - Observables: `$` suffix, private members: `_` prefix (remove unused, don't prefix with `_`)
 - Error handling: `catchError` with `LoggerService`, never `console.log`
 - Explicit return types, JSDoc comments
