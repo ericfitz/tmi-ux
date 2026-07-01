@@ -1162,7 +1162,7 @@ export class AuthService {
         catchError((error: HttpErrorResponse) => {
           this.pkceService.clearVerifier();
 
-          const body = error.error;
+          const body: unknown = error.error;
           const bodyError =
             typeof body === 'object' && body !== null
               ? (body as { error?: string }).error

@@ -82,7 +82,7 @@ export class UsabilityFeedbackDialogComponent {
   }
 
   get sentiment(): UsabilityFeedbackSentiment | null {
-    return this.form.get('sentiment')!.value;
+    return this.form.get('sentiment')!.value as UsabilityFeedbackSentiment | null;
   }
 
   // SEM@aec9307215a45f0a44bafee0211ff7b427b4c267: clear the attached screenshot from the feedback form (mutates shared state)

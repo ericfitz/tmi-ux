@@ -11,7 +11,7 @@
  * - Handles server connectivity states
  */
 
-import { Injectable, OnDestroy, Injector } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, EMPTY, of, Subscription } from 'rxjs';
 import { map, switchMap, takeUntil, catchError, shareReplay } from 'rxjs/operators';
@@ -72,8 +72,6 @@ export class CollaborationSessionService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _subscriberCount = 0;
   private _sessionPollingSubscription: Subscription | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _authProvider: any = null; // Lazy-loaded to avoid circular dependency
 
   // SEM@7b1c50d5310daf035ba2d194bb898b33003dc519: inject dependencies and initialize WebSocket listeners (mutates shared state)
   constructor(
@@ -81,7 +79,6 @@ export class CollaborationSessionService implements OnDestroy {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private webSocketAdapter: WebSocketAdapter,
-    private injector: Injector,
   ) {
     this.initializeService();
   }
@@ -359,30 +356,5 @@ export class CollaborationSessionService implements OnDestroy {
     const currentSessions = this._sessions$.value;
     const updatedSessions = currentSessions.filter(s => s.id !== session.id);
     this._sessions$.next(updatedSessions);
-  }
-
-  /**
-   * Lazy-load AuthProvider to avoid circular dependency
-   * AuthService is in the auth module which depends on core services
-   * We use late binding via Injector to get it without static import
-   */
-
-  // SEM@5cf5885c74a030f8c823e9e6b34c6ff2405967e6: lazy-load AuthService via injector to break circular dependency at module level (mutates shared state)
-  private getAuthProvider(): any {
-    if (!this._authProvider) {
-      try {
-        // Use dynamic import to load AuthService class without static import
-        // This breaks the circular dependency at module level
-        void import('../../auth/services/auth.service').then(module => {
-          this._authProvider = this.injector.get(module.AuthService);
-        });
-        // Return null on first call - will be available on subsequent calls
-        return null;
-      } catch {
-        // AuthService not yet available, return null
-        return null;
-      }
-    }
-    return this._authProvider;
   }
 }

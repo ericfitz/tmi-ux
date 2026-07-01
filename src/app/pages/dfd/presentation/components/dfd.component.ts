@@ -1851,61 +1851,44 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!cell) return;
     if (!(ICON_ELIGIBLE_SHAPES as readonly string[]).includes(cell.shape)) return;
 
-    const wasLocked = isCellLayoutLocked(cell);
-
-    if (!wasLocked) {
-      // Lock applied: data change only, single history op.
-      const previousState = this.dfdIcon.captureCellStateForHistory(cell);
-      const next = { ...cell.getData() };
-      next._layoutLocked = true;
-      cell.setData(next, { silent: true, overwrite: true });
-      this.dfdIcon.applyLockBadge(cell);
-
-      const ts = Date.now();
-      const op = {
-        id: `layout-lock-${ts}-${cell.id}`,
-        type: 'update-node' as const,
-        source: 'user-interaction' as const,
-        priority: 'normal' as const,
-        timestamp: ts,
-        nodeId: cell.id,
-        updates: {},
-        includeInHistory: true,
-        metadata: { previousCellState: previousState },
-      };
-      this.appDfdOrchestrator.executeOperation(op).subscribe();
-
-      this.rightClickedCellIsLocked = true;
-      return;
+    if (!isCellLayoutLocked(cell)) {
+      this._lockCellLayout(cell);
+    } else {
+      this._unlockCellLayout(cell);
     }
+  }
 
-    // Lock removed: capture pre-state for cell + children + cascade ancestors,
-    // clear the flag, run a layout cycle inside one batched history entry.
-    const previousStates = new Map<string, unknown>();
-    // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: record a cell's pre-change state into the history snapshot map (mutates shared state)
-    const captureCell = (c: any): void => {
-      if (!c?.id || previousStates.has(c.id)) return;
-      if (!c.isNode?.()) return;
-      previousStates.set(c.id, this.dfdIcon.captureCellStateForHistory(c));
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: apply the layout-lock flag to a cell and record a single history operation (mutates shared state)
+  private _lockCellLayout(cell: any): void {
+    // Lock applied: data change only, single history op.
+    const previousState = this.dfdIcon.captureCellStateForHistory(cell);
+    const next = { ...cell.getData() };
+    next._layoutLocked = true;
+    cell.setData(next, { silent: true, overwrite: true });
+    this.dfdIcon.applyLockBadge(cell);
+
+    const ts = Date.now();
+    const op = {
+      id: `layout-lock-${ts}-${cell.id}`,
+      type: 'update-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: ts,
+      nodeId: cell.id,
+      updates: {},
+      includeInHistory: true,
+      metadata: { previousCellState: previousState },
     };
+    this.appDfdOrchestrator.executeOperation(op).subscribe();
 
-    captureCell(cell);
-    for (const child of (cell.getChildren?.() ?? []) as any[]) {
-      captureCell(child);
-    }
-    let ancestor = cell.getParent?.();
-    while (ancestor) {
-      if (isCellLayoutLocked(ancestor)) break;
-      const ancData = ancestor.getData?.() ?? {};
-      const autoFit = ancData._archAutoFit as
-        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
-      if (!autoFit || autoFit.kind !== 'container') break;
-      captureCell(ancestor);
-      for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
-        captureCell(child);
-      }
-      ancestor = ancestor.getParent?.();
-    }
+    this.rightClickedCellIsLocked = true;
+  }
+
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: clear the layout-lock flag, re-run layout, and record a batched history operation (mutates shared state)
+  private _unlockCellLayout(cell: any): void {
+    // Capture pre-state for cell + children + cascade ancestors, clear the
+    // flag, run a layout cycle inside one batched history entry.
+    const previousStates = this._captureLayoutHistoryStates(cell);
 
     // Clear the flag and update the badge before running the layout cycle —
     // applyAutoLayout checks isCellLayoutLocked at entry.
@@ -1948,6 +1931,36 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.rightClickedCellIsLocked = false;
+  }
+
+  // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: capture pre-layout history state for a cell, its children, and locked-container ancestor chain (mutates shared state)
+  private _captureLayoutHistoryStates(triggerCell: any): Map<string, unknown> {
+    const previousStates = new Map<string, unknown>();
+    const captureCell = (c: any): void => {
+      if (!c?.id || previousStates.has(c.id)) return;
+      if (!c.isNode?.()) return;
+      previousStates.set(c.id, this.dfdIcon.captureCellStateForHistory(c));
+    };
+
+    captureCell(triggerCell);
+    for (const child of (triggerCell.getChildren?.() ?? []) as any[]) {
+      captureCell(child);
+    }
+    let ancestor = triggerCell.getParent?.();
+    while (ancestor) {
+      if (isCellLayoutLocked(ancestor)) break;
+      const ancData = ancestor.getData?.() ?? {};
+      const autoFit = ancData._archAutoFit as
+        { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
+      if (!autoFit || autoFit.kind !== 'container') break;
+      captureCell(ancestor);
+      for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
+        captureCell(child);
+      }
+      ancestor = ancestor.getParent?.();
+    }
+
+    return previousStates;
   }
 
   // Edge methods
@@ -2981,31 +2994,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!graph) return false;
     this._inLayoutCycle = true;
     try {
-      const previousStates = new Map<string, unknown>();
-      // SEM@01f9ff2e5d302f59de9518564209654d345d9b8d: capture a node cell's state into the pre-layout snapshot map (mutates shared state)
-      const captureCell = (c: any): void => {
-        if (!c?.id || previousStates.has(c.id)) return;
-        if (!c.isNode?.()) return;
-        previousStates.set(c.id, this.dfdIcon.captureCellStateForHistory(c));
-      };
-
-      captureCell(triggerCell);
-      for (const child of (triggerCell.getChildren?.() ?? []) as any[]) {
-        captureCell(child);
-      }
-      let ancestor = triggerCell.getParent?.();
-      while (ancestor) {
-        if (isCellLayoutLocked(ancestor)) break;
-        const ancData = ancestor.getData?.() ?? {};
-        const autoFit = ancData._archAutoFit as
-          { kind: 'icon-only' | 'container'; width: number; height: number } | undefined;
-        if (!autoFit || autoFit.kind !== 'container') break;
-        captureCell(ancestor);
-        for (const child of (ancestor.getChildren?.() ?? []) as any[]) {
-          captureCell(child);
-        }
-        ancestor = ancestor.getParent?.();
-      }
+      const previousStates = this._captureLayoutHistoryStates(triggerCell);
 
       const changed = this.dfdLayout.applyAutoLayout(triggerCell, graph, sortBy);
       if (changed) {

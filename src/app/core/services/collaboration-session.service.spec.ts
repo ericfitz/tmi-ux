@@ -10,7 +10,6 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Injector } from '@angular/core';
 import { CollaborationSessionService } from './collaboration-session.service';
 import { LoggerService } from './logger.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
@@ -34,10 +33,6 @@ describe('CollaborationSessionService', () => {
     isConnected: ReturnType<typeof vi.fn>;
     getMessagesOfType: ReturnType<typeof vi.fn>;
   };
-  let mockInjector: {
-    get: ReturnType<typeof vi.fn>;
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -63,16 +58,11 @@ describe('CollaborationSessionService', () => {
       getMessagesOfType: vi.fn().mockReturnValue(of()),
     };
 
-    mockInjector = {
-      get: vi.fn(),
-    };
-
     service = new CollaborationSessionService(
       mockHttpClient as unknown as HttpClient,
       mockLoggerService as unknown as LoggerService,
       mockServerConnectionService as unknown as ServerConnectionService,
       mockWebSocketAdapter as unknown as WebSocketAdapter,
-      mockInjector as unknown as Injector,
     );
   });
 
