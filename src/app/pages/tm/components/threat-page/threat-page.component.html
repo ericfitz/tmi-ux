@@ -108,12 +108,8 @@
                 mat-icon-button
                 type="button"
                 class="issue-uri-open-button"
-                [disabled]="
-                  !isValidUrl(threatForm.get('issue_uri')?.value)
-                "
-                (click)="
-                  openUriInNewTab(threatForm.get('issue_uri')?.value)
-                "
+                [disabled]="!isValidUrl(threatForm.get('issue_uri')?.value)"
+                (click)="openUriInNewTab(threatForm.get('issue_uri')?.value)"
                 [matTooltip]="
                   isValidUrl(threatForm.get('issue_uri')?.value)
                     ? threatForm.get('issue_uri')?.value

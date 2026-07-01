@@ -174,8 +174,7 @@
                   threatModelForm.get('status')?.value !== 'none'
                 ) {
                   <span class="summary-value">{{
-                    'threatModels.status.' +
-                      threatModelForm.get('status')?.value | transloco
+                    'threatModels.status.' + threatModelForm.get('status')?.value | transloco
                   }}</span>
                 } @else {
                   <span class="summary-value">—</span>
@@ -234,8 +233,7 @@
                     threatModelForm.get('status')?.value !== 'none'
                   ) {
                     <span class="info-value">{{
-                      'threatModels.status.' +
-                        threatModelForm.get('status')?.value | transloco
+                      'threatModels.status.' + threatModelForm.get('status')?.value | transloco
                     }}</span>
                   } @else {
                     <span class="info-value">—</span>
@@ -342,12 +340,8 @@
                 mat-icon-button
                 type="button"
                 class="issue-uri-icon-button"
-                [disabled]="
-                  !isValidUrl(threatModelForm.get('issue_uri')?.value)
-                "
-                (click)="
-                  openUriInNewTab(threatModelForm.get('issue_uri')?.value)
-                "
+                [disabled]="!isValidUrl(threatModelForm.get('issue_uri')?.value)"
+                (click)="openUriInNewTab(threatModelForm.get('issue_uri')?.value)"
                 [matTooltip]="
                   isValidUrl(threatModelForm.get('issue_uri')?.value)
                     ? threatModelForm.get('issue_uri')?.value
