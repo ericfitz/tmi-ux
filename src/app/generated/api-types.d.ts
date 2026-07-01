@@ -1909,7 +1909,7 @@ export interface paths {
      * Get minimal diagram model for automated analysis
      * @description Returns a minimal representation of the diagram optimized for automated threat modeling. Strips all visual styling, layout, and rendering properties. Includes threat model context, computed parent-child relationships, and flattened metadata.
      *
-     *     Content negotiation: Use the Accept header (application/json, application/x-yaml, application/xml) or the ?format query parameter. Query parameter takes precedence if both are specified. Default: application/json.
+     *     Content negotiation: use the Accept header to select the response format — application/json (default), application/yaml, or application/graphml+xml. An Accept header that matches none of these yields 406 Not Acceptable.
      */
     get: operations['getDiagramModel'];
     put?: never;
@@ -4089,6 +4089,8 @@ export interface paths {
     /**
      * List system audit entries
      * @description Cursor-paginated, filterable list of system-level admin-write audit records. Admin role required; read-only (no step-up).
+     *
+     *     Content negotiation: the default application/json returns a cursor-paginated page. Request Accept: text/csv or application/x-ndjson to stream the entire filtered set as a downloadable export (honors all active filters; ignores cursor/limit/around). An Accept header that matches none of the offered types yields 406 Not Acceptable.
      */
     get: operations['listSystemAuditEntries'];
     put?: never;
@@ -4260,7 +4262,6 @@ export interface paths {
     trace?: never;
   };
 }
-// SEM@30a70f3b62a18926fe3bc0123659cd4db72ad22c: declare the API webhook registry as an empty record (pure)
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
@@ -7866,13 +7867,13 @@ export interface components {
        */
       SAMLRequest: string;
     };
-    /** @description OAuth 2.0 refresh token request */
+    /** @description OAuth 2.0 refresh token request. The refresh token may be supplied either in this body or via the HttpOnly refresh cookie (browser SPA flow); at least one must be present. */
     TokenRefreshRequest: {
       /**
-       * @description Valid refresh token
+       * @description Refresh token. Optional: browser SPA clients may omit it and send an empty body, in which case the server reads the refresh token from the HttpOnly refresh cookie. Non-browser clients should supply it in the body.
        * @example 8xLOxBtZp8_example_refresh_token
        */
-      refresh_token: string;
+      refresh_token?: string;
     };
     /** @description Health status of a system component */
     ComponentHealth: {
@@ -9577,10 +9578,7 @@ export interface components {
     };
     /** @description Denormalized user information stored with audit entries. Persists after user deletion. */
     AuditActor: {
-      /**
-       * Format: email
-       * @description User email at the time of the action
-       */
+      /** @description User email at the time of the action */
       email: string;
       /** @description Identity provider (e.g., google, github, tmi) */
       provider: string;
@@ -9701,6 +9699,64 @@ export interface components {
       limit: number;
       /** @description Offset from the beginning of the result set */
       offset: number;
+    };
+    /**
+     * @description Cursor-paginated list of audit trail entries for a threat model
+     * @example {
+     *       "audit_entries": [
+     *         {
+     *           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+     *           "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *           "object_type": "threat_model",
+     *           "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+     *           "version": 3,
+     *           "change_type": "updated",
+     *           "actor": {
+     *             "email": "alice@example.com",
+     *             "provider": "google",
+     *             "provider_id": "google-12345",
+     *             "display_name": "Alice"
+     *           },
+     *           "change_summary": "Updated threat model description",
+     *           "created_at": "2026-01-15T10:30:00Z"
+     *         }
+     *       ],
+     *       "total": 42,
+     *       "limit": 20,
+     *       "next_cursor": null,
+     *       "prev_cursor": null
+     *     }
+     */
+    ListThreatModelAuditTrailResponse: {
+      /**
+       * @example [
+       *       {
+       *         "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+       *         "threat_model_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+       *         "object_type": "threat_model",
+       *         "object_id": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+       *         "version": 3,
+       *         "change_type": "updated",
+       *         "actor": {
+       *           "email": "alice@example.com",
+       *           "provider": "google",
+       *           "provider_id": "google-12345",
+       *           "display_name": "Alice"
+       *         },
+       *         "change_summary": "Updated threat model description",
+       *         "created_at": "2026-01-15T10:30:00Z"
+       *       }
+       *     ]
+       */
+      audit_entries: components['schemas']['AuditEntry'][];
+      /** @description Total number of matching audit entries */
+      total: number;
+      /** @description Maximum number of entries returned */
+      limit: number;
+      /** @description Cursor for the next (older) page; absent or null when exhausted. */
+      next_cursor?: string | null;
+      /** @description Cursor for the previous (newer) page; absent or null when at the newest end. */
+      prev_cursor?: string | null;
     };
     /**
      * @description Result of a rollback operation
@@ -11201,6 +11257,21 @@ export interface components {
         'application/json': components['schemas']['Error'];
       };
     };
+    /** @description Unsupported media type - the request Content-Type is not supported for this operation */
+    UnsupportedMediaType: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['Error'];
+      };
+    };
   };
   parameters: {
     /** @description Threat model identifier */
@@ -11363,8 +11434,6 @@ export interface components {
     ThreatModelIdPathParam: string;
     /** @description Diagram UUID */
     DiagramIdPathParam: string;
-    /** @description Output format for the diagram model (case-insensitive). Defaults to json if not specified. */
-    FormatQueryParam: 'json' | 'yaml' | 'graphml';
     /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
     SurveyResponseStatusQueryParam: string;
     /** @description Filter by secret_project flag */
@@ -11388,10 +11457,6 @@ export interface components {
     AuditChangeType: 'created' | 'updated' | 'patched' | 'deleted' | 'rolled_back' | 'restored';
     /** @description Filter by actor email */
     AuditActorEmail: string;
-    /** @description Filter entries after this timestamp (ISO 8601) */
-    AuditAfter: string;
-    /** @description Filter entries before this timestamp (ISO 8601) */
-    AuditBefore: string;
     /** @description Filter by mitigated status (exact match) */
     MitigatedQueryParam: boolean;
     /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
@@ -11426,14 +11491,11 @@ export interface components {
     AuditThreatModelId: string;
     /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
     AuditAround: string;
-    /** @description When set, stream the entire filtered set as an attachment instead of a JSON page. Honors all active filters; ignores cursor/limit/around. */
-    AuditExportFormat: 'csv' | 'ndjson';
   };
   requestBodies: never;
   headers: never;
   pathItems: never;
 }
-// SEM@30a70f3b62a18926fe3bc0123659cd4db72ad22c: declare the API shared definitions registry as an empty record (pure)
 export type $defs = Record<string, never>;
 export interface operations {
   getApiInfo: {
@@ -11461,6 +11523,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -11592,6 +11656,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -11690,6 +11756,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -11753,6 +11821,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -11783,6 +11853,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -11878,6 +11950,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -11962,6 +12037,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -12057,6 +12134,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -12125,6 +12204,8 @@ export interface operations {
           'text/html': string;
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error generating authorization URL */
       500: {
@@ -12238,6 +12319,13 @@ export interface operations {
           'text/plain': string;
         };
       };
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error - OAuth provider communication failed */
       500: {
@@ -12310,6 +12398,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -12401,6 +12492,8 @@ export interface operations {
         };
       };
       401: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -12446,6 +12539,8 @@ export interface operations {
       };
       400: components['responses']['Error'];
       401: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -12527,6 +12622,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -12602,6 +12700,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -12727,6 +12827,9 @@ export interface operations {
         };
       };
       401: components['responses']['Error'];
+      403: components['responses']['Forbidden'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -12821,6 +12924,9 @@ export interface operations {
         };
       };
       401: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -12943,6 +13049,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13045,7 +13153,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -13094,6 +13205,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Cannot delete threat model while a diagram has an active collaboration session */
       409: {
         headers: {
@@ -13109,6 +13222,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13225,7 +13339,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -13339,6 +13456,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13393,6 +13512,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13446,6 +13568,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13507,7 +13631,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -13558,6 +13685,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13619,7 +13749,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -13672,6 +13805,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13728,6 +13863,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -13743,6 +13880,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13796,6 +13934,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13865,6 +14005,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13916,6 +14060,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -13972,6 +14119,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14028,6 +14178,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -14043,6 +14195,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14099,6 +14252,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14153,6 +14309,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14207,6 +14366,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14270,6 +14432,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -14326,6 +14491,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -14382,6 +14550,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14458,6 +14628,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14511,6 +14684,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14572,7 +14747,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -14623,6 +14801,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14698,7 +14879,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
@@ -14751,6 +14935,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14807,6 +14993,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -14822,6 +15010,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14875,6 +15064,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14944,6 +15135,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -14995,6 +15190,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15051,6 +15249,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15107,6 +15308,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -15122,6 +15325,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15178,6 +15382,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15232,6 +15439,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15286,6 +15496,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15342,6 +15555,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15396,6 +15611,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15447,6 +15665,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15503,6 +15723,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15552,6 +15775,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15622,6 +15848,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -15673,6 +15902,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15729,6 +15960,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -15744,6 +15977,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15797,6 +16031,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15866,6 +16102,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15917,6 +16157,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -15973,6 +16216,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16029,6 +16275,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -16044,6 +16292,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16100,6 +16349,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16154,6 +16406,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16208,6 +16463,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16257,6 +16515,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16311,6 +16571,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -16326,6 +16588,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16377,6 +16640,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16444,6 +16709,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16493,6 +16762,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16547,6 +16819,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16601,6 +16876,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -16616,6 +16893,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16670,6 +16948,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16744,6 +17025,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16798,6 +17081,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16851,6 +17137,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -16912,6 +17200,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Cannot modify diagram while collaboration session is active */
       409: {
         headers: {
@@ -16927,6 +17217,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -16977,6 +17268,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Cannot delete diagram while collaboration session is active */
       409: {
         headers: {
@@ -16992,6 +17285,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17053,6 +17347,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Cannot modify diagram while collaboration session is active */
       409: {
         headers: {
@@ -17068,6 +17364,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       422: components['responses']['Error'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
@@ -17121,6 +17418,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17139,6 +17438,21 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description Collaboration session already exists; the existing session is returned. Clients must NOT evaluate the payload to determine success. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CollaborationSession'];
+        };
+      };
       /** @description Collaboration session created successfully. The 201 status indicates successful creation - clients must NOT evaluate the payload to determine success. */
       201: {
         headers: {
@@ -17158,6 +17472,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Collaboration session already exists for this diagram */
       409: {
         headers: {
@@ -17190,6 +17506,7 @@ export interface operations {
           };
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17239,6 +17556,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17290,6 +17610,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17346,6 +17668,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -17361,6 +17685,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17414,6 +17739,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17483,6 +17810,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17534,6 +17865,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17590,6 +17924,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17646,6 +17983,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -17661,6 +18000,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17717,6 +18057,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17761,6 +18104,8 @@ export interface operations {
         };
       };
       401: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -17836,6 +18181,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -17908,6 +18256,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -17971,6 +18321,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18031,6 +18384,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18096,6 +18451,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18145,6 +18503,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18224,6 +18585,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -18275,6 +18639,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18331,6 +18697,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -18346,6 +18714,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18399,6 +18768,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18468,6 +18839,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18519,6 +18894,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18575,6 +18953,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18631,6 +19012,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -18646,6 +19029,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18702,6 +19086,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18775,6 +19162,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18839,6 +19228,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -18915,6 +19307,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19003,6 +19398,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19066,6 +19464,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19137,7 +19537,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -19188,6 +19591,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19273,7 +19679,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
@@ -19326,6 +19735,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19382,6 +19793,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -19397,6 +19810,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19450,6 +19864,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19508,6 +19924,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19559,6 +19979,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19615,6 +20038,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19671,6 +20097,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -19686,6 +20114,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19742,6 +20171,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -19818,6 +20250,11 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -19873,6 +20310,8 @@ export interface operations {
         };
       };
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -19935,6 +20374,9 @@ export interface operations {
         };
       };
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20000,6 +20442,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20093,6 +20537,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20169,6 +20616,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20258,6 +20707,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - cannot delete add-on with active invocations */
       409: {
         headers: {
@@ -20273,6 +20724,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -20354,6 +20806,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Rate limit exceeded (quota: 1 active invocation or 10 per hour) */
       429: {
         headers: {
@@ -20431,6 +20886,8 @@ export interface operations {
         };
       };
       400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -20473,6 +20930,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Failed to initiate SAML authentication */
       500: {
@@ -20528,6 +20987,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Failed to generate metadata */
       500: {
@@ -20613,6 +21074,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -20749,6 +21212,9 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -20879,6 +21345,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -20989,6 +21458,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21127,6 +21598,9 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21257,6 +21731,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21388,6 +21865,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21520,6 +21999,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21650,6 +22131,10 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21787,6 +22272,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -21917,6 +22405,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22036,6 +22526,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Group already exists */
       409: {
         headers: {
@@ -22051,6 +22543,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22183,6 +22676,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22313,6 +22808,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22450,6 +22948,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22579,6 +23080,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22716,6 +23219,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -22853,6 +23358,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - User is already a member of this group */
       409: {
         headers: {
@@ -22868,6 +23375,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23003,6 +23511,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23137,6 +23648,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23266,6 +23779,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23393,6 +23908,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23503,6 +24020,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23639,6 +24158,9 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23769,6 +24291,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23808,10 +24333,7 @@ export interface operations {
   };
   getDiagramModel: {
     parameters: {
-      query?: {
-        /** @description Output format for the diagram model (case-insensitive). Defaults to json if not specified. */
-        format?: components['parameters']['FormatQueryParam'];
-      };
+      query?: never;
       header?: never;
       path: {
         /** @description Threat model UUID */
@@ -23836,8 +24358,8 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['MinimalDiagramModel'];
-          'application/x-yaml': string;
-          'application/xml': string;
+          'application/yaml': string;
+          'application/graphml+xml': string;
         };
       };
       /** @description Bad Request - Invalid UUID format or invalid format parameter */
@@ -23900,6 +24422,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Rate limit exceeded */
       429: {
         headers: {
@@ -24006,6 +24530,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -24142,6 +24668,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -24234,6 +24763,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests */
       429: {
         headers: {
@@ -24327,6 +24858,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests */
       429: {
         headers: {
@@ -24420,6 +24954,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - preferences already exist (use PUT to update) */
       409: {
         headers: {
@@ -24435,6 +24971,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests */
       429: {
         headers: {
@@ -24523,6 +25060,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error - token revocation failed */
       500: {
@@ -24582,6 +25122,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24655,6 +25197,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24732,6 +25276,8 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24799,6 +25345,10 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24874,6 +25424,9 @@ export interface operations {
         };
       };
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -24961,6 +25514,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25047,6 +25602,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - survey name/version already exists */
       409: {
         headers: {
@@ -25062,6 +25619,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25147,6 +25705,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25237,6 +25797,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict */
       409: {
         headers: {
@@ -25252,6 +25814,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25299,6 +25862,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - survey has responses */
       409: {
         headers: {
@@ -25314,6 +25879,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25418,6 +25984,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - survey has been modified by another request */
       409: {
         headers: {
@@ -25433,6 +26001,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25516,6 +26085,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25600,6 +26171,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25691,6 +26264,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25799,6 +26374,9 @@ export interface operations {
       };
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25889,6 +26467,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -25987,6 +26567,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - invalid status for edit */
       409: {
         headers: {
@@ -26002,6 +26584,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -26050,6 +26633,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26162,6 +26748,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - invalid status for edit */
       409: {
         headers: {
@@ -26177,6 +26765,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Unprocessable Entity. Returned when a status transition has unmet requirements — for example, transitioning to needs_revision requires revision_notes to be set on the survey response. */
       422: {
         headers: {
@@ -26292,6 +26881,8 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26380,6 +26971,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26482,6 +27075,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - invalid status for edit */
       409: {
         headers: {
@@ -26497,6 +27092,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Unprocessable Entity. Returned when a status transition has unmet requirements — for example, transitioning to needs_revision requires revision_notes to be set on the survey response. */
       422: {
         headers: {
@@ -26567,6 +27163,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - not in ready_for_review status */
       409: {
         headers: {
@@ -26582,6 +27180,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26631,6 +27230,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26685,6 +27286,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -26700,6 +27303,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26751,6 +27355,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26807,6 +27413,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26856,6 +27466,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26910,6 +27523,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -26964,6 +27580,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -26979,6 +27597,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27033,6 +27652,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27082,6 +27704,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27136,6 +27760,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Metadata key already exists for this entity */
       409: {
         headers: {
@@ -27151,6 +27777,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27202,6 +27829,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27258,6 +27887,10 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27307,6 +27940,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27361,6 +27997,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27415,6 +28054,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - One or more metadata keys already exist for this entity */
       409: {
         headers: {
@@ -27430,6 +28071,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27484,6 +28126,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27533,6 +28178,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27584,6 +28231,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27638,6 +28287,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27708,6 +28359,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27782,6 +28436,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27836,6 +28492,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -27910,6 +28568,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28016,6 +28676,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Encryption is not enabled on this server */
       409: {
         headers: {
@@ -28037,6 +28699,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28115,6 +28778,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -28245,6 +28911,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -28378,6 +29047,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28457,6 +29128,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict (e.g., relationship cycle detected) */
       409: {
         headers: {
@@ -28472,6 +29145,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28575,6 +29249,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28692,6 +29368,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict (e.g., relationship cycle detected) */
       409: {
         headers: {
@@ -28707,6 +29385,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -28797,6 +29476,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - team is referenced by projects */
       409: {
         headers: {
@@ -28812,6 +29493,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -28932,6 +29614,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict */
       409: {
         headers: {
@@ -28947,6 +29631,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -29024,6 +29709,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29105,6 +29792,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Key already exists */
       409: {
         headers: {
@@ -29120,6 +29809,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29203,6 +29893,10 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29279,6 +29973,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29360,6 +30057,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29441,6 +30141,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Duplicate keys */
       409: {
         headers: {
@@ -29456,6 +30158,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29537,6 +30240,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29630,6 +30336,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29726,6 +30434,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict (e.g., relationship cycle detected) */
       409: {
         headers: {
@@ -29741,6 +30451,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29845,6 +30556,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -29964,6 +30677,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict */
       409: {
         headers: {
@@ -29979,6 +30694,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -30069,6 +30785,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - project is referenced by threat models */
       409: {
         headers: {
@@ -30084,6 +30802,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30205,6 +30924,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict */
       409: {
         headers: {
@@ -30220,6 +30941,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -30297,6 +31019,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30378,6 +31102,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Key already exists */
       409: {
         headers: {
@@ -30393,6 +31119,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30476,6 +31203,10 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30552,6 +31283,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30633,6 +31367,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30714,6 +31451,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Duplicate keys */
       409: {
         headers: {
@@ -30729,6 +31468,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30810,6 +31550,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -30854,6 +31597,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests */
       429: {
         headers: {
@@ -30980,6 +31725,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests */
       429: {
         headers: {
@@ -31017,20 +31764,20 @@ export interface operations {
   getThreatModelAuditTrail: {
     parameters: {
       query?: {
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['PaginationLimit'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['PaginationOffset'];
+        /** @description Maximum number of entries to return per page. */
+        limit?: components['parameters']['AuditPageLimit'];
+        /** @description Opaque pagination cursor from the previous page next_cursor. Omit for the first page. */
+        cursor?: components['parameters']['AuditCursor'];
         /** @description Filter by object type */
         object_type?: components['parameters']['AuditObjectType'];
         /** @description Filter by change type */
         change_type?: components['parameters']['AuditChangeType'];
         /** @description Filter by actor email */
         actor_email?: components['parameters']['AuditActorEmail'];
-        /** @description Filter entries after this timestamp (ISO 8601) */
-        after?: components['parameters']['AuditAfter'];
-        /** @description Filter entries before this timestamp (ISO 8601) */
-        before?: components['parameters']['AuditBefore'];
+        /** @description Return only records created after this RFC 3339 timestamp. */
+        created_after?: components['parameters']['CreatedAfterQueryParam'];
+        /** @description Return only records created before this RFC 3339 timestamp. */
+        created_before?: components['parameters']['CreatedBeforeQueryParam'];
       };
       header?: never;
       path: {
@@ -31053,13 +31800,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['ListAuditTrailResponse'];
+          'application/json': components['schemas']['ListThreatModelAuditTrailResponse'];
         };
       };
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31097,6 +31846,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31134,6 +31885,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Version snapshot has been pruned; rollback is no longer available */
       410: {
         headers: {
@@ -31149,6 +31902,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31191,6 +31945,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31233,6 +31989,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31275,6 +32033,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31317,6 +32077,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31359,6 +32121,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31401,6 +32165,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31450,6 +32216,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31465,6 +32233,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31516,6 +32285,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31531,6 +32302,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31582,6 +32354,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31597,6 +32371,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31648,6 +32423,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31663,6 +32440,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31714,6 +32492,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31729,6 +32509,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31780,6 +32561,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31795,6 +32578,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31846,6 +32630,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - Entity is not in a deleted state, or parent threat model is deleted */
       409: {
         headers: {
@@ -31861,6 +32647,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -31939,6 +32726,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -32017,6 +32806,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - an account with the same email or provider ID already exists */
       409: {
         headers: {
@@ -32032,6 +32823,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -32142,6 +32934,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -32158,6 +32952,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAdminUserClientCredential: {
@@ -32269,6 +33064,10 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -32285,6 +33084,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteAdminUserClientCredential: {
@@ -32374,6 +33174,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
       500: {
@@ -32390,6 +33193,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteCurrentUserClientCredential: {
@@ -32462,6 +33266,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -32583,6 +33390,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -32670,6 +33479,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too Many Requests */
       429: {
         headers: {
@@ -32771,6 +33583,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -32839,6 +33653,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      403: components['responses']['Forbidden'];
       /** @description Not Found */
       404: {
         headers: {
@@ -32854,6 +33669,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -32929,6 +33747,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      403: components['responses']['Forbidden'];
       /** @description Not Found */
       404: {
         headers: {
@@ -32944,6 +33763,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -33036,6 +33858,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -33121,6 +33945,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal Server Error */
       500: {
@@ -33200,6 +34026,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33260,6 +34088,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33311,6 +34142,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33373,6 +34206,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33422,6 +34258,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33487,6 +34326,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33557,6 +34399,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33617,6 +34461,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33668,6 +34515,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33730,6 +34579,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33779,6 +34631,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33844,6 +34699,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
     };
@@ -33924,6 +34782,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -34023,6 +34883,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - invalid status transition */
       409: {
         headers: {
@@ -34038,6 +34900,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
     };
@@ -34100,8 +34963,11 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTimmyChatSession: {
@@ -34159,6 +35025,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -34221,8 +35090,11 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteTimmyChatSession: {
@@ -34270,8 +35142,12 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listTimmyChatMessages: {
@@ -34334,8 +35210,11 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTimmyChatMessage: {
@@ -34395,8 +35274,12 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTimmyUsage: {
@@ -34455,8 +35338,12 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTimmyStatus: {
@@ -34512,8 +35399,12 @@ export interface operations {
       };
       401: components['responses']['Error'];
       403: components['responses']['Error'];
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   refreshTimmySources: {
@@ -34560,8 +35451,12 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   requestDocumentAccess: {
@@ -34608,6 +35503,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Document is not in pending_access status */
       409: {
         headers: {
@@ -34623,6 +35520,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Content source not configured or does not support access requests */
       422: {
         headers: {
@@ -34681,8 +35579,11 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   ingestEmbeddings: {
@@ -34761,9 +35662,13 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       422: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteEmbeddings: {
@@ -34823,8 +35728,12 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listMyContentTokens: {
@@ -34859,6 +35768,8 @@ export interface operations {
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -34912,6 +35823,9 @@ export interface operations {
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       422: components['responses']['Error'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
@@ -34946,6 +35860,9 @@ export interface operations {
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -34995,9 +35912,12 @@ export interface operations {
         };
         content: {
           'text/html': string;
+          'application/json': components['schemas']['Error'];
         };
       };
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -35039,6 +35959,8 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -35075,6 +35997,9 @@ export interface operations {
       401: components['responses']['Error'];
       403: components['responses']['Error'];
       404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
@@ -35118,6 +36043,9 @@ export interface operations {
       400: components['responses']['Error'];
       401: components['responses']['Error'];
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Provider not supported or token not linked */
       422: {
         headers: {
@@ -35183,6 +36111,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Graph permission grant rejected (e.g., insufficient scope). */
       422: {
         headers: {
@@ -35198,6 +36129,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];
     };
@@ -35240,8 +36172,13 @@ export interface operations {
           };
         };
       };
+      400: components['responses']['BadRequest'];
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   createUsabilityFeedback: {
@@ -35274,7 +36211,12 @@ export interface operations {
       };
       400: components['responses']['BadRequest'];
       401: components['responses']['Unauthorized'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       413: components['responses']['PayloadTooLarge'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   getUsabilityFeedback: {
@@ -35303,9 +36245,14 @@ export interface operations {
           'application/json': components['schemas']['UsabilityFeedback'];
         };
       };
+      400: components['responses']['BadRequest'];
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   listContentFeedback: {
@@ -35355,9 +36302,14 @@ export interface operations {
           };
         };
       };
+      400: components['responses']['BadRequest'];
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   createContentFeedback: {
@@ -35395,7 +36347,12 @@ export interface operations {
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       413: components['responses']['PayloadTooLarge'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   getContentFeedback: {
@@ -35426,9 +36383,14 @@ export interface operations {
           'application/json': components['schemas']['ContentFeedback'];
         };
       };
+      400: components['responses']['BadRequest'];
       401: components['responses']['Unauthorized'];
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
     };
   };
   stepUpAuthenticate: {
@@ -35449,7 +36411,11 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Weak-provider short-circuit: tokens rotated in-place. Set-Cookie headers carry new HttpOnly access and refresh tokens. Returned only when the JWT-bound provider is classified as 'weak' (e.g., github). */
+      /**
+       * @description JSON outcome of the step-up call. Two shapes, distinguished by the 'result' field:
+       *     - 'step_up_weak_complete' — weak-provider short-circuit: tokens rotated in-place; Set-Cookie headers carry new HttpOnly access and refresh tokens. Returned only when the JWT-bound provider is classified as 'weak' (e.g., github).
+       *     - 'step_up_redirect' — strong-provider path negotiated to JSON: returned in place of the 302 when the caller sends 'Accept: application/json' (XHR/fetch). 'redirect_url' carries the upstream IdP authorize URL the client must top-level navigate to; server-side state and PKCE are already stored, so the redirect proceeds exactly as the 302 path. A bare '*\/*' Accept does not trigger this — browser top-level navigations still receive the 302.
+       */
       200: {
         headers: {
           /** @description Maximum number of requests allowed in the current time window */
@@ -35461,25 +36427,27 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          /**
-           * @example {
-           *       "result": "step_up_weak_complete",
-           *       "provider": "github",
-           *       "auth_time": 1715357321,
-           *       "message": "Provider does not support guaranteed fresh re-auth; tokens rotated and step-up window reset. Audit log records this as a weak step-up."
-           *     }
-           */
           'application/json': {
             /** @enum {string} */
-            result: 'step_up_weak_complete';
-            provider: string;
-            /** Format: int64 */
-            auth_time: number;
-            message: string;
+            result: 'step_up_weak_complete' | 'step_up_redirect';
+            /**
+             * Format: uri
+             * @description Upstream IdP authorization URL (with fresh-prompt parameters appended) the client must top-level navigate to. Present only when result='step_up_redirect'.
+             */
+            redirect_url?: string;
+            /** @description Present only when result='step_up_weak_complete'. */
+            provider?: string;
+            /**
+             * Format: int64
+             * @description Present only when result='step_up_weak_complete'.
+             */
+            auth_time?: number;
+            /** @description Present only when result='step_up_weak_complete'. */
+            message?: string;
           };
         };
       };
-      /** @description Strong-provider path: redirect to upstream IdP with prompt=login&max_age=0 (OAuth/OIDC) or ForceAuthn=true (SAML). */
+      /** @description Strong-provider path (default): redirect to upstream IdP with prompt=login&max_age=0 (OAuth/OIDC) or ForceAuthn=true (SAML). Returned unless the caller sends 'Accept: application/json', in which case the same upstream URL is delivered as a 200 'step_up_redirect' JSON envelope instead. */
       302: {
         headers: {
           /** @description Upstream IdP authorization URL with fresh-prompt parameters appended. */
@@ -35547,6 +36515,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error. */
       500: {
@@ -35605,8 +36575,6 @@ export interface operations {
         cursor?: components['parameters']['AuditCursor'];
         /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
         around?: components['parameters']['AuditAround'];
-        /** @description When set, stream the entire filtered set as an attachment instead of a JSON page. Honors all active filters; ignores cursor/limit/around. */
-        format?: components['parameters']['AuditExportFormat'];
       };
       header?: never;
       path?: never;
@@ -35693,6 +36661,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -35819,6 +36789,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -35963,6 +36935,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36089,6 +37063,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36217,6 +37193,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36340,6 +37319,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Conflict - the identity is already bound to a TMI account (error_code: identity_already_bound) */
       409: {
         headers: {
@@ -36355,6 +37336,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36403,6 +37385,7 @@ export interface operations {
           'application/json': components['schemas']['MyIdentitiesResponse'];
         };
       };
+      400: components['responses']['BadRequest'];
       /** @description Unauthorized - missing or invalid JWT token */
       401: {
         headers: {
@@ -36433,6 +37416,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36481,6 +37466,7 @@ export interface operations {
         };
         content?: never;
       };
+      400: components['responses']['BadRequest'];
       /** @description Unauthorized - missing or invalid JWT token */
       401: {
         headers: {
@@ -36526,6 +37512,9 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -36577,6 +37566,7 @@ export interface operations {
           'application/json': components['schemas']['PendingIdentityLinkResponse'];
         };
       };
+      400: components['responses']['BadRequest'];
       /** @description Unauthorized - missing or invalid JWT token */
       401: {
         headers: {
@@ -36592,6 +37582,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      403: components['responses']['Forbidden'];
       /** @description Pending identity link not found or does not belong to authenticated user */
       404: {
         headers: {
@@ -36607,6 +37598,8 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {

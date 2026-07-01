@@ -32,7 +32,7 @@ overrides:
   ws: '>=8.20.1'
   brace-expansion: '>=5.0.6'
   '@babel/core@>=7.0.0 <8': '>=7.29.6 <8'
-  js-yaml: '>=4.2.0'
+  js-yaml: '>=4.2.0 <5'
   piscina: '>=5.2.0'
   vite@>=7.0.0: '>=7.3.5'
 
@@ -4579,8 +4579,8 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  js-yaml@5.2.0:
-    resolution: {integrity: sha512-YeLUMlvR4Ou1B119LIaM0r65JvbOBooJDc9yEu0dClb/uSC5P4FrLU8OCCz/HXWvtPoIrR0dRzABTjo1sTN9Bw==}
+  js-yaml@4.3.0:
+    resolution: {integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==}
     hasBin: true
 
   jsdom@29.1.1:
@@ -8772,7 +8772,7 @@ snapshots:
       colorette: 1.4.0
       https-proxy-agent: 7.0.6(supports-color@10.2.2)
       js-levenshtein: 1.1.6
-      js-yaml: 5.2.0
+      js-yaml: 4.3.0
       minimatch: 5.1.9
       pluralize: 8.0.0
       yaml-ast-parser: 0.0.43
@@ -9939,7 +9939,7 @@ snapshots:
   cosmiconfig@8.3.6(typescript@6.0.3):
     dependencies:
       import-fresh: 3.3.1
-      js-yaml: 5.2.0
+      js-yaml: 4.3.0
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
@@ -9949,7 +9949,7 @@ snapshots:
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
-      js-yaml: 5.2.0
+      js-yaml: 4.3.0
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 6.0.3
@@ -11040,7 +11040,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  js-yaml@5.2.0:
+  js-yaml@4.3.0:
     dependencies:
       argparse: 2.0.1
 
