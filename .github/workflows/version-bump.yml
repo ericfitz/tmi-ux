@@ -1,0 +1,125 @@
+name: Version Bump
+
+# Single source of truth for semantic version bumping. Runs on every push to
+# main (PR merges and direct pushes alike), derives the bump from the pushed
+# conventional commits, and commits `chore: bump version to X.Y.Z [skip ci]`
+# plus a vX.Y.Z tag back to main.
+#
+# No loop: the commit is pushed with the built-in GITHUB_TOKEN, whose pushes do
+# not trigger new workflow runs. The `[skip ci]` marker and the job-level guard
+# below are belt-and-suspenders.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    # Skip our own bump commits (redundant with GITHUB_TOKEN non-retrigger, kept explicit).
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore: bump version') }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Compute and apply version bump
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+
+          # --- Determine the commit range for this push ---
+          # For an existing branch, github.event.before is the prior tip. Guard against
+          # the all-zeros sentinel (branch creation) by falling back to the first parent.
+          if printf '%s' "$BEFORE" | grep -qE '^0+$'; then
+            RANGE_BASE=$(git rev-parse HEAD^ 2>/dev/null || echo '')
+          else
+            RANGE_BASE="$BEFORE"
+          fi
+
+          # --- Relevant-files filter (mirrors the retired post-commit hook) ---
+          # Bump only when the push touches version-relevant files: package.json or
+          # src/ excluding tests, testing utilities, and environment configs.
+          if [ -n "$RANGE_BASE" ]; then
+            CHANGED=$(git diff --name-only "$RANGE_BASE" "$AFTER")
+          else
+            CHANGED=$(git show --name-only --pretty=format: HEAD)
+          fi
+          RELEVANT=$(printf '%s\n' "$CHANGED" \
+            | grep -E '^(package\.json|src/)' \
+            | grep -v '\.spec\.ts$' \
+            | grep -v '^src/testing/' \
+            | grep -v '^src/environments/' || true)
+          if [ -z "$RELEVANT" ]; then
+            echo "No version-relevant files changed; skipping bump."
+            exit 0
+          fi
+
+          # --- Derive bump type from the conventional commits in the range ---
+          # minor wins over patch; feat/refactor -> minor, other bumpable types -> patch.
+          if [ -n "$RANGE_BASE" ]; then
+            SUBJECTS=$(git log --format='%s' "${RANGE_BASE}..${AFTER}")
+          else
+            SUBJECTS=$(git log -1 --format='%s' HEAD)
+          fi
+          # Drop our own bump commits, then extract the leading conventional type from each subject.
+          TYPES=$(printf '%s\n' "$SUBJECTS" \
+            | grep -vE '^chore: bump version' \
+            | sed -nE 's/^([a-z]+)(\(.+\))?!?: .+/\1/p' || true)
+          if printf '%s\n' "$TYPES" | grep -qE '^(feat|refactor)$'; then
+            BUMP='minor'
+          elif printf '%s\n' "$TYPES" | grep -qE '^(fix|docs|perf|test|build|ci|chore|deps|ops)$'; then
+            BUMP='patch'
+          else
+            BUMP=''
+          fi
+
+          if [ -z "$BUMP" ]; then
+            echo "No bumpable conventional commits in range; skipping bump."
+            exit 0
+          fi
+
+          # --- Compute the next version ---
+          CURRENT=$(node -p "require('./package.json').version")
+          if [ -n "$RANGE_BASE" ]; then
+            PREVIOUS=$(git show "${RANGE_BASE}:package.json" 2>/dev/null \
+              | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).version))" \
+              2>/dev/null || echo "$CURRENT")
+          else
+            PREVIOUS="$CURRENT"
+          fi
+          NEW=$(node scripts/compute-next-version.mjs "$CURRENT" "$PREVIOUS" "$BUMP")
+
+          if [ "$NEW" = "$CURRENT" ]; then
+            echo "Version already $CURRENT ($BUMP resolved to no change); nothing to do."
+            exit 0
+          fi
+          echo "Bumping $CURRENT -> $NEW ($BUMP)"
+
+          # --- Apply, commit, tag, push (GITHUB_TOKEN push does not re-trigger) ---
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('./package.json','utf8'));p.version='$NEW';fs.writeFileSync('./package.json',JSON.stringify(p,null,2)+'\n');"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json
+          git commit -m "chore: bump version to $NEW [skip ci]"
+          git tag -a "v$NEW" -m "Release version $NEW"
+          git push origin HEAD:main
+          git push origin "v$NEW"
+          echo "Bumped to $NEW and tagged v$NEW."
