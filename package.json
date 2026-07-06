@@ -140,7 +140,7 @@
     "fake-indexeddb": "^6.2.5",
     "glob": "^13.0.6",
     "globals": "^17.7.0",
-    "http-proxy-middleware": "^4.1.1",
+    "http-proxy-middleware": "^4.2.0",
     "jsdom": "^29.1.1",
     "openapi-typescript": "^7.13.0",
     "prettier": "^3.9.3",
