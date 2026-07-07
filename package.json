@@ -126,7 +126,7 @@
     "@playwright/test": "^1.61.1",
     "@testing-library/angular": "^19.4.1",
     "@types/jsdom": "^28.0.3",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.1.0",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.63.0",
     "@vitest/coverage-v8": "^4.1.9",
