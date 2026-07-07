@@ -47,7 +47,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "{{admin.addons.addDialog.title}}",
+      "addButton": "{{admin.addons.addDialog.title}}...",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "이 애드온은 무엇을 하나요?",
@@ -183,7 +183,7 @@
       "title": "{{admin.createAutomationUserDialog.save}}"
     },
     "groups": {
-      "addButton": "{{admin.groups.addDialog.title}}",
+      "addButton": "{{admin.groups.addDialog.title}}...",
       "addDialog": {
         "description": "설명 (선택 사항)",
         "descriptionHint": "그룹 목적에 대한 선택적 설명",
@@ -302,7 +302,7 @@
       }
     },
     "settings": {
-      "addButton": "{{admin.settings.addDialog.title}}",
+      "addButton": "{{admin.settings.addDialog.title}}...",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "이 설정에 대한 선택적 설명",
@@ -360,7 +360,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}...",
       "deleteTooltip": "사용자 계정 삭제",
       "filter": {
         "automationOnly": "자동화 계정만 표시합니다."
@@ -388,7 +388,7 @@
       }
     },
     "webhooks": {
-      "addButton": "{{admin.webhooks.addDialog.title}}",
+      "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
         "createAutomationUser": "이 웹훅을 위한 자동화 사용자 생성.",
         "events": "구독할 이벤트 유형",
@@ -870,7 +870,6 @@
     "openInNewTab": "새 탭에서 열기",
     "other": "기타",
     "paste": "붙여넣기",
-    "permissions": "권한",
     "priority": "우선순위",
     "project": "프로젝트",
     "provider": "공급자",
@@ -925,7 +924,8 @@
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
-    "viewThreat": "위협 보기"
+    "viewThreat": "위협 보기",
+    "permissions": "권한..."
   },
   "contextMenu": {
     "addInverseConnection": "역방향 연결 추가",
@@ -1008,7 +1008,7 @@
   "cwePicker": {
     "addCwe": "CWE 추가",
     "addCweReference": "위협에 CWE 참조 추가",
-    "chooseCwe": "{{cwePicker.title}}",
+    "chooseCwe": "{{cwePicker.title}}...",
     "extendedDescription": "확장 설명",
     "loading": "취약점 로드 중...",
     "matchingWeaknesses": "일치하는 취약점",
@@ -1611,10 +1611,10 @@
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
-      "delete": "{{common.delete}}",
-      "metadata": "{{common.metadata}}",
-      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
-      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+      "delete": "{{common.delete}}...",
+      "metadata": "{{common.metadata}}...",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}...",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}..."
     },
     "listTitle": "{{admin.sections.projects.title}}",
     "noProjects": "프로젝트를 찾을 수 없음.",
@@ -1850,11 +1850,11 @@
     },
     "filterLabel": "팀 필터",
     "kebab": {
-      "delete": "{{common.delete}}",
+      "delete": "{{common.delete}}...",
       "members": "멤버...",
-      "metadata": "{{common.metadata}}",
-      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
-      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+      "metadata": "{{common.metadata}}...",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}...",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}..."
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
@@ -1943,14 +1943,14 @@
     "selectDiagramFirst": "다이어그램을 먼저 선택하세요",
     "threatPriority": {
       "0": "Immediate (P0)",
-      "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
       "1": "High (P1)",
-      "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
       "2": "Medium (P2)",
-      "2.description": "Address within standard development cycles; moderate exposure.",
       "3": "Low (P3)",
-      "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
+      "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
+      "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
+      "2.description": "Address within standard development cycles; moderate exposure.",
+      "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "연기됨 (P4)",
       "deferred.description": "문서화된 비즈니스 승인에 따라 연기됨; 추적 중이나 예정 없음.",
@@ -1964,11 +1964,11 @@
       "medium.description": "표준 개발 주기 내에 처리; 중간 수준의 노출."
     },
     "threatSeverity": {
+      "4": "Informational",
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
       "1.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
       "2.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
       "3.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
-      "4": "Informational",
       "4.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
       "5.description": "Threat severity has not yet been assessed.",
       "critical": "치명적",
@@ -1986,24 +1986,24 @@
     },
     "threatStatus": {
       "0": "Open",
-      "0.description": "The finding has been identified and documented but no action has been initiated.",
       "1": "Confirmed",
-      "1.description": "The threat has been validated as legitimate through analysis or evidence.",
       "2": "Mitigation Planned",
-      "2.description": "A remediation or mitigation strategy has been defined and assigned.",
       "3": "Mitigation In Progress",
-      "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
       "4": "Verification Pending",
-      "4.description": "Mitigation is complete; security team must test or review effectiveness.",
       "5": "Resolved",
-      "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
       "6": "Accepted",
-      "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
       "7": "False Positive",
-      "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
       "8": "Deferred",
-      "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
+      "0.description": "The finding has been identified and documented but no action has been initiated.",
+      "1.description": "The threat has been validated as legitimate through analysis or evidence.",
+      "2.description": "A remediation or mitigation strategy has been defined and assigned.",
+      "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
+      "4.description": "Mitigation is complete; security team must test or review effectiveness.",
+      "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
+      "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
+      "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
+      "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
       "accepted": "수용됨",
       "accepted.description": "위협이 인식되었으나 의도적으로 완화하지 않습니다 (예: 비즈니스 정당성으로 인해); 공식적인 위험 수용이 필요합니다.",
@@ -2125,24 +2125,24 @@
     "sourcesCount": "저장소",
     "status": {
       "0": "Not Started",
-      "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
       "1": "In Progress",
-      "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
       "2": "Pending Review",
-      "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
       "3": "Remediation Required",
-      "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
       "4": "Remediation In Progress",
-      "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
       "5": "Verification Pending",
-      "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
       "6": "Approved",
-      "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
       "7": "Rejected",
-      "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
       "8": "Deferred",
-      "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
+      "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
+      "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
+      "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
+      "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
+      "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
+      "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
+      "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
+      "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
+      "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
       "active": "활성",
       "active.tooltip": "위협 모델이 현재 작업 중입니다.",
@@ -2175,7 +2175,7 @@
       "addAsset": "자산 추가...",
       "addDiagram": "다이어그램 추가...",
       "addDocument": "문서 추가...",
-      "addNote": "{{triage.detail.addNote}}",
+      "addNote": "{{triage.detail.addNote}}...",
       "assetsCardTitle": "자산은 데이터, 하드웨어, 소프트웨어, 인프라, 서비스 또는 인력과 같이 보호가 필요한 시스템 내의 가치 있는 리소스입니다",
       "diagramsCardTitle": "TMI의 다이어그램은 시스템 내 데이터 이동 및 프로세스를 기계가 읽을 수 있는 형태로 표현하여 수동 및 자동 보안 분석을 모두 가능하게 합니다",
       "documentsCardTitle": "문서 참조는 TMI 외부에 저장된 문서에 대한 링크입니다. 관련 문서는 분석할 시스템을 설명하며 보안 분석가와 자동화된 분석 프로세스 모두에서 사용할 수 있습니다",

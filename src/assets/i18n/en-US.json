@@ -55,7 +55,8 @@
   },
   "admin": {
     "addons": {
-      "addButton": "{{admin.addons.addDialog.title}}",
+      "addButton": "{{admin.addons.addDialog.title}}...",
+      "addButton.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "What does this addon do?",
@@ -200,7 +201,8 @@
       "title": "{{admin.createAutomationUserDialog.save}}"
     },
     "groups": {
-      "addButton": "{{admin.groups.addDialog.title}}",
+      "addButton": "{{admin.groups.addDialog.title}}...",
+      "addButton.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "addDialog": {
         "description": "Description (optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -334,7 +336,8 @@
       }
     },
     "settings": {
-      "addButton": "{{admin.settings.addDialog.title}}",
+      "addButton": "{{admin.settings.addDialog.title}}...",
+      "addButton.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "Optional description of this setting",
@@ -399,7 +402,8 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}...",
+      "createAutomationUser.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "deleteTooltip": "Delete user account",
       "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete user account'.",
       "filter": {
@@ -431,7 +435,8 @@
       }
     },
     "webhooks": {
-      "addButton": "{{admin.webhooks.addDialog.title}}",
+      "addButton": "{{admin.webhooks.addDialog.title}}...",
+      "addButton.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "addDialog": {
         "createAutomationUser": "Create automation user for this webhook.",
         "events": "Event types to subscribe to",
@@ -727,9 +732,9 @@
   "auth": {
     "unauthorized": {
       "401": "401 unauthorized",
+      "403": "403 forbidden",
       "401.comment": "This is a standard error message and should not be translated.",
       "401.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
-      "403": "403 forbidden",
       "403.comment": "This is a standard error message and should not be translated.",
       "403.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
       "noPermission": "You do not have permission to access this page.",
@@ -853,6 +858,7 @@
   "common": {
     "about": "About",
     "actions": "Actions",
+    "actions.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "activate": "Activate",
     "active": "Active",
     "add": "Add",
@@ -887,6 +893,7 @@
     "copyToClipboard": "Copy to clipboard",
     "copyToClipboard.comment": "Verb (imperative). Used on a button that initiates the action: 'Copy to clipboard'.",
     "create": "Create",
+    "create.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "created": "Created",
     "createdBy": "Created by",
     "criticality": "Criticality",
@@ -894,6 +901,7 @@
     "cut": "Cut",
     "deactivate": "Deactivate",
     "delete": "Delete",
+    "delete.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "delete.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete'.",
     "deleteConfirm": "Confirm deletion",
     "deleteFailed": "Delete failed",
@@ -914,6 +922,7 @@
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
+    "edit.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "edit.comment": "Action description on a tooltip (typically for an icon button): 'Edit'.",
     "editThreat": "Edit threat",
     "editThreat.comment": "Verb (imperative form). Used as an action label: 'Edit threat'. Surface not identified in source scan.",
@@ -939,7 +948,9 @@
     "loading.lint-skip": "Ellipsis (...) is intentional for loading/in-progress states",
     "manage": "Manage",
     "manageMetadata": "Manage metadata",
+    "manageMetadata.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "manageThreats": "Manage threats",
+    "manageThreats.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "metadata": "Metadata",
     "metadataKey": "Key",
     "metadataValue": "Value",
@@ -988,7 +999,8 @@
     "openInNewTab": "Open in new tab",
     "other": "Other",
     "paste": "Paste",
-    "permissions": "Permissions",
+    "permissions": "Permissions...",
+    "permissions.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
     "priority": "Priority",
     "project": "Project",
     "provider": "Provider",
@@ -1048,6 +1060,7 @@
     "view": "View",
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View metadata",
+    "viewMetadata.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "viewMetadata.comment": "Verb (imperative). Used on a button that initiates the action: 'View metadata'.",
     "viewPermissions": "View permissions",
     "viewPermissions.comment": "Verb (imperative form). Used as an action label: 'View permissions'. Surface not identified in source scan.",
@@ -1198,7 +1211,8 @@
     "addCwe.comment": "Button label to open the CWE picker dialog. CWE = Common Weakness Enumeration, should not be translated.",
     "addCweReference": "Add CWE reference to threat",
     "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
-    "chooseCwe": "{{cwePicker.title}}",
+    "chooseCwe": "{{cwePicker.title}}...",
+    "chooseCwe.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
     "chooseCwe.comment": "Tooltip for the action button that opens the CWE picker dialog. CWE = Common Weakness Enumeration.",
     "extendedDescription": "Extended description",
     "extendedDescription.comment": "Label for the extended description field shown when a CWE weakness is selected.",
@@ -1880,10 +1894,14 @@
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
-      "delete": "{{common.delete}}",
-      "metadata": "{{common.metadata}}",
-      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
-      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+      "delete": "{{common.delete}}...",
+      "delete.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
+      "metadata": "{{common.metadata}}...",
+      "metadata.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}...",
+      "relatedProjects.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}...",
+      "responsibleParties.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog."
     },
     "listTitle": "{{admin.sections.projects.title}}",
     "noProjects": "No projects found.",
@@ -2199,12 +2217,16 @@
     "filterLabel": "Filter teams",
     "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter teams'.",
     "kebab": {
-      "delete": "{{common.delete}}",
+      "delete": "{{common.delete}}...",
+      "delete.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
       "members": "Members...",
       "members.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-      "metadata": "{{common.metadata}}",
-      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
-      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+      "metadata": "{{common.metadata}}...",
+      "metadata.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}...",
+      "relatedTeams.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}...",
+      "responsibleParties.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog."
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
@@ -2519,7 +2541,8 @@
       "addDocument": "Add document...",
       "addDocument.comment": "Action description on a tooltip (typically for an icon button): 'Add document'.",
       "addDocument.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog",
-      "addNote": "{{triage.detail.addNote}}",
+      "addNote": "{{triage.detail.addNote}}...",
+      "addNote.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
       "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis",
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes",
