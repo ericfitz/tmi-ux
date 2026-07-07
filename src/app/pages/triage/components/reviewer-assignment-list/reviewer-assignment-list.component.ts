@@ -10,7 +10,6 @@ import {
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -65,13 +64,6 @@ interface ReviewerFilters {
   templateUrl: './reviewer-assignment-list.component.html',
   styleUrl: './reviewer-assignment-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  animations: [
-    trigger('detailExpand', [
-      state('void', style({ height: '0', opacity: '0', overflow: 'hidden' })),
-      state('*', style({ height: '*', opacity: '1' })),
-      transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
 })
 // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: list and assign security reviewers to unreviewed threat models (reads DB)
 export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {

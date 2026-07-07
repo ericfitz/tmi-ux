@@ -26,7 +26,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -116,13 +115,6 @@ import { getErrorMessage } from '@app/shared/utils/http-error.utils';
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
-  animations: [
-    trigger('detailExpand', [
-      state('void', style({ height: '0', opacity: '0', overflow: 'hidden' })),
-      state('*', style({ height: '*', opacity: '1' })),
-      transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
 })
 // SEM@e2fbc45e03d8471569c0ba4d4f2d8d25008f8a5d: list, filter, search, and manage threat models on the main dashboard
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
