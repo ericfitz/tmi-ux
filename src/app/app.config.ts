@@ -7,7 +7,6 @@
  * Key functionality:
  * - Configures routing with component input binding support
  * - Sets up HTTP client with fetch API and JWT interceptors
- * - Provides animations support for Angular Material components
  * - Configures internationalization with Transloco and locale support
  * - Sets up zone.js change detection with event coalescing for performance
  * - Determines locale from user preferences with fallback to English
@@ -27,7 +26,6 @@ import {
   importProvidersFrom,
   APP_INITIALIZER,
 } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { BidiModule } from '@angular/cdk/bidi';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
@@ -165,7 +163,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
-    provideAnimations(),
     // Add Bidi module for RTL/LTR support
     importProvidersFrom(BidiModule),
     // Configure Material Dialog to respect document direction

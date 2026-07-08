@@ -47,7 +47,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "{{admin.addons.addDialog.title}}",
+      "addButton": "{{admin.addons.addDialog.title}}...",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "ما هي وظيفة هذا الملحق؟",
@@ -183,7 +183,7 @@
       "title": "{{admin.createAutomationUserDialog.save}}"
     },
     "groups": {
-      "addButton": "{{admin.groups.addDialog.title}}",
+      "addButton": "{{admin.groups.addDialog.title}}...",
       "addDialog": {
         "description": "الوصف (اختياري)",
         "descriptionHint": "وصف اختياري لغرض المجموعة",
@@ -302,7 +302,7 @@
       }
     },
     "settings": {
-      "addButton": "{{admin.settings.addDialog.title}}",
+      "addButton": "{{admin.settings.addDialog.title}}...",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "وصف اختياري لهذا الإعداد",
@@ -360,7 +360,7 @@
         "threatModels": "TMs",
         "user": "{{common.subjectTypes.user}}"
       },
-      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}",
+      "createAutomationUser": "{{admin.createAutomationUserDialog.save}}...",
       "deleteTooltip": "حذف حساب المستخدم",
       "filter": {
         "automationOnly": "عرض حسابات الأتمتة فقط."
@@ -388,7 +388,7 @@
       }
     },
     "webhooks": {
-      "addButton": "{{admin.webhooks.addDialog.title}}",
+      "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
         "createAutomationUser": "إنشاء مستخدم أتمتة لهذا الـ Webhook.",
         "events": "أنواع الأحداث للاشتراك فيها",
@@ -870,7 +870,6 @@
     "openInNewTab": "فتح في علامة تبويب جديدة",
     "other": "أخرى",
     "paste": "لصق",
-    "permissions": "الأذونات",
     "priority": "الأولوية",
     "project": "مشروع",
     "provider": "المزود",
@@ -925,7 +924,8 @@
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
-    "viewThreat": "عرض التهديد"
+    "viewThreat": "عرض التهديد",
+    "permissions": "الأذونات..."
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",
@@ -1008,7 +1008,7 @@
   "cwePicker": {
     "addCwe": "إضافة CWE",
     "addCweReference": "إضافة مرجع CWE إلى التهديد",
-    "chooseCwe": "{{cwePicker.title}}",
+    "chooseCwe": "{{cwePicker.title}}...",
     "extendedDescription": "الوصف الموسَّع",
     "loading": "جارٍ تحميل الثغرات...",
     "matchingWeaknesses": "الثغرات المطابقة",
@@ -1615,10 +1615,10 @@
     "filterStatusLabel": "{{projects.statusFilterLabel}}",
     "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
-      "delete": "{{common.delete}}",
-      "metadata": "{{common.metadata}}",
-      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
-      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+      "delete": "{{common.delete}}...",
+      "metadata": "{{common.metadata}}...",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}...",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}..."
     },
     "listTitle": "{{admin.sections.projects.title}}",
     "noProjects": "لم يتم العثور على مشاريع.",
@@ -1854,11 +1854,11 @@
     },
     "filterLabel": "تصفية الفرق",
     "kebab": {
-      "delete": "{{common.delete}}",
+      "delete": "{{common.delete}}...",
       "members": "أعضاء الفريق...",
-      "metadata": "{{common.metadata}}",
-      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
-      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+      "metadata": "{{common.metadata}}...",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}...",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}..."
     },
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
@@ -1947,14 +1947,14 @@
     "selectDiagramFirst": "اختر مخططاً أولاً",
     "threatPriority": {
       "0": "Immediate (P0)",
-      "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
       "1": "High (P1)",
-      "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
       "2": "Medium (P2)",
-      "2.description": "Address within standard development cycles; moderate exposure.",
       "3": "Low (P3)",
-      "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4": "Deferred (P4)",
+      "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
+      "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
+      "2.description": "Address within standard development cycles; moderate exposure.",
+      "3.description": "Include in backlog for future cycles; no immediate exposure.",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "مؤجل (P4)",
       "deferred.description": "مؤجل بموافقة تجارية موثقة؛ متتبع لكن غير مجدول.",
@@ -1968,11 +1968,11 @@
       "medium.description": "المعالجة ضمن دورات التطوير القياسية؛ تعرض معتدل."
     },
     "threatSeverity": {
+      "4": "Informational",
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
       "1.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
       "2.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
       "3.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
-      "4": "Informational",
       "4.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
       "5.description": "Threat severity has not yet been assessed.",
       "critical": "حرج",
@@ -1990,24 +1990,24 @@
     },
     "threatStatus": {
       "0": "Open",
-      "0.description": "The finding has been identified and documented but no action has been initiated.",
       "1": "Confirmed",
-      "1.description": "The threat has been validated as legitimate through analysis or evidence.",
       "2": "Mitigation Planned",
-      "2.description": "A remediation or mitigation strategy has been defined and assigned.",
       "3": "Mitigation In Progress",
-      "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
       "4": "Verification Pending",
-      "4.description": "Mitigation is complete; security team must test or review effectiveness.",
       "5": "Resolved",
-      "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
       "6": "Accepted",
-      "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
       "7": "False Positive",
-      "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
       "8": "Deferred",
-      "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9": "Closed",
+      "0.description": "The finding has been identified and documented but no action has been initiated.",
+      "1.description": "The threat has been validated as legitimate through analysis or evidence.",
+      "2.description": "A remediation or mitigation strategy has been defined and assigned.",
+      "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
+      "4.description": "Mitigation is complete; security team must test or review effectiveness.",
+      "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
+      "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
+      "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
+      "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
       "accepted": "مقبول",
       "accepted.description": "التهديد معترف به لكن لم يتم تخفيفه عمداً (مثل: بسبب مبرر تجاري)؛ يتطلب قبول المخاطر الرسمي.",
@@ -2129,24 +2129,24 @@
     "sourcesCount": "مستودعات",
     "status": {
       "0": "Not Started",
-      "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
       "1": "In Progress",
-      "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
       "2": "Pending Review",
-      "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
       "3": "Remediation Required",
-      "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
       "4": "Remediation In Progress",
-      "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
       "5": "Verification Pending",
-      "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
       "6": "Approved",
-      "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
       "7": "Rejected",
-      "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
       "8": "Deferred",
-      "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9": "Closed",
+      "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
+      "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
+      "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
+      "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
+      "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
+      "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
+      "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
+      "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
+      "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
       "active": "نشط",
       "active.tooltip": "يجري العمل على نموذج التهديد بشكل نشط.",
@@ -2179,7 +2179,7 @@
       "addAsset": "إضافة أصل...",
       "addDiagram": "إضافة مخطط...",
       "addDocument": "إضافة وثيقة...",
-      "addNote": "{{triage.detail.addNote}}",
+      "addNote": "{{triage.detail.addNote}}...",
       "assetsCardTitle": "الأصول هي موارد قيمة داخل النظام تتطلب الحماية، مثل البيانات والأجهزة والبرامج والبنية التحتية والخدمات أو الموظفين",
       "diagramsCardTitle": "المخططات في TMI هي تمثيلات قابلة للقراءة آلياً لحركة البيانات والعمليات داخل النظام، مما يتيح التحليل الأمني اليدوي والآلي",
       "documentsCardTitle": "مراجع الوثائق هي روابط للوثائق المخزنة خارج TMI. الوثائق ذات الصلة تصف النظام المراد تحليله، ويمكن استخدامها من قبل محللي الأمن وعمليات التحليل الآلي",

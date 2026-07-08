@@ -75,6 +75,9 @@
   margin-bottom: 16px;
   flex-wrap: wrap;
 
+  // Enter animation played when the row is added to the DOM (@if toggle).
+  animation: filters-row-expand 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
   .text-filter {
     width: 200px;
   }
@@ -85,6 +88,20 @@
 
   mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
+  }
+}
+
+@keyframes filters-row-expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  to {
+    max-height: 600px;
+    opacity: 1;
+    overflow: hidden;
   }
 }
 
@@ -495,8 +512,23 @@ button.delete-button {
   overflow: hidden;
   padding: 8px 16px 16px 56px;
 
+  // Enter animation played when the detail row is added to the DOM (@if toggle).
+  animation: session-detail-expand 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
   mat-divider {
     margin: 12px 0;
+  }
+}
+
+@keyframes session-detail-expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 600px;
+    opacity: 1;
   }
 }
 
