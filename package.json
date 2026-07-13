@@ -121,7 +121,7 @@
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
     "@material/material-color-utilities": "^0.4.0",
-    "@oxc-project/runtime": "^0.137.0",
+    "@oxc-project/runtime": "^0.139.0",
     "@playwright/test": "^1.61.1",
     "@testing-library/angular": "^19.4.1",
     "@types/jsdom": "^28.0.3",
