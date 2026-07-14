@@ -8,7 +8,7 @@ export const environment: Environment = {
   production: false,
   logLevel: 'DEBUG', // Most verbose logging in development
   debugComponents: ['websocket-api', 'websocket-adapter'], // Enable component-specific debug logging for WebSocket messages
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'http://192.168.1.2:8080',
   authTokenExpiryMinutes: 1440, // 24 hours for easier development
   operatorName: 'Local development',
   operatorContact: '',
