@@ -159,10 +159,6 @@ When you encounter a problem during development or debugging that appears to ori
 
 **Always use the pnpm scripts** from `package.json` for building, testing, linting, formatting, and deployment — never hand-craft bespoke command lines. The scripts encode required context (configurations, pre/post steps, env vars, ordering, generated inputs) that a raw `ng`/`vitest`/`playwright`/`eslint` invocation will miss. Reaching for a bespoke command leads to failures that wouldn't have occurred under the real script, and time wasted debugging them. If no script fits the need, add one rather than running a one-off. Run from project root.
 
-Key commands: `pnpm run dev`, `pnpm test`, `pnpm run build`, `pnpm run lint:all`, `pnpm run format`
-
-**Node:** runs on the latest two Node LTS lines — current LTS and previous LTS (today, 24.x and 22.x). Enforced via `engines` in `package.json`; use a version in that range.
-
 ## Architecture
 
 See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architecture-and-Design) on the TMI wiki for complete architecture documentation.
@@ -173,27 +169,11 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 - Import constants from `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
 - Always unsubscribe using `takeUntil(destroy$)` pattern
 
-**Key Modules:**
-
-- Authentication (`/auth`) - OAuth/JWT
-- Threat Modeling (`/pages/tm`) - List, edit, diagram management
-- Data Flow Diagrams (`/pages/dfd`) - Layered DDD architecture with AntV X6 graphing
-- Core Services (`/core`) - ApiService, AuthService, LoggerService, WebSocketService, etc.
-- Administration (`/admin`) - Administration of the application while it is operating
-- Intake (`/intake`) - User requests for security review via surveys; code lives under `/pages/surveys` (route `/intake` → `surveys.routes`)
-- Triage (`/triage`) - Reviewers triage and prioritize incoming requests
-- Projects/Teams (`/pages/projects`, `/pages/teams`) - Review project and team management
-
-**Environments:** `src/environments/` - API URLs, feature flags, OAuth config
+**Gotcha:** the Intake feature (route `/intake`) lives under `/pages/surveys` (route `/intake` → `surveys.routes`), not under an `/intake` directory.
 
 ## Testing
 
 **Unit Tests (Vitest):** NOT Jasmine/Jest. Use `describe.only()` and `it.only()` to focus tests.
-
-- Config: `vitest.config.ts`, mocks in `src/app/mocks/`, utilities in `src/testing/`
-- Tests alongside source: `*.spec.ts`
-
-**E2E Tests (Playwright):** Config: `playwright.config.ts`
 
 ## Automated Workflows
 
@@ -201,28 +181,9 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 
 When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `visual-regression-triage` skill to present the baseline, actual, and diff images, describe the differences, and guide resolution (fix bug or update baseline).
 
-## Versioning
+## Versioning and Branching
 
-Automatic semantic versioning on push to `main` via the `.github/workflows/version-bump.yml` GitHub Actions workflow, using [Conventional Commits](https://www.conventionalcommits.org/). It derives the bump from the pushed commits and commits a `chore: bump version to X.Y.Z [skip ci]` commit plus a `vX.Y.Z` tag back to `main`:
-
-- `feat:`/`refactor:` → minor bump (x.Y.0)
-- `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:`/`deps:`/`ops:` → patch bump (x.y.Z)
-- **Major** bumps are never automatic — raise the major by hand; the workflow strips any prerelease suffix and preserves the version you set.
-- **Prerelease finalization**: when `package.json` carries a prerelease suffix at push time (e.g. a `release/1.6.0` branch at `1.6.0-rc.N` merging to `main`), the workflow strips the suffix to publish exactly that target (`1.6.0`) with no further increment.
-- Bumps are skipped when a push changes only tests, `src/testing/`, `src/environments/`, or non-`src` files. Version math lives in `scripts/compute-next-version.mjs` (run `node scripts/compute-next-version.mjs --test`).
-- No loop: the bump is pushed with the built-in `GITHUB_TOKEN`, whose pushes do not re-trigger workflows.
-
-Version bumps happen server-side on push to `main`, not on local commit or build. (The former local `post-commit` bump hook has been removed.)
-
-## Branching Strategy
-
-Feature development for a release uses a `release/<semver>` branch:
-
-1. **Release branch**: Created from `main` (e.g., `release/1.2.0`) with a prerelease version in `package.json` (e.g., `1.2.0-rc.0`)
-2. **Feature branches**: Created from the release branch as `feature/<name>`, merged back when complete
-3. **Release merge**: When all features are ready, the release branch merges into `main` with the prerelease suffix cleared for the stable release
-
-The version-bump workflow only runs on `main`, so the `rc.0` prerelease label stays stable throughout development on the release branch; when the release branch merges to `main`, the workflow strips the suffix to publish the stable release. Deploy scripts pass the version from `package.json` as a `--build-arg APP_VERSION` to Docker builds for OCI image labels.
+Versioning is automatic on push to `main` (Conventional Commits drive the bump) and releases use `release/<semver>` branches — invoke the `release-process` skill before committing to main, creating/merging release or feature branches, or touching version numbers.
 
 ## UI Terminology
 
@@ -276,7 +237,6 @@ GitHub repo and Project (v2) metadata used by `file-github-bug` and `verify-migr
 
 ## Code Style
 
-- 2 spaces, single quotes, max 100 chars, strict TypeScript
 - Standalone components; prefer OnPush change detection for new and performance-sensitive components (large lists, frequently re-rendered or deep trees). Default (CheckAlways) is acceptable for the rest — don't convert existing components to OnPush without a perf reason and runtime verification
 - Observables: `$` suffix, private members: `_` prefix (remove unused, don't prefix with `_`)
 - Error handling: `catchError` with `LoggerService`, never `console.log`
