@@ -92,7 +92,7 @@
     "clipboard": "^2.0.11",
     "dompurify": "^3.4.12",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2",
+    "express-rate-limit": "^8.6.0",
     "fontkit": "^2.0.4",
     "html2canvas": "^1.4.1",
     "marked": "^18.0.6",
