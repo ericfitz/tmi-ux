@@ -18,9 +18,14 @@ describe('AWS deployment environment', () => {
     expect(environment.apiUrl.endsWith('/')).toBe(false);
   });
 
-  it('declares exactly the security headers CloudFront is configured to send', () => {
-    // Mirrors terraform/aws/cloudfront.tf. If you change one, change both:
-    // this object is what the app reports about itself, not what is enforced.
+  it('pins the advisory securityConfig copy so edits are deliberate', () => {
+    // This compares environment.aws.ts against a literal in this same repo, so
+    // it only detects edits to environment.aws.ts — it cannot see edits to
+    // terraform/aws/cloudfront.tf, which is what actually decides the headers
+    // browsers receive. It is a change-detector on the copy, not verification
+    // of the edge. The copy feeds only generateRecommendedHeaders(), an
+    // advisory report; drift here is a reporting inaccuracy, not a
+    // vulnerability. If you change either file, change both by hand.
     expect(environment.securityConfig).toEqual({
       enableHSTS: true,
       hstsMaxAge: 31536000,

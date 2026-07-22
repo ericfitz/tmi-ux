@@ -40,9 +40,36 @@ AWS_PROFILE=tmi terraform apply
 
 State lives at `tmi-ux/aws-public/terraform.tfstate` in
 `s3://tmi-tfstate-967218005408` — separate from the tmi server repo's state
-(`tmi/aws-public/…`), so this stack can be applied and destroyed independently.
+(`tmi/aws-public/…`), so this stack is applied independently of the server's.
 If a plan ever shows resources to **change or destroy** that you did not edit,
 stop: it means the backend key is resolving to the server's state.
+
+### Destroying the stack
+
+`terraform destroy` does **not** work on its own. The content bucket has no
+`force_destroy` and is versioned, so destroy fails with `BucketNotEmpty`. That
+is deliberate: versioning exists so a bad deploy can be rolled back, and an
+accidental destroy should not silently discard it. Empty it first — including
+noncurrent versions and delete markers:
+
+```bash
+BUCKET="$(cd terraform/aws && AWS_PROFILE=tmi terraform output -raw content_bucket)"
+AWS_PROFILE=tmi aws s3api delete-objects --bucket "$BUCKET" \
+  --delete "$(AWS_PROFILE=tmi aws s3api list-object-versions --bucket "$BUCKET" \
+    --output json --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}')"
+AWS_PROFILE=tmi aws s3api delete-objects --bucket "$BUCKET" \
+  --delete "$(AWS_PROFILE=tmi aws s3api list-object-versions --bucket "$BUCKET" \
+    --output json --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}')"
+cd terraform/aws && AWS_PROFILE=tmi terraform destroy
+```
+
+(Repeat the two `delete-objects` calls if the bucket holds more than 1000
+versions; `list-object-versions` pages at 1000.) The log bucket sets
+`force_destroy = true` — access logs are disposable — so it needs no such step.
+
+Unbounded growth is bounded by lifecycle rules on the content bucket:
+noncurrent versions expire after 30 days and incomplete multipart uploads are
+aborted after 7.
 
 `terraform init` warns that the backend's `dynamodb_table` argument is
 deprecated in favour of S3 native locking (`use_lockfile = true`). The argument
@@ -52,10 +79,33 @@ not unilaterally here.
 ## Caching model
 
 `outputHashing: "all"` hashes only build-emitted files. `public/` and
-`src/assets/` ship under stable names, so the deploy script uses three passes:
+`src/assets/` ship under stable names, so the deploy script uploads in classes:
 stable names get one hour, hashed output gets a year `immutable`, and
 `index.html` / `config.json` get `no-store`. The `/*` invalidation exists for
 the stable-named assets.
+
+The pass **order** is load-bearing and must not be collapsed into a single
+`sync --delete`: new hashed bundles are uploaded first with no deletion, then
+`index.html` cuts over to them, and only then does a final pass prune keys the
+build no longer produces. Deleting first would leave the origin serving an
+`index.html` whose bundles are gone; CloudFront rewrites those 403s to
+`/index.html` with a 200, so the browser gets HTML where JavaScript is expected
+and fails with `Uncaught SyntaxError: Unexpected token '<'`.
+
+After invalidating, the script waits for the invalidation to complete and then
+asserts that `/` and one hashed bundle referenced by the new `index.html` both
+return 200 with the expected content type, so a broken deploy cannot exit 0.
+
+`config.json` is **rewritten to `{}` and re-uploaded on every deploy**. It
+exists only so the pre-bootstrap fetch in `src/main.ts` gets valid JSON instead
+of the SPA fallback's HTML. It is not a durable override hook — anything
+hand-edited into it in S3 is lost on the next deploy. Configure this deployment
+in `src/environments/environment.aws.ts` instead.
+
+`deploy-aws.sh` refuses to upload a `dist/` that does not reference
+`server.aws.tmi.dev`. Every build configuration emits to the same
+`dist/tmi-ux/browser`, so without that check `--no-build` would happily publish
+a `build:prod` or `build:test` output pointed at the wrong API.
 
 Verified behaviour of the bare domain `/`: it returns `cache-control: no-store`
 and CloudFront does not cache it at the edge (repeated requests report
@@ -76,8 +126,17 @@ directives to the CloudFront policy** — a directive narrower than the app's
 silently breaks the Google Drive and OneDrive pickers. `frame-ancestors` is the
 exception: meta-tag CSPs ignore it, so the edge is the only place it can be set.
 
-`environment.aws.ts`'s `securityConfig` block mirrors these headers and is
-guarded by `environment.aws.spec.ts`. If you change one, change both.
+`environment.aws.ts`'s `securityConfig` block is a hand-maintained copy of
+these headers. Nothing enforces it: it feeds only
+`generateRecommendedHeaders()` in
+`src/app/core/services/security-config.service.ts`, which publishes an advisory
+observable. Drift is a reporting inaccuracy, not a security regression.
+
+`environment.aws.spec.ts` compares that block against a literal in the same
+repo, so it catches edits to `environment.aws.ts` but is blind to edits of
+`cloudfront.tf` — which is the direction that actually changes what browsers
+receive. Treat it as a change-detector on the copy, not as verification of the
+edge. If you change either file, change both by hand.
 
 Known gap: the meta tag is injected during Angular bootstrap, so it does not
 cover the initial document parse (the Font Awesome and Google Fonts links in
@@ -116,7 +175,8 @@ can read it. A `200` would mean the bucket has gone public.
 
 ```bash
 AWS_PROFILE=tmi aws cloudfront get-invalidation \
-  --distribution-id EDFBI6U9CTWU7 --id <invalidation-id>
+  --distribution-id "$(cd terraform/aws && AWS_PROFILE=tmi terraform output -raw distribution_id)" \
+  --id <invalidation-id>
 ```
 
 **Login fails / callback rejected.** See "Server dependency" above.

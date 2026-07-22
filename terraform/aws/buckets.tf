@@ -40,6 +40,39 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "content" {
   }
 }
 
+# Deliberately NO force_destroy here. Versioning is on so a bad deploy can be
+# rolled back; letting `terraform destroy` silently discard every version is
+# worse than the destroy failing with BucketNotEmpty. Emptying the bucket is a
+# conscious step — see docs/reference/aws-deployment.md.
+#
+# Versioning plus a deploy on every push would otherwise accumulate noncurrent
+# copies of each hashed bundle forever, so bound it here.
+resource "aws_s3_bucket_lifecycle_configuration" "content" {
+  bucket = aws_s3_bucket.content.id
+
+  rule {
+    id     = "expire-noncurrent-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+
+  rule {
+    id     = "abort-incomplete-multipart-uploads"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
 # ---------------------------------------------------------------------------
 # Log bucket: CloudFront standard (legacy) logging delivers via S3 ACLs, which
 # is incompatible with BucketOwnerEnforced. This bucket therefore enables ACLs
@@ -50,6 +83,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "content" {
 
 resource "aws_s3_bucket" "logs" {
   bucket = var.log_bucket_name
+
+  # Access logs are disposable and the bucket is never empty in practice, so
+  # without this `terraform destroy` fails with BucketNotEmpty.
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "logs" {

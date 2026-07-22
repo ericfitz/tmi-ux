@@ -4,9 +4,15 @@
  * Used by the S3 + CloudFront deployment at https://app.aws.tmi.dev.
  * See docs/reference/aws-deployment.md and terraform/aws/.
  *
- * The securityConfig block below is what the application reports about its own
- * posture; the headers are actually emitted by the CloudFront response-headers
- * policy in terraform/aws/cloudfront.tf. Keep the two in sync.
+ * The securityConfig block below is a hand-maintained copy of the headers the
+ * CloudFront response-headers policy in terraform/aws/cloudfront.tf actually
+ * emits. Nothing here is enforced: it feeds only generateRecommendedHeaders()
+ * in core/services/security-config.service.ts, which publishes an advisory
+ * observable. Drift makes that report wrong, nothing more.
+ *
+ * environment.aws.spec.ts pins this block against a literal in the same repo,
+ * so it catches edits here but cannot see edits to cloudfront.tf. Keeping the
+ * two in sync is a manual discipline, not something the test verifies.
  */
 
 import { Environment } from './environment.interface';
