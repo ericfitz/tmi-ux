@@ -14,6 +14,7 @@
     "build:prod": "ng build --configuration=production",
     "build:test": "ng build --configuration=test",
     "build:aws": "ng build --configuration=aws",
+    "deploy:aws": "bash scripts/deploy-aws.sh",
     "watch": "ng build --watch --configuration development",
     "test": "vitest run",
     "test:watch": "vitest",
