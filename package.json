@@ -13,6 +13,7 @@
     "build": "ng build",
     "build:prod": "ng build --configuration=production",
     "build:test": "ng build --configuration=test",
+    "build:aws": "ng build --configuration=aws",
     "watch": "ng build --watch --configuration development",
     "test": "vitest run",
     "test:watch": "vitest",
