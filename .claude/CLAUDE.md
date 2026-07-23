@@ -124,26 +124,18 @@ TMI-UX is an Angular-based application implementing a user workflow for managing
 
 The application has three sets of users:
 
-- Security reviewers - triage and prioritize incoming work; peform security reviews
+- Security reviewers - triage and prioritize incoming work; perform security reviews
 - End users/requesters - request security reviews by filling out intake surveys; check status
 - Administrators - manage the application and its configuration at runtime
 
 ## Related Projects
 
-TMI has several sibling projects. When you need to read files from or interact with these projects, check `.local-projects.json` in the project root for local filesystem paths before fetching from GitHub. This file is gitignored (local to each developer's machine).
-
-The `.local-projects.json` file also carries GitHub coordinates used by some skills:
-
-- `github.owner` and `github.repo` for each project — used by repo-targeted skills.
-- `github.wiki_path` — local clone of the project's wiki, used by `verify-migrate-doc`.
-- `github.issues_project` — GitHub Project (v2) number, node ID, and status field/option IDs — used by `file-github-bug`.
-
-See the `schema` block in `.local-projects.json` itself for the full shape.
+TMI has several sibling projects (notably the `tmi` server repo). When you need to read files from or interact with these projects, look up their local paths and GitHub coordinates in the machine-local `.local/repos.json` registry (see the `.local/` convention in the global CLAUDE.md) before fetching from GitHub. Repo-targeted skills (`github:create-issue`, `wiki:verify-doc`) read that registry and the `.local/gh-projects.json` cache; both are provisioned by `~/Scripts/provision-repo-config.py`.
 
 ## API and Backend
 
-- API specs: check `.local-projects.json` for the local `tmi` project path, then read `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallback URLs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json`, `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml`
-- Wiki: check `.local-projects.json` for the local `tmi-wiki` project path. Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
+- API specs: check `.local/repos.json` for the local `tmi` project path, then read `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallback URLs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json`, `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml`
+- Wiki: check `.local/repos.json` for the local `tmi-wiki` project path (register it there if absent). Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
 - Server repo: `https://github.com/ericfitz/tmi`
 
 ### Suspected Server Bugs
@@ -153,7 +145,7 @@ When you encounter a problem during development or debugging that appears to ori
 1. **Stop** working on the current task
 2. **Explain** why you believe the problem is a server-side bug, including the evidence (request/response payloads, log entries, spec violations, etc.)
 3. **Ask** the user whether to file a server bug report
-4. If the user confirms, use the `file-github-bug` skill with target `tmi` to create the issue in the server repo
+4. If the user confirms, use the `github:create-issue` skill with target `tmi` to create the issue in the server repo
 
 ## Development Commands
 
@@ -179,11 +171,18 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 
 ### Visual Regression Triage
 
-When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `visual-regression-triage` skill to present the baseline, actual, and diff images, describe the differences, and guide resolution (fix bug or update baseline).
+When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `ui:vrt` skill to present the baseline, actual, and diff images, describe the differences, and guide resolution (fix bug or update baseline).
 
 ## Versioning and Branching
 
-Versioning is automatic on push to `main` (Conventional Commits drive the bump) and releases use `release/<semver>` branches — invoke the `release-process` skill before committing to main, creating/merging release or feature branches, or touching version numbers.
+Semantic version bumps happen **on the pull request**, not after merge (the `main` ruleset requires a PR + the CodeQL check with no bypass). `.github/workflows/version-bump.yml`:
+
+- **bump** job (on the PR): derives the bump from the PR's Conventional Commits and commits the version change to the PR head branch. `feat:`/`refactor:` → minor; `fix:`/`docs:`/`perf:`/`test:`/`build:`/`ci:`/`chore:`/`deps:`/`ops:` → patch. Changes touching only tests, `src/testing/`, `src/environments/`, or non-`src` files don't bump. Major bumps are never automatic — raise the major by hand and it's preserved.
+- **tag** job (on push to `main`): creates the `vX.Y.Z` tag for the merged version.
+
+Version math lives in `scripts/compute-next-version.mjs` (self-test: `node scripts/compute-next-version.mjs --test`) and `scripts/pr-version-target.sh`.
+
+Release work uses `release/<semver>` branches carrying a prerelease version (e.g. `1.6.0-rc.0`); merging to `main` finalizes it (the suffix is stripped, no further bump). Feature branches (`feature/<name>`) branch off the release branch.
 
 ## UI Terminology
 
@@ -226,14 +225,6 @@ In every `mat-dialog-actions align="end"` block, DOM order is `[Cancel (mat-butt
 ### Documented exception
 
 The **Timmy launcher button** at `src/app/pages/tm/tm-edit.component.html` (`class="timmy-header-button"`) is an oversized `mat-icon-button` with an `<img>` child that opens the Timmy AI chat. The larger size and image content are intentional. Do not refactor it as part of button-style audits.
-
-## Skill Configuration
-
-Project-local config files for generalized skills live under `.claude/`:
-
-- **`.claude/i18n.config.json`** — used by the i18n skill family (`analyze-localization-files`, `validate-localization-coverage`, `update-json-localization-file`, `detect-non-localizable`, `translate-to-language`, `validate-translation`) and the `/localization-backfill` command. Defines `locales_dir`, `master_locale`, `file_extension`, `check_command`, and the parser regexes for `check_command`'s output.
-
-GitHub repo and Project (v2) metadata used by `file-github-bug` and `verify-migrate-doc` lives in `.local-projects.json` (see "Related Projects" above), not in skill-specific config.
 
 ## Code Style
 
