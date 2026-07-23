@@ -1,0 +1,12 @@
+.terraform/
+.terraform.lock.hcl.bak
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# Backend configuration is per-deployer and not versioned, matching the
+# sibling tmi repo's `**/backend.hcl` rule. Its contents are documented in
+# docs/reference/aws-deployment.md so the stack can be re-initialized.
+backend.hcl
