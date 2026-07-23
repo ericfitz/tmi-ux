@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,6 +52,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // SEM@dad0c81f4d87ea8457ac6ef32b1aedf685dc20ad: initialize login page: surface stored auth error and fetch providers
@@ -96,6 +97,16 @@ export class LoginComponent implements OnInit {
       oauth: this.authService.getAvailableProviders(),
       saml: this.authService.getAvailableSAMLProviders(),
     }).subscribe({
+      // markForCheck is required, not optional. app-root (the router-outlet
+      // host) is OnPush, and this forkJoin resolves from an async HTTP
+      // callback rather than a template event. Without marking the path
+      // dirty, the change-detection tick that follows starts at the OnPush
+      // app-root, finds it clean, and prunes this whole subtree — so this
+      // CheckAlways component is never checked and the "Loading authentication
+      // providers" spinner stays up even though the data arrived. It only
+      // rendered intermittently, on loads where some other event happened to
+      // dirty an ancestor. markForCheck marks LoginComponent up through
+      // app-root so the tick reaches it.
       next: ({ oauth, saml }) => {
         this.oauthProviders = this.sortProviders(oauth);
         this.samlProviders = this.sortProviders(saml);
@@ -103,6 +114,8 @@ export class LoginComponent implements OnInit {
 
         // Load provider logos
         this.loadProviderLogos();
+
+        this.cdr.markForCheck();
 
         // this.logger.debugComponent('Auth', `Loaded providers`, {
         //   oauthCount: oauth.length,
@@ -114,6 +127,7 @@ export class LoginComponent implements OnInit {
       error: error => {
         this.providersLoading = false;
         this.error = 'Failed to load authentication providers';
+        this.cdr.markForCheck();
         this.logger.error('Failed to load authentication providers', error);
       },
     });

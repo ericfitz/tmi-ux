@@ -29,6 +29,7 @@ describe('LoginComponent', () => {
     debugComponent: ReturnType<typeof vi.fn>;
   };
   let mockDialog: { open: ReturnType<typeof vi.fn> };
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn>; detectChanges: ReturnType<typeof vi.fn> };
 
   const mockOAuthProviders: OAuthProviderInfo[] = [
     {
@@ -98,6 +99,11 @@ describe('LoginComponent', () => {
       }),
     };
 
+    mockCdr = {
+      markForCheck: vi.fn(),
+      detectChanges: vi.fn(),
+    };
+
     // Clear sessionStorage before each test
     sessionStorage.clear();
 
@@ -107,6 +113,7 @@ describe('LoginComponent', () => {
       mockRouter as any,
       mockLogger as any,
       mockDialog as any,
+      mockCdr as any,
     );
   });
 
@@ -174,6 +181,33 @@ describe('LoginComponent', () => {
       component.ngOnInit();
 
       expect(component.providersLoading).toBe(false);
+      expect(component.error).toBe('Failed to load authentication providers');
+    });
+
+    // Regression test for the intermittent "Loading authentication providers"
+    // hang. app-root (the router-outlet host) is OnPush, and this forkJoin
+    // resolves from an async HTTP callback rather than a template event, so the
+    // change-detection tick that follows is pruned at the clean OnPush ancestor
+    // and never reaches this CheckAlways component — the spinner stays up even
+    // though the data arrived. The fix marks the component (and its ancestors)
+    // for check. These tests guard that both the success and error paths call
+    // markForCheck.
+    it('should mark for check after providers load so the OnPush ancestor is traversed', () => {
+      component.ngOnInit();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
+      expect(component.providersLoading).toBe(false);
+    });
+
+    it('should mark for check after a provider load error', () => {
+      mockCdr.markForCheck.mockClear();
+      mockAuthService.getAvailableProviders.mockReturnValue(
+        throwError(() => new Error('Network error')),
+      );
+
+      component.ngOnInit();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
       expect(component.error).toBe('Failed to load authentication providers');
     });
 
