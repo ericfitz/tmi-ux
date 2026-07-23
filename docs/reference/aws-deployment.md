@@ -15,8 +15,11 @@ All commands use the `tmi` AWS profile.
 
 ```bash
 pnpm run deploy:aws                 # build + deploy
-pnpm run deploy:aws -- --no-build   # deploy the existing dist/
+bash scripts/deploy-aws.sh --no-build   # deploy the existing dist/
 ```
+
+(Call the script directly to pass `--no-build`; `pnpm run deploy:aws -- --no-build`
+forwards the `--` to the script as a literal argument on this pnpm version.)
 
 ## Change infrastructure
 
