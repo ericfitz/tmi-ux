@@ -1,15 +1,36 @@
 name: Version Bump
 
-# Single source of truth for semantic version bumping. Runs on every push to
-# main (PR merges and direct pushes alike), derives the bump from the pushed
-# conventional commits, and commits `chore: bump version to X.Y.Z [skip ci]`
-# plus a vX.Y.Z tag back to main.
+# Version bumping runs on the PR, not after merge (issue #789). The `main`
+# repository ruleset requires a PR plus the CodeQL check with no bypass actors,
+# so nothing — not even the built-in GITHUB_TOKEN — can push straight to main.
 #
-# No loop: the commit is pushed with the built-in GITHUB_TOKEN, whose pushes do
-# not trigger new workflow runs. The `[skip ci]` marker and the job-level guard
-# below are belt-and-suspenders.
+# Design:
+#   - bump (pull_request): derive the target version from the PR's conventional
+#     commits and commit the bump to the PR head branch. The push uses the
+#     DEPS_BOT GitHub App token (not GITHUB_TOKEN) precisely because an App-token
+#     push RE-TRIGGERS workflows, so CodeQL re-runs on the bumped head commit and
+#     the required check is satisfied on the SHA that will merge. A GITHUB_TOKEN
+#     push does not re-trigger CI and would leave the required check missing,
+#     blocking the merge forever.
+#   - tag (push: main): after the PR merges, create/push the vX.Y.Z tag for the
+#     version now on main. Tags live under refs/tags/* which the branch ruleset
+#     does not cover, so a tag push is allowed. Idempotent, so it also self-heals
+#     any version already on main that never got tagged.
+#   - check-bump (pull_request): fork and dependabot[bot] PRs run with a
+#     read-only token and no access to the App secret, so we cannot push a bump
+#     to them. Instead fail with an actionable message telling the author which
+#     version to set by hand. This check is not in the ruleset's required set, so
+#     it flags loudly without hard-blocking the merge.
+#
+# Idempotency: the target is computed from the merge-base (the version on main),
+# never from the PR's current package.json, so re-running on `synchronize` — including
+# the synchronize fired by our own bump push — never double-bumps. Version math
+# lives in scripts/compute-next-version.mjs.
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
   push:
     branches: [main]
 
@@ -17,14 +38,68 @@ permissions:
   contents: write
 
 concurrency:
-  group: version-bump
+  group: version-bump-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   bump:
+    # Auto-bump only PRs we can push to: same-repo head branch, not dependabot[bot].
+    # Fork and dependabot[bot] PRs are handled by check-bump below.
+    if: >-
+      ${{ github.event_name == 'pull_request'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
-    # Skip our own bump commits (redundant with GITHUB_TOKEN non-retrigger, kept explicit).
-    if: "${{ !startsWith(github.event.head_commit.message, 'chore: bump version') }}"
+    steps:
+      - name: Mint GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
+
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Compute and apply version bump
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          # Shared version math (BASE/HEAD_VER/BUMP/TARGET). A non-zero exit here
+          # aborts the job (set -e on the assignment) rather than silently skipping.
+          OUT=$(bash scripts/pr-version-target.sh)
+          eval "$OUT"
+
+          if [ "$TARGET" = "$HEAD_VER" ]; then
+            echo "package.json already at $HEAD_VER (target $TARGET); nothing to do."
+            exit 0
+          fi
+
+          echo "Bumping $HEAD_VER -> $TARGET (base $BASE, bump ${BUMP:-none})"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('./package.json','utf8'));p.version='$TARGET';fs.writeFileSync('./package.json',JSON.stringify(p,null,2)+'\n');"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json
+          git commit -m "chore: bump version to $TARGET"
+          git push origin "HEAD:$HEAD_REF"
+          echo "Pushed bump to $TARGET on $HEAD_REF."
+
+  tag:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,89 +112,60 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Compute and apply version bump
+      - name: Create and push tag if missing
+        run: |
+          set -euo pipefail
+          V=$(node -p "require('./package.json').version")
+          TAG="v$V"
+          if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already on origin; nothing to do."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "$TAG" -m "Release version $V"
+          git push origin "$TAG"
+          echo "Tagged $TAG."
+
+  check-bump:
+    # Fork and dependabot[bot] PRs cannot be pushed to (read-only token, no App
+    # secret). Fail with an actionable message so the author bumps by hand.
+    if: >-
+      ${{ github.event_name == 'pull_request'
+      && (github.event.pull_request.head.repo.full_name != github.repository
+      || github.actor == 'dependabot[bot]') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR merge ref
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Verify the version was bumped manually
         env:
-          BEFORE: ${{ github.event.before }}
-          AFTER: ${{ github.event.after }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
 
-          # --- Determine the commit range for this push ---
-          # For an existing branch, github.event.before is the prior tip. Guard against
-          # the all-zeros sentinel (branch creation) by falling back to the first parent.
-          if printf '%s' "$BEFORE" | grep -qE '^0+$'; then
-            RANGE_BASE=$(git rev-parse HEAD^ 2>/dev/null || echo '')
-          else
-            RANGE_BASE="$BEFORE"
-          fi
+          # Same shared version math the bump job uses, so the advisory target
+          # matches exactly what auto-bump would have produced. For a fork PR the
+          # default checkout is the merge ref (refs/pull/N/merge); its first
+          # parent is origin/BASE_REF, so the merge base resolves to current main.
+          OUT=$(bash scripts/pr-version-target.sh)
+          eval "$OUT"
 
-          # --- Relevant-files filter (mirrors the retired post-commit hook) ---
-          # Bump only when the push touches version-relevant files: package.json or
-          # src/ excluding tests, testing utilities, and environment configs.
-          if [ -n "$RANGE_BASE" ]; then
-            CHANGED=$(git diff --name-only "$RANGE_BASE" "$AFTER")
-          else
-            CHANGED=$(git show --name-only --pretty=format: HEAD)
-          fi
-          RELEVANT=$(printf '%s\n' "$CHANGED" \
-            | grep -E '^(package\.json|src/)' \
-            | grep -v '\.spec\.ts$' \
-            | grep -v '^src/testing/' \
-            | grep -v '^src/environments/' || true)
-          if [ -z "$RELEVANT" ]; then
-            echo "No version-relevant files changed; skipping bump."
+          if [ "$TARGET" = "$BASE" ] || [ "$HEAD_VER" = "$TARGET" ]; then
+            echo "Version OK: base $BASE, head $HEAD_VER, target $TARGET."
             exit 0
           fi
 
-          # --- Derive bump type from the conventional commits in the range ---
-          # minor wins over patch; feat/refactor -> minor, other bumpable types -> patch.
-          if [ -n "$RANGE_BASE" ]; then
-            SUBJECTS=$(git log --format='%s' "${RANGE_BASE}..${AFTER}")
-          else
-            SUBJECTS=$(git log -1 --format='%s' HEAD)
-          fi
-          # Drop our own bump commits, then extract the leading conventional type from each subject.
-          TYPES=$(printf '%s\n' "$SUBJECTS" \
-            | grep -vE '^chore: bump version' \
-            | sed -nE 's/^([a-z]+)(\(.+\))?!?: .+/\1/p' || true)
-          if printf '%s\n' "$TYPES" | grep -qE '^(feat|refactor)$'; then
-            BUMP='minor'
-          elif printf '%s\n' "$TYPES" | grep -qE '^(fix|docs|perf|test|build|ci|chore|deps|ops)$'; then
-            BUMP='patch'
-          else
-            BUMP=''
-          fi
-
-          if [ -z "$BUMP" ]; then
-            echo "No bumpable conventional commits in range; skipping bump."
-            exit 0
-          fi
-
-          # --- Compute the next version ---
-          CURRENT=$(node -p "require('./package.json').version")
-          if [ -n "$RANGE_BASE" ]; then
-            PREVIOUS=$(git show "${RANGE_BASE}:package.json" 2>/dev/null \
-              | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).version))" \
-              2>/dev/null || echo "$CURRENT")
-          else
-            PREVIOUS="$CURRENT"
-          fi
-          NEW=$(node scripts/compute-next-version.mjs "$CURRENT" "$PREVIOUS" "$BUMP")
-
-          if [ "$NEW" = "$CURRENT" ]; then
-            echo "Version already $CURRENT ($BUMP resolved to no change); nothing to do."
-            exit 0
-          fi
-          echo "Bumping $CURRENT -> $NEW ($BUMP)"
-
-          # --- Apply, commit, tag, push (GITHUB_TOKEN push does not re-trigger) ---
-          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('./package.json','utf8'));p.version='$NEW';fs.writeFileSync('./package.json',JSON.stringify(p,null,2)+'\n');"
-
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json
-          git commit -m "chore: bump version to $NEW [skip ci]"
-          git tag -a "v$NEW" -m "Release version $NEW"
-          git push origin HEAD:main
-          git push origin "v$NEW"
-          echo "Bumped to $NEW and tagged v$NEW."
+          echo "::error title=Version bump required::This PR is not auto-version-bumped (fork or Dependabot). Set package.json \"version\" to $TARGET and push the change."
+          exit 1
