@@ -4,13 +4,12 @@
 # only from that region. The provider is already pinned there via
 # var.aws_region.
 #
-# The hosted zone (aws.tmi.dev) already contains a certificate-validation
-# CNAME for server.aws.tmi.dev, owned by the separate TMI server deployment.
-# This resource only ever creates/manages records keyed by this
-# certificate's own domain_validation_options, so it cannot collide with
-# that record. allow_overwrite exists to let re-plans/re-creates of this
-# certificate's own validation record succeed, not to touch unrelated
-# records.
+# The hosted zone (tmi.dev, migrated into this account) contains many
+# unrelated records (mail, delegations, other ACM validation CNAMEs). This
+# resource only ever creates/manages records keyed by this certificate's own
+# domain_validation_options, so it cannot collide with them. allow_overwrite
+# exists to let re-plans/re-creates of this certificate's own validation
+# record succeed, not to touch unrelated records.
 # ---------------------------------------------------------------------------
 
 resource "aws_acm_certificate" "this" {
