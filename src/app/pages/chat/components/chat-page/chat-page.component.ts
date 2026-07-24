@@ -625,6 +625,10 @@ export class ChatPageComponent implements OnInit {
         },
         error: err => {
           this.logger.error('Failed to load sessions', err);
+          // Callers clear active-session state before calling this and rely on
+          // the success path to repaint. If the reload fails, this OnPush view
+          // would otherwise keep showing the deleted session's messages.
+          this.cdr.markForCheck();
         },
       });
   }

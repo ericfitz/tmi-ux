@@ -1,6 +1,7 @@
 import '@angular/compiler';
 
 import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -40,6 +41,7 @@ function buildFixture(overrides: MockOverrides): {
   auth: { initiateStepUp: ReturnType<typeof vi.fn> };
   router: { navigateByUrl: ReturnType<typeof vi.fn> };
   snackBar: { open: ReturnType<typeof vi.fn> };
+  markForCheck: ReturnType<typeof vi.spyOn>;
 } {
   const identityLink = {
     getPending: overrides.getPending ?? vi.fn().mockReturnValue(of(PENDING)),
@@ -70,8 +72,16 @@ function buildFixture(overrides: MockOverrides): {
   }).compileComponents();
 
   const fixture = TestBed.createComponent(IdentityLinkCallbackComponent);
+
+  // Spy before the first detectChanges so ngOnInit's async resolve is observed.
+  // Note ComponentFixture.detectChanges() force-checks this view regardless of
+  // its dirty flag, so asserting on rendered DOM cannot catch a missing
+  // markForCheck — only spying on the ChangeDetectorRef can.
+  const cdr = (fixture.componentInstance as unknown as { cdr: ChangeDetectorRef }).cdr;
+  const markForCheck = vi.spyOn(cdr, 'markForCheck');
+
   fixture.detectChanges();
-  return { fixture, identityLink, auth, router, snackBar };
+  return { fixture, identityLink, auth, router, snackBar, markForCheck };
 }
 
 describe('IdentityLinkCallbackComponent', () => {
@@ -95,6 +105,40 @@ describe('IdentityLinkCallbackComponent', () => {
     expect(identityLink.getPending).toHaveBeenCalledWith('tok');
     expect(component.state).toBe('confirm');
     expect(component.pending).toEqual(PENDING);
+  });
+
+  // Regression tests for the hung-spinner class of bug. This component is
+  // OnPush, so state it assigns from an HTTP callback (rather than a template
+  // event) is never repainted unless it marks itself for check — the view stays
+  // on the 'loading' spinner even though the data arrived. Same defect that hung
+  // the login page (e6fc5244) and the admin list pages.
+  it('marks for check when pending details resolve so the confirm view repaints', () => {
+    const { markForCheck } = buildFixture({ queryParams: { link_pending: 'tok' } });
+
+    expect(markForCheck).toHaveBeenCalled();
+  });
+
+  it('marks for check when loading pending details fails', () => {
+    const { markForCheck, fixture } = buildFixture({
+      queryParams: { link_pending: 'tok' },
+      getPending: vi.fn().mockReturnValue(throwError(() => ({ status: 404 }))),
+    });
+
+    expect(fixture.componentInstance.state).toBe('error');
+    expect(markForCheck).toHaveBeenCalled();
+  });
+
+  it('marks for check when confirm fails so the error view repaints', () => {
+    const { markForCheck, fixture } = buildFixture({
+      queryParams: { link_pending: 'tok' },
+      confirmLink: vi.fn().mockReturnValue(throwError(() => ({ status: 404 }))),
+    });
+    markForCheck.mockClear();
+
+    fixture.componentInstance.onConfirm();
+
+    expect(fixture.componentInstance.state).toBe('error');
+    expect(markForCheck).toHaveBeenCalled();
   });
 
   it('initiates step-up re-auth when confirmLink throws StepUpRequiredError', () => {

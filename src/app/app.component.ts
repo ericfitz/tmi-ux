@@ -27,7 +27,15 @@ import { SessionManagerService } from './auth/services/session-manager.service';
   standalone: true,
   imports: [RouterOutlet, CommonModule, NavbarComponent, FooterComponent],
   templateUrl: './app.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Must stay CheckAlways. This component hosts the <router-outlet>, so every
+  // routed page renders inside its view. Under OnPush, a change-detection tick
+  // starts at this (clean) component and prunes the entire subtree, so a routed
+  // CheckAlways page that mutates state from an async callback — an HTTP
+  // subscribe, setTimeout, Promise.then — updates its model but never repaints.
+  // That produced hung loading spinners across the admin pages and the login
+  // page; it looked intermittent only because the navbar's async pipes
+  // transiently mark this component dirty and let a full traversal through.
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss',
 })
 // SEM@4ed130a60616a970c685c78ff132b21800f7ae3b: root application shell; bootstraps injector and session manager (mutates shared state)
