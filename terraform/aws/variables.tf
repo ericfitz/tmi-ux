@@ -7,13 +7,13 @@ variable "aws_region" {
 variable "domain_name" {
   description = "Public hostname for the tmi-ux SPA."
   type        = string
-  default     = "app.aws.tmi.dev"
+  default     = "www.tmi.dev"
 }
 
 variable "hosted_zone_id" {
-  description = "Route 53 hosted zone ID for aws.tmi.dev."
+  description = "Route 53 hosted zone ID for tmi.dev (migrated into this account)."
   type        = string
-  default     = "Z05646533D2YL1I678JXS"
+  default     = "Z017072317XPHCAN503JC"
 }
 
 variable "content_bucket_name" {
