@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -57,6 +63,7 @@ export class AiFeedbackDialogComponent implements OnInit {
     private readonly _snack: MatSnackBar,
     private readonly _transloco: TranslocoService,
     private readonly _logger: LoggerService,
+    private readonly _cdr: ChangeDetectorRef,
   ) {
     this.form = fb.group({
       sentiment: [data.initialSentiment ?? null, Validators.required],
@@ -132,6 +139,9 @@ export class AiFeedbackDialogComponent implements OnInit {
         error: err => {
           this._logger.error('AI feedback submit failed', err);
           this.submitting = false;
+          // OnPush: without this the Submit/Cancel buttons stay disabled after a
+          // failed submit, since this runs in an HTTP callback, not a DOM event.
+          this._cdr.markForCheck();
           this._snack.open(this._transloco.translate('aiFeedback.snackbarFailed'), undefined, {
             duration: 6000,
           });

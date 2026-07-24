@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -43,6 +49,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
   private auth = inject(AuthService);
   private transloco = inject(TranslocoService);
   private logger = inject(LoggerService);
+  private cdr = inject(ChangeDetectorRef);
 
   state: ViewState = 'loading';
   errorKey = 'identities.link.error.generic';
@@ -80,6 +87,9 @@ export class IdentityLinkCallbackComponent implements OnInit {
       next: details => {
         this.pending = details;
         this.state = 'confirm';
+        // OnPush: this resolves from an HTTP callback, not a template event, so
+        // without markForCheck the view stays on the 'loading' spinner forever.
+        this.cdr.markForCheck();
       },
       error: (err: unknown) => {
         this.logger.warn('Failed to load pending identity link', err);
@@ -89,6 +99,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
             ? 'identities.link.error.expired'
             : 'identities.link.error.generic';
         this.state = 'error';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -130,5 +141,7 @@ export class IdentityLinkCallbackComponent implements OnInit {
     }
     this.logger.warn('Identity-link confirm failed', err);
     this.state = 'error';
+    // Reached from confirmLink()'s async error callback — see loadPending().
+    this.cdr.markForCheck();
   }
 }

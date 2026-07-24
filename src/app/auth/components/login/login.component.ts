@@ -97,16 +97,14 @@ export class LoginComponent implements OnInit {
       oauth: this.authService.getAvailableProviders(),
       saml: this.authService.getAvailableSAMLProviders(),
     }).subscribe({
-      // markForCheck is required, not optional. app-root (the router-outlet
-      // host) is OnPush, and this forkJoin resolves from an async HTTP
-      // callback rather than a template event. Without marking the path
-      // dirty, the change-detection tick that follows starts at the OnPush
-      // app-root, finds it clean, and prunes this whole subtree — so this
-      // CheckAlways component is never checked and the "Loading authentication
-      // providers" spinner stays up even though the data arrived. It only
-      // rendered intermittently, on loads where some other event happened to
-      // dirty an ancestor. markForCheck marks LoginComponent up through
-      // app-root so the tick reaches it.
+      // Kept as defense in depth. While app-root (the router-outlet host) was
+      // OnPush — between 67ba1fef and the fix that reverted it to CheckAlways —
+      // this forkJoin resolving from an async HTTP callback left the "Loading
+      // authentication providers" spinner up: the tick started at the clean
+      // OnPush app-root and pruned this whole subtree before reaching this
+      // CheckAlways component. app-root is CheckAlways again, so these calls are
+      // no longer load-bearing, but they keep this component correct on its own
+      // terms rather than relying on an ancestor's strategy.
       next: ({ oauth, saml }) => {
         this.oauthProviders = this.sortProviders(oauth);
         this.samlProviders = this.sortProviders(saml);

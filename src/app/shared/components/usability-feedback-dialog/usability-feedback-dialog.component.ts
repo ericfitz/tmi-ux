@@ -124,6 +124,9 @@ export class UsabilityFeedbackDialogComponent {
         error: err => {
           this._logger.error('Usability feedback submit failed', err);
           this.submitting = false;
+          // OnPush: without this the Submit/Cancel buttons stay disabled after a
+          // failed submit, since this runs in an HTTP callback, not a DOM event.
+          this._cdr.markForCheck();
           this._snack.open(
             this._transloco.translate('usabilityFeedback.snackbarFailed'),
             undefined,

@@ -120,6 +120,20 @@ describe('UsabilityFeedbackDialogComponent', () => {
       expect(mockDialogRef.close).not.toHaveBeenCalled();
       expect(mockSnack.open).toHaveBeenCalled();
     });
+
+    // This dialog is OnPush and `submitting` gates [disabled] on both buttons.
+    // Clearing it from an HTTP error callback (not a DOM event) does not repaint
+    // on its own, so without markForCheck a failed submit leaves the dialog
+    // permanently unusable — the user can neither retry nor cancel.
+    it('marks for check on submit failure so the buttons re-enable', () => {
+      mockFeedback.submit.mockReturnValue(throwError(() => new Error('boom')));
+      const component = build({ surface: 'dashboard', initialSentiment: 'up' });
+      mockCdr.markForCheck.mockClear();
+
+      component.onSubmit();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
+    });
   });
 
   describe('onCancel', () => {

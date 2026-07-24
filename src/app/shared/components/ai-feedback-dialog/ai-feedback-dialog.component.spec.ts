@@ -16,6 +16,7 @@ describe('AiFeedbackDialogComponent', () => {
   let mockSnack: { open: ReturnType<typeof vi.fn> };
   let mockTransloco: TranslocoService;
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn>; detectChanges: ReturnType<typeof vi.fn> };
 
   // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: build an AiFeedbackDialogComponent with mocked dependencies for unit testing (pure)
   function build(data: AiFeedbackDialogData, init = true): AiFeedbackDialogComponent {
@@ -27,6 +28,7 @@ describe('AiFeedbackDialogComponent', () => {
       mockSnack as never,
       mockTransloco,
       mockLogger as never,
+      mockCdr as never,
     );
     if (init) component.ngOnInit();
     return component;
@@ -44,6 +46,7 @@ describe('AiFeedbackDialogComponent', () => {
     mockSnack = { open: vi.fn() };
     mockTransloco = { translate: vi.fn((key: string) => key) } as unknown as TranslocoService;
     mockLogger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
+    mockCdr = { markForCheck: vi.fn(), detectChanges: vi.fn() };
   });
 
   describe('initialization', () => {
@@ -137,6 +140,20 @@ describe('AiFeedbackDialogComponent', () => {
       expect(mockLogger['error']).toHaveBeenCalled();
       expect(component.submitting).toBe(false);
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    // This dialog is OnPush and `submitting` gates [disabled] on both buttons.
+    // Clearing it from an HTTP error callback (not a DOM event) does not repaint
+    // on its own, so without markForCheck a failed submit leaves the dialog
+    // permanently unusable — the user can neither retry nor cancel.
+    it('marks for check on submit failure so the buttons re-enable', () => {
+      mockFeedback.submit.mockReturnValue(throwError(() => new Error('boom')));
+      const component = build({ ...threatData, initialSentiment: 'up' });
+      mockCdr.markForCheck.mockClear();
+
+      component.onSubmit();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
     });
   });
 

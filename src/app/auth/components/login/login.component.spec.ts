@@ -184,15 +184,15 @@ describe('LoginComponent', () => {
       expect(component.error).toBe('Failed to load authentication providers');
     });
 
-    // Regression test for the intermittent "Loading authentication providers"
-    // hang. app-root (the router-outlet host) is OnPush, and this forkJoin
-    // resolves from an async HTTP callback rather than a template event, so the
-    // change-detection tick that follows is pruned at the clean OnPush ancestor
-    // and never reaches this CheckAlways component — the spinner stays up even
-    // though the data arrived. The fix marks the component (and its ancestors)
-    // for check. These tests guard that both the success and error paths call
-    // markForCheck.
-    it('should mark for check after providers load so the OnPush ancestor is traversed', () => {
+    // Regression tests for the intermittent "Loading authentication providers"
+    // hang, which occurred while app-root (the router-outlet host) was OnPush:
+    // this forkJoin resolves from an async HTTP callback rather than a template
+    // event, so the tick was pruned at the clean OnPush ancestor and never
+    // reached this CheckAlways component — the spinner stayed up even though the
+    // data arrived. app-root is CheckAlways again (guarded by
+    // app.component.spec.ts), so these markForCheck calls are now defense in
+    // depth rather than load-bearing. These tests keep them from being dropped.
+    it('should mark for check after providers load so the component repaints', () => {
       component.ngOnInit();
 
       expect(mockCdr.markForCheck).toHaveBeenCalled();
