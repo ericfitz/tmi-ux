@@ -1,6 +1,17 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
 
 import { environment } from './environment.aws';
+
+/**
+ * The string scripts/deploy-aws.sh greps for in the built bundles to prove
+ * dist/ was compiled with configuration=aws. Kept in sync with
+ * AWS_BUILD_FINGERPRINT in that script.
+ */
+const AWS_BUILD_FINGERPRINT = 'TMI Project (AWS Demo)';
 
 describe('AWS deployment environment', () => {
   it('is a production build so runtime config and CSP injection are active', () => {
@@ -8,7 +19,46 @@ describe('AWS deployment environment', () => {
   });
 
   it('points at the deployed TMI server', () => {
-    expect(environment.apiUrl).toBe('https://server.aws.tmi.dev');
+    expect(environment.apiUrl).toBe('https://api.tmi.dev');
+  });
+
+  it('pins operatorName, which scripts/deploy-aws.sh uses as the build fingerprint', () => {
+    // deploy-aws.sh greps the built bundles for this exact string to prove
+    // dist/ was compiled with configuration=aws before publishing to
+    // www.tmi.dev. apiUrl cannot serve that purpose any more: since the server
+    // moved to api.tmi.dev, environment.{container,hosted-container,oci}.ts
+    // share that host, so a bundle built from any of them would pass a
+    // host-based check. This value must stay UNIQUE across src/environments/*.ts
+    // — if you rename it, update AWS_BUILD_FINGERPRINT in deploy-aws.sh too.
+    expect(environment.operatorName).toBe(AWS_BUILD_FINGERPRINT);
+  });
+
+  it('is the ONLY environment file containing the fingerprint', () => {
+    // The test above pins the aws value, but on its own it only guards one
+    // direction. The dangerous direction is another environment file *adopting*
+    // the string — e.g. a future environment.gcp.ts created by copying
+    // environment.aws.ts — because then a `--configuration=gcp` bundle would
+    // pass deploy-aws.sh's gate and be published to www.tmi.dev. A gate that
+    // wrongly blocks is merely annoying; one that wrongly passes ships the
+    // wrong apiUrl. This scans the directory on disk (rather than importing)
+    // so it also covers gitignored/untracked environment files present on a
+    // developer's machine, which a bundle-content gate is otherwise blind to.
+    const dir = dirname(fileURLToPath(import.meta.url));
+    const otherEnvFiles = readdirSync(dir).filter(
+      file =>
+        file.endsWith('.ts') &&
+        !file.endsWith('.spec.ts') &&
+        file !== 'environment.aws.ts' &&
+        file !== 'environment.interface.ts',
+    );
+
+    // Guard: if the scan ever matches nothing, this test would pass vacuously.
+    expect(otherEnvFiles.length).toBeGreaterThan(0);
+
+    const offenders = otherEnvFiles.filter(file =>
+      readFileSync(join(dir, file), 'utf8').includes(AWS_BUILD_FINGERPRINT),
+    );
+    expect(offenders).toEqual([]);
   });
 
   it('has no trailing slash on apiUrl', () => {

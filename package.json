@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -36,7 +36,6 @@
     "dev:test": "ng serve --configuration=test --open",
     "dev:e2e": "ng serve --configuration=e2e --open",
     "dev:prod": "ng serve --configuration=production --open",
-    "shannon": "ng serve --configuration=shannon --host 0.0.0.0",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",
     "lint:i18n": "uv run scripts/check-i18n-style.py",
