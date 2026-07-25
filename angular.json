@@ -173,17 +173,6 @@
               "extractLicenses": false,
               "sourceMap": true
             },
-            "shannon": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.shannon.ts"
-                }
-              ],
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            },
             "hosted-container": {
               "budgets": [
                 {
