@@ -1,7 +1,12 @@
-# AWS deployment (app.aws.tmi.dev)
+# AWS deployment (www.tmi.dev)
 
 The tmi-ux SPA is served from S3 + CloudFront in AWS account `967218005408`
-(`us-east-1`), against the TMI server at `https://server.aws.tmi.dev`.
+(`us-east-1`), against the TMI server at `https://api.tmi.dev`.
+
+Both hostnames live in the `tmi.dev` hosted zone (`Z017072317XPHCAN503JC`),
+which was migrated into this account from the personal account. The earlier
+`app.aws.tmi.dev` / `server.aws.tmi.dev` pair under the delegated
+`aws.tmi.dev` subzone is retired.
 
 All commands use the `tmi` AWS profile.
 
@@ -105,10 +110,19 @@ of the SPA fallback's HTML. It is not a durable override hook — anything
 hand-edited into it in S3 is lost on the next deploy. Configure this deployment
 in `src/environments/environment.aws.ts` instead.
 
-`deploy-aws.sh` refuses to upload a `dist/` that does not reference
-`server.aws.tmi.dev`. Every build configuration emits to the same
-`dist/tmi-ux/browser`, so without that check `--no-build` would happily publish
-a `build:prod` or `build:test` output pointed at the wrong API.
+`deploy-aws.sh` refuses to upload a `dist/` that does not contain
+`TMI Project (AWS Demo)` — `environment.aws.ts`'s `operatorName`. Every build
+configuration emits to the same `dist/tmi-ux/browser`, so without that check
+`--no-build` would happily publish a `build:prod` or `build:test` output
+pointed at the wrong API.
+
+The fingerprint is deliberately **not** the API hostname. When the server moved
+to `api.tmi.dev` that host stopped being unique — `environment.container.ts`,
+`environment.hosted-container.ts` and `environment.oci.ts` all use it — so a
+host-based check would wave an `ng build --configuration=oci` output through.
+`environment.aws.spec.ts` pins `operatorName` so renaming it cannot silently
+disarm the gate; if you do rename it, update `AWS_BUILD_FINGERPRINT` in
+`deploy-aws.sh` to match.
 
 Verified behaviour of the bare domain `/`: it returns `cache-control: no-store`
 and CloudFront does not cache it at the edge (repeated requests report
@@ -149,16 +163,19 @@ build time.
 ## Server dependency
 
 The server must allowlist this origin's OAuth callbacks, via
-`TMI_OAUTH_CLIENT_CALLBACK_ALLOWLIST=https://app.aws.tmi.dev/*` in the
+`TMI_OAUTH_CLIENT_CALLBACK_ALLOWLIST=https://www.tmi.dev/*` in the
 `tmi-server-config` ConfigMap (namespace `tmi-platform`). The allowlist is
 fail-closed: unset means every callback is rejected and login fails. The
 ConfigMap is Terraform-owned in the tmi repo and consumed via `envFrom`, so it
 needs `kubectl -n tmi-platform rollout restart deployment/tmi-server`.
 
-Optional hardening: `TMI_CORS_ALLOWED_ORIGINS` is unset, so the server reflects
-any `Origin` back with `access-control-allow-credentials: true`. Setting it
-switches the server from reflect-all to allowlist-only, so it must list every
-origin in use, not just this one.
+`TMI_CORS_ALLOWED_ORIGINS=https://www.tmi.dev` is now set, so the server is
+allowlist-only rather than reflect-all. It must list every browser origin in
+use — note that this is the **SPA** origin, not the API's own hostname, so
+`api.tmi.dev` does not belong in it.
+
+Both values are the client-facing side of the rename; moving the API to
+`api.tmi.dev` does not change either one.
 
 ## Troubleshooting
 

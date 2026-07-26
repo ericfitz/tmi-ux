@@ -59,16 +59,23 @@ fi
 # Every Angular build configuration emits to the same dist/tmi-ux/browser, so
 # the presence of index.html proves nothing about *which* environment was
 # compiled in. A dist/ left over from `pnpm run build:prod` or `build:test`
-# would deploy the wrong apiUrl to app.aws.tmi.dev, and the failure mode (login
+# would deploy the wrong apiUrl to www.tmi.dev, and the failure mode (login
 # and API calls silently pointed at another server) is not obvious in the
-# browser. environment.aws.ts is the only environment file carrying this host,
-# so its presence in the emitted bundles is a reliable fingerprint. This runs
-# for built and --no-build deploys alike.
+# browser.
+#
+# The fingerprint is environment.aws.ts's operatorName, NOT its apiUrl. Since
+# the server moved to api.tmi.dev, apiUrl is no longer unique — the container,
+# hosted-container and oci configurations all point at https://api.tmi.dev, so
+# grepping for the host would let an `ng build --configuration=oci` output pass
+# this gate. operatorName is unique across src/environments/*.ts, and
+# environment.aws.spec.ts pins it so a rename here cannot go unnoticed.
+# This runs for built and --no-build deploys alike.
+AWS_BUILD_FINGERPRINT='TMI Project (AWS Demo)'
 echo "==> Verifying dist/ was built with configuration=aws"
-if ! grep -rqlF 'server.aws.tmi.dev' "$DIST_DIR" --include='*.js'; then
-    echo "Error: no bundle in $DIST_DIR references server.aws.tmi.dev." >&2
+if ! grep -rqF "$AWS_BUILD_FINGERPRINT" "$DIST_DIR" --include='*.js'; then
+    echo "Error: no bundle in $DIST_DIR contains '$AWS_BUILD_FINGERPRINT'." >&2
     echo "       This dist/ was built with a different configuration and must" >&2
-    echo "       not be deployed to app.aws.tmi.dev. Run: pnpm run build:aws" >&2
+    echo "       not be deployed to www.tmi.dev. Run: pnpm run build:aws" >&2
     exit 1
 fi
 
