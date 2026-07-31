@@ -229,7 +229,7 @@
       },
       "deleteTooltip": "গ্রুপ মুছুন",
       "filter": {
-        "builtInOnly": "শুধুমাত্র বিল্ট-ইন গ্রুপ দেখান"
+        "tmiOnly": "শুধুমাত্র TMI গ্রুপ দেখান"
       },
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
@@ -255,7 +255,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "এই গ্রুপটি থ্রেট মডেল বা প্রকল্পের অনুমোদন অনুদানে উল্লেখ করা হয়েছে।",
         "builtInBadge": "বিল্ট-ইন",
-        "builtInTooltip": "TMI দ্বারা সরবরাহকৃত বিল্ট-ইন গ্রুপ।"
+        "builtInTooltip": "TMI দ্বারা সরবরাহকৃত বিল্ট-ইন গ্রুপ।",
+        "refCount": "{{count}}টি রেফারেন্স"
       },
       "viewMembersTooltip": "গ্রুপ সদস্যদের দেখুন এবং পরিচালনা করুন"
     },

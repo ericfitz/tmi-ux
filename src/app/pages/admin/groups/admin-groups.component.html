@@ -31,12 +31,12 @@
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
         <mat-slide-toggle
-          data-testid="groups-builtin-toggle"
-          [checked]="builtInOnly"
-          (change)="onBuiltInFilterChange($event.checked)"
+          data-testid="groups-tmi-toggle"
+          [checked]="tmiOnly"
+          (change)="onTmiFilterChange($event.checked)"
           class="builtin-toggle"
         >
-          <span [transloco]="'admin.groups.filter.builtInOnly'">Show built-in groups only.</span>
+          <span [transloco]="'admin.groups.filter.tmiOnly'">Show TMI groups only.</span>
         </mat-slide-toggle>
       </div>
     </mat-card-content>
@@ -109,7 +109,9 @@
               </th>
               <td mat-cell *matCellDef="let group" class="usage-column">
                 <div class="usage-info">
-                  <div class="usage-count">{{ group.usage_count }} refs</div>
+                  <div class="usage-count">
+                    {{ 'admin.groups.usage.refCount' | transloco: { count: group.usage_count } }}
+                  </div>
                   @if (group.used_in_authorizations) {
                     <span
                       class="usage-badge authz"

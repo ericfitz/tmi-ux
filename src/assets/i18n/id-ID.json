@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "Hapus grup",
       "filter": {
-        "builtInOnly": "Tampilkan hanya grup bawaan."
+        "tmiOnly": "Tampilkan hanya grup TMI."
       },
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "Grup ini dirujuk dalam otorisasi model ancaman atau proyek.",
         "builtInBadge": "Bawaan",
-        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI."
+        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI.",
+        "refCount": "{{count}} referensi"
       },
       "viewMembersTooltip": "Lihat dan kelola anggota grup..."
     },

@@ -87,8 +87,20 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
-  builtInOnly = false;
+  tmiOnly = false;
   loading = false;
+
+  // Group names seeded by the server (api/seed/seed.go in the tmi repo).
+  // The API has no is_builtin flag, and admin-created groups also get
+  // provider 'tmi', so provider alone cannot identify built-in groups.
+  private static readonly BUILT_IN_GROUP_NAMES = new Set([
+    'everyone',
+    'security-reviewers',
+    'administrators',
+    'confidential-project-reviewers',
+    'embedding-automation',
+    'tmi-automation',
+  ]);
 
   // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject group admin service, router, dialog, logger, and auth service
   constructor(
@@ -179,7 +191,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
         limit: this.pageSize,
         offset,
         ...(filter ? { group_name: filter } : {}),
-        ...(this.builtInOnly ? { provider: 'tmi' } : {}),
+        ...(this.tmiOnly ? { provider: 'tmi' } : {}),
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -206,9 +218,9 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     this.filterSubject$.next(value);
   }
 
-  // Toggle the built-in-only filter and reload the group list
-  onBuiltInFilterChange(checked: boolean): void {
-    this.builtInOnly = checked;
+  // Toggle the TMI-groups-only filter and reload the group list
+  onTmiFilterChange(checked: boolean): void {
+    this.tmiOnly = checked;
     this.pageIndex = 0;
     this.loadGroups();
     this.updateUrl();
@@ -335,10 +347,14 @@ This action cannot be undone.`);
     return group.provider === 'tmi' && group.group_name.toLowerCase() === 'everyone';
   }
 
-  // Check whether a group is a built-in group seeded by the TMI server (pure).
-  // The server represents built-in groups with provider 'tmi' ('*' for legacy wildcard rows).
+  // Check whether a group is one of the built-in groups seeded by the TMI
+  // server (pure). Matched by name because admin-created groups share the
+  // 'tmi' provider ('*' is the legacy wildcard form, migrated at server start).
   isBuiltInGroup(group: AdminGroup): boolean {
-    return group.provider === 'tmi' || group.provider === '*';
+    return (
+      (group.provider === 'tmi' || group.provider === '*') &&
+      AdminGroupsComponent.BUILT_IN_GROUP_NAMES.has(group.group_name.toLowerCase())
+    );
   }
 
   // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the OAuth provider info for a given provider ID (pure)

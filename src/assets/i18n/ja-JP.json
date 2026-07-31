@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "グループを削除",
       "filter": {
-        "builtInOnly": "組み込みグループのみ表示する。"
+        "tmiOnly": "TMIグループのみ表示する。"
       },
       "filterLabel": "グループを絞り込む",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "このグループは脅威モデルまたはプロジェクトの認可設定で参照されています。",
         "builtInBadge": "組み込み",
-        "builtInTooltip": "TMIが提供する組み込みグループです。"
+        "builtInTooltip": "TMIが提供する組み込みグループです。",
+        "refCount": "{{count}} 件の参照"
       },
       "viewMembersTooltip": "グループメンバーを表示・管理する..."
     },

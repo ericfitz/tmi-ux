@@ -231,7 +231,8 @@
       "deleteTooltip": "Delete group",
       "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete group'.",
       "filter": {
-        "builtInOnly": "Show built-in groups only."
+        "tmiOnly": "Show TMI groups only.",
+        "tmiOnly.comment": "TMI should not be translated. Toggle limiting the list to groups managed by TMI rather than an external identity provider."
       },
       "filterLabel": "Filter groups",
       "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter groups'.",
@@ -262,7 +263,9 @@
         "authzTooltip": "This group is referenced in authorization grants on threat models or projects.",
         "builtInBadge": "Built-in",
         "builtInBadge.comment": "Short badge/tag shown on groups provisioned by the TMI server itself.",
-        "builtInTooltip": "Built-in group provisioned by TMI."
+        "builtInTooltip": "Built-in group provisioned by TMI.",
+        "refCount": "{{count}} references",
+        "refCount.comment": "Number of times the group is referenced. {{count}} is a numeric placeholder."
       },
       "viewMembersTooltip": "View and manage group members...",
       "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"

@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "Excluir grupo",
       "filter": {
-        "builtInOnly": "Exibir apenas grupos integrados."
+        "tmiOnly": "Exibir apenas grupos TMI."
       },
       "filterLabel": "Filtrar grupos",
       "filterPlaceholder": "Pesquisar por nome do grupo ou provedor",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "Este grupo é referenciado em autorizações de modelos de ameaças ou projetos.",
         "builtInBadge": "Integrado",
-        "builtInTooltip": "Grupo integrado provisionado pelo TMI."
+        "builtInTooltip": "Grupo integrado provisionado pelo TMI.",
+        "refCount": "{{count}} referências"
       },
       "viewMembersTooltip": "Visualizar e gerenciar membros do grupo..."
     },

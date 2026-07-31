@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "حذف المجموعة",
       "filter": {
-        "builtInOnly": "عرض المجموعات المدمجة فقط."
+        "tmiOnly": "عرض مجموعات TMI فقط."
       },
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "تتم الإشارة إلى هذه المجموعة في منح التخويل على نماذج التهديد أو المشاريع.",
         "builtInBadge": "مدمجة",
-        "builtInTooltip": "مجموعة مدمجة يوفرها TMI."
+        "builtInTooltip": "مجموعة مدمجة يوفرها TMI.",
+        "refCount": "{{count}} مراجع"
       },
       "viewMembersTooltip": "عرض وإدارة أعضاء المجموعة..."
     },

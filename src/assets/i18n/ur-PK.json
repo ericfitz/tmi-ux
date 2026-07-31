@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "گروپ حذف کریں",
       "filter": {
-        "builtInOnly": "صرف بلٹ اِن گروپ دکھائیں۔"
+        "tmiOnly": "صرف TMI گروپ دکھائیں۔"
       },
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "اس گروپ کا حوالہ تھریٹ ماڈلز یا پروجیکٹس کی اجازتوں میں دیا گیا ہے۔",
         "builtInBadge": "بلٹ اِن",
-        "builtInTooltip": "TMI کی طرف سے فراہم کردہ بلٹ اِن گروپ۔"
+        "builtInTooltip": "TMI کی طرف سے فراہم کردہ بلٹ اِن گروپ۔",
+        "refCount": "{{count}} حوالہ جات"
       },
       "viewMembersTooltip": "گروپ کے اراکین کو دیکھیں اور ان کا انتظام کریں..."
     },

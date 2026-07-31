@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "Gruppe löschen",
       "filter": {
-        "builtInOnly": "Nur integrierte Gruppen anzeigen."
+        "tmiOnly": "Nur TMI-Gruppen anzeigen."
       },
       "filterLabel": "Gruppen filtern",
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "Diese Gruppe wird in Autorisierungen von Bedrohungsmodellen oder Projekten referenziert.",
         "builtInBadge": "Integriert",
-        "builtInTooltip": "Integrierte, von TMI bereitgestellte Gruppe."
+        "builtInTooltip": "Integrierte, von TMI bereitgestellte Gruppe.",
+        "refCount": "{{count}} Referenzen"
       },
       "viewMembersTooltip": "Gruppenmitglieder anzeigen und verwalten..."
     },

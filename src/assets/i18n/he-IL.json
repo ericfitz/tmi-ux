@@ -207,7 +207,7 @@
       },
       "deleteTooltip": "מחק קבוצה",
       "filter": {
-        "builtInOnly": "הצג רק קבוצות מובנות."
+        "tmiOnly": "הצג רק קבוצות TMI."
       },
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
@@ -233,7 +233,8 @@
         "authzBadge": "Authz",
         "authzTooltip": "קבוצה זו מוזכרת בהרשאות של מודלי איומים או פרויקטים.",
         "builtInBadge": "מובנית",
-        "builtInTooltip": "קבוצה מובנית שסופקה על ידי TMI."
+        "builtInTooltip": "קבוצה מובנית שסופקה על ידי TMI.",
+        "refCount": "{{count}} הפניות"
       },
       "viewMembersTooltip": "הצג ונהל חברי קבוצה..."
     },
