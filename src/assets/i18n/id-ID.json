@@ -1342,7 +1342,8 @@
   "identities": {
     "columns": {
       "account": "Akun",
-      "provider": "Penyedia"
+      "provider": "Penyedia",
+      "providerId": "ID penyedia"
     },
     "help": "Akun yang dapat Anda gunakan untuk masuk ke TMI.",
     "link": {

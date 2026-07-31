@@ -1344,7 +1344,8 @@
   "identities": {
     "columns": {
       "account": "खाता",
-      "provider": "प्रदाता"
+      "provider": "प्रदाता",
+      "providerId": "प्रदाता आईडी"
     },
     "help": "वे खाते जिनका उपयोग आप TMI में साइन इन करने के लिए कर सकते हैं।",
     "link": {

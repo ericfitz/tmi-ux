@@ -1342,7 +1342,8 @@
   "identities": {
     "columns": {
       "account": "账户",
-      "provider": "提供商"
+      "provider": "提供商",
+      "providerId": "提供商ID"
     },
     "help": "可用于登录 TMI 的账户。",
     "link": {

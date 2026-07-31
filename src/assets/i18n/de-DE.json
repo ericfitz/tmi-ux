@@ -1342,7 +1342,8 @@
   "identities": {
     "columns": {
       "account": "Konto",
-      "provider": "Anbieter"
+      "provider": "Anbieter",
+      "providerId": "Anbieter-ID"
     },
     "help": "Konten, mit denen Sie sich bei TMI anmelden können.",
     "link": {

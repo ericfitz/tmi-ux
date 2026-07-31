@@ -1344,7 +1344,8 @@
   "identities": {
     "columns": {
       "account": "アカウント",
-      "provider": "プロバイダー"
+      "provider": "プロバイダー",
+      "providerId": "プロバイダーID"
     },
     "help": "TMI へのサインインに使用できるアカウントです。",
     "link": {

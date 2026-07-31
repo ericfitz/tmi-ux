@@ -1592,7 +1592,9 @@
   "identities": {
     "columns": {
       "account": "Account",
-      "provider": "Provider"
+      "provider": "Provider",
+      "providerId": "Provider ID",
+      "providerId.comment": "Column header for the user's identifier at the identity provider."
     },
     "help": "Accounts you can use to sign in to TMI.",
     "link": {

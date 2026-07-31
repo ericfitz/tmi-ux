@@ -1342,7 +1342,8 @@
   "identities": {
     "columns": {
       "account": "บัญชี",
-      "provider": "ผู้ให้บริการ"
+      "provider": "ผู้ให้บริการ",
+      "providerId": "ID ผู้ให้บริการ"
     },
     "help": "บัญชีที่คุณสามารถใช้เพื่อลงชื่อเข้าใช้ TMI",
     "link": {

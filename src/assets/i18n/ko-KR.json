@@ -1340,7 +1340,8 @@
   "identities": {
     "columns": {
       "account": "계정",
-      "provider": "제공업체"
+      "provider": "제공업체",
+      "providerId": "제공업체 ID"
     },
     "help": "TMI에 로그인할 때 사용할 수 있는 계정입니다.",
     "link": {

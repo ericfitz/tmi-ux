@@ -1342,7 +1342,8 @@
   "identities": {
     "columns": {
       "account": "Аккаунт",
-      "provider": "Провайдер"
+      "provider": "Провайдер",
+      "providerId": "ID провайдера"
     },
     "help": "Аккаунты, которые вы можете использовать для входа в TMI.",
     "link": {

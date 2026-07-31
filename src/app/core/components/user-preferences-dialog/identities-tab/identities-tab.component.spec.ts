@@ -117,12 +117,14 @@ describe('IdentitiesTabComponent', () => {
         id: 'primary',
         provider: 'google',
         label: 'primary@example.com',
+        providerUserId: '',
         isPrimary: true,
       });
       expect(rows[1]).toEqual({
         id: 'link-1',
         provider: 'github',
         label: 'secondary@example.com',
+        providerUserId: 'gh-123',
         isPrimary: false,
       });
     });
@@ -157,6 +159,7 @@ describe('IdentitiesTabComponent', () => {
       id: 'link-1',
       provider: 'github',
       label: 'secondary@example.com',
+      providerUserId: 'gh-123',
       isPrimary: false,
     };
 

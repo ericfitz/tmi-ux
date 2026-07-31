@@ -1344,7 +1344,8 @@
   "identities": {
     "columns": {
       "account": "Conta",
-      "provider": "Provedor"
+      "provider": "Provedor",
+      "providerId": "ID do provedor"
     },
     "help": "Contas que você pode usar para entrar no TMI.",
     "link": {

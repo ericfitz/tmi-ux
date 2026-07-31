@@ -36,6 +36,7 @@ interface IdentityRow {
   id: string;
   provider: string;
   label: string;
+  providerUserId: string;
   isPrimary: boolean;
 }
 
@@ -81,8 +82,18 @@ interface IdentityRow {
             </th>
             <td mat-cell *matCellDef="let r">{{ r.label }}</td>
           </ng-container>
+          <ng-container matColumnDef="providerId">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'identities.columns.providerId' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let r" class="provider-user-id">
+              {{ r.providerUserId || '—' }}
+            </td>
+          </ng-container>
           <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef></th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'common.status' | transloco }}
+            </th>
             <td mat-cell *matCellDef="let r">
               @if (r.isPrimary) {
                 <mat-chip [disabled]="true" color="primary">
@@ -92,7 +103,9 @@ interface IdentityRow {
             </td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'common.actions' | transloco }}
+            </th>
             <td mat-cell *matCellDef="let r">
               @if (!r.isPrimary) {
                 <button
@@ -157,6 +170,11 @@ interface IdentityRow {
         width: 100%;
         margin-bottom: 16px;
       }
+      .provider-user-id {
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+      }
       .identities-actions {
         margin-top: 12px;
       }
@@ -173,7 +191,7 @@ export class IdentitiesTabComponent implements OnInit {
   private logger = inject(LoggerService);
   private destroyRef = inject(DestroyRef);
 
-  readonly displayedColumns = ['provider', 'account', 'role', 'actions'];
+  readonly displayedColumns = ['provider', 'account', 'providerId', 'role', 'actions'];
   readonly identities = signal<MyIdentitiesResponse | null>(null);
   readonly linkableProviders = signal<OAuthProviderInfo[]>([]);
 
@@ -195,12 +213,15 @@ export class IdentitiesTabComponent implements OnInit {
       id: 'primary',
       provider: ids.primary.provider,
       label: ids.primary.email || ids.primary.name || ids.primary.provider,
+      // MyIdentitiesResponse.primary carries no provider_user_id
+      providerUserId: '',
       isPrimary: true,
     };
     const linked: IdentityRow[] = (ids.linked ?? []).map((l: LinkedIdentity) => ({
       id: l.id,
       provider: l.provider,
       label: l.email || l.name || l.provider_user_id,
+      providerUserId: l.provider_user_id,
       isPrimary: false,
     }));
     return [primary, ...linked];

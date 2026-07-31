@@ -1340,7 +1340,8 @@
   "identities": {
     "columns": {
       "account": "חשבון",
-      "provider": "ספק"
+      "provider": "ספק",
+      "providerId": "מזהה ספק"
     },
     "help": "חשבונות שבהם תוכל להשתמש כדי להתחבר ל-TMI.",
     "link": {
