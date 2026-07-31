@@ -1940,7 +1940,8 @@
     "status.splitting": "Dividindo",
     "status.winding_down": "Encerrando",
     "subtitle": "Gerencie suas equipes e associações.",
-    "title": "Equipes"
+    "title": "Equipes",
+    "viewMembersTooltip": "Visualizar e gerenciar membros da equipe..."
   },
   "threatEditor": {
     "addCvssEntry": "Adicionar entrada CVSS.",

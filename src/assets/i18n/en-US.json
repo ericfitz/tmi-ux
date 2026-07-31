@@ -2287,7 +2287,9 @@
       "winding_down": "Winding down"
     },
     "subtitle": "Create, edit, and manage teams, members, and relationships.",
-    "title": "Manage teams"
+    "title": "Manage teams",
+    "viewMembersTooltip": "View and manage team members...",
+    "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
   },
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry.",

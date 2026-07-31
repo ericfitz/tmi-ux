@@ -1911,7 +1911,8 @@
       "winding_down": "Ditutup Bertahap"
     },
     "subtitle": "Buat, edit, dan kelola tim, anggota, dan hubungan.",
-    "title": "Kelola Tim"
+    "title": "Kelola Tim",
+    "viewMembersTooltip": "Lihat dan kelola anggota tim..."
   },
   "threatEditor": {
     "addCvssEntry": "Tambah Entri CVSS.",

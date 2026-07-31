@@ -1913,7 +1913,8 @@
       "winding_down": "縮小中"
     },
     "subtitle": "チーム、メンバー、関係を作成・編集・管理します。",
-    "title": "チームの管理"
+    "title": "チームの管理",
+    "viewMembersTooltip": "チームメンバーを表示・管理する..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSSエントリを追加する。",

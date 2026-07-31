@@ -1909,7 +1909,8 @@
       "winding_down": "종료 중"
     },
     "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리합니다.",
-    "title": "팀 관리"
+    "title": "팀 관리",
+    "viewMembersTooltip": "팀 멤버 보기 및 관리..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSS 항목 추가.",

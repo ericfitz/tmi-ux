@@ -1911,7 +1911,8 @@
       "winding_down": "Auslauf"
     },
     "subtitle": "Teams, Mitglieder und Beziehungen erstellen, bearbeiten und verwalten.",
-    "title": "Teams verwalten"
+    "title": "Teams verwalten",
+    "viewMembersTooltip": "Teammitglieder anzeigen und verwalten..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSS-Eintrag hinzufügen.",

@@ -1911,7 +1911,8 @@
       "winding_down": "En cours de fermeture"
     },
     "subtitle": "Créer, modifier et gérer les équipes, les membres et les relations.",
-    "title": "Gérer les équipes"
+    "title": "Gérer les équipes",
+    "viewMembersTooltip": "Afficher et gérer les membres de l'équipe..."
   },
   "threatEditor": {
     "addCvssEntry": "Ajouter une entrée CVSS.",

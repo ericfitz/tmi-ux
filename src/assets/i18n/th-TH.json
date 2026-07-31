@@ -1911,7 +1911,8 @@
       "winding_down": "กำลังปิดตัว"
     },
     "subtitle": "สร้าง แก้ไข และจัดการทีม สมาชิก และความสัมพันธ์",
-    "title": "จัดการทีม"
+    "title": "จัดการทีม",
+    "viewMembersTooltip": "ดูและจัดการสมาชิกทีม..."
   },
   "threatEditor": {
     "addCvssEntry": "เพิ่มรายการ CVSS",

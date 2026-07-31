@@ -1913,7 +1913,8 @@
       "winding_down": "قيد الإغلاق"
     },
     "subtitle": "إنشاء وتحرير وإدارة الفرق والأعضاء والعلاقات.",
-    "title": "إدارة الفرق"
+    "title": "إدارة الفرق",
+    "viewMembersTooltip": "عرض وإدارة أعضاء الفريق..."
   },
   "threatEditor": {
     "addCvssEntry": "إضافة إدخال CVSS.",

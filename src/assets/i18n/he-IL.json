@@ -1909,7 +1909,8 @@
       "winding_down": "בסגירה"
     },
     "subtitle": "צור, ערוך ונהל צוותות, חברים וקשרים.",
-    "title": "ניהול צוותות"
+    "title": "ניהול צוותות",
+    "viewMembersTooltip": "הצג ונהל חברי צוות..."
   },
   "threatEditor": {
     "addCvssEntry": "הוסף רשומת CVSS.",

@@ -1913,7 +1913,8 @@
       "winding_down": "समाप्ति की ओर"
     },
     "subtitle": "अपनी टीम सदस्यता प्रबंधित करें",
-    "title": "टीमें"
+    "title": "टीमें",
+    "viewMembersTooltip": "टीम सदस्य देखें और प्रबंधित करें..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSS प्रविष्टि जोड़ें।",

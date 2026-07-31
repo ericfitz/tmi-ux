@@ -1911,7 +1911,8 @@
       "winding_down": "逐步关闭"
     },
     "subtitle": "创建、编辑和管理团队、成员和关系。",
-    "title": "管理团队"
+    "title": "管理团队",
+    "viewMembersTooltip": "查看和管理团队成员..."
   },
   "threatEditor": {
     "addCvssEntry": "添加 CVSS 条目。",
