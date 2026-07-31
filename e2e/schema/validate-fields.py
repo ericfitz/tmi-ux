@@ -98,23 +98,37 @@ def resolve_ref(spec: dict, ref: str) -> dict:
 
 # SEM@ff77ac69c351fc45c303f33443eff511c453ed1f: aggregate all property names from named schemas, resolving allOf (pure)
 def collect_api_fields(spec: dict, schema_names: list[str]) -> set[str]:
-    """Collect all property names from the given schema(s), resolving allOf."""
+    """Collect all property names from the given schema(s), resolving allOf.
+
+    Nested object properties are also emitted in dotted form one level deep, so
+    a UI control bound to a sub-field can name it exactly: Repository exposes
+    refType/refValue/subPath inside `parameters`, and the editor dialog has a
+    separate input for each, so the definitions say `parameters.refType` rather
+    than collapsing all three into one `parameters` entry.
+    """
     schemas = spec.get("components", {}).get("schemas", {})
     fields: set[str] = set()
+
+    def add_properties(properties: dict) -> None:
+        for prop_name, prop_schema in properties.items():
+            fields.add(prop_name)
+            nested = prop_schema.get("properties", {}) if isinstance(prop_schema, dict) else {}
+            for nested_name in nested:
+                fields.add(f"{prop_name}.{nested_name}")
 
     for name in schema_names:
         schema = schemas.get(name, {})
 
         # Direct properties
-        fields.update(schema.get("properties", {}).keys())
+        add_properties(schema.get("properties", {}))
 
         # allOf composition
         for item in schema.get("allOf", []):
             if "$ref" in item:
                 ref_schema = resolve_ref(spec, item["$ref"])
-                fields.update(ref_schema.get("properties", {}).keys())
+                add_properties(ref_schema.get("properties", {}))
             else:
-                fields.update(item.get("properties", {}).keys())
+                add_properties(item.get("properties", {}))
 
     return fields
 
