@@ -1,7 +1,6 @@
 import { expect } from '@playwright/test';
 import { userTest } from '../../fixtures/auth-fixtures';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
-import { SurveyListPage } from '../../pages/survey-list.page';
 
 /**
  * Tests that each SurveyJS question type renders correctly and accepts input.

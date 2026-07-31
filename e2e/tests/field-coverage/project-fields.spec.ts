@@ -1,21 +1,41 @@
 import { expect } from '@playwright/test';
 import { userTest } from '../../fixtures/auth-fixtures';
 import { PROJECT_FIELDS } from '../../schema/field-definitions';
+import { FieldSkip, withoutSkipped } from '../../schema/field-skips';
 import { ProjectsPage } from '../../pages/projects.page';
 
 const SEEDED_PROJECT = 'Seed Project One';
 
-// Fields tested via workflow tests or not direct form inputs in the edit dialog
-const SKIP_FIELDS = [
-  'responsible_parties',
-  'related_projects',
-  'metadata',
+const SKIPS: FieldSkip[] = [
+  {
+    apiName: 'responsible_parties',
+    reason: 'covered-elsewhere',
+    note:
+      'project-workflows.spec.ts ("Responsible parties") drives ResponsiblePartiesDialog end to ' +
+      "end. field-definitions.json's uiSelector for this field " +
+      "('project-responsible-parties-button') does not match the real DOM testid " +
+      "('projects-responsible-parties-item') — harmless while skipped, but would need fixing " +
+      'before this field could ever be tested directly by this spec.',
+  },
+  {
+    apiName: 'related_projects',
+    reason: 'covered-elsewhere',
+    note:
+      'project-workflows.spec.ts ("Related projects") drives RelatedProjectsDialog end to end. ' +
+      "Same stale-selector caveat: recorded uiSelector ('project-related-projects-button') " +
+      "doesn't match the real DOM testid ('projects-related-projects-item').",
+  },
+  {
+    apiName: 'metadata',
+    reason: 'covered-elsewhere',
+    note: 'project-workflows.spec.ts ("Project metadata") drives MetadataDialog end to end.',
+  },
 ];
 
 userTest.describe('Project Field Coverage', () => {
   userTest.setTimeout(30000);
 
-  for (const field of PROJECT_FIELDS.filter(f => !SKIP_FIELDS.includes(f.apiName))) {
+  for (const field of withoutSkipped(PROJECT_FIELDS, SKIPS)) {
     userTest(`field: ${field.apiName}`, async ({ userPage }) => {
       await userPage.goto('/projects');
       await userPage.waitForLoadState('networkidle');

@@ -139,6 +139,13 @@ def main() -> int:
     stale_count = 0
     missing_count = 0
 
+    # Entity groups with hand-authored FieldDefs but no OpenAPI schema to
+    # check them against (e.g. admin_* selectors, dashboard table columns,
+    # survey_response/survey_template forms). Their FieldDefs cannot be
+    # contradicted by this script and should not be read as schema-validated.
+    all_entity_keys = set(field_defs.get("entities", {}).keys())
+    unvalidated_entities = sorted(all_entity_keys - set(ENTITY_SCHEMA_MAP.keys()))
+
     for entity_key, schema_names in ENTITY_SCHEMA_MAP.items():
         defs = field_defs.get("entities", {}).get(entity_key, [])
         def_field_names = {d["apiName"] for d in defs}
@@ -160,9 +167,19 @@ def main() -> int:
             )
             missing_count += 1
 
+    if unvalidated_entities:
+        print(f"\n{'=' * 60}")
+        print(
+            "WARN  Entity groups with no ENTITY_SCHEMA_MAP entry — their FieldDefs are "
+            "hand-authored UI selectors that no OpenAPI schema can validate:"
+        )
+        for entity_key in unvalidated_entities:
+            print(f"  - {entity_key}")
+
     # Summary
     print(f"\n{'=' * 60}")
-    print(f"Entities checked: {len(ENTITY_SCHEMA_MAP)}")
+    print(f"Entities checked against schema: {len(ENTITY_SCHEMA_MAP)}")
+    print(f"Entities unvalidated (no schema mapping): {len(unvalidated_entities)}")
     print(f"Stale definitions (errors): {stale_count}")
     print(f"Missing definitions (warnings): {missing_count}")
 

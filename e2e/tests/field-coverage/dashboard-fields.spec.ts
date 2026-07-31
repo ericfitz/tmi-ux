@@ -20,19 +20,20 @@ userTest.describe('Dashboard Field Coverage', () => {
 
   for (const field of DASHBOARD_FIELDS) {
     userTest(`column: ${field.apiName}`, async ({ userPage }) => {
-      // Verify the column header exists
+      // Verify the column header exists.
+      // mat-table columns use class-based selectors (.mat-column-name); the
+      // header cell carries the column class directly (th.mat-column-name).
       const headerLocator = userPage.locator(`${field.uiSelector} th, th${field.uiSelector}`);
-      // mat-table columns use class-based selectors (.mat-column-name)
-      // The header cell will have the column class
-      const columnCells = userPage.locator(field.uiSelector);
-      await expect(columnCells.first()).toBeVisible({ timeout: 5000 });
+      await expect(headerLocator.first()).toBeVisible({ timeout: 5000 });
 
-      // Verify the seeded TM row has a value in this column
+      // Verify the seeded TM row renders an actual value in this column, not
+      // just an empty cell — visibility alone would still pass for a field
+      // bound to the wrong (always-blank) API property (see #819).
       const dashboard = new DashboardPage(userPage);
       const tmRow = dashboard.tableRow(SEEDED_TM);
       const cellInRow = tmRow.locator(field.uiSelector);
-      // The cell should exist and have some text content
       await expect(cellInRow).toBeVisible({ timeout: 5000 });
+      await expect(cellInRow).not.toBeEmpty({ timeout: 5000 });
     });
   }
 });
