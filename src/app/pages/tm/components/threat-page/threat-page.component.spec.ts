@@ -590,6 +590,35 @@ describe('ThreatPageComponent', () => {
         }),
       );
     });
+
+    it('should include ssvc in save payload', () => {
+      const ssvc = {
+        decision: 'Immediate',
+        methodology: 'CISA',
+        vector: 'SSVCv2/E:A/A:S/T:T/B:S/',
+      };
+      component.threatForm.patchValue({ ssvc });
+      component.threatForm.markAsDirty();
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({ ssvc }),
+      );
+    });
+
+    it('should send null ssvc when the assessment is removed', () => {
+      component.threatForm.patchValue({ ssvc: null });
+      component.threatForm.markAsDirty();
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({ ssvc: null }),
+      );
+    });
   });
 
   describe('ngOnDestroy', () => {
