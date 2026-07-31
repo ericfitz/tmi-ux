@@ -229,11 +229,11 @@
       "title": "管理用户组",
       "usage": {
         "adminBadge": "管理",
-        "adminTooltip": "此组被管理员角色授权引用。",
+        "adminTooltip": "此组被管理员角色授权引用",
         "authzBadge": "Authz",
-        "authzTooltip": "此组在威胁模型或项目的授权中被引用。",
+        "authzTooltip": "此组在威胁模型或项目的授权中被引用",
         "builtInBadge": "内置",
-        "builtInTooltip": "由TMI预置的内置组。",
+        "builtInTooltip": "由TMI预置的内置组",
         "refCount": "{{count}} 个引用"
       },
       "viewMembersTooltip": "查看和管理组成员..."

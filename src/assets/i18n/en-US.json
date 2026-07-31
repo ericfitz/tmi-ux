@@ -112,8 +112,10 @@
         "changeSummary": "Change summary",
         "changeType": "Change type",
         "close": "Close",
+        "close.comment": "Verb (imperative). Button label that closes the audit detail panel: 'Close'.",
         "copied": "Copied",
         "copyPermalink": "Copy permalink",
+        "copyPermalink.comment": "Verb (imperative). Button label that copies a permanent link to this audit entry.",
         "email": "Email",
         "fieldPath": "Field path",
         "method": "HTTP method",
@@ -129,7 +131,8 @@
         "timestamp": "Timestamp",
         "title": "Audit entry",
         "version": "Version",
-        "viewInContext": "View in context"
+        "viewInContext": "View in context",
+        "viewInContext.comment": "Verb (imperative). Button label that navigates to the audited object: 'View in context'."
       },
       "empty": "No entries match these filters.",
       "enums": {
@@ -161,6 +164,7 @@
       "filters": {
         "actor": "Actor",
         "actorPlaceholder": "Search by email",
+        "actorPlaceholder.comment": "Placeholder for the actor filter input on the audit page: 'Search by email'.",
         "changeType": "Change type",
         "clear": "Clear filters",
         "createdAfter": "Created after",
@@ -257,13 +261,13 @@
       "usage": {
         "adminBadge": "Admin",
         "adminBadge.comment": "Short badge/tag shown on a group that is referenced by administrator role grants.",
-        "adminTooltip": "This group is referenced by administrator role grants.",
+        "adminTooltip": "This group is referenced by administrator role grants",
         "authzBadge": "Authz",
         "authzBadge.comment": "Short badge/tag. Abbreviation of 'authorization'; may be left untranslated.",
-        "authzTooltip": "This group is referenced in authorization grants on threat models or projects.",
+        "authzTooltip": "This group is referenced in authorization grants on threat models or projects",
         "builtInBadge": "Built-in",
         "builtInBadge.comment": "Short badge/tag shown on groups provisioned by the TMI server itself.",
-        "builtInTooltip": "Built-in group provisioned by TMI.",
+        "builtInTooltip": "Built-in group provisioned by TMI",
         "refCount": "{{count}} references",
         "refCount.comment": "Number of times the group is referenced. {{count}} is a numeric placeholder."
       },
@@ -650,6 +654,7 @@
     "snackbarFailed": "Could not submit feedback. Try again later.",
     "snackbarSubmitted": "Thanks for the feedback.",
     "submit": "Send feedback",
+    "submit.comment": "Verb (imperative). Button label that submits the AI feedback form: 'Send feedback'.",
     "subreason": {
       "code_does_not_exist": "Referenced code or call doesn't exist",
       "code_does_not_exist.lint-skip": "Dropdown option label; fragment by design.",
@@ -681,7 +686,8 @@
     },
     "verbatimLabelOptional": "Comments (optional)",
     "verbatimLabelRequired": "Comments (required)",
-    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing.",
+    "verbatimPlaceholder.lint-skip": "Full-sentence textarea placeholder; trailing period is intentional."
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press enter",
@@ -821,6 +827,7 @@
     "suggestedPrompts": {
       "assets": "What assets are in scope?",
       "summary": "Give me a summary of this threat model",
+      "summary.lint-skip": "Suggested chat prompt chip, not UI prose; deliberately unpunctuated.",
       "threats": "What threats have been identified?"
     },
     "title": "Timmy"
@@ -2346,8 +2353,10 @@
     "issueUriPlaceholder.comment": "Placeholder for the issue URI input. Shows an example URL format.",
     "noCellsInDiagram": "This diagram has no cells.",
     "noCellsInDiagram.comment": "Hint shown below the cell drop-down when the selected diagram contains no cells.",
+    "noCellsInDiagram.lint-skip": "Full-sentence empty-state hint (classified as placeholder surface); trailing period is intentional.",
     "noDiagramsInThreatModel": "This threat model has no diagrams.",
     "noDiagramsInThreatModel.comment": "Hint shown below the diagram drop-down when the threat model contains no diagrams.",
+    "noDiagramsInThreatModel.lint-skip": "Full-sentence empty-state hint (classified as placeholder surface); trailing period is intentional.",
     "notAssociatedWithAsset": "Not associated with an asset.",
     "notAssociatedWithCell": "Not associated with a cell.",
     "notAssociatedWithDiagram": "Not associated with a diagram.",
@@ -2790,19 +2799,23 @@
   "usabilityFeedback": {
     "prompt": "Was this experience helpful?",
     "screenshotAlt": "Captured screenshot of the page being reviewed.",
+    "screenshotAlt.lint-skip": "Image alt text (classified as tooltip surface); full sentence with period is intentional.",
     "screenshotLabel": "Attached screenshot",
     "screenshotRemove": "Remove screenshot",
     "screenshotRemove.comment": "Action description on a tooltip (typically for an icon button): 'Remove screenshot'.",
     "snackbarFailed": "Could not submit feedback. Try again later.",
     "snackbarSubmitted": "Thanks for the feedback.",
     "submit": "Send feedback",
+    "submit.comment": "Verb (imperative). Button label that submits the usability feedback form: 'Send feedback'.",
     "thumbsDown": "Thumbs down",
     "thumbsDown.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs down'.",
     "thumbsUp": "Thumbs up",
     "thumbsUp.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs up'.",
     "title": "Share your feedback",
+    "title.comment": "Noun phrase. Title of the usability feedback dialog: 'Share your feedback'.",
     "verbatimLabel": "Comments (optional)",
-    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing.",
+    "verbatimPlaceholder.lint-skip": "Full-sentence textarea placeholder; trailing period is intentional."
   },
   "userPreferences": {
     "autoLayout": {

@@ -229,11 +229,11 @@
       "title": "Gerenciar grupos",
       "usage": {
         "adminBadge": "Admin",
-        "adminTooltip": "Este grupo é referenciado por concessões de função de administrador.",
+        "adminTooltip": "Este grupo é referenciado por concessões de função de administrador",
         "authzBadge": "Authz",
-        "authzTooltip": "Este grupo é referenciado em autorizações de modelos de ameaças ou projetos.",
+        "authzTooltip": "Este grupo é referenciado em autorizações de modelos de ameaças ou projetos",
         "builtInBadge": "Integrado",
-        "builtInTooltip": "Grupo integrado provisionado pelo TMI.",
+        "builtInTooltip": "Grupo integrado provisionado pelo TMI",
         "refCount": "{{count}} referências"
       },
       "viewMembersTooltip": "Visualizar e gerenciar membros do grupo..."

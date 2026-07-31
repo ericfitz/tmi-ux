@@ -229,11 +229,11 @@
       "title": "Gérer les groupes",
       "usage": {
         "adminBadge": "Admin",
-        "adminTooltip": "Ce groupe est référencé par des attributions de rôle d'administrateur.",
+        "adminTooltip": "Ce groupe est référencé par des attributions de rôle d'administrateur",
         "authzBadge": "Authz",
-        "authzTooltip": "Ce groupe est référencé dans des autorisations de modèles de menaces ou de projets.",
+        "authzTooltip": "Ce groupe est référencé dans des autorisations de modèles de menaces ou de projets",
         "builtInBadge": "Intégré",
-        "builtInTooltip": "Groupe intégré provisionné par TMI.",
+        "builtInTooltip": "Groupe intégré provisionné par TMI",
         "refCount": "{{count}} références"
       },
       "viewMembersTooltip": "Afficher et gérer les membres du groupe..."

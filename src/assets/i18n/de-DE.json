@@ -229,11 +229,11 @@
       "title": "Gruppen verwalten",
       "usage": {
         "adminBadge": "Admin",
-        "adminTooltip": "Diese Gruppe wird von Administratorrollen-Zuweisungen referenziert.",
+        "adminTooltip": "Diese Gruppe wird von Administratorrollen-Zuweisungen referenziert",
         "authzBadge": "Authz",
-        "authzTooltip": "Diese Gruppe wird in Autorisierungen von Bedrohungsmodellen oder Projekten referenziert.",
+        "authzTooltip": "Diese Gruppe wird in Autorisierungen von Bedrohungsmodellen oder Projekten referenziert",
         "builtInBadge": "Integriert",
-        "builtInTooltip": "Integrierte, von TMI bereitgestellte Gruppe.",
+        "builtInTooltip": "Integrierte, von TMI bereitgestellte Gruppe",
         "refCount": "{{count}} Referenzen"
       },
       "viewMembersTooltip": "Gruppenmitglieder anzeigen und verwalten..."

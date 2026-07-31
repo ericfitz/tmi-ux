@@ -229,11 +229,11 @@
       "title": "Kelola Grup",
       "usage": {
         "adminBadge": "Admin",
-        "adminTooltip": "Grup ini dirujuk oleh pemberian peran administrator.",
+        "adminTooltip": "Grup ini dirujuk oleh pemberian peran administrator",
         "authzBadge": "Authz",
-        "authzTooltip": "Grup ini dirujuk dalam otorisasi model ancaman atau proyek.",
+        "authzTooltip": "Grup ini dirujuk dalam otorisasi model ancaman atau proyek",
         "builtInBadge": "Bawaan",
-        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI.",
+        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI",
         "refCount": "{{count}} referensi"
       },
       "viewMembersTooltip": "Lihat dan kelola anggota grup..."

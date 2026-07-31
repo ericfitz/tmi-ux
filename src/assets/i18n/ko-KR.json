@@ -229,11 +229,11 @@
       "title": "그룹 관리",
       "usage": {
         "adminBadge": "관리",
-        "adminTooltip": "이 그룹은 관리자 역할 부여에서 참조됩니다.",
+        "adminTooltip": "이 그룹은 관리자 역할 부여에서 참조됩니다",
         "authzBadge": "Authz",
-        "authzTooltip": "이 그룹은 위협 모델 또는 프로젝트의 권한 부여에서 참조됩니다.",
+        "authzTooltip": "이 그룹은 위협 모델 또는 프로젝트의 권한 부여에서 참조됩니다",
         "builtInBadge": "기본 제공",
-        "builtInTooltip": "TMI에서 제공하는 기본 그룹입니다.",
+        "builtInTooltip": "TMI에서 제공하는 기본 그룹입니다",
         "refCount": "참조 {{count}}개"
       },
       "viewMembersTooltip": "그룹 멤버 보기 및 관리..."
