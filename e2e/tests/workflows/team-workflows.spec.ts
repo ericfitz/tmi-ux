@@ -3,7 +3,6 @@ import { AuthFlow } from '../../flows/auth.flow';
 import { TeamFlow } from '../../flows/team.flow';
 import { MetadataFlow } from '../../flows/metadata.flow';
 import { TeamsPage } from '../../pages/teams.page';
-import { EditTeamDialog } from '../../dialogs/edit-team.dialog';
 import { TeamMembersDialog } from '../../dialogs/team-members.dialog';
 import { ResponsiblePartiesDialog } from '../../dialogs/responsible-parties.dialog';
 import { RelatedTeamsDialog } from '../../dialogs/related-teams.dialog';

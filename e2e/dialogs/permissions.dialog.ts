@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test';
-import { angularFill } from '../helpers/angular-fill';
 
 // SEM@81a32062eea63fd38be41293a7faaafddd14eef1: escape special regex characters in a string for safe pattern matching (pure)
 function escapeRegex(s: string): string {

@@ -4,6 +4,11 @@
     "types": ["@playwright/test", "node"],
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    // Playwright runs these files through its own ESM loader, which supports
+    // import attributes (`with { type: 'json' }`); the base config's module
+    // setting does not, so `pnpm run typecheck:e2e` needs its own.
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM"]
   },
   "include": ["e2e/**/*.ts"],

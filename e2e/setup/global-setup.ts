@@ -3,10 +3,7 @@ import { testConfig } from '../config/test.config';
 // SEM@48c7d463773c81c64114653681810aa76ac2f5ae: fetch a service URL and throw if unavailable within timeout (pure)
 async function checkService(url: string, label: string): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(
-    () => controller.abort(),
-    testConfig.serviceAvailabilityTimeout,
-  );
+  const timeoutId = setTimeout(() => controller.abort(), testConfig.serviceAvailabilityTimeout);
 
   try {
     await fetch(url, { method: 'GET', signal: controller.signal, redirect: 'manual' });
@@ -15,7 +12,7 @@ async function checkService(url: string, label: string): Promise<void> {
   } catch (error) {
     clearTimeout(timeoutId);
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`${label} not available at ${url}: ${message}`);
+    throw new Error(`${label} not available at ${url}: ${message}`, { cause: error });
   }
 }
 

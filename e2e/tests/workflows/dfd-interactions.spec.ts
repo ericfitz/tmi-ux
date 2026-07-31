@@ -3,7 +3,6 @@ import { test } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DiagramFlow } from '../../flows/diagram.flow';
-import { DashboardPage } from '../../pages/dashboard.page';
 import { DfdEditorPage } from '../../pages/dfd-editor.page';
 
 /**
@@ -27,7 +26,6 @@ test.describe.serial('DFD Editor Interactions', () => {
 
   let threatModelFlow: ThreatModelFlow;
   let diagramFlow: DiagramFlow;
-  let dashboardPage: DashboardPage;
   let dfdEditorPage: DfdEditorPage;
 
   const testTmName = `E2E DFD Interactions TM ${Date.now()}`;
@@ -42,7 +40,6 @@ test.describe.serial('DFD Editor Interactions', () => {
 
     threatModelFlow = new ThreatModelFlow(page);
     diagramFlow = new DiagramFlow(page);
-    dashboardPage = new DashboardPage(page);
     dfdEditorPage = new DfdEditorPage(page);
 
     // Create a fresh TM and diagram, then open the DFD editor
