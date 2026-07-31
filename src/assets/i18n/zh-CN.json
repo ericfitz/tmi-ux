@@ -405,7 +405,7 @@
         "secretPlaceholder": "留空以自动生成",
         "title": "添加 webhook",
         "url": "Webhook URL",
-        "urlHint": "建议使用HTTPS",
+        "urlHint": "生产环境部署必须使用HTTPS。",
         "urlHttpWarning": "警告：webhook 端点 URL 应使用 HTTPS。服务器可能会拒绝指定非 TLS 端点的 webhook 注册。",
         "urlHttpWarningTitle": "非 HTTPS 的 webhook URL。",
         "urlInvalid": "必须是有效的 URL。",

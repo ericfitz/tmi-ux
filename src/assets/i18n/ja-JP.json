@@ -405,7 +405,7 @@
         "secretPlaceholder": "自動生成する場合は空のままにしてください",
         "title": "Webhookを追加",
         "url": "Webhook URL",
-        "urlHint": "HTTPSを推奨",
+        "urlHint": "本番環境へのデプロイではHTTPSが必須です。",
         "urlHttpWarning": "警告: WebhookエンドポイントURLはHTTPSを使用する必要があります。サーバーはTLS以外のエンドポイントを指定するWebhook登録を拒否する場合があります。",
         "urlHttpWarningTitle": "非HTTPSのWebhook URL。",
         "urlInvalid": "有効なURLでなければなりません。",

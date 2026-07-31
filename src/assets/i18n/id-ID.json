@@ -405,7 +405,7 @@
         "secretPlaceholder": "Biarkan kosong untuk dibuat otomatis",
         "title": "Tambah Webhook",
         "url": "URL Webhook",
-        "urlHint": "HTTPS disarankan",
+        "urlHint": "HTTPS wajib digunakan dalam deployment produksi.",
         "urlHttpWarning": "Peringatan: URL endpoint webhook harus menggunakan HTTPS. Server mungkin menolak pendaftaran webhook yang menggunakan endpoint non-TLS.",
         "urlHttpWarningTitle": "URL Webhook Non-HTTPS.",
         "urlInvalid": "Harus berupa URL yang valid.",

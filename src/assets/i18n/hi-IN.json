@@ -405,7 +405,7 @@
         "secretPlaceholder": "स्वचालित रूप से उत्पन्न करने के लिए खाली छोड़ें",
         "title": "Webhook जोड़ें",
         "url": "Webhook URL",
-        "urlHint": "HTTPS अनुशंसित",
+        "urlHint": "प्रोडक्शन परिनियोजन में HTTPS आवश्यक है।",
         "urlHttpWarning": "चेतावनी: webhook एंडपॉइंट URL को HTTPS का उपयोग करना चाहिए। सर्वर non-TLS एंडपॉइंट निर्दिष्ट करने वाले webhook पंजीकरण को अस्वीकार कर सकता है।",
         "urlHttpWarningTitle": "Non-HTTPS webhook URL।",
         "urlInvalid": "एक मान्य URL होना चाहिए।",

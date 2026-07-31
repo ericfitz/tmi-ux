@@ -405,7 +405,7 @@
         "secretPlaceholder": "เว้นว่างเพื่อสร้างอัตโนมัติ",
         "title": "เพิ่ม Webhook",
         "url": "URL ของ Webhook",
-        "urlHint": "แนะนำให้ใช้ HTTPS",
+        "urlHint": "จำเป็นต้องใช้ HTTPS ในสภาพแวดล้อมการใช้งานจริง",
         "urlHttpWarning": "คำเตือน: URL ปลายทาง Webhook ควรใช้ HTTPS เซิร์ฟเวอร์อาจปฏิเสธการลงทะเบียน Webhook ที่ระบุ endpoint ที่ไม่ใช่ TLS",
         "urlHttpWarningTitle": "URL Webhook ที่ไม่ใช่ HTTPS",
         "urlInvalid": "ต้องเป็น URL ที่ถูกต้อง",

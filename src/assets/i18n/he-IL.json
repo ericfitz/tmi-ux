@@ -405,7 +405,7 @@
         "secretPlaceholder": "השאר ריק לצורך יצירה אוטומטית",
         "title": "הוסף webhook",
         "url": "כתובת URL של Webhook",
-        "urlHint": "מומלץ HTTPS",
+        "urlHint": "HTTPS נדרש בסביבות ייצור.",
         "urlHttpWarning": "אזהרה: כתובת ה-URL של נקודת הקצה של ה-webhook אמורה להשתמש ב-HTTPS. השרת עשוי לדחות רישומי webhook עם נקודת קצה ללא TLS.",
         "urlHttpWarningTitle": "כתובת URL של webhook שאינה HTTPS.",
         "urlInvalid": "חייב להיות URL תקין.",

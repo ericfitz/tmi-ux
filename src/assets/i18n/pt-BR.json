@@ -405,7 +405,7 @@
         "secretPlaceholder": "Deixe vazio para gerar automaticamente",
         "title": "Adicionar webhook",
         "url": "URL do Webhook",
-        "urlHint": "HTTPS recomendado",
+        "urlHint": "HTTPS é obrigatório em implantações de produção.",
         "urlHttpWarning": "Aviso: o URL do endpoint do webhook deve usar HTTPS. O servidor pode rejeitar registros de webhook que especifiquem um endpoint sem TLS.",
         "urlHttpWarningTitle": "URL de webhook sem HTTPS.",
         "urlInvalid": "Deve ser um URL válido.",
