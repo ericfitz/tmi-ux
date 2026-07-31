@@ -298,8 +298,12 @@ interface CheckboxChangeEvent {
                       Auto-layout shapes
                     </span>
                   </mat-checkbox>
+                  <!-- aria-hidden must be overridden: MatIcon defaults to aria-hidden="true",
+                       which would hide the tooltip text from assistive technology -->
                   <mat-icon
                     class="preference-help-icon"
+                    aria-hidden="false"
+                    tabindex="0"
                     [matTooltip]="'userPreferences.autoLayout.description' | transloco"
                     >help_outline</mat-icon
                   >
