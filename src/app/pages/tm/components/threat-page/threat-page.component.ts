@@ -746,6 +746,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       timmy_enabled: formValues.timmy_enabled,
       cwe_id: formValues.cwe_id || [],
       cvss: formValues.cvss || [],
+      // Null (not undefined) so clearing an SSVC assessment is persisted as a
+      // removal rather than omitted from the payload and silently retained.
+      ssvc: formValues.ssvc ?? null,
     };
   }
 

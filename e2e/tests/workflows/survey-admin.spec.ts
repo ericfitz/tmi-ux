@@ -81,13 +81,13 @@ test.describe.serial('Survey Admin Workflows', () => {
     // Re-select and verify persisted
     await builderFlow.selectQuestion('Test Text Question');
     // Expand conditional logic panel
-    await page.locator('mat-expansion-panel')
+    await page
+      .locator('mat-expansion-panel')
       .filter({ hasText: /Conditional Logic/i })
-      .locator('mat-expansion-panel-header').click();
+      .locator('mat-expansion-panel-header')
+      .click();
     await page.waitForTimeout(300);
-    await expect(builder.questionVisibleIf()).toHaveValue(
-      "{Test Radio Question} = 'Option A'"
-    );
+    await expect(builder.questionVisibleIf()).toHaveValue("{Test Radio Question} = 'Option A'");
   });
 
   test('survey lifecycle (toggle status, archive)', async () => {
@@ -96,15 +96,11 @@ test.describe.serial('Survey Admin Workflows', () => {
 
     // Toggle to inactive
     await adminFlow.toggleStatus(testSurveyName);
-    await expect(
-      adminSurveys.surveyRow(testSurveyName)
-    ).toContainText(/inactive|deactivat/i);
+    await expect(adminSurveys.surveyRow(testSurveyName)).toContainText(/inactive|deactivat/i);
 
     // Toggle back to active
     await adminFlow.toggleStatus(testSurveyName);
-    await expect(
-      adminSurveys.surveyRow(testSurveyName)
-    ).toContainText(/active/i);
+    await expect(adminSurveys.surveyRow(testSurveyName)).toContainText(/active/i);
 
     // Archive
     await adminFlow.archiveSurvey(testSurveyName);
@@ -112,17 +108,28 @@ test.describe.serial('Survey Admin Workflows', () => {
   });
 
   test('clone survey', async () => {
-    // Clone the seeded Kitchen Sink Survey
-    await page.goto('/admin/surveys');
-    await page.waitForLoadState('networkidle');
-    await adminFlow.cloneSurvey('Kitchen Sink Survey');
+    // Clones the seeded Kitchen Sink Survey, which other suites locate by exact
+    // name (survey-fill.spec.ts, the field-coverage specs). The clone is deleted
+    // at the end of this test so the shared fixture is not left duplicated.
+    clonedSurveyName = 'Kitchen Sink Survey';
 
-    // Find the cloned survey in the list
-    clonedSurveyName = 'Kitchen Sink Survey'; // clone appears with same or similar name
-    await page.waitForLoadState('networkidle');
-    // Verify at least 2 rows match (original + clone)
-    const rows = adminSurveys.surveyRows();
-    await expect(rows).not.toHaveCount(0);
+    await page.goto('/admin/surveys');
+    const before = await adminSurveys.surveyRow(clonedSurveyName).count();
+
+    await adminFlow.cloneSurvey(clonedSurveyName);
+
+    // The clone must actually appear: one more row matching the name than
+    // before. `not.toHaveCount(0)` was true before the clone ran, so it could
+    // not fail if cloning silently did nothing.
+    await expect(adminSurveys.surveyRow(clonedSurveyName)).toHaveCount(before + 1, {
+      timeout: 10000,
+    });
+
+    await adminFlow.deleteSurvey(clonedSurveyName);
+    await expect(
+      adminSurveys.surveyRow(clonedSurveyName),
+      'cleanup: cloned survey was not removed, leaving the shared fixture duplicated',
+    ).toHaveCount(before, { timeout: 10000 });
   });
 
   test('delete survey', async () => {
@@ -132,11 +139,17 @@ test.describe.serial('Survey Admin Workflows', () => {
     // The previous test archived testSurveyName — select the "archived"
     // status filter so the row is visible before we delete it.
     await adminSurveys.statusFilter().click();
-    await page.locator('.cdk-overlay-pane mat-option').filter({ hasText: /archived/i }).click();
+    await page
+      .locator('.cdk-overlay-pane mat-option')
+      .filter({ hasText: /archived/i })
+      .click();
     // Close the multi-select overlay and wait for it to fully hide so the
     // subsequent row click isn't intercepted by a stale backdrop.
     await page.keyboard.press('Escape');
-    await page.locator('.cdk-overlay-backdrop').waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+    await page
+      .locator('.cdk-overlay-backdrop')
+      .waitFor({ state: 'hidden', timeout: 5000 })
+      .catch(() => {});
 
     await expect(adminSurveys.surveyRow(testSurveyName)).toBeVisible({ timeout: 10000 });
 

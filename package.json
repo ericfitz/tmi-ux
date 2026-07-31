@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -37,9 +37,11 @@
     "dev:e2e": "ng serve --configuration=e2e --open",
     "dev:prod": "ng serve --configuration=production --open",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",
+    "lint:e2e": "eslint \"e2e/**/*.ts\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",
     "lint:i18n": "uv run scripts/check-i18n-style.py",
-    "lint:all": "pnpm run lint && pnpm run lint:scss && pnpm run lint:i18n",
+    "lint:all": "pnpm run lint && pnpm run lint:e2e && pnpm run lint:scss && pnpm run lint:i18n",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\" | grep -v '(unchanged)' || echo 'Formatting complete (no changes needed)'",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json,md}\"",
     "check": "pnpm run format:check && pnpm run lint:all",

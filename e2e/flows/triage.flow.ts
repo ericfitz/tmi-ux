@@ -13,10 +13,20 @@ export class TriageFlow {
     this.revisionNotesDialog = new RevisionNotesDialog(page);
   }
 
-  // SEM@8697500456874c624d6100bf8ef5713b83d84248: filter triage list by review status and await reload (mutates shared state)
-  async filterByStatus(status: string) {
+  // SEM@8697500456874c624d6100bf8ef5713b83d84248: replace the triage status filter's selection with exactly the given labels (mutates shared state)
+  async setStatusFilter(labels: string[]) {
     await this.triagePage.statusFilter().click();
-    await this.page.locator('mat-option').filter({ hasText: status }).click();
+    const options = this.page.locator('mat-option');
+    const count = await options.count();
+    for (let i = 0; i < count; i++) {
+      const option = options.nth(i);
+      const text = (await option.textContent())?.trim() ?? '';
+      const shouldSelect = labels.some(label => text.includes(label));
+      const isSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (shouldSelect !== isSelected) {
+        await option.click();
+      }
+    }
     await this.page.keyboard.press('Escape');
     await this.page.waitForLoadState('networkidle');
   }
@@ -51,7 +61,7 @@ export class TriageFlow {
   async approveResponse(name: string) {
     await this.triagePage.approveButton(name).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/survey_responses/') && resp.status() < 300
+      resp => resp.url().includes('/survey_responses/') && resp.status() < 300,
     );
   }
 
@@ -68,7 +78,7 @@ export class TriageFlow {
   async createThreatModel(name: string) {
     await this.triagePage.createTmButton(name).click();
     await this.page.waitForResponse(
-      (resp) => resp.url().includes('/threat_models') && resp.status() < 300
+      resp => resp.url().includes('/threat_models') && resp.status() < 300,
     );
   }
 }

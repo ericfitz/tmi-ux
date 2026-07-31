@@ -51,7 +51,7 @@ test.describe.serial('Core Lifecycle', () => {
     await context.close();
   });
 
-  test('login completed successfully', async () => {
+  test('login completed successfully', () => {
     const url = page.url();
     expect(url).not.toContain('/login');
     expect(url).not.toContain('/oauth2/callback');
@@ -112,9 +112,7 @@ test.describe.serial('Core Lifecycle', () => {
   test('delete the diagram', async () => {
     await diagramFlow.deleteFromTmEdit(testDiagramName);
 
-    await expect(
-      tmEditPage.diagramRow(testDiagramName),
-    ).toHaveCount(0, { timeout: 10000 });
+    await expect(tmEditPage.diagramRow(testDiagramName)).toHaveCount(0, { timeout: 10000 });
   });
 
   test('delete the threat model', async () => {
@@ -124,8 +122,6 @@ test.describe.serial('Core Lifecycle', () => {
     await expect(dashboardPage.tmCard(testTmName)).toBeVisible({ timeout: 10000 });
     await threatModelFlow.deleteFromDashboard(testTmName);
 
-    await expect(
-      dashboardPage.tmCard(testTmName),
-    ).toHaveCount(0, { timeout: 10000 });
+    await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
   });
 });

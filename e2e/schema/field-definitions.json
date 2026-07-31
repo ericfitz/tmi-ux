@@ -359,7 +359,7 @@
         "editable": true
       },
       {
-        "apiName": "ref_type",
+        "apiName": "parameters.refType",
         "uiSelector": "[data-testid='repository-ref-type-select']",
         "type": "select",
         "required": false,
@@ -371,14 +371,14 @@
         ]
       },
       {
-        "apiName": "ref_value",
+        "apiName": "parameters.refValue",
         "uiSelector": "[data-testid='repository-ref-value-input']",
         "type": "text",
         "required": false,
         "editable": true
       },
       {
-        "apiName": "subpath",
+        "apiName": "parameters.subPath",
         "uiSelector": "[data-testid='repository-sub-path-input']",
         "type": "text",
         "required": false,

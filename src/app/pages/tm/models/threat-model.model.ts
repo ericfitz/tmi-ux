@@ -106,9 +106,16 @@ export interface CVSSScore {
   score: number;
 }
 
+/**
+ * SSVC decision outcomes, matching the `SSVCScore.decision` enum in the API
+ * schema. Kept as a union rather than `string` so a score built here is
+ * assignable to the generated ThreatInput payload type.
+ */
+export type SSVCDecision = 'Defer' | 'Scheduled' | 'Out-of-Cycle' | 'Immediate';
+
 export interface SSVCScore {
   vector: string;
-  decision: string;
+  decision: SSVCDecision;
   methodology: string;
 }
 

@@ -270,7 +270,7 @@ export class DfdEditorPage {
       return new Promise<string>((resolve, reject) => {
         orchestrator.addNode(type).subscribe({
           next: (result: any) => resolve(result?.affectedCellIds?.[0] || result?.nodeId || result?.id || ''),
-          error: (err: any) => reject(err),
+          error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
         });
       });
     }, nodeType);
@@ -288,7 +288,7 @@ export class DfdEditorPage {
       return new Promise<void>((resolve, reject) => {
         orchestrator.deleteSelectedCells().subscribe({
           next: () => resolve(),
-          error: (err: any) => reject(err),
+          error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
         });
       });
     });
@@ -302,7 +302,7 @@ export class DfdEditorPage {
       return new Promise<void>((resolve, reject) => {
         orchestrator.undo().subscribe({
           next: () => resolve(),
-          error: (err: any) => reject(err),
+          error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
         });
       });
     });
@@ -318,7 +318,7 @@ export class DfdEditorPage {
       return new Promise<void>((resolve, reject) => {
         orchestrator.redo().subscribe({
           next: () => resolve(),
-          error: (err: any) => reject(err),
+          error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
         });
       });
     });
@@ -392,7 +392,7 @@ export class DfdEditorPage {
                 resolve();
               }
             },
-            error: (err: any) => reject(err),
+            error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
           });
         });
       },

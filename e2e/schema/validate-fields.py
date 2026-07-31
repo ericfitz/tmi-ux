@@ -98,23 +98,37 @@ def resolve_ref(spec: dict, ref: str) -> dict:
 
 # SEM@ff77ac69c351fc45c303f33443eff511c453ed1f: aggregate all property names from named schemas, resolving allOf (pure)
 def collect_api_fields(spec: dict, schema_names: list[str]) -> set[str]:
-    """Collect all property names from the given schema(s), resolving allOf."""
+    """Collect all property names from the given schema(s), resolving allOf.
+
+    Nested object properties are also emitted in dotted form one level deep, so
+    a UI control bound to a sub-field can name it exactly: Repository exposes
+    refType/refValue/subPath inside `parameters`, and the editor dialog has a
+    separate input for each, so the definitions say `parameters.refType` rather
+    than collapsing all three into one `parameters` entry.
+    """
     schemas = spec.get("components", {}).get("schemas", {})
     fields: set[str] = set()
+
+    def add_properties(properties: dict) -> None:
+        for prop_name, prop_schema in properties.items():
+            fields.add(prop_name)
+            nested = prop_schema.get("properties", {}) if isinstance(prop_schema, dict) else {}
+            for nested_name in nested:
+                fields.add(f"{prop_name}.{nested_name}")
 
     for name in schema_names:
         schema = schemas.get(name, {})
 
         # Direct properties
-        fields.update(schema.get("properties", {}).keys())
+        add_properties(schema.get("properties", {}))
 
         # allOf composition
         for item in schema.get("allOf", []):
             if "$ref" in item:
                 ref_schema = resolve_ref(spec, item["$ref"])
-                fields.update(ref_schema.get("properties", {}).keys())
+                add_properties(ref_schema.get("properties", {}))
             else:
-                fields.update(item.get("properties", {}).keys())
+                add_properties(item.get("properties", {}))
 
     return fields
 
@@ -139,6 +153,13 @@ def main() -> int:
     stale_count = 0
     missing_count = 0
 
+    # Entity groups with hand-authored FieldDefs but no OpenAPI schema to
+    # check them against (e.g. admin_* selectors, dashboard table columns,
+    # survey_response/survey_template forms). Their FieldDefs cannot be
+    # contradicted by this script and should not be read as schema-validated.
+    all_entity_keys = set(field_defs.get("entities", {}).keys())
+    unvalidated_entities = sorted(all_entity_keys - set(ENTITY_SCHEMA_MAP.keys()))
+
     for entity_key, schema_names in ENTITY_SCHEMA_MAP.items():
         defs = field_defs.get("entities", {}).get(entity_key, [])
         def_field_names = {d["apiName"] for d in defs}
@@ -160,9 +181,19 @@ def main() -> int:
             )
             missing_count += 1
 
+    if unvalidated_entities:
+        print(f"\n{'=' * 60}")
+        print(
+            "WARN  Entity groups with no ENTITY_SCHEMA_MAP entry — their FieldDefs are "
+            "hand-authored UI selectors that no OpenAPI schema can validate:"
+        )
+        for entity_key in unvalidated_entities:
+            print(f"  - {entity_key}")
+
     # Summary
     print(f"\n{'=' * 60}")
-    print(f"Entities checked: {len(ENTITY_SCHEMA_MAP)}")
+    print(f"Entities checked against schema: {len(ENTITY_SCHEMA_MAP)}")
+    print(f"Entities unvalidated (no schema mapping): {len(unvalidated_entities)}")
     print(f"Stale definitions (errors): {stale_count}")
     print(f"Missing definitions (warnings): {missing_count}")
 

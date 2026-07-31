@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { angularFill } from './angular-fill';
 import { FieldDef } from '../schema/field-definitions';
 
