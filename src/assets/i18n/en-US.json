@@ -2807,6 +2807,7 @@
   "userPreferences": {
     "autoLayout": {
       "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "description.lint-skip": "Full-sentence setting description shown on a help tooltip; trailing period is intentional.",
       "label": "Auto-layout shapes",
       "orientation": {
         "automatic": "Automatic (infer from current diagram)",
