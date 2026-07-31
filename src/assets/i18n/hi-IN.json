@@ -206,6 +206,9 @@
         "usage": "उपयोग"
       },
       "deleteTooltip": "समूह हटाएं",
+      "filter": {
+        "builtInOnly": "केवल बिल्ट-इन समूह दिखाएं।"
+      },
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "कोई समूह नहीं मिला।",
       "subtitle": "सिस्टम समूह देखें और प्रबंधित करें।",
       "title": "समूह प्रबंधित करें",
+      "usage": {
+        "adminBadge": "एडमिन",
+        "adminTooltip": "यह समूह व्यवस्थापक भूमिका अनुमतियों में संदर्भित है।",
+        "authzBadge": "Authz",
+        "authzTooltip": "यह समूह थ्रेट मॉडल या प्रोजेक्ट की प्राधिकरण अनुमतियों में संदर्भित है।",
+        "builtInBadge": "बिल्ट-इन",
+        "builtInTooltip": "TMI द्वारा प्रदान किया गया बिल्ट-इन समूह।"
+      },
       "viewMembersTooltip": "समूह सदस्य देखें और प्रबंधित करें..."
     },
     "quotas": {

@@ -206,6 +206,9 @@
         "usage": "Penggunaan"
       },
       "deleteTooltip": "Hapus grup",
+      "filter": {
+        "builtInOnly": "Tampilkan hanya grup bawaan."
+      },
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "Tidak ada grup ditemukan.",
       "subtitle": "Lihat dan kelola grup sistem.",
       "title": "Kelola Grup",
+      "usage": {
+        "adminBadge": "Admin",
+        "adminTooltip": "Grup ini dirujuk oleh pemberian peran administrator.",
+        "authzBadge": "Authz",
+        "authzTooltip": "Grup ini dirujuk dalam otorisasi model ancaman atau proyek.",
+        "builtInBadge": "Bawaan",
+        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI."
+      },
       "viewMembersTooltip": "Lihat dan kelola anggota grup..."
     },
     "quotas": {

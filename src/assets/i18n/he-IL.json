@@ -206,6 +206,9 @@
         "usage": "שימוש"
       },
       "deleteTooltip": "מחק קבוצה",
+      "filter": {
+        "builtInOnly": "הצג רק קבוצות מובנות."
+      },
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "לא נמצאו קבוצות.",
       "subtitle": "צפה ונהל קבוצות מערכת.",
       "title": "ניהול קבוצות",
+      "usage": {
+        "adminBadge": "מנהל",
+        "adminTooltip": "קבוצה זו מוזכרת בהקצאות תפקיד מנהל.",
+        "authzBadge": "Authz",
+        "authzTooltip": "קבוצה זו מוזכרת בהרשאות של מודלי איומים או פרויקטים.",
+        "builtInBadge": "מובנית",
+        "builtInTooltip": "קבוצה מובנית שסופקה על ידי TMI."
+      },
       "viewMembersTooltip": "הצג ונהל חברי קבוצה..."
     },
     "quotas": {

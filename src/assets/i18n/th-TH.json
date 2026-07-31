@@ -206,6 +206,9 @@
         "usage": "การใช้งาน"
       },
       "deleteTooltip": "ลบกลุ่ม",
+      "filter": {
+        "builtInOnly": "แสดงเฉพาะกลุ่มในตัว"
+      },
       "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "ไม่พบกลุ่ม",
       "subtitle": "ดูและจัดการกลุ่มของระบบ",
       "title": "จัดการกลุ่ม",
+      "usage": {
+        "adminBadge": "ผู้ดูแล",
+        "adminTooltip": "กลุ่มนี้ถูกอ้างอิงโดยการมอบบทบาทผู้ดูแลระบบ",
+        "authzBadge": "Authz",
+        "authzTooltip": "กลุ่มนี้ถูกอ้างอิงในการให้สิทธิ์ของโมเดลภัยคุกคามหรือโปรเจกต์",
+        "builtInBadge": "ในตัว",
+        "builtInTooltip": "กลุ่มในตัวที่จัดเตรียมโดย TMI"
+      },
       "viewMembersTooltip": "ดูและจัดการสมาชิกกลุ่ม..."
     },
     "quotas": {

@@ -206,6 +206,9 @@
         "usage": "Verwendung"
       },
       "deleteTooltip": "Gruppe löschen",
+      "filter": {
+        "builtInOnly": "Nur integrierte Gruppen anzeigen."
+      },
       "filterLabel": "Gruppen filtern",
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "Keine Gruppen gefunden.",
       "subtitle": "Systemgruppen anzeigen und verwalten.",
       "title": "Gruppen verwalten",
+      "usage": {
+        "adminBadge": "Admin",
+        "adminTooltip": "Diese Gruppe wird von Administratorrollen-Zuweisungen referenziert.",
+        "authzBadge": "Authz",
+        "authzTooltip": "Diese Gruppe wird in Autorisierungen von Bedrohungsmodellen oder Projekten referenziert.",
+        "builtInBadge": "Integriert",
+        "builtInTooltip": "Integrierte, von TMI bereitgestellte Gruppe."
+      },
       "viewMembersTooltip": "Gruppenmitglieder anzeigen und verwalten..."
     },
     "quotas": {

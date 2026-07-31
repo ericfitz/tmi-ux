@@ -206,6 +206,9 @@
         "usage": "الاستخدام"
       },
       "deleteTooltip": "حذف المجموعة",
+      "filter": {
+        "builtInOnly": "عرض المجموعات المدمجة فقط."
+      },
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "لم يتم العثور على مجموعات.",
       "subtitle": "عرض وإدارة مجموعات النظام.",
       "title": "إدارة المجموعات",
+      "usage": {
+        "adminBadge": "مسؤول",
+        "adminTooltip": "تتم الإشارة إلى هذه المجموعة في منح دور المسؤول.",
+        "authzBadge": "Authz",
+        "authzTooltip": "تتم الإشارة إلى هذه المجموعة في منح التخويل على نماذج التهديد أو المشاريع.",
+        "builtInBadge": "مدمجة",
+        "builtInTooltip": "مجموعة مدمجة يوفرها TMI."
+      },
       "viewMembersTooltip": "عرض وإدارة أعضاء المجموعة..."
     },
     "quotas": {

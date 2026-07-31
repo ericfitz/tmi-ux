@@ -230,6 +230,9 @@
       },
       "deleteTooltip": "Delete group",
       "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete group'.",
+      "filter": {
+        "builtInOnly": "Show built-in groups only."
+      },
       "filterLabel": "Filter groups",
       "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter groups'.",
       "filterPlaceholder": "Search by group name or provider",
@@ -250,6 +253,17 @@
       "noGroups": "No groups found.",
       "subtitle": "View and manage system groups.",
       "title": "Manage groups",
+      "usage": {
+        "adminBadge": "Admin",
+        "adminBadge.comment": "Short badge/tag shown on a group that is referenced by administrator role grants.",
+        "adminTooltip": "This group is referenced by administrator role grants.",
+        "authzBadge": "Authz",
+        "authzBadge.comment": "Short badge/tag. Abbreviation of 'authorization'; may be left untranslated.",
+        "authzTooltip": "This group is referenced in authorization grants on threat models or projects.",
+        "builtInBadge": "Built-in",
+        "builtInBadge.comment": "Short badge/tag shown on groups provisioned by the TMI server itself.",
+        "builtInTooltip": "Built-in group provisioned by TMI."
+      },
       "viewMembersTooltip": "View and manage group members...",
       "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
     },

@@ -206,6 +206,9 @@
         "usage": "Utilisation"
       },
       "deleteTooltip": "Supprimer le groupe",
+      "filter": {
+        "builtInOnly": "Afficher uniquement les groupes intégrés."
+      },
       "filterLabel": "Filtrer les groupes",
       "filterPlaceholder": "Rechercher par nom de groupe ou fournisseur",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "Aucun groupe trouvé.",
       "subtitle": "Afficher et gérer les groupes système.",
       "title": "Gérer les groupes",
+      "usage": {
+        "adminBadge": "Admin",
+        "adminTooltip": "Ce groupe est référencé par des attributions de rôle d'administrateur.",
+        "authzBadge": "Authz",
+        "authzTooltip": "Ce groupe est référencé dans des autorisations de modèles de menaces ou de projets.",
+        "builtInBadge": "Intégré",
+        "builtInTooltip": "Groupe intégré provisionné par TMI."
+      },
       "viewMembersTooltip": "Afficher et gérer les membres du groupe..."
     },
     "quotas": {

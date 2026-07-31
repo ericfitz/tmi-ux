@@ -206,6 +206,9 @@
         "usage": "使用状況"
       },
       "deleteTooltip": "グループを削除",
+      "filter": {
+        "builtInOnly": "組み込みグループのみ表示する。"
+      },
       "filterLabel": "グループを絞り込む",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,14 @@
       "noGroups": "グループが見つかりません。",
       "subtitle": "システムグループを表示・管理します。",
       "title": "グループの管理",
+      "usage": {
+        "adminBadge": "管理",
+        "adminTooltip": "このグループは管理者ロールの付与で参照されています。",
+        "authzBadge": "Authz",
+        "authzTooltip": "このグループは脅威モデルまたはプロジェクトの認可設定で参照されています。",
+        "builtInBadge": "組み込み",
+        "builtInTooltip": "TMIが提供する組み込みグループです。"
+      },
       "viewMembersTooltip": "グループメンバーを表示・管理する..."
     },
     "quotas": {

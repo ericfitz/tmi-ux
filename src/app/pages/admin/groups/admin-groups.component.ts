@@ -87,6 +87,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
+  builtInOnly = false;
   loading = false;
 
   // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: inject group admin service, router, dialog, logger, and auth service
@@ -174,7 +175,12 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     const filter = this.filterText.trim();
 
     this.groupAdminService
-      .list({ limit: this.pageSize, offset, ...(filter ? { group_name: filter } : {}) })
+      .list({
+        limit: this.pageSize,
+        offset,
+        ...(filter ? { group_name: filter } : {}),
+        ...(this.builtInOnly ? { provider: 'tmi' } : {}),
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -198,6 +204,14 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: emit a filter value to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
+  }
+
+  // Toggle the built-in-only filter and reload the group list
+  onBuiltInFilterChange(checked: boolean): void {
+    this.builtInOnly = checked;
+    this.pageIndex = 0;
+    this.loadGroups();
+    this.updateUrl();
   }
 
   // SEM@c6d9d4bbcb88860a9e3f045f032a755e2782182a: update page index and size then reload the group list (mutates shared state)
@@ -319,6 +333,12 @@ This action cannot be undone.`);
   // SEM@76be7d92d38b9a859024414252c3c16bca0b7f9c: check whether a group is the built-in everyone group (pure)
   isEveryoneGroup(group: AdminGroup): boolean {
     return group.provider === 'tmi' && group.group_name.toLowerCase() === 'everyone';
+  }
+
+  // Check whether a group is a built-in group seeded by the TMI server (pure).
+  // The server represents built-in groups with provider 'tmi' ('*' for legacy wildcard rows).
+  isBuiltInGroup(group: AdminGroup): boolean {
+    return group.provider === 'tmi' || group.provider === '*';
   }
 
   // SEM@b06ef0d1274dc7d9b45479c9be451a0c1ad7bbd1: return the OAuth provider info for a given provider ID (pure)

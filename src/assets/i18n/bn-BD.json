@@ -228,6 +228,9 @@
         "usage": "ব্যবহার"
       },
       "deleteTooltip": "গ্রুপ মুছুন",
+      "filter": {
+        "builtInOnly": "শুধুমাত্র বিল্ট-ইন গ্রুপ দেখান"
+      },
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -246,6 +249,14 @@
       "noGroups": "কোনো গ্রুপ পাওয়া যায়নি",
       "subtitle": "সিস্টেম গ্রুপ দেখুন এবং পরিচালনা করুন",
       "title": "গ্রুপ পরিচালনা করুন",
+      "usage": {
+        "adminBadge": "অ্যাডমিন",
+        "adminTooltip": "এই গ্রুপটি অ্যাডমিনিস্ট্রেটর ভূমিকা অনুদানে উল্লেখ করা হয়েছে।",
+        "authzBadge": "Authz",
+        "authzTooltip": "এই গ্রুপটি থ্রেট মডেল বা প্রকল্পের অনুমোদন অনুদানে উল্লেখ করা হয়েছে।",
+        "builtInBadge": "বিল্ট-ইন",
+        "builtInTooltip": "TMI দ্বারা সরবরাহকৃত বিল্ট-ইন গ্রুপ।"
+      },
       "viewMembersTooltip": "গ্রুপ সদস্যদের দেখুন এবং পরিচালনা করুন"
     },
     "quotas": {
