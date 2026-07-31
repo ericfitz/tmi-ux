@@ -26,11 +26,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     include: ['src/**/*.spec.ts'],
-    exclude: [
-      // Integration tests have transitive Angular Material dependencies that
-      // can't compile in vitest/JSDOM. Keep excluded until migrated to Playwright.
-      'src/app/pages/dfd/integration/**',
-    ],
     setupFiles: ['src/test-setup.ts'],
     server: {
       deps: {
