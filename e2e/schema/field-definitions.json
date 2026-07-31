@@ -704,6 +704,13 @@
         "editable": true
       },
       {
+        "apiName": "tmi_toggle",
+        "uiSelector": "[data-testid=\"groups-tmi-toggle\"]",
+        "type": "toggle",
+        "required": false,
+        "editable": true
+      },
+      {
         "apiName": "add_button",
         "uiSelector": "[data-testid=\"groups-add-button\"]",
         "type": "text",

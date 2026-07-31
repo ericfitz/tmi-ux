@@ -206,6 +206,9 @@
         "usage": "उपयोग"
       },
       "deleteTooltip": "समूह हटाएं",
+      "filter": {
+        "tmiOnly": "केवल TMI समूह दिखाएं।"
+      },
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,15 @@
       "noGroups": "कोई समूह नहीं मिला।",
       "subtitle": "सिस्टम समूह देखें और प्रबंधित करें।",
       "title": "समूह प्रबंधित करें",
+      "usage": {
+        "adminBadge": "एडमिन",
+        "adminTooltip": "यह समूह व्यवस्थापक भूमिका अनुमतियों में संदर्भित है",
+        "authzBadge": "Authz",
+        "authzTooltip": "यह समूह थ्रेट मॉडल या प्रोजेक्ट की प्राधिकरण अनुमतियों में संदर्भित है",
+        "builtInBadge": "बिल्ट-इन",
+        "builtInTooltip": "TMI द्वारा प्रदान किया गया बिल्ट-इन समूह",
+        "refCount": "{{count}} संदर्भ"
+      },
       "viewMembersTooltip": "समूह सदस्य देखें और प्रबंधित करें..."
     },
     "quotas": {
@@ -405,7 +417,7 @@
         "secretPlaceholder": "स्वचालित रूप से उत्पन्न करने के लिए खाली छोड़ें",
         "title": "Webhook जोड़ें",
         "url": "Webhook URL",
-        "urlHint": "HTTPS अनुशंसित",
+        "urlHint": "प्रोडक्शन परिनियोजन में HTTPS आवश्यक है।",
         "urlHttpWarning": "चेतावनी: webhook एंडपॉइंट URL को HTTPS का उपयोग करना चाहिए। सर्वर non-TLS एंडपॉइंट निर्दिष्ट करने वाले webhook पंजीकरण को अस्वीकार कर सकता है।",
         "urlHttpWarningTitle": "Non-HTTPS webhook URL।",
         "urlInvalid": "एक मान्य URL होना चाहिए।",
@@ -870,6 +882,7 @@
     "openInNewTab": "नए टैब में खोलें",
     "other": "अन्य",
     "paste": "पेस्ट करें",
+    "permissions": "अनुमतियां...",
     "priority": "प्राथमिकता",
     "project": "प्रोजेक्ट",
     "provider": "प्रदाता",
@@ -924,8 +937,7 @@
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियाँ देखें",
-    "viewThreat": "खतरा देखें",
-    "permissions": "अनुमतियां..."
+    "viewThreat": "खतरा देखें"
   },
   "contextMenu": {
     "addInverseConnection": "व्युत्क्रम कनेक्शन जोड़ें",
@@ -1344,7 +1356,8 @@
   "identities": {
     "columns": {
       "account": "खाता",
-      "provider": "प्रदाता"
+      "provider": "प्रदाता",
+      "providerId": "प्रदाता आईडी"
     },
     "help": "वे खाते जिनका उपयोग आप TMI में साइन इन करने के लिए कर सकते हैं।",
     "link": {
@@ -1742,12 +1755,12 @@
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "stepUp": {
-    "confirmTitle": "पुनः प्रमाणीकरण आवश्यक है",
-    "confirmBody": "इस कार्य के लिए हालिया प्रमाणीकरण आवश्यक है। आपको पुनः साइन इन करने के लिए रीडायरेक्ट किया जाएगा। इस पृष्ठ पर सहेजे न गए परिवर्तन खो जाएंगे।",
     "confirmAction": "पुनः प्रमाणित करें",
-    "redoPrompt": "पुनः प्रमाणीकरण पूर्ण हुआ — कृपया अपनी कार्रवाई फिर से आज़माएं।",
-    "mismatchTitle": "गलत खाता",
+    "confirmBody": "इस कार्य के लिए हालिया प्रमाणीकरण आवश्यक है। आपको पुनः साइन इन करने के लिए रीडायरेक्ट किया जाएगा। इस पृष्ठ पर सहेजे न गए परिवर्तन खो जाएंगे।",
+    "confirmTitle": "पुनः प्रमाणीकरण आवश्यक है",
     "mismatchBody": "इस कार्य को पूरा करने के लिए आपको {{email}} के रूप में पुनः प्रमाणित करना होगा।",
+    "mismatchTitle": "गलत खाता",
+    "redoPrompt": "पुनः प्रमाणीकरण पूर्ण हुआ — कृपया अपनी कार्रवाई फिर से आज़माएं।",
     "tryAgain": "पुनः प्रयास करें"
   },
   "surveys": {
@@ -1913,7 +1926,8 @@
       "winding_down": "समाप्ति की ओर"
     },
     "subtitle": "अपनी टीम सदस्यता प्रबंधित करें",
-    "title": "टीमें"
+    "title": "टीमें",
+    "viewMembersTooltip": "टीम सदस्य देखें और प्रबंधित करें..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSS प्रविष्टि जोड़ें।",
@@ -1947,14 +1961,14 @@
     "selectDiagramFirst": "पहले एक आरेख चुनें",
     "threatPriority": {
       "0": "Immediate (P0)",
-      "1": "High (P1)",
-      "2": "Medium (P2)",
-      "3": "Low (P3)",
-      "4": "Deferred (P4)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
+      "1": "High (P1)",
       "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
+      "2": "Medium (P2)",
       "2.description": "Address within standard development cycles; moderate exposure.",
+      "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
+      "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "स्थगित (p4)",
       "deferred.description": "प्रलेखित व्यावसायिक अनुमोदन के साथ स्थगित; ट्रैक किया गया लेकिन अनुसूचित नहीं।",
@@ -1968,11 +1982,11 @@
       "medium.description": "मानक विकास चक्रों के भीतर समाधान करें; मध्यम जोखिम।"
     },
     "threatSeverity": {
-      "4": "Informational",
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
       "1.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
       "2.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
       "3.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
+      "4": "Informational",
       "4.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
       "5.description": "Threat severity has not yet been assessed.",
       "critical": "गंभीर",
@@ -1990,24 +2004,24 @@
     },
     "threatStatus": {
       "0": "Open",
-      "1": "Confirmed",
-      "2": "Mitigation Planned",
-      "3": "Mitigation In Progress",
-      "4": "Verification Pending",
-      "5": "Resolved",
-      "6": "Accepted",
-      "7": "False Positive",
-      "8": "Deferred",
-      "9": "Closed",
       "0.description": "The finding has been identified and documented but no action has been initiated.",
+      "1": "Confirmed",
       "1.description": "The threat has been validated as legitimate through analysis or evidence.",
+      "2": "Mitigation Planned",
       "2.description": "A remediation or mitigation strategy has been defined and assigned.",
+      "3": "Mitigation In Progress",
       "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
+      "4": "Verification Pending",
       "4.description": "Mitigation is complete; security team must test or review effectiveness.",
+      "5": "Resolved",
       "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
+      "6": "Accepted",
       "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
+      "7": "False Positive",
       "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
+      "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
+      "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
       "accepted": "स्वीकृत",
       "accepted.description": "खतरे को स्वीकार किया गया है लेकिन जानबूझकर शमन नहीं किया गया है (जैसे, व्यावसायिक औचित्य के कारण); औपचारिक जोखिम स्वीकृति की आवश्यकता है।",
@@ -2129,24 +2143,24 @@
     "sourcesCount": "रिपोज़",
     "status": {
       "0": "Not Started",
-      "1": "In Progress",
-      "2": "Pending Review",
-      "3": "Remediation Required",
-      "4": "Remediation In Progress",
-      "5": "Verification Pending",
-      "6": "Approved",
-      "7": "Rejected",
-      "8": "Deferred",
-      "9": "Closed",
       "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
+      "1": "In Progress",
       "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
+      "2": "Pending Review",
       "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
+      "3": "Remediation Required",
       "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
+      "4": "Remediation In Progress",
       "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
+      "5": "Verification Pending",
       "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
+      "6": "Approved",
       "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
+      "7": "Rejected",
       "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
+      "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
+      "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
       "active": "सक्रिय",
       "active.tooltip": "थ्रेट मॉडल पर सक्रिय रूप से काम किया जा रहा है।",

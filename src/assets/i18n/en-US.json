@@ -112,8 +112,10 @@
         "changeSummary": "Change summary",
         "changeType": "Change type",
         "close": "Close",
+        "close.comment": "Verb (imperative). Button label that closes the audit detail panel: 'Close'.",
         "copied": "Copied",
         "copyPermalink": "Copy permalink",
+        "copyPermalink.comment": "Verb (imperative). Button label that copies a permanent link to this audit entry.",
         "email": "Email",
         "fieldPath": "Field path",
         "method": "HTTP method",
@@ -129,7 +131,8 @@
         "timestamp": "Timestamp",
         "title": "Audit entry",
         "version": "Version",
-        "viewInContext": "View in context"
+        "viewInContext": "View in context",
+        "viewInContext.comment": "Verb (imperative). Button label that navigates to the audited object: 'View in context'."
       },
       "empty": "No entries match these filters.",
       "enums": {
@@ -161,6 +164,7 @@
       "filters": {
         "actor": "Actor",
         "actorPlaceholder": "Search by email",
+        "actorPlaceholder.comment": "Placeholder for the actor filter input on the audit page: 'Search by email'.",
         "changeType": "Change type",
         "clear": "Clear filters",
         "createdAfter": "Created after",
@@ -230,6 +234,10 @@
       },
       "deleteTooltip": "Delete group",
       "deleteTooltip.comment": "Verb (imperative). Used as a context-menu or dropdown action: 'Delete group'.",
+      "filter": {
+        "tmiOnly": "Show TMI groups only.",
+        "tmiOnly.comment": "TMI should not be translated. Toggle limiting the list to groups managed by TMI rather than an external identity provider."
+      },
       "filterLabel": "Filter groups",
       "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter groups'.",
       "filterPlaceholder": "Search by group name or provider",
@@ -250,6 +258,19 @@
       "noGroups": "No groups found.",
       "subtitle": "View and manage system groups.",
       "title": "Manage groups",
+      "usage": {
+        "adminBadge": "Admin",
+        "adminBadge.comment": "Short badge/tag shown on a group that is referenced by administrator role grants.",
+        "adminTooltip": "This group is referenced by administrator role grants",
+        "authzBadge": "Authz",
+        "authzBadge.comment": "Short badge/tag. Abbreviation of 'authorization'; may be left untranslated.",
+        "authzTooltip": "This group is referenced in authorization grants on threat models or projects",
+        "builtInBadge": "Built-in",
+        "builtInBadge.comment": "Short badge/tag shown on groups provisioned by the TMI server itself.",
+        "builtInTooltip": "Built-in group provisioned by TMI",
+        "refCount": "{{count}} references",
+        "refCount.comment": "Number of times the group is referenced. {{count}} is a numeric placeholder."
+      },
       "viewMembersTooltip": "View and manage group members...",
       "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
     },
@@ -457,7 +478,9 @@
         "title": "Add webhook",
         "title.comment": "Noun phrase. Title of a dialog: 'Add webhook'.",
         "url": "Webhook URL",
-        "urlHint": "HTTPS recommended",
+        "urlHint": "HTTPS is required in production deployments.",
+        "urlHint.comment": "The acronym HTTPS should not be translated.",
+        "urlHint.lint-skip": "Complete sentence; trailing period is intentional.",
         "urlHttpWarning": "Warning: the webhook endpoint URL should use HTTPS. The server may reject webhook registrations that specify a non-tls endpoint.",
         "urlHttpWarning.comment": "The acronyms HTTPS and TLS should not be translated.",
         "urlHttpWarningTitle": "Non-https webhook URL.",
@@ -631,6 +654,7 @@
     "snackbarFailed": "Could not submit feedback. Try again later.",
     "snackbarSubmitted": "Thanks for the feedback.",
     "submit": "Send feedback",
+    "submit.comment": "Verb (imperative). Button label that submits the AI feedback form: 'Send feedback'.",
     "subreason": {
       "code_does_not_exist": "Referenced code or call doesn't exist",
       "code_does_not_exist.lint-skip": "Dropdown option label; fragment by design.",
@@ -662,7 +686,8 @@
     },
     "verbatimLabelOptional": "Comments (optional)",
     "verbatimLabelRequired": "Comments (required)",
-    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing.",
+    "verbatimPlaceholder.lint-skip": "Full-sentence textarea placeholder; trailing period is intentional."
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press enter",
@@ -732,9 +757,9 @@
   "auth": {
     "unauthorized": {
       "401": "401 unauthorized",
-      "403": "403 forbidden",
       "401.comment": "This is a standard error message and should not be translated.",
       "401.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
+      "403": "403 forbidden",
       "403.comment": "This is a standard error message and should not be translated.",
       "403.lint-skip": "HTTP status code label starting with numeric code, not a sentence.",
       "noPermission": "You do not have permission to access this page.",
@@ -802,6 +827,7 @@
     "suggestedPrompts": {
       "assets": "What assets are in scope?",
       "summary": "Give me a summary of this threat model",
+      "summary.lint-skip": "Suggested chat prompt chip, not UI prose; deliberately unpunctuated.",
       "threats": "What threats have been identified?"
     },
     "title": "Timmy"
@@ -901,8 +927,8 @@
     "cut": "Cut",
     "deactivate": "Deactivate",
     "delete": "Delete",
-    "delete.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "delete.comment": "Verb (imperative). Used on a button that initiates the action: 'Delete'.",
+    "delete.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "deleteConfirm": "Confirm deletion",
     "deleteFailed": "Delete failed",
     "deleteFailed.comment": "Verb (imperative form). Used as an action label: 'Delete failed'. Surface not identified in source scan.",
@@ -922,8 +948,8 @@
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
-    "edit.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "edit.comment": "Action description on a tooltip (typically for an icon button): 'Edit'.",
+    "edit.lint-skip": "Shared base label used across multiple surfaces (button/menu-item/tooltip); dedicated ellipsis-carrying wrapper keys exist where a dialog-opening affordance needs one, so this base key is intentionally not ellipsized.",
     "editThreat": "Edit threat",
     "editThreat.comment": "Verb (imperative form). Used as an action label: 'Edit threat'. Surface not identified in source scan.",
     "email": "Email",
@@ -1060,8 +1086,8 @@
     "view": "View",
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View metadata",
-    "viewMetadata.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "viewMetadata.comment": "Verb (imperative). Used on a button that initiates the action: 'View metadata'.",
+    "viewMetadata.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "viewPermissions": "View permissions",
     "viewPermissions.comment": "Verb (imperative form). Used as an action label: 'View permissions'. Surface not identified in source scan.",
     "viewThreat": "View threat",
@@ -1212,8 +1238,8 @@
     "addCweReference": "Add CWE reference to threat",
     "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
     "chooseCwe": "{{cwePicker.title}}...",
-    "chooseCwe.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
     "chooseCwe.comment": "Tooltip for the action button that opens the CWE picker dialog. CWE = Common Weakness Enumeration.",
+    "chooseCwe.lint-skip": "Trailing ellipsis is intentional per style guide: menu-item/tooltip/button that opens a dialog.",
     "extendedDescription": "Extended description",
     "extendedDescription.comment": "Label for the extended description field shown when a CWE weakness is selected.",
     "loading": "Loading weaknesses...",
@@ -1590,7 +1616,9 @@
   "identities": {
     "columns": {
       "account": "Account",
-      "provider": "Provider"
+      "provider": "Provider",
+      "providerId": "Provider ID",
+      "providerId.comment": "Column header for the user's identifier at the identity provider."
     },
     "help": "Accounts you can use to sign in to TMI.",
     "link": {
@@ -2089,12 +2117,12 @@
     "vectorString.comment": "Label for the SSVC vector string display."
   },
   "stepUp": {
-    "confirmTitle": "Re-authentication required",
-    "confirmBody": "This action requires recent authentication. You'll be redirected to sign in again. Unsaved changes on this page will be lost.",
     "confirmAction": "Re-authenticate",
-    "redoPrompt": "Re-authentication is complete — please retry your action.",
-    "mismatchTitle": "Wrong account",
+    "confirmBody": "This action requires recent authentication. You'll be redirected to sign in again. Unsaved changes on this page will be lost.",
+    "confirmTitle": "Re-authentication required",
     "mismatchBody": "You must re-authenticate as {{email}} to complete this action.",
+    "mismatchTitle": "Wrong account",
+    "redoPrompt": "Re-authentication is complete — please retry your action.",
     "tryAgain": "Try again"
   },
   "surveys": {
@@ -2287,7 +2315,9 @@
       "winding_down": "Winding down"
     },
     "subtitle": "Create, edit, and manage teams, members, and relationships.",
-    "title": "Manage teams"
+    "title": "Manage teams",
+    "viewMembersTooltip": "View and manage team members...",
+    "viewMembersTooltip.lint-skip": "Trailing ... is intentional per style guide: button/tooltip that opens a dialog"
   },
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry.",
@@ -2323,8 +2353,10 @@
     "issueUriPlaceholder.comment": "Placeholder for the issue URI input. Shows an example URL format.",
     "noCellsInDiagram": "This diagram has no cells.",
     "noCellsInDiagram.comment": "Hint shown below the cell drop-down when the selected diagram contains no cells.",
+    "noCellsInDiagram.lint-skip": "Full-sentence empty-state hint (classified as placeholder surface); trailing period is intentional.",
     "noDiagramsInThreatModel": "This threat model has no diagrams.",
     "noDiagramsInThreatModel.comment": "Hint shown below the diagram drop-down when the threat model contains no diagrams.",
+    "noDiagramsInThreatModel.lint-skip": "Full-sentence empty-state hint (classified as placeholder surface); trailing period is intentional.",
     "notAssociatedWithAsset": "Not associated with an asset.",
     "notAssociatedWithCell": "Not associated with a cell.",
     "notAssociatedWithDiagram": "Not associated with a diagram.",
@@ -2767,23 +2799,28 @@
   "usabilityFeedback": {
     "prompt": "Was this experience helpful?",
     "screenshotAlt": "Captured screenshot of the page being reviewed.",
+    "screenshotAlt.lint-skip": "Image alt text (classified as tooltip surface); full sentence with period is intentional.",
     "screenshotLabel": "Attached screenshot",
     "screenshotRemove": "Remove screenshot",
     "screenshotRemove.comment": "Action description on a tooltip (typically for an icon button): 'Remove screenshot'.",
     "snackbarFailed": "Could not submit feedback. Try again later.",
     "snackbarSubmitted": "Thanks for the feedback.",
     "submit": "Send feedback",
+    "submit.comment": "Verb (imperative). Button label that submits the usability feedback form: 'Send feedback'.",
     "thumbsDown": "Thumbs down",
     "thumbsDown.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs down'.",
     "thumbsUp": "Thumbs up",
     "thumbsUp.comment": "Action description on a tooltip (typically for an icon button): 'Thumbs up'.",
     "title": "Share your feedback",
+    "title.comment": "Noun phrase. Title of the usability feedback dialog: 'Share your feedback'.",
     "verbatimLabel": "Comments (optional)",
-    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing."
+    "verbatimPlaceholder": "What worked well, what didn't, or anything else worth sharing.",
+    "verbatimPlaceholder.lint-skip": "Full-sentence textarea placeholder; trailing period is intentional."
   },
   "userPreferences": {
     "autoLayout": {
       "description": "Automatically resize and position shapes when icons are added, children are embedded, or shapes are moved.",
+      "description.lint-skip": "Full-sentence setting description shown on a help tooltip; trailing period is intentional.",
       "label": "Auto-layout shapes",
       "orientation": {
         "automatic": "Automatic (infer from current diagram)",

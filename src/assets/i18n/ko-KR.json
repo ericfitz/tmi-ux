@@ -206,6 +206,9 @@
         "usage": "사용량"
       },
       "deleteTooltip": "그룹 삭제",
+      "filter": {
+        "tmiOnly": "TMI 그룹만 표시합니다."
+      },
       "filterLabel": "그룹 필터",
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
       "listTitle": "{{admin.sections.groups.title}}",
@@ -224,6 +227,15 @@
       "noGroups": "그룹을 찾을 수 없습니다.",
       "subtitle": "시스템 그룹을 보고 관리합니다.",
       "title": "그룹 관리",
+      "usage": {
+        "adminBadge": "관리",
+        "adminTooltip": "이 그룹은 관리자 역할 부여에서 참조됩니다",
+        "authzBadge": "Authz",
+        "authzTooltip": "이 그룹은 위협 모델 또는 프로젝트의 권한 부여에서 참조됩니다",
+        "builtInBadge": "기본 제공",
+        "builtInTooltip": "TMI에서 제공하는 기본 그룹입니다",
+        "refCount": "참조 {{count}}개"
+      },
       "viewMembersTooltip": "그룹 멤버 보기 및 관리..."
     },
     "quotas": {
@@ -405,7 +417,7 @@
         "secretPlaceholder": "비우면 자동 생성됩니다",
         "title": "Webhook 추가",
         "url": "웹훅 URL",
-        "urlHint": "HTTPS 권장",
+        "urlHint": "프로덕션 배포에서는 HTTPS가 필수입니다.",
         "urlHttpWarning": "경고: 웹훅 엔드포인트 URL은 HTTPS를 사용해야 합니다. 서버는 TLS가 아닌 엔드포인트를 지정하는 웹훅 등록을 거부할 수 있습니다.",
         "urlHttpWarningTitle": "비HTTPS 웹훅 URL.",
         "urlInvalid": "유효한 URL이어야 합니다.",
@@ -870,6 +882,7 @@
     "openInNewTab": "새 탭에서 열기",
     "other": "기타",
     "paste": "붙여넣기",
+    "permissions": "권한...",
     "priority": "우선순위",
     "project": "프로젝트",
     "provider": "공급자",
@@ -924,8 +937,7 @@
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
-    "viewThreat": "위협 보기",
-    "permissions": "권한..."
+    "viewThreat": "위협 보기"
   },
   "contextMenu": {
     "addInverseConnection": "역방향 연결 추가",
@@ -1340,7 +1352,8 @@
   "identities": {
     "columns": {
       "account": "계정",
-      "provider": "제공업체"
+      "provider": "제공업체",
+      "providerId": "제공업체 ID"
     },
     "help": "TMI에 로그인할 때 사용할 수 있는 계정입니다.",
     "link": {
@@ -1738,12 +1751,12 @@
     "vectorString": "{{cvssCalculator.vectorString}}"
   },
   "stepUp": {
-    "confirmTitle": "재인증이 필요합니다",
-    "confirmBody": "이 작업을 수행하려면 최근 인증이 필요합니다. 로그인 페이지로 이동합니다. 이 페이지에서 저장하지 않은 변경 사항은 손실됩니다.",
     "confirmAction": "재인증",
-    "redoPrompt": "재인증이 완료되었습니다. 작업을 다시 시도해 주세요.",
-    "mismatchTitle": "계정이 일치하지 않습니다",
+    "confirmBody": "이 작업을 수행하려면 최근 인증이 필요합니다. 로그인 페이지로 이동합니다. 이 페이지에서 저장하지 않은 변경 사항은 손실됩니다.",
+    "confirmTitle": "재인증이 필요합니다",
     "mismatchBody": "이 작업을 완료하려면 {{email}}(으)로 재인증해야 합니다.",
+    "mismatchTitle": "계정이 일치하지 않습니다",
+    "redoPrompt": "재인증이 완료되었습니다. 작업을 다시 시도해 주세요.",
     "tryAgain": "다시 시도"
   },
   "surveys": {
@@ -1909,7 +1922,8 @@
       "winding_down": "종료 중"
     },
     "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리합니다.",
-    "title": "팀 관리"
+    "title": "팀 관리",
+    "viewMembersTooltip": "팀 멤버 보기 및 관리..."
   },
   "threatEditor": {
     "addCvssEntry": "CVSS 항목 추가.",
@@ -1943,14 +1957,14 @@
     "selectDiagramFirst": "다이어그램을 먼저 선택하세요",
     "threatPriority": {
       "0": "Immediate (P0)",
-      "1": "High (P1)",
-      "2": "Medium (P2)",
-      "3": "Low (P3)",
-      "4": "Deferred (P4)",
       "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
+      "1": "High (P1)",
       "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
+      "2": "Medium (P2)",
       "2.description": "Address within standard development cycles; moderate exposure.",
+      "3": "Low (P3)",
       "3.description": "Include in backlog for future cycles; no immediate exposure.",
+      "4": "Deferred (P4)",
       "4.description": "Postponed with documented business approval; tracked but not scheduled.",
       "deferred": "연기됨 (P4)",
       "deferred.description": "문서화된 비즈니스 승인에 따라 연기됨; 추적 중이나 예정 없음.",
@@ -1964,11 +1978,11 @@
       "medium.description": "표준 개발 주기 내에 처리; 중간 수준의 노출."
     },
     "threatSeverity": {
-      "4": "Informational",
       "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
       "1.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
       "2.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
       "3.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
+      "4": "Informational",
       "4.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
       "5.description": "Threat severity has not yet been assessed.",
       "critical": "치명적",
@@ -1986,24 +2000,24 @@
     },
     "threatStatus": {
       "0": "Open",
-      "1": "Confirmed",
-      "2": "Mitigation Planned",
-      "3": "Mitigation In Progress",
-      "4": "Verification Pending",
-      "5": "Resolved",
-      "6": "Accepted",
-      "7": "False Positive",
-      "8": "Deferred",
-      "9": "Closed",
       "0.description": "The finding has been identified and documented but no action has been initiated.",
+      "1": "Confirmed",
       "1.description": "The threat has been validated as legitimate through analysis or evidence.",
+      "2": "Mitigation Planned",
       "2.description": "A remediation or mitigation strategy has been defined and assigned.",
+      "3": "Mitigation In Progress",
       "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
+      "4": "Verification Pending",
       "4.description": "Mitigation is complete; security team must test or review effectiveness.",
+      "5": "Resolved",
       "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
+      "6": "Accepted",
       "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
+      "7": "False Positive",
       "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
+      "8": "Deferred",
       "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
+      "9": "Closed",
       "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
       "accepted": "수용됨",
       "accepted.description": "위협이 인식되었으나 의도적으로 완화하지 않습니다 (예: 비즈니스 정당성으로 인해); 공식적인 위험 수용이 필요합니다.",
@@ -2125,24 +2139,24 @@
     "sourcesCount": "저장소",
     "status": {
       "0": "Not Started",
-      "1": "In Progress",
-      "2": "Pending Review",
-      "3": "Remediation Required",
-      "4": "Remediation In Progress",
-      "5": "Verification Pending",
-      "6": "Approved",
-      "7": "Rejected",
-      "8": "Deferred",
-      "9": "Closed",
       "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
+      "1": "In Progress",
       "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
+      "2": "Pending Review",
       "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
+      "3": "Remediation Required",
       "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
+      "4": "Remediation In Progress",
       "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
+      "5": "Verification Pending",
       "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
+      "6": "Approved",
       "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
+      "7": "Rejected",
       "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
+      "8": "Deferred",
       "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
+      "9": "Closed",
       "9.tooltip": "The review is fully completed and archived, with no further action needed.",
       "active": "활성",
       "active.tooltip": "위협 모델이 현재 작업 중입니다.",

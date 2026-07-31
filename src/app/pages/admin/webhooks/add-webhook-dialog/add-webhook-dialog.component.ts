@@ -77,7 +77,9 @@ import { LoggerService } from '@app/core/services/logger.service';
               registrations that specify a non-TLS endpoint.</mat-hint
             >
           } @else {
-            <mat-hint [transloco]="'admin.webhooks.addDialog.urlHint'">HTTPS recommended</mat-hint>
+            <mat-hint [transloco]="'admin.webhooks.addDialog.urlHint'"
+              >HTTPS is required in production deployments.</mat-hint
+            >
           }
           @if (form.get('url')?.hasError('required')) {
             <mat-error>
