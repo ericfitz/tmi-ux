@@ -171,9 +171,13 @@ interface IdentityRow {
         margin-bottom: 16px;
       }
       .provider-user-id {
-        font-family: monospace;
-        font-size: 12px;
+        font-family: var(--font-family-monospace);
+        font-size: var(--font-size-xs);
         color: var(--theme-text-secondary);
+
+        /* provider IDs are opaque LTR tokens; keep them readable in RTL locales */
+        direction: ltr;
+        unicode-bidi: isolate;
       }
       .identities-actions {
         margin-top: 12px;
