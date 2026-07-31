@@ -298,10 +298,11 @@ interface CheckboxChangeEvent {
                       Auto-layout shapes
                     </span>
                   </mat-checkbox>
-                  <p class="preference-hint" [transloco]="'userPreferences.autoLayout.description'">
-                    Automatically resize and position shapes when icons are added, children are
-                    embedded, or shapes are moved.
-                  </p>
+                  <mat-icon
+                    class="preference-help-icon"
+                    [matTooltip]="'userPreferences.autoLayout.description' | transloco"
+                    >help_outline</mat-icon
+                  >
                 </div>
 
                 <div class="preference-item" [class.disabled]="!preferences.autoLayoutEnabled">
@@ -672,11 +673,14 @@ interface CheckboxChangeEvent {
         color: var(--theme-text-primary);
       }
 
-      .preference-hint {
-        margin: 4px 0 0 32px;
-        font-size: 12px;
+      .preference-help-icon {
+        margin-left: 4px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
         color: var(--theme-text-secondary);
-        line-height: 1.4;
+        cursor: help;
       }
 
       .preference-item.disabled .preference-label {
