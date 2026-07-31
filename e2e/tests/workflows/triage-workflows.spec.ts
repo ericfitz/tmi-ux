@@ -8,68 +8,174 @@ import { TriageDetailPage } from '../../pages/triage-detail.page';
 import { ReviewerAssignmentPage } from '../../pages/reviewer-assignment.page';
 import { testConfig } from '../../config/test.config';
 
+interface SeededResponse {
+  id: string;
+  surveyName: string;
+}
+
+type SeedResult = { ok: true; id: string } | { ok: false; step: string; status?: number };
+
 /**
- * Create and submit a survey response against an existing active survey so
- * the triage queue has something to display. Uses the authenticated page's
- * cookies via fetch — idempotent enough: running twice just adds another
- * submitted response.
+ * Create and submit a survey response against an existing active survey, and
+ * optionally transition it to a different triage status. Fails loudly
+ * (throws) on any error instead of warning, and returns the created
+ * response's id so tests can act on the exact response they created rather
+ * than an unscoped `.first()` from the shared triage queue.
  */
-// SEM@88e6a889c33276e0b9d96b4698fbf7d39d4a382b: create and submit a seed survey response via the intake API (mutates shared state)
-async function ensureSubmittedResponse(page: Page): Promise<void> {
-  const apiUrl = testConfig.apiUrl;
-  const result = await page.evaluate(async (api: string) => {
-    const listRes = await fetch(`${api}/intake/surveys?limit=100`, {
-      credentials: 'include',
-    });
-    if (!listRes.ok) return { ok: false, step: 'list', status: listRes.status };
-    const list = await listRes.json();
-    const survey = (list.surveys || []).find(
-      (s: { name: string }) => s.name === 'Simple Workflow Survey',
-    );
-    if (!survey) return { ok: false, step: 'find' };
+// SEM@6a2f9c1b3e5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a: seed a submitted survey response via the intake API and optionally set its triage status (mutates shared state)
+async function seedSurveyResponse(
+  page: Page,
+  apiUrl: string,
+  opts: { surveyName: string; answers: Record<string, unknown>; status?: string },
+): Promise<SeededResponse> {
+  const result: SeedResult = await page.evaluate(
+    async (args: { api: string; surveyName: string; answers: Record<string, unknown> }) => {
+      const listRes = await fetch(`${args.api}/intake/surveys?limit=100`, {
+        credentials: 'include',
+      });
+      if (!listRes.ok) return { ok: false, step: 'list', status: listRes.status };
+      const list = await listRes.json();
+      const survey = (list.surveys || []).find((s: { name: string }) => s.name === args.surveyName);
+      if (!survey) return { ok: false, step: 'find' };
 
-    const createRes = await fetch(`${api}/intake/survey_responses`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ survey_id: survey.id, is_confidential: false }),
-    });
-    if (!createRes.ok) return { ok: false, step: 'create', status: createRes.status };
-    const draft = await createRes.json();
+      const createRes = await fetch(`${args.api}/intake/survey_responses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ survey_id: survey.id, is_confidential: false }),
+      });
+      if (!createRes.ok) return { ok: false, step: 'create', status: createRes.status };
+      const draft = await createRes.json();
 
-    const answersRes = await fetch(`${api}/intake/survey_responses/${draft.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        answers: {
-          system_name: 'E2E Triage Seed',
-          review_reason: 'Automated triage test seed',
-          urgency: 'medium',
-        },
-        survey_id: survey.id,
-      }),
-    });
-    if (!answersRes.ok) return { ok: false, step: 'answers', status: answersRes.status };
+      const answersRes = await fetch(`${args.api}/intake/survey_responses/${draft.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ answers: args.answers, survey_id: survey.id }),
+      });
+      if (!answersRes.ok) return { ok: false, step: 'answers', status: answersRes.status };
 
-    const submitRes = await fetch(`${api}/intake/survey_responses/${draft.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json-patch+json' },
-      credentials: 'include',
-      body: JSON.stringify([{ op: 'replace', path: '/status', value: 'submitted' }]),
-    });
-    if (!submitRes.ok) return { ok: false, step: 'submit', status: submitRes.status };
-    return { ok: true };
-  }, apiUrl);
+      const submitRes = await fetch(`${args.api}/intake/survey_responses/${draft.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json-patch+json' },
+        credentials: 'include',
+        body: JSON.stringify([{ op: 'replace', path: '/status', value: 'submitted' }]),
+      });
+      if (!submitRes.ok) return { ok: false, step: 'submit', status: submitRes.status };
+      return { ok: true, id: draft.id as string };
+    },
+    { api: apiUrl, surveyName: opts.surveyName, answers: opts.answers },
+  );
 
   if (!result.ok) {
-    // eslint-disable-next-line no-console
-    console.warn('[triage beforeAll] failed to seed submitted response', result);
+    throw new Error(
+      `Failed to seed a submitted survey_response for "${opts.surveyName}": ${JSON.stringify(result)}`,
+    );
   }
+
+  if (opts.status && opts.status !== 'submitted') {
+    await setTriageResponseStatus(page, apiUrl, result.id, opts.status);
+  }
+
+  return { id: result.id, surveyName: opts.surveyName };
+}
+
+// SEM@6a2f9c1b3e5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a: patch a survey response's triage status via the reviewer API (mutates shared state)
+async function setTriageResponseStatus(
+  page: Page,
+  apiUrl: string,
+  responseId: string,
+  status: string,
+): Promise<void> {
+  const result = await page.evaluate(
+    async (args: { api: string; id: string; status: string }) => {
+      const res = await fetch(`${args.api}/triage/survey_responses/${args.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json-patch+json' },
+        credentials: 'include',
+        body: JSON.stringify([{ op: 'replace', path: '/status', value: args.status }]),
+      });
+      return { ok: res.ok, status: res.status };
+    },
+    { api: apiUrl, id: responseId, status },
+  );
+  if (!result.ok) {
+    throw new Error(
+      `Failed to set survey_response ${responseId} status to "${status}": HTTP ${result.status}`,
+    );
+  }
+}
+
+// SEM@6a2f9c1b3e5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a: fetch a survey response's current triage status via the reviewer API (pure)
+async function fetchTriageResponseStatus(
+  page: Page,
+  apiUrl: string,
+  responseId: string,
+): Promise<string | null> {
+  return page.evaluate(
+    async (args: { api: string; id: string }) => {
+      const res = await fetch(`${args.api}/triage/survey_responses/${args.id}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return null;
+      const body = await res.json();
+      return (body.status as string) ?? null;
+    },
+    { api: apiUrl, id: responseId },
+  );
+}
+
+type CreateTmResult = { ok: true; id: string } | { ok: false; status: number };
+
+// SEM@6a2f9c1b3e5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a: create a threat model with no assigned reviewer via the API, guaranteeing a row in the assignment queue (mutates shared state)
+async function createUnassignedThreatModel(
+  page: Page,
+  apiUrl: string,
+  name: string,
+): Promise<string> {
+  const result: CreateTmResult = await page.evaluate(
+    async (args: { api: string; name: string }) => {
+      const res = await fetch(`${args.api}/threat_models`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: args.name }),
+      });
+      if (!res.ok) return { ok: false, status: res.status };
+      const body = await res.json();
+      return { ok: true, id: body.id as string };
+    },
+    { api: apiUrl, name },
+  );
+  if (!result.ok) {
+    throw new Error(`Failed to create seed threat model "${name}": HTTP ${result.status}`);
+  }
+  return result.id;
+}
+
+// SEM@6a2f9c1b3e5d7f9a1c3e5b7d9f1a3c5e7b9d1f3a: fetch a threat model via the API to read back its security_reviewer (pure)
+async function fetchThreatModel(
+  page: Page,
+  apiUrl: string,
+  id: string,
+): Promise<{ security_reviewer?: unknown } | null> {
+  return page.evaluate(
+    async (args: { api: string; id: string }) => {
+      const res = await fetch(`${args.api}/threat_models/${args.id}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    { api: apiUrl, id },
+  );
 }
 
 test.describe.serial('Triage Workflows', () => {
   test.setTimeout(60000);
+
+  const apiUrl = testConfig.apiUrl;
+  const seedSuffix = Date.now();
 
   let context: BrowserContext;
   let page: Page;
@@ -79,6 +185,13 @@ test.describe.serial('Triage Workflows', () => {
   let triagePage: TriagePage;
   let detailPage: TriageDetailPage;
   let assignmentPage: ReviewerAssignmentPage;
+
+  // Seeded, independently-identifiable response. Tests act on it by id
+  // instead of on `.first()` from the shared, unscoped triage queue. Two
+  // further responses (a different template, a different status) are
+  // seeded in beforeAll purely so the filter test has a known row to
+  // exclude — their ids aren't otherwise referenced.
+  let seedSubmitted: SeededResponse;
 
   test.beforeAll(async ({ browser }, testInfo) => {
     testInfo.setTimeout(60000);
@@ -93,10 +206,31 @@ test.describe.serial('Triage Workflows', () => {
 
     await new AuthFlow(page).loginAs('test-reviewer');
 
-    // Ensure the submitted response is created from a logged-in origin so
-    // same-site cookies are available to fetch.
+    // Seed responses from a logged-in origin so same-site cookies are
+    // available to fetch.
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
-    await ensureSubmittedResponse(page);
+
+    seedSubmitted = await seedSurveyResponse(page, apiUrl, {
+      surveyName: 'Simple Workflow Survey',
+      answers: {
+        system_name: `E2E Triage Seed Submitted ${seedSuffix}`,
+        review_reason: 'Automated triage test seed',
+        urgency: 'medium',
+      },
+    });
+    await seedSurveyResponse(page, apiUrl, {
+      surveyName: 'Kitchen Sink Survey',
+      answers: { project_name: `E2E Triage Seed Kitchen Sink ${seedSuffix}` },
+    });
+    await seedSurveyResponse(page, apiUrl, {
+      surveyName: 'Simple Workflow Survey',
+      answers: {
+        system_name: `E2E Triage Seed Revision ${seedSuffix}`,
+        review_reason: 'Automated triage test seed',
+        urgency: 'low',
+      },
+      status: 'needs_revision',
+    });
   });
 
   test.afterAll(async () => {
@@ -107,37 +241,49 @@ test.describe.serial('Triage Workflows', () => {
     await page.goto('/triage');
     await page.waitForLoadState('networkidle');
 
-    // Verify seeded submitted response is visible
-    await expect(triagePage.responseRows().first()).toBeVisible({
-      timeout: 10000,
-    });
+    const submittedRow = triagePage
+      .responseRows()
+      .filter({ hasText: 'Simple Workflow Survey' })
+      .filter({ hasText: 'Submitted' });
+    const needsRevisionRow = triagePage.responseRows().filter({ hasText: 'Needs revision' });
+    const kitchenSinkRow = triagePage.responseRows().filter({ hasText: 'Kitchen Sink Survey' });
 
-    // Filter by status (submitted)
-    await triageFlow.filterByStatus('Submitted');
-    await expect(triagePage.responseRows().first()).toBeVisible();
+    // Default filter (status = Submitted) shows submitted responses and
+    // hides the needs-revision seed.
+    await expect(submittedRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(needsRevisionRow).toHaveCount(0);
 
-    // Filter by template
+    // Status filter: switching to "Needs revision" flips which rows show.
+    await triageFlow.setStatusFilter(['Needs revision']);
+    await expect(needsRevisionRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(submittedRow).toHaveCount(0);
+
+    // Restore the submitted-only view before checking the template filter,
+    // so each filter is exercised from a known baseline.
+    await triageFlow.setStatusFilter(['Submitted']);
+    await expect(submittedRow.first()).toBeVisible({ timeout: 10000 });
+
+    // Template filter: narrowing to "Simple Workflow Survey" hides the
+    // Kitchen Sink seed.
     await triageFlow.filterByTemplate('Simple Workflow Survey');
-    await expect(triagePage.responseRows().first()).toBeVisible();
+    await expect(submittedRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(kitchenSinkRow).toHaveCount(0);
 
-    // Search by submitter
-    await triageFlow.searchByName('Test User');
-    await expect(triagePage.responseRows().first()).toBeVisible();
-
-    // Clear filters
+    // Submitter/survey search: narrowing to "Kitchen Sink" should show that
+    // seed and hide the Simple Workflow one.
     await triageFlow.clearFilters();
-    await expect(triagePage.responseRows().first()).toBeVisible();
+    await triageFlow.searchByName('Kitchen Sink');
+    await expect(kitchenSinkRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(submittedRow).toHaveCount(0);
+
+    // Clear filters: both submitted-status seeds are visible again.
+    await triageFlow.clearFilters();
+    await expect(submittedRow.first()).toBeVisible({ timeout: 10000 });
+    await expect(kitchenSinkRow.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('view response detail', async () => {
-    await page.goto('/triage');
-    await page.waitForLoadState('networkidle');
-
-    // Click view on the seeded response
-    // Triage rows identify the submitter but not the system_name — click the
-    // first row's view button to inspect the seeded response.
-    await triagePage.responseRows().first().getByTestId('triage-view-button').click();
-    await page.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
+    await page.goto(`/triage/${seedSubmitted.id}`);
     await page.waitForLoadState('networkidle');
 
     // Verify detail page loads with expected data. The triage detail page
@@ -148,37 +294,27 @@ test.describe.serial('Triage Workflows', () => {
   });
 
   test('return for revision', async () => {
-    // Should already be on the detail page from previous test
-    // If not, navigate there
-    if (!page.url().includes('/triage/')) {
-      await page.goto('/triage');
-      await page.waitForLoadState('networkidle');
-      // Triage rows identify the submitter but not the system_name — click the
-    // first row's view button to inspect the seeded response.
-    await triagePage.responseRows().first().getByTestId('triage-view-button').click();
-      await page.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
-      await page.waitForLoadState('networkidle');
-    }
+    await page.goto(`/triage/${seedSubmitted.id}`);
+    await page.waitForLoadState('networkidle');
 
-    await detailFlow.returnForRevision(
-      'Please provide more detail about the architecture'
-    );
+    await detailFlow.returnForRevision('Please provide more detail about the architecture');
 
-    // Verify status changed to needs_revision
+    // Verify status changed to needs_revision in the UI and via an
+    // independent API read-back.
     await expect(detailPage.status()).toContainText(/revision/i, {
       timeout: 10000,
     });
+    await expect
+      .poll(() => fetchTriageResponseStatus(page, apiUrl, seedSubmitted.id), {
+        message: `expected survey_response ${seedSubmitted.id} to reach needs-revision`,
+        timeout: 10000,
+      })
+      .toMatch(/revision/i);
   });
 
   test('triage notes', async () => {
-    // Should still be on detail page
-    if (!page.url().includes('/triage/')) {
-      await page.goto('/triage');
-      await page.waitForLoadState('networkidle');
-      await triagePage.responseRows().first().click();
-      await page.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
-      await page.waitForLoadState('networkidle');
-    }
+    await page.goto(`/triage/${seedSubmitted.id}`);
+    await page.waitForLoadState('networkidle');
 
     const noteName = `E2E Note ${Date.now()}`;
     const noteContent = '## Review Findings\n\nInitial triage notes from E2E test.';
@@ -206,41 +342,51 @@ test.describe.serial('Triage Workflows', () => {
   });
 
   test('reviewer assignment', async () => {
+    // Seed a threat model with no reviewer assigned and status != closed, so
+    // the Unassigned Reviews tab always has a deterministic row to act on.
+    const tmName = `E2E Assignment Seed ${Date.now()}`;
+    const tmId = await createUnassignedThreatModel(page, apiUrl, tmName);
+
     await page.goto('/triage');
     await page.waitForLoadState('networkidle');
 
     await assignmentFlow.switchToAssignmentTab();
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    // If the assignment list API returned 403, the page shows an
-    // "Unauthorized Access" card. test-reviewer does not reliably have
-    // permission on every server config — if the card appears (or appears
-    // up to a few seconds later), accept and exit.
+    // If the assignment list API returns 403, the whole tab shows an
+    // "Unauthorized Access" card — test-reviewer does not reliably have
+    // permission on every server config. Skip explicitly (visible as
+    // skipped, not a silent pass) rather than returning.
     const forbidden = page.getByText(/Unauthorized Access|403 Forbidden/i);
-    if (await forbidden.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-      return;
-    }
-    // Also bail if the URL redirected to a forbidden route.
-    if (/forbidden|error|unauthorized/i.test(page.url())) {
-      return;
-    }
+    const isForbidden = await forbidden
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.skip(
+      isForbidden || /forbidden|error|unauthorized/i.test(page.url()),
+      'test-reviewer is not authorized for reviewer assignment in this environment',
+    );
 
-    const rows = assignmentPage.tmRows();
-    const rowCount = await rows.count();
-    if (rowCount === 0) return;
+    const row = assignmentPage.tmRow(tmName);
+    await expect(row).toBeVisible({ timeout: 15000 });
 
-    const firstRowName = await rows.first().locator('.tm-name').textContent();
-    if (!firstRowName) return;
-    // Guard against Forbidden showing up mid-assignment.
-    if (await forbidden.first().isVisible({ timeout: 500 }).catch(() => false)) {
-      return;
-    }
-    try {
-      await assignmentFlow.assignToMe(firstRowName.trim());
-      await page.waitForLoadState('networkidle');
-    } catch {
-      // Assignment failed (typically 403 after a stale row click) — the
-      // feature isn't meaningful for test-reviewer on this server. Pass.
-    }
+    await assignmentFlow.assignToMe(tmName);
+
+    // The row must drop out of the *unassigned* list once assigned...
+    await expect(row).toHaveCount(0, { timeout: 10000 });
+
+    // ...and an independent API read-back must confirm a reviewer landed.
+    await expect
+      .poll(
+        async () => {
+          const tm = await fetchThreatModel(page, apiUrl, tmId);
+          return tm?.security_reviewer ?? null;
+        },
+        {
+          message: `expected threat model ${tmId} to have a security_reviewer assigned`,
+          timeout: 10000,
+        },
+      )
+      .toBeTruthy();
   });
 });
