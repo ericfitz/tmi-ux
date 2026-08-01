@@ -38,6 +38,11 @@ overrides:
   vite@>=7.0.0: '>=7.3.5'
   '@angular/build>vite': ^8.2.0
 
+patchedDependencies:
+  '@antv/x6@3.1.7':
+    hash: 9b3c54e6369bae06dc0b14b8d7f07805061ca86305660d77636d3629446d0320
+    path: patches/@antv__x6@3.1.7.patch
+
 importers:
 
   .:
@@ -70,26 +75,8 @@ importers:
         specifier: ^22.1.0
         version: 22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
       '@antv/x6':
-        specifier: 2.19.2
-        version: 2.19.2
-      '@antv/x6-plugin-clipboard':
-        specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.19.2)
-      '@antv/x6-plugin-export':
-        specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.19.2)
-      '@antv/x6-plugin-history':
-        specifier: ^2.2.4
-        version: 2.2.4(@antv/x6@2.19.2)
-      '@antv/x6-plugin-selection':
-        specifier: ^2.2.2
-        version: 2.2.2(@antv/x6@2.19.2)
-      '@antv/x6-plugin-snapline':
-        specifier: ^2.1.7
-        version: 2.1.7(@antv/x6@2.19.2)
-      '@antv/x6-plugin-transform':
-        specifier: ^2.1.8
-        version: 2.1.8(@antv/x6@2.19.2)
+        specifier: 3.1.7
+        version: 3.1.7(patch_hash=9b3c54e6369bae06dc0b14b8d7f07805061ca86305660d77636d3629446d0320)
       '@jsverse/transloco':
         specifier: ^8.4.0
         version: 8.4.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)(typescript@6.0.3)
@@ -530,44 +517,9 @@ packages:
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
 
-  '@antv/x6-common@2.0.17':
-    resolution: {integrity: sha512-37g7vmRkNdYzZPdwjaMSZEGv/MMH0S4r70/Jwoab1mioycmuIBN73iyziX8m56BvJSDucZ3J/6DU07otWqzS6A==}
-
-  '@antv/x6-geometry@2.0.5':
-    resolution: {integrity: sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==}
-
-  '@antv/x6-plugin-clipboard@2.1.6':
-    resolution: {integrity: sha512-roZPLnZx6PK8MBvee0QMo90fz/TXeF0WNe4EGin2NBq5M1I5XTWrYvA6N2XVIiWAAI67gjQeEE8TpkL7f8QdqA==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-export@2.1.6':
-    resolution: {integrity: sha512-m0ukMmZhrFE5n7uCR43DVQBdiUfpjGN+vm1mc+6RTZdHK8pa6Mxr0RZztaxPy34YA4tli+bGY3ePslsNPfh6PQ==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-history@2.2.4':
-    resolution: {integrity: sha512-9gHHvEW4Fla+1hxUV49zNgJyIMoV9CjVM52MrFgAJcvyRn1Kvxz4MfxiKlG+DEZUs+/zvfjl9pS6gJOd8laRkg==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-selection@2.2.2':
-    resolution: {integrity: sha512-s2gtR9Onlhr7HOHqyqg0d+4sG76JCcQEbvrZZ64XmSChlvieIPlC3YtH4dg1KMNhYIuBmBmpSum6S0eVTEiPQw==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-snapline@2.1.7':
-    resolution: {integrity: sha512-AsysoCb9vES0U2USNhEpYuO/W8I0aYfkhlbee5Kt4NYiMfQfZKQyqW/YjDVaS2pm38C1NKu1LdPVk/BBr4CasA==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6-plugin-transform@2.1.8':
-    resolution: {integrity: sha512-GvJuiJ4BKp0H7+qx3R1I+Vzbw5gXp9+oByXo/WyVxE3urOC7LC5sqnaDfIjyYMN6ROLPYPZraLSeSyYBgMgcDw==}
-    peerDependencies:
-      '@antv/x6': ^2.x
-
-  '@antv/x6@2.19.2':
-    resolution: {integrity: sha512-lr9sUAlrR7eSVANru8kUNZUqCRl7eOCgb36M61FMDonUYREwkHpRN+0zq+1egSSOdz3HHSDBjs7UMtGH1ZEg2w==}
+  '@antv/x6@3.1.7':
+    resolution: {integrity: sha512-NLKXtbCK51oLbazfFD0XsD93rMmih08UBW4gAuEyLBpwAqHmHe+vP8VhOZDkl5O9jV1LSv85IJghr9CT5tZjWw==}
+    engines: {node: '>=20.0.0'}
 
   '@asamuzakjp/css-color@6.0.5':
     resolution: {integrity: sha512-mbhpPMmnw/kwW19aRNmSUl1QzLbdGo1SCuE49BT98MNwqF6zaHb3o2owssFc/PEO/4t2UjqtCNwocuDtJornzA==}
@@ -2988,6 +2940,9 @@ packages:
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
+  dom-align@1.12.4:
+    resolution: {integrity: sha512-R8LUSEay/68zE5c8/3BDxiTEvgb4xZTF0RKmAHfiEVN3klfIpXfi2/QCoiWPccVQ0J/ZGdz9OjzL4uJEP/MRAw==}
+
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
 
@@ -3835,6 +3790,9 @@ packages:
     resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
     engines: {node: '>=10'}
     hasBin: true
+
+  mousetrap@1.6.5:
+    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -5172,41 +5130,11 @@ snapshots:
       package-manager-detector: 1.7.0
       tinyexec: 1.2.4
 
-  '@antv/x6-common@2.0.17':
+  '@antv/x6@3.1.7(patch_hash=9b3c54e6369bae06dc0b14b8d7f07805061ca86305660d77636d3629446d0320)':
     dependencies:
+      dom-align: 1.12.4
       lodash-es: 4.18.1
-      utility-types: 3.11.0
-
-  '@antv/x6-geometry@2.0.5': {}
-
-  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6-plugin-export@2.1.6(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6-plugin-history@2.2.4(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6-plugin-selection@2.2.2(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.19.2)':
-    dependencies:
-      '@antv/x6': 2.19.2
-
-  '@antv/x6@2.19.2':
-    dependencies:
-      '@antv/x6-common': 2.0.17
-      '@antv/x6-geometry': 2.0.5
+      mousetrap: 1.6.5
       utility-types: 3.11.0
 
   '@asamuzakjp/css-color@6.0.5':
@@ -7306,6 +7234,8 @@ snapshots:
 
   dom-accessibility-api@0.5.16: {}
 
+  dom-align@1.12.4: {}
+
   dom-serializer@2.0.0:
     dependencies:
       domelementtype: 2.3.0
@@ -8164,6 +8094,8 @@ snapshots:
   minipass@7.1.3: {}
 
   mkdirp@3.0.1: {}
+
+  mousetrap@1.6.5: {}
 
   mrmime@2.0.1: {}
 
