@@ -23,10 +23,12 @@ For each duplicate, we:
 ### 1. tslib (1.14.1 + 2.8.1) -- RESOLVED
 
 **Consumers:**
+
 - tslib@2.8.1: Angular, rxjs, and 60+ other packages
 - tslib@1.14.1: pdf-lib@1.17.1 (`^1.11.1`), tsyringe@4.10.0 (`^1.9.3`)
 
 **Breaking changes in 2.x:**
+
 - `__exportStar`/`__importStar` changed to use `__createBinding` (getter-based vs direct assignment)
 - Only affects code compiled with TypeScript <=3.8 that does complex `export *` re-export patterns
 - All helper functions from 1.x preserved; 2.x is a strict superset (adds 9 new helpers)
@@ -42,10 +44,12 @@ For each duplicate, we:
 ### 2. marked (16.4.2 + 17.0.5) -- RESOLVED
 
 **Consumers:**
+
 - marked@17.0.5: our direct dep, ngx-markdown@21.1.0
 - marked@16.4.2: mermaid@11.13.0 (`^16.3.0`)
 
 **Breaking changes in 17.0.0 (single PR #3755):**
+
 1. `parser.parse()` `top` parameter removed
 2. Consecutive text token handling in lists removed from parser (moved to tokenizer)
 3. `listItem` renderer simplified -- checkbox HTML no longer injected inline
@@ -63,15 +67,18 @@ For each duplicate, we:
 ### 3. uuid (8.3.2 + 11.1.0 + 13.0.0) -- NOT RESOLVED
 
 **Consumers:**
+
 - uuid@13.0.0: our direct dep
 - uuid@11.1.0: mermaid@11.13.0 (`^11.1.0`) -- production
 - uuid@8.3.2: sockjs@0.3.24 (`^8.3.2`) -- dev only (via webpack-dev-server)
 
 **Breaking changes:**
+
 - v12.0.0: **CJS removed entirely.** `require('uuid')` throws `ERR_REQUIRE_ESM`
 - v13.0.0: Fixed export map ordering (browser build as default)
 
 **Assessment:**
+
 - Mermaid: **No risk** -- mermaid bundles uuid@11.1.0 inline in its dist files. A pnpm override would have zero effect on the actual code that runs.
 - sockjs: **High risk** -- uses `require('uuid').v4` (CJS). Forcing uuid@13 would crash `pnpm run dev` with `ERR_REQUIRE_ESM`.
 
@@ -84,10 +91,12 @@ For each duplicate, we:
 ### 4. pako (0.2.9 + 1.0.11) -- RESOLVED
 
 **Consumers:**
+
 - pako@1.0.11: pdf-lib@1.17.1 and sub-packages (`^1.0.4`)
 - pako@0.2.9: unicode-trie@2.0.0 via fontkit@2.0.4 (`~0.2.8`)
 
 **Breaking changes in 1.0.0:**
+
 - None. The 1.0.0 release was explicitly described as a "maintenance release (semver, coding style)." The public API is identical.
 - v0.2.9 was actually a backport of the v1.0.2 bug fix -- the two versions are functionally equivalent.
 
@@ -102,10 +111,12 @@ For each duplicate, we:
 ### 5. iconv-lite (0.6.3 + 0.7.2) -- RESOLVED
 
 **Consumers:**
+
 - iconv-lite@0.7.2: express body-parser (via raw-body)
 - iconv-lite@0.6.3: d3-dsv@3.0.1 via mermaid -> d3 (`"iconv-lite": "0.6"`)
 
 **Breaking changes in 0.7.0:**
+
 - Dropped Node.js <18 support (removed `safe-buffer` and `object-assign` polyfills)
 - Core `decode()`/`encode()` API unchanged
 - Project moved from `ashtuchkin/iconv-lite` to `pillarjs/iconv-lite`
@@ -121,10 +132,12 @@ For each duplicate, we:
 ### 6. cosmiconfig (8.3.6 + 9.0.1) -- RESOLVED
 
 **Consumers:**
+
 - cosmiconfig@9.0.1: postcss-loader, stylelint
 - cosmiconfig@8.3.6: @jsverse/transloco-utils@8.2.1 (`^8.1.3`)
 
 **Breaking changes in 9.0.0:**
+
 1. Default `searchStrategy` changed from upward traversal to `'none'` (current directory only)
 2. Meta config file lookup location moved to `.config` subfolder
 3. `searchPlaces` merging behavior changed in meta config
@@ -141,16 +154,23 @@ For each duplicate, we:
 
 The remaining ~123 duplicates are in dev-only dependency chains (webpack, babel, eslint, Angular CLI tooling, etc.). These do not affect the production bundle and are caused by upstream packages pinning older versions. Notable examples:
 
-| Duplicate | Cause |
-|-----------|-------|
-| express 4.22.1 + 5.2.1 | webpack-dev-server pins express `^4.22.1` |
-| vite 7.3.1 + 8.0.3 | @angular/build hard-pins vite 7.3.1 |
-| glob 7.2.3 + 13.0.6 | e18e's own dep tree pulls glob 7 via rimraf@2.6.3 |
-| rolldown rc.4 + rc.12 | @angular/build vs vite 8 use different rolldown versions |
-| semver 5.7.2 + 6.3.1 + 7.7.4 | babel pins 6.x, make-dir pins 5.x |
-| chokidar 3.6.0 + 4.0.3 + 5.0.0 | webpack-dev-server, sass, Angular use different majors |
+| Duplicate                      | Cause                                                    |
+| ------------------------------ | -------------------------------------------------------- |
+| express 4.22.1 + 5.2.1         | webpack-dev-server pins express `^4.22.1`                |
+| vite 7.3.1 + 8.0.3             | @angular/build hard-pins vite 7.3.1                      |
+| glob 7.2.3 + 13.0.6            | e18e's own dep tree pulls glob 7 via rimraf@2.6.3        |
+| rolldown rc.4 + rc.12          | @angular/build vs vite 8 use different rolldown versions |
+| semver 5.7.2 + 6.3.1 + 7.7.4   | babel pins 6.x, make-dir pins 5.x                        |
+| chokidar 3.6.0 + 4.0.3 + 5.0.0 | webpack-dev-server, sass, Angular use different majors   |
 
 ## Summary of Changes
+
+<!-- STATUS (2026-08-01 review): these five overrides were added in 29dc9423 but were
+silently DROPPED two days later by merge ee5726d9 ("chore: merge main into dev/1.4.0",
+2026-03-30) during conflict resolution on package.json. None of them are present in the
+current overrides block. Note the analysis is now partially stale: marked is a direct
+dependency at ^18.x (the ^17.0.5 override no longer applies as written), so re-validate
+each override against the current tree before re-applying. -->
 
 **pnpm overrides added in package.json:**
 
