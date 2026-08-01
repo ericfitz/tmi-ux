@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node, Edge, Cell } from '@antv/x6';
-import { Selection } from '@antv/x6-plugin-selection';
-import { Transform } from '@antv/x6-plugin-transform';
+import { Graph, Node, Edge, Cell, Selection, Transform } from '@antv/x6';
 import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';

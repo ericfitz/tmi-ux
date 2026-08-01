@@ -22,13 +22,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Graph, Node, Edge, Cell } from '@antv/x6';
-import '@antv/x6-plugin-export';
-import { Export } from '@antv/x6-plugin-export';
-import { Snapline } from '@antv/x6-plugin-snapline';
-import { Transform } from '@antv/x6-plugin-transform';
-import '@antv/x6-plugin-clipboard';
-import { Clipboard } from '@antv/x6-plugin-clipboard';
+import { Graph, Node, Edge, Cell, Export, Snapline, Transform, Clipboard } from '@antv/x6';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';

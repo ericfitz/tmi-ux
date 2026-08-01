@@ -13,7 +13,6 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError, combineLatest } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import '@antv/x6-plugin-export';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';

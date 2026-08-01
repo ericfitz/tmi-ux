@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Edge, Node } from '@antv/x6';
+import { Edge, Node, type EdgeProperties } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -263,7 +263,7 @@ export class InfraEdgeService {
    * Ensure edge has proper attrs structure for visual rendering
    */
   // SEM@5f881a84d0935fecd8e018eac99b16974e7641c9: build edge visual attrs with required connection and stroke defaults when missing (pure)
-  private _ensureEdgeAttrs(attrs: Edge.Properties['attrs']): Edge.Properties['attrs'] {
+  private _ensureEdgeAttrs(attrs: EdgeProperties['attrs']): EdgeProperties['attrs'] {
     // If attrs is empty or missing critical styling, provide defaults.
     // The 'lines' group selector targets both 'wrap' and 'line' paths
     // (via groupSelector in markup) — connection: true is an X6 runtime

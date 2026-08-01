@@ -20,16 +20,16 @@
 
 ## Verified v3 facts (from the shipped 3.1.7 tarball, not guesswork)
 
-| v2 usage                                                                       | v3 replacement                                                                                        | Where used                          |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `import { Snapline/Transform/Export/Clipboard } from '@antv/x6-plugin-*'`      | same names `from '@antv/x6'`                                                                          | `infra-x6-graph.adapter.ts:26-31`   |
-| `import { Selection, Transform } from '@antv/x6-plugin-*'`                     | same names `from '@antv/x6'`                                                                          | `infra-x6-selection.adapter.ts:3-4` |
-| `Edge.Properties` (namespace type — **removed**, TS2702)                       | flat `EdgeProperties` interface                                                                       | `infra-edge.service.ts:266` (×2)    |
-| `Markup.JSONMarkup`                                                            | flat `MarkupJSONMarkup` type                                                                          | `edge-markup.util.ts:12`            |
-| `Shape.Rect.define` / `Shape.Edge.define`                                      | unchanged (`Shape` is still a module-object export)                                                   | `infra-x6-shape-definitions.ts`     |
-| `Cell, Edge, Graph, Model, Node, NumberExt, Shape, Markup` value/class imports | all still exported from core                                                                          | 76 files — no change needed         |
-| `.transition()` animation API (removed in v3)                                  | not used anywhere in src (verified)                                                                   | —                                   |
-| `panning` now default-enabled                                                  | we already configure panning explicitly in `infra-x6-graph.adapter.ts` (~L369) — verify, don't change | —                                   |
+| v2 usage                                                                       | v3 replacement                                                                                                                                                                                      | Where used                          |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `import { Snapline/Transform/Export/Clipboard } from '@antv/x6-plugin-*'`      | same names `from '@antv/x6'`                                                                                                                                                                        | `infra-x6-graph.adapter.ts:26-31`   |
+| `import { Selection, Transform } from '@antv/x6-plugin-*'`                     | same names `from '@antv/x6'`                                                                                                                                                                        | `infra-x6-selection.adapter.ts:3-4` |
+| `Edge.Properties` (namespace type — **removed**, TS2702)                       | flat `EdgeProperties` interface                                                                                                                                                                     | `infra-edge.service.ts:266` (×2)    |
+| `Markup.JSONMarkup`                                                            | `MarkupJSONMarkup` type exists in v3 but 3.1.7's public barrel (`lib/view/index.d.ts`) does not re-export it — deep import from `@antv/x6/lib/view/markup` required until the pnpm patch is dropped | `edge-markup.util.ts:12`            |
+| `Shape.Rect.define` / `Shape.Edge.define`                                      | unchanged (`Shape` is still a module-object export)                                                                                                                                                 | `infra-x6-shape-definitions.ts`     |
+| `Cell, Edge, Graph, Model, Node, NumberExt, Shape, Markup` value/class imports | all still exported from core                                                                                                                                                                        | 76 files — no change needed         |
+| `.transition()` animation API (removed in v3)                                  | not used anywhere in src (verified)                                                                                                                                                                 | —                                   |
+| `panning` now default-enabled                                                  | we already configure panning explicitly in `infra-x6-graph.adapter.ts` (~L369) — verify, don't change                                                                                               | —                                   |
 
 Behavioral note for testing: in v3, when panning and the Selection plugin conflict, **selection takes priority**. We use both; E2E + manual smoke must confirm rubber-band select and canvas pan still behave as before.
 
@@ -51,7 +51,7 @@ Behavioral note for testing: in v3, when panning and the Selection plugin confli
 **Interfaces:**
 
 - Consumes: nothing (first task)
-- Produces: an installed `@antv/x6@3.1.7` that loads under Node ESM; plugin packages gone. Later tasks assume `import { EdgeProperties, MarkupJSONMarkup, Export, Snapline, Transform, Clipboard, Selection } from '@antv/x6'` resolves.
+- Produces: an installed `@antv/x6@3.1.7` that loads under Node ESM; plugin packages gone. Later tasks assume `import { EdgeProperties, Export, Snapline, Transform, Clipboard, Selection } from '@antv/x6'` resolves; `MarkupJSONMarkup` is not part of the barrel and instead resolves via deep import from `@antv/x6/lib/view/markup` (see Verified v3 facts).
 
 - [ ] **Step 1: Create the feature branch**
 
@@ -197,7 +197,9 @@ If nothing else in the file still uses `Edge` as a value after this change, drop
 import { Markup } from '@antv/x6';
 export function getEdgeMarkup(): Markup.JSONMarkup[] {
 // After
-import type { MarkupJSONMarkup } from '@antv/x6';
+// v3.1.7's public barrel (lib/view/index.d.ts) re-exports the `Markup` value but not the
+// `MarkupJSONMarkup` type; deep import is intentional. Revisit when the pnpm patch is dropped.
+import type { MarkupJSONMarkup } from '@antv/x6/lib/view/markup';
 export function getEdgeMarkup(): MarkupJSONMarkup[] {
 ```
 
