@@ -18,6 +18,8 @@ Render the `share_with_application` remediation as a card with copy-pasteable Mi
 ## Non-goals
 
 - Refactoring `AccessDiagnosticsPanelComponent` into a generic `RemediationCardComponent` — tracked separately in [#655](https://github.com/ericfitz/tmi-ux/issues/655).
+  <!-- RESOLUTION (2026-08-01): #655 completed 2026-05-19. RemediationCardComponent
+  now exists at src/app/shared/components/access-diagnostics-panel/remediation-card/. -->
 - Background polling or WebSocket subscription for access-status flips — manual recheck only.
 - Localization beyond en-US — the existing localization-backfill workflow handles other languages later.
 - A "Check now" button on remediations other than `share_with_application`.
@@ -25,21 +27,22 @@ Render the `share_with_application` remediation as a card with copy-pasteable Mi
 
 ## Existing infrastructure (verified)
 
-| Concern | Location | Status |
-|---|---|---|
-| `Document` model with `access_status`, `access_diagnostics` | `src/app/pages/tm/models/threat-model.model.ts:39-54` | ✅ exists |
-| `AccessRemediation` / `DocumentAccessDiagnostics` types | `src/app/core/models/content-provider.types.ts` (re-exported from `src/app/generated/api-types.d.ts:10157-10190`) | ✅ exists; `share_with_application` and `microsoft_not_shared` are valid enum members |
-| `AccessDiagnosticsPanelComponent` | `src/app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component.ts` | ✅ renders pending banner, loops remediations, dispatches 7 actions; missing `share_with_application` arm |
-| `DocumentEditorDialogComponent` | `src/app/pages/tm/components/document-editor-dialog/document-editor-dialog.component.ts` | ✅ already embeds the panel (template line 21) |
-| `request_access` endpoint | OpenAPI: `POST /threat_models/{tmid}/documents/{docid}/request_access` | ✅ defined in spec; **not currently called from UI** |
-| Copy-to-clipboard | `src/app/shared/utils/clipboard.util.ts` + Angular CDK `Clipboard` | ✅ both available; the panel already uses CDK `Clipboard` |
-| i18n keys for documentAccess remediations | `src/assets/i18n/en-US.json` | ✅ existing keys for the 7 current actions; `shareWithApplication` keys to be added |
+| Concern                                                     | Location                                                                                                          | Status                                                                                                    |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Document` model with `access_status`, `access_diagnostics` | `src/app/pages/tm/models/threat-model.model.ts:39-54`                                                             | ✅ exists                                                                                                 |
+| `AccessRemediation` / `DocumentAccessDiagnostics` types     | `src/app/core/models/content-provider.types.ts` (re-exported from `src/app/generated/api-types.d.ts:10157-10190`) | ✅ exists; `share_with_application` and `microsoft_not_shared` are valid enum members                     |
+| `AccessDiagnosticsPanelComponent`                           | `src/app/shared/components/access-diagnostics-panel/access-diagnostics-panel.component.ts`                        | ✅ renders pending banner, loops remediations, dispatches 7 actions; missing `share_with_application` arm |
+| `DocumentEditorDialogComponent`                             | `src/app/pages/tm/components/document-editor-dialog/document-editor-dialog.component.ts`                          | ✅ already embeds the panel (template line 21)                                                            |
+| `request_access` endpoint                                   | OpenAPI: `POST /threat_models/{tmid}/documents/{docid}/request_access`                                            | ✅ defined in spec; **not currently called from UI**                                                      |
+| Copy-to-clipboard                                           | `src/app/shared/utils/clipboard.util.ts` + Angular CDK `Clipboard`                                                | ✅ both available; the panel already uses CDK `Clipboard`                                                 |
+| i18n keys for documentAccess remediations                   | `src/assets/i18n/en-US.json`                                                                                      | ✅ existing keys for the 7 current actions; `shareWithApplication` keys to be added                       |
 
 ## Architecture
 
 ### New component
 
 **`ShareWithApplicationRemediationComponent`**
+
 - Path: `src/app/shared/components/access-diagnostics-panel/share-with-application-remediation/share-with-application-remediation.component.ts`
 - Standalone, OnPush.
 - `@Input() remediation: AccessRemediation` — the remediation as received from the server. Component narrows `params` internally to the Microsoft shape.
@@ -53,15 +56,18 @@ Render the `share_with_application` remediation as a card with copy-pasteable Mi
 ### Modified components
 
 **`AccessDiagnosticsPanelComponent`**
+
 - Add a template branch that, when a remediation has `action === 'share_with_application'`, renders `<app-share-with-application-remediation>` instead of the standard action-button row.
 - Add a `handleRemediation()` arm for `share_with_application` (no-op; the child handles its own dispatching). Or, equivalently, gate the action-button row in the template so it doesn't render for actions handled by their own card.
 - Add a "Check now" button visible only when `document.access_status === 'pending_access'` AND `document.access_diagnostics?.remediations` is non-empty. Emits a new `@Output() recheck = new EventEmitter<void>()`.
 
 **`DocumentEditorDialogComponent`**
+
 - On dialog open: if the editing document is `pending_access`, GET the latest document state via the document service. Don't block dialog open — show whatever's cached, then patch when the GET resolves. Silently log on failure; the cached view remains.
 - Bind `(recheck)` from the panel: call `requestDocumentAccess(threatModelId, documentId)`, then GET the document on success. Surface success/failure via snackbar.
 
 **Document service** (likely `ThreatModelService` — confirm during implementation)
+
 - Add `requestDocumentAccess(threatModelId, documentId): Observable<Document>` — POSTs to `/threat_models/{tmid}/documents/{docid}/request_access` and returns the updated document.
 - Add `getDocument(threatModelId, documentId): Observable<Document>` if not already present.
 
@@ -109,16 +115,16 @@ en-US only. Other languages picked up by the existing `/localization-backfill` w
 
 ## Edge cases
 
-| Case | Behavior |
-|---|---|
+| Case                                                                                          | Behavior                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Any of `drive_id`, `item_id`, `app_object_id`, `graph_call`, `graph_body` is missing or empty | Render fallback text ("Microsoft remediation details unavailable — contact support"). Log a `LoggerService.warn` since this indicates a server contract violation. |
-| `graph_body` is not valid JSON | Display verbatim in the raw block. PowerShell and curl variants embed it as a single-quoted string verbatim. Do not throw. |
-| Clipboard API unavailable | `clipboard.util.ts` already handles fallback; surface `copyFailed` snackbar if both paths fail. |
-| `request_access` POST fails (network, 4xx, 5xx) | `action.checkNow.failed` snackbar. Document state unchanged. |
-| `request_access` succeeds but document is still `pending_access` | `action.checkNow.stillPending` snackbar. UI updates with whatever new diagnostic info the server returned. |
-| `request_access` succeeds and document is now `accessible` | `action.checkNow.success` snackbar. Panel hides itself (already conditional on `access_status !== 'accessible'`). |
-| Initial GET on dialog open fails | Silently log via `LoggerService`. Show cached state. Don't block the dialog. |
-| Document was opened with status other than `pending_access` (e.g., `accessible`) | No GET on open. No "Check now" button. |
+| `graph_body` is not valid JSON                                                                | Display verbatim in the raw block. PowerShell and curl variants embed it as a single-quoted string verbatim. Do not throw.                                         |
+| Clipboard API unavailable                                                                     | `clipboard.util.ts` already handles fallback; surface `copyFailed` snackbar if both paths fail.                                                                    |
+| `request_access` POST fails (network, 4xx, 5xx)                                               | `action.checkNow.failed` snackbar. Document state unchanged.                                                                                                       |
+| `request_access` succeeds but document is still `pending_access`                              | `action.checkNow.stillPending` snackbar. UI updates with whatever new diagnostic info the server returned.                                                         |
+| `request_access` succeeds and document is now `accessible`                                    | `action.checkNow.success` snackbar. Panel hides itself (already conditional on `access_status !== 'accessible'`).                                                  |
+| Initial GET on dialog open fails                                                              | Silently log via `LoggerService`. Show cached state. Don't block the dialog.                                                                                       |
+| Document was opened with status other than `pending_access` (e.g., `accessible`)              | No GET on open. No "Check now" button.                                                                                                                             |
 
 ## Testing
 

@@ -1,0 +1,4 @@
+# graphify knowledge-graph exclusions (gitignore syntax)
+# AWS/Azure architecture icon packs: ~1,845 SVG assets with zero graph value.
+# Excluding them keeps semantic extraction from re-queueing them on every update.
+src/assets/architecture-icons/

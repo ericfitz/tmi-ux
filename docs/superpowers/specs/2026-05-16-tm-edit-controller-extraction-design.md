@@ -37,7 +37,7 @@ stays covered by Playwright `workflows` E2E. No backward-compatibility concerns
 ## Approach
 
 A **phased extraction with two checkpoints**. The Phase 2/Phase 4 boundary and
-the dialog-seam mechanism are decided *after* prototyping, not committed up
+the dialog-seam mechanism are decided _after_ prototyping, not committed up
 front. Phases 1 and 2 are each committed independently.
 
 ### Phase 1 — Pure helpers → `TmEditFormattingService`
@@ -102,6 +102,13 @@ extracting all six entity groups into a `TmEntityCrudService` is worth the
 gate.**
 
 ### Phase 4 — Conditional: full entity-CRUD extraction
+
+<!-- RESOLUTION (2026-08-01): Phase 4 was approved and implemented, but decomposed
+into six per-entity services instead of the single TmEntityCrudService named below:
+TmThreatCrudService, TmDiagramCrudService, TmDocumentCrudService,
+TmRepositoryCrudService, TmNoteCrudService, TmAssetCrudService — all in
+src/app/pages/tm/services/, each with its own spec. tm-edit.component.ts injects
+all six. No class named TmEntityCrudService exists in the codebase. -->
 
 Only if Checkpoint 3 approves. New file:
 `src/app/pages/tm/services/tm-entity-crud.service.ts`.

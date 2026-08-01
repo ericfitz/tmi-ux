@@ -1,5 +1,11 @@
 # Admin Audit-Log UI Implementation Plan
 
+<!-- SUPERSEDED (2026-08-01 review): this plan was blocked on server issue tmi#398 and
+replaced by docs/superpowers/plans/2026-06-15-admin-audit-ui.md once tmi#464 published
+the final API contract (response field items→entries, from/to→created_after/created_before).
+Both target the same AdminAuditService; use the 2026-06-15 plan as the record of what
+shipped. -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Admin-only UI with two views (system audit log, cross-TM threat-model audit log) featuring cursor pagination, a route-driven detail side panel with permalinks, filters, and CSV/NDJSON export.
@@ -16,7 +22,7 @@
 
 1. Fetch the server OpenAPI spec (check `.local-projects.json` for the local `tmi` repo path and read `api-schema/tmi-openapi.json`; fallback URL `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/dev/1.4.0/api-schema/tmi-openapi.json`).
 2. Confirm `/admin/audit/system`, `/admin/audit/system/{entry_id}`, `/admin/audit/threat_models`, `/admin/audit/threat_models/{entry_id}` exist.
-3. Diff the published request params and response shapes against the types in Task 1 below (which encode the *proposed* contract: `cursor`/`around`/`limit` params; `{ items, next_cursor, prev_cursor }` responses; `format=csv|ndjson` export). **If they differ, update the types and service params in Tasks 1–3 to match the published spec before proceeding** — the published spec wins. If the endpoints are absent, STOP and report that the work is still blocked.
+3. Diff the published request params and response shapes against the types in Task 1 below (which encode the _proposed_ contract: `cursor`/`around`/`limit` params; `{ items, next_cursor, prev_cursor }` responses; `format=csv|ndjson` export). **If they differ, update the types and service params in Tasks 1–3 to match the published spec before proceeding** — the published spec wins. If the endpoints are absent, STOP and report that the work is still blocked.
 
 All unit tests run against mocks, so Tasks 1–11 can technically proceed before the server ships, but the contract check must happen first to avoid building against a stale guess.
 
@@ -60,6 +66,7 @@ Modify: src/assets/i18n/en-US.json                       # new keys
 ### Task 1: Contract types + AdminAuditService (list/get)
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/models/admin-audit.types.ts`
 - Create: `src/app/pages/admin/audit/services/admin-audit.service.ts`
 - Test: `src/app/pages/admin/audit/services/admin-audit.service.spec.ts`
@@ -241,7 +248,10 @@ describe('AdminAuditService', () => {
   describe('listSystem', () => {
     it('passes filters and cursor as query params', () => {
       service
-        .listSystem({ actor_email: 'admin@example.com', http_method: 'PUT' }, { cursor: 'c1', limit: 20 })
+        .listSystem(
+          { actor_email: 'admin@example.com', http_method: 'PUT' },
+          { cursor: 'c1', limit: 20 },
+        )
         .subscribe(page => expect(page).toEqual(mockSystemPage));
 
       expect(apiService.get).toHaveBeenCalledWith('admin/audit/system', {
@@ -413,6 +423,7 @@ git commit -m "feat(admin): add audit contract types and AdminAuditService (#679
 ### Task 2: ApiService.getBlob
 
 **Files:**
+
 - Modify: `src/app/core/services/api.service.ts` (add method after `getText`, ~line 114)
 - Test: `src/app/core/services/api.service.spec.ts` (append a describe block)
 
@@ -421,21 +432,21 @@ git commit -m "feat(admin): add audit contract types and AdminAuditService (#679
 Append to the existing spec (inside the top-level `describe`, following the file's existing mock pattern — it builds the service from `createTypedMockHttpClient()` etc.):
 
 ```typescript
-  describe('getBlob', () => {
-    it('requests blob response type and returns the blob', () => {
-      const blob = new Blob(['a,b\n1,2'], { type: 'text/csv' });
-      mockHttpClient.get.mockReturnValue(of(blob));
+describe('getBlob', () => {
+  it('requests blob response type and returns the blob', () => {
+    const blob = new Blob(['a,b\n1,2'], { type: 'text/csv' });
+    mockHttpClient.get.mockReturnValue(of(blob));
 
-      let result: Blob | undefined;
-      service.getBlob('admin/audit/system', { format: 'csv' }).subscribe(b => (result = b));
+    let result: Blob | undefined;
+    service.getBlob('admin/audit/system', { format: 'csv' }).subscribe(b => (result = b));
 
-      expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:8080/admin/audit/system', {
-        params: { format: 'csv' },
-        responseType: 'blob',
-      });
-      expect(result).toBe(blob);
+    expect(mockHttpClient.get).toHaveBeenCalledWith('http://localhost:8080/admin/audit/system', {
+      params: { format: 'csv' },
+      responseType: 'blob',
     });
+    expect(result).toBe(blob);
   });
+});
 ```
 
 Note: match the spec file's actual local variable names (`mockHttpClient`, `service`) — read the top of the file first and reuse its setup exactly.
@@ -488,6 +499,7 @@ git commit -m "feat(core): add ApiService.getBlob for authenticated file downloa
 ### Task 3: File-download util + export method
 
 **Files:**
+
 - Create: `src/app/shared/utils/file-download.util.ts`
 - Modify: `src/app/pages/admin/audit/services/admin-audit.service.ts`
 - Test: `src/app/pages/admin/audit/services/admin-audit.service.spec.ts`
@@ -518,23 +530,23 @@ export function saveBlobAsFile(blob: Blob, filename: string): void {
 Append inside `describe('AdminAuditService', ...)`:
 
 ```typescript
-  describe('exportSystem', () => {
-    it('requests a blob with filters plus format param', () => {
-      const blob = new Blob(['{}'], { type: 'application/x-ndjson' });
-      (apiService.getBlob as ReturnType<typeof vi.fn>).mockReturnValue(of(blob));
+describe('exportSystem', () => {
+  it('requests a blob with filters plus format param', () => {
+    const blob = new Blob(['{}'], { type: 'application/x-ndjson' });
+    (apiService.getBlob as ReturnType<typeof vi.fn>).mockReturnValue(of(blob));
 
-      let result: Blob | undefined;
-      service
-        .exportSystem({ actor_email: 'admin@example.com' }, 'ndjson')
-        .subscribe(b => (result = b));
+    let result: Blob | undefined;
+    service
+      .exportSystem({ actor_email: 'admin@example.com' }, 'ndjson')
+      .subscribe(b => (result = b));
 
-      expect(apiService.getBlob).toHaveBeenCalledWith('admin/audit/system', {
-        actor_email: 'admin@example.com',
-        format: 'ndjson',
-      });
-      expect(result).toBe(blob);
+    expect(apiService.getBlob).toHaveBeenCalledWith('admin/audit/system', {
+      actor_email: 'admin@example.com',
+      format: 'ndjson',
     });
+    expect(result).toBe(blob);
   });
+});
 ```
 
 - [ ] **Step 3: Run to verify it fails**
@@ -573,6 +585,7 @@ git commit -m "feat(admin): add system audit export (blob download) (#679)"
 ### Task 4: Routes, admin section card, and master i18n keys
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/admin-audit.routes.ts`
 - Modify: `src/app/app.routes.ts` (admin children array, after the `surveys/:surveyId` entry ~line 203)
 - Modify: `src/app/pages/admin/admin.component.ts` (adminSections array)
@@ -594,8 +607,7 @@ import { Routes } from '@angular/router';
 export const ADMIN_AUDIT_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./audit-logs-page.component').then(c => c.AuditLogsPageComponent),
+    loadComponent: () => import('./audit-logs-page.component').then(c => c.AuditLogsPageComponent),
     children: [
       { path: '', redirectTo: 'system', pathMatch: 'full' },
       {
@@ -615,8 +627,7 @@ export const ADMIN_AUDIT_ROUTES: Routes = [
       },
       {
         path: 'threat-models',
-        loadComponent: () =>
-          import('./tm-audit-view.component').then(c => c.TmAuditViewComponent),
+        loadComponent: () => import('./tm-audit-view.component').then(c => c.TmAuditViewComponent),
         children: [
           {
             path: ':entryId',
@@ -757,6 +768,7 @@ Under the existing `admin.settings` object, add:
 ### Task 5: Shell component (tabs + outlet)
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/audit-logs-page.component.ts`
 - Create: `src/app/pages/admin/audit/audit-logs-page.component.html`
 - Create: `src/app/pages/admin/audit/audit-logs-page.component.scss`
@@ -850,6 +862,7 @@ export class AuditLogsPageComponent {}
 ### Task 6: Filter bar component
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/components/audit-filter-bar/audit-filter-bar.component.ts`
 - Create: `.../audit-filter-bar.component.html`
 - Create: `.../audit-filter-bar.component.scss`
@@ -901,9 +914,7 @@ describe('AuditFilterBarComponent', () => {
     component.selectValues['http_method'] = '';
     component.apply();
 
-    expect(emitted).toEqual([
-      { actor_email: 'admin@example.com', path_prefix: '/admin/settings' },
-    ]);
+    expect(emitted).toEqual([{ actor_email: 'admin@example.com', path_prefix: '/admin/settings' }]);
   });
 
   it('includes ISO date range bounds when set', () => {
@@ -978,11 +989,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TranslocoModule } from '@jsverse/transloco';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 
-import {
-  COMMON_IMPORTS,
-  CORE_MATERIAL_IMPORTS,
-  FORM_MATERIAL_IMPORTS,
-} from '@app/shared/imports';
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserAdminService } from '../../../../../core/services/user-admin.service';
 import { AuditExportFormat } from '../../models/admin-audit.types';
 
@@ -1144,7 +1151,7 @@ Expected: PASS.
     <input matInput [formControl]="actorControl" [matAutocomplete]="actorAuto" />
     <mat-autocomplete #actorAuto="matAutocomplete">
       @for (option of actorOptions; track option) {
-        <mat-option [value]="option">{{ option }}</mat-option>
+      <mat-option [value]="option">{{ option }}</mat-option>
       }
     </mat-autocomplete>
   </mat-form-field>
@@ -1164,28 +1171,23 @@ Expected: PASS.
   </mat-form-field>
 
   @for (field of selectFields; track field.key) {
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>{{ field.labelKey | transloco }}</mat-label>
-      <mat-select [(value)]="selectValues[field.key]">
-        <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
-        @for (opt of field.options; track opt) {
-          <mat-option [value]="opt">
-            @if (field.optionLabelPrefix) {
-              {{ field.optionLabelPrefix + opt | transloco }}
-            } @else {
-              {{ opt }}
-            }
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  }
-
-  @for (field of textFields; track field.key) {
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>{{ field.labelKey | transloco }}</mat-label>
-      <input matInput [(ngModel)]="textValues[field.key]" (keyup.enter)="apply()" />
-    </mat-form-field>
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>{{ field.labelKey | transloco }}</mat-label>
+    <mat-select [(value)]="selectValues[field.key]">
+      <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
+      @for (opt of field.options; track opt) {
+      <mat-option [value]="opt">
+        @if (field.optionLabelPrefix) { {{ field.optionLabelPrefix + opt | transloco }} } @else { {{
+        opt }} }
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  } @for (field of textFields; track field.key) {
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>{{ field.labelKey | transloco }}</mat-label>
+    <input matInput [(ngModel)]="textValues[field.key]" (keyup.enter)="apply()" />
+  </mat-form-field>
   }
 
   <button
@@ -1208,23 +1210,23 @@ Expected: PASS.
   </button>
 
   @if (showExport) {
-    <span class="spacer"></span>
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="exportMenu"
-      [matTooltip]="'adminAudit.export.button' | transloco"
-      [attr.aria-label]="'adminAudit.export.button' | transloco"
-    >
-      <mat-icon>download</mat-icon>
+  <span class="spacer"></span>
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="exportMenu"
+    [matTooltip]="'adminAudit.export.button' | transloco"
+    [attr.aria-label]="'adminAudit.export.button' | transloco"
+  >
+    <mat-icon>download</mat-icon>
+  </button>
+  <mat-menu #exportMenu="matMenu">
+    <button mat-menu-item (click)="onExport('csv')">
+      {{ 'adminAudit.export.csv' | transloco }}
     </button>
-    <mat-menu #exportMenu="matMenu">
-      <button mat-menu-item (click)="onExport('csv')">
-        {{ 'adminAudit.export.csv' | transloco }}
-      </button>
-      <button mat-menu-item (click)="onExport('ndjson')">
-        {{ 'adminAudit.export.ndjson' | transloco }}
-      </button>
-    </mat-menu>
+    <button mat-menu-item (click)="onExport('ndjson')">
+      {{ 'adminAudit.export.ndjson' | transloco }}
+    </button>
+  </mat-menu>
   }
 </div>
 ```
@@ -1260,6 +1262,7 @@ Note: `COMMON_IMPORTS` includes `FormsModule`/`CommonModule` (check `src/app/sha
 ### Task 7: Cursor-paged table component
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/components/audit-table/audit-table.component.ts`
 - Create: `.../audit-table.component.html`
 - Create: `.../audit-table.component.scss`
@@ -1347,20 +1350,10 @@ Expected: FAIL — cannot resolve `./audit-table.component`.
 
 ```typescript
 // src/app/pages/admin/audit/components/audit-table/audit-table.component.ts
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
-import {
-  COMMON_IMPORTS,
-  CORE_MATERIAL_IMPORTS,
-  DATA_MATERIAL_IMPORTS,
-} from '@app/shared/imports';
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /** Column config: header translation key + cell value accessor */
@@ -1451,62 +1444,60 @@ Expected: PASS.
 ```html
 <!-- src/app/pages/admin/audit/components/audit-table/audit-table.component.html -->
 @if (loading) {
-  <div class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+<div class="loading-container">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
 } @else if (error) {
-  <div class="error-state">
-    <mat-icon>error_outline</mat-icon>
-    <p>{{ 'adminAudit.error.queryFailed' | transloco }}</p>
-    <button mat-button (click)="retry.emit()">
-      {{ 'adminAudit.error.retry' | transloco }}
-    </button>
-  </div>
+<div class="error-state">
+  <mat-icon>error_outline</mat-icon>
+  <p>{{ 'adminAudit.error.queryFailed' | transloco }}</p>
+  <button mat-button (click)="retry.emit()">{{ 'adminAudit.error.retry' | transloco }}</button>
+</div>
 } @else if (rows.length === 0) {
-  <div class="empty-state">
-    <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-    <p>{{ 'adminAudit.empty.noMatches' | transloco }}</p>
-    <button mat-button (click)="clearFilters.emit()">
-      {{ 'adminAudit.filters.clear' | transloco }}
-    </button>
-  </div>
+<div class="empty-state">
+  <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+  <p>{{ 'adminAudit.empty.noMatches' | transloco }}</p>
+  <button mat-button (click)="clearFilters.emit()">
+    {{ 'adminAudit.filters.clear' | transloco }}
+  </button>
+</div>
 } @else {
-  <table mat-table [dataSource]="rows" class="audit-table">
-    @for (col of columns; track col.key) {
-      <ng-container [matColumnDef]="col.key">
-        <th mat-header-cell *matHeaderCellDef>{{ col.headerKey | transloco }}</th>
-        <td
-          mat-cell
-          *matCellDef="let row"
-          [matTooltip]="col.tooltip ? col.tooltip(row) : ''"
-          matTooltipPosition="above"
-        >
-          {{ col.value(row) }}
-        </td>
-      </ng-container>
-    }
+<table mat-table [dataSource]="rows" class="audit-table">
+  @for (col of columns; track col.key) {
+  <ng-container [matColumnDef]="col.key">
+    <th mat-header-cell *matHeaderCellDef>{{ col.headerKey | transloco }}</th>
+    <td
+      mat-cell
+      *matCellDef="let row"
+      [matTooltip]="col.tooltip ? col.tooltip(row) : ''"
+      matTooltipPosition="above"
+    >
+      {{ col.value(row) }}
+    </td>
+  </ng-container>
+  }
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      class="clickable-row"
-      [class.anchor-row]="isAnchor(row)"
-      [class.selected-row]="isSelected(row)"
-      (click)="onRowClick(row)"
-    ></tr>
-  </table>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: displayedColumns"
+    class="clickable-row"
+    [class.anchor-row]="isAnchor(row)"
+    [class.selected-row]="isSelected(row)"
+    (click)="onRowClick(row)"
+  ></tr>
+</table>
 
-  <div class="pager-row">
-    <button mat-button [disabled]="!prevCursor" (click)="onNewer()">
-      <mat-icon>chevron_left</mat-icon>
-      {{ 'adminAudit.pager.newer' | transloco }}
-    </button>
-    <button mat-button [disabled]="!nextCursor" (click)="onOlder()">
-      {{ 'adminAudit.pager.older' | transloco }}
-      <mat-icon iconPositionEnd>chevron_right</mat-icon>
-    </button>
-  </div>
+<div class="pager-row">
+  <button mat-button [disabled]="!prevCursor" (click)="onNewer()">
+    <mat-icon>chevron_left</mat-icon>
+    {{ 'adminAudit.pager.newer' | transloco }}
+  </button>
+  <button mat-button [disabled]="!nextCursor" (click)="onOlder()">
+    {{ 'adminAudit.pager.older' | transloco }}
+    <mat-icon iconPositionEnd>chevron_right</mat-icon>
+  </button>
+</div>
 }
 ```
 
@@ -1560,6 +1551,7 @@ Note: check `src/styles/` for the actual theme CSS variable names (`--theme-*` /
 ### Task 8: Detail side panel component
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/components/audit-detail-panel/audit-detail-panel.component.ts`
 - Create: `.../audit-detail-panel.component.html`
 - Create: `.../audit-detail-panel.component.scss`
@@ -1824,11 +1816,9 @@ export class AuditDetailPanelComponent implements OnInit {
       .createUrlTree(['.'], { relativeTo: this.route })
       .toString()}`;
     void navigator.clipboard.writeText(url).then(() => {
-      this.snackBar.open(
-        this.transloco.translate('adminAudit.detail.permalinkCopied'),
-        undefined,
-        { duration: 3000 },
-      );
+      this.snackBar.open(this.transloco.translate('adminAudit.detail.permalinkCopied'), undefined, {
+        duration: 3000,
+      });
     });
   }
 
@@ -1881,80 +1871,76 @@ Expected: PASS.
   </div>
 
   @if (loadFailed) {
-    <p class="load-failed">{{ 'adminAudit.detail.loadFailed' | transloco }}</p>
+  <p class="load-failed">{{ 'adminAudit.detail.loadFailed' | transloco }}</p>
   } @else if (stream === 'system' && systemEntry) {
-    <dl class="detail-fields">
-      <dt>{{ 'adminAudit.detail.timestamp' | transloco }}</dt>
-      <dd>{{ formatTimestamp(systemEntry.created_at) }}</dd>
+  <dl class="detail-fields">
+    <dt>{{ 'adminAudit.detail.timestamp' | transloco }}</dt>
+    <dd>{{ formatTimestamp(systemEntry.created_at) }}</dd>
 
-      <dt>{{ 'adminAudit.detail.actor' | transloco }}</dt>
-      <dd>
-        {{ systemEntry.actor.email }}
-        <span class="actor-secondary">
-          {{ systemEntry.actor.display_name }} · {{ systemEntry.actor.provider }} ·
-          {{ systemEntry.actor.provider_id }}
-        </span>
-      </dd>
+    <dt>{{ 'adminAudit.detail.actor' | transloco }}</dt>
+    <dd>
+      {{ systemEntry.actor.email }}
+      <span class="actor-secondary">
+        {{ systemEntry.actor.display_name }} · {{ systemEntry.actor.provider }} · {{
+        systemEntry.actor.provider_id }}
+      </span>
+    </dd>
 
-      <dt>{{ 'adminAudit.detail.request' | transloco }}</dt>
-      <dd class="monospace">{{ systemEntry.http_method }} {{ systemEntry.path }}</dd>
+    <dt>{{ 'adminAudit.detail.request' | transloco }}</dt>
+    <dd class="monospace">{{ systemEntry.http_method }} {{ systemEntry.path }}</dd>
 
-      @if (systemEntry.field_path) {
-        <dt>{{ 'adminAudit.detail.fieldPath' | transloco }}</dt>
-        <dd class="monospace">{{ systemEntry.field_path }}</dd>
-      }
+    @if (systemEntry.field_path) {
+    <dt>{{ 'adminAudit.detail.fieldPath' | transloco }}</dt>
+    <dd class="monospace">{{ systemEntry.field_path }}</dd>
+    } @if (systemEntry.old_value !== null) {
+    <dt>{{ 'adminAudit.detail.oldValue' | transloco }}</dt>
+    <dd class="monospace value-block">{{ systemEntry.old_value }}</dd>
+    } @if (systemEntry.new_value !== null) {
+    <dt>{{ 'adminAudit.detail.newValue' | transloco }}</dt>
+    <dd class="monospace value-block">{{ systemEntry.new_value }}</dd>
+    }
 
-      @if (systemEntry.old_value !== null) {
-        <dt>{{ 'adminAudit.detail.oldValue' | transloco }}</dt>
-        <dd class="monospace value-block">{{ systemEntry.old_value }}</dd>
-      }
-
-      @if (systemEntry.new_value !== null) {
-        <dt>{{ 'adminAudit.detail.newValue' | transloco }}</dt>
-        <dd class="monospace value-block">{{ systemEntry.new_value }}</dd>
-      }
-
-      <dt>{{ 'adminAudit.detail.summary' | transloco }}</dt>
-      <dd>{{ systemEntry.change_summary }}</dd>
-    </dl>
+    <dt>{{ 'adminAudit.detail.summary' | transloco }}</dt>
+    <dd>{{ systemEntry.change_summary }}</dd>
+  </dl>
   } @else if (stream === 'tm' && tmEntry) {
-    <dl class="detail-fields">
-      <dt>{{ 'adminAudit.detail.timestamp' | transloco }}</dt>
-      <dd>{{ formatTimestamp(tmEntry.created_at) }}</dd>
+  <dl class="detail-fields">
+    <dt>{{ 'adminAudit.detail.timestamp' | transloco }}</dt>
+    <dd>{{ formatTimestamp(tmEntry.created_at) }}</dd>
 
-      <dt>{{ 'adminAudit.detail.actor' | transloco }}</dt>
-      <dd>
-        {{ tmEntry.actor.email }}
-        <span class="actor-secondary">
-          {{ tmEntry.actor.display_name }} · {{ tmEntry.actor.provider }} ·
-          {{ tmEntry.actor.provider_id }}
-        </span>
-      </dd>
+    <dt>{{ 'adminAudit.detail.actor' | transloco }}</dt>
+    <dd>
+      {{ tmEntry.actor.email }}
+      <span class="actor-secondary">
+        {{ tmEntry.actor.display_name }} · {{ tmEntry.actor.provider }} · {{
+        tmEntry.actor.provider_id }}
+      </span>
+    </dd>
 
-      <dt>{{ 'adminAudit.detail.threatModel' | transloco }}</dt>
-      <dd>
-        <a [routerLink]="['/tm', tmEntry.threat_model_id]">
-          {{ tmEntry.threat_model_name || tmEntry.threat_model_id }}
-        </a>
-      </dd>
+    <dt>{{ 'adminAudit.detail.threatModel' | transloco }}</dt>
+    <dd>
+      <a [routerLink]="['/tm', tmEntry.threat_model_id]">
+        {{ tmEntry.threat_model_name || tmEntry.threat_model_id }}
+      </a>
+    </dd>
 
-      <dt>{{ 'adminAudit.detail.objectType' | transloco }}</dt>
-      <dd>{{ tmEntry.object_type }}</dd>
+    <dt>{{ 'adminAudit.detail.objectType' | transloco }}</dt>
+    <dd>{{ tmEntry.object_type }}</dd>
 
-      <dt>{{ 'adminAudit.detail.objectId' | transloco }}</dt>
-      <dd class="monospace">{{ tmEntry.object_id }}</dd>
+    <dt>{{ 'adminAudit.detail.objectId' | transloco }}</dt>
+    <dd class="monospace">{{ tmEntry.object_id }}</dd>
 
-      <dt>{{ 'adminAudit.detail.changeType' | transloco }}</dt>
-      <dd>{{ tmEntry.change_type }}</dd>
+    <dt>{{ 'adminAudit.detail.changeType' | transloco }}</dt>
+    <dd>{{ tmEntry.change_type }}</dd>
 
-      @if (tmEntry.rolled_back_to_version !== null) {
-        <dt>{{ 'adminAudit.detail.rolledBackTo' | transloco }}</dt>
-        <dd>{{ tmEntry.rolled_back_to_version }}</dd>
-      }
+    @if (tmEntry.rolled_back_to_version !== null) {
+    <dt>{{ 'adminAudit.detail.rolledBackTo' | transloco }}</dt>
+    <dd>{{ tmEntry.rolled_back_to_version }}</dd>
+    }
 
-      <dt>{{ 'adminAudit.detail.summary' | transloco }}</dt>
-      <dd>{{ tmEntry.change_summary }}</dd>
-    </dl>
+    <dt>{{ 'adminAudit.detail.summary' | transloco }}</dt>
+    <dd>{{ tmEntry.change_summary }}</dd>
+  </dl>
   }
 </aside>
 ```
@@ -2023,6 +2009,7 @@ git commit -m "feat(admin): audit-log routes, shell, filter bar, table, detail p
 ### Task 9: System audit view (composition + URL state + export)
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/system-audit-view.component.ts`
 - Create: `src/app/pages/admin/audit/system-audit-view.component.html`
 - Create: `src/app/pages/admin/audit/system-audit-view.component.scss`
@@ -2046,10 +2033,7 @@ import { convertToParamMap, ParamMap } from '@angular/router';
 import { SystemAuditViewComponent } from './system-audit-view.component';
 import { AdminAuditService } from './services/admin-audit.service';
 import { CursorPage, SystemAuditEntry } from './models/admin-audit.types';
-import {
-  createTypedMockLoggerService,
-  type MockLoggerService,
-} from '../../../../testing/mocks';
+import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 
 interface MockRouter {
   navigate: ReturnType<typeof vi.fn>;
@@ -2224,11 +2208,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../../core/services/logger.service';
 import { saveBlobAsFile } from '@app/shared/utils/file-download.util';
 import { AdminAuditService } from './services/admin-audit.service';
-import {
-  AuditExportFormat,
-  SystemAuditEntry,
-  SystemAuditFilter,
-} from './models/admin-audit.types';
+import { AuditExportFormat, SystemAuditEntry, SystemAuditFilter } from './models/admin-audit.types';
 import {
   AuditFilterBarComponent,
   AuditFilterSelect,
@@ -2538,6 +2518,7 @@ git commit -m "feat(admin): system audit view with URL-driven cursor state and e
 ### Task 10: Threat-model audit view
 
 **Files:**
+
 - Create: `src/app/pages/admin/audit/tm-audit-view.component.ts`
 - Create: `src/app/pages/admin/audit/tm-audit-view.component.html`
 - Create: `src/app/pages/admin/audit/tm-audit-view.component.scss`
@@ -2548,36 +2529,34 @@ Same shape as Task 9 with TM config; no export. Write the spec first (mirror the
 - [ ] **Step 1: Write the failing spec** — copy `system-audit-view.component.spec.ts`, rename to `TmAuditViewComponent`, mock `listTm` (no `exportSystem`), use this mock entry and these param expectations:
 
 ```typescript
-  const entry: TmAuditEntry = {
-    id: 'tma-1',
-    threat_model_id: 'tm-1',
-    threat_model_name: 'Payments TM',
-    object_type: 'threat',
-    object_id: 'threat-1',
-    change_type: 'updated',
-    actor: {
-      email: 'user@example.com',
-      provider: 'google',
-      provider_id: 'g-2',
-      display_name: 'User',
-    },
-    change_summary: 'Updated threat name',
-    created_at: '2026-06-01T11:00:00Z',
-    rolled_back_to_version: null,
-  };
+const entry: TmAuditEntry = {
+  id: 'tma-1',
+  threat_model_id: 'tm-1',
+  threat_model_name: 'Payments TM',
+  object_type: 'threat',
+  object_id: 'threat-1',
+  change_type: 'updated',
+  actor: {
+    email: 'user@example.com',
+    provider: 'google',
+    provider_id: 'g-2',
+    display_name: 'User',
+  },
+  change_summary: 'Updated threat name',
+  created_at: '2026-06-01T11:00:00Z',
+  rolled_back_to_version: null,
+};
 ```
 
 ```typescript
-  it('passes TM filters from query params to the service', () => {
-    route.queryParamMap.next(
-      convertToParamMap({ threat_model_id: 'tm-1', change_type: 'updated' }),
-    );
-    component.ngOnInit();
-    expect(service.listTm).toHaveBeenCalledWith(
-      { threat_model_id: 'tm-1', change_type: 'updated' },
-      { limit: 25 },
-    );
-  });
+it('passes TM filters from query params to the service', () => {
+  route.queryParamMap.next(convertToParamMap({ threat_model_id: 'tm-1', change_type: 'updated' }));
+  component.ngOnInit();
+  expect(service.listTm).toHaveBeenCalledWith(
+    { threat_model_id: 'tm-1', change_type: 'updated' },
+    { limit: 25 },
+  );
+});
 ```
 
 Drop the export test. Keep load/error/paging/row-click tests identical in structure.
@@ -2677,6 +2656,7 @@ git commit -m "feat(admin): cross-TM audit view (#679)"
 ### Task 11: "View in audit log" cross-reference on admin settings
 
 **Files:**
+
 - Modify: `src/app/pages/admin/settings/admin-settings.component.html` (actions column, `matColumnDef="actions"` container ~line 142)
 - Modify: `src/app/pages/admin/settings/admin-settings.component.ts`
 
