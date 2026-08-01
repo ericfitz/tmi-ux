@@ -212,7 +212,7 @@
   },
   "comments": {
     "dependencies": {
-      "@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) fixes upstream antvis/X6#5048 (published package.json declares type:module but its own ESM build uses extensionless directory imports Node's ESM resolver rejects) by setting type:commonjs so the CJS lib/index.js entry loads correctly under Node; a version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
+      "@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) sets type:commonjs to fix upstream antvis/X6#5048 (package.json declares type:module over a CJS main build). Separately, the package's own es/ (ESM) build is unloadable by Node due to extensionless directory imports, which is why the patch targets type rather than redirecting main to es/index.js. A version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
     },
     "pnpm.overrides": {
       "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed."

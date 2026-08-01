@@ -6,7 +6,7 @@
 
 **Goal:** Upgrade `@antv/x6` 2.19.2 → 3.1.7, remove the six now-consolidated `@antv/x6-plugin-*` packages, and work around the upstream ESM/CJS packaging bug so build, unit tests, and E2E all pass.
 
-**Architecture:** v3 merges all plugins plus `@antv/x6-common`/`@antv/x6-geometry` into the core package; `graph.use(new Plugin())` is unchanged, only import paths move. The DFD module's x6 access is already funneled through infrastructure adapters/services, so source changes are confined to four files. The one real engineering obstacle is upstream [antvis/X6#5048](https://github.com/antvis/X6/issues/5048): `@antv/x6@3.1.7` declares `"type": "module"` with `"main": "lib/index.js"` (CJS content, no `exports` map), so Node's ESM loader crashes on it — which breaks Vitest. We fix it with a `pnpm patch` that points `main` at the real ESM build (`es/index.js`).
+**Architecture:** v3 merges all plugins plus `@antv/x6-common`/`@antv/x6-geometry` into the core package; `graph.use(new Plugin())` is unchanged, only import paths move. The DFD module's x6 access is already funneled through infrastructure adapters/services, so source changes are confined to four files. The one real engineering obstacle is upstream [antvis/X6#5048](https://github.com/antvis/X6/issues/5048): `@antv/x6@3.1.7` declares `"type": "module"` with `"main": "lib/index.js"` (CJS content, no `exports` map), so Node's ESM loader crashes on it — which breaks Vitest. We fix it with a `pnpm patch` that flips the package's `type` field to `"commonjs"`, removing the type/main mismatch at the root. (Mechanism corrected during execution: the originally planned `main` → `es/index.js` redirect fails with `ERR_UNSUPPORTED_DIR_IMPORT` because the `es/` build itself uses extensionless directory imports Node rejects — a second upstream defect. Bundler builds are unaffected either way: they resolve via the `module` field with their own, laxer resolvers.)
 
 **Tech Stack:** Angular 22, Vitest 4 (jsdom), Playwright E2E (incl. visual regression), pnpm 10 (`pnpm patch`).
 
@@ -35,7 +35,7 @@ Behavioral note for testing: in v3, when panning and the Selection plugin confli
 
 ## Decision points (approve before executing)
 
-1. **ESM/CJS workaround = `pnpm patch` of `@antv/x6@3.1.7`** (change `"main"` to `"es/index.js"`). Alternative considered: Vitest-only `resolve.alias` to `@antv/x6/es/index.js`. The patch is preferred because it fixes every Node-resolution consumer in one place and is self-documenting in `package.json` `patchedDependencies`; the alias fixes only Vitest and can drift. Drop the patch when upstream ships a fixed release (leave a follow-up note on #446).
+1. **ESM/CJS workaround = `pnpm patch` of `@antv/x6@3.1.7`** (change `"type"` to `"commonjs"`, leaving `main`/`module` untouched). Alternative considered: Vitest-only `resolve.alias` to `@antv/x6/es/index.js`. The patch is preferred because it fixes every Node-resolution consumer in one place and is self-documenting in `package.json` `patchedDependencies`; the alias fixes only Vitest and can drift. (A `"main"` → `"es/index.js"` redirect was also considered and rejected — it fails under Node with `ERR_UNSUPPORTED_DIR_IMPORT` because the `es/` build uses extensionless directory imports.) Drop the patch when upstream ships a fixed release (leave a follow-up note on #446).
 2. **Exact-pin 3.1.7** (see Global Constraints). This keeps the package out of `/bump` auto-updates, which is intended while the patch exists.
 
 ---
@@ -83,7 +83,7 @@ pnpm patch @antv/x6@3.1.7
 # pnpm prints an editable dir, e.g. /private/var/.../antv-x6@3.1.7
 ```
 
-In the printed directory, edit `package.json`: change `"main": "lib/index.js"` to `"main": "es/index.js"`. Then:
+In the printed directory, edit `package.json`: change `"type": "module"` to `"type": "commonjs"` (leave `main` and `module` untouched). Do NOT instead point `main` at `es/index.js` — that variant fails under Node with `ERR_UNSUPPORTED_DIR_IMPORT` (the `es/` build uses extensionless directory imports). Then:
 
 ```bash
 pnpm patch-commit <printed-dir>
@@ -102,7 +102,7 @@ Expected: prints `function`.
 In `package.json`, replace the `comments.dependencies["@antv/x6"]` value with:
 
 ```json
-"@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) fixes upstream antvis/X6#5048 (type:module + CJS main); a version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
+"@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) sets type:commonjs to fix upstream antvis/X6#5048 (type:module declared over a CJS main build; the es/ build is also un-loadable by Node due to directory imports); a version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
 ```
 
 - [ ] **Step 7: Commit**
@@ -113,7 +113,7 @@ git commit -m "deps: upgrade @antv/x6 to 3.1.7, drop consolidated plugin package
 
 Removes @antv/x6-plugin-{clipboard,export,history,selection,snapline,transform}
 (merged into @antv/x6 core in v3; history was never imported).
-Adds a pnpm patch pointing main at the ESM build to work around antvis/X6#5048."
+Adds a pnpm patch setting type:commonjs to work around antvis/X6#5048."
 ```
 
 Note: the build is **expected to be broken** at this commit (TS2702 in `infra-edge.service.ts`); Task 2 fixes it. Do not push yet.
