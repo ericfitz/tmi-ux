@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -118,7 +118,7 @@
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
     "@material/material-color-utilities": "^0.4.0",
-    "@oxc-project/runtime": "^0.141.0",
+    "@oxc-project/runtime": "^0.142.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/angular": "^19.4.1",
     "@types/jsdom": "^28.0.3",
