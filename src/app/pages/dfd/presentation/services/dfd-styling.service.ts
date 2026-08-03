@@ -94,7 +94,7 @@ export class DfdStylingService {
       .map(cell => ({
         cellId: cell.id,
         nodeType: cell.shape,
-        arch: (cell.getData()['_arch'] as ArchIconData) ?? null,
+        arch: ((cell.getData() ?? {})['_arch'] as ArchIconData) ?? null,
       }));
   }
 
