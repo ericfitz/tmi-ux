@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -194,7 +194,7 @@
       "js-yaml": ">=4.2.0 <5",
       "piscina": ">=5.2.0",
       "vite@>=7.0.0": ">=7.3.5",
-      "@angular/build>vite": "7.3.5"
+      "@angular/build>vite": "^8.2.0"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
@@ -216,6 +216,9 @@
   "comments": {
     "dependencies": {
       "@antv/x6": "Pinned to v2.x - blocked by upstream antvis/X6#5048 (ESM/CJS module type conflict in v3.x). Tracking in issue #446"
+    },
+    "pnpm.overrides": {
+      "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed."
     }
   }
 }
