@@ -1,7 +1,7 @@
 /**
  * Test suite for AppDfdFacade.
  *
- * AppDfdFacade is a coordinator that delegates to 13 injected services. This
+ * AppDfdFacade is a coordinator that delegates to 14 injected services. This
  * suite covers the delegation and predicate surface — infrastructure setup,
  * connection/embedding validation, clipboard, selection, z-order, and the
  * cell-type predicates — by asserting the facade forwards to the right
@@ -34,6 +34,7 @@ describe('AppDfdFacade', () => {
   let facade: AppDfdFacade;
   let logger: Record<string, Mock>;
   let infraX6GraphAdapter: Record<string, Mock>;
+  let infraX6SelectionAdapter: Record<string, Mock>;
   let infraX6ZOrderAdapter: Record<string, Mock>;
   let infraNodeService: Record<string, Mock>;
   let appEdgeService: Record<string, Mock>;
@@ -64,6 +65,9 @@ describe('AppDfdFacade', () => {
       getGraph: vi.fn(() => mockGraph),
       executeCellDeletion: vi.fn(),
       setReadOnlyMode: vi.fn(),
+    };
+    infraX6SelectionAdapter = {
+      sanitizePastedCells: vi.fn(),
     };
     infraX6ZOrderAdapter = {
       moveSelectedCellsForward: vi.fn(),
@@ -100,6 +104,7 @@ describe('AppDfdFacade', () => {
     facade = new AppDfdFacade(
       logger as never,
       infraX6GraphAdapter as never,
+      infraX6SelectionAdapter as never,
       infraX6ZOrderAdapter as never,
       infraNodeService as never,
       appEdgeService as never,
@@ -297,10 +302,16 @@ describe('AppDfdFacade', () => {
 
     it('paste pastes when the clipboard is not empty', () => {
       mockGraph['isClipboardEmpty'].mockReturnValue(false);
+      const pastedCells = [{ id: 'pasted-1' }];
+      mockGraph['paste'].mockReturnValue(pastedCells);
 
       facade.paste();
 
       expect(mockGraph['paste']).toHaveBeenCalled();
+      expect(infraX6SelectionAdapter['sanitizePastedCells']).toHaveBeenCalledWith(
+        mockGraph,
+        pastedCells,
+      );
     });
 
     it('paste does nothing when the clipboard is empty', () => {

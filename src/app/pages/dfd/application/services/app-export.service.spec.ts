@@ -80,6 +80,7 @@ describe('AppExportService', () => {
         padding: 20,
         copyStyles: false,
         preserveAspectRatio: 'xMidYMid meet',
+        beforeSerialize: expect.any(Function),
       });
     });
 
@@ -101,6 +102,24 @@ describe('AppExportService', () => {
       const result = service.prepareImageExport(mockGraph as any, 10);
 
       expect(result?.viewBox).toBe('-10 -10 820 620');
+    });
+
+    it('should strip interactive tool overlays via beforeSerialize', () => {
+      const result = service.prepareImageExport(mockGraph as any);
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const removeButton = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      removeButton.setAttribute('data-tool-name', 'button-remove');
+      const toolsContainer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      toolsContainer.setAttribute('class', 'x6-cell-tools');
+      const shape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      svg.append(removeButton, toolsContainer, shape);
+
+      result?.exportOptions.beforeSerialize(svg);
+
+      expect(svg.querySelector('[data-tool-name]')).toBeNull();
+      expect(svg.querySelector('.x6-cell-tools')).toBeNull();
+      expect(svg.querySelector('rect')).not.toBeNull();
     });
 
     it('should return null if no cells to export', () => {

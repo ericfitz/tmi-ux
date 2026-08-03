@@ -36,6 +36,7 @@ export class AppExportService {
       copyStyles: boolean;
       preserveAspectRatio: string;
       viewBox?: string;
+      beforeSerialize: (svg: SVGSVGElement) => void;
     };
   } | null {
     // Get tight bbox of all cells + padding (no zoom needed for vector export)
@@ -51,6 +52,7 @@ export class AppExportService {
     }
 
     const viewBox = `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`;
+    const beforeSerialize = (svg: SVGSVGElement): void => this.stripInteractiveTooling(svg);
 
     // Validate viewBox calculation
     if (viewBox.includes('NaN') || viewBox.includes('undefined') || viewBox.includes('null')) {
@@ -64,6 +66,7 @@ export class AppExportService {
         padding,
         copyStyles: false,
         preserveAspectRatio: 'xMidYMid meet',
+        beforeSerialize,
       };
       return { bbox, viewBox: '', exportOptions };
     }
@@ -72,6 +75,7 @@ export class AppExportService {
       padding, // Still apply if needed for internal
       copyStyles: false,
       preserveAspectRatio: 'xMidYMid meet',
+      beforeSerialize,
       // Don't set viewBox here to avoid duplicates - we'll apply it during SVG processing
     };
 
@@ -82,6 +86,17 @@ export class AppExportService {
     });
 
     return { bbox, viewBox, exportOptions };
+  }
+
+  /**
+   * Remove interactive tool overlays (selection boundary, remove button) from
+   * the cloned SVG before serialization. X6's export plugin clones the live
+   * DOM, so any cell tools present at export time would otherwise be baked
+   * into the exported image.
+   */
+  // SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: strip X6 cell tool overlays from a cloned SVG prior to export serialization (mutates argument)
+  private stripInteractiveTooling(svg: SVGSVGElement): void {
+    svg.querySelectorAll('[data-tool-name], .x6-cell-tools').forEach(el => el.remove());
   }
 
   /**

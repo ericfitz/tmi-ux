@@ -771,6 +771,34 @@ describe('InfraX6SelectionAdapter', () => {
       expect(adapter.clearSelection).toHaveBeenCalledWith(graph);
       expect(adapter.selectCells).toHaveBeenCalledWith(graph, cellsToPaste);
     });
+
+    it('should strip cloned selection tools and glow from pasted cells', () => {
+      adapter.setupSelectionEvents(graph);
+
+      // Simulate X6 clipboard behavior: the source cell is selected (tools and
+      // glow applied to its model), then cloned — the clone carries that
+      // ephemeral state into the graph without ever being selected itself
+      graph.trigger('selection:changed', { added: [nodes[0]], removed: [] });
+      const pasted = nodes[0].clone();
+      graph.addCell(pasted);
+      addNodeTypeInfoExtension(pasted, 'process');
+
+      expect(pasted.getTools()).toBeDefined();
+      expect(pasted.attr('body/filter')).not.toBe('none');
+
+      adapter.sanitizePastedCells(graph, [pasted]);
+
+      expect(pasted.getTools()).toBeUndefined();
+      expect(pasted.attr('body/filter')).toBe('none');
+    });
+
+    it('should handle sanitize with no pasted cells', () => {
+      const executeVisualEffectSpy = vi.spyOn(historyCoordinator, 'executeVisualEffect');
+
+      adapter.sanitizePastedCells(graph, []);
+
+      expect(executeVisualEffectSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('Alignment and Distribution Operations', () => {
