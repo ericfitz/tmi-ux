@@ -12,5 +12,5 @@ export class LoginPage {
   readonly loginHintInput = () => this.page.getByLabel('Username');
 
   readonly signInButton = () =>
-    this.page.getByRole('button', { name: 'Sign In', exact: true });
+    this.page.getByRole('button', { name: 'Sign in', exact: true });
 }
