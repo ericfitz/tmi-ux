@@ -152,6 +152,12 @@ describe('AppDfdOrchestrator', () => {
         exportOptions: { padding: 20 },
       }),
       processSvg: vi.fn((svgString: string) => svgString),
+      prepareRasterExport: vi.fn((format: string) => ({
+        backgroundColor: 'white',
+        padding: 20,
+        quality: format === 'jpeg' ? 0.8 : 1,
+        beforeSerialize: vi.fn(),
+      })),
     };
 
     // Create a mock graph that will be returned by facade.getGraph()
@@ -901,7 +907,12 @@ describe('AppDfdOrchestrator', () => {
             expect(mockGraph.toPNG).toHaveBeenCalled();
             expect(mockGraph.toPNG).toHaveBeenCalledWith(
               expect.any(Function),
-              expect.objectContaining({ backgroundColor: 'white', padding: 20, quality: 1 }),
+              expect.objectContaining({
+                backgroundColor: 'white',
+                padding: 20,
+                quality: 1,
+                beforeSerialize: expect.any(Function),
+              }),
             );
             resolve();
           },

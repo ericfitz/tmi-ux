@@ -209,6 +209,39 @@ describe('AppExportService', () => {
     });
   });
 
+  describe('prepareRasterExport()', () => {
+    it('should build PNG options with full quality and the strip hook', () => {
+      const options = service.prepareRasterExport('png');
+
+      expect(options).toEqual({
+        backgroundColor: 'white',
+        padding: 20,
+        quality: 1,
+        beforeSerialize: expect.any(Function),
+      });
+    });
+
+    it('should build JPEG options with reduced quality', () => {
+      const options = service.prepareRasterExport('jpeg');
+
+      expect(options.quality).toBe(0.8);
+      expect(options.beforeSerialize).toEqual(expect.any(Function));
+    });
+
+    it('should strip interactive tool overlays via beforeSerialize', () => {
+      const options = service.prepareRasterExport('png');
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const removeButton = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      removeButton.setAttribute('data-tool-name', 'button-remove');
+      svg.append(removeButton);
+
+      options.beforeSerialize(svg);
+
+      expect(svg.querySelector('[data-tool-name]')).toBeNull();
+    });
+  });
+
   describe('processSvg()', () => {
     it('should optimize SVG for export without encoding', () => {
       const svgString = '<svg>test content</svg>';

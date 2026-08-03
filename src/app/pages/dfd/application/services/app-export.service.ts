@@ -89,6 +89,26 @@ export class AppExportService {
   }
 
   /**
+   * Build export options for raster (PNG/JPEG) image exports.
+   * Shares the tool-stripping beforeSerialize hook with the SVG export path —
+   * X6 renders raster exports from the same cloned-DOM SVG pipeline.
+   */
+  // SEM@4fb49728d1fcb8c162fd869008cfbe1294b345ef: build raster image export options with tool-stripping serialization hook (pure)
+  prepareRasterExport(format: 'png' | 'jpeg'): {
+    backgroundColor: string;
+    padding: number;
+    quality: number;
+    beforeSerialize: (svg: SVGSVGElement) => void;
+  } {
+    return {
+      backgroundColor: 'white',
+      padding: 20,
+      quality: format === 'jpeg' ? 0.8 : 1,
+      beforeSerialize: (svg: SVGSVGElement): void => this.stripInteractiveTooling(svg),
+    };
+  }
+
+  /**
    * Remove interactive tool overlays (selection boundary, remove button) from
    * the cloned SVG before serialization. X6's export plugin clones the live
    * DOM, so any cell tools present at export time would otherwise be baked

@@ -464,18 +464,15 @@ export class AppDfdOrchestrator {
               // Clear selection before export to avoid highlighting selected cells
               this.clearSelection();
 
-              graph.toPNG(
-                (dataUri: string) => {
-                  try {
-                    const blob = this._dataUriToBlob(dataUri, 'image/png');
-                    observer.next(blob);
-                    observer.complete();
-                  } catch (error) {
-                    observer.error(error);
-                  }
-                },
-                { backgroundColor: 'white', padding: 20, quality: 1 },
-              );
+              graph.toPNG((dataUri: string) => {
+                try {
+                  const blob = this._dataUriToBlob(dataUri, 'image/png');
+                  observer.next(blob);
+                  observer.complete();
+                } catch (error) {
+                  observer.error(error);
+                }
+              }, this.appExportService.prepareRasterExport('png'));
             } catch (error) {
               observer.error(error);
             }
@@ -490,18 +487,15 @@ export class AppDfdOrchestrator {
               // Clear selection before export to avoid highlighting selected cells
               this.clearSelection();
 
-              graph.toJPEG(
-                (dataUri: string) => {
-                  try {
-                    const blob = this._dataUriToBlob(dataUri, 'image/jpeg');
-                    observer.next(blob);
-                    observer.complete();
-                  } catch (error) {
-                    observer.error(error);
-                  }
-                },
-                { backgroundColor: 'white', padding: 20, quality: 0.8 },
-              );
+              graph.toJPEG((dataUri: string) => {
+                try {
+                  const blob = this._dataUriToBlob(dataUri, 'image/jpeg');
+                  observer.next(blob);
+                  observer.complete();
+                } catch (error) {
+                  observer.error(error);
+                }
+              }, this.appExportService.prepareRasterExport('jpeg'));
             } catch (error) {
               observer.error(error);
             }
