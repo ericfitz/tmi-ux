@@ -254,6 +254,20 @@ describe('DfdStylingService', () => {
 
       expect(result).toEqual([{ cellId: 'n1', nodeType: 'store', arch: null }]);
     });
+
+    it('does not throw and classifies arch as null when getData() returns undefined (x6 v3 behavior for cells with no data set)', () => {
+      // x6 v2's Cell.getData() returned {} for a cell with no explicit data;
+      // x6 v3 returns undefined. A freshly created node (e.g. via the
+      // orchestrator) has no data set until something writes to it.
+      const node = fakeCell({ id: 'n1', shape: 'process' });
+      node.getData = (() => undefined) as unknown as FakeCell['getData'];
+      const graph = fakeGraph([node]);
+
+      expect(() => service.buildIconPickerCells(graph, ['n1'])).not.toThrow();
+      expect(service.buildIconPickerCells(graph, ['n1'])).toEqual([
+        { cellId: 'n1', nodeType: 'process', arch: null },
+      ]);
+    });
   });
 
   describe('applyNodeStyleChange', () => {

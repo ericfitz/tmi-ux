@@ -27,6 +27,7 @@ import { NodeType } from '../../domain/value-objects/node-info';
 
 // Infrastructure services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { AppEdgeService } from '../services/app-edge.service';
@@ -56,6 +57,7 @@ export class AppDfdFacade {
   constructor(
     private readonly logger: LoggerService,
     private readonly infraX6GraphAdapter: InfraX6GraphAdapter,
+    private readonly infraX6SelectionAdapter: InfraX6SelectionAdapter,
     private readonly infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private readonly infraNodeService: InfraNodeService,
     private readonly appEdgeService: AppEdgeService,
@@ -834,7 +836,10 @@ export class AppDfdFacade {
     const graph = this.infraX6GraphAdapter.getGraph();
 
     if (!graph.isClipboardEmpty()) {
-      graph.paste();
+      const pastedCells = graph.paste();
+      // Clipboard clones carry the source cells' selection tools and glow;
+      // strip them since pasted cells are not selected
+      this.infraX6SelectionAdapter.sanitizePastedCells(graph, pastedCells);
       this.logger.debugComponent(
         'AppDfdFacade',
         'Paste operation initiated - cells will be captured retroactively',

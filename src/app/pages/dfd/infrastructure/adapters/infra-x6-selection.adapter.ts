@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node, Edge, Cell } from '@antv/x6';
-import { Selection } from '@antv/x6-plugin-selection';
-import { Transform } from '@antv/x6-plugin-transform';
+import { Graph, Node, Edge, Cell, Selection, Transform } from '@antv/x6';
 import { NODE_TOOLS, EDGE_TOOLS } from '../constants/tool-configurations';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';
@@ -337,6 +335,37 @@ export class InfraX6SelectionAdapter {
     this.selectCells(graph, pastedCells);
     this.logger.debugComponent('InfraX6SelectionAdapter', 'Pasted cells', {
       count: pastedCells.length,
+    });
+  }
+
+  /**
+   * Strip ephemeral selection state from cells cloned by X6's clipboard.
+   * The clipboard clones the full cell store, so cells copied while selected
+   * carry this adapter's tools and selection glow into the pasted copies.
+   * Pasted cells are never actually selected, so the deselection handler can
+   * never clean them — without this, the stale tool overlay and glow persist
+   * on canvas and leak into SVG exports.
+   */
+  // SEM@d35d1af6c1de1a1f60931cb1806860b7deef7d3a: remove cloned selection tools and glow from clipboard-pasted cells (mutates shared state)
+  sanitizePastedCells(graph: Graph, cells: Cell[]): void {
+    if (cells.length === 0) {
+      return;
+    }
+
+    // Use history coordinator to exclude the cleanup from undo/redo history
+    this.historyCoordinator.executeVisualEffect(graph, () => {
+      graph.batchUpdate(() => {
+        cells.forEach(cell => {
+          this.selectedCells.delete(cell.id);
+          this.removeSelectionEffect(cell);
+          this.removeHoverEffect(cell);
+          cell.removeTools();
+        });
+      });
+    });
+
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Sanitized pasted cells', {
+      count: cells.length,
     });
   }
 

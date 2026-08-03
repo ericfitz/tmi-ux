@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -82,13 +82,7 @@
     "@angular/platform-browser": "^22.1.0",
     "@angular/platform-browser-dynamic": "^22.1.0",
     "@angular/router": "^22.1.0",
-    "@antv/x6": "2.19.2",
-    "@antv/x6-plugin-clipboard": "^2.1.6",
-    "@antv/x6-plugin-export": "^2.1.6",
-    "@antv/x6-plugin-history": "^2.2.4",
-    "@antv/x6-plugin-selection": "^2.2.2",
-    "@antv/x6-plugin-snapline": "^2.1.7",
-    "@antv/x6-plugin-transform": "^2.1.8",
+    "@antv/x6": "3.1.7",
     "@jsverse/transloco": "^8.4.0",
     "@types/prismjs": "^1.26.6",
     "ae-cvss-calculator": "^1.0.13",
@@ -211,11 +205,14 @@
       "msgpackr-extract",
       "playwright",
       "unrs-resolver"
-    ]
+    ],
+    "patchedDependencies": {
+      "@antv/x6@3.1.7": "patches/@antv__x6@3.1.7.patch"
+    }
   },
   "comments": {
     "dependencies": {
-      "@antv/x6": "Pinned to v2.x - blocked by upstream antvis/X6#5048 (ESM/CJS module type conflict in v3.x). Tracking in issue #446"
+      "@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) sets type:commonjs to fix upstream antvis/X6#5048 (package.json declares type:module over a CJS main build). Separately, the package's own es/ (ESM) build is unloadable by Node due to extensionless directory imports, which is why the patch targets type rather than redirecting main to es/index.js. A version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
     },
     "pnpm.overrides": {
       "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed."
