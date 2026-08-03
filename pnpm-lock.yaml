@@ -36,7 +36,7 @@ overrides:
   js-yaml: '>=4.2.0 <5'
   piscina: '>=5.2.0'
   vite@>=7.0.0: '>=7.3.5'
-  '@angular/build>vite': 7.3.5
+  '@angular/build>vite': ^8.2.0
 
 importers:
 
@@ -156,7 +156,7 @@ importers:
     devDependencies:
       '@analogjs/vite-plugin-angular':
         specifier: ^2.6.4
-        version: 2.6.4(@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(lightningcss@1.33.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
+        version: 2.6.4(@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
       '@angular-eslint/builder':
         specifier: ^22.1.0
         version: 22.1.0(@angular/cli@22.1.2(@types/node@26.1.2)(chokidar@5.0.0))(chokidar@5.0.0)(eslint@10.8.0)(typescript@6.0.3)
@@ -174,7 +174,7 @@ importers:
         version: 22.1.0(eslint@10.8.0)(typescript@6.0.3)
       '@angular/build':
         specifier: ^22.1.2
-        version: 22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(lightningcss@1.33.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)
+        version: 22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)
       '@angular/cli':
         specifier: ^22.1.2
         version: 22.1.2(@types/node@26.1.2)(chokidar@5.0.0)
@@ -4632,46 +4632,6 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  vite@7.3.5:
-    resolution: {integrity: sha512-KuOaNhcnGFN2zIPGA7wRmzF+lJA1sea7rHq17aiJ++9lzY1WWG6Jpwqwe1KNbRVPIqHmr8GLYx7jbrQcN/7/ww==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^20.19.0 || >=22.12.0
-      jiti: '>=1.21.0'
-      less: ^4.0.0
-      lightningcss: ^1.21.0
-      sass: ^1.70.0
-      sass-embedded: ^1.70.0
-      stylus: '>=0.54.8'
-      sugarss: ^5.0.0
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
-
   vite@8.2.0:
     resolution: {integrity: sha512-pn+CFpM0lwDeKwmOq1ZaBK/9sjorZcgqxki6MbY/jPEVd9vichIlmlD4HmQ5wdP5EgqQCFRaACBxMC7uEGc6lQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -4868,7 +4828,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@analogjs/vite-plugin-angular@2.6.4(@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(lightningcss@1.33.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))':
+  '@analogjs/vite-plugin-angular@2.6.4(@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))':
     dependencies:
       magic-string: 0.30.21
       obug: 2.1.3
@@ -4876,7 +4836,7 @@ snapshots:
       tinyglobby: 0.2.17
       ts-morph: 21.0.1
     optionalDependencies:
-      '@angular/build': 22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(lightningcss@1.33.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)
+      '@angular/build': 22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)
       vite: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)
     transitivePeerDependencies:
       - '@emnapi/core'
@@ -5049,7 +5009,7 @@ snapshots:
       eslint: 10.8.0
       typescript: 6.0.3
 
-  '@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(lightningcss@1.33.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)':
+  '@angular/build@22.1.2(@angular/compiler-cli@22.1.0(@angular/compiler@22.1.0)(typescript@6.0.3))(@angular/compiler@22.1.0)(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.1.0(@angular/common@22.1.0(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)))(@types/node@26.1.2)(chokidar@5.0.0)(postcss@8.5.25)(rollup@4.60.2)(tslib@2.8.1)(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2201.2(chokidar@5.0.0)
@@ -5059,7 +5019,7 @@ snapshots:
       '@babel/helper-annotate-as-pure': 8.0.0
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 6.1.1(@types/node@26.1.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@26.1.2)(lightningcss@1.33.0)(sass@1.101.0)(tsx@4.23.1))
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
       beasties: 0.4.3
       browserslist: 4.28.5
       esbuild: 0.28.1
@@ -5079,7 +5039,7 @@ snapshots:
       tinyglobby: 0.2.17
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.5(@types/node@26.1.2)(lightningcss@1.33.0)(sass@1.101.0)(tsx@4.23.1)
+      vite: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)
       watchpack: 2.5.2
     optionalDependencies:
       '@angular/core': 22.1.0(@angular/compiler@22.1.0)(rxjs@7.8.2)(zone.js@0.16.2)
@@ -5090,10 +5050,10 @@ snapshots:
       vitest: 4.1.10(@types/node@26.1.2)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(jsdom@30.0.1)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
     transitivePeerDependencies:
       - '@types/node'
+      - '@vitejs/devtools'
       - chokidar
       - jiti
       - kerberos
-      - lightningcss
       - sass-embedded
       - stylus
       - sugarss
@@ -6544,7 +6504,8 @@ snapshots:
 
   '@types/esrecurse@4.3.1': {}
 
-  '@types/estree@1.0.8': {}
+  '@types/estree@1.0.8':
+    optional: true
 
   '@types/estree@1.0.9': {}
 
@@ -6721,9 +6682,9 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@26.1.2)(lightningcss@1.33.0)(sass@1.101.0)(tsx@4.23.1))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))':
     dependencies:
-      vite: 7.3.5(@types/node@26.1.2)(lightningcss@1.33.0)(sass@1.101.0)(tsx@4.23.1)
+      vite: 8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)
 
   '@vitest/coverage-v8@4.1.10(vitest@4.1.10)':
     dependencies:
@@ -8668,6 +8629,7 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.60.2
       '@rollup/rollup-win32-x64-msvc': 4.60.2
       fsevents: 2.3.3
+    optional: true
 
   roughjs@4.6.6:
     dependencies:
@@ -9119,21 +9081,6 @@ snapshots:
   validate-npm-package-name@8.0.0: {}
 
   vary@1.1.2: {}
-
-  vite@7.3.5(@types/node@26.1.2)(lightningcss@1.33.0)(sass@1.101.0)(tsx@4.23.1):
-    dependencies:
-      esbuild: 0.28.1
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
-      postcss: 8.5.23
-      rollup: 4.60.2
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 26.1.2
-      fsevents: 2.3.3
-      lightningcss: 1.33.0
-      sass: 1.101.0
-      tsx: 4.23.1
 
   vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1):
     dependencies:
