@@ -2110,6 +2110,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "समूह का नाम (जैसे everyone)",
+    "permissionsSubjectPlaceholderUser": "ईमेल या उपयोगकर्ता आईडी",
     "permissionsTooltip": "अनुमतियाँ प्रबंधित करें",
     "rename": "नाम बदलें",
     "renameDiagram": "आरेख का नाम बदलें",

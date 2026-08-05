@@ -1666,34 +1666,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/admin/users/{internal_uuid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get user details
-     * @description Returns detailed information about a specific user, including enriched data (admin status, groups, threat model counts).
-     */
-    get: operations['getAdminUser'];
-    put?: never;
-    post?: never;
-    /**
-     * Delete user
-     * @description Deletes a user and all associated data. Transfers sole-owned threat models or deletes them if no other owners exist.
-     */
-    delete: operations['deleteAdminUser'];
-    options?: never;
-    head?: never;
-    /**
-     * Update user metadata
-     * @description Updates user metadata fields (email, name, email_verified). Only provided fields are updated.
-     */
-    patch: operations['updateAdminUser'];
-    trace?: never;
-  };
   '/admin/groups': {
     parameters: {
       query?: never;
@@ -1718,34 +1690,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/admin/groups/{internal_uuid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get group details
-     * @description Returns detailed information about a specific group, including enriched data (usage in authorizations and admin grants).
-     */
-    get: operations['getAdminGroup'];
-    put?: never;
-    post?: never;
-    /**
-     * Delete group
-     * @description Deletes a TMI-managed group and handles threat model cleanup. Protected groups like 'everyone' cannot be deleted.
-     */
-    delete: operations['deleteAdminGroup'];
-    options?: never;
-    head?: never;
-    /**
-     * Update group metadata
-     * @description Updates group metadata fields (name, description). Only provided fields are updated.
-     */
-    patch: operations['updateAdminGroup'];
-    trace?: never;
-  };
   '/saml/providers/{idp}/users': {
     parameters: {
       query?: never;
@@ -1761,50 +1705,6 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/groups/{internal_uuid}/members': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List group members
-     * @description Returns a paginated list of users who are members of the specified group. Includes user details (email, name, provider information).
-     */
-    get: operations['listGroupMembers'];
-    put?: never;
-    /**
-     * Add member to group
-     * @description Adds a user to a group. The user must exist in the system. Cannot add members to the special 'everyone' pseudo-group.
-     */
-    post: operations['addGroupMember'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/groups/{internal_uuid}/members/{member_uuid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Remove member from group
-     * @description Removes a user or nested group from a group. Use the subject_type query parameter to specify whether the member is a user (default) or a group. Cannot remove members from the special 'everyone' pseudo-group.
-     */
-    delete: operations['removeGroupMember'];
     options?: never;
     head?: never;
     patch?: never;
@@ -2600,26 +2500,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/admin/users/{internal_uuid}/transfer': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Transfer user ownership to another user
-     * @description Transfers ownership of all threat models and survey responses owned by the specified user to the target user. The source user is downgraded to writer role on all transferred items. Requires administrator privileges.
-     */
-    post: operations['transferAdminUserOwnership'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/teams': {
     parameters: {
       query?: never;
@@ -2893,29 +2773,9 @@ export interface paths {
     };
     /**
      * List my groups
-     * @description Returns the TMI-managed groups that the authenticated user belongs to. Returns direct memberships only (excludes the implicit everyone pseudo-group). Each group includes its internal_uuid which can be used to query group members via GET /me/groups/{internal_uuid}/members.
+     * @description Returns the TMI-managed groups that the authenticated user belongs to. Returns direct memberships only (excludes the implicit everyone pseudo-group). Each group includes its internal_uuid which can be used to query group members via GET /me/groups/{group_id}/members.
      */
     get: operations['listMyGroups'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/me/groups/{internal_uuid}/members': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List members of my group
-     * @description Returns a paginated list of members for a group that the authenticated user belongs to. Only effective members (direct or via nested group membership) can list a group's members. Admin audit fields (added_by, notes) are redacted from the response.
-     */
-    get: operations['listMyGroupMembers'];
     put?: never;
     post?: never;
     delete?: never;
@@ -3279,50 +3139,6 @@ export interface paths {
      */
     post: operations['createAutomationAccount'];
     delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users/{internal_uuid}/client_credentials': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List client credentials for an automation user
-     * @description Lists all client credentials for the specified automation user. Only accessible for users with automation=true. Secrets are never returned.
-     */
-    get: operations['listAdminUserClientCredentials'];
-    put?: never;
-    /**
-     * Create a client credential for an automation user
-     * @description Creates a new client credential for the specified automation user. Only accessible for users with automation=true. The client_secret is returned only once. Admin operations bypass quota limits.
-     */
-    post: operations['createAdminUserClientCredential'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users/{internal_uuid}/client_credentials/{credential_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Delete a client credential for an automation user
-     * @description Deletes and revokes a client credential for the specified automation user. Only accessible for users with automation=true.
-     */
-    delete: operations['deleteAdminUserClientCredential'];
     options?: never;
     head?: never;
     patch?: never;
@@ -3894,46 +3710,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/admin/users/{internal_uuid}/content_tokens': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List a user's linked content provider tokens (admin)
-     * @description Administrator-only listing of a target user's delegated content provider tokens. Secrets are never returned.
-     */
-    get: operations['adminListUserContentTokens'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/users/{internal_uuid}/content_tokens/{provider_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Revoke a user's linked content provider token (admin)
-     * @description Administrator-only best-effort revocation of a target user's delegated content provider token. Returns 204 whether or not the row existed (idempotent).
-     */
-    delete: operations['adminDeleteUserContentToken'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/me/picker_tokens/{provider_id}': {
     parameters: {
       query?: never;
@@ -4261,6 +4037,230 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/admin/users/{user_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get user details
+     * @description Returns detailed information about a specific user, including enriched data (admin status, groups, threat model counts).
+     */
+    get: operations['getAdminUser'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete user
+     * @description Deletes a user and all associated data. Transfers sole-owned threat models or deletes them if no other owners exist.
+     */
+    delete: operations['deleteAdminUser'];
+    options?: never;
+    head?: never;
+    /**
+     * Update user metadata
+     * @description Updates user metadata fields (email, name, email_verified). Only provided fields are updated.
+     */
+    patch: operations['updateAdminUser'];
+    trace?: never;
+  };
+  '/admin/groups/{group_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get group details
+     * @description Returns detailed information about a specific group, including enriched data (usage in authorizations and admin grants).
+     */
+    get: operations['getAdminGroup'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete group
+     * @description Deletes a TMI-managed group and handles threat model cleanup. Protected groups like 'everyone' cannot be deleted.
+     */
+    delete: operations['deleteAdminGroup'];
+    options?: never;
+    head?: never;
+    /**
+     * Update group metadata
+     * @description Updates group metadata fields (name, description). Only provided fields are updated.
+     */
+    patch: operations['updateAdminGroup'];
+    trace?: never;
+  };
+  '/admin/groups/{group_id}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List group members
+     * @description Returns a paginated list of users who are members of the specified group. Includes user details (email, name, provider information).
+     */
+    get: operations['listGroupMembers'];
+    put?: never;
+    /**
+     * Add member to group
+     * @description Adds a user to a group. The user must exist in the system. Cannot add members to the special 'everyone' pseudo-group.
+     */
+    post: operations['addGroupMember'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/groups/{group_id}/members/{member_uuid}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Remove member from group
+     * @description Removes a user or nested group from a group. Use the subject_type query parameter to specify whether the member is a user (default) or a group. Cannot remove members from the special 'everyone' pseudo-group.
+     */
+    delete: operations['removeGroupMember'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/transfer': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Transfer user ownership to another user
+     * @description Transfers ownership of all threat models and survey responses owned by the specified user to the target user. The source user is downgraded to writer role on all transferred items. Requires administrator privileges.
+     */
+    post: operations['transferAdminUserOwnership'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/groups/{group_id}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List members of my group
+     * @description Returns a paginated list of members for a group that the authenticated user belongs to. Only effective members (direct or via nested group membership) can list a group's members. Admin audit fields (added_by, notes) are redacted from the response.
+     */
+    get: operations['listMyGroupMembers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/client_credentials': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List client credentials for an automation user
+     * @description Lists all client credentials for the specified automation user. Only accessible for users with automation=true. Secrets are never returned.
+     */
+    get: operations['listAdminUserClientCredentials'];
+    put?: never;
+    /**
+     * Create a client credential for an automation user
+     * @description Creates a new client credential for the specified automation user. Only accessible for users with automation=true. The client_secret is returned only once. Admin operations bypass quota limits.
+     */
+    post: operations['createAdminUserClientCredential'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/client_credentials/{credential_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a client credential for an automation user
+     * @description Deletes and revokes a client credential for the specified automation user. Only accessible for users with automation=true.
+     */
+    delete: operations['deleteAdminUserClientCredential'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/content_tokens': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List a user's linked content provider tokens (admin)
+     * @description Administrator-only listing of a target user's delegated content provider tokens. Secrets are never returned.
+     */
+    get: operations['adminListUserContentTokens'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/content_tokens/{provider_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke a user's linked content provider token (admin)
+     * @description Administrator-only best-effort revocation of a target user's delegated content provider token. Returns 204 whether or not the row existed (idempotent).
+     */
+    delete: operations['adminDeleteUserContentToken'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4283,6 +4283,18 @@ export interface components {
      *       "operator": {
      *         "name": "Example Organization",
      *         "contact": "api-support@example.com"
+     *       },
+     *       "health": {
+     *         "database": {
+     *           "status": "healthy",
+     *           "latency_ms": 5,
+     *           "message": "example"
+     *         },
+     *         "redis": {
+     *           "status": "healthy",
+     *           "latency_ms": 2,
+     *           "message": "example"
+     *         }
      *       }
      *     }
      */
@@ -4459,7 +4471,16 @@ export interface components {
      *       "include_in_report": true,
      *       "timmy_enabled": true,
      *       "access_status": "accessible",
-     *       "content_source": "http"
+     *       "content_source": "http",
+     *       "alias": 1,
+     *       "access_diagnostics": {
+     *         "reason_code": "token_not_linked",
+     *         "reason_detail": "example",
+     *         "remediations": []
+     *       },
+     *       "access_status_updated_at": "2026-01-01T00:00:00Z",
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "version": 1
      *     }
      */
     Document: {
@@ -4672,7 +4693,15 @@ export interface components {
      *         }
      *       ],
      *       "include_in_report": true,
-     *       "timmy_enabled": true
+     *       "timmy_enabled": true,
+     *       "alias": 20,
+     *       "image": null,
+     *       "metadata": null,
+     *       "update_vector": 0,
+     *       "auto_generated": false,
+     *       "color_palette": [],
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "version": 1
      *     }
      */
     DfdDiagram: {
@@ -4947,7 +4976,35 @@ export interface components {
      *       "threat_model_framework": "STRIDE",
      *       "status": "in_progress",
      *       "created_at": "2026-01-10T08:00:00Z",
-     *       "modified_at": "2026-01-15T10:30:00Z"
+     *       "modified_at": "2026-01-15T10:30:00Z",
+     *       "alias": 1,
+     *       "assets": [],
+     *       "created_by": {
+     *         "principal_type": "user",
+     *         "provider": "example",
+     *         "provider_id": "example",
+     *         "display_name": "example",
+     *         "email": "user@example.com"
+     *       },
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "diagrams": [],
+     *       "documents": [],
+     *       "is_confidential": false,
+     *       "issue_uri": "https://example.com/resource",
+     *       "metadata": [],
+     *       "notes": [],
+     *       "project_id": "00000000-0000-0000-0000-000000000000",
+     *       "repositories": [],
+     *       "security_reviewer": {
+     *         "principal_type": "user",
+     *         "provider": "example",
+     *         "provider_id": "example",
+     *         "display_name": "example",
+     *         "email": "user@example.com"
+     *       },
+     *       "status_updated": "2026-01-01T00:00:00Z",
+     *       "threats": [],
+     *       "version": 1
      *     }
      */
     ThreatModel: {
@@ -5031,7 +5088,21 @@ export interface components {
      *         "vector": "SSVCv2/E:A/U:S/T:T/P:S/2026-04-08/",
      *         "decision": "Immediate",
      *         "methodology": "Supplier"
-     *       }
+     *       },
+     *       "alias": 1,
+     *       "asset_id": "00000000-0000-0000-0000-000000000000",
+     *       "auto_generated": false,
+     *       "cell_id": "00000000-0000-0000-0000-000000000000",
+     *       "cvss": [],
+     *       "cwe_id": [],
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "diagram_id": "00000000-0000-0000-0000-000000000000",
+     *       "issue_uri": "https://example.com/resource",
+     *       "mitigated": false,
+     *       "mitigation": "example",
+     *       "priority": "example",
+     *       "score": 0,
+     *       "version": 1
      *     }
      */
     Threat: {
@@ -5434,6 +5505,7 @@ export interface components {
       /**
        * Format: uuid
        * @description ID of the connected node (UUID)
+       * @example 37EAEDFA-BF37-4996-8665-242FEC34BBFF
        */
       cell: string;
       /** @description ID of the specific port on the node (optional) */
@@ -6044,7 +6116,15 @@ export interface components {
      *       "modified_at": "2024-01-15T10:00:00Z",
      *       "uri": "https://github.com/example/repo",
      *       "include_in_report": true,
-     *       "timmy_enabled": true
+     *       "timmy_enabled": true,
+     *       "alias": 1,
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "parameters": {
+     *         "refType": "branch",
+     *         "refValue": "example",
+     *         "subPath": "example"
+     *       },
+     *       "type": "git"
      *     }
      */
     Repository: components['schemas']['RepositoryBase'] & {
@@ -6084,7 +6164,13 @@ export interface components {
      *       "content": "Reviewed authentication flow. Identified potential session fixation risk.",
      *       "description": "Notes from initial security review session",
      *       "created_at": "2026-01-12T11:00:00Z",
-     *       "modified_at": "2026-01-13T16:00:00Z"
+     *       "modified_at": "2026-01-13T16:00:00Z",
+     *       "alias": 1,
+     *       "auto_generated": false,
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "include_in_report": true,
+     *       "metadata": [],
+     *       "timmy_enabled": true
      *     }
      */
     Note: components['schemas']['NoteBase'] & {
@@ -6131,7 +6217,13 @@ export interface components {
      *       "criticality": "high",
      *       "sensitivity": "high",
      *       "created_at": "2026-01-11T09:00:00Z",
-     *       "modified_at": "2026-01-14T14:00:00Z"
+     *       "modified_at": "2026-01-14T14:00:00Z",
+     *       "alias": 1,
+     *       "deleted_at": "2026-01-01T00:00:00Z",
+     *       "include_in_report": true,
+     *       "metadata": [],
+     *       "timmy_enabled": true,
+     *       "version": 1
      *     }
      */
     Asset: {
@@ -6564,7 +6656,20 @@ export interface components {
      *       "attempts": 1,
      *       "created_at": "2024-01-20T15:45:30Z",
      *       "delivered_at": "2024-01-20T15:45:31Z",
-     *       "payload": {}
+     *       "payload": {},
+     *       "addon_id": "00000000-0000-0000-0000-000000000000",
+     *       "invoked_by": {
+     *         "principal_type": "user",
+     *         "provider": "example",
+     *         "provider_id": "example",
+     *         "display_name": "example",
+     *         "email": "user@example.com"
+     *       },
+     *       "last_activity_at": "2026-01-01T00:00:00Z",
+     *       "last_error": "example",
+     *       "next_retry_at": "2026-01-01T00:00:00Z",
+     *       "status_message": "example",
+     *       "status_percent": 0
      *     }
      */
     WebhookDelivery: {
@@ -6764,7 +6869,8 @@ export interface components {
      *         "threat_model",
      *         "diagram"
      *       ],
-     *       "created_at": "2024-01-15T10:30:00Z"
+     *       "created_at": "2024-01-15T10:30:00Z",
+     *       "parameters": []
      *     }
      */
     AddonResponse: {
@@ -6808,7 +6914,11 @@ export interface components {
      *           "name": "Security Scanner",
      *           "description": "Automated security vulnerability scanner",
      *           "webhook_id": "550e8400-e29b-41d4-a716-446655440000",
-     *           "created_at": "2024-01-15T10:30:00Z"
+     *           "created_at": "2024-01-15T10:30:00Z",
+     *           "icon": "example",
+     *           "objects": [],
+     *           "parameters": [],
+     *           "threat_model_id": "00000000-0000-0000-0000-000000000000"
      *         }
      *       ],
      *       "total": 1,
@@ -7007,7 +7117,8 @@ export interface components {
      *       "user_id": "550e8400-e29b-41d4-a716-446655440000",
      *       "max_requests_per_minute": 60,
      *       "created_at": "2024-01-01T00:00:00Z",
-     *       "modified_at": "2024-01-01T00:00:00Z"
+     *       "modified_at": "2024-01-01T00:00:00Z",
+     *       "max_requests_per_hour": 1
      *     }
      */
     UserAPIQuota: {
@@ -7082,7 +7193,10 @@ export interface components {
      *       "is_admin": false,
      *       "created_at": "2024-01-01T00:00:00Z",
      *       "modified_at": "2024-01-01T00:00:00Z",
-     *       "automation": null
+     *       "automation": null,
+     *       "active_threat_models": 0,
+     *       "groups": [],
+     *       "last_login": "2026-01-01T00:00:00Z"
      *     }
      */
     AdminUser: {
@@ -7142,7 +7256,11 @@ export interface components {
      *           "internal_uuid": "123e4567-e89b-12d3-a456-426614174000",
      *           "provider_user_id": "github_123456",
      *           "email_verified": true,
-     *           "modified_at": "2024-01-15T00:00:00Z"
+     *           "modified_at": "2024-01-15T00:00:00Z",
+     *           "active_threat_models": 0,
+     *           "automation": false,
+     *           "groups": [],
+     *           "last_login": "2026-01-01T00:00:00Z"
      *         }
      *       ],
      *       "total": 1,
@@ -7192,7 +7310,9 @@ export interface components {
      *       "last_used": "2024-01-20T15:00:00Z",
      *       "usage_count": 150,
      *       "created_at": "2024-01-02T10:00:00Z",
-     *       "modified_at": "2024-01-02T10:00:00Z"
+     *       "modified_at": "2024-01-02T10:00:00Z",
+     *       "used_in_admin_grants": false,
+     *       "used_in_authorizations": false
      *     }
      */
     AdminGroup: {
@@ -7244,7 +7364,9 @@ export interface components {
      *           "group_name": "Engineering",
      *           "first_used": "2024-01-02T10:00:00Z",
      *           "last_used": "2024-01-15T14:30:00Z",
-     *           "usage_count": 150
+     *           "usage_count": 150,
+     *           "used_in_authorizations": true,
+     *           "used_in_admin_grants": false
      *         }
      *       ],
      *       "total": 1,
@@ -7343,7 +7465,12 @@ export interface components {
      *       "user_provider": "github",
      *       "user_provider_user_id": "bob-github-456",
      *       "added_at": "2024-01-06T09:00:00Z",
-     *       "subject_type": "user"
+     *       "subject_type": "user",
+     *       "added_by_email": "user@example.com",
+     *       "added_by_internal_uuid": "00000000-0000-0000-0000-000000000000",
+     *       "member_group_internal_uuid": "00000000-0000-0000-0000-000000000000",
+     *       "member_group_name": "example",
+     *       "notes": "example"
      *     }
      */
     GroupMember: {
@@ -7417,7 +7544,12 @@ export interface components {
      *           "user_provider": "github",
      *           "user_provider_user_id": "github_456789",
      *           "added_at": "2024-01-06T09:00:00Z",
-     *           "subject_type": "user"
+     *           "subject_type": "user",
+     *           "added_by_email": "user@example.com",
+     *           "added_by_internal_uuid": "00000000-0000-0000-0000-000000000000",
+     *           "member_group_internal_uuid": "00000000-0000-0000-0000-000000000000",
+     *           "member_group_name": "example",
+     *           "notes": "example"
      *         }
      *       ],
      *       "total": 1,
@@ -7591,7 +7723,16 @@ export interface components {
      *         "environment": "production",
      *         "compliance": "PCI-DSS"
      *       },
-     *       "cells": [],
+     *       "cells": [
+     *         {
+     *           "children": [],
+     *           "id": "550e8400-e29b-41d4-a716-446655440000",
+     *           "labels": [],
+     *           "metadata": {},
+     *           "security_boundary": false,
+     *           "shape": "process"
+     *         }
+     *       ],
      *       "assets": []
      *     }
      */
@@ -7749,7 +7890,7 @@ export interface components {
        */
       grant_type: 'authorization_code' | 'client_credentials' | 'refresh_token';
       /**
-       * @description Authorization code (required for authorization_code grant)
+       * @description Authorization code received from OAuth provider. Per RFC 6749, can contain any visible ASCII characters (VSCHAR: 0x20-0x7E). maxLength is deliberately generous: Microsoft Entra v2.0 codes routinely exceed 700 characters and can pass 2000 with additional scopes/claims. A 512 limit silently broke Microsoft sign-in with a 400 from request validation before the handler ran (Google codes are ~100 chars, so only Microsoft was affected). Do not tighten without checking real Entra code lengths.
        * @example 0AX4XfWiXY2BZ_example_auth_code
        */
       code?: string | null;
@@ -7971,13 +8112,23 @@ export interface components {
      *           "id": "http",
      *           "name": "HTTP",
      *           "kind": "direct",
-     *           "icon": "fa-solid fa-globe"
+     *           "icon": "fa-solid fa-globe",
+     *           "picker_config": {
+     *             "client_id": "1234567890-abc.apps.googleusercontent.com",
+     *             "developer_key": "AIzaSyB-1234example",
+     *             "app_id": "1234567890"
+     *           }
      *         },
      *         {
      *           "id": "google_workspace",
      *           "name": "Google Workspace",
      *           "kind": "delegated",
-     *           "icon": "fa-brands fa-google"
+     *           "icon": "fa-brands fa-google",
+     *           "picker_config": {
+     *             "client_id": "1234567890-abc.apps.googleusercontent.com",
+     *             "developer_key": "AIzaSyB-1234example",
+     *             "app_id": "1234567890"
+     *           }
      *         }
      *       ]
      *     }
@@ -8619,8 +8770,6 @@ export interface components {
        * @description ID of the survey this response is based on
        */
       survey_id: string;
-      /** @description Survey version captured at creation time - responses always complete on the original version */
-      readonly survey_version?: string;
       /**
        * Format: uuid
        * @description Optional reference to the project this survey response belongs to
@@ -8713,6 +8862,8 @@ export interface components {
        * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
        */
       readonly version?: number;
+      /** @description Survey version captured at creation time - responses always complete on the original version (server-set; response only) */
+      readonly survey_version?: string;
     });
     /**
      * @description Summary of a survey response for list endpoints
@@ -9251,6 +9402,7 @@ export interface components {
       /**
        * Format: uuid
        * @description UUID of the related team
+       * @example bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
        */
       related_team_id: string;
       relationship: components['schemas']['RelationshipType'];
@@ -9262,6 +9414,7 @@ export interface components {
       /**
        * Format: uuid
        * @description UUID of the related project
+       * @example aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
        */
       related_project_id: string;
       relationship: components['schemas']['RelationshipType'];
@@ -9280,21 +9433,6 @@ export interface components {
        * @example Core platform infrastructure team
        */
       description?: string | null;
-      /**
-       * @description List of team members with their roles
-       * @example [
-       *       {
-       *         "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-       *         "role": "engineering_lead"
-       *       }
-       *     ]
-       */
-      members?: components['schemas']['TeamMember'][];
-      /**
-       * @description Responsible parties for this team (in lieu of owner)
-       * @example []
-       */
-      responsible_parties?: components['schemas']['ResponsibleParty'][];
       /**
        * @description Relationships to other teams
        * @example []
@@ -9361,7 +9499,40 @@ export interface components {
        * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
        */
       readonly version?: number;
+      /**
+       * @description List of team members with their roles (resolved on read)
+       * @example [
+       *       {
+       *         "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+       *         "role": "engineering_lead"
+       *       }
+       *     ]
+       */
+      members?: components['schemas']['TeamMember'][];
+      /**
+       * @description Responsible parties for this team (in lieu of owner) (resolved on read)
+       * @example []
+       */
+      responsible_parties?: components['schemas']['ResponsibleParty'][];
     });
+    /** @description Minimal team reference embedded in other resources. Only the identifying fields are resolved; fetch /teams/{team_id} for the complete team. */
+    TeamSummary: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the team (UUID)
+       */
+      readonly id: string;
+      /**
+       * @description Team name
+       * @example Platform Engineering
+       */
+      name: string;
+      /**
+       * @description Team description
+       * @example Core platform infrastructure team
+       */
+      description?: string | null;
+    };
     /** @description Summary of a team for list views */
     TeamListItem: {
       /** Format: uuid */
@@ -9384,7 +9555,24 @@ export interface components {
       /** @description Number of notes associated with this team */
       note_count?: number;
     };
-    TeamInput: components['schemas']['TeamBase'];
+    /** @description Client-writable fields for Team */
+    TeamInput: components['schemas']['TeamBase'] & {
+      /**
+       * @description List of team members with their roles
+       * @example [
+       *       {
+       *         "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+       *         "role": "engineering_lead"
+       *       }
+       *     ]
+       */
+      members?: components['schemas']['TeamMemberInput'][];
+      /**
+       * @description Responsible parties for this team (in lieu of owner)
+       * @example []
+       */
+      responsible_parties?: components['schemas']['ResponsiblePartyInput'][];
+    };
     /** @description Paginated list of teams */
     ListTeamsResponse: {
       /**
@@ -9435,11 +9623,6 @@ export interface components {
        */
       team_id: string;
       /**
-       * @description Responsible parties for this project
-       * @example []
-       */
-      responsible_parties?: components['schemas']['ResponsibleParty'][];
-      /**
        * @description Relationships to other projects
        * @example []
        */
@@ -9470,7 +9653,7 @@ export interface components {
        */
       readonly id?: string;
       /** @description The team this project belongs to (resolved) */
-      readonly team?: components['schemas']['Team'] | null;
+      readonly team?: components['schemas']['TeamSummary'] | null;
       /** @description User who created the project */
       readonly created_by?: components['schemas']['User'] | null;
       /**
@@ -9501,6 +9684,11 @@ export interface components {
        * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
        */
       readonly version?: number;
+      /**
+       * @description Responsible parties for this project (resolved on read)
+       * @example []
+       */
+      responsible_parties?: components['schemas']['ResponsibleParty'][];
     });
     /** @description Summary of a project for list views */
     ProjectListItem: {
@@ -9524,7 +9712,14 @@ export interface components {
       /** @description Number of notes associated with this project */
       note_count?: number;
     };
-    ProjectInput: components['schemas']['ProjectBase'];
+    /** @description Client-writable fields for Project */
+    ProjectInput: components['schemas']['ProjectBase'] & {
+      /**
+       * @description Responsible parties for this project
+       * @example []
+       */
+      responsible_parties?: components['schemas']['ResponsiblePartyInput'][];
+    };
     /** @description Paginated list of projects */
     ListProjectsResponse: {
       /**
@@ -9954,14 +10149,20 @@ export interface components {
      *         "email_verified": true,
      *         "automation": true,
      *         "created_at": "2024-01-01T00:00:00Z",
-     *         "modified_at": "2024-01-01T00:00:00Z"
+     *         "modified_at": "2024-01-01T00:00:00Z",
+     *         "active_threat_models": 0,
+     *         "groups": [],
+     *         "is_admin": false,
+     *         "last_login": "2026-01-01T00:00:00Z"
      *       },
      *       "client_credential": {
      *         "id": "990eabcd-e89b-41d4-a716-446655440008",
      *         "client_id": "tmi_cc_abcdef1234567890",
      *         "client_secret": "base64url-encoded-secret-shown-only-once",
      *         "name": "webhook-analyzer",
-     *         "created_at": "2024-01-01T00:00:00Z"
+     *         "created_at": "2024-01-01T00:00:00Z",
+     *         "description": "example",
+     *         "expires_at": "2026-01-01T00:00:00Z"
      *       }
      *     }
      */
@@ -11000,6 +11201,52 @@ export interface components {
       /** @description Additional linked identities */
       linked?: components['schemas']['LinkedIdentity'][];
     };
+    /** @description Document data for bulk update operations, including required ID field */
+    DocumentBulkUpdateItem: components['schemas']['DocumentBase'] & {
+      /**
+       * Format: uuid
+       * @description Unique identifier of the document to update (required for bulk updates)
+       */
+      id: string;
+    };
+    /** @description Repository data for bulk update operations, including required ID field */
+    RepositoryBulkUpdateItem: components['schemas']['RepositoryBase'] & {
+      /**
+       * Format: uuid
+       * @description Unique identifier of the repository to update (required for bulk updates)
+       */
+      id: string;
+    };
+    /** @description Asset data for bulk update operations, including required ID field */
+    AssetBulkUpdateItem: components['schemas']['AssetBase'] & {
+      /**
+       * Format: uuid
+       * @description Unique identifier of the asset to update (required for bulk updates)
+       */
+      id: string;
+    };
+    /** @description Client-writable fields of TeamMember (excludes the server-resolved user). */
+    TeamMemberInput: {
+      /**
+       * Format: uuid
+       * @description UUID of the team member user
+       */
+      user_id: string;
+      role?: components['schemas']['TeamMemberRole'];
+      /** @description Custom role description when role is 'other' */
+      custom_role?: string;
+    };
+    /** @description Client-writable fields of ResponsibleParty (excludes the server-resolved user). */
+    ResponsiblePartyInput: {
+      /**
+       * Format: uuid
+       * @description UUID of the responsible party user
+       */
+      user_id: string;
+      role?: components['schemas']['TeamMemberRole'];
+      /** @description Custom role description when role is 'other' */
+      custom_role?: string;
+    };
   };
   responses: {
     /** @description Error response */
@@ -11406,7 +11653,7 @@ export interface components {
     LimitQueryParam: number;
     /** @description Number of results to skip */
     OffsetQueryParam: number;
-    /** @description User ID */
+    /** @description Internal system UUID of the user */
     UserIdPathParam: string;
     /** @description Filter by email (case-insensitive substring match) */
     EmailQueryParam: string;
@@ -11422,8 +11669,6 @@ export interface components {
     SortByQueryParam: 'created_at' | 'last_login' | 'email' | 'name';
     /** @description Sort direction */
     SortOrderQueryParam: 'asc' | 'desc';
-    /** @description Internal system UUID of the user */
-    InternalUuidPathParam: string;
     /** @description Filter by group name (case-insensitive substring match) */
     GroupNameQueryParam: string;
     /** @description Filter groups used (true) or not used (false) in authorizations */
@@ -11473,8 +11718,8 @@ export interface components {
     SecurityReviewerQueryParam: string;
     /** @description Chat session identifier */
     SessionId: string;
-    /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
-    IfMatchHeader: number;
+    /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
+    IfMatchHeader: string;
     /** @description Maximum number of entries to return per page. */
     AuditPageLimit: number;
     /** @description Opaque pagination cursor from the previous page next_cursor. Omit for the first page. */
@@ -11491,6 +11736,8 @@ export interface components {
     AuditThreatModelId: string;
     /** @description Return a page centered on this entry id (~half newer, ~half older, entry included). Mutually exclusive with cursor. */
     AuditAround: string;
+    /** @description Internal system UUID of the group */
+    GroupIdPathParam: string;
   };
   requestBodies: never;
   headers: never;
@@ -11527,6 +11774,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getOpenIDConfiguration: {
@@ -12073,10 +12321,14 @@ export interface operations {
            *       "idp": "azure",
            *       "groups": [
            *         {
-           *           "name": "Security Team"
+           *           "name": "Security Team",
+           *           "display_name": "example",
+           *           "used_in_authorizations": false
            *         },
            *         {
-           *           "name": "Developers"
+           *           "name": "Developers",
+           *           "display_name": "example",
+           *           "used_in_authorizations": false
            *         }
            *       ]
            *     }
@@ -12240,7 +12492,7 @@ export interface operations {
            */
           grant_type: 'authorization_code' | 'client_credentials' | 'refresh_token';
           /**
-           * @description Authorization code received from OAuth provider. Per RFC 6749, can contain any visible ASCII characters (VSCHAR: 0x20-0x7E).
+           * @description Authorization code received from OAuth provider. Per RFC 6749, can contain any visible ASCII characters (VSCHAR: 0x20-0x7E). maxLength is deliberately generous: Microsoft Entra v2.0 codes routinely exceed 700 characters and can pass 2000 with additional scopes/claims. A 512 limit silently broke Microsoft sign-in with a 400 from request validation before the handler ran (Google codes are ~100 chars, so only Microsoft was affected). Do not tighten without checking real Entra code lengths.
            * @example 0AX4XfWiXY2BZ_example_auth_code_from_google
            */
           code?: string | null;
@@ -12440,7 +12692,11 @@ export interface operations {
            *       "sub": "alice",
            *       "name": "Alice Smith",
            *       "email": "alice@example.com",
-           *       "idp": "github"
+           *       "idp": "github",
+           *       "groups": [
+           *         "admins",
+           *         "users"
+           *       ]
            *     }
            */
           'application/json': {
@@ -12712,6 +12968,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listThreatModels: {
@@ -12800,7 +13057,20 @@ export interface operations {
            *           "diagram_count": 1,
            *           "threat_count": 5,
            *           "asset_count": 4,
-           *           "note_count": 2
+           *           "note_count": 2,
+           *           "alias": 1,
+           *           "deleted_at": "2026-01-01T00:00:00Z",
+           *           "description": "example",
+           *           "issue_uri": "https://example.com/resource",
+           *           "security_reviewer": {
+           *             "principal_type": "user",
+           *             "provider": "example",
+           *             "provider_id": "example",
+           *             "display_name": "example",
+           *             "email": "user@example.com"
+           *           },
+           *           "status": "not_started",
+           *           "status_updated": "2026-01-01T00:00:00Z"
            *         }
            *       ],
            *       "total": 42,
@@ -12832,6 +13102,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModel: {
@@ -12902,7 +13173,25 @@ export interface operations {
            *       "documents": [],
            *       "repositories": [],
            *       "notes": [],
-           *       "assets": []
+           *       "assets": [],
+           *       "issue_uri": "https://example.com/resource",
+           *       "metadata": [
+           *         {
+           *           "key": "environment",
+           *           "value": "production"
+           *         }
+           *       ],
+           *       "status_updated": "2026-02-01T09:00:00Z",
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "security_reviewer": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['ThreatModel'];
@@ -12929,6 +13218,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModel: {
@@ -13019,13 +13309,51 @@ export interface operations {
            *             "Tampering"
            *           ],
            *           "severity": "high",
-           *           "status": "open"
+           *           "status": "open",
+           *           "alias": 1,
+           *           "asset_id": "00000000-0000-0000-0000-000000000000",
+           *           "auto_generated": false,
+           *           "cell_id": "00000000-0000-0000-0000-000000000000",
+           *           "created_at": "2026-01-01T00:00:00Z",
+           *           "cvss": [],
+           *           "cwe_id": [],
+           *           "deleted_at": "2026-01-01T00:00:00Z",
+           *           "description": "example",
+           *           "diagram_id": "00000000-0000-0000-0000-000000000000",
+           *           "include_in_report": true,
+           *           "issue_uri": "https://example.com/resource",
+           *           "metadata": [],
+           *           "mitigated": false,
+           *           "mitigation": "example",
+           *           "modified_at": "2026-01-01T00:00:00Z",
+           *           "priority": "example",
+           *           "score": 0,
+           *           "ssvc": {
+           *             "vector": "example",
+           *             "decision": "Defer",
+           *             "methodology": "example"
+           *           },
+           *           "threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *           "timmy_enabled": true,
+           *           "version": 1
            *         }
            *       ],
            *       "documents": [],
            *       "repositories": [],
            *       "notes": [],
-           *       "assets": []
+           *       "assets": [],
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "metadata": [],
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "security_reviewer": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "status_updated": "2026-01-01T00:00:00Z",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['ThreatModel'];
@@ -13053,13 +13381,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModel: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -13129,7 +13458,20 @@ export interface operations {
            *       "documents": [],
            *       "repositories": [],
            *       "notes": [],
-           *       "assets": []
+           *       "assets": [],
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "issue_uri": "https://example.com/resource",
+           *       "metadata": [],
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "security_reviewer": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "status_updated": "2026-01-01T00:00:00Z",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['ThreatModel'];
@@ -13160,6 +13502,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModel: {
@@ -13225,13 +13568,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModel: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -13315,7 +13659,20 @@ export interface operations {
            *       "documents": [],
            *       "repositories": [],
            *       "notes": [],
-           *       "assets": []
+           *       "assets": [],
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "issue_uri": "https://example.com/resource",
+           *       "metadata": [],
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "security_reviewer": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "status_updated": "2026-01-01T00:00:00Z",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['ThreatModel'];
@@ -13346,6 +13703,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelThreats: {
@@ -13460,6 +13818,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelThreat: {
@@ -13517,6 +13876,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelThreat: {
@@ -13572,13 +13932,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelThreat: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -13638,6 +13999,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelThreat: {
@@ -13690,13 +14052,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelThreat: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -13756,6 +14119,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatMetadata: {
@@ -13809,6 +14173,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatMetadata: {
@@ -13883,6 +14248,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatMetadataByKey: {
@@ -13938,6 +14304,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatMetadataByKey: {
@@ -14011,6 +14378,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatMetadataByKey: {
@@ -14065,6 +14433,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceThreatMetadata: {
@@ -14124,6 +14493,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatMetadata: {
@@ -14198,6 +14568,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatMetadata: {
@@ -14257,6 +14628,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpdateThreatModelThreats: {
@@ -14314,6 +14686,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelThreats: {
@@ -14329,7 +14702,7 @@ export interface operations {
     /** @description Array of threats to create in bulk */
     requestBody: {
       content: {
-        'application/json': components['schemas']['Threat'][];
+        'application/json': components['schemas']['ThreatInput'][];
       };
     };
     responses: {
@@ -14368,9 +14741,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkDeleteThreatModelThreats: {
@@ -14408,7 +14783,11 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "deleted_count": 3
+           *       "deleted_count": 3,
+           *       "deleted_ids": [
+           *         "550e8400-e29b-41d4-a716-446655440001",
+           *         "550e8400-e29b-41d4-a716-446655440002"
+           *       ]
            *     }
            */
           'application/json': {
@@ -14437,6 +14816,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkPatchThreatModelThreats: {
@@ -14493,9 +14873,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelDocuments: {
@@ -14554,6 +14936,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelDocument: {
@@ -14633,6 +15016,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelDocument: {
@@ -14688,13 +15072,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelDocument: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -14754,6 +15139,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelDocument: {
@@ -14806,13 +15192,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelDocument: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -14886,6 +15273,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDocumentMetadata: {
@@ -14939,6 +15327,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createDocumentMetadata: {
@@ -15013,6 +15402,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDocumentMetadataByKey: {
@@ -15068,6 +15458,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateDocumentMetadataByKey: {
@@ -15141,6 +15532,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteDocumentMetadataByKey: {
@@ -15195,6 +15587,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceDocumentMetadata: {
@@ -15254,6 +15647,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateDocumentMetadata: {
@@ -15328,6 +15722,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertDocumentMetadata: {
@@ -15387,6 +15782,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatModelDocuments: {
@@ -15402,7 +15798,7 @@ export interface operations {
     /** @description Array of documents to upsert in bulk */
     requestBody: {
       content: {
-        'application/json': components['schemas']['Document'][];
+        'application/json': components['schemas']['DocumentBulkUpdateItem'][];
       };
     };
     responses: {
@@ -15441,9 +15837,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelDocuments: {
@@ -15459,7 +15857,7 @@ export interface operations {
     /** @description Array of documents to create in bulk */
     requestBody: {
       content: {
-        'application/json': components['schemas']['Document'][];
+        'application/json': components['schemas']['DocumentInput'][];
       };
     };
     responses: {
@@ -15498,9 +15896,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelRepositories: {
@@ -15559,6 +15959,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelRepository: {
@@ -15616,6 +16017,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelRepository: {
@@ -15669,6 +16071,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelRepository: {
@@ -15728,6 +16131,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelRepository: {
@@ -15780,6 +16184,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelRepository: {
@@ -15853,6 +16258,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getRepositoryMetadata: {
@@ -15906,6 +16312,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createRepositoryMetadata: {
@@ -15980,6 +16387,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getRepositoryMetadataByKey: {
@@ -16035,6 +16443,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateRepositoryMetadataByKey: {
@@ -16108,6 +16517,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteRepositoryMetadataByKey: {
@@ -16162,6 +16572,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceRepositoryMetadata: {
@@ -16221,6 +16632,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateRepositoryMetadata: {
@@ -16295,6 +16707,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertRepositoryMetadata: {
@@ -16354,6 +16767,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatModelRepositories: {
@@ -16369,10 +16783,25 @@ export interface operations {
     /** @description Array of repositorys to upsert in bulk */
     requestBody: {
       content: {
-        'application/json': components['schemas']['Repository'][];
+        'application/json': components['schemas']['RepositoryBulkUpdateItem'][];
       };
     };
     responses: {
+      /** @description Repositories upserted successfully. Returned when the bulk upsert completes; the handler returns 200 for PUT regardless of how many items were newly created. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Repository'][];
+        };
+      };
       /** @description Sources created successfully */
       201: {
         headers: {
@@ -16408,9 +16837,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelRepositories: {
@@ -16426,7 +16857,7 @@ export interface operations {
     /** @description Array of repositorys to create in bulk */
     requestBody: {
       content: {
-        'application/json': components['schemas']['Repository'][];
+        'application/json': components['schemas']['RepositoryInput'][];
       };
     };
     responses: {
@@ -16465,9 +16896,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelMetadata: {
@@ -16519,6 +16952,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelMetadata: {
@@ -16591,6 +17025,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelMetadataByKey: {
@@ -16644,6 +17079,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelMetadataByKey: {
@@ -16715,6 +17151,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelMetadataByKey: {
@@ -16767,6 +17204,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceThreatModelMetadata: {
@@ -16824,6 +17262,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelMetadata: {
@@ -16896,6 +17335,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatModelMetadata: {
@@ -16953,6 +17393,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelDiagrams: {
@@ -16996,7 +17437,11 @@ export interface operations {
            *           "description": "Data flow diagram showing payment processing flow",
            *           "created_at": "2025-01-15T10:30:00Z",
            *           "modified_at": "2025-01-15T14:22:00Z",
-           *           "image": null
+           *           "image": null,
+           *           "alias": 1,
+           *           "deleted_at": "2026-01-01T00:00:00Z",
+           *           "include_in_report": true,
+           *           "timmy_enabled": true
            *         }
            *       ],
            *       "total": 5,
@@ -17029,6 +17474,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelDiagram: {
@@ -17086,6 +17532,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelDiagram: {
@@ -17141,13 +17588,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelDiagram: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -17221,6 +17669,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelDiagram: {
@@ -17288,13 +17737,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelDiagram: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -17369,6 +17819,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDiagramCollaborationSession: {
@@ -17422,6 +17873,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createDiagramCollaborationSession: {
@@ -17509,6 +17961,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   endDiagramCollaborationSession: {
@@ -17561,6 +18014,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDiagramMetadata: {
@@ -17614,6 +18068,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createDiagramMetadata: {
@@ -17688,6 +18143,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDiagramMetadataByKey: {
@@ -17743,6 +18199,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateDiagramMetadataByKey: {
@@ -17816,6 +18273,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteDiagramMetadataByKey: {
@@ -17870,6 +18328,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceDiagramMetadata: {
@@ -17929,6 +18388,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateDiagramMetadata: {
@@ -18003,6 +18463,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertDiagramMetadata: {
@@ -18062,6 +18523,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getCurrentUserProfile: {
@@ -18227,7 +18689,13 @@ export interface operations {
            *           "id": "ff0e8400-e29b-41d4-a716-44665544000a",
            *           "name": "Security Review Notes",
            *           "created_at": "2024-01-17T14:30:00Z",
-           *           "modified_at": "2024-01-17T15:00:00Z"
+           *           "modified_at": "2024-01-17T15:00:00Z",
+           *           "alias": 1,
+           *           "deleted_at": "2026-01-01T00:00:00Z",
+           *           "description": "example",
+           *           "include_in_report": true,
+           *           "metadata": [],
+           *           "timmy_enabled": true
            *         }
            *       ],
            *       "total": 12,
@@ -18260,6 +18728,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelNote: {
@@ -18297,7 +18766,14 @@ export interface operations {
            *       "name": "Security Analysis Notes",
            *       "content": "Initial security analysis of the authentication flow.",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-15T10:00:00Z"
+           *       "modified_at": "2026-01-15T10:00:00Z",
+           *       "alias": 1,
+           *       "description": "Notes from initial security review session",
+           *       "include_in_report": true,
+           *       "timmy_enabled": true,
+           *       "auto_generated": false,
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "metadata": []
            *     }
            */
           'application/json': components['schemas']['Note'];
@@ -18326,6 +18802,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelNote: {
@@ -18360,7 +18837,14 @@ export interface operations {
            *       "name": "Security Analysis Notes",
            *       "content": "Initial security analysis of the authentication flow.",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-16T14:30:00Z"
+           *       "modified_at": "2026-01-16T14:30:00Z",
+           *       "alias": 1,
+           *       "auto_generated": false,
+           *       "description": "Notes from initial security review session",
+           *       "include_in_report": true,
+           *       "metadata": [],
+           *       "timmy_enabled": true,
+           *       "deleted_at": "2026-01-01T00:00:00Z"
            *     }
            */
           'application/json': components['schemas']['Note'];
@@ -18388,6 +18872,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelNote: {
@@ -18427,7 +18912,14 @@ export interface operations {
            *       "name": "Security Analysis Notes - Replaced",
            *       "content": "Completely revised security analysis document.",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-17T09:00:00Z"
+           *       "modified_at": "2026-01-17T09:00:00Z",
+           *       "description": "Notes from initial security review session",
+           *       "include_in_report": true,
+           *       "timmy_enabled": true,
+           *       "alias": 1,
+           *       "auto_generated": false,
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "metadata": []
            *     }
            */
           'application/json': components['schemas']['Note'];
@@ -18456,6 +18948,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelNote: {
@@ -18508,6 +19001,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelNote: {
@@ -18561,7 +19055,14 @@ export interface operations {
            *       "name": "Security Analysis Notes - Updated",
            *       "content": "Updated security analysis with additional findings.",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-17T09:00:00Z"
+           *       "modified_at": "2026-01-17T09:00:00Z",
+           *       "alias": 1,
+           *       "auto_generated": false,
+           *       "description": "Notes from initial security review session",
+           *       "include_in_report": true,
+           *       "metadata": [],
+           *       "timmy_enabled": true,
+           *       "deleted_at": "2026-01-01T00:00:00Z"
            *     }
            */
           'application/json': components['schemas']['Note'];
@@ -18590,6 +19091,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getNoteMetadata: {
@@ -18643,6 +19145,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createNoteMetadata: {
@@ -18717,6 +19220,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getNoteMetadataByKey: {
@@ -18772,6 +19276,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateNoteMetadataByKey: {
@@ -18845,6 +19350,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteNoteMetadataByKey: {
@@ -18899,6 +19405,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceNoteMetadata: {
@@ -18958,6 +19465,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateNoteMetadata: {
@@ -19032,6 +19540,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertNoteMetadata: {
@@ -19091,6 +19600,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelAssets: {
@@ -19133,7 +19643,16 @@ export interface operations {
            *           "type": "data",
            *           "description": "Primary database storing user credentials",
            *           "created_at": "2026-01-15T10:00:00Z",
-           *           "modified_at": "2026-01-16T14:30:00Z"
+           *           "modified_at": "2026-01-16T14:30:00Z",
+           *           "alias": 1,
+           *           "classification": [],
+           *           "criticality": "example",
+           *           "deleted_at": "2026-01-01T00:00:00Z",
+           *           "include_in_report": true,
+           *           "metadata": [],
+           *           "sensitivity": "example",
+           *           "timmy_enabled": true,
+           *           "version": 1
            *         }
            *       ],
            *       "total": 1,
@@ -19166,6 +19685,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelAsset: {
@@ -19204,7 +19724,18 @@ export interface operations {
            *       "type": "data",
            *       "description": "Primary database storing user credentials",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-16T14:30:00Z"
+           *       "modified_at": "2026-01-16T14:30:00Z",
+           *       "alias": 1,
+           *       "classification": [
+           *         "classification"
+           *       ],
+           *       "criticality": "high",
+           *       "include_in_report": true,
+           *       "sensitivity": "high",
+           *       "timmy_enabled": true,
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "metadata": [],
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Asset'];
@@ -19233,6 +19764,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatModelAssets: {
@@ -19258,10 +19790,48 @@ export interface operations {
          *       }
          *     ]
          */
-        'application/json': components['schemas']['Asset'][];
+        'application/json': components['schemas']['AssetBulkUpdateItem'][];
       };
     };
     responses: {
+      /** @description Assets upserted successfully. Returned when the bulk upsert completes; the handler returns 200 for PUT regardless of how many items were newly created. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example [
+           *       {
+           *         "id": "550e8400-e29b-41d4-a716-446655440001",
+           *         "name": "API Gateway Updated",
+           *         "type": "software",
+           *         "description": "Updated gateway service",
+           *         "created_at": "2026-01-17T10:00:00Z",
+           *         "modified_at": "2026-01-17T11:00:00Z",
+           *         "classification": [
+           *           "classification"
+           *         ],
+           *         "criticality": "high",
+           *         "include_in_report": true,
+           *         "sensitivity": "high",
+           *         "timmy_enabled": true,
+           *         "alias": 1,
+           *         "deleted_at": "2026-01-01T00:00:00Z",
+           *         "metadata": [],
+           *         "version": 1
+           *       }
+           *     ]
+           */
+          'application/json': components['schemas']['Asset'][];
+        };
+      };
       /** @description Assets created successfully */
       201: {
         headers: {
@@ -19282,7 +19852,16 @@ export interface operations {
            *         "type": "software",
            *         "description": "Updated gateway service",
            *         "created_at": "2026-01-17T10:00:00Z",
-           *         "modified_at": "2026-01-17T11:00:00Z"
+           *         "modified_at": "2026-01-17T11:00:00Z",
+           *         "classification": null,
+           *         "criticality": null,
+           *         "include_in_report": true,
+           *         "sensitivity": null,
+           *         "timmy_enabled": true,
+           *         "alias": 1,
+           *         "deleted_at": "2026-01-01T00:00:00Z",
+           *         "metadata": [],
+           *         "version": 1
            *       }
            *     ]
            */
@@ -19309,9 +19888,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelAssets: {
@@ -19365,7 +19946,18 @@ export interface operations {
            *         "type": "software",
            *         "description": "Main API gateway service",
            *         "created_at": "2026-01-17T10:00:00Z",
-           *         "modified_at": "2026-01-17T10:00:00Z"
+           *         "modified_at": "2026-01-17T10:00:00Z",
+           *         "alias": 1,
+           *         "classification": [
+           *           "classification"
+           *         ],
+           *         "criticality": "high",
+           *         "include_in_report": true,
+           *         "sensitivity": "high",
+           *         "timmy_enabled": true,
+           *         "deleted_at": "2026-01-01T00:00:00Z",
+           *         "metadata": [],
+           *         "version": 1
            *       },
            *       {
            *         "id": "550e8400-e29b-41d4-a716-446655440002",
@@ -19373,7 +19965,16 @@ export interface operations {
            *         "type": "infrastructure",
            *         "description": "Caching layer",
            *         "created_at": "2026-01-17T10:00:00Z",
-           *         "modified_at": "2026-01-17T10:00:00Z"
+           *         "modified_at": "2026-01-17T10:00:00Z",
+           *         "alias": 241,
+           *         "classification": null,
+           *         "criticality": null,
+           *         "include_in_report": true,
+           *         "sensitivity": null,
+           *         "timmy_enabled": true,
+           *         "deleted_at": "2026-01-01T00:00:00Z",
+           *         "metadata": [],
+           *         "version": 1
            *       }
            *     ]
            */
@@ -19400,9 +20001,11 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelAsset: {
@@ -19440,7 +20043,18 @@ export interface operations {
            *       "type": "data",
            *       "description": "Primary database storing user credentials",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-16T14:30:00Z"
+           *       "modified_at": "2026-01-16T14:30:00Z",
+           *       "alias": 1,
+           *       "classification": [
+           *         "classification"
+           *       ],
+           *       "criticality": "high",
+           *       "include_in_report": true,
+           *       "metadata": [],
+           *       "sensitivity": "high",
+           *       "timmy_enabled": true,
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Asset'];
@@ -19468,13 +20082,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelAsset: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -19513,7 +20128,18 @@ export interface operations {
            *       "type": "data",
            *       "description": "Primary database storing user credentials - replaced",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-17T09:00:00Z"
+           *       "modified_at": "2026-01-17T09:00:00Z",
+           *       "classification": [
+           *         "classification"
+           *       ],
+           *       "criticality": "high",
+           *       "include_in_report": true,
+           *       "sensitivity": "high",
+           *       "timmy_enabled": true,
+           *       "alias": 1,
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "metadata": [],
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Asset'];
@@ -19544,6 +20170,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelAsset: {
@@ -19596,13 +20223,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchThreatModelAsset: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -19655,7 +20283,16 @@ export interface operations {
            *       "type": "data",
            *       "description": "Primary database storing user credentials - updated",
            *       "created_at": "2026-01-15T10:00:00Z",
-           *       "modified_at": "2026-01-17T09:00:00Z"
+           *       "modified_at": "2026-01-17T09:00:00Z",
+           *       "alias": 1,
+           *       "include_in_report": true,
+           *       "metadata": [],
+           *       "timmy_enabled": true,
+           *       "classification": [],
+           *       "criticality": "example",
+           *       "deleted_at": "2026-01-01T00:00:00Z",
+           *       "sensitivity": "example",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Asset'];
@@ -19686,6 +20323,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelAssetMetadata: {
@@ -19739,6 +20377,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelAssetMetadata: {
@@ -19813,6 +20452,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelAssetMetadataByKey: {
@@ -19868,6 +20508,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateThreatModelAssetMetadata: {
@@ -19930,6 +20571,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteThreatModelAssetMetadata: {
@@ -19984,6 +20626,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceThreatModelAssetMetadata: {
@@ -20043,6 +20686,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateThreatModelAssetMetadata: {
@@ -20117,6 +20761,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertThreatModelAssetMetadata: {
@@ -20176,6 +20821,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   processSAMLResponse: {
@@ -20257,6 +20903,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   processSAMLLogout: {
@@ -20314,6 +20961,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   processSAMLLogoutPost: {
@@ -20379,6 +21027,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAddons: {
@@ -20446,6 +21095,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAddon: {
@@ -20542,6 +21192,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAddon: {
@@ -20620,6 +21271,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteAddon: {
@@ -20727,6 +21379,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   invokeAddon: {
@@ -20827,6 +21480,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getSAMLProviders: {
@@ -20861,7 +21515,8 @@ export interface operations {
            *           "metadata_url": "http://localhost:8080/saml/okta/metadata",
            *           "entity_id": "urn:example:tmi",
            *           "acs_url": "http://localhost:8080/saml/acs",
-           *           "initialized": true
+           *           "initialized": true,
+           *           "slo_url": "https://example.com/resource"
            *         }
            *       ]
            *     }
@@ -20890,6 +21545,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   initiateSAMLLogin: {
@@ -20942,6 +21598,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getSAMLMetadata: {
@@ -20999,6 +21656,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getUserAPIQuota: {
@@ -21006,7 +21664,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21111,6 +21769,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateUserAPIQuota: {
@@ -21118,7 +21777,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21258,6 +21917,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteUserAPIQuota: {
@@ -21265,7 +21925,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21383,6 +22043,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getWebhookQuota: {
@@ -21390,7 +22051,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21495,6 +22156,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateWebhookQuota: {
@@ -21502,7 +22164,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21644,6 +22306,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteWebhookQuota: {
@@ -21651,7 +22314,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -21769,6 +22432,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAdminUsers: {
@@ -21910,414 +22574,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-    };
-  };
-  getAdminUser: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description User details */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminUser'];
-        };
-      };
-      /** @description Bad request - Invalid UUID format */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  deleteAdminUser: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description User deleted successfully (no content) */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      409: components['responses']['Conflict'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  updateAdminUser: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    /** @description User profile update */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateAdminUserRequest'];
-      };
-    };
-    responses: {
-      /** @description User updated successfully */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminUser'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAdminGroups: {
@@ -22450,6 +22707,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAdminGroup: {
@@ -22587,413 +22845,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-    };
-  };
-  getAdminGroup: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Group details */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminGroup'];
-        };
-      };
-      /** @description Bad request - Invalid UUID format */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  deleteAdminGroup: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Group deleted successfully (no content) */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad Request - Invalid UUID format */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Cannot delete protected group or insufficient permissions */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  updateAdminGroup: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    /** @description Group update details */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateAdminGroupRequest'];
-      };
-    };
-    responses: {
-      /** @description Group updated successfully */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminGroup'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listSAMLUsers: {
@@ -23022,16 +22874,56 @@ export interface operations {
         content: {
           /**
            * @example {
+           *       "idp": "tmi",
            *       "users": [
            *         {
-           *           "id": "user-1",
+           *           "internal_uuid": "123e4567-e89b-12d3-a456-426614174000",
            *           "email": "alice@example.com",
-           *           "name": "Alice Smith"
+           *           "name": "Alice Smith",
+           *           "last_login": "2026-01-15T10:30:00Z"
            *         }
-           *       ]
+           *       ],
+           *       "total": 41
            *     }
            */
-          'application/json': Record<string, never>;
+          'application/json': {
+            /**
+             * @description Identity provider the users belong to; always equals the {idp} path parameter.
+             * @example tmi
+             */
+            idp: string;
+            /** @description Users from this identity provider, most recently logged in first. */
+            users: {
+              /**
+               * Format: uuid
+               * @description TMI-internal identifier for the user.
+               * @example 123e4567-e89b-12d3-a456-426614174000
+               */
+              internal_uuid: string;
+              /**
+               * Format: email
+               * @description User's email address as asserted by the identity provider.
+               * @example alice@example.com
+               */
+              email: string;
+              /**
+               * @description User's display name.
+               * @example Alice Smith
+               */
+              name: string;
+              /**
+               * Format: date-time
+               * @description When the user last authenticated. Omitted if the user has never logged in.
+               * @example 2026-01-15T10:30:00Z
+               */
+              last_login?: string;
+            }[];
+            /**
+             * @description Total users matching the filter, ignoring limit/offset.
+             * @example 41
+             */
+            total: number;
+          };
         };
       };
       /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
@@ -23125,438 +23017,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-    };
-  };
-  listGroupMembers: {
-    parameters: {
-      query?: {
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['LimitQueryParam'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['OffsetQueryParam'];
-      };
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Paginated list of group members */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['GroupMemberListResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  addGroupMember: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    /** @description Group membership update */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AddGroupMemberRequest'];
-      };
-    };
-    responses: {
-      /** @description Member added successfully */
-      201: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['GroupMember'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group or user not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      /** @description Conflict - User is already a member of this group */
-      409: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  removeGroupMember: {
-    parameters: {
-      query?: {
-        /** @description Type of member to remove: 'user' (default) for a user member, 'group' for a nested group member */
-        subject_type?: 'user' | 'group';
-      };
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-        /** @description Internal system UUID of the member to remove (user UUID when subject_type is user, group UUID when subject_type is group) */
-        member_uuid: components['parameters']['MemberUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Member removed successfully (no content) */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad request - Invalid UUID format */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group, member, or membership not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listUserAPIQuotas: {
@@ -23592,7 +23053,8 @@ export interface operations {
            *           "user_id": "550e8400-e29b-41d4-a716-446655440000",
            *           "max_requests_per_minute": 60,
            *           "created_at": "2024-01-01T00:00:00Z",
-           *           "modified_at": "2024-01-01T00:00:00Z"
+           *           "modified_at": "2024-01-01T00:00:00Z",
+           *           "max_requests_per_hour": 1
            *         }
            *       ],
            *       "total": 25,
@@ -23685,6 +23147,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listWebhookQuotas: {
@@ -23816,6 +23279,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAddonInvocationQuotas: {
@@ -23945,6 +23409,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAddonInvocationQuota: {
@@ -23952,7 +23417,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -24057,6 +23522,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateAddonInvocationQuota: {
@@ -24064,7 +23530,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -24204,6 +23670,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteAddonInvocationQuota: {
@@ -24211,7 +23678,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        /** @description User ID */
+        /** @description Internal system UUID of the user */
         user_id: components['parameters']['UserIdPathParam'];
       };
       cookie?: never;
@@ -24329,6 +23796,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDiagramModel: {
@@ -24450,6 +23918,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listCurrentUserClientCredentials: {
@@ -24489,7 +23958,9 @@ export interface operations {
            *           "client_id": "tmi_cc_monitoring123",
            *           "is_active": true,
            *           "created_at": "2024-01-15T10:00:00Z",
-           *           "modified_at": "2024-01-15T10:00:00Z"
+           *           "modified_at": "2024-01-15T10:00:00Z",
+           *           "expires_at": "2026-01-01T00:00:00Z",
+           *           "last_used_at": "2026-01-01T00:00:00Z"
            *         }
            *       ],
            *       "total": 4,
@@ -24797,6 +24268,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateCurrentUserPreferences: {
@@ -24893,6 +24365,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createCurrentUserPreferences: {
@@ -25004,6 +24477,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   logoutCurrentUser: {
@@ -25079,6 +24553,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getClientConfig: {
@@ -25126,6 +24601,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listSystemSettings: {
@@ -25201,6 +24677,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getSystemSetting: {
@@ -25280,6 +24757,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateSystemSetting: {
@@ -25351,6 +24829,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteSystemSetting: {
@@ -25429,6 +24908,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAdminSurveys: {
@@ -25518,6 +24998,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAdminSurvey: {
@@ -25622,6 +25103,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAdminSurvey: {
@@ -25709,6 +25191,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateAdminSurvey: {
@@ -25817,11 +25300,15 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteAdminSurvey: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description When true, delete the survey even if it has responses, cascading deletion to all of its responses and their sub-resources (triage notes, access grants, metadata, answers). Intended as an admin cleanup affordance; without it a survey that has responses cannot be deleted (409). */
+        force?: boolean;
+      };
       header?: never;
       path: {
         /** @description Unique identifier of the survey */
@@ -25882,6 +25369,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchAdminSurvey: {
@@ -26004,6 +25492,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listIntakeSurveys: {
@@ -26089,6 +25578,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getIntakeSurvey: {
@@ -26175,6 +25665,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listIntakeSurveyResponses: {
@@ -26268,6 +25759,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createIntakeSurveyResponse: {
@@ -26312,7 +25804,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "owner"
+           *           "role": "owner",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "survey_json": {
@@ -26351,7 +25845,16 @@ export interface operations {
            *       "revision_notes": null,
            *       "created_threat_model_id": null,
            *       "linked_threat_model_id": null,
-           *       "ui_state": null
+           *       "ui_state": null,
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -26379,6 +25882,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getIntakeSurveyResponse: {
@@ -26423,7 +25927,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "writer"
+           *           "role": "writer",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "metadata": [],
@@ -26443,7 +25949,21 @@ export interface operations {
            *         "provider_id": "109876543210987654321",
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
-           *       }
+           *       },
+           *       "created_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "linked_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "revision_notes": "example",
+           *       "ui_state": null,
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -26471,13 +25991,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateIntakeSurveyResponse: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -26523,7 +26044,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "writer"
+           *           "role": "writer",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "metadata": [],
@@ -26543,7 +26066,21 @@ export interface operations {
            *         "provider_id": "109876543210987654321",
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
-           *       }
+           *       },
+           *       "created_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "linked_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "revision_notes": "example",
+           *       "ui_state": null,
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -26588,6 +26125,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteIntakeSurveyResponse: {
@@ -26638,13 +26176,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchIntakeSurveyResponse: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -26704,7 +26243,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "writer"
+           *           "role": "writer",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "metadata": [],
@@ -26724,7 +26265,21 @@ export interface operations {
            *         "provider_id": "109876543210987654321",
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
-           *       }
+           *       },
+           *       "created_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "linked_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "revision_notes": "example",
+           *       "ui_state": null,
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -26790,6 +26345,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listTriageSurveyResponses: {
@@ -26885,6 +26441,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTriageSurveyResponse: {
@@ -26927,7 +26484,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "writer"
+           *           "role": "writer",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "metadata": [],
@@ -26947,7 +26506,35 @@ export interface operations {
            *         "provider_id": "109876543210987654321",
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
-           *       }
+           *       },
+           *       "created_threat_model_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *       "reviewed_at": "2026-02-01T09:00:00Z",
+           *       "reviewed_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "survey_json": {
+           *         "pages": [
+           *           {
+           *             "elements": [
+           *               {
+           *                 "name": "project_name",
+           *                 "title": "Project Name",
+           *                 "type": "text"
+           *               }
+           *             ],
+           *             "name": "page1"
+           *           }
+           *         ]
+           *       },
+           *       "linked_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "revision_notes": "example",
+           *       "ui_state": null,
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -26975,6 +26562,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchTriageSurveyResponse: {
@@ -27031,7 +26619,9 @@ export interface operations {
            *           "principal_type": "user",
            *           "provider": "google",
            *           "provider_id": "109876543210987654321",
-           *           "role": "writer"
+           *           "role": "writer",
+           *           "display_name": "example",
+           *           "email": "user@example.com"
            *         }
            *       ],
            *       "metadata": [],
@@ -27051,7 +26641,35 @@ export interface operations {
            *         "provider_id": "109876543210987654321",
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
-           *       }
+           *       },
+           *       "created_threat_model_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *       "reviewed_at": "2026-02-01T09:00:00Z",
+           *       "reviewed_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "survey_json": {
+           *         "pages": [
+           *           {
+           *             "elements": [
+           *               {
+           *                 "name": "project_name",
+           *                 "title": "Project Name",
+           *                 "type": "text"
+           *               }
+           *             ],
+           *             "name": "page1"
+           *           }
+           *         ]
+           *       },
+           *       "linked_threat_model_id": "00000000-0000-0000-0000-000000000000",
+           *       "project_id": "00000000-0000-0000-0000-000000000000",
+           *       "revision_notes": "example",
+           *       "ui_state": null,
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['SurveyResponse'];
@@ -27116,6 +26734,7 @@ export interface operations {
       };
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createThreatModelFromSurveyResponse: {
@@ -27183,6 +26802,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAdminSurveyMetadata: {
@@ -27234,6 +26854,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAdminSurveyMetadata: {
@@ -27306,6 +26927,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAdminSurveyMetadataByKey: {
@@ -27359,6 +26981,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateAdminSurveyMetadataByKey: {
@@ -27419,6 +27042,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteAdminSurveyMetadataByKey: {
@@ -27471,6 +27095,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceAdminSurveyMetadata: {
@@ -27528,6 +27153,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateAdminSurveyMetadata: {
@@ -27600,6 +27226,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertAdminSurveyMetadata: {
@@ -27657,6 +27284,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getIntakeSurveyResponseMetadata: {
@@ -27708,6 +27336,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createIntakeSurveyResponseMetadata: {
@@ -27780,6 +27409,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getIntakeSurveyResponseMetadataByKey: {
@@ -27833,6 +27463,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateIntakeSurveyResponseMetadataByKey: {
@@ -27893,6 +27524,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteIntakeSurveyResponseMetadataByKey: {
@@ -27945,6 +27577,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceIntakeSurveyResponseMetadata: {
@@ -28002,6 +27635,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateIntakeSurveyResponseMetadata: {
@@ -28074,6 +27708,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertIntakeSurveyResponseMetadata: {
@@ -28131,6 +27766,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTriageSurveyResponseMetadata: {
@@ -28182,6 +27818,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTriageSurveyResponseMetadataByKey: {
@@ -28235,6 +27872,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listTriageSurveyResponseTriageNotes: {
@@ -28291,6 +27929,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTriageSurveyResponseTriageNote: {
@@ -28335,7 +27974,8 @@ export interface operations {
            *         "display_name": "Alice Developer",
            *         "email": "alice@example.com"
            *       },
-           *       "modified_at": "2024-02-20T14:30:00Z"
+           *       "modified_at": "2024-02-20T14:30:00Z",
+           *       "modified_by": null
            *     }
            */
           'application/json': components['schemas']['TriageNote'];
@@ -28364,6 +28004,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTriageSurveyResponseTriageNote: {
@@ -28440,6 +28081,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listIntakeSurveyResponseTriageNotes: {
@@ -28496,6 +28138,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getIntakeSurveyResponseTriageNote: {
@@ -28572,6 +28215,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   reencryptSystemSettings: {
@@ -28702,6 +28346,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   transferCurrentUserOwnership: {
@@ -28819,146 +28464,6 @@ export interface operations {
       503: components['responses']['ServiceUnavailable'];
     };
   };
-  transferAdminUserOwnership: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    /** @description Ownership transfer request specifying the target user */
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['TransferOwnershipRequest'];
-      };
-    };
-    responses: {
-      /** @description Ownership transferred successfully */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TransferOwnershipResult'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters or attempting to transfer to same user */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - Invalid or missing authentication token */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - Insufficient permissions to access this resource */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Source or target user not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      /** @description Too many requests - rate limit exceeded */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
   listTeams: {
     parameters: {
       query?: {
@@ -29006,7 +28511,10 @@ export interface operations {
            *           "description": "Core platform infrastructure team",
            *           "status": "active",
            *           "created_at": "2025-01-15T10:30:00Z",
-           *           "modified_at": "2025-06-20T14:22:00Z"
+           *           "modified_at": "2025-06-20T14:22:00Z",
+           *           "member_count": 1,
+           *           "note_count": 0,
+           *           "project_count": 1
            *         }
            *       ],
            *       "total": 1,
@@ -29051,6 +28559,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTeam: {
@@ -29092,7 +28601,50 @@ export interface operations {
            *       "description": "Core platform infrastructure team",
            *       "status": "active",
            *       "created_at": "2025-01-15T10:30:00Z",
-           *       "modified_at": "2025-01-15T10:30:00Z"
+           *       "modified_at": "2025-01-15T10:30:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "email_address": "platform-eng@example.com",
+           *       "members": [
+           *         {
+           *           "role": "engineering_lead",
+           *           "user": {
+           *             "display_name": "Alice Johnson",
+           *             "email": "alice@example.com",
+           *             "principal_type": "user",
+           *             "provider": "github",
+           *             "provider_id": "alice@example.com"
+           *           },
+           *           "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *           "custom_role": "example"
+           *         }
+           *       ],
+           *       "metadata": [],
+           *       "related_teams": [],
+           *       "responsible_parties": [],
+           *       "uri": "https://wiki.example.com/teams/platform-engineering",
+           *       "modified_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "notes": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Team'];
@@ -29148,6 +28700,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTeam: {
@@ -29183,7 +28736,37 @@ export interface operations {
            *       "description": "Core platform infrastructure team",
            *       "status": "active",
            *       "created_at": "2025-01-15T10:30:00Z",
-           *       "modified_at": "2025-06-20T14:22:00Z"
+           *       "modified_at": "2025-06-20T14:22:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "email_address": "platform-eng@example.com",
+           *       "members": [],
+           *       "metadata": [],
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "notes": [],
+           *       "related_teams": [],
+           *       "responsible_parties": [],
+           *       "uri": "https://wiki.example.com/teams/platform-engineering",
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Team'];
@@ -29253,13 +28836,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateTeam: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -29302,7 +28886,37 @@ export interface operations {
            *       "description": "Core platform infrastructure team - updated",
            *       "status": "active",
            *       "created_at": "2025-01-15T10:30:00Z",
-           *       "modified_at": "2025-08-01T11:00:00Z"
+           *       "modified_at": "2025-08-01T11:00:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "email_address": "platform-eng@example.com",
+           *       "members": [],
+           *       "metadata": [],
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "related_teams": [],
+           *       "responsible_parties": [],
+           *       "uri": "https://wiki.example.com/teams/platform-engineering",
+           *       "notes": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Team'];
@@ -29389,6 +29003,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteTeam: {
@@ -29496,13 +29111,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchTeam: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -29548,7 +29164,37 @@ export interface operations {
            *       "description": "Updated team description",
            *       "status": "active",
            *       "created_at": "2025-01-15T10:30:00Z",
-           *       "modified_at": "2025-08-01T11:00:00Z"
+           *       "modified_at": "2025-08-01T11:00:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "members": [],
+           *       "metadata": [],
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "related_teams": [],
+           *       "responsible_parties": [],
+           *       "uri": "https://wiki.example.com/teams/platform-engineering",
+           *       "email_address": "platform-eng@example.com",
+           *       "notes": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Team'];
@@ -29635,6 +29281,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTeamMetadata: {
@@ -29713,6 +29360,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTeamMetadata: {
@@ -29812,6 +29460,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateTeamMetadata: {
@@ -29899,6 +29548,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteTeamMetadata: {
@@ -29978,6 +29628,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceTeamMetadata: {
@@ -30062,6 +29713,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateTeamMetadata: {
@@ -30161,6 +29813,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertTeamMetadata: {
@@ -30245,6 +29898,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listProjects: {
@@ -30295,7 +29949,9 @@ export interface operations {
            *           "team_id": "550e8400-e29b-41d4-a716-446655440000",
            *           "status": "active",
            *           "created_at": "2025-02-01T09:00:00Z",
-           *           "modified_at": "2025-07-10T16:45:00Z"
+           *           "modified_at": "2025-07-10T16:45:00Z",
+           *           "note_count": 0,
+           *           "team_name": "example"
            *         }
            *       ],
            *       "total": 1,
@@ -30340,6 +29996,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createProject: {
@@ -30383,7 +30040,40 @@ export interface operations {
            *       "team_id": "550e8400-e29b-41d4-a716-446655440000",
            *       "status": "active",
            *       "created_at": "2025-02-01T09:00:00Z",
-           *       "modified_at": "2025-02-01T09:00:00Z"
+           *       "modified_at": "2025-02-01T09:00:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "team": {
+           *         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *         "name": "Platform Engineering",
+           *         "description": "Core platform infrastructure team"
+           *       },
+           *       "uri": "https://wiki.example.com/projects/api-gateway",
+           *       "metadata": [],
+           *       "modified_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "notes": [],
+           *       "related_projects": [],
+           *       "responsible_parties": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Project'];
@@ -30454,6 +30144,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getProject: {
@@ -30490,7 +30181,40 @@ export interface operations {
            *       "team_id": "550e8400-e29b-41d4-a716-446655440000",
            *       "status": "active",
            *       "created_at": "2025-02-01T09:00:00Z",
-           *       "modified_at": "2025-07-10T16:45:00Z"
+           *       "modified_at": "2025-07-10T16:45:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "notes": [],
+           *       "team": {
+           *         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *         "name": "Platform Engineering",
+           *         "description": "Core platform infrastructure team"
+           *       },
+           *       "uri": "https://wiki.example.com/projects/api-gateway",
+           *       "metadata": [],
+           *       "related_projects": [],
+           *       "responsible_parties": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Project'];
@@ -30560,13 +30284,14 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateProject: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -30611,7 +30336,40 @@ export interface operations {
            *       "team_id": "550e8400-e29b-41d4-a716-446655440000",
            *       "status": "active",
            *       "created_at": "2025-02-01T09:00:00Z",
-           *       "modified_at": "2025-08-05T13:30:00Z"
+           *       "modified_at": "2025-08-05T13:30:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "team": {
+           *         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *         "name": "Platform Engineering",
+           *         "description": "Core platform infrastructure team"
+           *       },
+           *       "uri": "https://wiki.example.com/projects/api-gateway",
+           *       "metadata": [],
+           *       "notes": [],
+           *       "related_projects": [],
+           *       "responsible_parties": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Project'];
@@ -30698,6 +30456,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteProject: {
@@ -30805,13 +30564,14 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchProject: {
     parameters: {
       query?: never;
       header?: {
-        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. */
+        /** @description Optimistic-locking precondition. Pass the integer version returned by the previous read (or as the body 'version' field on the previous write). On version mismatch the server returns 409 Conflict. In a future release this header will be required and missing values will return 428 Precondition Required. Accepts an integer version (bare or ETag-quoted) or "*" for an unconditional write (RFC 7232). */
         'If-Match'?: components['parameters']['IfMatchHeader'];
       };
       path: {
@@ -30858,7 +30618,40 @@ export interface operations {
            *       "team_id": "550e8400-e29b-41d4-a716-446655440000",
            *       "status": "active",
            *       "created_at": "2025-02-01T09:00:00Z",
-           *       "modified_at": "2025-08-05T13:30:00Z"
+           *       "modified_at": "2025-08-05T13:30:00Z",
+           *       "created_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "modified_by": {
+           *         "display_name": "Alice Johnson",
+           *         "email": "alice@example.com",
+           *         "principal_type": "user",
+           *         "provider": "github",
+           *         "provider_id": "alice@example.com"
+           *       },
+           *       "team": {
+           *         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+           *         "name": "Platform Engineering",
+           *         "description": "Core platform infrastructure team"
+           *       },
+           *       "metadata": [],
+           *       "notes": [],
+           *       "related_projects": [],
+           *       "responsible_parties": [],
+           *       "reviewed_at": "2026-01-01T00:00:00Z",
+           *       "reviewed_by": {
+           *         "principal_type": "user",
+           *         "provider": "example",
+           *         "provider_id": "example",
+           *         "display_name": "example",
+           *         "email": "user@example.com"
+           *       },
+           *       "uri": "https://wiki.example.com/projects/api-gateway",
+           *       "version": 1
            *     }
            */
           'application/json': components['schemas']['Project'];
@@ -30945,6 +30738,7 @@ export interface operations {
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getProjectMetadata: {
@@ -31023,6 +30817,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createProjectMetadata: {
@@ -31122,6 +30917,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateProjectMetadata: {
@@ -31209,6 +31005,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteProjectMetadata: {
@@ -31288,6 +31085,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkReplaceProjectMetadata: {
@@ -31372,6 +31170,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkCreateProjectMetadata: {
@@ -31471,6 +31270,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   bulkUpsertProjectMetadata: {
@@ -31555,6 +31355,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listMyGroups: {
@@ -31631,134 +31432,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-    };
-  };
-  listMyGroupMembers: {
-    parameters: {
-      query?: {
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['LimitQueryParam'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['OffsetQueryParam'];
-      };
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Paginated list of group members */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['GroupMemberListResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid parameters or malformed UUIDs */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Unauthorized - invalid or missing authentication */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden - not a member of this group */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Group not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      /** @description Too many requests */
-      429: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          /** @description Seconds until the rate limit resets */
-          'Retry-After'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatModelAuditTrail: {
@@ -31811,6 +31485,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAuditEntry: {
@@ -31850,6 +31525,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   rollbackToVersion: {
@@ -31905,6 +31581,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDiagramAuditTrail: {
@@ -31949,6 +31626,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getThreatAuditTrail: {
@@ -31993,6 +31671,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAssetAuditTrail: {
@@ -32037,6 +31716,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getDocumentAuditTrail: {
@@ -32081,6 +31761,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getNoteAuditTrail: {
@@ -32125,6 +31806,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getRepositoryAuditTrail: {
@@ -32169,6 +31851,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreThreatModel: {
@@ -32236,6 +31919,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreDiagram: {
@@ -32305,6 +31989,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreThreat: {
@@ -32374,6 +32059,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreAsset: {
@@ -32443,6 +32129,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreDocument: {
@@ -32512,6 +32199,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreNote: {
@@ -32581,6 +32269,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   restoreRepository: {
@@ -32650,6 +32339,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getWsTicket: {
@@ -32730,6 +32420,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createAutomationAccount: {
@@ -32823,359 +32514,6 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal server error */
-      500: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  listAdminUserClientCredentials: {
-    parameters: {
-      query?: {
-        /** @description Maximum number of results to return */
-        limit?: components['parameters']['LimitQueryParam'];
-        /** @description Number of results to skip */
-        offset?: components['parameters']['OffsetQueryParam'];
-      };
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description List of client credentials (without secrets) */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ListClientCredentialsResponse'];
-        };
-      };
-      /** @description Bad Request - Invalid query parameters */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authenticated */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authorized or target user is not an automation account */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal server error */
-      500: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  createAdminUserClientCredential: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-      };
-      cookie?: never;
-    };
-    /** @description Client credential creation parameters */
-    requestBody: {
-      content: {
-        'application/json': {
-          /**
-           * @description Human-readable name for the credential
-           * @example CI/CD Pipeline
-           */
-          name: string;
-          /**
-           * @description Optional description of the credential's purpose
-           * @example CI/CD pipeline automation credential
-           */
-          description?: string;
-          /**
-           * Format: date-time
-           * @description Optional expiration timestamp (ISO 8601)
-           * @example 2027-01-17T00:00:00Z
-           */
-          expires_at?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Client credential created. WARNING: client_secret is only returned once. */
-      201: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ClientCredentialResponse'];
-        };
-      };
-      /** @description Invalid request (validation error) */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authenticated */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authorized or target user is not an automation account */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      409: components['responses']['Conflict'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      /** @description Internal server error */
-      500: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  deleteAdminUserClientCredential: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the user */
-        internal_uuid: components['parameters']['InternalUuidPathParam'];
-        /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
-        credential_id: components['parameters']['CredentialIdPathParam'];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Client credential deleted successfully */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
-      400: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authenticated */
-      401: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Not authorized or target user is not an automation account */
-      403: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description User or credential not found */
-      404: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       /** @description Internal server error */
@@ -33349,7 +32687,11 @@ export interface operations {
            *           ],
            *           "status": "active",
            *           "created_at": "2024-01-15T10:30:00Z",
-           *           "modified_at": "2024-01-15T10:30:00Z"
+           *           "modified_at": "2024-01-15T10:30:00Z",
+           *           "challenges_sent": 0,
+           *           "last_successful_use": "2026-01-01T00:00:00Z",
+           *           "publication_failures": 0,
+           *           "threat_model_id": "00000000-0000-0000-0000-000000000000"
            *         }
            *       ],
            *       "total": 6,
@@ -33717,6 +33059,21 @@ export interface operations {
           'application/json': components['schemas']['WebhookTestResponse'];
         };
       };
+      /** @description Test delivery accepted and queued for asynchronous sending. The response carries the delivery id; delivery outcome is reported separately via the deliveries endpoints. */
+      202: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookTestResponse'];
+        };
+      };
       /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
       400: {
         headers: {
@@ -33817,7 +33174,20 @@ export interface operations {
            *           "status": "delivered",
            *           "attempts": 1,
            *           "created_at": "2024-01-20T15:45:30Z",
-           *           "delivered_at": "2024-01-20T15:45:31Z"
+           *           "delivered_at": "2024-01-20T15:45:31Z",
+           *           "addon_id": "00000000-0000-0000-0000-000000000000",
+           *           "invoked_by": {
+           *             "principal_type": "user",
+           *             "provider": "example",
+           *             "provider_id": "example",
+           *             "display_name": "example",
+           *             "email": "user@example.com"
+           *           },
+           *           "last_activity_at": "2026-01-01T00:00:00Z",
+           *           "last_error": "example",
+           *           "next_retry_at": "2026-01-01T00:00:00Z",
+           *           "status_message": "example",
+           *           "status_percent": 0
            *         }
            *       ],
            *       "total": 100,
@@ -33997,7 +33367,9 @@ export interface operations {
            *           "name": "Security Review Notes",
            *           "description": "Notes from quarterly security review",
            *           "created_at": "2026-01-15T10:30:00Z",
-           *           "modified_at": "2026-01-15T10:30:00Z"
+           *           "modified_at": "2026-01-15T10:30:00Z",
+           *           "sharable": false,
+           *           "timmy_enabled": true
            *         }
            *       ],
            *       "total": 1,
@@ -34030,6 +33402,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createTeamNote: {
@@ -34093,6 +33466,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getTeamNote: {
@@ -34146,6 +33520,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateTeamNote: {
@@ -34211,6 +33586,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteTeamNote: {
@@ -34263,6 +33639,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchTeamNote: {
@@ -34331,6 +33708,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listProjectNotes: {
@@ -34370,7 +33748,9 @@ export interface operations {
            *           "name": "Architecture Decision Record",
            *           "description": "ADR for authentication redesign",
            *           "created_at": "2026-02-01T14:00:00Z",
-           *           "modified_at": "2026-02-01T14:00:00Z"
+           *           "modified_at": "2026-02-01T14:00:00Z",
+           *           "sharable": false,
+           *           "timmy_enabled": true
            *         }
            *       ],
            *       "total": 1,
@@ -34403,6 +33783,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createProjectNote: {
@@ -34466,6 +33847,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getProjectNote: {
@@ -34519,6 +33901,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateProjectNote: {
@@ -34584,6 +33967,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteProjectNote: {
@@ -34636,6 +34020,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   patchProjectNote: {
@@ -34704,6 +34089,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getWebhookDeliveryStatus: {
@@ -34786,6 +34172,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   updateWebhookDeliveryStatus: {
@@ -34903,6 +34290,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listTimmyChatSessions: {
@@ -35066,7 +34454,10 @@ export interface operations {
            *       "user_id": "323e4567-e89b-12d3-a456-426614174002",
            *       "status": "active",
            *       "created_at": "2026-04-19T12:00:00Z",
-           *       "modified_at": "2026-04-19T12:34:56Z"
+           *       "modified_at": "2026-04-19T12:34:56Z",
+           *       "source_snapshot": [],
+           *       "system_prompt_hash": "sha256:abc123def456789",
+           *       "title": "Payment flow threat analysis"
            *     }
            */
           'application/json': components['schemas']['TimmyChatSession'];
@@ -35538,6 +34929,7 @@ export interface operations {
       };
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getEmbeddingConfig: {
@@ -35568,7 +34960,15 @@ export interface operations {
            * @example {
            *       "text_embedding": {
            *         "provider": "openai",
-           *         "model": "text-embedding-3-small"
+           *         "model": "text-embedding-3-small",
+           *         "api_key": "example",
+           *         "base_url": ""
+           *       },
+           *       "code_embedding": {
+           *         "provider": "openai",
+           *         "model": "text-embedding-3-small",
+           *         "api_key": "example",
+           *         "base_url": ""
            *       }
            *     }
            */
@@ -35923,88 +35323,6 @@ export interface operations {
       503: components['responses']['ServiceUnavailable'];
     };
   };
-  adminListUserContentTokens: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the target user. */
-        internal_uuid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description List of the target user's linked content provider tokens. */
-      200: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "content_tokens": []
-           *     }
-           */
-          'application/json': components['schemas']['ContentTokenList'];
-        };
-      };
-      400: components['responses']['Error'];
-      401: components['responses']['Error'];
-      403: components['responses']['Error'];
-      404: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
-  adminDeleteUserContentToken: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Internal system UUID of the target user. */
-        internal_uuid: string;
-        /** @description Content OAuth provider id to revoke. */
-        provider_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Token deleted (or was already absent). */
-      204: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      400: components['responses']['Error'];
-      401: components['responses']['Error'];
-      403: components['responses']['Error'];
-      404: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
-    };
-  };
   mintPickerToken: {
     parameters: {
       query?: never;
@@ -36179,6 +35497,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createUsabilityFeedback: {
@@ -36217,6 +35536,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getUsabilityFeedback: {
@@ -36253,6 +35573,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listContentFeedback: {
@@ -36310,6 +35631,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   createContentFeedback: {
@@ -36353,6 +35675,7 @@ export interface operations {
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getContentFeedback: {
@@ -36391,6 +35714,7 @@ export interface operations {
       406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   stepUpAuthenticate: {
@@ -36700,6 +36024,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getSystemAuditEntry: {
@@ -36828,6 +36153,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   listAdminThreatModelAuditEntries: {
@@ -36974,6 +36300,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   getAdminThreatModelAuditEntry: {
@@ -37102,6 +36429,7 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   startIdentityLink: {
@@ -37439,6 +36767,7 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
   deleteMyIdentity: {
@@ -37621,6 +36950,1969 @@ export interface operations {
         };
       };
       500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getAdminUser: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description User details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminUser'];
+        };
+      };
+      /** @description Bad request - Invalid UUID format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  deleteAdminUser: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description User deleted successfully (no content) */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  updateAdminUser: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    /** @description User profile update */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateAdminUserRequest'];
+      };
+    };
+    responses: {
+      /** @description User updated successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminUser'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  getAdminGroup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Group details */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminGroup'];
+        };
+      };
+      /** @description Bad request - Invalid UUID format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  deleteAdminGroup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Group deleted successfully (no content) */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid UUID format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Cannot delete protected group or insufficient permissions */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  updateAdminGroup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    /** @description Group update details */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateAdminGroupRequest'];
+      };
+    };
+    responses: {
+      /** @description Group updated successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminGroup'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listGroupMembers: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of group members */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GroupMemberListResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  addGroupMember: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    /** @description Group membership update */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AddGroupMemberRequest'];
+      };
+    };
+    responses: {
+      /** @description Member added successfully */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GroupMember'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group or user not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Conflict - User is already a member of this group */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  removeGroupMember: {
+    parameters: {
+      query?: {
+        /** @description Type of member to remove: 'user' (default) for a user member, 'group' for a nested group member */
+        subject_type?: 'user' | 'group';
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+        /** @description Internal system UUID of the member to remove (user UUID when subject_type is user, group UUID when subject_type is group) */
+        member_uuid: components['parameters']['MemberUuidPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Member removed successfully (no content) */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request - Invalid UUID format */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group, member, or membership not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  transferAdminUserOwnership: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    /** @description Ownership transfer request specifying the target user */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TransferOwnershipRequest'];
+      };
+    };
+    responses: {
+      /** @description Ownership transferred successfully */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TransferOwnershipResult'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters or attempting to transfer to same user */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - Invalid or missing authentication token */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - Insufficient permissions to access this resource */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Source or target user not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      /** @description Too many requests - rate limit exceeded */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "Rate limit exceeded. Please try again later.",
+           *       "retry_after": 60
+           *     }
+           */
+          'application/json': {
+            /**
+             * @description Error message
+             * @example rate_limit_exceeded
+             */
+            error: string;
+            /**
+             * @description Seconds until rate limit resets
+             * @example 60
+             */
+            retry_after?: number;
+          };
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listMyGroupMembers: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the group */
+        group_id: components['parameters']['GroupIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of group members */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GroupMemberListResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters or malformed UUIDs */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - invalid or missing authentication */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - not a member of this group */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Too many requests */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until the rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listAdminUserClientCredentials: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of client credentials (without secrets) */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListClientCredentialsResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid query parameters */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  createAdminUserClientCredential: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    /** @description Client credential creation parameters */
+    requestBody: {
+      content: {
+        'application/json': {
+          /**
+           * @description Human-readable name for the credential
+           * @example CI/CD Pipeline
+           */
+          name: string;
+          /**
+           * @description Optional description of the credential's purpose
+           * @example CI/CD pipeline automation credential
+           */
+          description?: string;
+          /**
+           * Format: date-time
+           * @description Optional expiration timestamp (ISO 8601)
+           * @example 2027-01-17T00:00:00Z
+           */
+          expires_at?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Client credential created. WARNING: client_secret is only returned once. */
+      201: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ClientCredentialResponse'];
+        };
+      };
+      /** @description Invalid request (validation error) */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  deleteAdminUserClientCredential: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+        /** @description Internal UUID of the client credential (the "id" field from the list response, not the "client_id") */
+        credential_id: components['parameters']['CredentialIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Client credential deleted successfully */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authenticated */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not authorized or target user is not an automation account */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description User or credential not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminListUserContentTokens: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of the target user's linked content provider tokens. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "content_tokens": []
+           *     }
+           */
+          'application/json': components['schemas']['ContentTokenList'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminDeleteUserContentToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: string;
+        /** @description Content OAuth provider id to revoke. */
+        provider_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Token deleted (or was already absent). */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
     };
   };
 }

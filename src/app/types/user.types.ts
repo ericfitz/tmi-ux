@@ -2,7 +2,7 @@
  * User type definitions
  * Re-exports generated types and defines client-side filter types
  */
-import { components } from '@app/generated/api-types';
+import { components, operations } from '@app/generated/api-types';
 
 /** Admin user object with enriched data */
 // SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API schema type for an admin user with enriched data (pure)
@@ -21,6 +21,15 @@ export type CreateAutomationAccountRequest =
 // SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for creating an automation account, including credential (pure)
 export type CreateAutomationAccountResponse =
   components['schemas']['CreateAutomationAccountResponse'];
+
+/** Response from the SAML user lookup endpoint (same-provider autocomplete) */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for the SAML user lookup endpoint (pure)
+export type SAMLUsersResponse =
+  operations['listSAMLUsers']['responses']['200']['content']['application/json'];
+
+/** A single user entry returned by the SAML user lookup endpoint */
+// SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API schema type for a SAML directory user entry (pure)
+export type SAMLUser = SAMLUsersResponse['users'][number];
 
 /**
  * Filter parameters for listing admin users (client-side convenience type)

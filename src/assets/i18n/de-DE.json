@@ -2108,6 +2108,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "Gruppenname (z. B. everyone)",
+    "permissionsSubjectPlaceholderUser": "E-Mail oder Benutzer-ID",
     "permissionsTooltip": "Berechtigungen verwalten",
     "rename": "Umbenennen",
     "renameDiagram": "Diagramm umbenennen",

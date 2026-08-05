@@ -2108,6 +2108,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "Имя группы (напр., everyone)",
+    "permissionsSubjectPlaceholderUser": "Эл. почта или ID пользователя",
     "permissionsTooltip": "Управление разрешениями",
     "rename": "Переименовать",
     "renameDiagram": "Переименовать диаграмму",

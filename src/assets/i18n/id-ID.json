@@ -2108,6 +2108,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "Nama grup (mis. everyone)",
+    "permissionsSubjectPlaceholderUser": "Email atau ID pengguna",
     "permissionsTooltip": "Kelola Izin",
     "rename": "Ubah Nama",
     "renameDiagram": "Ubah Nama Diagram",

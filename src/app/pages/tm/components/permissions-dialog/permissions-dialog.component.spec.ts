@@ -25,6 +25,8 @@ describe('PermissionsDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockAuthService: {
     getAvailableProviders: ReturnType<typeof vi.fn>;
+    getAvailableSAMLProviders: ReturnType<typeof vi.fn>;
+    userIdp: string;
   };
   let mockProviderAdapter: {
     getDefaultSubject: ReturnType<typeof vi.fn>;
@@ -65,6 +67,8 @@ describe('PermissionsDialogComponent', () => {
     mockDialogRef = { close: vi.fn() };
     mockAuthService = {
       getAvailableProviders: vi.fn().mockReturnValue(of(mockProviders)),
+      getAvailableSAMLProviders: vi.fn().mockReturnValue(of([])),
+      userIdp: 'tmi',
     };
     mockProviderAdapter = {
       getDefaultSubject: vi.fn().mockReturnValue(null),
@@ -462,6 +466,68 @@ describe('PermissionsDialogComponent', () => {
 
       expect(component.availableProviders).toHaveLength(1);
       expect(component.availableProviders[0].id).toBe('tmi');
+    });
+
+    it('should merge SAML providers into the available provider list', () => {
+      mockAuthService.getAvailableSAMLProviders.mockReturnValue(
+        of([{ id: 'saml_okta', name: 'Okta', icon: '' }]),
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.availableProviders.map(p => p.id)).toContain('saml_okta');
+    });
+
+    it('should still load OAuth and built-in providers when SAML loading fails', () => {
+      mockAuthService.getAvailableSAMLProviders.mockReturnValue(
+        throwError(() => new Error('API error')),
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.availableProviders.map(p => p.id)).toContain('tmi');
+    });
+  });
+
+  describe('isAutocompleteActive', () => {
+    it('is active for TMI rows', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.isAutocompleteActive(createPermission({ provider: 'tmi' }))).toBe(true);
+    });
+
+    it('is active for rows matching the signed-in user SAML provider', () => {
+      mockAuthService.userIdp = 'saml_okta';
+      mockAuthService.getAvailableSAMLProviders.mockReturnValue(
+        of([{ id: 'saml_okta', name: 'Okta', icon: '' }]),
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.isAutocompleteActive(createPermission({ provider: 'saml_okta' }))).toBe(
+        true,
+      );
+    });
+
+    it('is inactive for SAML rows not matching the signed-in user provider', () => {
+      mockAuthService.userIdp = 'tmi';
+      mockAuthService.getAvailableSAMLProviders.mockReturnValue(
+        of([{ id: 'saml_okta', name: 'Okta', icon: '' }]),
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.isAutocompleteActive(createPermission({ provider: 'saml_okta' }))).toBe(
+        false,
+      );
+    });
+
+    it('is inactive for other providers', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.isAutocompleteActive(createPermission({ provider: 'google' }))).toBe(false);
     });
   });
 

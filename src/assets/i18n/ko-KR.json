@@ -2106,6 +2106,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "그룹 이름(예: everyone)",
+    "permissionsSubjectPlaceholderUser": "이메일 또는 사용자 ID",
     "permissionsTooltip": "권한 관리",
     "rename": "이름 변경",
     "renameDiagram": "다이어그램 이름 변경",

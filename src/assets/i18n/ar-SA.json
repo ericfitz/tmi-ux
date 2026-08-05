@@ -2110,6 +2110,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "اسم المجموعة (مثل everyone)",
+    "permissionsSubjectPlaceholderUser": "البريد الإلكتروني أو معرّف المستخدم",
     "permissionsTooltip": "إدارة الأذونات",
     "rename": "إعادة تسمية",
     "renameDiagram": "إعادة تسمية المخطط",
