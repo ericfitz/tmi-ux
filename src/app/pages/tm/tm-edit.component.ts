@@ -108,8 +108,10 @@ import {
 } from '../../shared/utils/field-value-helpers';
 import { DeleteConfirmationDialogData } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
-import { AdminUser } from '@app/types/user.types';
+import {
+  PickedUser,
+  UserPickerDialogComponent,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';
 import { environment } from '../../../environments/environment';
@@ -819,15 +821,17 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((selectedAdminUser: AdminUser | undefined) => {
-        if (!selectedAdminUser || !this.threatModel) return;
+      dialogRef.afterClosed().subscribe((selectedUser: PickedUser | undefined) => {
+        if (!selectedUser || !this.threatModel) return;
 
         const user: User = {
           principal_type: 'user',
-          provider: selectedAdminUser.provider,
-          provider_id: selectedAdminUser.provider_user_id,
-          email: selectedAdminUser.email,
-          display_name: selectedAdminUser.name,
+          provider: selectedUser.provider,
+          // SAML directory results carry no provider_user_id; the server
+          // resolves sparse principals by provider + email
+          provider_id: selectedUser.provider_user_id ?? selectedUser.email,
+          email: selectedUser.email,
+          display_name: selectedUser.name,
         };
 
         this.onSecurityReviewerChange({ value: user });

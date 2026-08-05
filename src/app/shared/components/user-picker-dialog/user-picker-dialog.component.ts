@@ -13,16 +13,44 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, startWith, map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  startWith,
+  map,
+  catchError,
+} from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import { AuthService } from '@app/auth/services/auth.service';
 import { UserAdminService } from '@app/core/services/user-admin.service';
-import { AdminUser } from '@app/types/user.types';
+import { SamlUserService } from '@app/core/services/saml-user.service';
+
+/**
+ * A user selected in the picker.
+ *
+ * Narrower than AdminUser so results can come from either the admin user
+ * list or the same-provider SAML directory lookup (which does not expose
+ * provider_user_id).
+ */
+export interface PickedUser {
+  /** TMI-internal identifier for the user */
+  internal_uuid: string;
+  /** User's email address */
+  email: string;
+  /** User's display name */
+  name: string;
+  /** Identity provider the user belongs to */
+  provider: string;
+  /** Provider-assigned user ID; absent for SAML directory results */
+  provider_user_id?: string;
+}
 
 export interface UserPickerDialogData {
   title: string;
@@ -33,7 +61,7 @@ export interface UserPickerDialogData {
 }
 
 export interface UserPickerDialogResult {
-  user: AdminUser;
+  user: PickedUser;
   role?: string;
   customRole?: string;
 }
@@ -174,51 +202,131 @@ export interface UserPickerDialogResult {
 })
 // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: dialog for searching and selecting a user with an optional role assignment
 export class UserPickerDialogComponent implements OnInit {
+  private static readonly RESULT_LIMIT = 10;
+
   private destroyRef = inject(DestroyRef);
 
   userSearchControl = new FormControl('');
-  filteredUsers$!: Observable<AdminUser[]>;
-  selectedUser: AdminUser | null = null;
+  filteredUsers$!: Observable<PickedUser[]>;
+  selectedUser: PickedUser | null = null;
   selectedRole = '';
   customRole = '';
 
-  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject dialog reference, dialog data, and user admin service (pure)
+  /**
+   * The signed-in user's provider, when it is a SAML provider (else null).
+   * A subject so an in-flight search re-runs once detection resolves.
+   */
+  private _samlIdp$ = new BehaviorSubject<string | null>(null);
+
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject dialog reference, dialog data, auth, and user lookup services (pure)
   constructor(
     public dialogRef: MatDialogRef<UserPickerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserPickerDialogData,
+    private authService: AuthService,
     private userAdminService: UserAdminService,
+    private samlUserService: SamlUserService,
   ) {}
 
-  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: initialize the user autocomplete stream on component startup
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: initialize the user autocomplete stream and SAML provider detection on component startup
   ngOnInit(): void {
+    this.detectSamlProvider();
     this.setupUserAutocomplete();
   }
 
-  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: build a debounced autocomplete stream fetching matching users from the API
+  /**
+   * Determine whether the signed-in user's provider is a SAML provider,
+   * enabling the same-provider directory lookup.
+   */
+  private detectSamlProvider(): void {
+    const userIdp = this.authService.userIdp;
+    if (!userIdp || userIdp === 'tmi') {
+      return;
+    }
+    this.authService
+      .getAvailableSAMLProviders()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError(() => of([])),
+      )
+      .subscribe(providers => {
+        this._samlIdp$.next(providers.some(p => p.id === userIdp) ? userIdp : null);
+      });
+  }
+
+  // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: build a debounced autocomplete stream merging admin and SAML user lookups
   private setupUserAutocomplete(): void {
-    this.filteredUsers$ = this.userSearchControl.valueChanges.pipe(
+    const term$ = this.userSearchControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => {
+    );
+
+    // combineLatest with the SAML detection result so a search typed
+    // before detection resolves re-runs once it does
+    this.filteredUsers$ = combineLatest([term$, this._samlIdp$]).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(([value, samlIdp]) => {
         if (typeof value === 'string' && value.length >= 2) {
-          return this.userAdminService.list({ email: value, limit: 10 }).pipe(
-            takeUntilDestroyed(this.destroyRef),
-            map(response => {
-              if (this.data.excludeUserId) {
-                return response.users.filter(u => u.internal_uuid !== this.data.excludeUserId);
-              }
-              return response.users;
-            }),
-          );
+          return this.searchUsers(value, samlIdp);
         }
         return of([]);
       }),
     );
   }
 
+  /**
+   * Search available user sources for the given term and merge results.
+   *
+   * Admins search the full user list via the admin API; SAML users
+   * additionally (or instead) search their own provider's directory.
+   */
+  private searchUsers(term: string, samlIdp: string | null): Observable<PickedUser[]> {
+    const sources: Observable<PickedUser[]>[] = [];
+
+    if (this.authService.isAdmin) {
+      sources.push(
+        this.userAdminService
+          .list({ email: term, limit: UserPickerDialogComponent.RESULT_LIMIT })
+          .pipe(
+            map(response => response.users as PickedUser[]),
+            catchError(() => of([] as PickedUser[])),
+          ),
+      );
+    }
+
+    if (samlIdp) {
+      sources.push(
+        this.samlUserService
+          .list(samlIdp, { email: term, limit: UserPickerDialogComponent.RESULT_LIMIT })
+          .pipe(
+            map(response => response.users.map(user => ({ ...user, provider: samlIdp }))),
+            catchError(() => of([] as PickedUser[])),
+          ),
+      );
+    }
+
+    if (sources.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(sources).pipe(
+      map(results => {
+        const seen = new Set<string>();
+        const merged: PickedUser[] = [];
+        for (const user of results.flat()) {
+          if (user.internal_uuid === this.data.excludeUserId || seen.has(user.internal_uuid)) {
+            continue;
+          }
+          seen.add(user.internal_uuid);
+          merged.push(user);
+        }
+        return merged;
+      }),
+    );
+  }
+
   // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: format a user as a name-and-email string for autocomplete display (pure)
-  displayUser(user: AdminUser | null): string {
+  displayUser(user: PickedUser | null): string {
     if (!user) {
       return '';
     }
@@ -227,7 +335,7 @@ export class UserPickerDialogComponent implements OnInit {
 
   // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: store the user chosen from the autocomplete dropdown (mutates shared state)
   onUserSelected(event: MatAutocompleteSelectedEvent): void {
-    this.selectedUser = event.option.value as AdminUser;
+    this.selectedUser = event.option.value as PickedUser;
   }
 
   // SEM@5cd42152ea247d32680ced31fbcc3bb083b12383: reset selected user, search input, and role fields (mutates shared state)

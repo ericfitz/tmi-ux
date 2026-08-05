@@ -29,7 +29,10 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { AdminUser, CreateAutomationAccountResponse } from '@app/types/user.types';
-import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import {
+  PickedUser,
+  UserPickerDialogComponent,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import {
   ManageCredentialsDialogComponent,
@@ -382,7 +385,7 @@ This action cannot be undone.`;
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((targetUser: AdminUser | undefined) => {
+      .subscribe((targetUser: PickedUser | undefined) => {
         if (!targetUser) return;
 
         const confirmed = confirm(

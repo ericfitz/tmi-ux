@@ -14,8 +14,8 @@ import {
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { forkJoin, of, Subject, Subscription } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import {
   DIALOG_IMPORTS,
@@ -27,7 +27,7 @@ import { Authorization, User } from '../../models/threat-model.model';
 import { PrincipalTypeIconComponent } from '@app/shared/components/principal-type-icon/principal-type-icon.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { AuthService } from '@app/auth/services/auth.service';
-import { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import { OAuthProviderInfo, SAMLProviderInfo } from '@app/auth/models/auth.models';
 import {
   getPrincipalDisplayName,
   getCompositeKey,
@@ -213,7 +213,7 @@ export interface PermissionsDialogData {
                         matInput
                         data-testid="permissions-subject-input"
                         [(ngModel)]="auth._subject"
-                        [placeholder]="getSubjectPlaceholder(auth)"
+                        [placeholder]="getSubjectPlaceholderKey(auth) | transloco"
                         [attr.tabindex]="i * 5 + 3"
                         [matAutocomplete]="subjectAuto"
                         (input)="onSubjectInput(i, $event)"
@@ -569,8 +569,11 @@ export interface PermissionsDialogData {
 export class PermissionsDialogComponent implements OnInit, OnDestroy {
   permissionsDataSource = new MatTableDataSource<Authorization>([]);
   displayedColumns: string[] = [];
-  availableProviders: OAuthProviderInfo[] = [];
+  availableProviders: Array<OAuthProviderInfo | SAMLProviderInfo> = [];
   providersLoading = true;
+
+  /** IDs of providers that came from the SAML provider list */
+  private _samlProviderIds = new Set<string>();
 
   @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
   @ViewChild('permissionsSort') permissionsSort!: MatSort;
@@ -584,7 +587,11 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   principalsEqual = principalsEqual;
 
   /** Subject that emits search terms for autocomplete */
-  autocompleteTrigger$ = new Subject<{ term: string; principalType: 'user' | 'group' }>();
+  autocompleteTrigger$ = new Subject<{
+    term: string;
+    principalType: 'user' | 'group';
+    provider: string;
+  }>();
 
   /** Current autocomplete suggestions */
   autocompleteSuggestions: AutocompleteSuggestion[] = [];
@@ -623,10 +630,13 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
         .pipe(
           debounceTime(300),
           distinctUntilChanged(
-            (prev, curr) => prev.term === curr.term && prev.principalType === curr.principalType,
+            (prev, curr) =>
+              prev.term === curr.term &&
+              prev.principalType === curr.principalType &&
+              prev.provider === curr.provider,
           ),
-          switchMap(({ term, principalType }) =>
-            this.autocompleteService.search(term, principalType),
+          switchMap(({ term, principalType, provider }) =>
+            this.autocompleteService.search(term, principalType, provider),
           ),
         )
         .subscribe(suggestions => {
@@ -641,24 +651,29 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load OAuth providers from the authentication service
+   * Load OAuth and SAML providers from the authentication service
    */
-  // SEM@10a1c25477a868d41404f6284fb3ecb65aa29fd6: fetch available OAuth providers and merge with built-in providers (reads DB)
+  // SEM@10a1c25477a868d41404f6284fb3ecb65aa29fd6: fetch available OAuth and SAML providers and merge with built-in providers (reads DB)
   private loadProviders(): void {
     this.providersLoading = true;
     const builtInProviders = this.providerAdapter.getBuiltInProviders();
     this._subscriptions.add(
-      this.authService.getAvailableProviders().subscribe({
-        next: providers => {
-          const builtInIds = new Set(builtInProviders.map(p => p.id));
-          const filteredProviders = providers.filter(p => !builtInIds.has(p.id));
-          this.availableProviders = [...filteredProviders, ...builtInProviders];
-          this.providersLoading = false;
-        },
-        error: () => {
-          this.availableProviders = builtInProviders;
-          this.providersLoading = false;
-        },
+      forkJoin({
+        oauth: this.authService
+          .getAvailableProviders()
+          .pipe(catchError(() => of([] as OAuthProviderInfo[]))),
+        saml: this.authService
+          .getAvailableSAMLProviders()
+          .pipe(catchError(() => of([] as SAMLProviderInfo[]))),
+      }).subscribe(({ oauth, saml }) => {
+        const builtInIds = new Set(builtInProviders.map(p => p.id));
+        this._samlProviderIds = new Set(saml.map(p => p.id));
+        this.availableProviders = [
+          ...oauth.filter(p => !builtInIds.has(p.id)),
+          ...saml.filter(p => !builtInIds.has(p.id)),
+          ...builtInProviders,
+        ];
+        this.providersLoading = false;
       }),
     );
   }
@@ -678,8 +693,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @param providerId The provider identifier
    * @returns The provider info object or null if not found
    */
-  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: look up OAuth provider metadata by provider ID, or null if absent (pure)
-  getProviderInfo(providerId: string): OAuthProviderInfo | null {
+  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: look up provider metadata by provider ID, or null if absent (pure)
+  getProviderInfo(providerId: string): OAuthProviderInfo | SAMLProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }
 
@@ -718,13 +733,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get placeholder text for the subject field based on principal type
+   * Get the translation key for the subject field placeholder based on principal type
    * @param auth The authorization object
-   * @returns Placeholder text
+   * @returns Translation key for the placeholder
    */
-  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return input placeholder text appropriate for the permission's principal type (pure)
-  getSubjectPlaceholder(auth: Authorization): string {
-    return auth.principal_type === 'group' ? 'Group name (e.g., everyone)' : 'Email or user ID';
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: return the placeholder translation key appropriate for the permission's principal type (pure)
+  getSubjectPlaceholderKey(auth: Authorization): string {
+    return auth.principal_type === 'group'
+      ? 'threatModels.permissionsSubjectPlaceholderGroup'
+      : 'threatModels.permissionsSubjectPlaceholderUser';
   }
 
   /**
@@ -933,14 +950,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   /**
    * Handle input events on the subject field for autocomplete
-   * Only triggers search when the provider is TMI
+   * Only triggers search for searchable providers (TMI, or the signed-in
+   * user's own SAML provider)
    */
-  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: handle subject field input and dispatch autocomplete search for TMI provider (mutates shared state)
+  // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: handle subject field input and dispatch autocomplete search for searchable providers (mutates shared state)
   onSubjectInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const auth = this.permissionsDataSource.data[index];
 
-    if (auth.provider !== 'tmi') {
+    if (!this.isAutocompleteActive(auth)) {
       this.autocompleteSuggestions = [];
       return;
     }
@@ -949,6 +967,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     this.autocompleteTrigger$.next({
       term: input.value,
       principalType: auth.principal_type,
+      provider: auth.provider,
     });
   }
 
@@ -964,9 +983,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   /**
    * Check if autocomplete should be active for a given row
+   *
+   * Active for TMI rows (admin-searchable) and for rows whose provider is
+   * the signed-in user's own SAML provider (same-provider directory lookup).
    */
   // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: determine if autocomplete is enabled for a given authorization row (pure)
   isAutocompleteActive(auth: Authorization): boolean {
-    return auth.provider === 'tmi';
+    return (
+      auth.provider === 'tmi' ||
+      (this._samlProviderIds.has(auth.provider) && auth.provider === this.authService.userIdp)
+    );
   }
 }

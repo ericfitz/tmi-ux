@@ -17,7 +17,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import { UserPickerDialogComponent } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import {
+  PickedUser,
+  UserPickerDialogComponent,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import {
@@ -30,7 +33,6 @@ import {
 } from '../../../tm/services/threat-model.service';
 import { TMListItem } from '../../../tm/models/tm-list-item.model';
 import { User } from '../../../tm/models/threat-model.model';
-import { AdminUser } from '@app/types/user.types';
 import { getFieldKeysForFieldType, getFieldLabel } from '@app/shared/utils/field-value-helpers';
 
 interface ReviewerFilters {
@@ -383,14 +385,16 @@ export class ReviewerAssignmentListComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((selectedAdminUser: AdminUser | undefined) => {
-        if (selectedAdminUser) {
+      .subscribe((selectedUser: PickedUser | undefined) => {
+        if (selectedUser) {
           const user: User = {
             principal_type: 'user',
-            provider: selectedAdminUser.provider,
-            provider_id: selectedAdminUser.provider_user_id,
-            email: selectedAdminUser.email,
-            display_name: selectedAdminUser.name,
+            provider: selectedUser.provider,
+            // SAML directory results carry no provider_user_id; the server
+            // resolves sparse principals by provider + email
+            provider_id: selectedUser.provider_user_id ?? selectedUser.email,
+            email: selectedUser.email,
+            display_name: selectedUser.name,
           };
           this.selectedReviewers.set(tmId, user);
           this.cdr.detectChanges();

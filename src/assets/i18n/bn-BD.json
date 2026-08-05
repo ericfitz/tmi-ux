@@ -2664,6 +2664,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "গ্রুপের নাম (যেমন everyone)",
+    "permissionsSubjectPlaceholderUser": "ইমেল বা ব্যবহারকারী আইডি",
     "permissionsTooltip": "অনুমতি পরিচালনা করুন",
     "rename": "পুনঃনামকরণ",
     "renameDiagram": "ডায়াগ্রাম পুনঃনামকরণ করুন",
