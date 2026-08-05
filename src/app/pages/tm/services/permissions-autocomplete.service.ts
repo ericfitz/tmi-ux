@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthService } from '@app/auth/services/auth.service';
 import { UserAdminService } from '@app/core/services/user-admin.service';
 import { GroupAdminService } from '@app/core/services/group-admin.service';
@@ -81,9 +81,20 @@ export class PermissionsAutocompleteService {
       return this.searchUsers(term);
     }
 
-    // The SAML lookup endpoint only serves the caller's own provider
+    // The SAML lookup endpoint only serves the caller's own provider,
+    // and only SAML providers have a directory — verify both before calling
     if (rowProvider === this.authService.userIdp) {
-      return this.searchSAMLUsers(rowProvider, term);
+      return this.authService.getAvailableSAMLProviders().pipe(
+        switchMap(providers =>
+          providers.some(p => p.id === rowProvider)
+            ? this.searchSAMLUsers(rowProvider, term)
+            : of([] as AutocompleteSuggestion[]),
+        ),
+        catchError(error => {
+          this.logger.debug('SAML provider list unavailable for autocomplete', error);
+          return of([] as AutocompleteSuggestion[]);
+        }),
+      );
     }
 
     return of([]);

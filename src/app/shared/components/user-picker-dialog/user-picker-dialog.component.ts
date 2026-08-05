@@ -13,7 +13,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { forkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -212,8 +212,11 @@ export class UserPickerDialogComponent implements OnInit {
   selectedRole = '';
   customRole = '';
 
-  /** The signed-in user's provider, when it is a SAML provider (else null) */
-  private _samlIdp: string | null = null;
+  /**
+   * The signed-in user's provider, when it is a SAML provider (else null).
+   * A subject so an in-flight search re-runs once detection resolves.
+   */
+  private _samlIdp$ = new BehaviorSubject<string | null>(null);
 
   // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: inject dialog reference, dialog data, auth, and user lookup services (pure)
   constructor(
@@ -246,20 +249,25 @@ export class UserPickerDialogComponent implements OnInit {
         catchError(() => of([])),
       )
       .subscribe(providers => {
-        this._samlIdp = providers.some(p => p.id === userIdp) ? userIdp : null;
+        this._samlIdp$.next(providers.some(p => p.id === userIdp) ? userIdp : null);
       });
   }
 
   // SEM@6b35da8ffade83ef6579f36d41c97823a2565785: build a debounced autocomplete stream merging admin and SAML user lookups
   private setupUserAutocomplete(): void {
-    this.filteredUsers$ = this.userSearchControl.valueChanges.pipe(
+    const term$ = this.userSearchControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
+    );
+
+    // combineLatest with the SAML detection result so a search typed
+    // before detection resolves re-runs once it does
+    this.filteredUsers$ = combineLatest([term$, this._samlIdp$]).pipe(
       takeUntilDestroyed(this.destroyRef),
-      switchMap(value => {
+      switchMap(([value, samlIdp]) => {
         if (typeof value === 'string' && value.length >= 2) {
-          return this.searchUsers(value);
+          return this.searchUsers(value, samlIdp);
         }
         return of([]);
       }),
@@ -272,7 +280,7 @@ export class UserPickerDialogComponent implements OnInit {
    * Admins search the full user list via the admin API; SAML users
    * additionally (or instead) search their own provider's directory.
    */
-  private searchUsers(term: string): Observable<PickedUser[]> {
+  private searchUsers(term: string, samlIdp: string | null): Observable<PickedUser[]> {
     const sources: Observable<PickedUser[]>[] = [];
 
     if (this.authService.isAdmin) {
@@ -286,7 +294,6 @@ export class UserPickerDialogComponent implements OnInit {
       );
     }
 
-    const samlIdp = this._samlIdp;
     if (samlIdp) {
       sources.push(
         this.samlUserService

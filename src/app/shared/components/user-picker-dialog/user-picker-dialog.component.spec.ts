@@ -60,13 +60,16 @@ describe('UserPickerDialogComponent', () => {
     return component;
   }
 
-  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: invoke the component's private searchUsers and capture emitted results (pure)
+  // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: invoke the component's private searchUsers with its resolved SAML idp and capture emitted results (pure)
   function search(component: UserPickerDialogComponent, term: string): PickedUser[] {
     let results: PickedUser[] = [];
-    (component as unknown as { searchUsers(term: string): { subscribe(cb: unknown): void } })
-      .searchUsers(term)
-       
-      .subscribe((r: PickedUser[]) => (results = r));
+    const internals = component as unknown as {
+      _samlIdp$: { value: string | null };
+      searchUsers(term: string, samlIdp: string | null): { subscribe(cb: unknown): void };
+    };
+    internals.searchUsers(term, internals._samlIdp$.value).subscribe((r: PickedUser[]) => {
+      results = r;
+    });
     return results;
   }
 

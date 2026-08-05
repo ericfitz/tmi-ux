@@ -17,7 +17,11 @@ import type { AdminGroup } from '@app/types/group.types';
 
 describe('PermissionsAutocompleteService', () => {
   let service: PermissionsAutocompleteService;
-  let mockAuthService: { isAdmin: boolean; userIdp: string };
+  let mockAuthService: {
+    isAdmin: boolean;
+    userIdp: string;
+    getAvailableSAMLProviders: ReturnType<typeof vi.fn>;
+  };
   let mockUserAdminService: { list: ReturnType<typeof vi.fn> };
   let mockGroupAdminService: { list: ReturnType<typeof vi.fn> };
   let mockSamlUserService: { list: ReturnType<typeof vi.fn> };
@@ -78,7 +82,11 @@ describe('PermissionsAutocompleteService', () => {
   ];
 
   beforeEach(() => {
-    mockAuthService = { isAdmin: true, userIdp: 'tmi' };
+    mockAuthService = {
+      isAdmin: true,
+      userIdp: 'tmi',
+      getAvailableSAMLProviders: vi.fn().mockReturnValue(of([{ id: 'saml_okta' }])),
+    };
     mockUserAdminService = {
       list: vi.fn().mockReturnValue(of({ users: mockUsers, total: 2, limit: 10, offset: 0 })),
     };
@@ -207,6 +215,28 @@ describe('PermissionsAutocompleteService', () => {
       service.search('car', 'user', 'saml_okta').subscribe(r => (results = r));
 
       expect(results).toEqual([]);
+    });
+
+    it('should not call the SAML endpoint when the shared provider is not SAML', () => {
+      mockAuthService.userIdp = 'google';
+
+      let results: AutocompleteSuggestion[] = [];
+      service.search('car', 'user', 'google').subscribe(r => (results = r));
+
+      expect(results).toEqual([]);
+      expect(mockSamlUserService.list).not.toHaveBeenCalled();
+    });
+
+    it('should return empty results when the SAML provider list is unavailable', () => {
+      mockAuthService.getAvailableSAMLProviders.mockReturnValue(
+        throwError(() => new Error('API error')),
+      );
+
+      let results: AutocompleteSuggestion[] = [];
+      service.search('car', 'user', 'saml_okta').subscribe(r => (results = r));
+
+      expect(results).toEqual([]);
+      expect(mockSamlUserService.list).not.toHaveBeenCalled();
     });
   });
 
