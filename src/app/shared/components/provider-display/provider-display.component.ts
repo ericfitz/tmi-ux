@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import { OAuthProviderInfo, SAMLProviderInfo } from '@app/auth/models/auth.models';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -31,7 +31,7 @@ export class ProviderDisplayComponent {
    * Full provider info from API (includes icon URL)
    * When provided, takes precedence over provider string
    */
-  @Input() providerInfo: OAuthProviderInfo | null = null;
+  @Input() providerInfo: OAuthProviderInfo | SAMLProviderInfo | null = null;
 
   /**
    * Check if provider uses FontAwesome icon

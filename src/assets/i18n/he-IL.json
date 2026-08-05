@@ -2106,6 +2106,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "שם הקבוצה (למשל everyone)",
+    "permissionsSubjectPlaceholderUser": "אימייל או מזהה משתמש",
     "permissionsTooltip": "נהל הרשאות",
     "rename": "שנה שם",
     "renameDiagram": "שנה שם דיאגרמה",

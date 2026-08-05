@@ -2110,6 +2110,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "グループ名（例：everyone）",
+    "permissionsSubjectPlaceholderUser": "メールアドレスまたはユーザーID",
     "permissionsTooltip": "権限を管理",
     "rename": "名前を変更",
     "renameDiagram": "ダイアグラムの名前を変更",

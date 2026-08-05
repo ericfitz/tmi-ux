@@ -41,13 +41,13 @@ import {
 } from './credential-secret-dialog/credential-secret-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import {
+  PickedUser,
   UserPickerDialogComponent,
   UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { UserService } from '../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoService } from '@jsverse/transloco';
-import { AdminUser } from '@app/types/user.types';
 
 export interface UserPreferences {
   animations: boolean;
@@ -1154,7 +1154,7 @@ export class UserPreferencesDialogComponent implements OnInit, AfterViewInit {
     pickerRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((selectedUser: AdminUser | undefined) => {
+      .subscribe((selectedUser: PickedUser | undefined) => {
         if (!selectedUser) {
           return;
         }

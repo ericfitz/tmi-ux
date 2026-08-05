@@ -2108,6 +2108,8 @@
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
+    "permissionsSubjectPlaceholderGroup": "گروپ کا نام (مثلاً everyone)",
+    "permissionsSubjectPlaceholderUser": "ای میل یا صارف آئی ڈی",
     "permissionsTooltip": "اجازتیں منظم کریں",
     "rename": "نام تبدیل کریں",
     "renameDiagram": "خاکے کا نام تبدیل کریں",
