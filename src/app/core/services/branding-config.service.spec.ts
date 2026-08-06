@@ -338,6 +338,44 @@ describe('BrandingConfigService', () => {
     });
   });
 
+  describe('timmyEnabled', () => {
+    it('should report enabled when the server advertises timmy_enabled', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(
+          createConfigResponse({ ...mockConfig, features: { timmy_enabled: true } }),
+        )
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      let value = false;
+      service.timmyEnabled$.subscribe(v => (value = v));
+      expect(value).toBe(true);
+      expect(service.timmyEnabled).toBe(true);
+    });
+
+    it('should default to disabled when the flag is absent', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(createConfigResponse(mockConfig))
+        .mockResolvedValueOnce(createPngResponse());
+
+      await service.initialize();
+
+      let value = true;
+      service.timmyEnabled$.subscribe(v => (value = v));
+      expect(value).toBe(false);
+      expect(service.timmyEnabled).toBe(false);
+    });
+
+    it('should default to disabled when the server config is unavailable', () => {
+      // No initialize() — config$ still holds null (offline / older server)
+      let value = true;
+      service.timmyEnabled$.subscribe(v => (value = v));
+      expect(value).toBe(false);
+      expect(service.timmyEnabled).toBe(false);
+    });
+  });
+
   describe('defaultTheme', () => {
     it('should return null before initialization', () => {
       expect(service.defaultTheme).toBeNull();

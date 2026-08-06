@@ -25,12 +25,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subscription, Subject } from 'rxjs';
+import { Observable, Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
+import { BrandingConfigService } from '../../core/services/branding-config.service';
 import { AddonService } from '../../core/services/addon.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { SecurityReviewerService } from '../../shared/services/security-reviewer.service';
@@ -293,6 +294,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.computeDiagramSvgData();
   }
 
+  /** Whether the server advertises Timmy chat; gates the launcher button. */
+  readonly timmyEnabled$: Observable<boolean>;
+
   // Enhanced save behavior properties
   // Simplified form tracking
   private _subscriptions = new Subscription();
@@ -334,7 +338,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private repositoryCrud: TmRepositoryCrudService,
     private noteCrud: TmNoteCrudService,
     private assetCrud: TmAssetCrudService,
+    private brandingConfig: BrandingConfigService,
   ) {
+    this.timmyEnabled$ = this.brandingConfig.timmyEnabled$;
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
