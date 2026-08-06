@@ -357,6 +357,16 @@
         "int": "Entier",
         "json": "JSON",
         "string": "Chaîne de caractères"
+      },
+      "reencrypt": {
+        "button": "Rechiffrer les paramètres stockés...",
+        "confirmTitle": "Rechiffrer les paramètres stockés ?",
+        "confirmMessage": "Cette opération réécrit tous les paramètres classés secrets avec la clé de chiffrement actuelle, afin que les valeurs stockées avant l'activation du chiffrement soient chiffrées au repos. Les paramètres qui ne peuvent pas être rechiffrés sont signalés sans interrompre l'opération. Elle peut être exécutée plusieurs fois sans risque.",
+        "confirmButton": "Rechiffrer",
+        "success": "{{reencrypted}} paramètres sur {{total}} rechiffrés.",
+        "partial": "{{reencrypted}} paramètres sur {{total}} rechiffrés ; {{failed}} en échec. Consultez le journal pour plus de détails.",
+        "error": "Échec du rechiffrement (HTTP {{status}}).",
+        "errorGeneric": "Échec du rechiffrement"
       }
     },
     "subtitle": "Gérer les paramètres et configurations du système.",

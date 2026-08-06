@@ -357,6 +357,16 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
+      },
+      "reencrypt": {
+        "button": "Enkripsi ulang pengaturan tersimpan...",
+        "confirmTitle": "Enkripsi ulang pengaturan tersimpan?",
+        "confirmMessage": "Tindakan ini menulis ulang semua pengaturan berklasifikasi rahasia dengan kunci enkripsi saat ini, sehingga nilai yang disimpan sebelum enkripsi diaktifkan menjadi terenkripsi saat disimpan. Pengaturan yang tidak dapat dienkripsi ulang akan dilaporkan tetapi tidak menghentikan operasi. Aman dijalankan lebih dari sekali.",
+        "confirmButton": "Enkripsi ulang",
+        "success": "{{reencrypted}} dari {{total}} pengaturan berhasil dienkripsi ulang.",
+        "partial": "{{reencrypted}} dari {{total}} pengaturan dienkripsi ulang; {{failed}} gagal. Lihat log untuk detailnya.",
+        "error": "Enkripsi ulang gagal (HTTP {{status}}).",
+        "errorGeneric": "Enkripsi ulang gagal"
       }
     },
     "subtitle": "Kelola pengaturan dan konfigurasi sistem.",

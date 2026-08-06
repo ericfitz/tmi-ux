@@ -39,6 +39,15 @@
       <mat-card-title [transloco]="'admin.settings.listTitle'">System Settings</mat-card-title>
       <div class="action-buttons">
         <button
+          mat-button
+          data-testid="settings-reencrypt-button"
+          (click)="onReencryptSettings()"
+          [disabled]="reencrypting"
+        >
+          <mat-icon>enhanced_encryption</mat-icon>
+          <span [transloco]="'admin.settings.reencrypt.button'">Re-encrypt stored settings...</span>
+        </button>
+        <button
           mat-flat-button
           color="primary"
           data-testid="settings-add-button"

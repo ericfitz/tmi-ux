@@ -357,6 +357,16 @@
         "int": "Inteiro",
         "json": "JSON",
         "string": "String"
+      },
+      "reencrypt": {
+        "button": "Recriptografar configurações armazenadas...",
+        "confirmTitle": "Recriptografar as configurações armazenadas?",
+        "confirmMessage": "Esta ação regrava todas as configurações classificadas como secretas com a chave de criptografia atual, para que valores armazenados antes de a criptografia ser habilitada fiquem criptografados em repouso. Configurações que não puderem ser recriptografadas são relatadas, mas não interrompem a operação. É seguro executá-la mais de uma vez.",
+        "confirmButton": "Recriptografar",
+        "success": "{{reencrypted}} de {{total}} configurações recriptografadas.",
+        "partial": "{{reencrypted}} de {{total}} configurações recriptografadas; {{failed}} falharam. Consulte o log para mais detalhes.",
+        "error": "Falha na recriptografia (HTTP {{status}}).",
+        "errorGeneric": "Falha na recriptografia"
       }
     },
     "subtitle": "Gerencie configurações e definições do sistema.",
