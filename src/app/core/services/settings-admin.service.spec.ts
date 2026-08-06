@@ -11,12 +11,17 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { SettingsAdminService } from './settings-admin.service';
 import { ApiService } from './api.service';
-import { SystemSetting, SystemSettingUpdate } from '@app/types/settings.types';
+import {
+  SettingsReencryptResult,
+  SystemSetting,
+  SystemSettingUpdate,
+} from '@app/types/settings.types';
 
 describe('SettingsAdminService', () => {
   let service: SettingsAdminService;
   let mockApiService: {
     get: ReturnType<typeof vi.fn>;
+    post: ReturnType<typeof vi.fn>;
     put: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
   };
@@ -50,6 +55,7 @@ describe('SettingsAdminService', () => {
 
     mockApiService = {
       get: vi.fn(),
+      post: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
     };
@@ -140,6 +146,47 @@ describe('SettingsAdminService', () => {
           '/admin/settings/feature.websocket_enabled',
           update,
         );
+      });
+    });
+  });
+
+  describe('reencryptSettings()', () => {
+    it('should POST to the reencrypt endpoint and return the result', () => {
+      const result: SettingsReencryptResult = {
+        reencrypted: 8,
+        errors: [],
+        total: 8,
+      };
+      mockApiService.post.mockReturnValue(of(result));
+
+      service.reencryptSettings().subscribe(response => {
+        expect(mockApiService.post).toHaveBeenCalledWith('/admin/settings/reencrypt', {});
+        expect(response).toEqual(result);
+      });
+    });
+
+    it('should surface per-setting errors in the result', () => {
+      const result: SettingsReencryptResult = {
+        reencrypted: 7,
+        errors: [{ key: 'smtp.password', error: 'decryption failed: invalid key' }],
+        total: 8,
+      };
+      mockApiService.post.mockReturnValue(of(result));
+
+      service.reencryptSettings().subscribe(response => {
+        expect(response.errors).toHaveLength(1);
+        expect(response.errors[0].key).toBe('smtp.password');
+      });
+    });
+
+    it('should handle API errors', () => {
+      const error = new Error('Conflict');
+      mockApiService.post.mockReturnValue(throwError(() => error));
+
+      service.reencryptSettings().subscribe({
+        error: err => {
+          expect(err).toBe(error);
+        },
       });
     });
   });

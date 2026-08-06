@@ -26,6 +26,12 @@ import {
 import { SettingsAdminService } from '@app/core/services/settings-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
+import { NotificationService } from '@app/shared/services/notification.service';
+import {
+  ConfirmActionDialogComponent,
+  ConfirmActionDialogData,
+  ConfirmActionDialogResult,
+} from '@app/shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { EditableSystemSetting, SystemSetting } from '@app/types/settings.types';
 import { AddSettingDialogComponent } from './add-setting-dialog/add-setting-dialog.component';
 import { navigateFromAdminPage } from '../shared/admin-navigation.util';
@@ -83,6 +89,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
 
   filterText = '';
   loading = false;
+  reencrypting = false;
 
   // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: inject settings, routing, dialog, logger, auth, and translation dependencies (pure)
   constructor(
@@ -93,6 +100,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     private logger: LoggerService,
     private authService: AuthService,
     private transloco: TranslocoService,
+    private notificationService: NotificationService,
   ) {}
 
   // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: wire paginator sort and custom sort accessor to the settings data source (mutates shared state)
@@ -225,6 +233,85 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
         if (result) {
           this.loadSettings();
         }
+      });
+  }
+
+  /**
+   * Confirm and trigger server-side re-encryption of all secret-classified settings.
+   * Intended operator path for converting plaintext rows persisted before
+   * settings-at-rest encryption was enabled.
+   */
+  onReencryptSettings(): void {
+    const dialogRef = this.dialog.open<
+      ConfirmActionDialogComponent,
+      ConfirmActionDialogData,
+      ConfirmActionDialogResult
+    >(ConfirmActionDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'admin.settings.reencrypt.confirmTitle',
+        message: 'admin.settings.reencrypt.confirmMessage',
+        confirmLabel: 'admin.settings.reencrypt.confirmButton',
+        icon: 'enhanced_encryption',
+        confirmIsDestructive: false,
+      },
+      disableClose: true,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result?.confirmed) {
+          this.reencryptSettings();
+        }
+      });
+  }
+
+  private reencryptSettings(): void {
+    this.reencrypting = true;
+
+    this.settingsService
+      .reencryptSettings()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: result => {
+          this.reencrypting = false;
+          this.logger.info('Settings re-encryption completed', {
+            reencrypted: result.reencrypted,
+            total: result.total,
+            errors: result.errors,
+          });
+
+          if (result.errors.length > 0) {
+            this.notificationService.showError(
+              this.transloco.translate('admin.settings.reencrypt.partial', {
+                reencrypted: result.reencrypted,
+                total: result.total,
+                failed: result.errors.length,
+              }),
+            );
+          } else {
+            this.notificationService.showSuccess(
+              this.transloco.translate('admin.settings.reencrypt.success', {
+                reencrypted: result.reencrypted,
+                total: result.total,
+              }),
+            );
+          }
+        },
+        error: (error: { status?: number }) => {
+          this.reencrypting = false;
+          this.logger.error('Settings re-encryption failed', error);
+          // Timeouts and client-side failures carry no HTTP status — don't render "HTTP 0"
+          const status =
+            typeof error?.status === 'number' && error.status > 0 ? error.status : null;
+          this.notificationService.showError(
+            status !== null
+              ? this.transloco.translate('admin.settings.reencrypt.error', { status })
+              : this.transloco.translate('admin.settings.reencrypt.errorGeneric'),
+          );
+        },
       });
   }
 
