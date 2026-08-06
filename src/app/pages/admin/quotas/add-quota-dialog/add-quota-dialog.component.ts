@@ -14,7 +14,28 @@ import {
 import { QuotaService } from '@app/core/services/quota.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AdminUser } from '@app/types/user.types';
-import { DEFAULT_USER_API_QUOTA, DEFAULT_WEBHOOK_QUOTA } from '@app/types/quota.types';
+import {
+  DEFAULT_USER_API_QUOTA,
+  DEFAULT_WEBHOOK_QUOTA,
+  QUOTA_LIMITS,
+} from '@app/types/quota.types';
+
+const QUOTA_DEFAULTS: Record<keyof typeof QUOTA_LIMITS, number> = {
+  ...DEFAULT_USER_API_QUOTA,
+  ...DEFAULT_WEBHOOK_QUOTA,
+};
+
+/** Transloco params per quota field: client default plus spec-sourced range. */
+const QUOTA_HINT_PARAMS = Object.fromEntries(
+  Object.entries(QUOTA_LIMITS).map(([field, range]) => [
+    field,
+    {
+      default: QUOTA_DEFAULTS[field as keyof typeof QUOTA_LIMITS],
+      min: range.min,
+      max: range.max,
+    },
+  ]),
+) as Record<keyof typeof QUOTA_LIMITS, { default: number; min: number; max: number }>;
 
 /**
  * Add Quota Dialog Component
@@ -53,6 +74,8 @@ export class AddQuotaDialogComponent implements OnInit {
 
   readonly defaultUserAPIQuota = DEFAULT_USER_API_QUOTA;
   readonly defaultWebhookQuota = DEFAULT_WEBHOOK_QUOTA;
+  readonly quotaLimits = QUOTA_LIMITS;
+  readonly hintParams = QUOTA_HINT_PARAMS;
 
   // SEM@65afaf0b87a37250bf4e27116c95afdfd3ffc43f: initialize user search and quota forms with default values (pure)
   constructor(
@@ -69,25 +92,51 @@ export class AddQuotaDialogComponent implements OnInit {
       // User API Quotas
       max_requests_per_minute: [
         this.defaultUserAPIQuota.max_requests_per_minute,
-        [Validators.required, Validators.min(1)],
+        [
+          Validators.required,
+          Validators.min(QUOTA_LIMITS.max_requests_per_minute.min),
+          Validators.max(QUOTA_LIMITS.max_requests_per_minute.max),
+        ],
       ],
-      max_requests_per_hour: [this.defaultUserAPIQuota.max_requests_per_hour, Validators.min(1)],
+      max_requests_per_hour: [
+        this.defaultUserAPIQuota.max_requests_per_hour,
+        [
+          Validators.min(QUOTA_LIMITS.max_requests_per_hour.min),
+          Validators.max(QUOTA_LIMITS.max_requests_per_hour.max),
+        ],
+      ],
       // Webhook Quotas
       max_subscriptions: [
         this.defaultWebhookQuota.max_subscriptions,
-        [Validators.required, Validators.min(1)],
+        [
+          Validators.required,
+          Validators.min(QUOTA_LIMITS.max_subscriptions.min),
+          Validators.max(QUOTA_LIMITS.max_subscriptions.max),
+        ],
       ],
       max_events_per_minute: [
         this.defaultWebhookQuota.max_events_per_minute,
-        [Validators.required, Validators.min(1)],
+        [
+          Validators.required,
+          Validators.min(QUOTA_LIMITS.max_events_per_minute.min),
+          Validators.max(QUOTA_LIMITS.max_events_per_minute.max),
+        ],
       ],
       max_subscription_requests_per_minute: [
         this.defaultWebhookQuota.max_subscription_requests_per_minute,
-        [Validators.required, Validators.min(1)],
+        [
+          Validators.required,
+          Validators.min(QUOTA_LIMITS.max_subscription_requests_per_minute.min),
+          Validators.max(QUOTA_LIMITS.max_subscription_requests_per_minute.max),
+        ],
       ],
       max_subscription_requests_per_day: [
         this.defaultWebhookQuota.max_subscription_requests_per_day,
-        [Validators.required, Validators.min(1)],
+        [
+          Validators.required,
+          Validators.min(QUOTA_LIMITS.max_subscription_requests_per_day.min),
+          Validators.max(QUOTA_LIMITS.max_subscription_requests_per_day.max),
+        ],
       ],
     });
   }

@@ -269,7 +269,11 @@
       "subtitle": "تكوين حدود المعدل والحصص للمستخدمين.",
       "title": "إدارة الحصص",
       "userAPITitle": "حدود معدل API",
-      "webhookTitle": "حدود Webhook"
+      "webhookTitle": "حدود Webhook",
+      "hint": {
+        "defaultAndRange": "الافتراضي: {{default}} (النطاق: {{min}}–{{max}})",
+        "outOfRange": "أدخل قيمة بين {{min}} و{{max}}"
+      }
     },
     "sections": {
       "addons": {

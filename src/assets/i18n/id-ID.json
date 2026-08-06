@@ -269,7 +269,11 @@
       "subtitle": "Konfigurasikan batas tingkat dan kuota untuk pengguna.",
       "title": "Kelola Kuota",
       "userAPITitle": "Batas Tingkat API",
-      "webhookTitle": "Batas Webhook"
+      "webhookTitle": "Batas Webhook",
+      "hint": {
+        "defaultAndRange": "Bawaan: {{default}} (rentang: {{min}}–{{max}})",
+        "outOfRange": "Masukkan nilai antara {{min}} dan {{max}}"
+      }
     },
     "sections": {
       "addons": {

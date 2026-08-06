@@ -13,6 +13,7 @@ import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
 import { AddQuotaDialogComponent } from './add-quota-dialog.component';
+import { DEFAULT_WEBHOOK_QUOTA, QUOTA_LIMITS } from '@app/types/quota.types';
 import type { AdminUser } from '@app/types/user.types';
 
 describe('AddQuotaDialogComponent', () => {
@@ -77,6 +78,38 @@ describe('AddQuotaDialogComponent', () => {
       component.quotaForm.patchValue({ max_requests_per_minute: 0 });
 
       expect(component.quotaForm.get('max_requests_per_minute')?.hasError('min')).toBe(true);
+    });
+
+    it('is invalid when a quota exceeds the spec maximum', () => {
+      const component = build();
+      component.quotaForm.patchValue({
+        max_requests_per_minute: QUOTA_LIMITS.max_requests_per_minute.max + 1,
+        max_subscriptions: QUOTA_LIMITS.max_subscriptions.max + 1,
+      });
+
+      expect(component.quotaForm.get('max_requests_per_minute')?.hasError('max')).toBe(true);
+      expect(component.quotaForm.get('max_subscriptions')?.hasError('max')).toBe(true);
+    });
+
+    it('accepts the spec boundary values', () => {
+      const component = build();
+      component.quotaForm.patchValue({
+        max_requests_per_minute: QUOTA_LIMITS.max_requests_per_minute.max,
+        max_requests_per_hour: QUOTA_LIMITS.max_requests_per_hour.min,
+      });
+
+      expect(component.quotaForm.get('max_requests_per_minute')?.valid).toBe(true);
+      expect(component.quotaForm.get('max_requests_per_hour')?.valid).toBe(true);
+    });
+
+    it('exposes default and range params for hints', () => {
+      const component = build();
+
+      expect(component.hintParams.max_events_per_minute).toEqual({
+        default: DEFAULT_WEBHOOK_QUOTA.max_events_per_minute,
+        min: QUOTA_LIMITS.max_events_per_minute.min,
+        max: QUOTA_LIMITS.max_events_per_minute.max,
+      });
     });
   });
 

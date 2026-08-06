@@ -269,7 +269,11 @@
       "subtitle": "Configurer les limites de taux et les quotas pour les utilisateurs.",
       "title": "Gérer les quotas",
       "userAPITitle": "Limites de taux API",
-      "webhookTitle": "Limites des webhooks"
+      "webhookTitle": "Limites des webhooks",
+      "hint": {
+        "defaultAndRange": "Par défaut : {{default}} (plage : {{min}}–{{max}})",
+        "outOfRange": "Saisissez une valeur entre {{min}} et {{max}}"
+      }
     },
     "sections": {
       "addons": {

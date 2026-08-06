@@ -269,7 +269,11 @@
       "subtitle": "ユーザーのレート制限とクォータを設定します。",
       "title": "クォータの管理",
       "userAPITitle": "APIレート制限",
-      "webhookTitle": "Webhook制限"
+      "webhookTitle": "Webhook制限",
+      "hint": {
+        "defaultAndRange": "デフォルト: {{default}} (範囲: {{min}}〜{{max}})",
+        "outOfRange": "{{min}}〜{{max}} の値を入力してください"
+      }
     },
     "sections": {
       "addons": {

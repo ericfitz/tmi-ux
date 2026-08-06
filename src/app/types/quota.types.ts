@@ -63,6 +63,22 @@ export const DEFAULT_WEBHOOK_QUOTA = {
 } as const;
 
 /**
+ * Allowable ranges per quota field, transcribed from the OpenAPI spec
+ * (UserQuotaUpdate / WebhookQuotaUpdate schemas in tmi-openapi.json) because
+ * the minimum/maximum constraints do not survive type codegen.
+ * Duplicated client-side and can drift — ericfitz/tmi#649 asks the server to
+ * expose defaults/ranges at runtime; if that lands, read them instead.
+ */
+export const QUOTA_LIMITS = {
+  max_requests_per_minute: { min: 1, max: 10000 },
+  max_requests_per_hour: { min: 1, max: 600000 },
+  max_subscriptions: { min: 1, max: 100 },
+  max_events_per_minute: { min: 1, max: 1000 },
+  max_subscription_requests_per_minute: { min: 1, max: 100 },
+  max_subscription_requests_per_day: { min: 1, max: 10000 },
+} as const;
+
+/**
  * Response from GET /admin/quotas/users
  */
 export interface ListUserAPIQuotasResponse extends PaginationMetadata {
