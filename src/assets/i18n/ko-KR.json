@@ -357,6 +357,16 @@
         "int": "정수",
         "json": "JSON",
         "string": "문자열"
+      },
+      "reencrypt": {
+        "button": "저장된 설정 다시 암호화...",
+        "confirmTitle": "저장된 설정을 다시 암호화하시겠습니까?",
+        "confirmMessage": "이 작업은 비밀로 분류된 모든 설정을 현재 암호화 키로 다시 기록하여, 암호화가 활성화되기 전에 저장된 값이 저장 시 암호화되도록 합니다. 다시 암호화할 수 없는 설정은 보고되지만 작업이 중단되지는 않습니다. 여러 번 실행해도 안전합니다.",
+        "confirmButton": "다시 암호화",
+        "success": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다.",
+        "partial": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다. {{failed}}개 실패. 자세한 내용은 로그를 확인하세요.",
+        "error": "다시 암호화하지 못했습니다 (HTTP {{status}}).",
+        "errorGeneric": "다시 암호화하지 못했습니다"
       }
     },
     "subtitle": "시스템 설정 및 구성을 관리합니다.",

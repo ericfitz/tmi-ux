@@ -357,6 +357,16 @@
         "int": "Entero",
         "json": "JSON",
         "string": "Cadena"
+      },
+      "reencrypt": {
+        "button": "Volver a cifrar los ajustes almacenados...",
+        "confirmTitle": "¿Volver a cifrar los ajustes almacenados?",
+        "confirmMessage": "Esto reescribe todos los ajustes clasificados como secretos con la clave de cifrado actual, de modo que los valores almacenados antes de habilitar el cifrado queden cifrados en reposo. Los ajustes que no se puedan volver a cifrar se notifican, pero no detienen la operación. Es seguro ejecutarlo más de una vez.",
+        "confirmButton": "Volver a cifrar",
+        "success": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes.",
+        "partial": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes; {{failed}} han fallado. Consulta el registro para más detalles.",
+        "error": "Error al volver a cifrar (HTTP {{status}}).",
+        "errorGeneric": "Error al volver a cifrar"
       }
     },
     "subtitle": "Gestionar configuraciones y ajustes del sistema.",

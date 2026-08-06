@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { SystemSetting, SystemSettingUpdate } from '@app/types/settings.types';
+import {
+  SettingsReencryptResult,
+  SystemSetting,
+  SystemSettingUpdate,
+} from '@app/types/settings.types';
 
 /**
  * Settings Admin Service
@@ -39,6 +43,13 @@ export class SettingsAdminService {
   // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: store or update a system setting value via the admin API
   updateSetting(key: string, update: Partial<SystemSettingUpdate>): Observable<SystemSetting> {
     return this.apiService.put<SystemSetting>(`/admin/settings/${key}`, update);
+  }
+
+  /**
+   * Re-encrypt all secret-classified system settings with the current encryption key
+   */
+  reencryptSettings(): Observable<SettingsReencryptResult> {
+    return this.apiService.post<SettingsReencryptResult>('/admin/settings/reencrypt', {});
   }
 
   /**

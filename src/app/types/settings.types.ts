@@ -34,6 +34,21 @@ export interface SystemSettingUpdate {
 }
 
 /**
+ * Result of POST /admin/settings/reencrypt
+ */
+export interface SettingsReencryptResult {
+  /** Number of settings successfully re-encrypted */
+  reencrypted: number;
+  /** Settings that failed re-encryption */
+  errors: {
+    key: string;
+    error: string;
+  }[];
+  /** Total number of settings processed */
+  total: number;
+}
+
+/**
  * Extended system setting with inline editing state
  */
 export interface EditableSystemSetting extends SystemSetting {

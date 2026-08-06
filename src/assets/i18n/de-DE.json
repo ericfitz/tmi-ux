@@ -357,6 +357,16 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
+      },
+      "reencrypt": {
+        "button": "Gespeicherte Einstellungen neu verschlüsseln...",
+        "confirmTitle": "Gespeicherte Einstellungen neu verschlüsseln?",
+        "confirmMessage": "Dabei werden alle als geheim eingestuften Einstellungen mit dem aktuellen Verschlüsselungsschlüssel neu geschrieben, sodass Werte, die vor der Aktivierung der Verschlüsselung gespeichert wurden, im Ruhezustand verschlüsselt sind. Einstellungen, die nicht neu verschlüsselt werden können, werden gemeldet, ohne den Vorgang zu stoppen. Der Vorgang kann gefahrlos mehrfach ausgeführt werden.",
+        "confirmButton": "Neu verschlüsseln",
+        "success": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt.",
+        "partial": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt; {{failed}} fehlgeschlagen. Details siehe Protokoll.",
+        "error": "Neuverschlüsselung fehlgeschlagen (HTTP {{status}}).",
+        "errorGeneric": "Neuverschlüsselung fehlgeschlagen"
       }
     },
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten.",

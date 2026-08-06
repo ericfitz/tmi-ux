@@ -156,6 +156,22 @@ export class NotificationService {
   }
 
   /**
+   * Show a generic error notification
+   * @param message Error message to display
+   * @param duration Duration in milliseconds (default 8000)
+   */
+  showError(message: string, duration: number = 8000): void {
+    this.logger.debugComponent('Notification', 'Showing error notification', { message });
+
+    this.snackBar.open(message, 'Dismiss', {
+      duration,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
+  }
+
+  /**
    * Show a generic warning notification
    * @param message Warning message to display
    * @param duration Duration in milliseconds (default 5000)

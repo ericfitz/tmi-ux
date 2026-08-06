@@ -357,6 +357,16 @@
         "int": "整数",
         "json": "JSON",
         "string": "字符串"
+      },
+      "reencrypt": {
+        "button": "重新加密已存储的设置...",
+        "confirmTitle": "重新加密已存储的设置?",
+        "confirmMessage": "此操作会使用当前加密密钥重写所有归类为机密的设置,使在启用加密之前存储的值实现静态加密。无法重新加密的设置会被报告,但不会中断操作。多次运行此操作是安全的。",
+        "confirmButton": "重新加密",
+        "success": "已重新加密 {{reencrypted}}/{{total}} 项设置。",
+        "partial": "已重新加密 {{reencrypted}}/{{total}} 项设置;{{failed}} 项失败。详情请查看日志。",
+        "error": "重新加密失败 (HTTP {{status}})。",
+        "errorGeneric": "重新加密失败"
       }
     },
     "subtitle": "管理系统设置和配置。",

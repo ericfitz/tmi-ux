@@ -408,6 +408,17 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
+      },
+      "reencrypt": {
+        "button": "Re-encrypt stored settings...",
+        "button.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
+        "confirmTitle": "Re-encrypt stored settings?",
+        "confirmMessage": "This rewrites all secret-classified settings with the current encryption key, so values stored before encryption was enabled become encrypted at rest. Settings that cannot be re-encrypted are reported but do not stop the operation. It is safe to run this more than once.",
+        "confirmButton": "Re-encrypt",
+        "success": "Re-encrypted {{reencrypted}} of {{total}} settings.",
+        "partial": "Re-encrypted {{reencrypted}} of {{total}} settings; {{failed}} failed. Check the log for details.",
+        "error": "Re-encryption failed (HTTP {{status}}).",
+        "errorGeneric": "Re-encryption failed"
       }
     },
     "subtitle": "Manage system settings and configurations.",
