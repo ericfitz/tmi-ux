@@ -269,7 +269,11 @@
       "subtitle": "Настройка лимитов и квот для пользователей.",
       "title": "Управление квотами",
       "userAPITitle": "Лимиты API",
-      "webhookTitle": "Лимиты вебхуков"
+      "webhookTitle": "Лимиты вебхуков",
+      "hint": {
+        "defaultAndRange": "По умолчанию: {{default}} (диапазон: {{min}}–{{max}})",
+        "outOfRange": "Введите значение от {{min}} до {{max}}"
+      }
     },
     "sections": {
       "addons": {

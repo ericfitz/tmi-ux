@@ -269,7 +269,11 @@
       "subtitle": "사용자의 요청 제한 및 할당량을 구성합니다.",
       "title": "할당량 관리",
       "userAPITitle": "API 제한",
-      "webhookTitle": "Webhook 제한"
+      "webhookTitle": "Webhook 제한",
+      "hint": {
+        "defaultAndRange": "기본값: {{default}} (범위: {{min}}–{{max}})",
+        "outOfRange": "{{min}}에서 {{max}} 사이의 값을 입력하세요"
+      }
     },
     "sections": {
       "addons": {

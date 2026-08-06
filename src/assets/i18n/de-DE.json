@@ -269,7 +269,11 @@
       "subtitle": "Ratenlimits und Kontingente für Benutzer konfigurieren.",
       "title": "Kontingente verwalten",
       "userAPITitle": "API-Ratenlimits",
-      "webhookTitle": "Webhook-Limits"
+      "webhookTitle": "Webhook-Limits",
+      "hint": {
+        "defaultAndRange": "Standard: {{default}} (Bereich: {{min}}–{{max}})",
+        "outOfRange": "Wert zwischen {{min}} und {{max}} eingeben"
+      }
     },
     "sections": {
       "addons": {

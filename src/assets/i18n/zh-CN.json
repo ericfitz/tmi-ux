@@ -269,7 +269,11 @@
       "subtitle": "为用户配置速率限制和配额。",
       "title": "管理配额",
       "userAPITitle": "API 速率限制",
-      "webhookTitle": "Webhook 限制"
+      "webhookTitle": "Webhook 限制",
+      "hint": {
+        "defaultAndRange": "默认值:{{default}}(范围:{{min}}–{{max}})",
+        "outOfRange": "请输入 {{min}} 到 {{max}} 之间的值"
+      }
     },
     "sections": {
       "addons": {

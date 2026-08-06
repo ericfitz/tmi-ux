@@ -269,7 +269,11 @@
       "subtitle": "Configure limites de taxa e cotas para usuários.",
       "title": "Gerenciar cotas",
       "userAPITitle": "Limites de taxa de API",
-      "webhookTitle": "Limites de webhook"
+      "webhookTitle": "Limites de webhook",
+      "hint": {
+        "defaultAndRange": "Padrão: {{default}} (intervalo: {{min}}–{{max}})",
+        "outOfRange": "Insira um valor entre {{min}} e {{max}}"
+      }
     },
     "sections": {
       "addons": {

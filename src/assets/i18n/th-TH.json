@@ -269,7 +269,11 @@
       "subtitle": "กำหนดค่าขีดจำกัดอัตราและโควตาสำหรับผู้ใช้",
       "title": "จัดการโควตา",
       "userAPITitle": "ขีดจำกัดอัตรา API",
-      "webhookTitle": "ขีดจำกัด Webhook"
+      "webhookTitle": "ขีดจำกัด Webhook",
+      "hint": {
+        "defaultAndRange": "ค่าเริ่มต้น: {{default}} (ช่วง: {{min}}–{{max}})",
+        "outOfRange": "ป้อนค่าระหว่าง {{min}} ถึง {{max}}"
+      }
     },
     "sections": {
       "addons": {

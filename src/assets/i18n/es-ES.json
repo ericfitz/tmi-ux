@@ -269,7 +269,11 @@
       "subtitle": "Configurar límites de tasa y cuotas para usuarios.",
       "title": "Gestionar cuotas",
       "userAPITitle": "Límites de tasa de API",
-      "webhookTitle": "Límites de webhook"
+      "webhookTitle": "Límites de webhook",
+      "hint": {
+        "defaultAndRange": "Predeterminado: {{default}} (rango: {{min}}–{{max}})",
+        "outOfRange": "Introduce un valor entre {{min}} y {{max}}"
+      }
     },
     "sections": {
       "addons": {

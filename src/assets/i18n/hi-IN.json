@@ -269,7 +269,11 @@
       "subtitle": "उपयोगकर्ताओं के लिए दर सीमाएं और कोटा कॉन्फ़िगर करें।",
       "title": "कोटा प्रबंधित करें",
       "userAPITitle": "API दर सीमाएं",
-      "webhookTitle": "Webhook सीमाएं"
+      "webhookTitle": "Webhook सीमाएं",
+      "hint": {
+        "defaultAndRange": "डिफ़ॉल्ट: {{default}} (सीमा: {{min}}–{{max}})",
+        "outOfRange": "{{min}} और {{max}} के बीच कोई मान दर्ज करें"
+      }
     },
     "sections": {
       "addons": {

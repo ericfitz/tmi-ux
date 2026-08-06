@@ -269,7 +269,11 @@
       "subtitle": "صارفین کے لیے شرح کی حدود اور کوٹہ ترتیب دیں۔",
       "title": "کوٹہ کا انتظام",
       "userAPITitle": "API شرح کی حدود",
-      "webhookTitle": "Webhook کی حدود"
+      "webhookTitle": "Webhook کی حدود",
+      "hint": {
+        "defaultAndRange": "طے شدہ: {{default}} (حد: {{min}}–{{max}})",
+        "outOfRange": "{{min}} اور {{max}} کے درمیان قدر درج کریں"
+      }
     },
     "sections": {
       "addons": {

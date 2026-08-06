@@ -312,7 +312,11 @@
       "subtitle": "Configure rate limits and quotas for users.",
       "title": "Manage quotas",
       "userAPITitle": "API rate limits",
-      "webhookTitle": "Webhook limits"
+      "webhookTitle": "Webhook limits",
+      "hint": {
+        "defaultAndRange": "Default: {{default}} (range: {{min}}–{{max}})",
+        "outOfRange": "Enter a value between {{min}} and {{max}}"
+      }
     },
     "sections": {
       "addons": {

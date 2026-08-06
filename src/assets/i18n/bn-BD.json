@@ -291,7 +291,11 @@
       "subtitle": "ব্যবহারকারীদের জন্য রেট লিমিট এবং কোটা কনফিগার করুন",
       "title": "কোটা পরিচালনা করুন",
       "userAPITitle": "API সীমা",
-      "webhookTitle": "Webhook সীমা"
+      "webhookTitle": "Webhook সীমা",
+      "hint": {
+        "defaultAndRange": "ডিফল্ট: {{default}} (পরিসর: {{min}}–{{max}})",
+        "outOfRange": "{{min}} থেকে {{max}} এর মধ্যে একটি মান লিখুন"
+      }
     },
     "sections": {
       "addons": {

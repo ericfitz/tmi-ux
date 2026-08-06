@@ -269,7 +269,11 @@
       "subtitle": "הגדר מגבלות קצב ומכסות למשתמשים.",
       "title": "ניהול מכסות",
       "userAPITitle": "מגבלות קצב API",
-      "webhookTitle": "מגבלות Webhook"
+      "webhookTitle": "מגבלות Webhook",
+      "hint": {
+        "defaultAndRange": "ברירת מחדל: {{default}} (טווח: {{min}}–{{max}})",
+        "outOfRange": "יש להזין ערך בין {{min}} ל-{{max}}"
+      }
     },
     "sections": {
       "addons": {
