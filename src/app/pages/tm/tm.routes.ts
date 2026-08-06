@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../auth/guards/auth.guard';
+import { timmyEnabledGuard } from '../chat/guards/timmy-enabled.guard';
 import { provideMarkdownConfig } from '@app/shared/markdown-providers';
 import { threatModelResolver } from './resolvers/threat-model.resolver';
 
@@ -36,7 +37,7 @@ export const TM_ROUTES: Routes = [
           import(
             /* webpackChunkName: "chat" */ '../chat/components/chat-page/chat-page.component'
           ).then(c => c.ChatPageComponent),
-        canActivate: [authGuard],
+        canActivate: [authGuard, timmyEnabledGuard],
         resolve: {
           threatModel: threatModelResolver,
         },

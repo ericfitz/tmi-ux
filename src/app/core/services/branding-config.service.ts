@@ -74,6 +74,15 @@ export class BrandingConfigService {
     map(c => c?.ui?.user_hyperlink_provider ?? null),
   );
 
+  /**
+   * Whether the server advertises Timmy (AI chat) as enabled and configured.
+   * Defaults to false when the server is offline, pre-dates the flag, or omits it,
+   * so a broken feature is never advertised.
+   */
+  readonly timmyEnabled$: Observable<boolean> = this.config$.pipe(
+    map(c => c?.features?.['timmy_enabled'] ?? false),
+  );
+
   // SEM@2cad9c89b8647548286ab1163fbaa90811eafce6: inject HTTP and logger dependencies (pure)
   constructor(
     private http: HttpClient,
@@ -107,6 +116,11 @@ export class BrandingConfigService {
 
   get userHyperlinkProvider(): string | null {
     return this.config$.value?.ui?.user_hyperlink_provider ?? null;
+  }
+
+  /** Synchronous variant of timmyEnabled$ for guards and procedural code. */
+  get timmyEnabled(): boolean {
+    return this.config$.value?.features?.['timmy_enabled'] ?? false;
   }
 
   /** Operator info from the server's /config response. Null if the server is offline or omitted the field. */
