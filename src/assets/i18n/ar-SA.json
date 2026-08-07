@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "الافتراضي: {{default}} (النطاق: {{min}}–{{max}})",
         "outOfRange": "أدخل قيمة بين {{min}} و{{max}}"
+      },
+      "copyToUser": "نسخ الحصص إلى مستخدم آخر...",
+      "copyDialog": {
+        "title": "نسخ الحصص",
+        "sourceLabel": "النسخ من",
+        "targetLabel": "النسخ إلى",
+        "field": "الإعداد",
+        "sourceValue": "قيمة المصدر",
+        "targetValue": "القيمة الحالية للهدف",
+        "systemDefault": "الإعداد الافتراضي للنظام",
+        "notCopied": "يستخدم المصدر الإعدادات الافتراضية للنظام في هذا القسم؛ لا يوجد ما يُنسخ.",
+        "overwriteWarning": "يؤدي النسخ إلى استبدال الحصص المخصصة الحالية للمستخدم الهدف.",
+        "nothingToCopy": "لا توجد لدى هذا المستخدم حصص مخصصة لنسخها.",
+        "loadFailed": "تعذر تحميل الحصص.",
+        "copyButton": "نسخ الحصص",
+        "success": "تم نسخ الحصص إلى {{email}}.",
+        "failed": "فشل نسخ الحصص (HTTP {{status}}).",
+        "failedGeneric": "فشل نسخ الحصص."
       }
     },
     "sections": {

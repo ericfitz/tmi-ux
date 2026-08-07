@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "Bawaan: {{default}} (rentang: {{min}}–{{max}})",
         "outOfRange": "Masukkan nilai antara {{min}} dan {{max}}"
+      },
+      "copyToUser": "Salin kuota ke pengguna lain...",
+      "copyDialog": {
+        "title": "Salin kuota",
+        "sourceLabel": "Menyalin dari",
+        "targetLabel": "Salin ke",
+        "field": "Pengaturan",
+        "sourceValue": "Nilai sumber",
+        "targetValue": "Nilai target saat ini",
+        "systemDefault": "Bawaan sistem",
+        "notCopied": "Sumber menggunakan bawaan sistem untuk bagian ini; tidak ada yang disalin.",
+        "overwriteWarning": "Menyalin akan menimpa kuota kustom yang ada pada pengguna target.",
+        "nothingToCopy": "Pengguna ini tidak memiliki kuota kustom untuk disalin.",
+        "loadFailed": "Tidak dapat memuat kuota.",
+        "copyButton": "Salin kuota",
+        "success": "Kuota disalin ke {{email}}.",
+        "failed": "Gagal menyalin kuota (HTTP {{status}}).",
+        "failedGeneric": "Gagal menyalin kuota."
       }
     },
     "sections": {

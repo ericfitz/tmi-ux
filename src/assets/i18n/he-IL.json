@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "ברירת מחדל: {{default}} (טווח: {{min}}–{{max}})",
         "outOfRange": "יש להזין ערך בין {{min}} ל-{{max}}"
+      },
+      "copyToUser": "העתקת מכסות למשתמש אחר...",
+      "copyDialog": {
+        "title": "העתקת מכסות",
+        "sourceLabel": "העתקה מ",
+        "targetLabel": "העתקה אל",
+        "field": "הגדרה",
+        "sourceValue": "ערך המקור",
+        "targetValue": "הערך הנוכחי של היעד",
+        "systemDefault": "ברירת מחדל של המערכת",
+        "notCopied": "המקור משתמש בברירות המחדל של המערכת בקטע זה; אין מה להעתיק.",
+        "overwriteWarning": "ההעתקה דורסת את המכסות המותאמות אישית הקיימות של משתמש היעד.",
+        "nothingToCopy": "למשתמש זה אין מכסות מותאמות אישית להעתקה.",
+        "loadFailed": "לא ניתן לטעון את המכסות.",
+        "copyButton": "העתקת מכסות",
+        "success": "המכסות הועתקו אל {{email}}.",
+        "failed": "העתקת המכסות נכשלה (HTTP {{status}}).",
+        "failedGeneric": "העתקת המכסות נכשלה."
       }
     },
     "sections": {

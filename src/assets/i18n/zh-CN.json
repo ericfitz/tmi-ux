@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "默认值:{{default}}(范围:{{min}}–{{max}})",
         "outOfRange": "请输入 {{min}} 到 {{max}} 之间的值"
+      },
+      "copyToUser": "将配额复制给其他用户...",
+      "copyDialog": {
+        "title": "复制配额",
+        "sourceLabel": "复制来源",
+        "targetLabel": "复制到",
+        "field": "设置",
+        "sourceValue": "来源值",
+        "targetValue": "目标当前值",
+        "systemDefault": "系统默认值",
+        "notCopied": "来源在此部分使用系统默认值,无需复制。",
+        "overwriteWarning": "复制会覆盖目标用户现有的自定义配额。",
+        "nothingToCopy": "该用户没有可复制的自定义配额。",
+        "loadFailed": "无法加载配额。",
+        "copyButton": "复制配额",
+        "success": "已将配额复制给 {{email}}。",
+        "failed": "复制配额失败 (HTTP {{status}})。",
+        "failedGeneric": "复制配额失败。"
       }
     },
     "sections": {

@@ -1,0 +1,266 @@
+<h2 mat-dialog-title [transloco]="'admin.quotas.copyDialog.title'">Copy quotas</h2>
+
+<mat-dialog-content>
+  @if (loadingSource) {
+    <div class="loading-container">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+  } @else if (loadError) {
+    <p class="dialog-message" [transloco]="'admin.quotas.copyDialog.loadFailed'">
+      Couldn't load quotas.
+    </p>
+  } @else if (!hasSomethingToCopy) {
+    <p class="dialog-message" [transloco]="'admin.quotas.copyDialog.nothingToCopy'">
+      This user has no custom quotas to copy.
+    </p>
+  } @else {
+    <!-- Source user -->
+    <div class="search-section">
+      <h3 [transloco]="'admin.quotas.copyDialog.sourceLabel'">Copying from</h3>
+      <div class="user-summary">
+        <div class="user-email">{{ data.sourceEmail }}</div>
+        <div class="user-meta">
+          <span class="user-name">{{ data.sourceName }}</span>
+          <span class="provider">{{ data.sourceProvider }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target user search -->
+    <div class="search-section">
+      <h3 [transloco]="'admin.quotas.copyDialog.targetLabel'">Copy to</h3>
+
+      @if (!targetUser) {
+        <form [formGroup]="userSearchForm">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label [transloco]="'admin.quotas.addDialog.searchLabel'"
+              >Search by email</mat-label
+            >
+            <input
+              matInput
+              formControlName="searchText"
+              data-testid="copy-quota-search-input"
+              (input)="onSearchChange($any($event.target).value)"
+              [placeholder]="'admin.quotas.addDialog.searchPlaceholder' | transloco"
+            />
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+        </form>
+
+        @if (searchingUsers) {
+          <div class="loading-container">
+            <mat-spinner diameter="30"></mat-spinner>
+          </div>
+        } @else if (filteredUsers.length > 0) {
+          <div class="user-list">
+            @for (user of filteredUsers; track user.internal_uuid) {
+              <div class="user-item" (click)="onSelectTarget(user)">
+                <div class="user-email">{{ user.email }}</div>
+                <div class="user-meta">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="provider">{{ user.provider }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <div class="selected-user">
+          <div class="user-info">
+            <div class="user-email">{{ targetUser.email }}</div>
+            <div class="user-meta">
+              <span class="user-name">{{ targetUser.name }}</span>
+              <span class="provider">{{ targetUser.provider }}</span>
+            </div>
+          </div>
+          <button
+            mat-icon-button
+            (click)="onClearTarget()"
+            [matTooltip]="'common.clear' | transloco"
+            [attr.aria-label]="'common.clear' | transloco"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Preview -->
+    @if (targetUser) {
+      @if (loadingTarget) {
+        <div class="loading-container">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+      } @else {
+        <div class="preview-section">
+          <p class="overwrite-warning" [transloco]="'admin.quotas.copyDialog.overwriteWarning'">
+            Copying overwrites the target user's existing custom quotas.
+          </p>
+
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th [transloco]="'admin.quotas.copyDialog.field'">Setting</th>
+                <th [transloco]="'admin.quotas.copyDialog.sourceValue'">Source value</th>
+                <th [transloco]="'admin.quotas.copyDialog.targetValue'">Target current value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="section-row">
+                <td colspan="3" [transloco]="'admin.quotas.addDialog.apiQuotas'">
+                  API Rate Limits
+                </td>
+              </tr>
+              @if (sourceAPIQuota) {
+                <tr>
+                  <td [transloco]="'admin.quotas.requestsPerMinute'">Requests per minute</td>
+                  <td>{{ sourceAPIQuota.max_requests_per_minute }}</td>
+                  <td>
+                    @if (targetAPIQuota) {
+                      {{ targetAPIQuota.max_requests_per_minute }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td [transloco]="'admin.quotas.requestsPerHour'">Requests per hour</td>
+                  <td>{{ sourceAPIQuota.max_requests_per_hour ?? '—' }}</td>
+                  <td>
+                    @if (targetAPIQuota) {
+                      {{ targetAPIQuota.max_requests_per_hour ?? '—' }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+              } @else {
+                <tr>
+                  <td
+                    colspan="3"
+                    class="not-copied"
+                    [transloco]="'admin.quotas.copyDialog.notCopied'"
+                  >
+                    Source uses system defaults for this section; nothing to copy.
+                  </td>
+                </tr>
+              }
+              <tr class="section-row">
+                <td colspan="3" [transloco]="'admin.quotas.addDialog.webhookQuotas'">
+                  Webhook Limits
+                </td>
+              </tr>
+              @if (sourceWebhookQuota) {
+                <tr>
+                  <td [transloco]="'admin.quotas.maxSubscriptions'">Max subscriptions</td>
+                  <td>{{ sourceWebhookQuota.max_subscriptions }}</td>
+                  <td>
+                    @if (targetWebhookQuota) {
+                      {{ targetWebhookQuota.max_subscriptions }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td [transloco]="'admin.quotas.eventsPerMinute'">Events per minute</td>
+                  <td>{{ sourceWebhookQuota.max_events_per_minute }}</td>
+                  <td>
+                    @if (targetWebhookQuota) {
+                      {{ targetWebhookQuota.max_events_per_minute }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td [transloco]="'admin.quotas.subReqPerMinute'">
+                    Subscription requests per minute
+                  </td>
+                  <td>{{ sourceWebhookQuota.max_subscription_requests_per_minute }}</td>
+                  <td>
+                    @if (targetWebhookQuota) {
+                      {{ targetWebhookQuota.max_subscription_requests_per_minute }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+                <tr>
+                  <td [transloco]="'admin.quotas.subReqPerDay'">Subscription requests per day</td>
+                  <td>{{ sourceWebhookQuota.max_subscription_requests_per_day }}</td>
+                  <td>
+                    @if (targetWebhookQuota) {
+                      {{ targetWebhookQuota.max_subscription_requests_per_day }}
+                    } @else {
+                      <span
+                        class="default-value"
+                        [transloco]="'admin.quotas.copyDialog.systemDefault'"
+                        >System default</span
+                      >
+                    }
+                  </td>
+                </tr>
+              } @else {
+                <tr>
+                  <td
+                    colspan="3"
+                    class="not-copied"
+                    [transloco]="'admin.quotas.copyDialog.notCopied'"
+                  >
+                    Source uses system defaults for this section; nothing to copy.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-button
+    (click)="onCancel()"
+    [disabled]="copying"
+    data-testid="copy-quota-cancel-button"
+  >
+    <span [transloco]="'common.cancel'">Cancel</span>
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    cdkFocusInitial
+    (click)="onCopy()"
+    [disabled]="!targetUser || loadingTarget || !hasSomethingToCopy || loadError || copying"
+    data-testid="copy-quota-submit-button"
+  >
+    @if (copying) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <span [transloco]="'admin.quotas.copyDialog.copyButton'">Copy quotas</span>
+    }
+  </button>
+</mat-dialog-actions>

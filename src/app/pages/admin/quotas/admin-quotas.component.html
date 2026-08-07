@@ -185,6 +185,23 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #userAPIQuotaKebabMenu="matMenu">
+                      <button
+                        mat-menu-item
+                        data-testid="api-quota-copy-item"
+                        (click)="
+                          onCopyQuotas({
+                            uuid: quota.user_id,
+                            email: quota.user_email,
+                            name: quota.user_name,
+                            provider: quota.provider,
+                          })
+                        "
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                        <span [transloco]="'admin.quotas.copyToUser'"
+                          >Copy quotas to another user...</span
+                        >
+                      </button>
                       <button mat-menu-item (click)="onDeleteUserAPIQuota(quota)">
                         <mat-icon>delete</mat-icon>
                         <span [transloco]="'admin.quotas.deleteTooltip'">Delete</span>
@@ -437,6 +454,23 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #webhookQuotaKebabMenu="matMenu">
+                      <button
+                        mat-menu-item
+                        data-testid="webhook-quota-copy-item"
+                        (click)="
+                          onCopyQuotas({
+                            uuid: quota.owner_id,
+                            email: quota.user_email,
+                            name: quota.user_name,
+                            provider: quota.provider,
+                          })
+                        "
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                        <span [transloco]="'admin.quotas.copyToUser'"
+                          >Copy quotas to another user...</span
+                        >
+                      </button>
                       <button mat-menu-item (click)="onDeleteWebhookQuota(quota)">
                         <mat-icon>delete</mat-icon>
                         <span [transloco]="'admin.quotas.deleteTooltip'">Delete</span>

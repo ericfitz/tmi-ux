@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "Standard: {{default}} (Bereich: {{min}}–{{max}})",
         "outOfRange": "Wert zwischen {{min}} und {{max}} eingeben"
+      },
+      "copyToUser": "Kontingente auf anderen Benutzer kopieren...",
+      "copyDialog": {
+        "title": "Kontingente kopieren",
+        "sourceLabel": "Kopieren von",
+        "targetLabel": "Kopieren nach",
+        "field": "Einstellung",
+        "sourceValue": "Quellwert",
+        "targetValue": "Aktueller Zielwert",
+        "systemDefault": "Systemstandard",
+        "notCopied": "Die Quelle verwendet in diesem Abschnitt Systemstandards; nichts zu kopieren.",
+        "overwriteWarning": "Beim Kopieren werden die vorhandenen benutzerdefinierten Kontingente des Zielbenutzers überschrieben.",
+        "nothingToCopy": "Dieser Benutzer hat keine benutzerdefinierten Kontingente zum Kopieren.",
+        "loadFailed": "Kontingente konnten nicht geladen werden.",
+        "copyButton": "Kontingente kopieren",
+        "success": "Kontingente nach {{email}} kopiert.",
+        "failed": "Kopieren der Kontingente fehlgeschlagen (HTTP {{status}}).",
+        "failedGeneric": "Kopieren der Kontingente fehlgeschlagen."
       }
     },
     "sections": {

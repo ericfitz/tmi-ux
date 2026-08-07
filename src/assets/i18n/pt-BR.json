@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "Padrão: {{default}} (intervalo: {{min}}–{{max}})",
         "outOfRange": "Insira um valor entre {{min}} e {{max}}"
+      },
+      "copyToUser": "Copiar cotas para outro usuário...",
+      "copyDialog": {
+        "title": "Copiar cotas",
+        "sourceLabel": "Copiando de",
+        "targetLabel": "Copiar para",
+        "field": "Configuração",
+        "sourceValue": "Valor de origem",
+        "targetValue": "Valor atual do destino",
+        "systemDefault": "Padrão do sistema",
+        "notCopied": "A origem usa os padrões do sistema nesta seção; nada a copiar.",
+        "overwriteWarning": "Copiar sobrescreve as cotas personalizadas existentes do usuário de destino.",
+        "nothingToCopy": "Este usuário não tem cotas personalizadas para copiar.",
+        "loadFailed": "Não foi possível carregar as cotas.",
+        "copyButton": "Copiar cotas",
+        "success": "Cotas copiadas para {{email}}.",
+        "failed": "Falha ao copiar as cotas (HTTP {{status}}).",
+        "failedGeneric": "Falha ao copiar as cotas."
       }
     },
     "sections": {

@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "기본값: {{default}} (범위: {{min}}–{{max}})",
         "outOfRange": "{{min}}에서 {{max}} 사이의 값을 입력하세요"
+      },
+      "copyToUser": "다른 사용자에게 할당량 복사...",
+      "copyDialog": {
+        "title": "할당량 복사",
+        "sourceLabel": "복사 원본",
+        "targetLabel": "복사 대상",
+        "field": "설정",
+        "sourceValue": "원본 값",
+        "targetValue": "대상의 현재 값",
+        "systemDefault": "시스템 기본값",
+        "notCopied": "이 섹션에서 원본은 시스템 기본값을 사용하므로 복사할 내용이 없습니다.",
+        "overwriteWarning": "복사하면 대상 사용자의 기존 사용자 지정 할당량을 덮어씁니다.",
+        "nothingToCopy": "이 사용자에게는 복사할 사용자 지정 할당량이 없습니다.",
+        "loadFailed": "할당량을 불러오지 못했습니다.",
+        "copyButton": "할당량 복사",
+        "success": "{{email}}에게 할당량을 복사했습니다.",
+        "failed": "할당량을 복사하지 못했습니다 (HTTP {{status}}).",
+        "failedGeneric": "할당량을 복사하지 못했습니다."
       }
     },
     "sections": {
