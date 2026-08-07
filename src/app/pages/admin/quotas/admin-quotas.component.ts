@@ -37,6 +37,10 @@ import {
 } from '@app/types/quota.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { AddQuotaDialogComponent } from './add-quota-dialog/add-quota-dialog.component';
+import {
+  CopyQuotaDialogComponent,
+  CopyQuotaDialogData,
+} from './copy-quota-dialog/copy-quota-dialog.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
@@ -403,6 +407,42 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
+          this.loadAllQuotas();
+        }
+      });
+  }
+
+  /**
+   * Open the copy-quotas dialog with a source user taken from a quota row
+   * (either table). Reloads both tables when the dialog reports a copy.
+   */
+  onCopyQuotas(source: {
+    uuid: string;
+    email: string;
+    name?: string | null;
+    provider: string;
+  }): void {
+    const data: CopyQuotaDialogData = {
+      sourceUuid: source.uuid,
+      sourceEmail: source.email,
+      sourceName: source.name,
+      sourceProvider: source.provider,
+    };
+
+    const dialogRef = this.dialog.open<CopyQuotaDialogComponent, CopyQuotaDialogData, boolean>(
+      CopyQuotaDialogComponent,
+      {
+        width: '700px',
+        maxWidth: '90vw',
+        data,
+      },
+    );
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(copied => {
+        if (copied) {
           this.loadAllQuotas();
         }
       });

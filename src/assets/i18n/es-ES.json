@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "Predeterminado: {{default}} (rango: {{min}}–{{max}})",
         "outOfRange": "Introduce un valor entre {{min}} y {{max}}"
+      },
+      "copyToUser": "Copiar cuotas a otro usuario...",
+      "copyDialog": {
+        "title": "Copiar cuotas",
+        "sourceLabel": "Copiando desde",
+        "targetLabel": "Copiar a",
+        "field": "Ajuste",
+        "sourceValue": "Valor de origen",
+        "targetValue": "Valor actual del destino",
+        "systemDefault": "Valor predeterminado del sistema",
+        "notCopied": "El origen usa los valores predeterminados del sistema en esta sección; no hay nada que copiar.",
+        "overwriteWarning": "Copiar sobrescribe las cuotas personalizadas existentes del usuario de destino.",
+        "nothingToCopy": "Este usuario no tiene cuotas personalizadas que copiar.",
+        "loadFailed": "No se pudieron cargar las cuotas.",
+        "copyButton": "Copiar cuotas",
+        "success": "Cuotas copiadas a {{email}}.",
+        "failed": "Error al copiar las cuotas (HTTP {{status}}).",
+        "failedGeneric": "Error al copiar las cuotas."
       }
     },
     "sections": {

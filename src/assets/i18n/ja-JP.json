@@ -273,6 +273,24 @@
       "hint": {
         "defaultAndRange": "デフォルト: {{default}} (範囲: {{min}}〜{{max}})",
         "outOfRange": "{{min}}〜{{max}} の値を入力してください"
+      },
+      "copyToUser": "クォータを別のユーザーにコピー...",
+      "copyDialog": {
+        "title": "クォータをコピー",
+        "sourceLabel": "コピー元",
+        "targetLabel": "コピー先",
+        "field": "設定",
+        "sourceValue": "コピー元の値",
+        "targetValue": "コピー先の現在の値",
+        "systemDefault": "システムデフォルト",
+        "notCopied": "このセクションではコピー元がシステムデフォルトを使用しているため、コピーするものはありません。",
+        "overwriteWarning": "コピーすると、コピー先ユーザーの既存のカスタムクォータが上書きされます。",
+        "nothingToCopy": "このユーザーにはコピーできるカスタムクォータがありません。",
+        "loadFailed": "クォータを読み込めませんでした。",
+        "copyButton": "クォータをコピー",
+        "success": "{{email}} にクォータをコピーしました。",
+        "failed": "クォータのコピーに失敗しました (HTTP {{status}})。",
+        "failedGeneric": "クォータのコピーに失敗しました。"
       }
     },
     "sections": {
