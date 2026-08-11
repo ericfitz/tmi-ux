@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Mint GitHub App token (reads Dependabot alerts)
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.DEPS_BOT_APP_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
@@ -78,7 +78,7 @@ jobs:
       group: deps-bump-run-${{ matrix.branch }}
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ matrix.branch }}
           fetch-depth: 0
@@ -88,12 +88,12 @@ jobs:
           persist-credentials: false
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           run_install: false   # version is read from package.json "packageManager"
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -149,7 +149,7 @@ jobs:
       # scoped to this App's Contents + Pull-requests permissions on this repo.
       - name: Mint GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.DEPS_BOT_APP_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
