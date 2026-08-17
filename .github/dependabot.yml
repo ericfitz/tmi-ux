@@ -85,3 +85,13 @@ updates:
       - dependency-name: "zone.js"
         update-types: ["version-update:semver-minor"]
         versions: [">=0.16.0", "<1.0.0"]
+
+      # oxc runtime helpers: must be bumped together with vite/rolldown, never
+      # on their own. The helpers pair with the oxc transformer bundled inside
+      # rolldown, but neither vite nor rolldown declares this package, so there
+      # is no dependency edge for pnpm to enforce -- and build/test/lint stay
+      # green even when the pairing is wrong. See the rationale recorded in
+      # package.json under comments.devDependencies. Bump it by hand alongside
+      # vite, then smoke-test a cold-boot `ng serve` plus a real browser load.
+      - dependency-name: "@oxc-project/runtime"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
