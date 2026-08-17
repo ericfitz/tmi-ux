@@ -849,6 +849,7 @@
     "email": "E-Mail",
     "emailLabel": "E-Mail-Adresse",
     "error": "Fehler",
+    "exportAsJpeg": "Als JPEG exportieren",
     "exportAsPng": "Als PNG exportieren",
     "exportAsSvg": "Als SVG exportieren",
     "false": "Falsch",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "Datenflussdiagramm-Editor",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "Als JPEG exportieren"
-      },
       "tooltips": {
         "addActor": "Akteur hinzufügen",
         "addProcess": "Prozess hinzufügen",

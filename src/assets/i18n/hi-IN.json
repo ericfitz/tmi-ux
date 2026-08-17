@@ -849,6 +849,7 @@
     "email": "ईमेल",
     "emailLabel": "ईमेल पता",
     "error": "त्रुटि",
+    "exportAsJpeg": "JPEG के रूप में निर्यात करें",
     "exportAsPng": "PNG के रूप में निर्यात करें",
     "exportAsSvg": "SVG के रूप में निर्यात करें",
     "false": "असत्य",
@@ -1355,9 +1356,6 @@
     },
     "pageTitle": "डेटा प्रवाह आरेख संपादक",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "JPEG के रूप में निर्यात करें"
-      },
       "tooltips": {
         "addActor": "अभिनेता जोड़ें",
         "addProcess": "प्रक्रिया जोड़ें",

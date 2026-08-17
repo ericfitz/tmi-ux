@@ -849,6 +849,7 @@
     "email": "ای میل",
     "emailLabel": "ای میل پتہ",
     "error": "خرابی",
+    "exportAsJpeg": "JPEG کے طور پر برآمد کریں",
     "exportAsPng": "PNG کے طور پر برآمد کریں",
     "exportAsSvg": "SVG کے طور پر برآمد کریں",
     "false": "غلط",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "ڈیٹا فلو خاکہ ایڈیٹر",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "JPEG کے طور پر برآمد کریں"
-      },
       "tooltips": {
         "addActor": "اداکار شامل کریں",
         "addProcess": "عمل شامل کریں",

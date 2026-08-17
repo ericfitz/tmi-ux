@@ -849,6 +849,7 @@
     "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
+    "exportAsJpeg": "ייצא כ-JPEG",
     "exportAsPng": "ייצא כ-PNG",
     "exportAsSvg": "ייצא כ-SVG",
     "false": "שקר",
@@ -1351,9 +1352,6 @@
     },
     "pageTitle": "עורך דיאגרמת זרימת נתונים",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "ייצא כ-JPEG"
-      },
       "tooltips": {
         "addActor": "הוסף שחקן",
         "addProcess": "הוסף תהליך",

@@ -849,6 +849,7 @@
     "email": "E-mail",
     "emailLabel": "Adresse e-mail",
     "error": "Erreur",
+    "exportAsJpeg": "Exporter en JPEG",
     "exportAsPng": "Exporter en PNG",
     "exportAsSvg": "Exporter en SVG",
     "false": "Faux",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "Éditeur de diagrammes de flux de données",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "Exporter en JPEG"
-      },
       "tooltips": {
         "addActor": "Ajouter un acteur",
         "addProcess": "Ajouter un processus",
