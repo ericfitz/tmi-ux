@@ -337,11 +337,11 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCell(cell);
 
-      expect(sanitized.attrs?.body?.filter).toBeUndefined();
-      expect(sanitized.attrs?.text?.filter).toBeUndefined();
-      expect(sanitized.attrs?.body?.fill).toBe('#fff');
-      expect(sanitized.attrs?.body?.stroke).toBe('#000');
-      expect(sanitized.attrs?.text?.text).toBe('Label');
+      expect(sanitized.attrs?.['body']?.filter).toBeUndefined();
+      expect(sanitized.attrs?.['text']?.filter).toBeUndefined();
+      expect(sanitized.attrs?.['body']?.fill).toBe('#fff');
+      expect(sanitized.attrs?.['body']?.stroke).toBe('#000');
+      expect(sanitized.attrs?.['text']?.text).toBe('Label');
     });
 
     it('should remove zIndex property', () => {
@@ -354,7 +354,7 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCell(cell);
 
-      expect(sanitized.zIndex).toBeUndefined();
+      expect(sanitized['zIndex']).toBeUndefined();
       expect(sanitized.position).toEqual({ x: 100, y: 100 });
     });
 
@@ -367,7 +367,7 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCell(cell);
 
-      expect(sanitized.tools).toBeUndefined();
+      expect(sanitized['tools']).toBeUndefined();
       expect(sanitized.id).toBe('node1');
     });
 
@@ -395,8 +395,8 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCell(cell);
 
-      expect(sanitized.ports?.items?.[0]?.attrs?.circle?.r).toBe(5);
-      expect(sanitized.ports?.items?.[0]?.attrs?.circle?.style?.visibility).toBeUndefined();
+      expect(sanitized['ports']?.items?.[0]?.attrs?.circle?.r).toBe(5);
+      expect(sanitized['ports']?.items?.[0]?.attrs?.circle?.style?.visibility).toBeUndefined();
     });
 
     it('should preserve all non-excluded properties', () => {
@@ -426,11 +426,11 @@ describe('Cell Property Filter Utility', () => {
       expect(sanitized.shape).toBe('rect');
       expect(sanitized.position).toEqual({ x: 100, y: 100 });
       expect(sanitized.size).toEqual({ width: 120, height: 60 });
-      expect(sanitized.attrs?.body?.fill).toBe('#fff');
-      expect(sanitized.attrs?.body?.stroke).toBe('#000');
-      expect(sanitized.attrs?.body?.strokeWidth).toBe(2);
-      expect(sanitized.attrs?.label?.text).toBe('My Node');
-      expect(sanitized.data?.customProp).toBe('value');
+      expect(sanitized.attrs?.['body']?.fill).toBe('#fff');
+      expect(sanitized.attrs?.['body']?.stroke).toBe('#000');
+      expect(sanitized.attrs?.['body']?.strokeWidth).toBe(2);
+      expect(sanitized.attrs?.['label']?.text).toBe('My Node');
+      expect(sanitized['data']?.customProp).toBe('value');
     });
 
     it('should not mutate the original cell', () => {
@@ -448,12 +448,12 @@ describe('Cell Property Filter Utility', () => {
       const sanitized = sanitizeCell(cell);
 
       // Original should still have excluded properties
-      expect(cell.zIndex).toBe(10);
-      expect(cell.attrs?.body?.filter).toBe('blur(5px)');
+      expect(cell['zIndex']).toBe(10);
+      expect(cell.attrs?.['body']?.filter).toBe('blur(5px)');
 
       // Sanitized should not
-      expect(sanitized.zIndex).toBeUndefined();
-      expect(sanitized.attrs?.body?.filter).toBeUndefined();
+      expect(sanitized['zIndex']).toBeUndefined();
+      expect(sanitized.attrs?.['body']?.filter).toBeUndefined();
     });
   });
 
@@ -481,10 +481,10 @@ describe('Cell Property Filter Utility', () => {
       const sanitized = sanitizeCells(cells);
 
       expect(sanitized).toHaveLength(2);
-      expect(sanitized[0].zIndex).toBeUndefined();
-      expect(sanitized[0].tools).toBeUndefined();
-      expect(sanitized[1].zIndex).toBeUndefined();
-      expect(sanitized[1].attrs?.body?.filter).toBeUndefined();
+      expect(sanitized[0]['zIndex']).toBeUndefined();
+      expect(sanitized[0]['tools']).toBeUndefined();
+      expect(sanitized[1]['zIndex']).toBeUndefined();
+      expect(sanitized[1].attrs?.['body']?.filter).toBeUndefined();
     });
   });
 
@@ -571,14 +571,14 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.shape).toBe('process');
         expect(sanitized.position).toEqual({ x: 100, y: 200 });
         expect(sanitized.size).toEqual({ width: 120, height: 80 });
-        expect(sanitized.angle).toBe(45);
-        expect(sanitized.parent).toBe('boundary-1');
-        expect(sanitized.data).toEqual({ _metadata: [] });
+        expect(sanitized['angle']).toBe(45);
+        expect(sanitized['parent']).toBe('boundary-1');
+        expect(sanitized['data']).toEqual({ _metadata: [] });
         expect(sanitized.attrs).toEqual({
           body: { fill: '#ffffff', stroke: '#333333' },
           text: { text: 'Process', fontSize: 14 },
         });
-        expect(sanitized.ports).toEqual({ items: [{ id: 'port-1', group: 'in' }] });
+        expect(sanitized['ports']).toEqual({ items: [{ id: 'port-1', group: 'in' }] });
       });
 
       it('should silently remove known transient properties', () => {
@@ -671,16 +671,16 @@ describe('Cell Property Filter Utility', () => {
         const sanitized = sanitizeCellForApi(node, logger);
 
         // Allowed properties should be preserved
-        expect(sanitized.attrs?.body?.fill).toBe('#ffffff');
-        expect(sanitized.attrs?.body?.stroke).toBe('#333333');
-        expect(sanitized.attrs?.text?.text).toBe('Label');
-        expect(sanitized.attrs?.text?.fontSize).toBe(14);
+        expect(sanitized.attrs?.['body']?.fill).toBe('#ffffff');
+        expect(sanitized.attrs?.['body']?.stroke).toBe('#333333');
+        expect(sanitized.attrs?.['text']?.text).toBe('Label');
+        expect(sanitized.attrs?.['text']?.fontSize).toBe(14);
 
         // Filter should be silently removed (no warning)
-        expect(sanitized.attrs?.body?.filter).toBeUndefined();
+        expect(sanitized.attrs?.['body']?.filter).toBeUndefined();
 
         // Unknown properties should be removed with warning
-        expect((sanitized.attrs?.body as any)?.customProp).toBeUndefined();
+        expect((sanitized.attrs?.['body'] as any)?.customProp).toBeUndefined();
         expect((sanitized.attrs as any)?.unknownSelector).toBeUndefined();
 
         // Should have warnings for customProp and unknownSelector
@@ -714,15 +714,15 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(node);
 
-        expect(sanitized.attrs?.text?.text).toBe('Label');
-        expect(sanitized.attrs?.text?.refX).toBe(0.5);
-        expect(sanitized.attrs?.text?.refY).toBe(1);
-        expect(sanitized.attrs?.text?.refDx).toBe(0);
-        expect(sanitized.attrs?.text?.refDy).toBe(10);
-        expect((sanitized.attrs?.text as any)?.refX2).toBe(5);
-        expect((sanitized.attrs?.text as any)?.refY2).toBe('50%');
-        expect(sanitized.attrs?.text?.textAnchor).toBe('middle');
-        expect(sanitized.attrs?.text?.textVerticalAnchor).toBe('top');
+        expect(sanitized.attrs?.['text']?.text).toBe('Label');
+        expect(sanitized.attrs?.['text']?.refX).toBe(0.5);
+        expect(sanitized.attrs?.['text']?.refY).toBe(1);
+        expect(sanitized.attrs?.['text']?.refDx).toBe(0);
+        expect(sanitized.attrs?.['text']?.refDy).toBe(10);
+        expect((sanitized.attrs?.['text'] as any)?.refX2).toBe(5);
+        expect((sanitized.attrs?.['text'] as any)?.refY2).toBe('50%');
+        expect(sanitized.attrs?.['text']?.textAnchor).toBe('middle');
+        expect(sanitized.attrs?.['text']?.textVerticalAnchor).toBe('top');
       });
 
       it('should preserve body shape and ref-sizing properties in node attrs', () => {
@@ -752,12 +752,12 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(node, logger);
 
-        expect((sanitized.attrs?.body as any)?.rx).toBe(10);
-        expect((sanitized.attrs?.body as any)?.ry).toBe(10);
-        expect((sanitized.attrs?.body as any)?.lateral).toBe(0.2);
-        expect((sanitized.attrs?.body as any)?.refWidth).toBe('100%');
-        expect((sanitized.attrs?.body as any)?.refHeight).toBe('100%');
-        expect((sanitized.attrs?.body as any)?.fillOpacity).toBe(0.5);
+        expect((sanitized.attrs?.['body'] as any)?.rx).toBe(10);
+        expect((sanitized.attrs?.['body'] as any)?.ry).toBe(10);
+        expect((sanitized.attrs?.['body'] as any)?.lateral).toBe(0.2);
+        expect((sanitized.attrs?.['body'] as any)?.refWidth).toBe('100%');
+        expect((sanitized.attrs?.['body'] as any)?.refHeight).toBe('100%');
+        expect((sanitized.attrs?.['body'] as any)?.fillOpacity).toBe(0.5);
         expect(warnings).toHaveLength(0);
       });
     });
@@ -850,17 +850,17 @@ describe('Cell Property Filter Utility', () => {
         const sanitized = sanitizeCellForApi(edge, logger);
 
         // Allowed properties should be preserved
-        expect(sanitized.attrs?.line?.stroke).toBe('#666666');
-        expect(sanitized.attrs?.line?.strokeWidth).toBe(2);
-        expect(sanitized.attrs?.line?.strokeDasharray).toBe('5,5');
-        expect(sanitized.attrs?.line?.targetMarker).toEqual({ name: 'classic', size: 8 });
-        expect(sanitized.attrs?.line?.sourceMarker).toEqual({ name: 'circle', size: 4 });
+        expect(sanitized.attrs?.['line']?.stroke).toBe('#666666');
+        expect(sanitized.attrs?.['line']?.strokeWidth).toBe(2);
+        expect(sanitized.attrs?.['line']?.strokeDasharray).toBe('5,5');
+        expect(sanitized.attrs?.['line']?.targetMarker).toEqual({ name: 'classic', size: 8 });
+        expect(sanitized.attrs?.['line']?.sourceMarker).toEqual({ name: 'circle', size: 4 });
 
         // Filter should be silently removed
-        expect(sanitized.attrs?.line?.filter).toBeUndefined();
+        expect(sanitized.attrs?.['line']?.filter).toBeUndefined();
 
         // Unknown properties should be removed with warning
-        expect((sanitized.attrs?.line as any)?.customProp).toBeUndefined();
+        expect((sanitized.attrs?.['line'] as any)?.customProp).toBeUndefined();
         expect((sanitized.attrs as any)?.unknownSelector).toBeUndefined();
 
         // Should have warnings for customProp and unknownSelector
@@ -893,7 +893,7 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(edge, logger);
 
-        expect(sanitized.attrs?.line?.targetMarker).toEqual({ name: 'classic', size: 8 });
+        expect(sanitized.attrs?.['line']?.targetMarker).toEqual({ name: 'classic', size: 8 });
         expect(warnings.some(w => w.message.includes('unknownMarkerProp'))).toBe(true);
       });
     });
@@ -954,11 +954,11 @@ describe('Cell Property Filter Utility', () => {
       expect((sanitized[0] as any).children).toEqual(['node-1', 'node-2']);
 
       // Child nodes should have parent set (derived from children array)
-      expect(sanitized[1].parent).toBe('boundary-1');
-      expect(sanitized[2].parent).toBe('boundary-1');
+      expect(sanitized[1]['parent']).toBe('boundary-1');
+      expect(sanitized[2]['parent']).toBe('boundary-1');
 
       // Node with existing parent should keep it
-      expect(sanitized[3].parent).toBe('existing-parent');
+      expect(sanitized[3]['parent']).toBe('existing-parent');
     });
 
     it('should handle cells without children arrays', () => {
@@ -976,8 +976,8 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCellsForApi(cells);
 
-      expect(sanitized[0].parent).toBeUndefined();
-      expect(sanitized[1].parent).toBe('boundary-1');
+      expect(sanitized[0]['parent']).toBeUndefined();
+      expect(sanitized[1]['parent']).toBe('boundary-1');
     });
 
     it('should pass logger to individual cell sanitization', () => {

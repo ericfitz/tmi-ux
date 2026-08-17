@@ -147,9 +147,9 @@ describe('PermissionsDialogComponent', () => {
       component.ngOnInit();
 
       const data = component.permissionsDataSource.data as Record<string, unknown>[];
-      expect(data[0]._subject).toBe('a@test.com');
-      expect(data[1]._subject).toBe('fallback-id');
-      expect(data[2]._subject).toBe('');
+      expect(data[0]['_subject']).toBe('a@test.com');
+      expect(data[1]['_subject']).toBe('fallback-id');
+      expect(data[2]['_subject']).toBe('');
     });
   });
 
@@ -189,7 +189,7 @@ describe('PermissionsDialogComponent', () => {
       const lastPerm = component.permissionsDataSource.data[
         component.permissionsDataSource.data.length - 1
       ] as Record<string, unknown>;
-      expect(lastPerm._subject).toBe('');
+      expect(lastPerm['_subject']).toBe('');
     });
 
     it('should fallback to google when no providers available', () => {
@@ -316,7 +316,7 @@ describe('PermissionsDialogComponent', () => {
       component.ngOnInit();
 
       // Simulate a cached _subject
-      (component.permissionsDataSource.data[0] as Record<string, unknown>)._subject =
+      (component.permissionsDataSource.data[0] as Record<string, unknown>)['_subject'] =
         'cached@test.com';
 
       component.save();
@@ -354,7 +354,7 @@ describe('PermissionsDialogComponent', () => {
   describe('getSubjectValue', () => {
     it('should return cached _subject when set', () => {
       const auth = createPermission();
-      (auth as Record<string, unknown>)._subject = 'cached';
+      (auth as Record<string, unknown>)['_subject'] = 'cached';
 
       expect(component.getSubjectValue(auth)).toBe('cached');
     });
@@ -603,7 +603,7 @@ describe('PermissionsDialogComponent', () => {
       component.onAutocompleteSelected(0, mockEvent);
 
       const auth = component.permissionsDataSource.data[0] as Record<string, unknown>;
-      expect(auth._subject).toBe('alice-pid');
+      expect(auth['_subject']).toBe('alice-pid');
     });
 
     it('should report autocomplete active for TMI provider', () => {

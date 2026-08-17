@@ -34,13 +34,13 @@ describe('AppNotificationService', () => {
       translate: vi.fn((key: string, params?: Record<string, string>) => {
         // Mock translations matching en-US.json values
         const translations: Record<string, string> = {
-          'collaboration.userJoined': `${params?.user || 'User'} joined the collaboration`,
-          'collaboration.userLeft': `${params?.user || 'User'} left the collaboration`,
+          'collaboration.userJoined': `${params?.['user'] || 'User'} joined the collaboration`,
+          'collaboration.userLeft': `${params?.['user'] || 'User'} left the collaboration`,
           'common.dismiss': 'Dismiss',
           'common.retry': 'Retry',
           'notifications.actions.login': 'Login',
           'notifications.presenter.assignedYou': 'You are now the presenter',
-          'notifications.presenter.assigned': `${params?.user || 'User'} is now the presenter`,
+          'notifications.presenter.assigned': `${params?.['user'] || 'User'} is now the presenter`,
           'notifications.websocket.connectionError': 'Connection error. Working in offline mode.',
           'notifications.websocket.multipleFailed':
             'Connection failed after multiple attempts. Working in offline mode.',

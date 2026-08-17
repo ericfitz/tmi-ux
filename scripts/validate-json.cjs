@@ -2,11 +2,11 @@
 
 /**
  * JSON Validation Script
- * 
+ *
  * This script validates JSON files for both syntactic and structural validity.
  * It can validate individual files or entire directories, with support for
  * custom schema validation and detailed error reporting.
- * 
+ *
  * Features:
  * - Syntactic validation (valid JSON format)
  * - Structural validation (schema-based validation)
@@ -15,7 +15,7 @@
  * - Custom validation rules
  * - Detailed error reporting with line numbers
  * - Summary statistics
- * 
+ *
  * Usage:
  *   node scripts/validate-json.cjs <file-or-pattern>
  *   node scripts/validate-json.cjs "src/assets/i18n/*.json"
@@ -26,6 +26,123 @@
 const fs = require('fs');
 const path = require('path');
 const { glob } = require('glob');
+
+/**
+ * Strip JSONC comments and trailing commas, ignoring anything inside strings.
+ *
+ * Walks the input once tracking string state, so `/*`, `*\/` and `//` that occur
+ * inside JSON string values are preserved. Comment bodies are replaced with
+ * spaces (newlines kept) so byte offsets and line numbers reported by
+ * JSON.parse still line up with the original file.
+ *
+ * @param {string} content Raw JSONC text
+ * @returns {string} Text that is valid JSON
+ */
+function stripJsoncNoise(content) {
+  const out = [];
+  let i = 0;
+  let inString = false;
+
+  while (i < content.length) {
+    const ch = content[i];
+
+    if (inString) {
+      if (ch === '\\') {
+        out.push(ch, content[i + 1] ?? '');
+        i += 2;
+        continue;
+      }
+      if (ch === '"') {
+        inString = false;
+      }
+      out.push(ch);
+      i += 1;
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+      out.push(ch);
+      i += 1;
+      continue;
+    }
+
+    // Line comment: blank out to end of line, keeping the newline
+    if (ch === '/' && content[i + 1] === '/') {
+      while (i < content.length && content[i] !== '\n') {
+        out.push(' ');
+        i += 1;
+      }
+      continue;
+    }
+
+    // Block comment: blank out through the terminator, preserving newlines
+    if (ch === '/' && content[i + 1] === '*') {
+      out.push(' ', ' ');
+      i += 2;
+      while (i < content.length && !(content[i] === '*' && content[i + 1] === '/')) {
+        out.push(content[i] === '\n' ? '\n' : ' ');
+        i += 1;
+      }
+      if (i < content.length) {
+        out.push(' ', ' ');
+        i += 2;
+      }
+      continue;
+    }
+
+    out.push(ch);
+    i += 1;
+  }
+
+  // Trailing commas, now that comments are gone and strings are intact
+  return removeTrailingCommas(out.join(''));
+}
+
+/**
+ * Remove commas that directly precede a closing brace or bracket.
+ *
+ * String-aware for the same reason as stripJsoncNoise: a string value may
+ * legitimately contain ", }".
+ *
+ * @param {string} content JSON text with comments already removed
+ * @returns {string} Text without trailing commas
+ */
+function removeTrailingCommas(content) {
+  const chars = [...content];
+  let inString = false;
+
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+
+    if (inString) {
+      if (ch === '\\') {
+        i += 1;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch !== ',') {
+      continue;
+    }
+
+    // Look ahead past whitespace for a closer
+    let j = i + 1;
+    while (j < chars.length && /\s/.test(chars[j])) {
+      j += 1;
+    }
+    if (chars[j] === '}' || chars[j] === ']') {
+      chars[i] = ' ';
+    }
+  }
+
+  return chars.join('');
+}
 
 /**
  * ANSI color codes for console output
@@ -60,7 +177,7 @@ class ValidationResult {
       message,
       line,
       column,
-      type: 'error'
+      type: 'error',
     });
   }
 
@@ -69,7 +186,7 @@ class ValidationResult {
       message,
       line,
       column,
-      type: 'warning'
+      type: 'warning',
     });
   }
 }
@@ -86,7 +203,7 @@ class JSONValidator {
       jsonc: options.jsonc || false,
       schema: options.schema || null,
       customValidators: options.customValidators || [],
-      ...options
+      ...options,
     };
   }
 
@@ -120,7 +237,9 @@ class JSONValidator {
 
       // Check file size
       if (result.fileSize > this.options.maxSize) {
-        result.addError(`File too large: ${this.formatFileSize(result.fileSize)} (max: ${this.formatFileSize(this.options.maxSize)})`);
+        result.addError(
+          `File too large: ${this.formatFileSize(result.fileSize)} (max: ${this.formatFileSize(this.options.maxSize)})`,
+        );
         return result;
       }
 
@@ -151,7 +270,6 @@ class JSONValidator {
       if (this.options.strict) {
         this.runStrictValidation(parsedData, content, result);
       }
-
     } catch (error) {
       result.addError(`Validation failed: ${error.message}`);
     }
@@ -168,46 +286,19 @@ class JSONValidator {
       return content;
     }
 
-    let processed = content;
+    // Strip comments and trailing commas in a single string-aware pass.
+    //
+    // A regex cannot do this: `/*` and `//` occur inside legitimate JSON string
+    // values. tsconfig path aliases are the common case — "./src/app/*" ends in
+    // `/*`, and a naive block-comment regex treats that as a comment opener and
+    // swallows the rest of the file. URLs inside comments ("https://...") are
+    // the mirror-image problem for `//`.
+    // Comments are blanked in place rather than deleted, so the offsets and line
+    // numbers in JSON.parse's error message still point at the original file.
+    // Do not add a whitespace-collapsing pass here — it would shift every
+    // position after the first comment and misreport where the real error is.
+    const processed = stripJsoncNoise(content);
 
-    // Remove multi-line comments (/* */ style) - must be done first
-    processed = processed.replace(/\/\*[\s\S]*?\*\//g, '');
-    
-    // Remove single-line comments (// style) more reliably
-    // Split by lines and process each line
-    const lines = processed.split('\n');
-    const processedLines = lines.map(line => {
-      // Find // outside of quoted strings
-      let inString = false;
-      let escaped = false;
-      for (let i = 0; i < line.length - 1; i++) {
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        if (line[i] === '\\') {
-          escaped = true;
-          continue;
-        }
-        if (line[i] === '"') {
-          inString = !inString;
-          continue;
-        }
-        if (!inString && line[i] === '/' && line[i + 1] === '/') {
-          return line.substring(0, i).trimEnd();
-        }
-      }
-      return line;
-    });
-    processed = processedLines.join('\n');
-    
-    // Remove trailing commas before closing brackets/braces
-    processed = processed.replace(/,(\s*[}\]])/g, '$1');
-    
-    // Clean up whitespace issues from comment removal
-    processed = processed.replace(/^\s*[\r\n]/gm, ''); // Remove lines that are now empty
-    processed = processed.replace(/\n\s*\n\s*\n/g, '\n\n'); // Collapse excessive newlines
-    
     result.addWarning('JSONC format: Comments and trailing commas were processed');
 
     return processed;
@@ -218,14 +309,14 @@ class JSONValidator {
    */
   handleParseError(parseError, content, result) {
     const message = parseError.message;
-    
+
     // Try to extract line and column information
     const match = message.match(/at position (\d+)/);
     if (match) {
       const position = parseInt(match[1]);
       const { line, column } = this.getLineAndColumn(content, position);
       result.addError(`JSON Parse Error: ${message}`, line, column);
-      
+
       // Add context around the error
       const context = this.getErrorContext(content, position);
       if (context) {
@@ -243,7 +334,7 @@ class JSONValidator {
     const lines = content.substring(0, position).split('\n');
     return {
       line: lines.length,
-      column: lines[lines.length - 1].length + 1
+      column: lines[lines.length - 1].length + 1,
     };
   }
 
@@ -299,7 +390,9 @@ class JSONValidator {
       // This is a simplified schema validation
       // In a real implementation, you'd use a library like ajv
       if (schema.type && typeof data !== schema.type) {
-        result.addError(`Schema validation failed: expected type '${schema.type}', got '${typeof data}'`);
+        result.addError(
+          `Schema validation failed: expected type '${schema.type}', got '${typeof data}'`,
+        );
       }
 
       if (schema.required && Array.isArray(schema.required)) {
@@ -354,11 +447,13 @@ class JSONValidator {
       const leadingWhitespace = line.match(/^(\s*)/)[1];
       if (leadingWhitespace.length > 0) {
         const currentIndentChar = leadingWhitespace[0];
-        
+
         if (indentChar === null) {
           indentChar = currentIndentChar;
         } else if (indentChar !== currentIndentChar) {
-          result.addWarning(`Inconsistent indentation character at line ${index + 1} (mixing tabs and spaces)`);
+          result.addWarning(
+            `Inconsistent indentation character at line ${index + 1} (mixing tabs and spaces)`,
+          );
         }
       }
     });
@@ -368,11 +463,11 @@ class JSONValidator {
     const duplicateKeyRegex = /"([^"]+)"\s*:/g;
     const keys = [];
     let match;
-    
+
     while ((match = duplicateKeyRegex.exec(contentStr)) !== null) {
       keys.push(match[1]);
     }
-    
+
     const uniqueKeys = new Set(keys);
     if (keys.length !== uniqueKeys.size) {
       result.addWarning('Potential duplicate keys detected');
@@ -397,7 +492,9 @@ class JSONValidator {
     const results = [];
 
     if (files.length === 0) {
-      console.log(`${colors.yellow}Warning: No files found matching pattern: ${pattern}${colors.reset}`);
+      console.log(
+        `${colors.yellow}Warning: No files found matching pattern: ${pattern}${colors.reset}`,
+      );
       return results;
     }
 
@@ -430,24 +527,28 @@ function printResults(results) {
     totalWarnings += result.warnings.length;
 
     // Print file result
-    const status = result.isValid 
+    const status = result.isValid
       ? `${colors.green}✓ VALID${colors.reset}`
       : `${colors.red}✗ INVALID${colors.reset}`;
-    
+
     const size = result.fileSize > 0 ? ` (${formatFileSize(result.fileSize)})` : '';
     const time = result.parseTime > 0 ? ` [${result.parseTime}ms]` : '';
-    
+
     console.log(`${status} ${result.filePath}${size}${time}`);
 
     // Print errors
     result.errors.forEach(error => {
-      const location = error.line ? ` at line ${error.line}${error.column ? `:${error.column}` : ''}` : '';
+      const location = error.line
+        ? ` at line ${error.line}${error.column ? `:${error.column}` : ''}`
+        : '';
       console.log(`  ${colors.red}ERROR:${colors.reset} ${error.message}${location}`);
     });
 
     // Print warnings
     result.warnings.forEach(warning => {
-      const location = warning.line ? ` at line ${warning.line}${warning.column ? `:${warning.column}` : ''}` : '';
+      const location = warning.line
+        ? ` at line ${warning.line}${warning.column ? `:${warning.column}` : ''}`
+        : '';
       console.log(`  ${colors.yellow}WARNING:${colors.reset} ${warning.message}${location}`);
     });
 
@@ -465,9 +566,13 @@ function printResults(results) {
   console.log(`Total warnings: ${colors.yellow}${totalWarnings}${colors.reset}`);
 
   if (totalErrors === 0) {
-    console.log(`\n${colors.green}✓ All files are syntactically and structurally valid!${colors.reset}`);
+    console.log(
+      `\n${colors.green}✓ All files are syntactically and structurally valid!${colors.reset}`,
+    );
   } else {
-    console.log(`\n${colors.red}✗ Found ${totalErrors} error(s) in ${totalFiles - validFiles} file(s)${colors.reset}`);
+    console.log(
+      `\n${colors.red}✗ Found ${totalErrors} error(s) in ${totalFiles - validFiles} file(s)${colors.reset}`,
+    );
   }
 }
 
@@ -493,12 +598,12 @@ function parseArgs() {
     maxDepth: 100,
     maxSize: 10 * 1024 * 1024,
     jsonc: false,
-    help: false
+    help: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg === '--help' || arg === '-h') {
       options.help = true;
     } else if (arg === '--strict') {
@@ -572,9 +677,95 @@ function loadSchema(schemaPath) {
 }
 
 /**
+ * Self-check for the JSONC preprocessing, runnable as `--test`.
+ *
+ * Covers the cases a regex-based stripper gets wrong: comment markers that
+ * appear inside string values, and string content that looks like a trailing
+ * comma. Mirrors the `compute-next-version.mjs --test` convention.
+ *
+ * @returns {boolean} True when every case passes
+ */
+function runSelfTest() {
+  const cases = [
+    {
+      name: 'tsconfig path alias ending in /* is not a comment opener',
+      input: '{\n  "paths": { "@app/*": ["./src/app/*"] },\n  "strict": true\n}',
+      expect: { paths: { '@app/*': ['./src/app/*'] }, strict: true },
+    },
+    {
+      name: 'https:// inside a block comment does not leave a dangling comment',
+      input:
+        '/* see https://example.com/docs */\n{\n  "paths": { "@a/*": ["./a/*"] },\n  "b": 1\n}',
+      expect: { paths: { '@a/*': ['./a/*'] }, b: 1 },
+    },
+    {
+      name: 'line comment is stripped, URL in a string value is kept',
+      input: '{\n  // a note\n  "url": "https://example.com/x"\n}',
+      expect: { url: 'https://example.com/x' },
+    },
+    {
+      name: 'block comment spanning lines is stripped',
+      input: '{\n  /* one\n     two */\n  "a": 1\n}',
+      expect: { a: 1 },
+    },
+    {
+      name: 'trailing commas removed in objects and arrays',
+      input: '{\n  "a": [1, 2,],\n  "b": 2,\n}',
+      expect: { a: [1, 2], b: 2 },
+    },
+    {
+      name: 'string containing ", }" survives trailing-comma removal',
+      input: '{ "a": "x, } y", "b": 1 }',
+      expect: { a: 'x, } y', b: 1 },
+    },
+    {
+      name: 'escaped quote does not desynchronize string tracking',
+      input: '{ "a": "he said \\"/* hi */\\"", "b": 1 }',
+      expect: { a: 'he said "/* hi */"', b: 1 },
+    },
+    {
+      name: 'comment markers inside a string value are preserved',
+      input: '{ "a": "// not a comment", "b": "/* also not */" }',
+      expect: { a: '// not a comment', b: '/* also not */' },
+    },
+  ];
+
+  let failures = 0;
+  for (const testCase of cases) {
+    let actual;
+    try {
+      actual = JSON.parse(stripJsoncNoise(testCase.input));
+    } catch (error) {
+      console.error(`${colors.red}FAIL${colors.reset} ${testCase.name}: ${error.message}`);
+      failures += 1;
+      continue;
+    }
+    if (JSON.stringify(actual) !== JSON.stringify(testCase.expect)) {
+      console.error(
+        `${colors.red}FAIL${colors.reset} ${testCase.name}\n  expected ${JSON.stringify(testCase.expect)}\n  actual   ${JSON.stringify(actual)}`,
+      );
+      failures += 1;
+      continue;
+    }
+    console.log(`${colors.green}ok${colors.reset} ${testCase.name}`);
+  }
+
+  if (failures) {
+    console.error(`\n${colors.red}${failures} of ${cases.length} case(s) failed${colors.reset}`);
+    return false;
+  }
+  console.log(`\n${colors.green}All ${cases.length} cases passed${colors.reset}`);
+  return true;
+}
+
+/**
  * Main execution function
  */
 async function main() {
+  if (process.argv.slice(2).includes('--test')) {
+    process.exit(runSelfTest() ? 0 : 1);
+  }
+
   const options = parseArgs();
 
   if (options.help) {
@@ -601,7 +792,7 @@ async function main() {
     schema: schema,
     maxDepth: options.maxDepth,
     maxSize: options.maxSize,
-    jsonc: options.jsonc
+    jsonc: options.jsonc,
   });
 
   // Validate all patterns

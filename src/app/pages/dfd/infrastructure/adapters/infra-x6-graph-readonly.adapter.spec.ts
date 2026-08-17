@@ -166,14 +166,14 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
       adapter.setReadOnlyMode(true);
 
       const interacting = graph.options.interacting as Record<string, boolean>;
-      expect(interacting.nodeMovable).toBe(false);
-      expect(interacting.edgeMovable).toBe(false);
-      expect(interacting.edgeLabelMovable).toBe(false);
-      expect(interacting.arrowheadMovable).toBe(false);
-      expect(interacting.vertexMovable).toBe(false);
-      expect(interacting.vertexAddable).toBe(false);
-      expect(interacting.vertexDeletable).toBe(false);
-      expect(interacting.magnetConnectable).toBe(false);
+      expect(interacting['nodeMovable']).toBe(false);
+      expect(interacting['edgeMovable']).toBe(false);
+      expect(interacting['edgeLabelMovable']).toBe(false);
+      expect(interacting['arrowheadMovable']).toBe(false);
+      expect(interacting['vertexMovable']).toBe(false);
+      expect(interacting['vertexAddable']).toBe(false);
+      expect(interacting['vertexDeletable']).toBe(false);
+      expect(interacting['magnetConnectable']).toBe(false);
     });
 
     it('should re-enable all interactions when set to edit mode', () => {
@@ -183,14 +183,14 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
       adapter.setReadOnlyMode(false);
 
       const interacting = graph.options.interacting as Record<string, boolean>;
-      expect(interacting.nodeMovable).toBe(true);
-      expect(interacting.edgeMovable).toBe(true);
-      expect(interacting.edgeLabelMovable).toBe(true);
-      expect(interacting.arrowheadMovable).toBe(true);
-      expect(interacting.vertexMovable).toBe(true);
-      expect(interacting.vertexAddable).toBe(true);
-      expect(interacting.vertexDeletable).toBe(true);
-      expect(interacting.magnetConnectable).toBe(true);
+      expect(interacting['nodeMovable']).toBe(true);
+      expect(interacting['edgeMovable']).toBe(true);
+      expect(interacting['edgeLabelMovable']).toBe(true);
+      expect(interacting['arrowheadMovable']).toBe(true);
+      expect(interacting['vertexMovable']).toBe(true);
+      expect(interacting['vertexAddable']).toBe(true);
+      expect(interacting['vertexDeletable']).toBe(true);
+      expect(interacting['magnetConnectable']).toBe(true);
     });
 
     it('should disable selection when entering read-only mode', () => {

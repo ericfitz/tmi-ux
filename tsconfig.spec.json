@@ -5,7 +5,11 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [],
-    "isolatedModules": false
+    "isolatedModules": false,
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@testing/*": ["./src/testing/*"]
+    }
   },
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

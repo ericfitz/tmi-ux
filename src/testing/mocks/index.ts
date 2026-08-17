@@ -5,6 +5,15 @@
  * making it easier to use shared mocks across test files.
  */
 
+// The factory helpers below reference these symbols, so they must be imported
+// into local scope — a bare `export ... from` re-export does not bind them here.
+import { MockAuthService } from './mock-auth.service';
+import { MockGraphService } from './mock-graph.service';
+import { MockWebSocketService } from './mock-websocket.service';
+import { createMockLoggerService, createTypedMockLoggerService } from './mock-logger.service';
+import { createMockRouter, createTypedMockRouter } from './mock-router.service';
+import { createMockHttpClient, createTypedMockHttpClient } from './mock-http-client.service';
+
 // Auth service mocks
 export { MockAuthService, type User } from './mock-auth.service';
 
