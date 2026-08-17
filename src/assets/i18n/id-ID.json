@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Salin kuota",
+        "failed": "Gagal menyalin kuota (HTTP {{status}}).",
+        "failedGeneric": "Gagal menyalin kuota.",
+        "field": "Pengaturan",
+        "loadFailed": "Tidak dapat memuat kuota.",
+        "notCopied": "Sumber menggunakan bawaan sistem untuk bagian ini; tidak ada yang disalin.",
+        "nothingToCopy": "Pengguna ini tidak memiliki kuota kustom untuk disalin.",
+        "overwriteWarning": "Menyalin akan menimpa kuota kustom yang ada pada pengguna target.",
+        "sourceLabel": "Menyalin dari",
+        "sourceValue": "Nilai sumber",
+        "success": "Kuota disalin ke {{email}}.",
+        "systemDefault": "Bawaan sistem",
+        "targetLabel": "Salin ke",
+        "targetValue": "Nilai target saat ini",
+        "title": "Salin kuota"
+      },
+      "copyToUser": "Salin kuota ke pengguna lain...",
       "default": "Bawaan",
       "deleteTooltip": "Hapus kuota kustom (kembalikan ke default)",
       "eventsPerMinute": "Peristiwa per menit",
       "filterLabel": "Filter Kuota",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau ID pengguna",
+      "hint": {
+        "defaultAndRange": "Bawaan: {{default}} (rentang: {{min}}–{{max}})",
+        "outOfRange": "Masukkan nilai antara {{min}} dan {{max}}"
+      },
       "maxSubscriptions": "Langganan maksimum",
       "noUserAPIQuotas": "Tidak ada kuota API kustom ditemukan.",
       "noWebhookQuotas": "Tidak ada kuota webhook kustom ditemukan.",
@@ -269,29 +291,7 @@
       "subtitle": "Konfigurasikan batas tingkat dan kuota untuk pengguna.",
       "title": "Kelola Kuota",
       "userAPITitle": "Batas Tingkat API",
-      "webhookTitle": "Batas Webhook",
-      "hint": {
-        "defaultAndRange": "Bawaan: {{default}} (rentang: {{min}}–{{max}})",
-        "outOfRange": "Masukkan nilai antara {{min}} dan {{max}}"
-      },
-      "copyToUser": "Salin kuota ke pengguna lain...",
-      "copyDialog": {
-        "title": "Salin kuota",
-        "sourceLabel": "Menyalin dari",
-        "targetLabel": "Salin ke",
-        "field": "Pengaturan",
-        "sourceValue": "Nilai sumber",
-        "targetValue": "Nilai target saat ini",
-        "systemDefault": "Bawaan sistem",
-        "notCopied": "Sumber menggunakan bawaan sistem untuk bagian ini; tidak ada yang disalin.",
-        "overwriteWarning": "Menyalin akan menimpa kuota kustom yang ada pada pengguna target.",
-        "nothingToCopy": "Pengguna ini tidak memiliki kuota kustom untuk disalin.",
-        "loadFailed": "Tidak dapat memuat kuota.",
-        "copyButton": "Salin kuota",
-        "success": "Kuota disalin ke {{email}}.",
-        "failed": "Gagal menyalin kuota (HTTP {{status}}).",
-        "failedGeneric": "Gagal menyalin kuota."
-      }
+      "webhookTitle": "Batas Webhook"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "Pengaturan Sistem",
       "noSettings": "Tidak ada pengaturan ditemukan.",
       "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
+      "reencrypt": {
+        "button": "Enkripsi ulang pengaturan tersimpan...",
+        "confirmButton": "Enkripsi ulang",
+        "confirmMessage": "Tindakan ini menulis ulang semua pengaturan berklasifikasi rahasia dengan kunci enkripsi saat ini, sehingga nilai yang disimpan sebelum enkripsi diaktifkan menjadi terenkripsi saat disimpan. Pengaturan yang tidak dapat dienkripsi ulang akan dilaporkan tetapi tidak menghentikan operasi. Aman dijalankan lebih dari sekali.",
+        "confirmTitle": "Enkripsi ulang pengaturan tersimpan?",
+        "error": "Enkripsi ulang gagal (HTTP {{status}}).",
+        "errorGeneric": "Enkripsi ulang gagal",
+        "partial": "{{reencrypted}} dari {{total}} pengaturan dienkripsi ulang; {{failed}} gagal. Lihat log untuk detailnya.",
+        "success": "{{reencrypted}} dari {{total}} pengaturan berhasil dienkripsi ulang."
+      },
       "saveTooltip": "Simpan perubahan",
       "sources": {
         "config": "File Konfigurasi",
@@ -379,16 +389,6 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
-      },
-      "reencrypt": {
-        "button": "Enkripsi ulang pengaturan tersimpan...",
-        "confirmTitle": "Enkripsi ulang pengaturan tersimpan?",
-        "confirmMessage": "Tindakan ini menulis ulang semua pengaturan berklasifikasi rahasia dengan kunci enkripsi saat ini, sehingga nilai yang disimpan sebelum enkripsi diaktifkan menjadi terenkripsi saat disimpan. Pengaturan yang tidak dapat dienkripsi ulang akan dilaporkan tetapi tidak menghentikan operasi. Aman dijalankan lebih dari sekali.",
-        "confirmButton": "Enkripsi ulang",
-        "success": "{{reencrypted}} dari {{total}} pengaturan berhasil dienkripsi ulang.",
-        "partial": "{{reencrypted}} dari {{total}} pengaturan dienkripsi ulang; {{failed}} gagal. Lihat log untuk detailnya.",
-        "error": "Enkripsi ulang gagal (HTTP {{status}}).",
-        "errorGeneric": "Enkripsi ulang gagal"
       }
     },
     "subtitle": "Kelola pengaturan dan konfigurasi sistem.",

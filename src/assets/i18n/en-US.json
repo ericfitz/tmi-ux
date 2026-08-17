@@ -294,6 +294,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Copy quotas",
+        "copyButton.comment": "Confirm button that performs the copy.",
+        "failed": "Failed to copy quotas (HTTP {{status}}).",
+        "failedGeneric": "Failed to copy quotas.",
+        "field": "Setting",
+        "field.comment": "Preview table column header: the name of the quota setting.",
+        "loadFailed": "Couldn't load quotas.",
+        "notCopied": "Source uses system defaults for this section; nothing to copy.",
+        "nothingToCopy": "This user has no custom quotas to copy.",
+        "overwriteWarning": "Copying overwrites the target user's existing custom quotas.",
+        "sourceLabel": "Copying from",
+        "sourceLabel.comment": "Section label above the user whose quotas are being copied (the source).",
+        "sourceValue": "Source value",
+        "sourceValue.comment": "Preview table column header: the source user's quota value.",
+        "success": "Quotas copied to {{email}}.",
+        "systemDefault": "System default",
+        "systemDefault.comment": "Shown in the preview when the target has no custom quota and uses the system default.",
+        "targetLabel": "Copy to",
+        "targetLabel.comment": "Section label above the picker for the user receiving the copied quotas.",
+        "targetValue": "Target current value",
+        "targetValue.comment": "Preview table column header: the target user's current quota value before copying.",
+        "title": "Copy quotas",
+        "title.comment": "Dialog title: copies one user's custom API/webhook quotas to another user."
+      },
+      "copyToUser": "Copy quotas to another user...",
+      "copyToUser.lint-skip": "Trailing ellipsis is intentional per style guide: menu item that opens a dialog.",
       "default": "Default",
       "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "deleteTooltip": "Remove custom quota (revert to defaults)",
@@ -301,6 +328,10 @@
       "filterLabel": "Filter quotas",
       "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter quotas'.",
       "filterPlaceholder": "Search by email, name, provider, or user ID",
+      "hint": {
+        "defaultAndRange": "Default: {{default}} (range: {{min}}–{{max}})",
+        "outOfRange": "Enter a value between {{min}} and {{max}}"
+      },
       "maxSubscriptions": "Max subscriptions",
       "maxSubscriptions.comment": "The word 'Max' is short for 'Maximum'.",
       "noUserAPIQuotas": "No custom API quotas found.",
@@ -312,38 +343,7 @@
       "subtitle": "Configure rate limits and quotas for users.",
       "title": "Manage quotas",
       "userAPITitle": "API rate limits",
-      "webhookTitle": "Webhook limits",
-      "hint": {
-        "defaultAndRange": "Default: {{default}} (range: {{min}}–{{max}})",
-        "outOfRange": "Enter a value between {{min}} and {{max}}"
-      },
-      "copyToUser": "Copy quotas to another user...",
-      "copyToUser.lint-skip": "Trailing ellipsis is intentional per style guide: menu item that opens a dialog.",
-      "copyDialog": {
-        "title": "Copy quotas",
-        "title.comment": "Dialog title: copies one user's custom API/webhook quotas to another user.",
-        "sourceLabel": "Copying from",
-        "sourceLabel.comment": "Section label above the user whose quotas are being copied (the source).",
-        "targetLabel": "Copy to",
-        "targetLabel.comment": "Section label above the picker for the user receiving the copied quotas.",
-        "field": "Setting",
-        "field.comment": "Preview table column header: the name of the quota setting.",
-        "sourceValue": "Source value",
-        "sourceValue.comment": "Preview table column header: the source user's quota value.",
-        "targetValue": "Target current value",
-        "targetValue.comment": "Preview table column header: the target user's current quota value before copying.",
-        "systemDefault": "System default",
-        "systemDefault.comment": "Shown in the preview when the target has no custom quota and uses the system default.",
-        "notCopied": "Source uses system defaults for this section; nothing to copy.",
-        "overwriteWarning": "Copying overwrites the target user's existing custom quotas.",
-        "nothingToCopy": "This user has no custom quotas to copy.",
-        "loadFailed": "Couldn't load quotas.",
-        "copyButton": "Copy quotas",
-        "copyButton.comment": "Confirm button that performs the copy.",
-        "success": "Quotas copied to {{email}}.",
-        "failed": "Failed to copy quotas (HTTP {{status}}).",
-        "failedGeneric": "Failed to copy quotas."
-      }
+      "webhookTitle": "Webhook limits"
     },
     "sections": {
       "addons": {
@@ -423,6 +423,17 @@
       "listTitle": "System settings",
       "noSettings": "No settings found.",
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
+      "reencrypt": {
+        "button": "Re-encrypt stored settings...",
+        "button.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
+        "confirmButton": "Re-encrypt",
+        "confirmMessage": "This rewrites all secret-classified settings with the current encryption key, so values stored before encryption was enabled become encrypted at rest. Settings that cannot be re-encrypted are reported but do not stop the operation. It is safe to run this more than once.",
+        "confirmTitle": "Re-encrypt stored settings?",
+        "error": "Re-encryption failed (HTTP {{status}}).",
+        "errorGeneric": "Re-encryption failed",
+        "partial": "Re-encrypted {{reencrypted}} of {{total}} settings; {{failed}} failed. Check the log for details.",
+        "success": "Re-encrypted {{reencrypted}} of {{total}} settings."
+      },
       "saveTooltip": "Save changes",
       "saveTooltip.comment": "Action description on a tooltip (typically for an icon button): 'Save changes'.",
       "sources": {
@@ -439,17 +450,6 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
-      },
-      "reencrypt": {
-        "button": "Re-encrypt stored settings...",
-        "button.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
-        "confirmTitle": "Re-encrypt stored settings?",
-        "confirmMessage": "This rewrites all secret-classified settings with the current encryption key, so values stored before encryption was enabled become encrypted at rest. Settings that cannot be re-encrypted are reported but do not stop the operation. It is safe to run this more than once.",
-        "confirmButton": "Re-encrypt",
-        "success": "Re-encrypted {{reencrypted}} of {{total}} settings.",
-        "partial": "Re-encrypted {{reencrypted}} of {{total}} settings; {{failed}} failed. Check the log for details.",
-        "error": "Re-encryption failed (HTTP {{status}}).",
-        "errorGeneric": "Re-encryption failed"
       }
     },
     "subtitle": "Manage system settings and configurations.",

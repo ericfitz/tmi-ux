@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Copiar cotas",
+        "failed": "Falha ao copiar as cotas (HTTP {{status}}).",
+        "failedGeneric": "Falha ao copiar as cotas.",
+        "field": "Configuração",
+        "loadFailed": "Não foi possível carregar as cotas.",
+        "notCopied": "A origem usa os padrões do sistema nesta seção; nada a copiar.",
+        "nothingToCopy": "Este usuário não tem cotas personalizadas para copiar.",
+        "overwriteWarning": "Copiar sobrescreve as cotas personalizadas existentes do usuário de destino.",
+        "sourceLabel": "Copiando de",
+        "sourceValue": "Valor de origem",
+        "success": "Cotas copiadas para {{email}}.",
+        "systemDefault": "Padrão do sistema",
+        "targetLabel": "Copiar para",
+        "targetValue": "Valor atual do destino",
+        "title": "Copiar cotas"
+      },
+      "copyToUser": "Copiar cotas para outro usuário...",
       "default": "Padrão",
       "deleteTooltip": "Remover cota personalizada (reverter para padroes)",
       "eventsPerMinute": "Eventos por minuto",
       "filterLabel": "Filtrar cotas",
       "filterPlaceholder": "Pesquisar por e-mail, nome, provedor ou ID do usuario",
+      "hint": {
+        "defaultAndRange": "Padrão: {{default}} (intervalo: {{min}}–{{max}})",
+        "outOfRange": "Insira um valor entre {{min}} e {{max}}"
+      },
       "maxSubscriptions": "Maximo de assinaturas",
       "noUserAPIQuotas": "Nenhuma cota de API personalizada encontrada.",
       "noWebhookQuotas": "Nenhuma cota de webhook personalizada encontrada.",
@@ -269,29 +291,7 @@
       "subtitle": "Configure limites de taxa e cotas para usuários.",
       "title": "Gerenciar cotas",
       "userAPITitle": "Limites de taxa de API",
-      "webhookTitle": "Limites de webhook",
-      "hint": {
-        "defaultAndRange": "Padrão: {{default}} (intervalo: {{min}}–{{max}})",
-        "outOfRange": "Insira um valor entre {{min}} e {{max}}"
-      },
-      "copyToUser": "Copiar cotas para outro usuário...",
-      "copyDialog": {
-        "title": "Copiar cotas",
-        "sourceLabel": "Copiando de",
-        "targetLabel": "Copiar para",
-        "field": "Configuração",
-        "sourceValue": "Valor de origem",
-        "targetValue": "Valor atual do destino",
-        "systemDefault": "Padrão do sistema",
-        "notCopied": "A origem usa os padrões do sistema nesta seção; nada a copiar.",
-        "overwriteWarning": "Copiar sobrescreve as cotas personalizadas existentes do usuário de destino.",
-        "nothingToCopy": "Este usuário não tem cotas personalizadas para copiar.",
-        "loadFailed": "Não foi possível carregar as cotas.",
-        "copyButton": "Copiar cotas",
-        "success": "Cotas copiadas para {{email}}.",
-        "failed": "Falha ao copiar as cotas (HTTP {{status}}).",
-        "failedGeneric": "Falha ao copiar as cotas."
-      }
+      "webhookTitle": "Limites de webhook"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "Configurações do sistema",
       "noSettings": "Nenhuma configuração encontrada.",
       "readOnlyTooltip": "Esta configuração é somente leitura e não pode ser modificada aqui",
+      "reencrypt": {
+        "button": "Recriptografar configurações armazenadas...",
+        "confirmButton": "Recriptografar",
+        "confirmMessage": "Esta ação regrava todas as configurações classificadas como secretas com a chave de criptografia atual, para que valores armazenados antes de a criptografia ser habilitada fiquem criptografados em repouso. Configurações que não puderem ser recriptografadas são relatadas, mas não interrompem a operação. É seguro executá-la mais de uma vez.",
+        "confirmTitle": "Recriptografar as configurações armazenadas?",
+        "error": "Falha na recriptografia (HTTP {{status}}).",
+        "errorGeneric": "Falha na recriptografia",
+        "partial": "{{reencrypted}} de {{total}} configurações recriptografadas; {{failed}} falharam. Consulte o log para mais detalhes.",
+        "success": "{{reencrypted}} de {{total}} configurações recriptografadas."
+      },
       "saveTooltip": "Salvar alterações",
       "sources": {
         "config": "Arquivo de configuração",
@@ -379,16 +389,6 @@
         "int": "Inteiro",
         "json": "JSON",
         "string": "String"
-      },
-      "reencrypt": {
-        "button": "Recriptografar configurações armazenadas...",
-        "confirmTitle": "Recriptografar as configurações armazenadas?",
-        "confirmMessage": "Esta ação regrava todas as configurações classificadas como secretas com a chave de criptografia atual, para que valores armazenados antes de a criptografia ser habilitada fiquem criptografados em repouso. Configurações que não puderem ser recriptografadas são relatadas, mas não interrompem a operação. É seguro executá-la mais de uma vez.",
-        "confirmButton": "Recriptografar",
-        "success": "{{reencrypted}} de {{total}} configurações recriptografadas.",
-        "partial": "{{reencrypted}} de {{total}} configurações recriptografadas; {{failed}} falharam. Consulte o log para mais detalhes.",
-        "error": "Falha na recriptografia (HTTP {{status}}).",
-        "errorGeneric": "Falha na recriptografia"
       }
     },
     "subtitle": "Gerencie configurações e definições do sistema.",

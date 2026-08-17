@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "复制配额",
+        "failed": "复制配额失败 (HTTP {{status}})。",
+        "failedGeneric": "复制配额失败。",
+        "field": "设置",
+        "loadFailed": "无法加载配额。",
+        "notCopied": "来源在此部分使用系统默认值,无需复制。",
+        "nothingToCopy": "该用户没有可复制的自定义配额。",
+        "overwriteWarning": "复制会覆盖目标用户现有的自定义配额。",
+        "sourceLabel": "复制来源",
+        "sourceValue": "来源值",
+        "success": "已将配额复制给 {{email}}。",
+        "systemDefault": "系统默认值",
+        "targetLabel": "复制到",
+        "targetValue": "目标当前值",
+        "title": "复制配额"
+      },
+      "copyToUser": "将配额复制给其他用户...",
       "default": "默认值",
       "deleteTooltip": "移除自定义配额（恢复默认值）",
       "eventsPerMinute": "每分钟事件数",
       "filterLabel": "筛选配额",
       "filterPlaceholder": "按电子邮件、姓名、提供商或用户ID搜索",
+      "hint": {
+        "defaultAndRange": "默认值:{{default}}(范围:{{min}}–{{max}})",
+        "outOfRange": "请输入 {{min}} 到 {{max}} 之间的值"
+      },
       "maxSubscriptions": "最大订阅数",
       "noUserAPIQuotas": "未找到自定义 API 配额。",
       "noWebhookQuotas": "未找到自定义 webhook 配额。",
@@ -269,29 +291,7 @@
       "subtitle": "为用户配置速率限制和配额。",
       "title": "管理配额",
       "userAPITitle": "API 速率限制",
-      "webhookTitle": "Webhook 限制",
-      "hint": {
-        "defaultAndRange": "默认值:{{default}}(范围:{{min}}–{{max}})",
-        "outOfRange": "请输入 {{min}} 到 {{max}} 之间的值"
-      },
-      "copyToUser": "将配额复制给其他用户...",
-      "copyDialog": {
-        "title": "复制配额",
-        "sourceLabel": "复制来源",
-        "targetLabel": "复制到",
-        "field": "设置",
-        "sourceValue": "来源值",
-        "targetValue": "目标当前值",
-        "systemDefault": "系统默认值",
-        "notCopied": "来源在此部分使用系统默认值,无需复制。",
-        "overwriteWarning": "复制会覆盖目标用户现有的自定义配额。",
-        "nothingToCopy": "该用户没有可复制的自定义配额。",
-        "loadFailed": "无法加载配额。",
-        "copyButton": "复制配额",
-        "success": "已将配额复制给 {{email}}。",
-        "failed": "复制配额失败 (HTTP {{status}})。",
-        "failedGeneric": "复制配额失败。"
-      }
+      "webhookTitle": "Webhook 限制"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "系统设置",
       "noSettings": "未找到设置。",
       "readOnlyTooltip": "此设置为只读，无法在此处修改",
+      "reencrypt": {
+        "button": "重新加密已存储的设置...",
+        "confirmButton": "重新加密",
+        "confirmMessage": "此操作会使用当前加密密钥重写所有归类为机密的设置,使在启用加密之前存储的值实现静态加密。无法重新加密的设置会被报告,但不会中断操作。多次运行此操作是安全的。",
+        "confirmTitle": "重新加密已存储的设置?",
+        "error": "重新加密失败 (HTTP {{status}})。",
+        "errorGeneric": "重新加密失败",
+        "partial": "已重新加密 {{reencrypted}}/{{total}} 项设置;{{failed}} 项失败。详情请查看日志。",
+        "success": "已重新加密 {{reencrypted}}/{{total}} 项设置。"
+      },
       "saveTooltip": "保存更改",
       "sources": {
         "config": "配置文件",
@@ -379,16 +389,6 @@
         "int": "整数",
         "json": "JSON",
         "string": "字符串"
-      },
-      "reencrypt": {
-        "button": "重新加密已存储的设置...",
-        "confirmTitle": "重新加密已存储的设置?",
-        "confirmMessage": "此操作会使用当前加密密钥重写所有归类为机密的设置,使在启用加密之前存储的值实现静态加密。无法重新加密的设置会被报告,但不会中断操作。多次运行此操作是安全的。",
-        "confirmButton": "重新加密",
-        "success": "已重新加密 {{reencrypted}}/{{total}} 项设置。",
-        "partial": "已重新加密 {{reencrypted}}/{{total}} 项设置;{{failed}} 项失败。详情请查看日志。",
-        "error": "重新加密失败 (HTTP {{status}})。",
-        "errorGeneric": "重新加密失败"
       }
     },
     "subtitle": "管理系统设置和配置。",

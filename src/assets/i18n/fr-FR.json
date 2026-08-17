@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Copier les quotas",
+        "failed": "Échec de la copie des quotas (HTTP {{status}}).",
+        "failedGeneric": "Échec de la copie des quotas.",
+        "field": "Paramètre",
+        "loadFailed": "Impossible de charger les quotas.",
+        "notCopied": "La source utilise les valeurs par défaut du système pour cette section ; rien à copier.",
+        "nothingToCopy": "Cet utilisateur n'a aucun quota personnalisé à copier.",
+        "overwriteWarning": "La copie remplace les quotas personnalisés existants de l'utilisateur cible.",
+        "sourceLabel": "Copie depuis",
+        "sourceValue": "Valeur source",
+        "success": "Quotas copiés vers {{email}}.",
+        "systemDefault": "Valeur par défaut du système",
+        "targetLabel": "Copier vers",
+        "targetValue": "Valeur actuelle de la cible",
+        "title": "Copier les quotas"
+      },
+      "copyToUser": "Copier les quotas vers un autre utilisateur...",
       "default": "Par défaut",
       "deleteTooltip": "Supprimer le quota personnalise (revenir aux valeurs par defaut)",
       "eventsPerMinute": "Evenements par minute",
       "filterLabel": "Filtrer les quotas",
       "filterPlaceholder": "Rechercher par email, nom, fournisseur ou ID utilisateur",
+      "hint": {
+        "defaultAndRange": "Par défaut : {{default}} (plage : {{min}}–{{max}})",
+        "outOfRange": "Saisissez une valeur entre {{min}} et {{max}}"
+      },
       "maxSubscriptions": "Abonnements maximum",
       "noUserAPIQuotas": "Aucun quota API personnalisé trouvé.",
       "noWebhookQuotas": "Aucun quota webhook personnalisé trouvé.",
@@ -269,29 +291,7 @@
       "subtitle": "Configurer les limites de taux et les quotas pour les utilisateurs.",
       "title": "Gérer les quotas",
       "userAPITitle": "Limites de taux API",
-      "webhookTitle": "Limites des webhooks",
-      "hint": {
-        "defaultAndRange": "Par défaut : {{default}} (plage : {{min}}–{{max}})",
-        "outOfRange": "Saisissez une valeur entre {{min}} et {{max}}"
-      },
-      "copyToUser": "Copier les quotas vers un autre utilisateur...",
-      "copyDialog": {
-        "title": "Copier les quotas",
-        "sourceLabel": "Copie depuis",
-        "targetLabel": "Copier vers",
-        "field": "Paramètre",
-        "sourceValue": "Valeur source",
-        "targetValue": "Valeur actuelle de la cible",
-        "systemDefault": "Valeur par défaut du système",
-        "notCopied": "La source utilise les valeurs par défaut du système pour cette section ; rien à copier.",
-        "overwriteWarning": "La copie remplace les quotas personnalisés existants de l'utilisateur cible.",
-        "nothingToCopy": "Cet utilisateur n'a aucun quota personnalisé à copier.",
-        "loadFailed": "Impossible de charger les quotas.",
-        "copyButton": "Copier les quotas",
-        "success": "Quotas copiés vers {{email}}.",
-        "failed": "Échec de la copie des quotas (HTTP {{status}}).",
-        "failedGeneric": "Échec de la copie des quotas."
-      }
+      "webhookTitle": "Limites des webhooks"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "Paramètres système",
       "noSettings": "Aucun paramètre trouvé.",
       "readOnlyTooltip": "Ce paramètre est en lecture seule et ne peut pas être modifié ici",
+      "reencrypt": {
+        "button": "Rechiffrer les paramètres stockés...",
+        "confirmButton": "Rechiffrer",
+        "confirmMessage": "Cette opération réécrit tous les paramètres classés secrets avec la clé de chiffrement actuelle, afin que les valeurs stockées avant l'activation du chiffrement soient chiffrées au repos. Les paramètres qui ne peuvent pas être rechiffrés sont signalés sans interrompre l'opération. Elle peut être exécutée plusieurs fois sans risque.",
+        "confirmTitle": "Rechiffrer les paramètres stockés ?",
+        "error": "Échec du rechiffrement (HTTP {{status}}).",
+        "errorGeneric": "Échec du rechiffrement",
+        "partial": "{{reencrypted}} paramètres sur {{total}} rechiffrés ; {{failed}} en échec. Consultez le journal pour plus de détails.",
+        "success": "{{reencrypted}} paramètres sur {{total}} rechiffrés."
+      },
       "saveTooltip": "Enregistrer les modifications",
       "sources": {
         "config": "Fichier de configuration",
@@ -379,16 +389,6 @@
         "int": "Entier",
         "json": "JSON",
         "string": "Chaîne de caractères"
-      },
-      "reencrypt": {
-        "button": "Rechiffrer les paramètres stockés...",
-        "confirmTitle": "Rechiffrer les paramètres stockés ?",
-        "confirmMessage": "Cette opération réécrit tous les paramètres classés secrets avec la clé de chiffrement actuelle, afin que les valeurs stockées avant l'activation du chiffrement soient chiffrées au repos. Les paramètres qui ne peuvent pas être rechiffrés sont signalés sans interrompre l'opération. Elle peut être exécutée plusieurs fois sans risque.",
-        "confirmButton": "Rechiffrer",
-        "success": "{{reencrypted}} paramètres sur {{total}} rechiffrés.",
-        "partial": "{{reencrypted}} paramètres sur {{total}} rechiffrés ; {{failed}} en échec. Consultez le journal pour plus de détails.",
-        "error": "Échec du rechiffrement (HTTP {{status}}).",
-        "errorGeneric": "Échec du rechiffrement"
       }
     },
     "subtitle": "Gérer les paramètres et configurations du système.",

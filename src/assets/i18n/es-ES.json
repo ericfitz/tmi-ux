@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Copiar cuotas",
+        "failed": "Error al copiar las cuotas (HTTP {{status}}).",
+        "failedGeneric": "Error al copiar las cuotas.",
+        "field": "Ajuste",
+        "loadFailed": "No se pudieron cargar las cuotas.",
+        "notCopied": "El origen usa los valores predeterminados del sistema en esta sección; no hay nada que copiar.",
+        "nothingToCopy": "Este usuario no tiene cuotas personalizadas que copiar.",
+        "overwriteWarning": "Copiar sobrescribe las cuotas personalizadas existentes del usuario de destino.",
+        "sourceLabel": "Copiando desde",
+        "sourceValue": "Valor de origen",
+        "success": "Cuotas copiadas a {{email}}.",
+        "systemDefault": "Valor predeterminado del sistema",
+        "targetLabel": "Copiar a",
+        "targetValue": "Valor actual del destino",
+        "title": "Copiar cuotas"
+      },
+      "copyToUser": "Copiar cuotas a otro usuario...",
       "default": "Predeterminado",
       "deleteTooltip": "Eliminar cuota personalizada (volver a valores predeterminados)",
       "eventsPerMinute": "Eventos por minuto",
       "filterLabel": "Filtrar cuotas",
       "filterPlaceholder": "Buscar por correo electrónico, nombre, proveedor o ID de usuario",
+      "hint": {
+        "defaultAndRange": "Predeterminado: {{default}} (rango: {{min}}–{{max}})",
+        "outOfRange": "Introduce un valor entre {{min}} y {{max}}"
+      },
       "maxSubscriptions": "Máximo de suscripciones",
       "noUserAPIQuotas": "No se encontraron cuotas de API personalizadas.",
       "noWebhookQuotas": "No se encontraron cuotas de webhook personalizadas.",
@@ -269,29 +291,7 @@
       "subtitle": "Configurar límites de tasa y cuotas para usuarios.",
       "title": "Gestionar cuotas",
       "userAPITitle": "Límites de tasa de API",
-      "webhookTitle": "Límites de webhook",
-      "hint": {
-        "defaultAndRange": "Predeterminado: {{default}} (rango: {{min}}–{{max}})",
-        "outOfRange": "Introduce un valor entre {{min}} y {{max}}"
-      },
-      "copyToUser": "Copiar cuotas a otro usuario...",
-      "copyDialog": {
-        "title": "Copiar cuotas",
-        "sourceLabel": "Copiando desde",
-        "targetLabel": "Copiar a",
-        "field": "Ajuste",
-        "sourceValue": "Valor de origen",
-        "targetValue": "Valor actual del destino",
-        "systemDefault": "Valor predeterminado del sistema",
-        "notCopied": "El origen usa los valores predeterminados del sistema en esta sección; no hay nada que copiar.",
-        "overwriteWarning": "Copiar sobrescribe las cuotas personalizadas existentes del usuario de destino.",
-        "nothingToCopy": "Este usuario no tiene cuotas personalizadas que copiar.",
-        "loadFailed": "No se pudieron cargar las cuotas.",
-        "copyButton": "Copiar cuotas",
-        "success": "Cuotas copiadas a {{email}}.",
-        "failed": "Error al copiar las cuotas (HTTP {{status}}).",
-        "failedGeneric": "Error al copiar las cuotas."
-      }
+      "webhookTitle": "Límites de webhook"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "Configuraciones del sistema",
       "noSettings": "No se encontraron configuraciones.",
       "readOnlyTooltip": "Esta configuración es de solo lectura y no se puede modificar aquí",
+      "reencrypt": {
+        "button": "Volver a cifrar los ajustes almacenados...",
+        "confirmButton": "Volver a cifrar",
+        "confirmMessage": "Esto reescribe todos los ajustes clasificados como secretos con la clave de cifrado actual, de modo que los valores almacenados antes de habilitar el cifrado queden cifrados en reposo. Los ajustes que no se puedan volver a cifrar se notifican, pero no detienen la operación. Es seguro ejecutarlo más de una vez.",
+        "confirmTitle": "¿Volver a cifrar los ajustes almacenados?",
+        "error": "Error al volver a cifrar (HTTP {{status}}).",
+        "errorGeneric": "Error al volver a cifrar",
+        "partial": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes; {{failed}} han fallado. Consulta el registro para más detalles.",
+        "success": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes."
+      },
       "saveTooltip": "Guardar cambios",
       "sources": {
         "config": "Archivo de configuración",
@@ -379,16 +389,6 @@
         "int": "Entero",
         "json": "JSON",
         "string": "Cadena"
-      },
-      "reencrypt": {
-        "button": "Volver a cifrar los ajustes almacenados...",
-        "confirmTitle": "¿Volver a cifrar los ajustes almacenados?",
-        "confirmMessage": "Esto reescribe todos los ajustes clasificados como secretos con la clave de cifrado actual, de modo que los valores almacenados antes de habilitar el cifrado queden cifrados en reposo. Los ajustes que no se puedan volver a cifrar se notifican, pero no detienen la operación. Es seguro ejecutarlo más de una vez.",
-        "confirmButton": "Volver a cifrar",
-        "success": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes.",
-        "partial": "Se han vuelto a cifrar {{reencrypted}} de {{total}} ajustes; {{failed}} han fallado. Consulta el registro para más detalles.",
-        "error": "Error al volver a cifrar (HTTP {{status}}).",
-        "errorGeneric": "Error al volver a cifrar"
       }
     },
     "subtitle": "Gestionar configuraciones y ajustes del sistema.",

@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "クォータをコピー",
+        "failed": "クォータのコピーに失敗しました (HTTP {{status}})。",
+        "failedGeneric": "クォータのコピーに失敗しました。",
+        "field": "設定",
+        "loadFailed": "クォータを読み込めませんでした。",
+        "notCopied": "このセクションではコピー元がシステムデフォルトを使用しているため、コピーするものはありません。",
+        "nothingToCopy": "このユーザーにはコピーできるカスタムクォータがありません。",
+        "overwriteWarning": "コピーすると、コピー先ユーザーの既存のカスタムクォータが上書きされます。",
+        "sourceLabel": "コピー元",
+        "sourceValue": "コピー元の値",
+        "success": "{{email}} にクォータをコピーしました。",
+        "systemDefault": "システムデフォルト",
+        "targetLabel": "コピー先",
+        "targetValue": "コピー先の現在の値",
+        "title": "クォータをコピー"
+      },
+      "copyToUser": "クォータを別のユーザーにコピー...",
       "default": "デフォルト",
       "deleteTooltip": "カスタムクォータを削除（デフォルトに戻す）",
       "eventsPerMinute": "1分あたりのイベント数",
       "filterLabel": "クォータを絞り込む",
       "filterPlaceholder": "メール、名前、プロバイダー、またはユーザーIDで検索",
+      "hint": {
+        "defaultAndRange": "デフォルト: {{default}} (範囲: {{min}}〜{{max}})",
+        "outOfRange": "{{min}}〜{{max}} の値を入力してください"
+      },
       "maxSubscriptions": "最大サブスクリプション数",
       "noUserAPIQuotas": "カスタムAPIクォータが見つかりません。",
       "noWebhookQuotas": "カスタムWebhookクォータが見つかりません。",
@@ -269,29 +291,7 @@
       "subtitle": "ユーザーのレート制限とクォータを設定します。",
       "title": "クォータの管理",
       "userAPITitle": "APIレート制限",
-      "webhookTitle": "Webhook制限",
-      "hint": {
-        "defaultAndRange": "デフォルト: {{default}} (範囲: {{min}}〜{{max}})",
-        "outOfRange": "{{min}}〜{{max}} の値を入力してください"
-      },
-      "copyToUser": "クォータを別のユーザーにコピー...",
-      "copyDialog": {
-        "title": "クォータをコピー",
-        "sourceLabel": "コピー元",
-        "targetLabel": "コピー先",
-        "field": "設定",
-        "sourceValue": "コピー元の値",
-        "targetValue": "コピー先の現在の値",
-        "systemDefault": "システムデフォルト",
-        "notCopied": "このセクションではコピー元がシステムデフォルトを使用しているため、コピーするものはありません。",
-        "overwriteWarning": "コピーすると、コピー先ユーザーの既存のカスタムクォータが上書きされます。",
-        "nothingToCopy": "このユーザーにはコピーできるカスタムクォータがありません。",
-        "loadFailed": "クォータを読み込めませんでした。",
-        "copyButton": "クォータをコピー",
-        "success": "{{email}} にクォータをコピーしました。",
-        "failed": "クォータのコピーに失敗しました (HTTP {{status}})。",
-        "failedGeneric": "クォータのコピーに失敗しました。"
-      }
+      "webhookTitle": "Webhook制限"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "システム設定",
       "noSettings": "設定が見つかりません。",
       "readOnlyTooltip": "この設定は読み取り専用で、ここでは変更できません",
+      "reencrypt": {
+        "button": "保存済み設定を再暗号化...",
+        "confirmButton": "再暗号化",
+        "confirmMessage": "この操作は、シークレットに分類されたすべての設定を現在の暗号化キーで書き直し、暗号化が有効になる前に保存された値を保存時に暗号化された状態にします。再暗号化できない設定は報告されますが、操作は中断されません。複数回実行しても安全です。",
+        "confirmTitle": "保存済み設定を再暗号化しますか?",
+        "error": "再暗号化に失敗しました (HTTP {{status}})。",
+        "errorGeneric": "再暗号化に失敗しました",
+        "partial": "{{total}} 件中 {{reencrypted}} 件の設定を再暗号化しました。{{failed}} 件が失敗しました。詳細はログを確認してください。",
+        "success": "{{total}} 件中 {{reencrypted}} 件の設定を再暗号化しました。"
+      },
       "saveTooltip": "変更を保存",
       "sources": {
         "config": "設定ファイル",
@@ -379,16 +389,6 @@
         "int": "整数",
         "json": "JSON",
         "string": "文字列"
-      },
-      "reencrypt": {
-        "button": "保存済み設定を再暗号化...",
-        "confirmTitle": "保存済み設定を再暗号化しますか?",
-        "confirmMessage": "この操作は、シークレットに分類されたすべての設定を現在の暗号化キーで書き直し、暗号化が有効になる前に保存された値を保存時に暗号化された状態にします。再暗号化できない設定は報告されますが、操作は中断されません。複数回実行しても安全です。",
-        "confirmButton": "再暗号化",
-        "success": "{{total}} 件中 {{reencrypted}} 件の設定を再暗号化しました。",
-        "partial": "{{total}} 件中 {{reencrypted}} 件の設定を再暗号化しました。{{failed}} 件が失敗しました。詳細はログを確認してください。",
-        "error": "再暗号化に失敗しました (HTTP {{status}})。",
-        "errorGeneric": "再暗号化に失敗しました"
       }
     },
     "subtitle": "システム設定と構成を管理します。",

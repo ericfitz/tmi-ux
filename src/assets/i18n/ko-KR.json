@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "할당량 복사",
+        "failed": "할당량을 복사하지 못했습니다 (HTTP {{status}}).",
+        "failedGeneric": "할당량을 복사하지 못했습니다.",
+        "field": "설정",
+        "loadFailed": "할당량을 불러오지 못했습니다.",
+        "notCopied": "이 섹션에서 원본은 시스템 기본값을 사용하므로 복사할 내용이 없습니다.",
+        "nothingToCopy": "이 사용자에게는 복사할 사용자 지정 할당량이 없습니다.",
+        "overwriteWarning": "복사하면 대상 사용자의 기존 사용자 지정 할당량을 덮어씁니다.",
+        "sourceLabel": "복사 원본",
+        "sourceValue": "원본 값",
+        "success": "{{email}}에게 할당량을 복사했습니다.",
+        "systemDefault": "시스템 기본값",
+        "targetLabel": "복사 대상",
+        "targetValue": "대상의 현재 값",
+        "title": "할당량 복사"
+      },
+      "copyToUser": "다른 사용자에게 할당량 복사...",
       "default": "기본값",
       "deleteTooltip": "사용자 정의 할당량 제거 (기본값으로 복원)",
       "eventsPerMinute": "분당 이벤트 수",
       "filterLabel": "할당량 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 사용자 ID로 검색",
+      "hint": {
+        "defaultAndRange": "기본값: {{default}} (범위: {{min}}–{{max}})",
+        "outOfRange": "{{min}}에서 {{max}} 사이의 값을 입력하세요"
+      },
       "maxSubscriptions": "최대 구독 수",
       "noUserAPIQuotas": "사용자 정의 API 할당량을 찾을 수 없습니다.",
       "noWebhookQuotas": "사용자 정의 웹훅 할당량을 찾을 수 없습니다.",
@@ -269,29 +291,7 @@
       "subtitle": "사용자의 요청 제한 및 할당량을 구성합니다.",
       "title": "할당량 관리",
       "userAPITitle": "API 제한",
-      "webhookTitle": "Webhook 제한",
-      "hint": {
-        "defaultAndRange": "기본값: {{default}} (범위: {{min}}–{{max}})",
-        "outOfRange": "{{min}}에서 {{max}} 사이의 값을 입력하세요"
-      },
-      "copyToUser": "다른 사용자에게 할당량 복사...",
-      "copyDialog": {
-        "title": "할당량 복사",
-        "sourceLabel": "복사 원본",
-        "targetLabel": "복사 대상",
-        "field": "설정",
-        "sourceValue": "원본 값",
-        "targetValue": "대상의 현재 값",
-        "systemDefault": "시스템 기본값",
-        "notCopied": "이 섹션에서 원본은 시스템 기본값을 사용하므로 복사할 내용이 없습니다.",
-        "overwriteWarning": "복사하면 대상 사용자의 기존 사용자 지정 할당량을 덮어씁니다.",
-        "nothingToCopy": "이 사용자에게는 복사할 사용자 지정 할당량이 없습니다.",
-        "loadFailed": "할당량을 불러오지 못했습니다.",
-        "copyButton": "할당량 복사",
-        "success": "{{email}}에게 할당량을 복사했습니다.",
-        "failed": "할당량을 복사하지 못했습니다 (HTTP {{status}}).",
-        "failedGeneric": "할당량을 복사하지 못했습니다."
-      }
+      "webhookTitle": "Webhook 제한"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "시스템 설정",
       "noSettings": "설정을 찾을 수 없습니다.",
       "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
+      "reencrypt": {
+        "button": "저장된 설정 다시 암호화...",
+        "confirmButton": "다시 암호화",
+        "confirmMessage": "이 작업은 비밀로 분류된 모든 설정을 현재 암호화 키로 다시 기록하여, 암호화가 활성화되기 전에 저장된 값이 저장 시 암호화되도록 합니다. 다시 암호화할 수 없는 설정은 보고되지만 작업이 중단되지는 않습니다. 여러 번 실행해도 안전합니다.",
+        "confirmTitle": "저장된 설정을 다시 암호화하시겠습니까?",
+        "error": "다시 암호화하지 못했습니다 (HTTP {{status}}).",
+        "errorGeneric": "다시 암호화하지 못했습니다",
+        "partial": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다. {{failed}}개 실패. 자세한 내용은 로그를 확인하세요.",
+        "success": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다."
+      },
       "saveTooltip": "변경 사항 저장",
       "sources": {
         "config": "구성 파일",
@@ -379,16 +389,6 @@
         "int": "정수",
         "json": "JSON",
         "string": "문자열"
-      },
-      "reencrypt": {
-        "button": "저장된 설정 다시 암호화...",
-        "confirmTitle": "저장된 설정을 다시 암호화하시겠습니까?",
-        "confirmMessage": "이 작업은 비밀로 분류된 모든 설정을 현재 암호화 키로 다시 기록하여, 암호화가 활성화되기 전에 저장된 값이 저장 시 암호화되도록 합니다. 다시 암호화할 수 없는 설정은 보고되지만 작업이 중단되지는 않습니다. 여러 번 실행해도 안전합니다.",
-        "confirmButton": "다시 암호화",
-        "success": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다.",
-        "partial": "설정 {{total}}개 중 {{reencrypted}}개를 다시 암호화했습니다. {{failed}}개 실패. 자세한 내용은 로그를 확인하세요.",
-        "error": "다시 암호화하지 못했습니다 (HTTP {{status}}).",
-        "errorGeneric": "다시 암호화하지 못했습니다"
       }
     },
     "subtitle": "시스템 설정 및 구성을 관리합니다.",

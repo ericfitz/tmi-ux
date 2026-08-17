@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "העתקת מכסות",
+        "failed": "העתקת המכסות נכשלה (HTTP {{status}}).",
+        "failedGeneric": "העתקת המכסות נכשלה.",
+        "field": "הגדרה",
+        "loadFailed": "לא ניתן לטעון את המכסות.",
+        "notCopied": "המקור משתמש בברירות המחדל של המערכת בקטע זה; אין מה להעתיק.",
+        "nothingToCopy": "למשתמש זה אין מכסות מותאמות אישית להעתקה.",
+        "overwriteWarning": "ההעתקה דורסת את המכסות המותאמות אישית הקיימות של משתמש היעד.",
+        "sourceLabel": "העתקה מ",
+        "sourceValue": "ערך המקור",
+        "success": "המכסות הועתקו אל {{email}}.",
+        "systemDefault": "ברירת מחדל של המערכת",
+        "targetLabel": "העתקה אל",
+        "targetValue": "הערך הנוכחי של היעד",
+        "title": "העתקת מכסות"
+      },
+      "copyToUser": "העתקת מכסות למשתמש אחר...",
       "default": "ברירת מחדל",
       "deleteTooltip": "הסר מכסה מותאמת אישית (חזור לברירות מחדל)",
       "eventsPerMinute": "אירועים לדקה",
       "filterLabel": "סנן מכסות",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או מזהה משתמש",
+      "hint": {
+        "defaultAndRange": "ברירת מחדל: {{default}} (טווח: {{min}}–{{max}})",
+        "outOfRange": "יש להזין ערך בין {{min}} ל-{{max}}"
+      },
       "maxSubscriptions": "מנויים מרביים",
       "noUserAPIQuotas": "לא נמצאו מכסות API מותאמות אישית.",
       "noWebhookQuotas": "לא נמצאו מכסות webhook מותאמות אישית.",
@@ -269,29 +291,7 @@
       "subtitle": "הגדר מגבלות קצב ומכסות למשתמשים.",
       "title": "ניהול מכסות",
       "userAPITitle": "מגבלות קצב API",
-      "webhookTitle": "מגבלות Webhook",
-      "hint": {
-        "defaultAndRange": "ברירת מחדל: {{default}} (טווח: {{min}}–{{max}})",
-        "outOfRange": "יש להזין ערך בין {{min}} ל-{{max}}"
-      },
-      "copyToUser": "העתקת מכסות למשתמש אחר...",
-      "copyDialog": {
-        "title": "העתקת מכסות",
-        "sourceLabel": "העתקה מ",
-        "targetLabel": "העתקה אל",
-        "field": "הגדרה",
-        "sourceValue": "ערך המקור",
-        "targetValue": "הערך הנוכחי של היעד",
-        "systemDefault": "ברירת מחדל של המערכת",
-        "notCopied": "המקור משתמש בברירות המחדל של המערכת בקטע זה; אין מה להעתיק.",
-        "overwriteWarning": "ההעתקה דורסת את המכסות המותאמות אישית הקיימות של משתמש היעד.",
-        "nothingToCopy": "למשתמש זה אין מכסות מותאמות אישית להעתקה.",
-        "loadFailed": "לא ניתן לטעון את המכסות.",
-        "copyButton": "העתקת מכסות",
-        "success": "המכסות הועתקו אל {{email}}.",
-        "failed": "העתקת המכסות נכשלה (HTTP {{status}}).",
-        "failedGeneric": "העתקת המכסות נכשלה."
-      }
+      "webhookTitle": "מגבלות Webhook"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "הגדרות מערכת",
       "noSettings": "לא נמצאו הגדרות.",
       "readOnlyTooltip": "הגדרה זו לקריאה בלבד ולא ניתן לשנות אותה כאן",
+      "reencrypt": {
+        "button": "הצפנה מחדש של ההגדרות המאוחסנות...",
+        "confirmButton": "הצפנה מחדש",
+        "confirmMessage": "פעולה זו כותבת מחדש את כל ההגדרות המסווגות כסודיות באמצעות מפתח ההצפנה הנוכחי, כך שערכים שנשמרו לפני הפעלת ההצפנה יהיו מוצפנים במנוחה. הגדרות שלא ניתן להצפין מחדש מדווחות אך אינן עוצרות את הפעולה. בטוח להריץ פעולה זו יותר מפעם אחת.",
+        "confirmTitle": "להצפין מחדש את ההגדרות המאוחסנות?",
+        "error": "ההצפנה מחדש נכשלה (HTTP {{status}}).",
+        "errorGeneric": "ההצפנה מחדש נכשלה",
+        "partial": "הוצפנו מחדש {{reencrypted}} מתוך {{total}} הגדרות; {{failed}} נכשלו. פרטים ביומן.",
+        "success": "הוצפנו מחדש {{reencrypted}} מתוך {{total}} הגדרות."
+      },
       "saveTooltip": "שמור שינויים",
       "sources": {
         "config": "קובץ תצורה",
@@ -379,16 +389,6 @@
         "int": "מספר שלם",
         "json": "JSON",
         "string": "מחרוזת"
-      },
-      "reencrypt": {
-        "button": "הצפנה מחדש של ההגדרות המאוחסנות...",
-        "confirmTitle": "להצפין מחדש את ההגדרות המאוחסנות?",
-        "confirmMessage": "פעולה זו כותבת מחדש את כל ההגדרות המסווגות כסודיות באמצעות מפתח ההצפנה הנוכחי, כך שערכים שנשמרו לפני הפעלת ההצפנה יהיו מוצפנים במנוחה. הגדרות שלא ניתן להצפין מחדש מדווחות אך אינן עוצרות את הפעולה. בטוח להריץ פעולה זו יותר מפעם אחת.",
-        "confirmButton": "הצפנה מחדש",
-        "success": "הוצפנו מחדש {{reencrypted}} מתוך {{total}} הגדרות.",
-        "partial": "הוצפנו מחדש {{reencrypted}} מתוך {{total}} הגדרות; {{failed}} נכשלו. פרטים ביומן.",
-        "error": "ההצפנה מחדש נכשלה (HTTP {{status}}).",
-        "errorGeneric": "ההצפנה מחדש נכשלה"
       }
     },
     "subtitle": "נהל הגדרות מערכת ותצורות.",

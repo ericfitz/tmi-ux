@@ -254,11 +254,33 @@
         "provider": "{{common.provider}}",
         "user": "{{common.subjectTypes.user}}"
       },
+      "copyDialog": {
+        "copyButton": "Kontingente kopieren",
+        "failed": "Kopieren der Kontingente fehlgeschlagen (HTTP {{status}}).",
+        "failedGeneric": "Kopieren der Kontingente fehlgeschlagen.",
+        "field": "Einstellung",
+        "loadFailed": "Kontingente konnten nicht geladen werden.",
+        "notCopied": "Die Quelle verwendet in diesem Abschnitt Systemstandards; nichts zu kopieren.",
+        "nothingToCopy": "Dieser Benutzer hat keine benutzerdefinierten Kontingente zum Kopieren.",
+        "overwriteWarning": "Beim Kopieren werden die vorhandenen benutzerdefinierten Kontingente des Zielbenutzers überschrieben.",
+        "sourceLabel": "Kopieren von",
+        "sourceValue": "Quellwert",
+        "success": "Kontingente nach {{email}} kopiert.",
+        "systemDefault": "Systemstandard",
+        "targetLabel": "Kopieren nach",
+        "targetValue": "Aktueller Zielwert",
+        "title": "Kontingente kopieren"
+      },
+      "copyToUser": "Kontingente auf anderen Benutzer kopieren...",
       "default": "Standard",
       "deleteTooltip": "Benutzerdefiniertes Kontingent entfernen (auf Standard zurücksetzen)",
       "eventsPerMinute": "Ereignisse pro Minute",
       "filterLabel": "Kontingente filtern",
       "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Benutzer-ID suchen",
+      "hint": {
+        "defaultAndRange": "Standard: {{default}} (Bereich: {{min}}–{{max}})",
+        "outOfRange": "Wert zwischen {{min}} und {{max}} eingeben"
+      },
       "maxSubscriptions": "Maximale Abonnements",
       "noUserAPIQuotas": "Keine benutzerdefinierten API-Kontingente gefunden.",
       "noWebhookQuotas": "Keine benutzerdefinierten Webhook-Kontingente gefunden.",
@@ -269,29 +291,7 @@
       "subtitle": "Ratenlimits und Kontingente für Benutzer konfigurieren.",
       "title": "Kontingente verwalten",
       "userAPITitle": "API-Ratenlimits",
-      "webhookTitle": "Webhook-Limits",
-      "hint": {
-        "defaultAndRange": "Standard: {{default}} (Bereich: {{min}}–{{max}})",
-        "outOfRange": "Wert zwischen {{min}} und {{max}} eingeben"
-      },
-      "copyToUser": "Kontingente auf anderen Benutzer kopieren...",
-      "copyDialog": {
-        "title": "Kontingente kopieren",
-        "sourceLabel": "Kopieren von",
-        "targetLabel": "Kopieren nach",
-        "field": "Einstellung",
-        "sourceValue": "Quellwert",
-        "targetValue": "Aktueller Zielwert",
-        "systemDefault": "Systemstandard",
-        "notCopied": "Die Quelle verwendet in diesem Abschnitt Systemstandards; nichts zu kopieren.",
-        "overwriteWarning": "Beim Kopieren werden die vorhandenen benutzerdefinierten Kontingente des Zielbenutzers überschrieben.",
-        "nothingToCopy": "Dieser Benutzer hat keine benutzerdefinierten Kontingente zum Kopieren.",
-        "loadFailed": "Kontingente konnten nicht geladen werden.",
-        "copyButton": "Kontingente kopieren",
-        "success": "Kontingente nach {{email}} kopiert.",
-        "failed": "Kopieren der Kontingente fehlgeschlagen (HTTP {{status}}).",
-        "failedGeneric": "Kopieren der Kontingente fehlgeschlagen."
-      }
+      "webhookTitle": "Webhook-Limits"
     },
     "sections": {
       "addons": {
@@ -365,6 +365,16 @@
       "listTitle": "Systemeinstellungen",
       "noSettings": "Keine Einstellungen gefunden.",
       "readOnlyTooltip": "Diese Einstellung ist schreibgeschützt und kann hier nicht geändert werden",
+      "reencrypt": {
+        "button": "Gespeicherte Einstellungen neu verschlüsseln...",
+        "confirmButton": "Neu verschlüsseln",
+        "confirmMessage": "Dabei werden alle als geheim eingestuften Einstellungen mit dem aktuellen Verschlüsselungsschlüssel neu geschrieben, sodass Werte, die vor der Aktivierung der Verschlüsselung gespeichert wurden, im Ruhezustand verschlüsselt sind. Einstellungen, die nicht neu verschlüsselt werden können, werden gemeldet, ohne den Vorgang zu stoppen. Der Vorgang kann gefahrlos mehrfach ausgeführt werden.",
+        "confirmTitle": "Gespeicherte Einstellungen neu verschlüsseln?",
+        "error": "Neuverschlüsselung fehlgeschlagen (HTTP {{status}}).",
+        "errorGeneric": "Neuverschlüsselung fehlgeschlagen",
+        "partial": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt; {{failed}} fehlgeschlagen. Details siehe Protokoll.",
+        "success": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt."
+      },
       "saveTooltip": "Änderungen speichern",
       "sources": {
         "config": "Konfigurationsdatei",
@@ -379,16 +389,6 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
-      },
-      "reencrypt": {
-        "button": "Gespeicherte Einstellungen neu verschlüsseln...",
-        "confirmTitle": "Gespeicherte Einstellungen neu verschlüsseln?",
-        "confirmMessage": "Dabei werden alle als geheim eingestuften Einstellungen mit dem aktuellen Verschlüsselungsschlüssel neu geschrieben, sodass Werte, die vor der Aktivierung der Verschlüsselung gespeichert wurden, im Ruhezustand verschlüsselt sind. Einstellungen, die nicht neu verschlüsselt werden können, werden gemeldet, ohne den Vorgang zu stoppen. Der Vorgang kann gefahrlos mehrfach ausgeführt werden.",
-        "confirmButton": "Neu verschlüsseln",
-        "success": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt.",
-        "partial": "{{reencrypted}} von {{total}} Einstellungen neu verschlüsselt; {{failed}} fehlgeschlagen. Details siehe Protokoll.",
-        "error": "Neuverschlüsselung fehlgeschlagen (HTTP {{status}}).",
-        "errorGeneric": "Neuverschlüsselung fehlgeschlagen"
       }
     },
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten.",
