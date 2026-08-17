@@ -28,8 +28,8 @@ export class AppSvgOptimizationService {
           name: 'preset-default',
           params: {
             overrides: {
-              // Keep viewBox - critical for X6 compatibility
-              removeViewBox: false,
+              // viewBox is preserved by default in svgo 4 - preset-default no longer
+              // includes removeViewBox, so no override is needed (or accepted) for it
               // Don't remove unknown elements/attributes yet - we'll handle X6-specific ones
               removeUnknownsAndDefaults: false,
               // Keep important structural elements
