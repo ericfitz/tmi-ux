@@ -24,6 +24,7 @@
         <div class="diagram-swatch-container">
           <button
             class="color-swatch diagram-swatch"
+            data-testid="color-picker-diagram-swatch"
             [class.selected]="isSelected(entry.color, 'diagram', entry.position)"
             [style.background-color]="entry.color"
             [disabled]="disabled"
@@ -43,6 +44,7 @@
       @if (canAddDiagramColor) {
         <button
           class="color-swatch empty-slot"
+          data-testid="color-picker-empty-slot"
           [disabled]="disabled"
           [matTooltip]="'dfd.stylePanel.addDiagramColor' | transloco"
           (click)="onEmptySlotClick()"
@@ -59,6 +61,7 @@
       <mat-label>{{ 'dfd.stylePanel.hexColor' | transloco }}</mat-label>
       <input
         matInput
+        data-testid="color-picker-hex-input"
         [disabled]="!isHexInputEnabled"
         [ngModel]="hexInputValue"
         (ngModelChange)="onHexInput($event)"

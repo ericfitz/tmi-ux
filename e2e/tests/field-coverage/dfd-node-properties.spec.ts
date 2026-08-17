@@ -98,7 +98,7 @@ test.describe.serial('DFD Node Properties', () => {
     // Trigger cell:dblclick via X6 directly — dispatching native dblclick
     // against .x6-node is unreliable on freshly-rendered canvases, and the
     // graph handler is what we want to exercise.
-    await page.evaluate((id) => {
+    await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const cell = graph?.getCellById(id);
       if (cell) {
@@ -136,9 +136,14 @@ test.describe.serial('DFD Node Properties', () => {
     await dfdEditorPage.selectNodeByIndex(0);
     await ensureStylePanelOpen();
 
-    // The stroke tab should be visible by default (first tab)
-    // Find the hex input in the style panel and set a color
-    const hexInput = dfdEditorPage.stylePanel().locator('input[placeholder="#000000"]');
+    // The stroke tab is selected by default (first tab).
+    //
+    // The hex input edits the selected *diagram palette slot*, not the node
+    // directly, so it stays disabled until a slot is claimed. Selecting a node
+    // is not sufficient — see issue #831.
+    await dfdEditorPage.enterDiagramPaletteMode();
+
+    const hexInput = dfdEditorPage.colorPickerHexInput();
     await expect(hexInput).toBeVisible({ timeout: 5000 });
 
     // Clear and type a red color
@@ -148,7 +153,7 @@ test.describe.serial('DFD Node Properties', () => {
     await page.waitForTimeout(500);
 
     // Verify the stroke color was applied to the node's body/stroke attr
-    const strokeColor = await page.evaluate((id) => {
+    const strokeColor = await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const node = graph?.getCellById(id);
       return node?.getAttrByPath('body/stroke') ?? null;
@@ -167,8 +172,13 @@ test.describe.serial('DFD Node Properties', () => {
     await fillTab.click();
     await page.waitForTimeout(300);
 
-    // Find the hex input and set blue color
-    const hexInput = dfdEditorPage.stylePanel().locator('input[placeholder="#000000"]');
+    // The fill tab hosts its own color-picker instance with its own selection
+    // state, so it needs its own palette-slot claim (issue #831).
+    // enterDiagramPaletteMode() also waits out the tab-switch animation, so the
+    // outgoing stroke tab's picker can no longer make the locator ambiguous.
+    await dfdEditorPage.enterDiagramPaletteMode();
+
+    const hexInput = dfdEditorPage.colorPickerHexInput();
     await expect(hexInput).toBeVisible({ timeout: 5000 });
 
     await hexInput.fill('');
@@ -177,7 +187,7 @@ test.describe.serial('DFD Node Properties', () => {
     await page.waitForTimeout(500);
 
     // Verify the fill color
-    const fillColor = await page.evaluate((id) => {
+    const fillColor = await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const node = graph?.getCellById(id);
       return node?.getAttrByPath('body/fill') ?? null;
@@ -207,7 +217,7 @@ test.describe.serial('DFD Node Properties', () => {
     await page.waitForTimeout(500);
 
     // Verify fill opacity on the node (should be 0.5 = 50/100)
-    const fillOpacity = await page.evaluate((id) => {
+    const fillOpacity = await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const node = graph?.getCellById(id);
       return node?.getAttrByPath('body/fillOpacity') ?? null;
@@ -238,7 +248,7 @@ test.describe.serial('DFD Node Properties', () => {
     await expect(positionCells.first()).toHaveClass(/active/);
 
     // Verify via the graph model that text refX/refY changed
-    const textAttrs = await page.evaluate((id) => {
+    const textAttrs = await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       const node = graph?.getCellById(id);
       const textAttr = node?.getAttrs()?.['text'] ?? {};

@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 /**
  * Serializable graph node data returned from page.evaluate().
@@ -39,8 +39,7 @@ export class DfdEditorPage {
   readonly closeButton = () => this.page.getByTestId('close-diagram-button');
 
   // --- Locators: node creation ---
-  readonly addSecurityBoundaryButton = () =>
-    this.page.getByTestId('add-security-boundary-button');
+  readonly addSecurityBoundaryButton = () => this.page.getByTestId('add-security-boundary-button');
   readonly addTextBoxButton = () => this.page.getByTestId('add-text-box-button');
 
   // --- Locators: panel toggles ---
@@ -82,6 +81,48 @@ export class DfdEditorPage {
   readonly stylePanel = () => this.page.locator('app-style-panel .style-panel');
   readonly iconPickerPanel = () => this.page.locator('app-icon-picker-panel .icon-picker-panel');
 
+  // --- Locators: style panel color picker ---
+  // Two notes on these locators:
+  //
+  // 1. The hex input is a diagram-palette *slot* editor: it stays disabled until
+  //    a diagram palette entry is selected (ColorPickerComponent.isHexInputEnabled),
+  //    so tests must claim a slot before typing. See enterDiagramPaletteMode().
+  // 2. They are scoped to the *active* tab body, not the whole style panel. The
+  //    stroke and fill tabs each host their own app-color-picker, and MatTabBody
+  //    only detaches the outgoing tab's content after its leave animation, so a
+  //    panel-wide locator can briefly match two elements and fail Playwright's
+  //    strict mode instead of retrying.
+  readonly styleTabBody = () => this.stylePanel().locator('.mat-mdc-tab-body-active');
+  readonly colorPickerEmptySlot = () => this.styleTabBody().getByTestId('color-picker-empty-slot');
+  readonly colorPickerDiagramSwatches = () =>
+    this.styleTabBody().getByTestId('color-picker-diagram-swatch');
+  readonly colorPickerHexInput = () => this.styleTabBody().getByTestId('color-picker-hex-input');
+
+  /**
+   * Put the visible color picker into diagram-palette editing mode so the hex
+   * input becomes usable.
+   *
+   * Claims a new diagram palette slot when one is free (the "+" empty slot,
+   * which selects the slot it creates), otherwise re-selects the first existing
+   * swatch. Each color-picker instance tracks its own selection, so the stroke
+   * and fill tabs must each be put into this mode independently.
+   *
+   * Returns once the hex input is actually enabled.
+   */
+  async enterDiagramPaletteMode(): Promise<void> {
+    // Settle on a single active tab body first, so the tab-switch animation
+    // cannot make the child locators ambiguous.
+    await expect(this.colorPickerHexInput()).toHaveCount(1, { timeout: 5000 });
+
+    const emptySlot = this.colorPickerEmptySlot();
+    if (await emptySlot.count()) {
+      await emptySlot.click();
+    } else {
+      await this.colorPickerDiagramSwatches().first().click();
+    }
+    await expect(this.colorPickerHexInput()).toBeEnabled({ timeout: 5000 });
+  }
+
   /**
    * Select a node in the graph via the X6 graph API.
    * Uses graph.select() for stability over DOM clicks during layout animations.
@@ -90,11 +131,12 @@ export class DfdEditorPage {
   async selectNodeByIndex(index: number): Promise<void> {
     // Select via the graph API to avoid SVG element stability issues
     // during X6 layout animations
-    await this.page.evaluate((idx) => {
+    await this.page.evaluate(idx => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) throw new Error('Graph not available');
       const nodes = graph.getNodes();
-      if (idx >= nodes.length) throw new Error(`Node index ${idx} out of range (${nodes.length} nodes)`);
+      if (idx >= nodes.length)
+        throw new Error(`Node index ${idx} out of range (${nodes.length} nodes)`);
       graph.cleanSelection();
       graph.select(nodes[idx]);
     }, index);
@@ -108,7 +150,7 @@ export class DfdEditorPage {
    */
   // SEM@23452d4b0c244e162aa7e3b871d29b0c81a18fda: select a graph node by its stable ID via the X6 graph API
   async selectNodeById(nodeId: string): Promise<void> {
-    await this.page.evaluate((id) => {
+    await this.page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) throw new Error('Graph not available');
       const node = graph.getCellById(id);
@@ -172,7 +214,7 @@ export class DfdEditorPage {
 
   // SEM@983bf3bdc607227f89bbe35498c49fedf98cfb05: fetch a single diagram node by ID, returning null if absent (pure)
   async getNodeById(nodeId: string): Promise<GraphNodeData | null> {
-    return this.page.evaluate((id) => {
+    return this.page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) return null;
       const node = graph.getCellById(id);
@@ -193,7 +235,7 @@ export class DfdEditorPage {
 
   // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: fetch IDs of child nodes embedded within a parent node (pure)
   async getEmbeddedChildren(parentId: string): Promise<string[]> {
-    return this.page.evaluate((pid) => {
+    return this.page.evaluate(pid => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) return [];
       const parent = graph.getCellById(pid);
@@ -202,7 +244,8 @@ export class DfdEditorPage {
       const children = (parent.getChildren() || []).map((c: any) => c.id);
       if (children.length > 0) return children;
       // Fallback: find nodes whose parentId matches
-      return graph.getNodes()
+      return graph
+        .getNodes()
         .filter((n: any) => n.getParentId?.() === pid)
         .map((n: any) => n.id);
     }, parentId);
@@ -264,12 +307,13 @@ export class DfdEditorPage {
 
   // SEM@44bd53efcecf91cbf0bb74fe65b4c58a42305808: add a diagram node of a given type via the orchestrator and return its ID (mutates shared state)
   async addNodeViaOrchestrator(nodeType: string): Promise<string> {
-    const nodeId = await this.page.evaluate(async (type) => {
+    const nodeId = await this.page.evaluate(async type => {
       const orchestrator = (window as any).__e2e?.dfd?.orchestrator;
       if (!orchestrator) throw new Error('E2E bridge not available');
       return new Promise<string>((resolve, reject) => {
         orchestrator.addNode(type).subscribe({
-          next: (result: any) => resolve(result?.affectedCellIds?.[0] || result?.nodeId || result?.id || ''),
+          next: (result: any) =>
+            resolve(result?.affectedCellIds?.[0] || result?.nodeId || result?.id || ''),
           error: (err: any) => reject(err instanceof Error ? err : new Error(String(err))),
         });
       });
@@ -347,10 +391,7 @@ export class DfdEditorPage {
   // events that X6 ignores. These helpers drive the same UpdateNodeOperation
   // that a real drag or resize produces at the app layer.
   // SEM@1806fa624a4ed61d940b72150f00a316059fd393: update a diagram node's position via the orchestrator (mutates shared state)
-  async moveNodeViaOrchestrator(
-    nodeId: string,
-    position: { x: number; y: number },
-  ): Promise<void> {
+  async moveNodeViaOrchestrator(nodeId: string, position: { x: number; y: number }): Promise<void> {
     await this._updateNodeViaOrchestrator(nodeId, { position });
   }
 
