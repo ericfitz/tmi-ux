@@ -849,6 +849,7 @@
     "email": "邮箱",
     "emailLabel": "电子邮件地址",
     "error": "错误",
+    "exportAsJpeg": "导出为 JPEG",
     "exportAsPng": "导出为 PNG",
     "exportAsSvg": "导出为 SVG",
     "false": "假",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "数据流图编辑器",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "导出为 JPEG"
-      },
       "tooltips": {
         "addActor": "添加角色",
         "addProcess": "添加处理",

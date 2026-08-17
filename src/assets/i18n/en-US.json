@@ -997,6 +997,7 @@
     "email": "Email",
     "emailLabel": "Email address",
     "error": "Error",
+    "exportAsJpeg": "Export as JPEG",
     "exportAsPng": "Export as PNG",
     "exportAsSvg": "Export as SVG",
     "false": "False",
@@ -1609,9 +1610,6 @@
     },
     "pageTitle": "Data flow diagram editor",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "Export as JPEG"
-      },
       "tooltips": {
         "addActor": "Add actor",
         "addActor.comment": "Action description on a tooltip (typically for an icon button): 'Add actor'.",

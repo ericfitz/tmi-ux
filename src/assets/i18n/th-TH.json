@@ -849,6 +849,7 @@
     "email": "อีเมล",
     "emailLabel": "ที่อยู่อีเมล",
     "error": "ข้อผิดพลาด",
+    "exportAsJpeg": "ส่งออกเป็น JPEG",
     "exportAsPng": "ส่งออกเป็น PNG",
     "exportAsSvg": "ส่งออกเป็น SVG",
     "false": "เท็จ",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "ตัวแก้ไขแผนภาพการไหลของข้อมูล",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "ส่งออกเป็น JPEG"
-      },
       "tooltips": {
         "addActor": "เพิ่มผู้กระทำ",
         "addProcess": "เพิ่มกระบวนการ",

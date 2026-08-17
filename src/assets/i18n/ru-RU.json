@@ -849,6 +849,7 @@
     "email": "Электронная почта",
     "emailLabel": "Адрес электронной почты",
     "error": "Ошибка",
+    "exportAsJpeg": "Экспортировать как JPEG",
     "exportAsPng": "Экспортировать как PNG",
     "exportAsSvg": "Экспортировать как SVG",
     "false": "Ложь",
@@ -1353,9 +1354,6 @@
     },
     "pageTitle": "Редактор диаграмм потоков данных",
     "toolbar": {
-      "exportMenu": {
-        "exportAsJpeg": "Экспортировать как JPEG"
-      },
       "tooltips": {
         "addActor": "Добавить субъекта",
         "addProcess": "Добавить процесс",
