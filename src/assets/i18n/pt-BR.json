@@ -2388,9 +2388,12 @@
       "noResponsesFiltered": "Nenhuma resposta corresponde aos seus filtros.",
       "noResponsesTitle": "Nenhuma resposta",
       "noResponsesToTriage": "Não há respostas de pesquisa para triagem.",
+      "noSearchMatches": "A busca abrange apenas as respostas carregadas nesta página. Tente outra página ou limpe a busca.",
+      "noSearchMatchesTitle": "Nenhuma correspondência",
       "notSubmitted": "Não enviada",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Buscar por autor ou pesquisa...",
+      "searchScopeHint": "{{count}} de {{total}} respostas nesta página correspondem.",
       "submitted": "Enviada",
       "submitter": "Remetente"
     },

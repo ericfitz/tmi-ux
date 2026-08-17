@@ -2357,9 +2357,12 @@
       "noResponsesFiltered": "אין תגובות התואמות את המסננים שלך.",
       "noResponsesTitle": "אין תגובות",
       "noResponsesToTriage": "אין תגובות סקר לסינון.",
+      "noSearchMatches": "החיפוש מכסה רק את התשובות שנטענו בדף זה. נסו דף אחר, או נקו את החיפוש.",
+      "noSearchMatchesTitle": "אין התאמות",
       "notSubmitted": "לא הוגש",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "חיפוש לפי מגיש או סקר...",
+      "searchScopeHint": "{{count}} מתוך {{total}} תשובות בדף זה מתאימות.",
       "submitted": "הוגש",
       "submitter": "מגיש"
     },

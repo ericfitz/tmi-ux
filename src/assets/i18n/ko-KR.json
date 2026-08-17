@@ -2357,9 +2357,12 @@
       "noResponsesFiltered": "필터와 일치하는 응답이 없습니다.",
       "noResponsesTitle": "응답 없음",
       "noResponsesToTriage": "분류할 설문 응답이 없습니다.",
+      "noSearchMatches": "검색은 이 페이지에 불러온 응답만 대상으로 합니다. 다른 페이지를 확인하거나 검색을 지우세요.",
+      "noSearchMatchesTitle": "일치 항목 없음",
       "notSubmitted": "미제출",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "제출자 또는 설문조사로 검색...",
+      "searchScopeHint": "이 페이지의 {{total}}개 중 {{count}}개가 일치합니다.",
       "submitted": "제출됨",
       "submitter": "제출자"
     },

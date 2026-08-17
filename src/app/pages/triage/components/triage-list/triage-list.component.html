@@ -36,15 +36,21 @@
           <input
             matInput
             [(ngModel)]="filters.searchTerm"
-            (ngModelChange)="onFilterChange()"
+            (ngModelChange)="onSearchTermChange()"
             [placeholder]="'triage.list.searchPlaceholder' | transloco"
             data-testid="triage-search-input"
           />
+          @if (isSearchActive) {
+            <mat-hint data-testid="triage-search-scope-hint">{{
+              'triage.list.searchScopeHint'
+                | transloco: { count: visibleResponseCount, total: dataSource.data.length }
+            }}</mat-hint>
+          }
           @if (filters.searchTerm) {
             <button
               matSuffix
               mat-icon-button
-              (click)="filters.searchTerm = ''; onFilterChange()"
+              (click)="filters.searchTerm = ''; onSearchTermChange()"
               [matTooltip]="'common.clearSearch' | transloco"
               [attr.aria-label]="'common.clearSearch' | transloco"
             >
@@ -135,6 +141,39 @@
           } @else {
             <p>{{ 'triage.list.noResponsesToTriage' | transloco }}</p>
           }
+        </div>
+      } @else if (visibleResponseCount === 0) {
+        <!--
+          The server returned rows but the client-side search matched none of
+          them. The paginator stays mounted so the reviewer can page on to look
+          for matches, and clearing just the search does not disturb the
+          status/survey/confidential filters or refetch.
+        -->
+        <div class="responses-table-container">
+          <div class="empty-state" data-testid="triage-no-search-matches">
+            <mat-icon>search_off</mat-icon>
+            <h2>{{ 'triage.list.noSearchMatchesTitle' | transloco }}</h2>
+            <p>{{ 'triage.list.noSearchMatches' | transloco }}</p>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="clearSearch()"
+              data-testid="triage-clear-search-button"
+            >
+              {{ 'common.clearSearch' | transloco }}
+            </button>
+          </div>
+
+          <mat-paginator
+            [length]="totalResponses"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+            data-testid="triage-paginator"
+          >
+          </mat-paginator>
         </div>
       } @else {
         <div class="responses-table-container">

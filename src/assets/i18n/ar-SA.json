@@ -2361,9 +2361,12 @@
       "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية.",
       "noResponsesTitle": "لا توجد ردود",
       "noResponsesToTriage": "لا توجد ردود استبيانات للفرز.",
+      "noSearchMatches": "يشمل البحث الردود المحمَّلة في هذه الصفحة فقط. جرِّب صفحة أخرى أو امسح البحث.",
+      "noSearchMatchesTitle": "لا توجد تطابقات",
       "notSubmitted": "لم يتم الإرسال",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "البحث حسب مقدم الطلب أو الاستبيان...",
+      "searchScopeHint": "مطابقة {{count}} من {{total}} استجابة في هذه الصفحة.",
       "submitted": "تم الإرسال",
       "submitter": "المرسل"
     },

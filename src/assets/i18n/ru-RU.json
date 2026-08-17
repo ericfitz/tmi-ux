@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам.",
       "noResponsesTitle": "Нет ответов",
       "noResponsesToTriage": "Нет ответов на опросы для сортировки.",
+      "noSearchMatches": "Поиск охватывает только ответы, загруженные на этой странице. Попробуйте другую страницу или очистите поиск.",
+      "noSearchMatchesTitle": "Нет совпадений",
       "notSubmitted": "Не отправлено",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Поиск по отправителю или опросу...",
+      "searchScopeHint": "Совпадений: {{count}} из {{total}} ответов на этой странице.",
       "submitted": "Отправлено",
       "submitter": "Отправитель"
     },

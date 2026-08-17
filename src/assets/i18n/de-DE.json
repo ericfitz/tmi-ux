@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "Keine Antworten stimmen mit Ihren Filtern überein.",
       "noResponsesTitle": "Keine Antworten",
       "noResponsesToTriage": "Es gibt keine Umfrageantworten zur Sichtung.",
+      "noSearchMatches": "Die Suche erfasst nur die auf dieser Seite geladenen Antworten. Versuchen Sie eine andere Seite oder löschen Sie die Suche.",
+      "noSearchMatchesTitle": "Keine Treffer",
       "notSubmitted": "Nicht eingereicht",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Nach Einreicher oder Umfrage suchen...",
+      "searchScopeHint": "{{count}} von {{total}} Antworten auf dieser Seite stimmen überein.",
       "submitted": "Eingereicht",
       "submitter": "Einreichender"
     },

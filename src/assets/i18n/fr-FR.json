@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "Aucune réponse ne correspond à vos filtres.",
       "noResponsesTitle": "Aucune réponse",
       "noResponsesToTriage": "Il n'y a aucune réponse à l'enquête à trier.",
+      "noSearchMatches": "La recherche ne porte que sur les réponses chargées sur cette page. Essayez une autre page ou effacez la recherche.",
+      "noSearchMatchesTitle": "Aucune correspondance",
       "notSubmitted": "Non soumise",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Rechercher par soumetteur ou enquête...",
+      "searchScopeHint": "{{count}} réponses sur {{total}} correspondent sur cette page.",
       "submitted": "Soumise",
       "submitter": "Soumetteur"
     },

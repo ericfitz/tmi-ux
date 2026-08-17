@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "آپ کے فلٹرز سے کوئی جوابات مماثل نہیں۔",
       "noResponsesTitle": "کوئی جوابات نہیں",
       "noResponsesToTriage": "ٹریاج کرنے کے لیے کوئی سروے جوابات نہیں ہیں۔",
+      "noSearchMatches": "تلاش صرف اس صفحے پر لوڈ شدہ جوابات تک محدود ہے۔ دوسرا صفحہ دیکھیں، یا تلاش صاف کریں۔",
+      "noSearchMatchesTitle": "کوئی مماثلت نہیں",
       "notSubmitted": "جمع نہیں کرایا",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "جمع کرانے والے یا سروے کے ذریعے تلاش کریں...",
+      "searchScopeHint": "اس صفحے کے {{total}} جوابات میں سے {{count}} مماثل ہیں۔",
       "submitted": "جمع کرایا گیا",
       "submitter": "جمع کرانے والا"
     },
