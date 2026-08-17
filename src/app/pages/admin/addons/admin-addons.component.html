@@ -7,7 +7,12 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="onClose()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>

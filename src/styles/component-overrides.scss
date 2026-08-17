@@ -100,6 +100,57 @@ $dark-colorblind-theme: mat.define-theme(
   @include mat.button-color($dark-colorblind-theme, $color-variant: error);
 }
 
+/**
+ * Page / panel header close (X) buttons
+ *
+ * Renders the header dismiss action as white-on-red in all four palette
+ * combinations (light-normal, dark-normal, light-colorblind, dark-colorblind).
+ *
+ * This deliberately does NOT use mat.button-color(..., error) like .mat-error
+ * above. M3's error *role* inverts for dark themes — error resolves to a light
+ * tone (#ffb4a9) with dark on-error text — so the role-driven approach yields
+ * white-on-red only in the two light palettes. Pinning fixed tones from each
+ * theme's error ramp (40 background / 100 foreground, 30 on hover) keeps the
+ * treatment identical across light and dark. Nothing is hard-coded: the tones
+ * still come from the themed ramp, so the colorblind palettes correctly render
+ * their intentional Okabe-Ito vermillion (#9d4400) rather than red.
+ *
+ * Opt-in by class, never by icon selector: `close` is also the icon for
+ * clear-search, remove-chip and deny actions, which must keep default styling.
+ */
+@mixin close-button-tones($theme) {
+  --mat-icon-button-icon-color: #{mat.get-theme-color($theme, error, 100)};
+  --mat-icon-button-state-layer-color: #{mat.get-theme-color($theme, error, 100)};
+  --mat-icon-button-ripple-color: #{mat.get-theme-color($theme, error, 100)};
+
+  background-color: mat.get-theme-color($theme, error, 40);
+  color: mat.get-theme-color($theme, error, 100);
+
+  &:hover:not([disabled]) {
+    background-color: mat.get-theme-color($theme, error, 30);
+  }
+}
+
+// Default: Light + Normal
+.mat-mdc-icon-button.close-button {
+  @include close-button-tones($light-normal-theme);
+}
+
+// Light + Colorblind
+.colorblind-palette .mat-mdc-icon-button.close-button {
+  @include close-button-tones($light-colorblind-theme);
+}
+
+// Dark + Normal
+.dark-theme .mat-mdc-icon-button.close-button {
+  @include close-button-tones($dark-normal-theme);
+}
+
+// Dark + Colorblind
+.dark-theme.colorblind-palette .mat-mdc-icon-button.close-button {
+  @include close-button-tones($dark-colorblind-theme);
+}
+
 // =============================================================================
 // FORM FIELD STYLING
 // =============================================================================

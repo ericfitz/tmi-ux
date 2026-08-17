@@ -36,7 +36,12 @@
     >
       <mat-icon>content_copy</mat-icon>
     </button>
-    <button mat-icon-button (click)="close()" [matTooltip]="'common.close' | transloco">
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="close()"
+      [matTooltip]="'common.close' | transloco"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>
