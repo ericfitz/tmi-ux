@@ -215,6 +215,9 @@
     "dependencies": {
       "@antv/x6": "Pinned exact at 3.1.7: pnpm patch (patches/@antv__x6@3.1.7.patch) sets type:commonjs to fix upstream antvis/X6#5048 (package.json declares type:module over a CJS main build). Separately, the package's own es/ (ESM) build is unloadable by Node due to extensionless directory imports, which is why the patch targets type rather than redirecting main to es/index.js. A version bump invalidates the patch. Remove patch + relax pin when upstream ships a fix. See issue #446."
     },
+    "devDependencies": {
+      "@oxc-project/runtime": "Held back during dependency bumps -- do NOT auto-apply. It supplies oxc runtime helpers that must match the oxc transformer bundled inside rolldown/vite (vite ^8.2.1, @angular/build ^22.1.x). Forcing a version the tooling did not resolve on its own is silent rot: it is a 0.x package, so a minor is semver-breaking, and build/test/lint stay green even when the helper/transformer pairing is wrong. To move it: bump it together with vite/rolldown, then run a cold-boot `ng serve` smoke plus a real browser load -- the unit suite will not catch a mismatch. Dependabot will keep opening PRs for it; close them unless vite is moving in the same change."
+    },
     "pnpm.overrides": {
       "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed."
     }
