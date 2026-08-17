@@ -1,7 +1,12 @@
 <div class="port-label-popover" [style.left.px]="positionX" [style.top.px]="positionY">
   <div class="popover-header">
     <span class="popover-title">{{ 'dfd.portLabel.title' | transloco }}</span>
-    <button mat-icon-button [matTooltip]="'common.actions.close' | transloco" (click)="close()">
+    <button
+      mat-icon-button
+      class="close-button"
+      [matTooltip]="'common.close' | transloco"
+      (click)="close()"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>

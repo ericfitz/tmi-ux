@@ -10,7 +10,12 @@
     >
       <mat-icon>{{ sidePanelOpen ? 'right_panel_close' : 'right_panel_open' }}</mat-icon>
     </button>
-    <button mat-icon-button [matTooltip]="t('common.close')" (click)="navigateBack()">
+    <button
+      mat-icon-button
+      class="close-button"
+      [matTooltip]="t('common.close')"
+      (click)="navigateBack()"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </mat-toolbar>
