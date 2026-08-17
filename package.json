@@ -118,7 +118,7 @@
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
     "@material/material-color-utilities": "^0.4.0",
-    "@oxc-project/runtime": "^0.143.0",
+    "@oxc-project/runtime": "^0.144.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/angular": "^19.4.2",
     "@types/jsdom": "^28.0.3",
