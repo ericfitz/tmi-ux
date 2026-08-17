@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "No hay respuestas que coincidan con sus filtros.",
       "noResponsesTitle": "No hay respuestas",
       "noResponsesToTriage": "No hay respuestas de encuestas para clasificar.",
+      "noSearchMatches": "La búsqueda solo abarca las respuestas cargadas en esta página. Pruebe otra página o borre la búsqueda.",
+      "noSearchMatchesTitle": "Sin coincidencias",
       "notSubmitted": "No enviada",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Buscar por remitente o encuesta...",
+      "searchScopeHint": "Coinciden {{count}} de {{total}} respuestas en esta página.",
       "submitted": "Enviada",
       "submitter": "Remitente"
     },

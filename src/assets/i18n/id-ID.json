@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda.",
       "noResponsesTitle": "Tidak Ada Tanggapan",
       "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase.",
+      "noSearchMatches": "Pencarian hanya mencakup respons yang dimuat di halaman ini. Coba halaman lain, atau hapus pencarian.",
+      "noSearchMatchesTitle": "Tidak ada yang cocok",
       "notSubmitted": "Belum dikirim",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Cari berdasarkan pengirim atau survei...",
+      "searchScopeHint": "{{count}} dari {{total}} respons di halaman ini cocok.",
       "submitted": "Terkirim",
       "submitter": "Pengirim"
     },

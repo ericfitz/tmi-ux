@@ -2772,10 +2772,13 @@
       "noResponsesFiltered": "No responses match your filters.",
       "noResponsesTitle": "No responses",
       "noResponsesToTriage": "There are no survey responses to triage.",
+      "noSearchMatches": "The search only covers the responses loaded on this page. Try another page, or clear the search.",
+      "noSearchMatchesTitle": "No matches",
       "notSubmitted": "Not submitted",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Search by submitter or survey...",
       "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
+      "searchScopeHint": "Matching {{count}} of {{total}} responses on this page.",
       "submitted": "Submitted",
       "submitter": "Submitter"
     },

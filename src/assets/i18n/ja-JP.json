@@ -2361,9 +2361,12 @@
       "noResponsesFiltered": "フィルターに一致する回答はありません。",
       "noResponsesTitle": "回答がありません",
       "noResponsesToTriage": "トリアージするアンケート回答はありません。",
+      "noSearchMatches": "検索はこのページに読み込まれた回答のみを対象とします。別のページを試すか、検索をクリアしてください。",
+      "noSearchMatchesTitle": "一致なし",
       "notSubmitted": "未提出",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "提出者または調査で検索...",
+      "searchScopeHint": "このページの{{total}}件のうち{{count}}件が一致します。",
       "submitted": "提出済み",
       "submitter": "提出者"
     },

@@ -3003,9 +3003,12 @@
       "noResponsesFiltered": "আপনার ফিল্টারের সাথে কোনো প্রতিক্রিয়া মেলেনি",
       "noResponsesTitle": "কোনো প্রতিক্রিয়া নেই",
       "noResponsesToTriage": "ফরজ করার জন্য কোনো সার্ভে প্রতিক্রিয়া নেই",
+      "noSearchMatches": "অনুসন্ধান শুধু এই পৃষ্ঠায় লোড হওয়া প্রতিক্রিয়াগুলোর মধ্যে চলে। অন্য পৃষ্ঠা দেখুন, বা অনুসন্ধান মুছুন।",
+      "noSearchMatchesTitle": "কোনো মিল নেই",
       "notSubmitted": "জমা দেওয়া হয়নি",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "জমাদাতা বা জরিপ দ্বারা অনুসন্ধান করুন...",
+      "searchScopeHint": "এই পৃষ্ঠার {{total}}টি প্রতিক্রিয়ার মধ্যে {{count}}টি মিলেছে",
       "submitted": "জমা দেওয়া হয়েছে",
       "submitter": "জমাদানকারী"
     },

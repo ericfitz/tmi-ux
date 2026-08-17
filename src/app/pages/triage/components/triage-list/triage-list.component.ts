@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -69,11 +62,25 @@ interface TriageFilters {
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 // SEM@28965fbbc1cc05c2313c3368f6409ec77d7ae535: list, filter, and triage survey responses with pagination and bulk actions
-export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TriageListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+
+  /**
+   * Bound through a setter rather than read once in ngAfterViewInit.
+   *
+   * The table lives behind an @if, so it is not in the DOM when
+   * ngAfterViewInit runs (the loading branch is showing), and it is destroyed
+   * and recreated whenever the list transitions through the loading, error or
+   * empty states. A one-time read would capture undefined and never recover.
+   */
+  @ViewChild(MatSort)
+  set matSort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   /** Table data source */
   dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
@@ -138,9 +145,34 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     private languageService: LanguageService,
   ) {}
 
-  // SEM@73deaedb04565ca3211c5e684dcd6bd0ab3a6ef7: bind the paginator sort to the table data source with custom field accessors
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  // SEM@198d9138cef09ed19e61938afc63adb0817f4bf2: subscribe to locale changes and fetch initial surveys and responses (reads DB)
+  ngOnInit(): void {
+    this.configureDataSource();
+
+    this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
+      this.currentLocale = language.code;
+    });
+
+    this.loadSurveys();
+    this.loadResponses();
+  }
+
+  /**
+   * Install the data source's filter and sort behavior.
+   *
+   * Runs before the first load rather than in ngAfterViewInit: these are
+   * properties of the data source, not the view, and loadResponses() applies
+   * the search filter as soon as data arrives — which happens before
+   * ngAfterViewInit would have run.
+   */
+  private configureDataSource(): void {
+    this.dataSource.filterPredicate = (item: SurveyResponseListItem, term: string): boolean => {
+      const haystack = [item.owner?.display_name, item.owner?.email, item.survey_name]
+        .filter((value): value is string => !!value)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(term);
+    };
     this.dataSource.sortingDataAccessor = (
       item: SurveyResponseListItem,
       property: string,
@@ -158,16 +190,6 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
           return '';
       }
     };
-  }
-
-  // SEM@198d9138cef09ed19e61938afc63adb0817f4bf2: subscribe to locale changes and fetch initial surveys and responses (reads DB)
-  ngOnInit(): void {
-    this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
-      this.currentLocale = language.code;
-    });
-
-    this.loadSurveys();
-    this.loadResponses();
   }
 
   // SEM@47259dcc3bd1f66f245714931e1330a50558a80a: complete the destroy subject to cancel all active subscriptions
@@ -224,6 +246,9 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
         next: response => {
           this.dataSource.data = response.survey_responses;
           this.totalResponses = response.total;
+          // Re-apply the search term: it is a client-side filter over the loaded
+          // page, so a fresh page of data has to be filtered again.
+          this.applySearchFilter();
           this.isLoading = false;
         },
         error: err => {
@@ -254,6 +279,55 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Handle a change to the search term.
+   *
+   * The API's survey-response listing exposes no search parameter (only
+   * status, survey_id, is_confidential, date ranges, sort and pagination), so
+   * this filters the rows of the currently loaded page client-side rather than
+   * issuing a request. Matches submitter display name, submitter email, and
+   * survey name — the fields the placeholder advertises.
+   */
+  onSearchTermChange(): void {
+    this.applySearchFilter();
+  }
+
+  /**
+   * Clear only the search term, leaving the server-side filters alone.
+   *
+   * Distinct from clearFilters(), which also resets status/survey/confidential
+   * and refetches. Nothing needs reloading here — the rows are already loaded.
+   */
+  clearSearch(): void {
+    this.filters.searchTerm = '';
+    this.applySearchFilter();
+  }
+
+  /**
+   * Push the current search term into the table's client-side filter.
+   */
+  private applySearchFilter(): void {
+    this.dataSource.filter = this.filters.searchTerm.trim().toLowerCase();
+  }
+
+  /**
+   * Rows visible after the client-side search filter.
+   *
+   * Drives the no-match state and the search hint's match count. The paginator
+   * length stays bound to the server total, because the paginator moves between
+   * server pages — it is not narrowed by the client-side filter.
+   */
+  get visibleResponseCount(): number {
+    return this.dataSource.filteredData.length;
+  }
+
+  /**
+   * Whether a search term is currently narrowing the loaded page.
+   */
+  get isSearchActive(): boolean {
+    return this.filters.searchTerm.trim().length > 0;
+  }
+
+  /**
    * Clear all filters
    */
   // SEM@20f07620df60d6cb0702ab476f86bb23b1d8a4cd: reset all filters to defaults and reload the response list
@@ -265,6 +339,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
       isConfidential: null,
     };
     this.pageIndex = 0;
+    this.applySearchFilter();
     this.loadResponses();
   }
 

@@ -2359,9 +2359,12 @@
       "noResponsesFiltered": "ไม่มีการตอบสนองที่ตรงกับตัวกรองของคุณ",
       "noResponsesTitle": "ไม่มีการตอบสนอง",
       "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องการ Triage",
+      "noSearchMatches": "การค้นหาครอบคลุมเฉพาะรายการที่โหลดในหน้านี้ ลองหน้าอื่น หรือล้างการค้นหา",
+      "noSearchMatchesTitle": "ไม่มีรายการที่ตรงกัน",
       "notSubmitted": "ยังไม่ได้ส่ง",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "ค้นหาตามผู้ส่งหรือแบบสำรวจ...",
+      "searchScopeHint": "ตรงกัน {{count}} จาก {{total}} รายการในหน้านี้",
       "submitted": "ส่งแล้ว",
       "submitter": "ผู้ส่ง"
     },

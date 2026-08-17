@@ -2361,9 +2361,12 @@
       "noResponsesFiltered": "आपके फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती।",
       "noResponsesTitle": "कोई प्रतिक्रिया नहीं",
       "noResponsesToTriage": "ट्राइएज करने के लिए कोई सर्वेक्षण प्रतिक्रिया नहीं है।",
+      "noSearchMatches": "खोज केवल इस पृष्ठ पर लोड की गई प्रतिक्रियाओं तक सीमित है। दूसरा पृष्ठ देखें, या खोज साफ़ करें।",
+      "noSearchMatchesTitle": "कोई मेल नहीं",
       "notSubmitted": "जमा नहीं किया गया",
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "प्रस्तुतकर्ता या सर्वेक्षण के अनुसार खोजें...",
+      "searchScopeHint": "इस पृष्ठ की {{total}} प्रतिक्रियाओं में से {{count}} मेल खाती हैं।",
       "submitted": "जमा किया गया",
       "submitter": "जमाकर्ता"
     },
