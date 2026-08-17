@@ -546,7 +546,7 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCell(edgeCell);
 
-      expect(filtered.shape).toBe('flow'); // Normalized to canonical 'flow'
+      expect(filtered['shape']).toBe('flow'); // Normalized to canonical 'flow'
     });
 
     it('should preserve shape for node cells', () => {
@@ -558,7 +558,7 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCell(nodeCell);
 
-      expect(filtered.shape).toBe('process');
+      expect(filtered['shape']).toBe('process');
     });
 
     it('should remove known transient properties but preserve children', () => {
@@ -575,8 +575,8 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCell(cell);
 
-      expect(filtered.id).toBe('node-1');
-      expect(filtered.shape).toBe('process');
+      expect(filtered['id']).toBe('node-1');
+      expect(filtered['shape']).toBe('process');
       // children is now preserved for API schema (pending server update)
       expect(filtered['children']).toEqual(['child-1']);
       expect(filtered['tools']).toBeUndefined();
@@ -603,10 +603,10 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCell(cell);
 
-      expect(filtered.id).toBe('edge-1');
-      expect(filtered.source).toEqual({ cell: 'node-1', port: 'out' });
-      expect(filtered.target).toEqual({ cell: 'node-2', port: 'in' });
-      expect(filtered.attrs).toEqual({ line: { stroke: '#000', strokeWidth: 2 } });
+      expect(filtered['id']).toBe('edge-1');
+      expect(filtered['source']).toEqual({ cell: 'node-1', port: 'out' });
+      expect(filtered['target']).toEqual({ cell: 'node-2', port: 'in' });
+      expect(filtered['attrs']).toEqual({ line: { stroke: '#000', strokeWidth: 2 } });
     });
 
     it('should filter node attrs to match NodeAttrs schema', () => {
@@ -628,7 +628,7 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCell(cell);
 
-      expect(filtered.attrs).toEqual({
+      expect(filtered['attrs']).toEqual({
         body: { fill: '#fff', stroke: '#333' },
         text: { text: 'Process', fontSize: 14 },
       });

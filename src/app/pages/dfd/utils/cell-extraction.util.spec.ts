@@ -164,7 +164,7 @@ describe('extractCellsFromGraph', () => {
     expect(result[0].shape).toBe('flow');
     expect(result[0].source).toEqual({ cell: 'a', port: 'p1' });
     expect(result[0].target).toEqual({ cell: 'b', port: 'p2' });
-    expect(result[0].vertices).toEqual([{ x: 300, y: 150 }]);
+    expect(result[0]['vertices']).toEqual([{ x: 300, y: 150 }]);
   });
 
   it('should handle mixed nodes and edges', () => {
@@ -195,7 +195,7 @@ describe('extractCellsFromGraph', () => {
     const result = extractCellsFromGraph(graph as any);
     const child = result.find(c => c.id === 'child-1');
 
-    expect(child?.parent).toBe('parent-1');
+    expect(child?.['parent']).toBe('parent-1');
   });
 
   it('should include edge labels', () => {
@@ -206,7 +206,7 @@ describe('extractCellsFromGraph', () => {
 
     const result = extractCellsFromGraph(graph as any);
 
-    expect(result[0].labels).toHaveLength(1);
+    expect(result[0]['labels']).toHaveLength(1);
   });
 
   it('should convert cell data to hybrid format', () => {
@@ -217,7 +217,7 @@ describe('extractCellsFromGraph', () => {
 
     const result = extractCellsFromGraph(graph as any);
 
-    expect(result[0].data).toEqual({
+    expect(result[0]['data']).toEqual({
       _metadata: [{ key: 'type', value: 'process' }],
     });
   });
@@ -239,6 +239,6 @@ describe('extractCellsFromGraph', () => {
     const result = extractCellsFromGraph(graph as any);
 
     // Ports should be included but cleaned of runtime state
-    expect(result[0].ports).toBeDefined();
+    expect(result[0]['ports']).toBeDefined();
   });
 });

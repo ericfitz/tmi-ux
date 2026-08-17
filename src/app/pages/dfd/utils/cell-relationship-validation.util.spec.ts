@@ -53,7 +53,7 @@ describe('Cell Relationship Validation', () => {
       expect(result.issues[0].type).toBe('missing-parent');
       expect(result.issues[0].childId).toBe('child1');
       expect(result.issues[0].parentId).toBe('nonexistent-parent');
-      expect(result.cells[0].parent).toBe(null); // Fixed
+      expect(result.cells[0]['parent']).toBe(null); // Fixed
       expect(mockLogger.warn).toHaveBeenCalled();
     });
 
@@ -82,7 +82,7 @@ describe('Cell Relationship Validation', () => {
       expect(result.hadIssues).toBe(true);
       expect(result.fixCount).toBe(1);
       expect(result.issues[0].type).toBe('invalid-parent-type');
-      expect(result.cells[1].parent).toBe(null); // Fixed
+      expect(result.cells[1]['parent']).toBe(null); // Fixed
     });
 
     it('should enforce security-boundary can only embed security-boundary', () => {
@@ -99,9 +99,9 @@ describe('Cell Relationship Validation', () => {
       expect(result.fixCount).toBe(1);
       expect(result.issues[0].type).toBe('invalid-child-type');
       expect(result.issues[0].childId).toBe('boundary3');
-      expect(result.cells[3].parent).toBe(null); // Fixed
+      expect(result.cells[3]['parent']).toBe(null); // Fixed
       // boundary2 should still have valid parent
-      expect(result.cells[1].parent).toBe('boundary1');
+      expect(result.cells[1]['parent']).toBe('boundary1');
     });
 
     it('should allow other shapes to embed into security-boundary', () => {
@@ -136,11 +136,11 @@ describe('Cell Relationship Validation', () => {
       expect(result.issues).toHaveLength(3);
 
       // Verify all invalid relationships were fixed
-      expect(result.cells[1].parent).toBe(null); // child1
-      expect(result.cells[2].parent).toBe(null); // child2
-      expect(result.cells[6].parent).toBe(null); // boundary3
+      expect(result.cells[1]['parent']).toBe(null); // child1
+      expect(result.cells[2]['parent']).toBe(null); // child2
+      expect(result.cells[6]['parent']).toBe(null); // boundary3
       // Verify valid relationship preserved
-      expect(result.cells[4].parent).toBe('boundary1'); // boundary2
+      expect(result.cells[4]['parent']).toBe('boundary1'); // boundary2
     });
 
     it('should handle empty cell array', () => {
@@ -174,7 +174,7 @@ describe('Cell Relationship Validation', () => {
       expect(result.hadIssues).toBe(true);
       expect(result.fixCount).toBe(1);
       expect(result.issues[0].type).toBe('circular');
-      expect(result.cells[0].parent).toBe(null);
+      expect(result.cells[0]['parent']).toBe(null);
     });
 
     it('should handle deep nesting hierarchies', () => {
@@ -191,10 +191,10 @@ describe('Cell Relationship Validation', () => {
       expect(result.hadIssues).toBe(false);
       expect(result.fixCount).toBe(0);
       // All valid nested relationships should be preserved
-      expect(result.cells[1].parent).toBe('boundary1');
-      expect(result.cells[2].parent).toBe('boundary2');
-      expect(result.cells[3].parent).toBe('boundary3');
-      expect(result.cells[4].parent).toBe('process1');
+      expect(result.cells[1]['parent']).toBe('boundary1');
+      expect(result.cells[2]['parent']).toBe('boundary2');
+      expect(result.cells[3]['parent']).toBe('boundary3');
+      expect(result.cells[4]['parent']).toBe('process1');
     });
   });
 

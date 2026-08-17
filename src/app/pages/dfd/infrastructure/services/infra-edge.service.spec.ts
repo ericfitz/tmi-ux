@@ -188,7 +188,7 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
       // Verify label was updated using X6 native getLabels()
       const labels = edge.getLabels();
       expect(labels).toHaveLength(1);
-      expect(labels[0].attrs?.text?.text).toBe('Updated Flow');
+      expect(labels[0].attrs?.['text']?.['text']).toBe('Updated Flow');
     });
 
     it('should update edge vertices', () => {

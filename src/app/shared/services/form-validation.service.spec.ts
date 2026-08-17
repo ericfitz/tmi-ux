@@ -285,7 +285,7 @@ describe('FormValidationService', () => {
       const result = FormValidationService.validators.uriGuidance(control);
 
       expect(result).toHaveProperty('uriSuggestion');
-      expect(result?.uriSuggestion).toEqual({
+      expect(result?.['uriSuggestion']).toEqual({
         message: 'URI contains invalid control characters',
         severity: 'warning',
       });
@@ -296,7 +296,7 @@ describe('FormValidationService', () => {
       const result = FormValidationService.validators.uriGuidance(control);
 
       expect(result).toHaveProperty('uriSuggestion');
-      expect(result?.uriSuggestion.message).toContain('spaces');
+      expect(result?.['uriSuggestion'].message).toContain('spaces');
     });
 
     it('should warn about invalid absolute URI with scheme', () => {
@@ -313,7 +313,7 @@ describe('FormValidationService', () => {
       const result = FormValidationService.validators.uriGuidance(control);
 
       expect(result).toHaveProperty('uriSuggestion');
-      expect(result?.uriSuggestion.severity).toBe('info');
+      expect(result?.['uriSuggestion'].severity).toBe('info');
     });
 
     it('should warn about problematic characters', () => {
@@ -321,7 +321,7 @@ describe('FormValidationService', () => {
       const result = FormValidationService.validators.uriGuidance(control);
 
       expect(result).toHaveProperty('uriSuggestion');
-      expect(result?.uriSuggestion.message).toContain('percent-encoded');
+      expect(result?.['uriSuggestion'].message).toContain('percent-encoded');
     });
   });
 
@@ -416,7 +416,7 @@ describe('FormValidationService', () => {
       expect(rules).toHaveProperty('description');
       expect(rules).toHaveProperty('threat_model_framework');
       expect(rules).toHaveProperty('issue_uri');
-      expect(rules.name.length).toBeGreaterThan(0);
+      expect(rules['name'].length).toBeGreaterThan(0);
     });
 
     it('should return threat validation rules', () => {

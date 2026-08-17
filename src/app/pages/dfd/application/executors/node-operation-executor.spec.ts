@@ -379,11 +379,11 @@ describe('NodeOperationExecutor', () => {
           next: result => {
             try {
               expect(result.success).toBe(true);
-              expect(result.metadata?.changedProperties).toContain('position');
-              expect(result.metadata?.changedProperties).toContain('size');
-              expect(result.metadata?.changedProperties).toContain('label');
-              expect(result.metadata?.changedProperties).toContain('fill');
-              expect(result.metadata?.changedProperties).toContain('properties');
+              expect(result.metadata?.['changedProperties']).toContain('position');
+              expect(result.metadata?.['changedProperties']).toContain('size');
+              expect(result.metadata?.['changedProperties']).toContain('label');
+              expect(result.metadata?.['changedProperties']).toContain('fill');
+              expect(result.metadata?.['changedProperties']).toContain('properties');
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -520,7 +520,7 @@ describe('NodeOperationExecutor', () => {
               expect(mockNodeService.removeNode).toHaveBeenCalledWith(mockGraph, 'node-to-delete', {
                 suppressHistory: true,
               });
-              expect(result.metadata?.connectedEdgesCount).toBe(2);
+              expect(result.metadata?.['connectedEdgesCount']).toBe(2);
 
               resolve();
             } catch (error) {
@@ -601,10 +601,10 @@ describe('NodeOperationExecutor', () => {
           next: result => {
             try {
               expect(result.success).toBe(true);
-              expect(result.metadata?.deletedNodeData).toBeDefined();
-              expect(result.metadata?.deletedNodeData.id).toBe('node-to-delete');
-              expect(result.metadata?.deletedNodeData.shape).toBe('rect');
-              expect(result.metadata?.deletedEdgeIds).toEqual(['edge-1', 'edge-2']);
+              expect(result.metadata?.['deletedNodeData']).toBeDefined();
+              expect(result.metadata?.['deletedNodeData'].id).toBe('node-to-delete');
+              expect(result.metadata?.['deletedNodeData'].shape).toBe('rect');
+              expect(result.metadata?.['deletedEdgeIds']).toEqual(['edge-1', 'edge-2']);
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -625,7 +625,7 @@ describe('NodeOperationExecutor', () => {
             try {
               expect(result.success).toBe(true);
               expect(result.affectedCellIds).toEqual(['node-to-delete']);
-              expect(result.metadata?.connectedEdgesCount).toBe(0);
+              expect(result.metadata?.['connectedEdgesCount']).toBe(0);
               expect(mockNodeService.removeNode).toHaveBeenCalledWith(mockGraph, 'node-to-delete', {
                 suppressHistory: true,
               });
@@ -660,7 +660,7 @@ describe('NodeOperationExecutor', () => {
               expect(result.affectedCellIds).toContain('node-to-delete');
               expect(result.affectedCellIds).toContain('child-1');
               expect(result.affectedCellIds).toContain('child-2');
-              expect(result.metadata?.unembeddedChildIds).toEqual(['child-1', 'child-2']);
+              expect(result.metadata?.['unembeddedChildIds']).toEqual(['child-1', 'child-2']);
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -687,7 +687,7 @@ describe('NodeOperationExecutor', () => {
               expect(result.success).toBe(true);
               expect(result.previousState).toBeDefined();
               const nodeState = result.previousState?.find((s: any) => s.id === 'node-to-delete');
-              expect(nodeState?.parent).toBe('parent-node');
+              expect(nodeState?.['parent']).toBe('parent-node');
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -729,7 +729,7 @@ describe('NodeOperationExecutor', () => {
               expect(result.previousState).toBeDefined();
               const childState = result.previousState?.find((s: any) => s.id === 'child-node');
               expect(childState).toBeDefined();
-              expect(childState?.parent).toBe('node-to-delete');
+              expect(childState?.['parent']).toBe('node-to-delete');
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));

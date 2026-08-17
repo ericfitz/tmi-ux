@@ -196,7 +196,7 @@ describe('BatchOperationExecutor', () => {
               expect(result.success).toBe(false);
               expect(result.error).toContain('partially failed');
               expect(result.metadata?.['failedCount']).toBe(1);
-              expect(mockLogger.warn).toHaveBeenCalledWith(
+              expect(mockLogger['warn']).toHaveBeenCalledWith(
                 expect.stringContaining('No executor found'),
                 expect.anything(),
               );

@@ -291,8 +291,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result.cells as any[])[0].id).toBe('client-cell-123');
-      expect((result.cells as any[])[1].id).toBe('client-cell-456');
+      expect((result['cells'] as any[])[0].id).toBe('client-cell-123');
+      expect((result['cells'] as any[])[1].id).toBe('client-cell-456');
     });
 
     it('should rewrite data_assets in cell data when translations exist', () => {
@@ -317,7 +317,10 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result.cells as any[])[0].data.data_assets).toEqual(['new-asset-1', 'new-asset-2']);
+      expect((result['cells'] as any[])[0].data.data_assets).toEqual([
+        'new-asset-1',
+        'new-asset-2',
+      ]);
     });
 
     it('should handle cells without data property', () => {
@@ -328,7 +331,7 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result.cells as any[])[0]).toEqual({ id: 'cell-1', shape: 'rect' });
+      expect((result['cells'] as any[])[0]).toEqual({ id: 'cell-1', shape: 'rect' });
     });
   });
 
@@ -349,8 +352,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toEqual(['new-asset-1', 'new-asset-2']);
-      expect(result.nodeType).toBe('process');
+      expect(result['data_assets']).toEqual(['new-asset-1', 'new-asset-2']);
+      expect(result['nodeType']).toBe('process');
     });
 
     it('should filter out unmapped asset IDs from data_assets', () => {
@@ -365,7 +368,7 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toEqual(['new-asset-1']);
+      expect(result['data_assets']).toEqual(['new-asset-1']);
     });
 
     it('should remove data_assets when all IDs are unmapped', () => {
@@ -378,8 +381,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toBeUndefined();
-      expect(result.nodeType).toBe('store');
+      expect(result['data_assets']).toBeUndefined();
+      expect(result['nodeType']).toBe('store');
     });
 
     it('should migrate legacy dataAssetId to data_assets format', () => {
@@ -391,8 +394,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toEqual(['new-asset-123']);
-      expect(result.dataAssetId).toBeUndefined();
+      expect(result['data_assets']).toEqual(['new-asset-123']);
+      expect(result['dataAssetId']).toBeUndefined();
     });
 
     it('should remove legacy dataAssetId even when translation not found', () => {
@@ -405,9 +408,9 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.dataAssetId).toBeUndefined();
-      expect(result.data_assets).toBeUndefined();
-      expect(result.nodeType).toBe('actor');
+      expect(result['dataAssetId']).toBeUndefined();
+      expect(result['data_assets']).toBeUndefined();
+      expect(result['nodeType']).toBe('actor');
     });
 
     it('should merge legacy dataAssetId into existing data_assets', () => {
@@ -426,8 +429,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toEqual(['new-asset-1', 'new-legacy-asset']);
-      expect(result.dataAssetId).toBeUndefined();
+      expect(result['data_assets']).toEqual(['new-asset-1', 'new-legacy-asset']);
+      expect(result['dataAssetId']).toBeUndefined();
     });
 
     it('should not duplicate when legacy dataAssetId already in data_assets', () => {
@@ -440,8 +443,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toEqual(['same-asset-id']);
-      expect(result.dataAssetId).toBeUndefined();
+      expect(result['data_assets']).toEqual(['same-asset-id']);
+      expect(result['dataAssetId']).toBeUndefined();
     });
 
     it('should handle empty data_assets array', () => {
@@ -452,8 +455,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteCellDataAssetReferences(cellData);
 
-      expect(result.data_assets).toBeUndefined();
-      expect(result.nodeType).toBe('process');
+      expect(result['data_assets']).toBeUndefined();
+      expect(result['nodeType']).toBe('process');
     });
 
     it('should handle cell data without asset references', () => {

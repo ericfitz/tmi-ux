@@ -333,11 +333,11 @@ describe('AppCellOperationConverterService', () => {
 
       const operation = service.createNodeOperation(cell, baseOperation);
 
-      expect(operation.nodeData.properties.ports).toEqual({ items: [] });
-      expect(operation.nodeData.properties.data).toEqual({ customData: 'test' });
-      expect(operation.nodeData.properties.visible).toBe(true);
+      expect(operation.nodeData.properties['ports']).toEqual({ items: [] });
+      expect(operation.nodeData.properties['data']).toEqual({ customData: 'test' });
+      expect(operation.nodeData.properties['visible']).toBe(true);
       // zIndex is now excluded by cell property filter (sanitized from cells)
-      expect(operation.nodeData.properties.zIndex).toBeUndefined();
+      expect(operation.nodeData.properties['zIndex']).toBeUndefined();
     });
   });
 
