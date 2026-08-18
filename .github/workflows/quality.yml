@@ -1,0 +1,108 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to a PR supersedes the previous run; let it cancel.
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Checks (lint, typecheck, validate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      # scripts/check-i18n-style.py runs under uv (see the lint:i18n script).
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Every check below runs even if an earlier one failed, so a single run
+      # reports every problem instead of only the first.
+      - name: Formatting
+        run: pnpm run format:check
+
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: pnpm run lint:all:check
+
+      - name: Typecheck e2e sources
+        if: ${{ !cancelled() }}
+        run: pnpm run typecheck:e2e
+
+      - name: Typecheck unit-test sources (ratchet)
+        if: ${{ !cancelled() }}
+        run: pnpm run typecheck:vitest:ratchet
+
+      - name: JSON validator self-test
+        if: ${{ !cancelled() }}
+        run: pnpm run validate-json:test
+
+      # Not `validate-all`: that also runs `unused-i18n`, which takes >3 minutes
+      # and always exits 0 (it is a report, not a gate).
+      - name: Validate i18n JSON
+        if: ${{ !cancelled() }}
+        run: pnpm run validate-json:i18n
+
+      - name: Validate tsconfig JSONC
+        if: ${{ !cancelled() }}
+        run: pnpm run validate-jsonc:tsconfig
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm run test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # codeql.yml also builds, but only for pushes and PRs targeting main.
+      # PRs into a release branch have no other build coverage.
+      - name: Build
+        run: pnpm run build
