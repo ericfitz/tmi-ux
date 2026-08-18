@@ -2,3 +2,8 @@ dist
 node_modules
 .angular
 package-lock.json
+
+# Generated usage map: written by scripts/build-i18n-usage-map.py with Python's
+# json.dump(indent=2), which prettier would reformat and the next regeneration
+# would undo.
+src/assets/i18n/*.usage.json
