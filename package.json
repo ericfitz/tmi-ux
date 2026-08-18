@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.10.6",
+  "version": "1.11.0",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
