@@ -4,23 +4,29 @@ Session context for resuming work. Read this first, then start with **Next sessi
 
 ## Where things stand
 
-Branch **`feature/backlog-bugfix-batch`**, 7 commits, **not pushed, no PR**. Base `main` @ v1.10.6.
+**Merged.** PR #861 rebase-merged to `main` on 2026-08-18 as **v1.11.0** (tagged `v1.11.0`). Branch `feature/backlog-bugfix-batch` deleted, local and remote.
+
+The rebase rewrote every SHA. These are the commits **as they exist on `main`** — the pre-merge SHAs quoted in the issue comments are dead, and each issue has a follow-up comment giving the corrected one:
 
 ```
-7bfb321c  test: type-check unit-test sources and ratchet the error count   (#858, partial)
-df1d542f  fix: make the triage search box actually filter results          (#821, closed)
-e6a47c5d  test: claim a palette slot before typing in the color-picker...  (#831, closed)
-8f553b9a  feat: render page-header close (X) buttons white-on-red          (#812, closed)
-523dcf40  chore: drop stale removeViewBox override from svgo config        (#832, closed)
-39349ef6  fix: show translated labels for DFD SVG/PNG export options       (#835, closed)
-21609b45  style: normalize i18n key ordering across all locale files       (no issue)
+e4867e4f  chore: bump version to 1.11.0                                (version-bump bot)
+7dcc88f0  docs: add HANDOFF.md for resuming the backlog batch
+a866b339  test: type-check unit-test sources and ratchet the error count   (#858, partial)
+dfa6cdf5  fix: make the triage search box actually filter results          (#821, closed)
+0b82d657  test: claim a palette slot before typing in the color-picker...  (#831, closed)
+4f2e62ff  feat: render page-header close (X) buttons white-on-red          (#812, closed)
+782a1984  chore: drop stale removeViewBox override from svgo config        (#832, closed)
+d31992b6  fix: show translated labels for DFD SVG/PNG export options       (#835, closed)
+73c8d567  style: normalize i18n key ordering across all locale files       (no issue)
 ```
 
-Gates as of the last commit — all green, all run locally:
+Gates before merge — all green, all run locally:
 
-`lint:all` · `build` · `test` (**6070 tests / 309 files**) · `typecheck:e2e` · `typecheck:vitest:ratchet` (at baseline 342) · `validate-json:test` (8/8) · `validate-all`
+`lint:all` · `build` · `test` (**6070 tests / 309 files**) · `typecheck:e2e` · `typecheck:vitest:ratchet` (baseline 342) · `validate-json:test` (8/8) · `validate-all`
 
-Five issues closed with commit references. **#858 remains open** (partial). **#860 filed** (new).
+CI on the PR: CodeQL `Analyze (javascript-typescript)` pass (the only required check), Snyk pass, version-bump `bump` pass. `e2e-tests.yml` is `workflow_dispatch`-only and did **not** run.
+
+Five issues closed. **#858 open** (partial). **#860 open** (new).
 
 ## Decisions already made — do not relitigate
 
@@ -105,9 +111,11 @@ The second half is what makes it a ratchet rather than a cap: improvements get l
 
 ## Next session
 
-1. **Plan #860** (the reason this handoff exists). Settle the open questions above before writing YAML. Note the `--fix`-in-CI problem is the substantive one.
+1. **Plan #860** (the reason this handoff exists). Settle the open questions above before writing YAML. The `--fix`-in-CI problem is the substantive one.
 2. **Clean up after this run:**
    - Decide the #858 ratchet-vs-zero question; if driving down, start with `cell-property-filter.util.spec.ts` (34) and `threat-model.resolver.spec.ts` (27).
-   - Decide what to do with this branch — 7 commits are unpushed with no PR. Version bump derives from the PR's Conventional Commits; `feat:` in `8f553b9a` means a **minor** bump.
    - Delete this file when the work it describes is done.
-3. **Not done, worth knowing:** #812 was verified by compiling the four themes and checking resolved tones — the buttons were never viewed in a browser. Same for the triage no-match state and the column-sort fix. The #831 e2e tests were not executed (they need a dev server plus a backend on :8080); they were fixed by reading the gating logic.
+3. **Verification debt worth clearing early.** These merged without ever being exercised in a browser:
+   - #812's colours were confirmed by compiling the four themes, not by looking at a page. Check all four palette combinations render white-on-red, and that no header close button lost its hit area.
+   - #821's no-match state and the column-sort fix are unit-tested but never clicked.
+   - The #831 e2e tests were fixed by reading the gating logic, **not executed** — they need `pnpm dev:e2e` plus a backend on `:8080`. Run `pnpm run test:e2e:field-coverage` to confirm the stroke/fill tests actually pass now.
