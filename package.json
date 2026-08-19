@@ -49,8 +49,6 @@
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "pretypecheck:vitest": "pnpm run generate-build-info",
     "typecheck:vitest": "tsc --noEmit -p tsconfig.vitest.json",
-    "pretypecheck:vitest:ratchet": "pnpm run generate-build-info",
-    "typecheck:vitest:ratchet": "node scripts/typecheck-vitest-ratchet.mjs",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\" | grep -v '(unchanged)' || echo 'Formatting complete (no changes needed)'",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json,md}\"",
     "check": "pnpm run format:check && pnpm run lint:all",

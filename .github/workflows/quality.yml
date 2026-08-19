@@ -47,9 +47,9 @@ jobs:
         if: ${{ !cancelled() }}
         run: pnpm run typecheck:e2e
 
-      - name: Typecheck unit-test sources (ratchet)
+      - name: Typecheck unit-test sources
         if: ${{ !cancelled() }}
-        run: pnpm run typecheck:vitest:ratchet
+        run: pnpm run typecheck:vitest
 
       - name: JSON validator self-test
         if: ${{ !cancelled() }}
