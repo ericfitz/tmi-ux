@@ -82,7 +82,7 @@ describe('adminGuard', () => {
       const result$ = adminGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(true);
           expect(mockLogger.info).toHaveBeenCalledWith('Admin access granted');
           expect(mockRouter.navigate).not.toHaveBeenCalled();
@@ -107,7 +107,7 @@ describe('adminGuard', () => {
       const result$ = adminGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockLogger.warn).toHaveBeenCalledWith(
             'Admin access denied: User is not an administrator',
@@ -134,7 +134,7 @@ describe('adminGuard', () => {
       const result$ = adminGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/intake'], {
             queryParams: { error: 'admin_required' },
@@ -153,7 +153,7 @@ describe('adminGuard', () => {
       const result$ = adminGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockLogger.error).toHaveBeenCalledWith(
             'Failed to verify admin status',

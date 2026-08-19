@@ -16,11 +16,20 @@ import {
   type MockRouter,
 } from '../../../../testing/mocks';
 import { AuthService } from '../../services/auth.service';
+import { UserProfile } from '../../models/auth.models';
 import { ActivatedRoute, Params } from '@angular/router';
+
+/**
+ * AuthService exposes lastAuthError/userProfile/userEmail as getter-only
+ * accessors, which TypeScript treats as readonly on the class type. The mock
+ * below needs to reassign them between test cases, so this type strips the
+ * readonly modifier for the mock's own declaration.
+ */
+type MockAuthService = { -readonly [K in keyof AuthService]?: AuthService[K] };
 
 describe('AuthCallbackComponent', () => {
   let component: AuthCallbackComponent;
-  let mockAuthService: Partial<AuthService>;
+  let mockAuthService: MockAuthService;
   let mockRouter: MockRouter;
   let mockLoggerService: MockLoggerService;
   let mockActivatedRoute: Partial<ActivatedRoute>;
@@ -555,7 +564,13 @@ describe('AuthCallbackComponent', () => {
         retryable: false,
       };
       mockAuthService.userEmail = 'user@example.com';
-      mockAuthService.userProfile = { provider: 'google' } as any;
+      mockAuthService.userProfile = {
+        provider: 'google',
+        provider_id: 'google-user-123',
+        display_name: 'Test User',
+        email: 'user@example.com',
+        groups: null,
+      } satisfies UserProfile;
 
       const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
       mockDialog.open = vi
@@ -593,7 +608,13 @@ describe('AuthCallbackComponent', () => {
         retryable: false,
       };
       mockAuthService.userEmail = 'user@example.com';
-      mockAuthService.userProfile = { provider: 'google' } as any;
+      mockAuthService.userProfile = {
+        provider: 'google',
+        provider_id: 'google-user-123',
+        display_name: 'Test User',
+        email: 'user@example.com',
+        groups: null,
+      } satisfies UserProfile;
 
       const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
       mockDialog.open = vi
@@ -622,7 +643,13 @@ describe('AuthCallbackComponent', () => {
         retryable: false,
       };
       mockAuthService.userEmail = 'user@example.com';
-      mockAuthService.userProfile = { provider: 'google' } as any;
+      mockAuthService.userProfile = {
+        provider: 'google',
+        provider_id: 'google-user-123',
+        display_name: 'Test User',
+        email: 'user@example.com',
+        groups: null,
+      } satisfies UserProfile;
 
       const afterClosedSubject = new BehaviorSubject<boolean | undefined>(undefined);
       mockDialog.open = vi

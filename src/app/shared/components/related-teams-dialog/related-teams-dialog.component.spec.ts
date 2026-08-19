@@ -124,7 +124,7 @@ describe('RelatedTeamsDialogComponent', () => {
 
     it('does not add a duplicate related team', () => {
       const component = build({
-        team: makeTeam([{ related_team_id: 'team-9', relationship: 'peer' }] as RelatedTeam[]),
+        team: makeTeam([{ related_team_id: 'team-9', relationship: 'related' }] as RelatedTeam[]),
       });
       component.selectedTeam = otherTeam;
       component.addForm.get('relationship')?.setValue('parent');
@@ -139,12 +139,15 @@ describe('RelatedTeamsDialogComponent', () => {
     it('removes the matching related team and marks dirty', () => {
       const component = build({
         team: makeTeam([
-          { related_team_id: 'team-2', relationship: 'peer' },
+          { related_team_id: 'team-2', relationship: 'related' },
           { related_team_id: 'team-3', relationship: 'parent' },
         ] as RelatedTeam[]),
       });
 
-      component.removeRelated({ related_team_id: 'team-2', relationship: 'peer' } as RelatedTeam);
+      component.removeRelated({
+        related_team_id: 'team-2',
+        relationship: 'related',
+      });
 
       expect(component.relatedTeams.map(r => r.related_team_id)).toEqual(['team-3']);
       expect(component.dirty).toBe(true);

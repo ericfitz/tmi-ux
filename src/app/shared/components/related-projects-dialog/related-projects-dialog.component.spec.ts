@@ -127,7 +127,7 @@ describe('RelatedProjectsDialogComponent', () => {
     it('does not add a duplicate related project', () => {
       const component = build({
         project: makeProject([
-          { related_project_id: 'proj-9', relationship: 'peer' },
+          { related_project_id: 'proj-9', relationship: 'related' },
         ] as RelatedProject[]),
       });
       component.selectedProject = otherProject;
@@ -143,15 +143,15 @@ describe('RelatedProjectsDialogComponent', () => {
     it('removes the matching related project and marks dirty', () => {
       const component = build({
         project: makeProject([
-          { related_project_id: 'proj-2', relationship: 'peer' },
+          { related_project_id: 'proj-2', relationship: 'related' },
           { related_project_id: 'proj-3', relationship: 'parent' },
         ] as RelatedProject[]),
       });
 
       component.removeRelated({
         related_project_id: 'proj-2',
-        relationship: 'peer',
-      } as RelatedProject);
+        relationship: 'related',
+      });
 
       expect(component.relatedProjects.map(r => r.related_project_id)).toEqual(['proj-3']);
       expect(component.dirty).toBe(true);

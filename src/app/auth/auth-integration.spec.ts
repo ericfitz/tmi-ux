@@ -9,6 +9,7 @@
 import '@angular/compiler';
 
 import { HttpClient, HttpContext } from '@angular/common/http';
+import { Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
@@ -163,7 +164,8 @@ describe('Authentication Integration', () => {
 
   describe('JWT Interceptor', () => {
     it('should be created', () => {
-      const interceptor = new JwtInterceptor(authService, logger as unknown as LoggerService);
+      const injector = Injector.create([{ provide: AuthService, useValue: authService }]);
+      const interceptor = new JwtInterceptor(injector, logger as unknown as LoggerService);
       expect(interceptor).toBeTruthy();
     });
   });
@@ -554,7 +556,8 @@ describe('Authentication Integration', () => {
 
     describe('JWT Interceptor Integration', () => {
       it('should integrate with JWT interceptor for API request handling', () => {
-        const interceptor = new JwtInterceptor(authService, logger as unknown as LoggerService);
+        const injector = Injector.create([{ provide: AuthService, useValue: authService }]);
+        const interceptor = new JwtInterceptor(injector, logger as unknown as LoggerService);
 
         // Mock HTTP request and handler for a successful API call
         const mockRequest = {

@@ -439,7 +439,7 @@ describe('JwtInterceptor', () => {
             // The clone is called with only context (no setHeaders)
             const retryCloneArgs = vi.mocked(mockRequest.clone).mock.calls[0][0];
             expect(retryCloneArgs.context).toBeDefined();
-            expect(retryCloneArgs.context.get(IS_AUTH_RETRY)).toBe(true);
+            expect(retryCloneArgs.context!.get(IS_AUTH_RETRY)).toBe(true);
             expect(retryCloneArgs).not.toHaveProperty('setHeaders');
             // The clone is called on the ORIGINAL request, so body is preserved
             expect(mockHandler.handle).toHaveBeenCalledTimes(2);
@@ -476,7 +476,7 @@ describe('JwtInterceptor', () => {
             // Verify the retry clone was called with IS_AUTH_RETRY context
             const retryCloneArgs = vi.mocked(mockRequest.clone).mock.calls[0][0];
             expect(retryCloneArgs.context).toBeDefined();
-            expect(retryCloneArgs.context.get(IS_AUTH_RETRY)).toBe(true);
+            expect(retryCloneArgs.context!.get(IS_AUTH_RETRY)).toBe(true);
             expect(retryCloneArgs).not.toHaveProperty('setHeaders');
             resolve();
           },

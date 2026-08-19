@@ -75,7 +75,7 @@ describe('authGuard', () => {
       const result$ = authGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(true);
           expect(mockRouter.navigate).not.toHaveBeenCalled();
         });
@@ -100,7 +100,7 @@ describe('authGuard', () => {
       const result$ = authGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/login'], {
             queryParams: {
@@ -163,7 +163,7 @@ describe('authGuard', () => {
       const result$ = authGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/login'], {
             queryParams: {

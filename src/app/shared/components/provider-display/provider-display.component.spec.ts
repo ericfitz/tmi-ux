@@ -77,7 +77,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Custom Provider',
           icon: 'https://example.com/custom-icon.svg',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -90,7 +89,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Custom Provider',
           icon: '/icons/custom.svg',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -106,7 +104,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Custom Provider',
           icon: 'microsoft.svg',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -122,7 +119,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Custom Provider',
           icon: 'fa-custom-icon',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -135,7 +131,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Google',
           icon: '',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -151,7 +146,6 @@ describe('ProviderDisplayComponent', () => {
         name: 'Custom',
         icon: 'fa-brands fa-microsoft',
         auth_url: 'https://example.com/auth',
-        token_url: 'https://example.com/token',
         redirect_uri: 'https://example.com/callback',
         client_id: 'test-client',
       };
@@ -164,7 +158,6 @@ describe('ProviderDisplayComponent', () => {
         name: 'Custom',
         icon: 'https://example.com/icon.svg',
         auth_url: 'https://example.com/auth',
-        token_url: 'https://example.com/token',
         redirect_uri: 'https://example.com/callback',
         client_id: 'test-client',
       };
@@ -177,7 +170,6 @@ describe('ProviderDisplayComponent', () => {
         name: 'Custom',
         icon: 'microsoft.svg',
         auth_url: 'https://example.com/auth',
-        token_url: 'https://example.com/token',
         redirect_uri: 'https://example.com/callback',
         client_id: 'test-client',
       };
@@ -196,7 +188,6 @@ describe('ProviderDisplayComponent', () => {
         name: 'Custom',
         icon: 'fa-brands fa-microsoft',
         auth_url: 'https://example.com/auth',
-        token_url: 'https://example.com/token',
         redirect_uri: 'https://example.com/callback',
         client_id: 'test-client',
       };
@@ -209,7 +200,6 @@ describe('ProviderDisplayComponent', () => {
         name: 'Custom',
         icon: 'https://example.com/icon.svg',
         auth_url: 'https://example.com/auth',
-        token_url: 'https://example.com/token',
         redirect_uri: 'https://example.com/callback',
         client_id: 'test-client',
       };
@@ -279,7 +269,6 @@ describe('ProviderDisplayComponent', () => {
           name: 'Custom OAuth Provider',
           icon: 'https://example.com/icon.svg',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
         };
@@ -291,7 +280,6 @@ describe('ProviderDisplayComponent', () => {
           id: 'github',
           name: '',
           auth_url: 'https://example.com/auth',
-          token_url: 'https://example.com/token',
           redirect_uri: 'https://example.com/callback',
           client_id: 'test-client',
           icon: 'https://example.com/icon.svg',

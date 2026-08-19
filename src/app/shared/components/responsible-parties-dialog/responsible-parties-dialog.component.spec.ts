@@ -10,6 +10,7 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { of, throwError } from 'rxjs';
+import type { Observable } from 'rxjs';
 import type { TranslocoService } from '@jsverse/transloco';
 
 import {
@@ -23,7 +24,9 @@ describe('ResponsiblePartiesDialogComponent', () => {
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let mockTransloco: TranslocoService;
-  let patchFn: ReturnType<typeof vi.fn>;
+  let patchFn: ReturnType<
+    typeof vi.fn<(id: string, parties: ResponsibleParty[]) => Observable<unknown>>
+  >;
   let envInjector: EnvironmentInjector;
 
   // SEM@03e5c5f70bd2b59edee41faf9772e5f114bffc49: construct a ResponsiblePartiesDialogComponent under test injection context (pure)
@@ -61,7 +64,7 @@ describe('ResponsiblePartiesDialogComponent', () => {
       error: vi.fn(),
     };
     mockTransloco = { translate: vi.fn((key: string) => key) } as unknown as TranslocoService;
-    patchFn = vi.fn(() => of({}));
+    patchFn = vi.fn<(id: string, parties: ResponsibleParty[]) => Observable<unknown>>(() => of({}));
     envInjector = createEnvironmentInjector([], {
       get: () => null,
     } as unknown as EnvironmentInjector);
