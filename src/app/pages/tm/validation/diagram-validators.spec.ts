@@ -83,13 +83,16 @@ describe('DfdDiagramValidator', () => {
     });
 
     it('should accept DFD-1.0.1 type (minor version)', () => {
-      const diagram = validDiagram({ type: 'DFD-1.0.1' });
+      // Diagram.type is typed as the literal 'DFD-1.0.0', but the validator accepts any
+      // minor version via a semver-like pattern; feed a non-canonical value to exercise that.
+      const diagram = validDiagram({ type: 'DFD-1.0.1' as unknown as Diagram['type'] });
       const errors = validator.validate(diagram, baseContext);
       expect(hasError(errors, 'UNSUPPORTED_DIAGRAM_TYPE')).toBe(false);
     });
 
     it('should reject unsupported diagram type', () => {
-      const diagram = validDiagram({ type: 'FLOW-2.0.0' });
+      // Deliberately not the literal 'DFD-1.0.0' to exercise the rejection path.
+      const diagram = validDiagram({ type: 'FLOW-2.0.0' as unknown as Diagram['type'] });
       const errors = validator.validate(diagram, baseContext);
       expect(hasError(errors, 'UNSUPPORTED_DIAGRAM_TYPE')).toBe(true);
     });
@@ -100,7 +103,8 @@ describe('DfdDiagramValidator', () => {
     });
 
     it('should reject diagram with missing type', () => {
-      const diagram = validDiagram({ type: '' });
+      // Empty string is deliberately not the literal 'DFD-1.0.0' to exercise the missing-type path.
+      const diagram = validDiagram({ type: '' as unknown as Diagram['type'] });
       const errors = validator.validate(diagram, baseContext);
       expect(hasError(errors, 'UNSUPPORTED_DIAGRAM_TYPE')).toBe(true);
     });

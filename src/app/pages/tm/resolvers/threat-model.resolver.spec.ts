@@ -8,15 +8,33 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { of, throwError, toArray } from 'rxjs';
+import {
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  type RedirectCommand,
+} from '@angular/router';
+import { of, throwError, toArray, isObservable, type Observable } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { threatModelResolver } from './threat-model.resolver';
 import { ThreatModelService } from '../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import type { ThreatModel } from '../models/threat-model.model';
+import type { ThreatModel, User } from '../models/threat-model.model';
+
+// The resolver is typed as Angular's ResolveFn<ThreatModel | null>, whose return type is
+// the union `ThreatModel | null | RedirectCommand | Observable<...> | Promise<...>`. This
+// resolver's implementation always returns an Observable; narrow to that branch so the
+// rest of the spec can `.subscribe`/`.pipe` without the union getting in the way.
+function expectObservableResult(
+  result: ReturnType<typeof threatModelResolver>,
+): Observable<ThreatModel | null | RedirectCommand> {
+  if (!isObservable(result)) {
+    throw new Error('Expected threatModelResolver to return an Observable');
+  }
+  return result;
+}
 
 describe('threatModelResolver', () => {
   let mockThreatModelService: {
@@ -37,12 +55,24 @@ describe('threatModelResolver', () => {
   };
   let envInjector: EnvironmentInjector;
 
+  const mockUser: User = {
+    principal_type: 'user',
+    provider: 'test',
+    provider_id: 'user1',
+    email: 'user1@test.com',
+    display_name: 'Test User',
+  };
+
   const mockThreatModel: ThreatModel = {
     id: 'tm-123',
     name: 'Test Model',
     status: 'not_started',
-    owner: { provider_id: 'user1', _subject: 'user1@test.com' },
-    authorizations: [],
+    created_at: '2025-01-01T00:00:00Z',
+    modified_at: '2025-01-01T00:00:00Z',
+    owner: mockUser,
+    created_by: mockUser,
+    threat_model_framework: 'STRIDE',
+    authorization: [],
     assets: [],
     threats: [],
     notes: [],
@@ -121,7 +151,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models');
 
       runInInjectionContext(envInjector, () => {
-        const result$ = threatModelResolver(route, state);
+        const result$ = expectObservableResult(threatModelResolver(route, state));
         result$.subscribe(result => {
           expect(result).toBeNull();
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
@@ -135,7 +165,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(() => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(() => {
           expect(mockThreatModelService.getThreatModelById).not.toHaveBeenCalled();
         });
       });
@@ -148,7 +178,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(result => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(result => {
           expect(result).toEqual(mockThreatModel);
           expect(mockThreatModelService.getThreatModelById).toHaveBeenCalledWith('tm-123', false);
         });
@@ -160,7 +190,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(() => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(() => {
           expect(mockAuthorizationService.getCurrentUserPermission).toHaveBeenCalled();
           expect(mockLogger.info).toHaveBeenCalledWith('User permission determined', {
             threatModelId: 'tm-123',
@@ -175,7 +205,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123?refresh=true');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(() => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(() => {
           expect(mockThreatModelService.getThreatModelById).toHaveBeenCalledWith('tm-123', true);
         });
       });
@@ -186,7 +216,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(() => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(() => {
           expect(mockThreatModelService.getThreatModelById).toHaveBeenCalledWith('tm-123', false);
         });
       });
@@ -197,7 +227,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123?refresh=false');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(() => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(() => {
           expect(mockThreatModelService.getThreatModelById).toHaveBeenCalledWith('tm-123', false);
         });
       });
@@ -209,7 +239,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(result => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(result => {
           expect(result).toBeNull();
         });
       });
@@ -221,7 +251,7 @@ describe('threatModelResolver', () => {
       const state = createMockState('/threat-models/tm-123');
 
       runInInjectionContext(envInjector, () => {
-        threatModelResolver(route, state).subscribe(result => {
+        expectObservableResult(threatModelResolver(route, state)).subscribe(result => {
           expect(result).toBeNull();
         });
       });
@@ -235,7 +265,7 @@ describe('threatModelResolver', () => {
         runInInjectionContext(envInjector, () => {
           const route = createMockRoute('tm-123');
           const state = createMockState('/threat-models/tm-123');
-          threatModelResolver(route, state)
+          expectObservableResult(threatModelResolver(route, state))
             .pipe(toArray())
             .subscribe({
               next: values => resolve(values),
