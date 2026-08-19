@@ -7,20 +7,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ThreatModelValidatorService } from './threat-model-validator.service';
 import { ValidationConfig } from './types';
 import { createMockLoggerService } from '../../../../testing/mocks/mock-logger.service';
+import type { ThreatModel, User } from '../models/threat-model.model';
+import type { Diagram, Cell } from '../models/diagram.model';
 
-// Helper to create Principal objects for test fixtures
-// SEM@0d8ef5842818f1be8b057536bbf346d0ac357fe6: build a principal test fixture with email and optional type (pure)
-const createTestPrincipal = (
-  email: string,
-  type: 'user' | 'group' = 'user',
-): {
-  principal_type: 'user' | 'group';
-  provider: string;
-  provider_id: string;
-  email: string;
-  display_name: string;
-} => ({
-  principal_type: type,
+// Helper to create a User (owner/created_by) fixture for test fixtures
+// SEM@0d8ef5842818f1be8b057536bbf346d0ac357fe6: build a user test fixture with email (pure)
+const createTestUser = (email: string): User => ({
+  principal_type: 'user',
   provider: 'test',
   provider_id: email,
   email,
@@ -65,8 +58,8 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestPrincipal('test@example.com'),
-      created_by: createTestPrincipal('test@example.com'),
+      owner: createTestUser('test@example.com'),
+      created_by: createTestUser('test@example.com'),
       threat_model_framework: 'STRIDE',
       authorization: [createTestAuthorization('test@example.com', 'owner')],
     };
@@ -85,7 +78,8 @@ describe('ThreatModel Validation Integration', () => {
       // Missing required fields: id, created_at, modified_at, owner, created_by, threat_model_framework, authorization
     };
 
-    const result = service.validate(invalidThreatModel);
+    // Intentionally missing required ThreatModel fields to exercise FIELD_REQUIRED errors.
+    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
@@ -100,13 +94,15 @@ describe('ThreatModel Validation Integration', () => {
       name: 123, // Should be string
       created_at: 'invalid-date',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestPrincipal('test@example.com'),
-      created_by: createTestPrincipal('test@example.com'),
+      owner: createTestUser('test@example.com'),
+      created_by: createTestUser('test@example.com'),
       threat_model_framework: 'INVALID_FRAMEWORK',
       authorization: 'not-an-array',
     };
 
-    const result = service.validate(invalidThreatModel);
+    // Intentionally wrong field types (name, framework, authorization) to exercise
+    // INVALID_TYPE / INVALID_ENUM_VALUE errors.
+    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
@@ -123,15 +119,15 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestPrincipal('test@example.com'),
-      created_by: createTestPrincipal('test@example.com'),
+      owner: createTestUser('test@example.com'),
+      created_by: createTestUser('test@example.com'),
       threat_model_framework: 'STRIDE',
       authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: 'diagram-1',
           name: 'Test Diagram',
-          type: 'DFD-1.0.0',
+          type: 'DFD-1.0.0' as const,
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           cells: [{ id: 'cell-1', shape: 'process', x: 100, y: 100, width: 120, height: 60 }],
@@ -167,15 +163,15 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestPrincipal('test@example.com'),
-      created_by: createTestPrincipal('test@example.com'),
+      owner: createTestUser('test@example.com'),
+      created_by: createTestUser('test@example.com'),
       threat_model_framework: 'STRIDE',
       authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: 'diagram-1',
           name: 'Test Diagram',
-          type: 'DFD-1.0.0',
+          type: 'DFD-1.0.0' as const,
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           cells: [
@@ -186,7 +182,8 @@ describe('ThreatModel Validation Integration', () => {
               source: { cell: 'cell-1' },
               target: { cell: 'non-existent-cell' },
             }, // Invalid target
-            { shape: 'process', x: 100, y: 100, width: 120, height: 60 }, // Missing ID
+            // Missing ID (intentional) to exercise the MISSING_CELL_ID error path.
+            { shape: 'process', x: 100, y: 100, width: 120, height: 60 } as unknown as Cell,
           ],
         },
       ],
@@ -214,7 +211,8 @@ describe('ThreatModel Validation Integration', () => {
       includeWarnings: false,
     };
 
-    const result = service.validate(invalidThreatModel, config);
+    // Intentionally missing required ThreatModel fields to exercise the failFast config path.
+    const result = service.validate(invalidThreatModel as unknown as ThreatModel, config);
 
     expect(result.valid).toBe(false);
     expect(result.warnings).toHaveLength(0); // Warnings excluded
@@ -226,15 +224,17 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestPrincipal('test@example.com'),
-      created_by: createTestPrincipal('test@example.com'),
+      owner: createTestUser('test@example.com'),
+      created_by: createTestUser('test@example.com'),
       threat_model_framework: 'STRIDE',
       authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Diagram',
-          type: 'UNSUPPORTED-TYPE', // This would fail diagram validation but not schema
+          // Intentionally not the literal 'DFD-1.0.0' — this would fail diagram
+          // validation but not schema validation.
+          type: 'UNSUPPORTED-TYPE' as unknown as Diagram['type'],
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
         },
@@ -269,7 +269,9 @@ describe('ThreatModel Validation Integration', () => {
       ],
     };
 
-    const result = service.validateReferences(threatModel);
+    // Intentionally missing created_at/modified_at/owner/created_by/threat_model_framework
+    // since this test exercises reference-only validation, which doesn't need them.
+    const result = service.validateReferences(threatModel as unknown as ThreatModel);
 
     expect(result.valid).toBe(false);
     const referenceError = result.errors.find(e => e.code === 'INVALID_THREAT_MODEL_REFERENCE');
@@ -284,7 +286,8 @@ describe('ThreatModel Validation Integration', () => {
   });
 
   it('should return properly structured validation results', () => {
-    const result = service.validate({});
+    // Intentionally empty to exercise the validation-result-structure path regardless of content.
+    const result = service.validate({} as unknown as ThreatModel);
 
     expect(result).toHaveProperty('valid');
     expect(result).toHaveProperty('errors');
@@ -306,7 +309,9 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test',
     };
 
-    const result = service.validate(invalidThreatModel);
+    // Intentionally missing required fields and using a non-UUID id to exercise the
+    // error-context path.
+    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
 
     expect(result.errors.length).toBeGreaterThan(0);
 
@@ -323,8 +328,8 @@ describe('ThreatModel Validation Integration', () => {
       description: 'A comprehensive threat model for testing',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-02T00:00:00Z',
-      owner: createTestPrincipal('owner@example.com'),
-      created_by: createTestPrincipal('creator@example.com'),
+      owner: createTestUser('owner@example.com'),
+      created_by: createTestUser('creator@example.com'),
       threat_model_framework: 'STRIDE',
       issue_uri: 'https://example.com/issues/123',
       authorization: [
@@ -341,6 +346,8 @@ describe('ThreatModel Validation Integration', () => {
           name: 'Architecture Document',
           uri: 'https://example.com/docs/arch.pdf',
           description: 'System architecture documentation',
+          created_at: '2025-01-01T00:00:00Z',
+          modified_at: '2025-01-01T00:00:00Z',
           metadata: [{ key: 'type', value: 'architecture' }],
         },
       ],
@@ -348,7 +355,7 @@ describe('ThreatModel Validation Integration', () => {
         {
           id: '123e4567-e89b-12d3-a456-426614174002',
           name: 'System Flow',
-          type: 'DFD-1.0.0',
+          type: 'DFD-1.0.0' as const,
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           cells: [
