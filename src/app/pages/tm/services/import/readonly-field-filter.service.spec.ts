@@ -690,7 +690,7 @@ describe('ReadonlyFieldFilterService', () => {
       service.filterCells(cells);
 
       expect(mockLogger.warn).toHaveBeenCalled();
-      expect(mockLogger.warn.mock.calls[0][0]).toContain('unknownProp');
+      expect(vi.mocked(mockLogger.warn).mock.calls[0][0]).toContain('unknownProp');
     });
   });
 

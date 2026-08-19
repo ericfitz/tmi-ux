@@ -16,6 +16,25 @@ import type { LoggerService } from '../../../../core/services/logger.service';
 import type { TranslocoService } from '@jsverse/transloco';
 import type { LanguageService } from '../../../../i18n/language.service';
 import type { BrandingConfigService } from '../../../../core/services/branding-config.service';
+import type { ThreatModel } from '../../models/threat-model.model';
+
+/**
+ * Narrow, explicitly-typed view of ThreatModelReportService's private
+ * pageSize/marginSize state and loadUserPreferences() method, used only to
+ * white-box test preference loading. A class with private members isn't
+ * directly comparable to an unrelated object type, so the cast must bridge
+ * through `unknown`; the interface below keeps the reached members precisely
+ * typed instead of using an untyped `Record<string, unknown>` escape hatch.
+ */
+interface ThreatModelReportServicePrivateAccess {
+  pageSize: 'usLetter' | 'A4';
+  marginSize: 'narrow' | 'standard' | 'wide';
+  loadUserPreferences: () => void;
+}
+
+function asPrivate(svc: ThreatModelReportService): ThreatModelReportServicePrivateAccess {
+  return svc as unknown as ThreatModelReportServicePrivateAccess;
+}
 
 describe('ThreatModelReportService', () => {
   let service: ThreatModelReportService;
@@ -104,10 +123,10 @@ describe('ThreatModelReportService', () => {
     it('should update pageSize when valid preference exists', () => {
       mockUserPreferencesService.getPreferences.mockReturnValue({ pageSize: 'A4' });
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       loadPrefs.call(service);
 
-      const pageSize = (service as Record<string, unknown>)['pageSize'];
+      const pageSize = asPrivate(service).pageSize;
       expect(pageSize).toBe('A4');
     });
 
@@ -116,20 +135,20 @@ describe('ThreatModelReportService', () => {
         pageSize: 'tabloid',
       });
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       loadPrefs.call(service);
 
-      const pageSize = (service as Record<string, unknown>)['pageSize'];
+      const pageSize = asPrivate(service).pageSize;
       expect(pageSize).toBe('usLetter');
     });
 
     it('should update marginSize when valid preference exists', () => {
       mockUserPreferencesService.getPreferences.mockReturnValue({ marginSize: 'narrow' });
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       loadPrefs.call(service);
 
-      const marginSize = (service as Record<string, unknown>)['marginSize'];
+      const marginSize = asPrivate(service).marginSize;
       expect(marginSize).toBe('narrow');
     });
 
@@ -138,17 +157,17 @@ describe('ThreatModelReportService', () => {
         marginSize: 'extraWide',
       });
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       loadPrefs.call(service);
 
-      const marginSize = (service as Record<string, unknown>)['marginSize'];
+      const marginSize = asPrivate(service).marginSize;
       expect(marginSize).toBe('standard');
     });
 
     it('should handle empty preferences object gracefully', () => {
       mockUserPreferencesService.getPreferences.mockReturnValue({});
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       expect(() => loadPrefs.call(service)).not.toThrow();
     });
 
@@ -158,7 +177,7 @@ describe('ThreatModelReportService', () => {
         marginSize: 'wide',
       });
 
-      const loadPrefs = (service as Record<string, unknown>)['loadUserPreferences'] as () => void;
+      const loadPrefs = asPrivate(service).loadUserPreferences;
       loadPrefs.call(service);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -174,7 +193,7 @@ describe('ThreatModelReportService', () => {
       const pdfLib = await import('pdf-lib');
       vi.spyOn(pdfLib.PDFDocument, 'create').mockRejectedValue(error);
 
-      const threatModel = {
+      const threatModel: ThreatModel = {
         id: 'tm-1',
         name: 'Test Model',
         description: 'Test',
@@ -184,21 +203,21 @@ describe('ThreatModelReportService', () => {
           principal_type: 'user',
           provider: 'google',
           provider_id: 'owner@test.com',
+          email: 'owner@test.com',
           display_name: 'Owner',
         },
         created_by: {
           principal_type: 'user',
           provider: 'google',
           provider_id: 'owner@test.com',
+          email: 'owner@test.com',
           display_name: 'Owner',
         },
         threat_model_framework: 'STRIDE',
         authorization: [],
       };
 
-      await expect(
-        service.generateReport(threatModel as Parameters<typeof service.generateReport>[0]),
-      ).rejects.toThrow('PDF generation failed');
+      await expect(service.generateReport(threatModel)).rejects.toThrow('PDF generation failed');
 
       expect(mockLogger.error).toHaveBeenCalledWith('Error generating PDF report', error);
     });
@@ -210,7 +229,7 @@ describe('ThreatModelReportService', () => {
     // test exercises real PDF generation without a real download.
     let createObjectURL: ReturnType<typeof vi.fn>;
     let revokeObjectURL: ReturnType<typeof vi.fn>;
-    let clickSpy: ReturnType<typeof vi.fn>;
+    let clickSpy: ReturnType<typeof vi.fn<() => void>>;
 
     beforeEach(() => {
       // PdfFontManager fetches NotoSans TTFs and falls back to Helvetica on
@@ -228,7 +247,7 @@ describe('ThreatModelReportService', () => {
         revokeObjectURL,
       });
 
-      clickSpy = vi.fn();
+      clickSpy = vi.fn<() => void>();
       vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(clickSpy);
     });
 
@@ -236,7 +255,7 @@ describe('ThreatModelReportService', () => {
       vi.unstubAllGlobals();
     });
 
-    const baseThreatModel = {
+    const baseThreatModel: ThreatModel = {
       id: 'tm-1',
       name: 'Test Model',
       description: 'A test threat model',
@@ -246,12 +265,14 @@ describe('ThreatModelReportService', () => {
         principal_type: 'user',
         provider: 'google',
         provider_id: 'owner@test.com',
+        email: 'owner@test.com',
         display_name: 'Owner',
       },
       created_by: {
         principal_type: 'user',
         provider: 'google',
         provider_id: 'owner@test.com',
+        email: 'owner@test.com',
         display_name: 'Owner',
       },
       threat_model_framework: 'STRIDE',
@@ -259,7 +280,7 @@ describe('ThreatModelReportService', () => {
     };
 
     it('generates a PDF and triggers the download for a minimal threat model', async () => {
-      await service.generateReport(baseThreatModel as Parameters<typeof service.generateReport>[0]);
+      await service.generateReport(baseThreatModel);
 
       // savePdf created a blob URL, clicked the download link, then revoked it.
       expect(createObjectURL).toHaveBeenCalledTimes(1);
@@ -272,7 +293,7 @@ describe('ThreatModelReportService', () => {
       mockBrandingConfig.confidentialityWarning = 'Internal use only';
       mockBrandingConfig.dataClassification = 'CONFIDENTIAL';
 
-      await service.generateReport(baseThreatModel as Parameters<typeof service.generateReport>[0]);
+      await service.generateReport(baseThreatModel);
 
       expect(createObjectURL).toHaveBeenCalledTimes(1);
       expect(clickSpy).toHaveBeenCalledTimes(1);
@@ -280,7 +301,7 @@ describe('ThreatModelReportService', () => {
     });
 
     it('generates a PDF that includes inputs and outputs sections', async () => {
-      const fullModel = {
+      const fullModel: ThreatModel = {
         ...baseThreatModel,
         assets: [
           {
@@ -318,7 +339,7 @@ describe('ThreatModelReportService', () => {
         ],
       };
 
-      await service.generateReport(fullModel as Parameters<typeof service.generateReport>[0]);
+      await service.generateReport(fullModel);
 
       expect(createObjectURL).toHaveBeenCalledTimes(1);
       expect(clickSpy).toHaveBeenCalledTimes(1);
@@ -331,10 +352,10 @@ describe('ThreatModelReportService', () => {
         marginSize: 'wide',
       });
 
-      await service.generateReport(baseThreatModel as Parameters<typeof service.generateReport>[0]);
+      await service.generateReport(baseThreatModel);
 
-      expect((service as Record<string, unknown>)['pageSize']).toBe('A4');
-      expect((service as Record<string, unknown>)['marginSize']).toBe('wide');
+      expect(asPrivate(service).pageSize).toBe('A4');
+      expect(asPrivate(service).marginSize).toBe('wide');
       expect(clickSpy).toHaveBeenCalledTimes(1);
     });
   });

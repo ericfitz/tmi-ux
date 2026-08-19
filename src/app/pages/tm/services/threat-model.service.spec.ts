@@ -27,11 +27,32 @@ import { waitForAsync } from '../../../../testing/async-utils';
 
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
 
+/**
+ * ThreatModelService only reads `username`/`userEmail`/`isAuthenticated` from
+ * AuthService, but this spec's mock also carries `isUsingLocalProvider` — a
+ * flag with no counterpart on the real AuthService (production code reaches
+ * it too, via an `as any` cast in app-dfd-orchestrator.service.ts). Extending
+ * AuthService locally keeps the mock's extra field precisely typed instead of
+ * using `any`.
+ */
+interface AuthServiceMock extends AuthService {
+  isUsingLocalProvider: boolean;
+}
+
+/**
+ * Mirrors ApiService#get's params type so mockImplementation callbacks are
+ * assignable to the real (generic) method signature.
+ */
+type ApiGetParams = Record<
+  string,
+  string | number | boolean | ReadonlyArray<string | number | boolean>
+>;
+
 describe('ThreatModelService', () => {
   let service: ThreatModelService;
   let loggerService: LoggerService;
   let apiService: ApiService;
-  let authService: AuthService;
+  let authService: AuthServiceMock;
   let authorizationService: ThreatModelAuthorizationService;
   let importOrchestrator: any;
   let testThreatModel1: any;
@@ -103,7 +124,7 @@ describe('ThreatModelService', () => {
       userEmail: 'test.user@example.com',
       userProfile: { email: 'test.user@example.com', name: 'Test User' },
       isUsingLocalProvider: true, // Enable offline mode by default for tests
-    } as unknown as AuthService;
+    } as unknown as AuthServiceMock;
 
     // Create a mock for ThreatModelAuthorizationService
     authorizationService = {
@@ -1289,42 +1310,40 @@ describe('ThreatModelService', () => {
           content: `content ${item.id}`,
         }));
 
-        vi.mocked(apiService.get).mockImplementation(
-          (url: string, params?: Record<string, string>) => {
-            if (url === `threat_models/${tmId}`) {
-              return of(baseTm);
-            }
-            if (url === `threat_models/${tmId}/notes`) {
-              const offset = parseInt(params?.['offset'] || '0', 10);
-              const limit = parseInt(params?.['limit'] || '100', 10);
-              // Simulate pages of size 2 with 3 total items
-              const page = noteListItems.slice(offset, offset + Math.min(limit, 2));
-              return of({ notes: page, total: 3, limit: Math.min(limit, 2), offset });
-            }
-            // Individual note fetches return full objects with content
-            const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
-            if (noteMatch) {
-              return of(notesFull.find(n => n.id === noteMatch[1]));
-            }
-            // Single-page responses for other sub-entities
-            if (url === `threat_models/${tmId}/documents`) {
-              return of({ documents: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/repositories`) {
-              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/assets`) {
-              return of({ assets: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/diagrams`) {
-              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/threats`) {
-              return of({ threats: [], total: 0, limit: 100, offset: 0 });
-            }
-            return of(undefined);
-          },
-        );
+        vi.mocked(apiService.get).mockImplementation((url: string, params?: ApiGetParams) => {
+          if (url === `threat_models/${tmId}`) {
+            return of(baseTm);
+          }
+          if (url === `threat_models/${tmId}/notes`) {
+            const offset = parseInt(String(params?.['offset'] ?? '0'), 10);
+            const limit = parseInt(String(params?.['limit'] ?? '100'), 10);
+            // Simulate pages of size 2 with 3 total items
+            const page = noteListItems.slice(offset, offset + Math.min(limit, 2));
+            return of({ notes: page, total: 3, limit: Math.min(limit, 2), offset });
+          }
+          // Individual note fetches return full objects with content
+          const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
+          if (noteMatch) {
+            return of(notesFull.find(n => n.id === noteMatch[1]));
+          }
+          // Single-page responses for other sub-entities
+          if (url === `threat_models/${tmId}/documents`) {
+            return of({ documents: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/repositories`) {
+            return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/assets`) {
+            return of({ assets: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/diagrams`) {
+            return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/threats`) {
+            return of({ threats: [], total: 0, limit: 100, offset: 0 });
+          }
+          return of(undefined);
+        });
 
         return new Promise<void>((resolve, reject) => {
           service.exportThreatModel(tmId).subscribe({
@@ -1376,45 +1395,43 @@ describe('ThreatModelService', () => {
           },
         ];
 
-        vi.mocked(apiService.get).mockImplementation(
-          (url: string, params?: Record<string, string>) => {
-            if (url === `threat_models/${tmId}`) {
-              return of(baseTm);
+        vi.mocked(apiService.get).mockImplementation((url: string, params?: ApiGetParams) => {
+          if (url === `threat_models/${tmId}`) {
+            return of(baseTm);
+          }
+          if (url === `threat_models/${tmId}/notes`) {
+            const offset = parseInt(String(params?.['offset'] ?? '0'), 10);
+            if (offset === 0) {
+              // First page: returns all 3 notes
+              return of({ notes: noteListItems, total: 3, limit: 100, offset: 0 });
             }
-            if (url === `threat_models/${tmId}/notes`) {
-              const offset = parseInt(params?.['offset'] || '0', 10);
-              if (offset === 0) {
-                // First page: returns all 3 notes
-                return of({ notes: noteListItems, total: 3, limit: 100, offset: 0 });
-              }
-              // Second page: server returns empty items but broken total/offset
-              // This previously caused an infinite loop
-              return of({ notes: [], total: 3, limit: 100, offset });
-            }
-            // Individual note fetches
-            const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
-            if (noteMatch) {
-              const item = noteListItems.find(n => n.id === noteMatch[1]);
-              return of(item ? { ...item, content: 'content' } : undefined);
-            }
-            if (url === `threat_models/${tmId}/documents`) {
-              return of({ documents: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/repositories`) {
-              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/assets`) {
-              return of({ assets: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/diagrams`) {
-              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/threats`) {
-              return of({ threats: [], total: 0, limit: 100, offset: 0 });
-            }
-            return of(undefined);
-          },
-        );
+            // Second page: server returns empty items but broken total/offset
+            // This previously caused an infinite loop
+            return of({ notes: [], total: 3, limit: 100, offset });
+          }
+          // Individual note fetches
+          const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
+          if (noteMatch) {
+            const item = noteListItems.find(n => n.id === noteMatch[1]);
+            return of(item ? { ...item, content: 'content' } : undefined);
+          }
+          if (url === `threat_models/${tmId}/documents`) {
+            return of({ documents: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/repositories`) {
+            return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/assets`) {
+            return of({ assets: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/diagrams`) {
+            return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/threats`) {
+            return of({ threats: [], total: 0, limit: 100, offset: 0 });
+          }
+          return of(undefined);
+        });
 
         return new Promise<void>((resolve, reject) => {
           service.exportThreatModel(tmId).subscribe({
@@ -1453,41 +1470,39 @@ describe('ThreatModelService', () => {
           content: 'content',
         };
 
-        vi.mocked(apiService.get).mockImplementation(
-          (url: string, params?: Record<string, string>) => {
-            if (url === `threat_models/${tmId}`) {
-              return of(baseTm);
+        vi.mocked(apiService.get).mockImplementation((url: string, params?: ApiGetParams) => {
+          if (url === `threat_models/${tmId}`) {
+            return of(baseTm);
+          }
+          if (url === `threat_models/${tmId}/notes`) {
+            const offset = parseInt(String(params?.['offset'] ?? '0'), 10);
+            if (offset === 0) {
+              // Server returns items but no total field
+              return of({ notes: [mockNoteListItem], limit: 100, offset: 0 } as any);
             }
-            if (url === `threat_models/${tmId}/notes`) {
-              const offset = parseInt(params?.['offset'] || '0', 10);
-              if (offset === 0) {
-                // Server returns items but no total field
-                return of({ notes: [mockNoteListItem], limit: 100, offset: 0 } as any);
-              }
-              // Subsequent page: empty
-              return of({ notes: [], limit: 100, offset } as any);
-            }
-            if (url === `threat_models/${tmId}/notes/n1`) {
-              return of(mockNoteFull);
-            }
-            if (url === `threat_models/${tmId}/documents`) {
-              return of({ documents: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/repositories`) {
-              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/assets`) {
-              return of({ assets: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/diagrams`) {
-              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
-            }
-            if (url === `threat_models/${tmId}/threats`) {
-              return of({ threats: [], total: 0, limit: 100, offset: 0 });
-            }
-            return of(undefined);
-          },
-        );
+            // Subsequent page: empty
+            return of({ notes: [], limit: 100, offset } as any);
+          }
+          if (url === `threat_models/${tmId}/notes/n1`) {
+            return of(mockNoteFull);
+          }
+          if (url === `threat_models/${tmId}/documents`) {
+            return of({ documents: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/repositories`) {
+            return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/assets`) {
+            return of({ assets: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/diagrams`) {
+            return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/threats`) {
+            return of({ threats: [], total: 0, limit: 100, offset: 0 });
+          }
+          return of(undefined);
+        });
 
         return new Promise<void>((resolve, reject) => {
           service.exportThreatModel(tmId).subscribe({
