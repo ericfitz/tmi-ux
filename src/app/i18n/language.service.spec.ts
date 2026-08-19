@@ -51,11 +51,15 @@ describe('LanguageService', () => {
 
     // Mock window.location
     delete (window as { location?: Location }).location;
-    window.location = {
-      ...originalLocation,
-      search: '',
-      href: 'http://localhost:4200',
-    };
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...originalLocation,
+        search: '',
+        href: 'http://localhost:4200',
+      },
+      writable: true,
+      configurable: true,
+    });
 
     // Mock window.navigator
     Object.defineProperty(window, 'navigator', {
@@ -94,7 +98,11 @@ describe('LanguageService', () => {
 
   afterEach(() => {
     service.ngOnDestroy();
-    window.location = originalLocation;
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
     global.localStorage = originalLocalStorage;
     Object.defineProperty(window, 'navigator', {
       value: originalNavigator,

@@ -3,11 +3,11 @@ import { vi, expect, describe, it, beforeEach, afterEach } from 'vitest';
 import { downloadBlob } from './blob-download.util';
 
 describe('downloadBlob', () => {
-  let clickSpy: ReturnType<typeof vi.fn>;
+  let clickSpy: ReturnType<typeof vi.fn<() => void>>;
   let anchor: HTMLAnchorElement;
 
   beforeEach(() => {
-    clickSpy = vi.fn();
+    clickSpy = vi.fn<() => void>();
     anchor = document.createElement('a');
     anchor.click = clickSpy;
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);

@@ -83,7 +83,7 @@ describe('reviewerGuard', () => {
       const result$ = reviewerGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(true);
           expect(mockLogger.info).toHaveBeenCalledWith('Security reviewer access granted');
           expect(mockRouter.navigate).not.toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('reviewerGuard', () => {
       const result$ = reviewerGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockLogger.warn).toHaveBeenCalled();
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/intake']);
@@ -126,7 +126,7 @@ describe('reviewerGuard', () => {
       const result$ = reviewerGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockLogger.error).toHaveBeenCalled();
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/intake']);
@@ -149,7 +149,7 @@ describe('reviewerGuard', () => {
       const result$ = reviewerGuard({} as any, {} as any);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
-        result$.subscribe((allowed: boolean) => {
+        result$.subscribe(allowed => {
           expect(allowed).toBe(false);
           expect(mockRouter.navigate).toHaveBeenCalledWith(['/intake']);
         });
