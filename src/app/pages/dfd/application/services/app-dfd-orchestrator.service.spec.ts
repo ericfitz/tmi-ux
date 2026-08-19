@@ -56,7 +56,10 @@ vi.mock('@antv/x6', () => {
 
 import { AppDfdOrchestrator, DfdInitializationParams } from './app-dfd-orchestrator.service';
 import { OperationResult, CreateNodeOperation } from '../../types/graph-operation.types';
-import { LoadResult } from '../../types/persistence.types';
+// AppDfdOrchestrator.loadDiagram() forwards appPersistenceCoordinator.load()'s result
+// unmodified (reading result.data.cells), so tests must use this LoadResult shape, not
+// the differently-shaped one in ../../types/persistence.types.
+import { LoadResult } from './app-persistence-coordinator.service';
 
 describe('AppDfdOrchestrator', () => {
   let service: AppDfdOrchestrator;
@@ -797,9 +800,10 @@ describe('AppDfdOrchestrator', () => {
     it('should load diagram', () => {
       const loadResult: LoadResult = {
         success: true,
-        diagramData: { cells: [] },
+        diagramId: 'test-diagram',
+        data: { cells: [] },
         source: 'api',
-        timestamp: new Date(),
+        timestamp: Date.now(),
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(of(loadResult));
@@ -841,9 +845,10 @@ describe('AppDfdOrchestrator', () => {
 
       const loadResult: LoadResult = {
         success: true,
-        diagramData: { cells: [] },
+        diagramId: 'test-diagram',
+        data: { cells: [] },
         source: 'api',
-        timestamp: new Date(),
+        timestamp: Date.now(),
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(of(loadResult));
