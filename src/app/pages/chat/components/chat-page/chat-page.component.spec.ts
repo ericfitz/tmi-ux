@@ -4,6 +4,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import type { DestroyRef } from '@angular/core';
 import { of, throwError, EMPTY, Subject } from 'rxjs';
 
 import { ChatPageComponent } from './chat-page.component';
@@ -123,7 +124,8 @@ describe('ChatPageComponent', () => {
       mockThreatModelService as any,
       mockSnackBar as any,
       mockDatePipe as any,
-      null, // destroyRef
+      // Intentionally omit the @Optional() DestroyRef to exercise the identity() fallback path.
+      null as unknown as DestroyRef,
     );
 
     component.ngOnInit();

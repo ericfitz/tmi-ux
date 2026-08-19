@@ -3,7 +3,7 @@ import '@angular/compiler';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DestroyRef, Injector, runInInjectionContext } from '@angular/core';
 import { AdminUsersComponent } from './admin-users.component';
-import { of, EMPTY, Subject } from 'rxjs';
+import { of, EMPTY, Subject, type Observable } from 'rxjs';
 import { CreateAutomationAccountResponse } from '@app/types/user.types';
 
 describe('AdminUsersComponent', () => {
@@ -25,7 +25,7 @@ describe('AdminUsersComponent', () => {
     let mockAuthService: { getAvailableProviders: ReturnType<typeof vi.fn>; isAdmin: boolean };
     let mockSnackBar: { open: ReturnType<typeof vi.fn> };
     let mockTransloco: { translate: ReturnType<typeof vi.fn> };
-    let mockLanguageService: { currentLanguage$: ReturnType<typeof of> };
+    let mockLanguageService: { currentLanguage$: Observable<{ code: string; name: string }> };
 
     beforeEach(() => {
       mockDialog = { open: vi.fn() };
@@ -90,6 +90,9 @@ describe('AdminUsersComponent', () => {
           provider_user_id: 'test',
           email: 'test@tmi.local',
           name: 'test-bot',
+          email_verified: true,
+          created_at: '2026-04-15T00:00:00Z',
+          modified_at: '2026-04-15T00:00:00Z',
           is_admin: false,
           automation: true,
         },
@@ -128,6 +131,9 @@ describe('AdminUsersComponent', () => {
           provider_user_id: 'test',
           email: 'test@tmi.local',
           name: 'test-bot',
+          email_verified: true,
+          created_at: '2026-04-15T00:00:00Z',
+          modified_at: '2026-04-15T00:00:00Z',
           is_admin: false,
           automation: true,
         },

@@ -34,7 +34,7 @@ describe('FrameworkMappingPickerDialogComponent', () => {
   function createComponent(data: FrameworkMappingPickerDialogData): void {
     dialogRef = { close: vi.fn() };
     languageService = {
-      direction$: new BehaviorSubject('ltr' as const),
+      direction$: new BehaviorSubject<'ltr' | 'rtl'>('ltr'),
     };
 
     component = new FrameworkMappingPickerDialogComponent(

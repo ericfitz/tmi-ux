@@ -10,7 +10,7 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { of, throwError } from 'rxjs';
+import { of, throwError, type Observable } from 'rxjs';
 import type { TranslocoService } from '@jsverse/transloco';
 
 import { InvokeAddonDialogComponent, InvokeAddonDialogData } from './invoke-addon-dialog.component';
@@ -21,7 +21,7 @@ describe('InvokeAddonDialogComponent', () => {
   let mockAddonService: { get: ReturnType<typeof vi.fn>; invoke: ReturnType<typeof vi.fn> };
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let mockTransloco: TranslocoService;
-  let mockUserPreferences: { preferences$: ReturnType<typeof of> };
+  let mockUserPreferences: { preferences$: Observable<{ showDeveloperTools: boolean }> };
   let envInjector: EnvironmentInjector;
 
   // SEM@417a9151d82d6abf834b61ca217dace46154b149: build a test addon fixture with optional parameter overrides (pure)

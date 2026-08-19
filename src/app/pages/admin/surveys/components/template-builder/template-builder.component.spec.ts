@@ -5,6 +5,7 @@ import { of, throwError, Subject } from 'rxjs';
 
 import { TemplateBuilderComponent } from './template-builder.component';
 import { Survey } from '@app/types/survey.types';
+import type { User } from '@app/pages/tm/models/threat-model.model';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -36,6 +37,14 @@ interface MockTranslocoService {
   translate: ReturnType<typeof vi.fn>;
 }
 
+const mockCreatedBy: User = {
+  principal_type: 'user',
+  provider: 'test',
+  provider_id: 'admin-1',
+  email: 'admin@example.com',
+  display_name: 'Admin User',
+};
+
 // SEM@96c34d433bdf8694a9679b9d7e88dddcc1d5563f: build a minimal Survey fixture with optional property overrides for tests (pure)
 const createMockSurvey = (overrides?: Partial<Survey>): Survey => ({
   id: 'survey-1',
@@ -45,6 +54,7 @@ const createMockSurvey = (overrides?: Partial<Survey>): Survey => ({
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',
   modified_at: '2026-01-02T00:00:00Z',
+  created_by: mockCreatedBy,
   survey_json: {
     title: 'Test Survey',
     description: '',

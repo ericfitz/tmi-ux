@@ -5,7 +5,7 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { FormBuilder } from '@angular/forms';
-import { of } from 'rxjs';
+import { of, type Observable } from 'rxjs';
 import type { TranslocoService } from '@jsverse/transloco';
 
 import {
@@ -18,8 +18,8 @@ describe('ThreatEditorDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn>; updateSize: ReturnType<typeof vi.fn> };
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let mockLanguageService: {
-    currentLanguage$: ReturnType<typeof of>;
-    direction$: ReturnType<typeof of>;
+    currentLanguage$: Observable<{ code: string; rtl: boolean }>;
+    direction$: Observable<string>;
   };
   let mockTransloco: TranslocoService;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
@@ -261,7 +261,7 @@ describe('ThreatEditorDialogComponent', () => {
         threat: makeThreat({ id: 'threat-9' }),
       });
 
-      component.openFeedback('positive');
+      component.openFeedback('up');
 
       expect(mockDialog.open).toHaveBeenCalledWith(
         expect.anything(),
@@ -270,7 +270,7 @@ describe('ThreatEditorDialogComponent', () => {
             threatModelId: 'tm-1',
             targetType: 'threat',
             targetId: 'threat-9',
-            initialSentiment: 'positive',
+            initialSentiment: 'up',
           }),
         }),
       );
@@ -279,7 +279,7 @@ describe('ThreatEditorDialogComponent', () => {
     it('does nothing when there is no threat', () => {
       const component = build({ threatModelId: 'tm-1', mode: 'create' });
       // No threat assigned (ngOnInit not run, so create-mode default not set).
-      component.openFeedback('negative');
+      component.openFeedback('down');
 
       expect(mockDialog.open).not.toHaveBeenCalled();
     });

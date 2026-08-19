@@ -75,7 +75,7 @@ describe('CwePickerDialogComponent', () => {
       debug: vi.fn(),
     };
     languageService = {
-      direction$: new BehaviorSubject('ltr' as const),
+      direction$: new BehaviorSubject<'ltr' | 'rtl'>('ltr'),
     };
 
     component = new CwePickerDialogComponent(

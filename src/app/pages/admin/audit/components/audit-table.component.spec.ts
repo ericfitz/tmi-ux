@@ -68,7 +68,7 @@ function queryAll<E extends Element = HTMLElement>(
   fixture: ComponentFixture<AuditTableComponent>,
   selector: string,
 ): E[] {
-  return Array.from(fixture.nativeElement.querySelectorAll<E>(selector));
+  return Array.from(fixture.nativeElement.querySelectorAll(selector));
 }
 
 beforeAll(() => {
