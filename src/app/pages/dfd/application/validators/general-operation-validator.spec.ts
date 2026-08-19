@@ -10,11 +10,12 @@ import '@angular/compiler';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { GeneralOperationValidator } from './general-operation-validator';
-import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { createMockLoggerService } from '@testing/mocks';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 describe('GeneralOperationValidator', () => {
   let validator: GeneralOperationValidator;
-  let loggerService: MockLoggerService;
+  let loggerService: LoggerService;
 
   // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal valid graph operation fixture with optional overrides (pure)
   function baseOperation(overrides: any = {}): any {
@@ -42,7 +43,7 @@ describe('GeneralOperationValidator', () => {
   }
 
   beforeEach(() => {
-    loggerService = createTypedMockLoggerService();
+    loggerService = createMockLoggerService();
     validator = new GeneralOperationValidator(loggerService);
   });
 

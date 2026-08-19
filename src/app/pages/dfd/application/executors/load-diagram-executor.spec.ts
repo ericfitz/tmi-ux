@@ -29,7 +29,7 @@ function makeLoadOperation(diagramData: unknown, clearExisting = false): LoadDia
   return {
     id: 'load-1',
     type: 'load-diagram',
-    source: 'system',
+    source: 'diagram-load',
     priority: 'high',
     timestamp: Date.now(),
     diagramId: 'd1',

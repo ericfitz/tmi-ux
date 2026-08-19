@@ -8,9 +8,11 @@
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
+import type { Graph } from '@antv/x6';
 import { AppHistoryService } from './app-history.service';
 import { HistoryEntry } from '../../types/history.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
+import { OperationContext } from '../../types/graph-operation.types';
 
 describe('AppHistoryService', () => {
   let service: AppHistoryService;
@@ -41,9 +43,16 @@ describe('AppHistoryService', () => {
     createDeleteOperation: ReturnType<typeof vi.fn>;
   };
 
-  const mockOperationContext = {
-    graph: {} as any,
-    x6GraphAdapter: {} as any,
+  const mockOperationContext: OperationContext = {
+    // graphOperationManager.execute is mocked below, so `graph` is never dereferenced;
+    // this is a type-only stub for the X6 Graph class (matches this codebase's
+    // established Graph-stubbing pattern, e.g. base-operation-executor.spec.ts).
+    graph: {} as unknown as Graph,
+    diagramId: 'diagram-1',
+    threatModelId: 'tm-1',
+    providerId: 'test-provider',
+    isCollaborating: false,
+    permissions: ['read', 'write'],
   };
 
   // SEM@09b5ebb360fd1538de624244d388e0e2c63b8c5f: build a minimal Cell fixture for use in history service tests (pure)

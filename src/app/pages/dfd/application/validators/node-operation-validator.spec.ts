@@ -10,11 +10,12 @@ import '@angular/compiler';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { NodeOperationValidator } from './node-operation-validator';
-import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { createMockLoggerService } from '@testing/mocks';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 describe('NodeOperationValidator', () => {
   let validator: NodeOperationValidator;
-  let loggerService: MockLoggerService;
+  let loggerService: LoggerService;
 
   // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a mock graph with configurable cells and connected edges for tests (pure)
   function createMockGraph(
@@ -77,7 +78,7 @@ describe('NodeOperationValidator', () => {
   }
 
   beforeEach(() => {
-    loggerService = createTypedMockLoggerService();
+    loggerService = createMockLoggerService();
     validator = new NodeOperationValidator(loggerService);
   });
 

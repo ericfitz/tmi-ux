@@ -77,8 +77,12 @@ describe('AppRemoteOperationHandler', () => {
     it('should wrap remote operation execution with executeRemoteOperation', () => {
       // Arrange
       const operationContext: OperationContext = {
-        source: 'remote-collaboration',
-        priority: 'normal',
+        graph: mockGraph,
+        diagramId: 'test-diagram',
+        threatModelId: 'test-tm',
+        providerId: 'test-provider',
+        isCollaborating: true,
+        permissions: ['read', 'write'],
       };
 
       const cellOperation: CellOperation = {
@@ -108,8 +112,12 @@ describe('AppRemoteOperationHandler', () => {
     it('should set isApplyingRemoteChange flag during execution', () => {
       // Arrange
       const operationContext: OperationContext = {
-        source: 'remote-collaboration',
-        priority: 'normal',
+        graph: mockGraph,
+        diagramId: 'test-diagram',
+        threatModelId: 'test-tm',
+        providerId: 'test-provider',
+        isCollaborating: true,
+        permissions: ['read', 'write'],
       };
 
       const cellOperation: CellOperation = {
@@ -144,8 +152,12 @@ describe('AppRemoteOperationHandler', () => {
     it('should clear isApplyingRemoteChange flag even on error', () => {
       // Arrange
       const operationContext: OperationContext = {
-        source: 'remote-collaboration',
-        priority: 'normal',
+        graph: mockGraph,
+        diagramId: 'test-diagram',
+        threatModelId: 'test-tm',
+        providerId: 'test-provider',
+        isCollaborating: true,
+        permissions: ['read', 'write'],
       };
 
       const cellOperation: CellOperation = {

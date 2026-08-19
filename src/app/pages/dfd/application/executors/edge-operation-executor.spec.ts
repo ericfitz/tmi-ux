@@ -272,7 +272,9 @@ describe('EdgeOperationExecutor', () => {
     it('builds a label from the legacy label string', () =>
       new Promise<void>((resolve, reject) => {
         const op = makeCreateOp({
-          edgeInfo: { id: 'e1', label: 'data flow' } as CreateEdgeOperation['edgeInfo'],
+          // Intentionally malformed: exercises the legacy `.label` string fallback that
+          // real EdgeInfo instances don't carry (see edge-operation-executor.ts _buildEdgeLabels).
+          edgeInfo: { id: 'e1', label: 'data flow' } as unknown as CreateEdgeOperation['edgeInfo'],
         });
 
         executor.execute(op, context).subscribe({
@@ -482,8 +484,14 @@ describe('EdgeOperationExecutor', () => {
     it('merges attrs updates onto the existing edge attrs, preserving nested keys', () =>
       new Promise<void>((resolve, reject) => {
         // Seed a pre-existing nested attr that the update does not touch.
-        const edge = cells.get('e1') as Record<string, ReturnType<typeof vi.fn>>;
-        edge['setAttrs']({ line: { strokeWidth: 2 } });
+        // Narrowly typed (not the file's usual `Record<string, ReturnType<typeof vi.fn>>`)
+        // because this test calls setAttrs/getAttrs directly rather than only asserting
+        // on the vi.fn() mock; matches createMockEdge's real setAttrs/getAttrs signatures.
+        const edge = cells.get('e1') as unknown as {
+          setAttrs: (attrs: Record<string, unknown>) => void;
+          getAttrs: () => Record<string, unknown>;
+        };
+        edge.setAttrs({ line: { strokeWidth: 2 } });
 
         const op = makeUpdateOp({ attrs: { line: { stroke: '#00ff00' } } });
 
@@ -493,7 +501,7 @@ describe('EdgeOperationExecutor', () => {
               expect(result.success).toBe(true);
               // X6's setAttrs deep-merges, so the new stroke is applied while
               // the pre-existing strokeWidth survives.
-              expect(edge['getAttrs']()).toEqual({
+              expect(edge.getAttrs()).toEqual({
                 line: { strokeWidth: 2, stroke: '#00ff00' },
               });
               expect(result.metadata?.['changedProperties']).toContain('attrs');
