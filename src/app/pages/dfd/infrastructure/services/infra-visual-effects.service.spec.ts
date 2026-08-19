@@ -17,7 +17,11 @@ import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-consta
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock types for better type safety
-interface MockCell extends Partial<Cell> {
+// Standalone (not `extends Partial<Cell>`): X6's `Cell.isNode`/`isEdge` are typed as
+// type predicates (`() => this is Node`), which a vi.fn() `Mock` return type cannot
+// satisfy structurally when extending the real interface. Usage sites already cast
+// these mocks `as unknown as Cell/Node/Edge` when passing them to the service.
+interface MockCell {
   id: string;
   isNode: Mock;
   isEdge: Mock;

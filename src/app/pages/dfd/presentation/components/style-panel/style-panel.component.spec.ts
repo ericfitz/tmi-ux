@@ -24,6 +24,7 @@ describe('StylePanelComponent - Label Position', () => {
       fillOpacity: 1,
       hasCustomStyles: false,
       labelPosition: { vertical: 'middle', horizontal: 'center' },
+      hasArchIcon: false,
       ...overrides,
     };
   }
@@ -54,6 +55,7 @@ describe('StylePanelComponent - Label Position', () => {
           fillOpacity: null,
           hasCustomStyles: false,
           labelPosition: null,
+          hasArchIcon: false,
         },
       ]);
       expect(component.labelPositionEnabled).toBe(false);
@@ -83,6 +85,7 @@ describe('StylePanelComponent - Label Position', () => {
           fillOpacity: null,
           hasCustomStyles: false,
           labelPosition: null,
+          hasArchIcon: false,
         },
       ]);
       expect(component.labelPositionEnabled).toBe(true);

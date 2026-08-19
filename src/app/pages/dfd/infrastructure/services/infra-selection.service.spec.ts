@@ -655,8 +655,12 @@ describe('SelectionService', () => {
     it('should handle grouping validation with null children', () => {
       const node = graph.addNode({ shape: 'rect', x: 100, y: 100, width: 50, height: 50 });
 
-      // Mock getChildren to return null
-      vi.spyOn(node, 'getChildren').mockReturnValue(null);
+      // Mock getChildren to return null: X6's real signature guarantees `Cell[]`, but
+      // this exercises canUngroupNode's defensive null-guard for a value it can never
+      // actually receive from X6 itself.
+      vi.spyOn(node, 'getChildren').mockReturnValue(
+        null as unknown as ReturnType<typeof node.getChildren>,
+      );
 
       expect(service.canUngroupNode(node)).toBe(false);
     });

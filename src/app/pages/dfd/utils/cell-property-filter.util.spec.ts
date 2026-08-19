@@ -22,6 +22,41 @@ import {
 } from './cell-property-filter.util';
 import { Cell } from '../../../core/types/websocket-message.types';
 
+/**
+ * `Cell.attrs`/`ports`/`data` are intentionally typed loosely in the real `Cell`
+ * interface (`attrs?: Record<string, unknown>`, everything else falls under its
+ * `[key: string]: unknown` index signature — see that interface's doc comment,
+ * "No convenience properties"). These tests assert on nested attrs/ports/data
+ * shapes structurally, including sanitize-only probe keys the production type
+ * doesn't model (e.g. `filter`, `customProp`), so this local type narrows just
+ * enough for those assertions to read as typed values without loosening the
+ * real `Cell` type.
+ */
+interface AttrsGroup {
+  filter?: unknown;
+  fill?: unknown;
+  stroke?: unknown;
+  text?: unknown;
+  strokeWidth?: unknown;
+  strokeDasharray?: unknown;
+  fontSize?: unknown;
+  refX?: unknown;
+  refY?: unknown;
+  refDx?: unknown;
+  refDy?: unknown;
+  textAnchor?: unknown;
+  textVerticalAnchor?: unknown;
+  targetMarker?: unknown;
+  sourceMarker?: unknown;
+}
+interface TestCell extends Cell {
+  attrs?: Record<string, AttrsGroup>;
+  ports?: {
+    items?: Array<{ attrs?: { circle?: { r?: number; style?: { visibility?: string } } } }>;
+  };
+  data?: { customProp?: unknown };
+}
+
 describe('Cell Property Filter Utility', () => {
   describe('JSONPathMatcher', () => {
     describe('matches()', () => {
@@ -335,7 +370,7 @@ describe('Cell Property Filter Utility', () => {
         },
       };
 
-      const sanitized = sanitizeCell(cell);
+      const sanitized = sanitizeCell(cell) as TestCell;
 
       expect(sanitized.attrs?.['body']?.filter).toBeUndefined();
       expect(sanitized.attrs?.['text']?.filter).toBeUndefined();
@@ -393,7 +428,7 @@ describe('Cell Property Filter Utility', () => {
         },
       };
 
-      const sanitized = sanitizeCell(cell);
+      const sanitized = sanitizeCell(cell) as TestCell;
 
       expect(sanitized['ports']?.items?.[0]?.attrs?.circle?.r).toBe(5);
       expect(sanitized['ports']?.items?.[0]?.attrs?.circle?.style?.visibility).toBeUndefined();
@@ -420,7 +455,7 @@ describe('Cell Property Filter Utility', () => {
         },
       };
 
-      const sanitized = sanitizeCell(cell);
+      const sanitized = sanitizeCell(cell) as TestCell;
 
       expect(sanitized.id).toBe('node1');
       expect(sanitized.shape).toBe('rect');
@@ -434,7 +469,7 @@ describe('Cell Property Filter Utility', () => {
     });
 
     it('should not mutate the original cell', () => {
-      const cell: Cell = {
+      const cell: TestCell = {
         id: 'node1',
         shape: 'rect',
         zIndex: 10,
@@ -445,7 +480,7 @@ describe('Cell Property Filter Utility', () => {
         },
       };
 
-      const sanitized = sanitizeCell(cell);
+      const sanitized = sanitizeCell(cell) as TestCell;
 
       // Original should still have excluded properties
       expect(cell['zIndex']).toBe(10);
@@ -478,7 +513,7 @@ describe('Cell Property Filter Utility', () => {
         },
       ];
 
-      const sanitized = sanitizeCells(cells);
+      const sanitized = sanitizeCells(cells) as TestCell[];
 
       expect(sanitized).toHaveLength(2);
       expect(sanitized[0]['zIndex']).toBeUndefined();
@@ -668,7 +703,7 @@ describe('Cell Property Filter Utility', () => {
             warnings.push({ message: msg, context: ctx }),
         };
 
-        const sanitized = sanitizeCellForApi(node, logger);
+        const sanitized = sanitizeCellForApi(node, logger) as TestCell;
 
         // Allowed properties should be preserved
         expect(sanitized.attrs?.['body']?.fill).toBe('#ffffff');
@@ -712,7 +747,7 @@ describe('Cell Property Filter Utility', () => {
           },
         };
 
-        const sanitized = sanitizeCellForApi(node);
+        const sanitized = sanitizeCellForApi(node) as TestCell;
 
         expect(sanitized.attrs?.['text']?.text).toBe('Label');
         expect(sanitized.attrs?.['text']?.refX).toBe(0.5);
@@ -847,7 +882,7 @@ describe('Cell Property Filter Utility', () => {
             warnings.push({ message: msg, context: ctx }),
         };
 
-        const sanitized = sanitizeCellForApi(edge, logger);
+        const sanitized = sanitizeCellForApi(edge, logger) as TestCell;
 
         // Allowed properties should be preserved
         expect(sanitized.attrs?.['line']?.stroke).toBe('#666666');
@@ -891,7 +926,7 @@ describe('Cell Property Filter Utility', () => {
             warnings.push({ message: msg, context: ctx }),
         };
 
-        const sanitized = sanitizeCellForApi(edge, logger);
+        const sanitized = sanitizeCellForApi(edge, logger) as TestCell;
 
         expect(sanitized.attrs?.['line']?.targetMarker).toEqual({ name: 'classic', size: 8 });
         expect(warnings.some(w => w.message.includes('unknownMarkerProp'))).toBe(true);

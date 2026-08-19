@@ -36,6 +36,8 @@ interface FakeCell extends LayoutCell {
   __pos: { x: number; y: number };
   __attrs: Record<string, unknown>;
   __vertices: unknown[];
+  // The real `LayoutCell.setVertices` is optional; this fixture always provides it.
+  setVertices(vertices: unknown[]): void;
 }
 
 // SEM@ae00299a0633c7d3c9bfe6633b44357e07c7f280: set a nested value in an object by slash-delimited path (pure)

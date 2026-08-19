@@ -12,6 +12,7 @@ import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
@@ -26,6 +27,7 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
   let queryService: InfraEdgeQueryService;
   let portStateManager: InfraPortStateService;
   let x6CoreOps: InfraX6CoreOperationsService;
+  let historyCoordinator: AppOperationStateManager;
   let graph: Graph;
   let sourceNode: Node;
   let targetNode: Node;
@@ -46,11 +48,13 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
       mockLogger as unknown as LoggerService,
     );
     x6CoreOps = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
+    historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
     // Create InfraEdgeService with real port management services
     service = new InfraEdgeService(
       mockLogger as unknown as LoggerService,
       portStateManager,
       x6CoreOps,
+      historyCoordinator,
     );
 
     // Create real X6 graph instance
