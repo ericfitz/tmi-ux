@@ -52,7 +52,6 @@ describe('AppDiagramResyncService', () => {
     };
 
     mockAppStateService = createMockAppStateService();
-    mockAppStateService.resyncComplete = vi.fn();
 
     mockDiagramLoadingService = {
       loadCellsIntoGraph: vi.fn(),

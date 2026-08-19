@@ -11,11 +11,12 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { EdgeOperationValidator } from './edge-operation-validator';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { createMockLoggerService } from '@testing/mocks';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 describe('EdgeOperationValidator', () => {
   let validator: EdgeOperationValidator;
-  let loggerService: MockLoggerService;
+  let loggerService: LoggerService;
 
   // Minimal mock graph builder
   // SEM@15f90070801a1934617dab012ffb4a9cb13ca72f: build a minimal mock graph with configurable cells and edges for tests (pure)
@@ -86,7 +87,7 @@ describe('EdgeOperationValidator', () => {
   }
 
   beforeEach(() => {
-    loggerService = createTypedMockLoggerService();
+    loggerService = createMockLoggerService();
     validator = new EdgeOperationValidator(loggerService);
   });
 

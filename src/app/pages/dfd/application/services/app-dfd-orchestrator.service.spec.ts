@@ -509,6 +509,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -795,11 +797,9 @@ describe('AppDfdOrchestrator', () => {
     it('should load diagram', () => {
       const loadResult: LoadResult = {
         success: true,
-        operationId: 'load-123',
-        diagramId: 'test-diagram',
-        data: { cells: [] },
-        timestamp: Date.now(),
-        metadata: {},
+        diagramData: { cells: [] },
+        source: 'api',
+        timestamp: new Date(),
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(of(loadResult));
@@ -841,11 +841,9 @@ describe('AppDfdOrchestrator', () => {
 
       const loadResult: LoadResult = {
         success: true,
-        operationId: 'force-load-123',
-        diagramId: 'test-diagram',
-        data: { cells: [] },
-        timestamp: Date.now(),
-        metadata: {},
+        diagramData: { cells: [] },
+        source: 'api',
+        timestamp: new Date(),
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(of(loadResult));

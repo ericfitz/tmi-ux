@@ -5,6 +5,7 @@
 
 import { vi } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
+import type { Cell } from '@antv/x6';
 
 /**
  * Create a mock LoggerService
@@ -34,6 +35,7 @@ export function createMockAppStateService() {
     setApplyingRemoteChange: vi.fn(),
     setBlockOperations: vi.fn(),
     setApplyingUndoRedo: vi.fn(),
+    resyncComplete: vi.fn(),
     state$: new BehaviorSubject({
       isApplyingRemoteChange: false,
       isBlockingOperations: false,
@@ -122,7 +124,7 @@ export function createMockX6GraphAdapter() {
 // SEM@4fb631d0431220cc47d07d47ff442af6cd5bcc57: build a vitest spy stub for an AntV X6 Graph instance (pure)
 export function createMockGraph() {
   return {
-    getCells: vi.fn(() => []),
+    getCells: vi.fn((): Cell[] => []),
     clearCells: vi.fn(),
     addCell: vi.fn(),
     removeCell: vi.fn(),

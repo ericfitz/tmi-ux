@@ -49,9 +49,6 @@ describe('NodeOperationExecutor', () => {
       providerId: 'test-user',
       isCollaborating: false,
       permissions: ['read', 'write'],
-      suppressValidation: false,
-      suppressHistory: false,
-      suppressBroadcast: false,
     };
   });
 
@@ -129,7 +126,10 @@ describe('NodeOperationExecutor', () => {
     });
 
     it('should generate ID when not provided', () => {
-      createNodeOperation.nodeData.id = undefined;
+      createNodeOperation = {
+        ...createNodeOperation,
+        nodeData: { ...createNodeOperation.nodeData, id: undefined },
+      };
 
       const mockNode = { id: 'auto-generated-id' };
       mockGraph.addNode.mockReturnValue(mockNode);
@@ -147,13 +147,19 @@ describe('NodeOperationExecutor', () => {
     });
 
     it('should apply custom styling', () => {
-      createNodeOperation.nodeData.style = {
-        fill: '#ff0000',
-        stroke: '#00ff00',
-        strokeWidth: 3,
-        fontSize: 16,
-        textColor: '#0000ff',
-        cssClass: 'custom-node-class',
+      createNodeOperation = {
+        ...createNodeOperation,
+        nodeData: {
+          ...createNodeOperation.nodeData,
+          style: {
+            fill: '#ff0000',
+            stroke: '#00ff00',
+            strokeWidth: 3,
+            fontSize: 16,
+            textColor: '#0000ff',
+            cssClass: 'custom-node-class',
+          },
+        },
       };
 
       const mockNode = {
@@ -203,9 +209,12 @@ describe('NodeOperationExecutor', () => {
     });
 
     it('should use default values for missing properties', () => {
-      createNodeOperation.nodeData = {
-        nodeType: 'process',
-        // Missing position, size, label, style, properties
+      createNodeOperation = {
+        ...createNodeOperation,
+        nodeData: {
+          nodeType: 'process',
+          // Missing position, size, label, style, properties
+        },
       };
 
       const mockNode = { id: 'default-node' };
@@ -323,8 +332,11 @@ describe('NodeOperationExecutor', () => {
     });
 
     it('should handle partial updates', () => {
-      updateNodeOperation.updates = {
-        label: 'Only Label Update',
+      updateNodeOperation = {
+        ...updateNodeOperation,
+        updates: {
+          label: 'Only Label Update',
+        },
       };
 
       mockGraph.getCellById.mockReturnValue(mockNode);
@@ -396,8 +408,11 @@ describe('NodeOperationExecutor', () => {
 
     it('should delete a key from node data when its value in properties is null', () => {
       mockNode.getData.mockReturnValue({ nodeType: 'process', _arch: { provider: 'aws' } });
-      updateNodeOperation.updates = {
-        properties: { _arch: null },
+      updateNodeOperation = {
+        ...updateNodeOperation,
+        updates: {
+          properties: { _arch: null },
+        },
       };
       mockGraph.getCellById.mockReturnValue(mockNode);
 
@@ -425,8 +440,11 @@ describe('NodeOperationExecutor', () => {
         _arch: { provider: 'aws' },
         extra: 'value',
       });
-      updateNodeOperation.updates = {
-        properties: { data: { nodeType: 'process' } },
+      updateNodeOperation = {
+        ...updateNodeOperation,
+        updates: {
+          properties: { data: { nodeType: 'process' } },
+        },
       };
       mockGraph.getCellById.mockReturnValue(mockNode);
 
@@ -759,7 +777,12 @@ describe('NodeOperationExecutor', () => {
         },
       };
 
-      const contextWithoutGraph = { ...operationContext, graph: null };
+      // Intentionally malformed: graph is required, but this test exercises the
+      // executor's handling of a missing graph.
+      const contextWithoutGraph = {
+        ...operationContext,
+        graph: null,
+      } as unknown as OperationContext;
 
       return new Promise<void>((resolve, reject) => {
         executor.execute(operation, contextWithoutGraph).subscribe({

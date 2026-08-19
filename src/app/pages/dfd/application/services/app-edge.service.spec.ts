@@ -29,6 +29,7 @@ interface MockX6ZOrderAdapter {
 
 interface MockAppOperationStateManager {
   executeVisualEffect: ReturnType<typeof vi.fn>;
+  executeAtomicOperation: ReturnType<typeof vi.fn>;
 }
 
 interface MockVisualEffectsService {

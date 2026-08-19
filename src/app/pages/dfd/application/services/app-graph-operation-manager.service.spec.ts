@@ -55,9 +55,6 @@ describe('AppGraphOperationManager', () => {
       providerId: 'test-user',
       isCollaborating: false,
       permissions: ['read', 'write'],
-      suppressValidation: false,
-      suppressHistory: false,
-      suppressBroadcast: false,
     };
   });
 
