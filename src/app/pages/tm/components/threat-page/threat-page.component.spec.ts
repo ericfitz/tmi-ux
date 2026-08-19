@@ -8,7 +8,7 @@ import { of, BehaviorSubject } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
 import { ThreatPageComponent } from './threat-page.component';
-import { CVSSScore, ThreatModel, Threat } from '../../models/threat-model.model';
+import { CVSSScore, ThreatModel, Threat, User } from '../../models/threat-model.model';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -89,6 +89,7 @@ describe('ThreatPageComponent', () => {
 
   const mockThreat: Threat = {
     id: 'threat-1',
+    threat_model_id: 'tm-1',
     name: 'Test Threat',
     description: 'Test description',
     severity: 'high',
@@ -98,6 +99,14 @@ describe('ThreatPageComponent', () => {
     metadata: [],
     cwe_id: ['CWE-79', 'CWE-89'],
     cvss: [{ vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', score: 9.8 }],
+  };
+
+  const mockUser: User = {
+    principal_type: 'user',
+    provider: 'test',
+    provider_id: 'user1',
+    email: 'user1@example.com',
+    display_name: 'Test User',
   };
 
   const mockThreatModel: ThreatModel = {
@@ -112,7 +121,8 @@ describe('ThreatPageComponent', () => {
     notes: [],
     repositories: [],
     authorization: [],
-    owner: { provider: 'test', provider_id: 'user1' },
+    owner: mockUser,
+    created_by: mockUser,
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
     metadata: [],
@@ -142,8 +152,11 @@ describe('ThreatPageComponent', () => {
     dialog = { open: vi.fn() };
     loggerService = createTypedMockLoggerService();
     languageService = {
-      currentLanguage$: new BehaviorSubject({ code: 'en-US', rtl: false }),
-      direction$: new BehaviorSubject('ltr' as const),
+      currentLanguage$: new BehaviorSubject<{ code: string; rtl: boolean }>({
+        code: 'en-US',
+        rtl: false,
+      }),
+      direction$: new BehaviorSubject<'ltr' | 'rtl'>('ltr'),
     };
     translocoService = {
       translate: vi.fn((key: string) => key),

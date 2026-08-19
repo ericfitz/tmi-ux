@@ -8,7 +8,7 @@ import { of, BehaviorSubject } from 'rxjs';
 
 import { AuditTrailPageComponent } from './audit-trail-page.component';
 import { AuditEntry, ListAuditTrailResponse } from '../../models/audit-trail.model';
-import { ThreatModel } from '../../models/threat-model.model';
+import { ThreatModel, User } from '../../models/threat-model.model';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock interfaces
@@ -69,6 +69,14 @@ describe('AuditTrailPageComponent', () => {
     offset: 0,
   };
 
+  const mockUser: User = {
+    principal_type: 'user',
+    provider: 'test',
+    provider_id: 'user1',
+    email: 'user1@example.com',
+    display_name: 'Test User',
+  };
+
   const mockThreatModel: ThreatModel = {
     id: 'tm-1',
     name: 'Test Threat Model',
@@ -81,7 +89,8 @@ describe('AuditTrailPageComponent', () => {
     notes: [],
     repositories: [],
     authorization: [],
-    owner: { provider: 'test', provider_id: 'user1' },
+    owner: mockUser,
+    created_by: mockUser,
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
     metadata: [],
@@ -105,7 +114,10 @@ describe('AuditTrailPageComponent', () => {
     };
 
     languageService = {
-      currentLanguage$: new BehaviorSubject({ code: 'en-US', rtl: false }),
+      currentLanguage$: new BehaviorSubject<{ code: string; rtl: boolean }>({
+        code: 'en-US',
+        rtl: false,
+      }),
     };
 
     loggerService = createTypedMockLoggerService();

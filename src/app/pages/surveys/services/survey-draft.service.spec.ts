@@ -13,6 +13,7 @@ import { SurveyDraftService } from './survey-draft.service';
 import { SurveyResponseService } from './survey-response.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponse } from '@app/types/survey.types';
+import { User } from '@app/pages/tm/models/threat-model.model';
 
 describe('SurveyDraftService', () => {
   let service: SurveyDraftService;
@@ -27,6 +28,14 @@ describe('SurveyDraftService', () => {
   };
 
   // Test data
+  const mockOwner: User = {
+    principal_type: 'user',
+    provider: 'test',
+    provider_id: 'user-1',
+    email: 'user1@example.com',
+    display_name: 'Test User',
+  };
+
   const mockResponse: SurveyResponse = {
     id: 'response-123',
     survey_id: 'template-456',
@@ -35,7 +44,7 @@ describe('SurveyDraftService', () => {
     is_confidential: false,
     answers: { question1: 'answer1' },
     ui_state: { currentPageNo: 1, isCompleted: false },
-    owner: { id: 'user-1', name: 'Test User' },
+    owner: mockOwner,
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-15T00:00:00Z',
   };

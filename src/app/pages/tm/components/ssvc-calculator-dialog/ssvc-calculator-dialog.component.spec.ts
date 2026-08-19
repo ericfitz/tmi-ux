@@ -44,7 +44,7 @@ describe('SsvcCalculatorDialogComponent', () => {
       debug: vi.fn(),
     };
     languageService = {
-      direction$: new BehaviorSubject('ltr' as const),
+      direction$: new BehaviorSubject<'ltr' | 'rtl'>('ltr'),
     };
     destroyRef = {
       onDestroy: vi.fn(),

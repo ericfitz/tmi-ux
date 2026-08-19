@@ -19,6 +19,7 @@ import {
   UpdateSurveyRequest,
   SurveyJsonSchema,
 } from '@app/types/survey.types';
+import { User } from '@app/pages/tm/models/threat-model.model';
 
 describe('SurveyService', () => {
   let service: SurveyService;
@@ -42,6 +43,14 @@ describe('SurveyService', () => {
     pages: [{ name: 'page1', elements: [] }],
   };
 
+  const mockCreatedBy: User = {
+    principal_type: 'user',
+    provider: 'test',
+    provider_id: 'user-1',
+    email: 'admin@example.com',
+    display_name: 'Admin User',
+  };
+
   const mockSurvey: Survey = {
     id: 'survey-123',
     name: 'Security Review Intake',
@@ -52,7 +61,7 @@ describe('SurveyService', () => {
     settings: { allow_threat_model_linking: true },
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-15T00:00:00Z',
-    created_by: { id: 'user-1', name: 'Admin User' },
+    created_by: mockCreatedBy,
   };
 
   const mockListResponse: ListSurveysResponse = {
@@ -65,7 +74,7 @@ describe('SurveyService', () => {
         status: 'active',
         created_at: '2024-01-01T00:00:00Z',
         modified_at: '2024-01-15T00:00:00Z',
-        created_by: { id: 'user-1', name: 'Admin User' },
+        created_by: mockCreatedBy,
       },
     ],
     total: 1,

@@ -3,7 +3,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, type Observable } from 'rxjs';
 
 import { CvssCalculatorDialogComponent } from './cvss-calculator-dialog.component';
 import {
@@ -32,7 +32,7 @@ interface MockLanguageService {
 
 interface MockTranslocoService {
   translate: ReturnType<typeof vi.fn>;
-  langChanges$: ReturnType<typeof of<string>>;
+  langChanges$: Observable<string>;
 }
 
 describe('CvssCalculatorDialogComponent', () => {
@@ -56,7 +56,7 @@ describe('CvssCalculatorDialogComponent', () => {
       debug: vi.fn(),
     };
     languageService = {
-      direction$: new BehaviorSubject('ltr' as const),
+      direction$: new BehaviorSubject<'ltr' | 'rtl'>('ltr'),
     };
     translocoService = {
       translate: vi.fn((key: string) => key),

@@ -7,8 +7,10 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { of } from 'rxjs';
 import { TriageDetailComponent } from './triage-detail.component';
 import { SurveyJsonSchema, SurveyResponse } from '@app/types/survey.types';
+import type { Language } from '@app/i18n/language-config';
 
 describe('TriageDetailComponent', () => {
   let component: TriageDetailComponent;
@@ -28,6 +30,8 @@ describe('TriageDetailComponent', () => {
     warn: vi.fn(),
     error: vi.fn(),
   };
+  const mockLanguage: Language = { code: 'en-US', name: 'English', localName: 'English' };
+  const mockLanguageService = { currentLanguage$: of(mockLanguage) };
 
   beforeEach(() => {
     component = new TriageDetailComponent(
@@ -40,6 +44,7 @@ describe('TriageDetailComponent', () => {
       mockSurveyService as any,
       mockTriageNoteService as any,
       mockLogger as any,
+      mockLanguageService as never,
     );
   });
 
@@ -327,10 +332,11 @@ describe('TriageDetailComponent', () => {
           provider: 'test',
           provider_id: 'u1',
           email: 'test@example.com',
+          display_name: 'Test User',
         },
         created_at: '2026-01-01T00:00:00Z',
         modified_at: '2026-01-01T00:00:00Z',
-      } as SurveyResponse;
+      };
 
       component['formatResponsesWithoutDefinition']();
 

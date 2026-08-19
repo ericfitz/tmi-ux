@@ -10,13 +10,22 @@ import { ExportDialogComponent } from './export-dialog.component';
 import type { ExportDialogData } from './export-dialog.types';
 import type { MatDialogRef } from '@angular/material/dialog';
 import type { LoggerService } from '../../../../core/services/logger.service';
-import type { ThreatModel } from '../../models/threat-model.model';
+import type { ThreatModel, User } from '../../models/threat-model.model';
+
+const mockUser: User = {
+  principal_type: 'user',
+  provider: 'test',
+  provider_id: 'user1',
+  email: 'user1@example.com',
+  display_name: 'Test User',
+};
 
 const mockThreatModel: ThreatModel = {
   id: 'tm-1',
   name: 'Test TM',
   description: 'A test threat model',
-  owner: 'user1',
+  owner: mockUser,
+  created_by: mockUser,
   status: 'active',
   threat_model_framework: 'stride',
   created_at: '2026-01-01T00:00:00.000Z',

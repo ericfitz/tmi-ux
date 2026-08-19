@@ -3,7 +3,8 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { Injector, DestroyRef, runInInjectionContext } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of, throwError, type Observable } from 'rxjs';
+import type { ITheme } from 'survey-core';
 import { ResponseDetailComponent } from './response-detail.component';
 import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
@@ -24,7 +25,7 @@ interface MockSurveyResponseService {
 
 interface MockSurveyThemeService {
   getTheme: ReturnType<typeof vi.fn>;
-  theme$: ReturnType<typeof of>;
+  theme$: Observable<ITheme>;
 }
 
 interface MockProjectService {

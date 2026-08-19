@@ -80,7 +80,8 @@ describe('ChatSessionPanelComponent', () => {
       let emitted: string | undefined;
       component.sessionDeleted.subscribe(id => (emitted = id));
       let stopped = false;
-      const event = { stopPropagation: () => (stopped = true) } as Event;
+      // Partial Event stub: only stopPropagation is exercised by onDelete.
+      const event = { stopPropagation: () => (stopped = true) } as unknown as Event;
 
       component.onDelete(event, 's9');
 
@@ -92,7 +93,8 @@ describe('ChatSessionPanelComponent', () => {
       let emitted: string | undefined;
       component.sessionSavedAsNote.subscribe(id => (emitted = id));
       let stopped = false;
-      const event = { stopPropagation: () => (stopped = true) } as Event;
+      // Partial Event stub: only stopPropagation is exercised by onSaveAsNote.
+      const event = { stopPropagation: () => (stopped = true) } as unknown as Event;
 
       component.onSaveAsNote(event, 's9');
 

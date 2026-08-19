@@ -9,7 +9,7 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of, throwError, type Observable } from 'rxjs';
 import type { TranslocoService } from '@jsverse/transloco';
 
 import { SurveyListComponent } from './survey-list.component';
@@ -30,7 +30,7 @@ describe('SurveyListComponent', () => {
   let mockLogger: MockLoggerService;
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
   let mockTransloco: TranslocoService;
-  let mockLanguageService: { currentLanguage$: ReturnType<typeof of> };
+  let mockLanguageService: { currentLanguage$: Observable<{ code: string; rtl: boolean }> };
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let envInjector: EnvironmentInjector;
 
@@ -150,13 +150,13 @@ describe('SurveyListComponent', () => {
   describe('startSurvey', () => {
     afterEach(() => {
       vi.unstubAllEnvs();
-      delete (environment as Record<string, unknown>)['enableConfidentialThreatModels'];
+      delete environment.enableConfidentialThreatModels;
     });
 
     it('creates a draft and navigates to the fill route when the confidential flag is off', () => {
       // Drive the false branch explicitly rather than relying on the base
       // environment file omitting the (optional) flag.
-      (environment as Record<string, unknown>)['enableConfidentialThreatModels'] = false;
+      environment.enableConfidentialThreatModels = false;
 
       component.startSurvey(survey);
 
@@ -169,7 +169,7 @@ describe('SurveyListComponent', () => {
     });
 
     it('prompts for confidentiality before creating the draft when the flag is on', () => {
-      (environment as Record<string, unknown>)['enableConfidentialThreatModels'] = true;
+      environment.enableConfidentialThreatModels = true;
       mockDialog.open.mockReturnValue({ afterClosed: () => of(true) });
 
       component.startSurvey(survey);
@@ -182,7 +182,7 @@ describe('SurveyListComponent', () => {
     });
 
     it('does not create a draft when the confidentiality prompt is dismissed', () => {
-      (environment as Record<string, unknown>)['enableConfidentialThreatModels'] = true;
+      environment.enableConfidentialThreatModels = true;
       mockDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
 
       component.startSurvey(survey);

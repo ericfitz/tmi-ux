@@ -43,7 +43,7 @@ import { UserDisplayComponent } from '@app/shared/components/user-display/user-d
 /**
  * Authorization with temporary _subject field for UI state management
  */
-interface AuthorizationWithSubject extends Authorization {
+export interface AuthorizationWithSubject extends Authorization {
   _subject?: string;
 }
 
