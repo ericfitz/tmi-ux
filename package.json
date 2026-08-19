@@ -76,6 +76,7 @@
     "deploy:chainguard": "./scripts/push-chainguard.sh",
     "deploy:aws:ecr": "./scripts/push-ecr.sh",
     "deploy:aws:eks": "aws eks update-kubeconfig --region us-east-1 --name tmi-eks && kubectl rollout restart deployment/tmi-ux -n tmi && kubectl get pods -n tmi -l app=tmi-ux -w",
+    "deploy:k3s": "bash scripts/deploy-k3s.sh",
     "generate:api-types": "sh scripts/generate-api-types.sh",
     "generate:icon-manifest": "tsx scripts/generate-icon-manifest.ts"
   },

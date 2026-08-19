@@ -14,6 +14,8 @@ RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
 # Copy package files first for layer caching
 COPY package.json pnpm-lock.yaml ./
+# pnpm patches (package.json pnpm.patchedDependencies) must be present at install time
+COPY patches ./patches
 
 # Install all dependencies (including devDependencies for build)
 RUN pnpm install --frozen-lockfile
@@ -31,7 +33,7 @@ USER root
 WORKDIR /app
 
 # Create minimal package.json with only runtime server dependencies
-RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
+RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.2.1","express-rate-limit":"^8.6.2","http-proxy-middleware":"^4.2.0"}}' > package.json
 
 # Install only production dependencies
 RUN npm install --omit=dev --production
