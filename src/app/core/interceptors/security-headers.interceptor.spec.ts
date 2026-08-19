@@ -1,6 +1,12 @@
 import '@angular/compiler';
 
-import { HttpRequest, HttpResponse, HttpHeaders, HttpHandlerFn } from '@angular/common/http';
+import {
+  HttpRequest,
+  HttpResponse,
+  HttpHeaders,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+} from '@angular/common/http';
 import { expect, describe, it, beforeEach, vi, afterEach, Mock } from 'vitest';
 import { of } from 'rxjs';
 
@@ -23,7 +29,7 @@ describe('SecurityHeadersInterceptor', () => {
   let loggerSpy: LoggerService;
   let securityConfigSpy: Partial<SecurityConfigService>;
   let mockNext: Mock<HttpHandlerFn>;
-  let interceptorFn: HttpHandlerFn;
+  let interceptorFn: HttpInterceptorFn;
 
   beforeEach(() => {
     vi.clearAllMocks();

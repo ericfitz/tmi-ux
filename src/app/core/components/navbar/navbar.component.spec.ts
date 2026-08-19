@@ -73,7 +73,7 @@ describe('NavbarComponent', () => {
     };
 
     mockAuthService = {
-      userProfile$: new BehaviorSubject(null),
+      userProfile$: new BehaviorSubject<unknown>(null),
       logout: vi.fn(),
       getLandingPage: vi.fn().mockReturnValue('/dashboard'),
     };
@@ -96,16 +96,18 @@ describe('NavbarComponent', () => {
     };
 
     mockServerConnectionService = {
-      connectionStatus$: new BehaviorSubject(ServerConnectionStatus.NOT_CONFIGURED),
+      connectionStatus$: new BehaviorSubject<ServerConnectionStatus>(
+        ServerConnectionStatus.NOT_CONFIGURED,
+      ),
     };
 
     mockWebSocketAdapter = {
-      connectionState$: new BehaviorSubject(WebSocketState.DISCONNECTED),
+      connectionState$: new BehaviorSubject<WebSocketState>(WebSocketState.DISCONNECTED),
       isConnected: false,
     };
 
     mockCollaborationService = {
-      collaborationState$: new BehaviorSubject({ isActive: false }),
+      collaborationState$: new BehaviorSubject<{ isActive: boolean }>({ isActive: false }),
       getCurrentState: vi.fn().mockReturnValue({ isActive: false }),
       currentWebSocketUrl: null,
     };
@@ -280,15 +282,15 @@ describe('NavbarComponent', () => {
 
   describe('switchLanguage', () => {
     it('should set language when different from current', () => {
-      component.currentLanguage = { code: 'en', name: 'English' };
-      component.switchLanguage({ code: 'es', name: 'Spanish' });
+      component.currentLanguage = { code: 'en', name: 'English', localName: 'English' };
+      component.switchLanguage({ code: 'es', name: 'Spanish', localName: 'Español' });
 
       expect(mockLanguageService.setLanguage).toHaveBeenCalledWith('es');
     });
 
     it('should not set language when same as current', () => {
-      component.currentLanguage = { code: 'en', name: 'English' };
-      component.switchLanguage({ code: 'en', name: 'English' });
+      component.currentLanguage = { code: 'en', name: 'English', localName: 'English' };
+      component.switchLanguage({ code: 'en', name: 'English', localName: 'English' });
 
       expect(mockLanguageService.setLanguage).not.toHaveBeenCalled();
     });
@@ -424,7 +426,7 @@ describe('NavbarComponent', () => {
 
   describe('copyUserEmailToClipboard', () => {
     it('should warn when no email available', () => {
-      mockAuthService.userEmail = '';
+      component.userEmail = '';
       component.copyUserEmailToClipboard();
 
       expect(mockLogger.warn).toHaveBeenCalledWith('No user email available to copy');

@@ -20,6 +20,7 @@ const REASON_CODE_KEYS: Record<ReasonCode, string> = {
   no_accessible_source: 'documentAccess.reason.noAccessibleSource',
   source_not_found: 'documentAccess.reason.sourceNotFound',
   fetch_error: 'documentAccess.reason.fetchError',
+  microsoft_not_shared: 'documentAccess.reason.microsoftNotShared',
   other: 'documentAccess.reason.other',
 };
 
@@ -28,6 +29,7 @@ const REMEDIATION_ACTION_KEYS: Record<RemediationAction, string> = {
   relink_account: 'documentAccess.remediation.relinkAccount',
   repick_file: 'documentAccess.remediation.repickFile',
   share_with_service_account: 'documentAccess.remediation.shareWithServiceAccount',
+  share_with_application: 'documentAccess.remediation.shareWithApplication.title',
   repick_after_share: 'documentAccess.remediation.repickAfterShare',
   retry: 'documentAccess.remediation.retry',
   contact_owner: 'documentAccess.remediation.contactOwner',

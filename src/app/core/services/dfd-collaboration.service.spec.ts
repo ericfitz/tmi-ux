@@ -37,11 +37,13 @@ describe('DfdCollaborationService', () => {
     debugComponent: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: {
-    getCurrentUser: ReturnType<typeof vi.fn>;
-    ensureValidSession: ReturnType<typeof vi.fn>;
+    userEmail: string | null;
+    userIdp: string;
+    providerId: string;
+    userProfile: { display_name: string; provider_id: string } | null;
   };
   let mockThreatModelService: {
-    getDiagramPermissions: ReturnType<typeof vi.fn>;
+    endDiagramCollaborationSession: ReturnType<typeof vi.fn>;
   };
   let mockWebSocketAdapter: {
     connect: ReturnType<typeof vi.fn>;
@@ -92,13 +94,6 @@ describe('DfdCollaborationService', () => {
     };
 
     mockAuthService = {
-      getCurrentUser: vi.fn().mockReturnValue({
-        email: 'user@example.com',
-        provider: 'google',
-        provider_id: 'google-123',
-        display_name: 'Test User',
-      }),
-      ensureValidSession: vi.fn().mockReturnValue(of({ token: 'valid-token' })),
       userEmail: 'user@example.com',
       userIdp: 'google',
       providerId: 'google-123',
@@ -106,10 +101,9 @@ describe('DfdCollaborationService', () => {
         display_name: 'Test User',
         provider_id: 'google-123',
       },
-    } as unknown as IAuthService;
+    };
 
     mockThreatModelService = {
-      getDiagramPermissions: vi.fn(),
       endDiagramCollaborationSession: vi.fn().mockReturnValue(of(undefined)),
     };
 
@@ -231,7 +225,7 @@ describe('DfdCollaborationService', () => {
     });
 
     it('should return null when auth service has no user', () => {
-      (mockAuthService as { userEmail: string | null }).userEmail = null;
+      mockAuthService.userEmail = null;
       const email = service.getCurrentUserEmail();
       expect(email).toBeNull();
     });
@@ -244,7 +238,7 @@ describe('DfdCollaborationService', () => {
     });
 
     it('should return null when no user profile', () => {
-      (mockAuthService as { userProfile: { display_name: string } | null }).userProfile = null;
+      mockAuthService.userProfile = null;
       const providerId = service.getCurrentProviderId();
       expect(providerId).toBeNull();
     });
@@ -482,10 +476,7 @@ describe('DfdCollaborationService', () => {
         expect.objectContaining({ disableClose: true }),
       );
       expect(result).toBe(false);
-      expect(
-        (mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> })
-          .endDiagramCollaborationSession,
-      ).not.toHaveBeenCalled();
+      expect(mockThreatModelService.endDiagramCollaborationSession).not.toHaveBeenCalled();
     });
 
     it('confirm proceeds to end the session', () => {
@@ -493,10 +484,7 @@ describe('DfdCollaborationService', () => {
       mockDialog.open.mockReturnValue({ afterClosed: () => of({ confirmed: true }) });
       let result: boolean | undefined;
       service.toggleCollaboration().subscribe(r => (result = r));
-      expect(
-        (mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> })
-          .endDiagramCollaborationSession,
-      ).toHaveBeenCalled();
+      expect(mockThreatModelService.endDiagramCollaborationSession).toHaveBeenCalled();
       expect(result).toBe(true);
     });
 
@@ -778,9 +766,9 @@ describe('DfdCollaborationService', () => {
 
     it('endCollaboration cleans up and messages even when the REST call fails', () => {
       arrangeHostSession();
-      (
-        mockThreatModelService as { endDiagramCollaborationSession: ReturnType<typeof vi.fn> }
-      ).endDiagramCollaborationSession.mockReturnValue(throwError(() => new Error('server error')));
+      mockThreatModelService.endDiagramCollaborationSession.mockReturnValue(
+        throwError(() => new Error('server error')),
+      );
       let errored = false;
       service.endCollaboration().subscribe({ error: () => (errored = true) });
       expect(errored).toBe(true);

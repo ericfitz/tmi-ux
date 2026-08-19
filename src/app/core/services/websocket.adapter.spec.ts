@@ -127,15 +127,19 @@ describe('WebSocketAdapter', () => {
 
     // Mock the global WebSocket constructor with static constants
     mockWebSocketInstance = new MockWebSocket('');
-    const mockConstructor = vi.fn().mockImplementation(function (url: string) {
-      mockWebSocketInstance = new MockWebSocket(url);
-      return mockWebSocketInstance;
-    });
     // WebSocket static constants are used by the adapter for readyState checks
-    mockConstructor.CONNECTING = MockWebSocket.CONNECTING;
-    mockConstructor.OPEN = MockWebSocket.OPEN;
-    mockConstructor.CLOSING = MockWebSocket.CLOSING;
-    mockConstructor.CLOSED = MockWebSocket.CLOSED;
+    const mockConstructor = Object.assign(
+      vi.fn().mockImplementation(function (url: string) {
+        mockWebSocketInstance = new MockWebSocket(url);
+        return mockWebSocketInstance;
+      }),
+      {
+        CONNECTING: MockWebSocket.CONNECTING,
+        OPEN: MockWebSocket.OPEN,
+        CLOSING: MockWebSocket.CLOSING,
+        CLOSED: MockWebSocket.CLOSED,
+      },
+    );
     vi.stubGlobal('WebSocket', mockConstructor);
   });
 
@@ -222,12 +226,16 @@ describe('WebSocketAdapter', () => {
       // The adapter stores the socket internally. When connect() is called again,
       // it checks this._socket.readyState === WebSocket.OPEN.
       // We need to ensure the global WebSocket.OPEN constant matches our mock's value.
-      const mockConstructor = vi.fn().mockImplementation(() => firstSocket);
       // Copy static constants to the mock constructor
-      mockConstructor.OPEN = MockWebSocket.OPEN;
-      mockConstructor.CONNECTING = MockWebSocket.CONNECTING;
-      mockConstructor.CLOSING = MockWebSocket.CLOSING;
-      mockConstructor.CLOSED = MockWebSocket.CLOSED;
+      const mockConstructor = Object.assign(
+        vi.fn().mockImplementation(() => firstSocket),
+        {
+          OPEN: MockWebSocket.OPEN,
+          CONNECTING: MockWebSocket.CONNECTING,
+          CLOSING: MockWebSocket.CLOSING,
+          CLOSED: MockWebSocket.CLOSED,
+        },
+      );
       vi.stubGlobal('WebSocket', mockConstructor);
 
       // Second connection attempt should complete immediately since socket is OPEN
