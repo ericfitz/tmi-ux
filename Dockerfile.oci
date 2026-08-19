@@ -19,6 +19,8 @@ RUN npm install -g pnpm@10.18.3
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
+# pnpm patches (package.json pnpm.patchedDependencies) must be present at install time
+COPY patches ./patches
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -33,7 +35,7 @@ RUN pnpm run build:oci
 # This runs in the builder stage which has npm registry access
 RUN mkdir /runtime && \
     cd /runtime && \
-    echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.2.1","express-rate-limit":"^8.3.1"}}' > package.json && \
+    echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.2.1","express-rate-limit":"^8.6.2","http-proxy-middleware":"^4.2.0"}}' > package.json && \
     npm install --omit=dev
 
 # Stage 2: Production server on Oracle Linux 9

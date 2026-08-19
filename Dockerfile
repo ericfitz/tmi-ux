@@ -14,6 +14,8 @@ RUN npm install -g pnpm@10.18.3
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
+# pnpm patches (package.json pnpm.patchedDependencies) must be present at install time
+COPY patches ./patches
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -33,7 +35,7 @@ LABEL org.opencontainers.image.version=$APP_VERSION
 WORKDIR /app
 
 # Create minimal package.json for runtime dependencies only
-RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
+RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.2.1","express-rate-limit":"^8.6.2","http-proxy-middleware":"^4.2.0"}}' > package.json
 
 # Install only runtime dependencies
 RUN npm install --omit=dev --production

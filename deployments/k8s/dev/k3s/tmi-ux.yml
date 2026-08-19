@@ -1,0 +1,78 @@
+# tmi-ux on the local Raspberry Pi k3s cluster (kube context `k3s-rp`).
+#
+# Companion to the server's k3s dev overlay in the tmi repo
+# (deployments/k8s/dev/k3s/): same namespace, same in-cluster registry
+# (rp2:30500), served on NodePort 30081 next to the server's 30080.
+# Deploy with `pnpm run deploy:k3s` (scripts/deploy-k3s.sh), which builds
+# Dockerfile.chainguard for the host arch (Apple Silicon == Pi arm64), pushes
+# to rp2:30500, applies this file, and waits for the rollout.
+#
+# The browser talks to the API directly at http://rp2:30080 (TMI_API_URL); the
+# server's OAuth client_callback_allowlist must admit http://rp2:30081/* —
+# see deploy-k3s.sh's post-deploy note.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tmi-ux
+  namespace: tmi-platform
+  labels:
+    app: tmi-ux
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tmi-ux
+  template:
+    metadata:
+      labels:
+        app: tmi-ux
+    spec:
+      containers:
+        - name: tmi-ux
+          image: rp2:30500/tmi-ux:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: TMI_API_URL
+              value: http://rp2:30080
+            - name: TMI_OPERATOR_NAME
+              value: TMI dev (k3s-rp)
+            - name: TMI_LOG_LEVEL
+              value: debug
+          readinessProbe:
+            httpGet:
+              path: /config.json
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /config.json
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmi-ux
+  namespace: tmi-platform
+  labels:
+    app: tmi-ux
+spec:
+  type: NodePort
+  selector:
+    app: tmi-ux
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30081
