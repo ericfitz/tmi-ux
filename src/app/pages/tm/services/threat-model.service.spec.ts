@@ -28,18 +28,6 @@ import { waitForAsync } from '../../../../testing/async-utils';
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
 
 /**
- * ThreatModelService only reads `username`/`userEmail`/`isAuthenticated` from
- * AuthService, but this spec's mock also carries `isUsingLocalProvider` — a
- * flag with no counterpart on the real AuthService (production code reaches
- * it too, via an `as any` cast in app-dfd-orchestrator.service.ts). Extending
- * AuthService locally keeps the mock's extra field precisely typed instead of
- * using `any`.
- */
-interface AuthServiceMock extends AuthService {
-  isUsingLocalProvider: boolean;
-}
-
-/**
  * Mirrors ApiService#get's params type so mockImplementation callbacks are
  * assignable to the real (generic) method signature.
  */
@@ -52,7 +40,7 @@ describe('ThreatModelService', () => {
   let service: ThreatModelService;
   let loggerService: LoggerService;
   let apiService: ApiService;
-  let authService: AuthServiceMock;
+  let authService: AuthService;
   let authorizationService: ThreatModelAuthorizationService;
   let importOrchestrator: any;
   let testThreatModel1: any;
@@ -119,12 +107,11 @@ describe('ThreatModelService', () => {
       delete: vi.fn().mockReturnValue(of(true)),
     } as unknown as ApiService;
 
-    // Create a mock for AuthService (default to offline mode enabled)
+    // Create a mock for AuthService
     authService = {
       userEmail: 'test.user@example.com',
       userProfile: { email: 'test.user@example.com', name: 'Test User' },
-      isUsingLocalProvider: true, // Enable offline mode by default for tests
-    } as unknown as AuthServiceMock;
+    } as unknown as AuthService;
 
     // Create a mock for ThreatModelAuthorizationService
     authorizationService = {
@@ -371,11 +358,6 @@ describe('ThreatModelService', () => {
   });
 
   describe('with offline mode disabled', () => {
-    beforeEach(() => {
-      // Disable offline mode
-      authService.isUsingLocalProvider = false;
-    });
-
     it('should make API calls for diagrams when mock data is disabled', waitForAsync(() => {
       const mockDiagrams = [{ id: 'diag1', name: 'Test Diagram' }];
       const mockResponse = { diagrams: mockDiagrams, total: 1, limit: 100, offset: 0 };
@@ -422,11 +404,6 @@ describe('ThreatModelService', () => {
   });
 
   describe('Metadata API Methods', () => {
-    beforeEach(() => {
-      // Disable offline mode for these tests
-      authService.isUsingLocalProvider = false;
-    });
-
     it('should get threat model metadata via API', waitForAsync(() => {
       const mockMetadata = [{ key: 'test-key', value: 'test-value' }];
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
@@ -606,11 +583,6 @@ describe('ThreatModelService', () => {
   });
 
   describe('Entity API Methods', () => {
-    beforeEach(() => {
-      // Disable offline mode for these tests
-      authService.isUsingLocalProvider = false;
-    });
-
     describe('Threat API Methods', () => {
       it('should create a threat via API', waitForAsync(() => {
         const threatData = {

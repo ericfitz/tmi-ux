@@ -255,19 +255,17 @@ describe('AuthorizationPrepareService', () => {
       mockProviderAdapter.transformProviderForApi.mockReturnValue('tmi');
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user-123',
           provider: 'tmi',
-          principal_type: 'user' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'writer',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id is intentionally omitted since deriving
-      // it is exactly what this test exercises.
-      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
+      const result = service.prepareForApi(authorizations);
 
       expect(result).toEqual([
         {
@@ -285,19 +283,17 @@ describe('AuthorizationPrepareService', () => {
       mockProviderAdapter.transformProviderForApi.mockReturnValue('google');
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user@example.com',
           provider: 'google',
-          principal_type: 'user' as const,
-          role: 'reader' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'reader',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id/email are intentionally omitted since
-      // deriving them is exactly what this test exercises.
-      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
+      const result = service.prepareForApi(authorizations);
 
       expect(result).toEqual([
         {
@@ -313,19 +309,17 @@ describe('AuthorizationPrepareService', () => {
     it('should remove _subject field from prepared authorization', () => {
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user@example.com',
           provider: 'google',
-          principal_type: 'user' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'writer',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id/email are intentionally omitted since
-      // deriving them is exactly what this test exercises.
-      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
+      const result = service.prepareForApi(authorizations);
 
       expect(result[0]).not.toHaveProperty('_subject');
     });
@@ -333,20 +327,18 @@ describe('AuthorizationPrepareService', () => {
     it('should remove display_name field from prepared authorization', () => {
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user@example.com',
           provider: 'google',
-          principal_type: 'user' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'writer',
           display_name: 'John Doe',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id/email are intentionally omitted since
-      // deriving them is exactly what this test exercises.
-      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
+      const result = service.prepareForApi(authorizations);
 
       expect(result[0]).not.toHaveProperty('display_name');
     });
@@ -390,19 +382,17 @@ describe('AuthorizationPrepareService', () => {
     it('should log warning for invalid authorizations', () => {
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(false);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user-123',
           provider: 'tmi',
-          principal_type: 'group' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'group',
+          role: 'writer',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id is intentionally omitted since deriving
-      // it is exactly what this test exercises.
-      service.prepareForApi(authorizations as unknown as Authorization[]);
+      service.prepareForApi(authorizations);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'Invalid authorization: Provider "tmi" does not support "group" principals',
@@ -417,31 +407,31 @@ describe('AuthorizationPrepareService', () => {
       mockProviderAdapter.transformProviderForApi.mockImplementation(p => p);
       mockProviderAdapter.isValidForPrincipalType.mockReturnValue(true);
 
-      const authorizations = [
+      const authorizations: (Authorization & { _subject: string })[] = [
         {
           _subject: 'user-123',
           provider: 'tmi',
-          principal_type: 'user' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'writer',
         },
         {
           _subject: 'user@example.com',
           provider: 'google',
-          principal_type: 'user' as const,
-          role: 'reader' as const,
+          provider_id: '',
+          principal_type: 'user',
+          role: 'reader',
         },
         {
           _subject: 'group-456',
           provider: 'github',
-          principal_type: 'group' as const,
-          role: 'writer' as const,
+          provider_id: '',
+          principal_type: 'group',
+          role: 'writer',
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id/email are intentionally omitted since
-      // deriving them is exactly what this test exercises.
-      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
+      const result = service.prepareForApi(authorizations);
 
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({
@@ -487,9 +477,9 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      // _subject is a transient UI-only field prepareForApi() reads internally to
-      // derive provider_id/email; provider_id is intentionally omitted since deriving
-      // it is exactly what this test exercises.
+      // custom_field is not a real Authorization property — its presence on the
+      // input is the deliberate condition this test exercises: that prepareForApi
+      // preserves unknown fields it doesn't recognize.
       const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result[0]).toHaveProperty('custom_field', 'custom-value');

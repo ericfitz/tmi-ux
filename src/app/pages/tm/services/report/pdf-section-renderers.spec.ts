@@ -31,7 +31,6 @@ import type {
   Note,
   Threat,
 } from '../../models/threat-model.model';
-import type { Diagram } from '../../models/diagram.model';
 
 const config: LayoutConfig = {
   pageWidth: 612,
@@ -342,9 +341,15 @@ describe('pdf-section-renderers', () => {
             modified_at: '2024-01-01',
           },
         ],
-        // Diagram fixture intentionally omits type/created_at/modified_at — this test
-        // exercises name resolution for a linked diagram, not full Diagram validity.
-        diagrams: [{ id: 'dg1', name: 'Linked Diagram' } as unknown as Diagram],
+        diagrams: [
+          {
+            id: 'dg1',
+            name: 'Linked Diagram',
+            type: 'DFD-1.0.0',
+            created_at: '2024-01-01',
+            modified_at: '2024-01-01',
+          },
+        ],
         threats: [{ ...threat, asset_id: 'a1', diagram_id: 'dg1', issue_uri: 'https://x/issue/1' }],
       });
 
@@ -356,13 +361,14 @@ describe('pdf-section-renderers', () => {
     it('renders a diagram section with no image (image unavailable path)', async () => {
       const tm = makeThreatModel({
         diagrams: [
-          // Diagram fixture intentionally omits type/created_at/modified_at — this
-          // test exercises the no-image render path, not full Diagram validity.
           {
             id: 'dg1',
             name: 'Empty Diagram',
+            type: 'DFD-1.0.0',
+            created_at: '2024-01-01',
+            modified_at: '2024-01-01',
             include_in_report: true,
-          } as unknown as Diagram,
+          },
         ],
       });
 
