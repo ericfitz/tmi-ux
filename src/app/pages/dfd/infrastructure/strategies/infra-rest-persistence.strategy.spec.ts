@@ -11,6 +11,7 @@ import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { HttpClient } from '@angular/common/http';
+import { LoggerService } from '../../../../core/services/logger.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import {
@@ -18,11 +19,11 @@ import {
   LoadOperation,
 } from '../../application/services/app-persistence-coordinator.service';
 import { InfraRestPersistenceStrategy } from './infra-rest-persistence.strategy';
-import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { createMockLoggerService } from '@testing/mocks';
 
 describe('InfraRestPersistenceStrategy', () => {
   let strategy: InfraRestPersistenceStrategy;
-  let loggerService: MockLoggerService;
+  let loggerService: LoggerService;
   let mockHttpClient: { get: ReturnType<typeof vi.fn>; patch: ReturnType<typeof vi.fn> };
   let mockDiagramService: { loadDiagram: ReturnType<typeof vi.fn> };
   let mockThreatModelService: {
@@ -31,7 +32,7 @@ describe('InfraRestPersistenceStrategy', () => {
   };
 
   beforeEach(() => {
-    loggerService = createTypedMockLoggerService();
+    loggerService = createMockLoggerService();
 
     mockHttpClient = {
       get: vi.fn(),

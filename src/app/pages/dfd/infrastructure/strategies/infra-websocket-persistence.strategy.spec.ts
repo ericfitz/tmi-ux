@@ -10,6 +10,7 @@ import '@angular/compiler';
 import { Subject, of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
+import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
 import { AppHistoryService } from '../../application/services/app-history.service';
@@ -20,7 +21,7 @@ import {
   LoadOperation,
 } from '../../application/services/app-persistence-coordinator.service';
 import { WebSocketPersistenceStrategy } from './infra-websocket-persistence.strategy';
-import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { createMockLoggerService } from '@testing/mocks';
 
 // Mock normalizeCells to pass through unchanged (isolates strategy logic from normalization)
 vi.mock('../../utils/cell-normalization.util', () => ({
@@ -29,14 +30,14 @@ vi.mock('../../utils/cell-normalization.util', () => ({
 
 describe('WebSocketPersistenceStrategy', () => {
   let strategy: WebSocketPersistenceStrategy;
-  let loggerService: MockLoggerService;
+  let loggerService: LoggerService;
   let mockWebSocketAdapter: { isConnected: boolean };
   let mockCollaborationAdapter: { sendDiagramOperation: ReturnType<typeof vi.fn> };
   let historyOperation$: Subject<HistoryOperationEvent>;
   let mockHistoryService: { historyOperation$: Subject<HistoryOperationEvent> };
 
   beforeEach(() => {
-    loggerService = createTypedMockLoggerService();
+    loggerService = createMockLoggerService();
 
     mockWebSocketAdapter = {
       isConnected: true,

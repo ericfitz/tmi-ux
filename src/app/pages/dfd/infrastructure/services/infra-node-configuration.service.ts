@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import type { NodeMetadata } from '@antv/x6';
 import { NodeTypeInfo } from '../../utils/x6-cell-extensions';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -12,10 +13,18 @@ export interface NodeAttrs {
 }
 
 /**
+ * X6's own metadata shape for a node's `ports` option (the `{ groups, items }` form,
+ * as opposed to the flat `PortMetadata[]` form). Reusing X6's real type for `groups`
+ * here (rather than a hand-rolled `Record<string, unknown>`) keeps `PortConfiguration`
+ * assignable to what `Graph.addNode()` / `Node.create()` actually expect.
+ */
+type X6PortsMetadata = Exclude<NonNullable<NodeMetadata['ports']>, readonly unknown[]>;
+
+/**
  * Port configuration interface
  */
 export interface PortConfiguration {
-  groups: Record<string, unknown>;
+  groups: NonNullable<X6PortsMetadata['groups']>;
   items: Array<{ group: string; id?: string }>;
 }
 

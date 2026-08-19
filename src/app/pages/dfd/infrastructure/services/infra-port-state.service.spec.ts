@@ -10,7 +10,8 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
-import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { createMockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -61,13 +62,13 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
 describe('InfraPortStateService', () => {
   let service: InfraPortStateService;
   let mockEdgeQueryService: InfraEdgeQueryService;
-  let mockLogger: MockLoggerService;
+  let mockLogger: LoggerService;
   let graph: Graph;
   let container: HTMLElement;
 
   beforeEach(() => {
     // Create mock logger
-    mockLogger = createTypedMockLoggerService();
+    mockLogger = createMockLoggerService();
 
     // Create mock InfraEdgeQueryService
     mockEdgeQueryService = {

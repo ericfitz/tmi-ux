@@ -20,6 +20,7 @@ import { ZOrderService } from '../infrastructure/services/infra-z-order.service'
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
 import { AppNotificationService } from '../application/services/app-notification.service';
+import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
 
 // Test helpers
 // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: build a minimal X6 graph instance for integration test setup (mutates shared state)
@@ -139,7 +140,8 @@ describe('Embedding Operations Integration Tests', () => {
     embeddingService = new InfraEmbeddingService(loggerService);
     zOrderService = new ZOrderService(loggerService);
 
-    // Create mock history coordinator
+    // Create mock history coordinator: only the methods these adapters actually call
+    // are stubbed, so the cast intentionally provides a partial AppOperationStateManager.
     const mockHistoryCoordinator = {
       executeVisualEffect: vi.fn((graph: Graph, operation: () => void) => {
         operation();
@@ -150,16 +152,16 @@ describe('Embedding Operations Integration Tests', () => {
       executeCompoundOperation: vi.fn((graph: Graph, operation: () => any) => {
         return operation();
       }),
-    };
+    } as unknown as AppOperationStateManager;
 
     // Create adapters for post-load validation tests
-    zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService);
+    zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService, mockHistoryCoordinator);
 
     embeddingAdapter = new InfraX6EmbeddingAdapter(
       loggerService,
       embeddingService,
       zOrderAdapter,
-      mockHistoryCoordinator as any,
+      mockHistoryCoordinator,
     );
 
     notificationService = {} as any;

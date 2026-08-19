@@ -297,7 +297,6 @@ describe('InfraNodeService - Core Functionality Tests', () => {
         position: { x: 0, y: 0 },
         width: 120,
         height: 80,
-        label: 'Test Process With Zero ZIndex',
         zIndex: 0, // Falsy zIndex
         visible: true,
         angle: 0,
@@ -306,7 +305,7 @@ describe('InfraNodeService - Core Functionality Tests', () => {
           text: { text: 'Test Process With Zero ZIndex', fontSize: 12, fill: '#000000' },
         },
         ports: { groups: {}, items: [] },
-        data: [],
+        data: { _metadata: [] },
       });
 
       // Verify the NodeInfo has the falsy zIndex
@@ -330,7 +329,6 @@ describe('InfraNodeService - Core Functionality Tests', () => {
         position: { x: 0, y: 0 },
         width: 120,
         height: 80,
-        label: 'Test Process With Explicit ZIndex',
         zIndex: 15, // Explicit zIndex different from type default (10)
         visible: true,
         angle: 0,
@@ -339,7 +337,7 @@ describe('InfraNodeService - Core Functionality Tests', () => {
           text: { text: 'Test Process With Explicit ZIndex', fontSize: 12, fill: '#000000' },
         },
         ports: { groups: {}, items: [] },
-        data: [],
+        data: { _metadata: [] },
       });
 
       // The explicit zIndex should be preserved
@@ -372,7 +370,6 @@ describe('InfraNodeService - Core Functionality Tests', () => {
           position: { x: 0, y: 0 },
           width: 120,
           height: 80,
-          label: `Test ${type}`,
           // No zIndex provided - should use type default
           visible: true,
           angle: 0,
@@ -381,7 +378,7 @@ describe('InfraNodeService - Core Functionality Tests', () => {
             text: { text: `Test ${type}`, fontSize: 12, fill: '#000000' },
           },
           ports: { groups: {}, items: [] },
-          data: [],
+          data: { _metadata: [] },
         });
 
         expect(nodeInfo.zIndex).toBe(expectedZIndex);

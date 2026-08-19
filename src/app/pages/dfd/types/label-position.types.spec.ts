@@ -72,7 +72,7 @@ describe('label-position.types', () => {
 
     it('should reverse-map all 9 positions correctly', () => {
       for (const [key, attrs] of Object.entries(LABEL_POSITION_ATTRS)) {
-        const result = getLabelPositionFromAttrs(attrs);
+        const result = getLabelPositionFromAttrs({ ...attrs });
         expect(result).not.toBeNull();
         expect(getLabelPositionKey(result!)).toBe(key);
       }
