@@ -47,7 +47,7 @@ describe('AppHistoryService', () => {
     // graphOperationManager.execute is mocked below, so `graph` is never dereferenced;
     // this is a type-only stub for the X6 Graph class (matches this codebase's
     // established Graph-stubbing pattern, e.g. base-operation-executor.spec.ts).
-    graph: {} as unknown as Graph,
+    graph: {} as Graph,
     diagramId: 'diagram-1',
     threatModelId: 'tm-1',
     providerId: 'test-provider',

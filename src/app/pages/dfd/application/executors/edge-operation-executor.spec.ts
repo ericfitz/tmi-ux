@@ -487,7 +487,7 @@ describe('EdgeOperationExecutor', () => {
         // Narrowly typed (not the file's usual `Record<string, ReturnType<typeof vi.fn>>`)
         // because this test calls setAttrs/getAttrs directly rather than only asserting
         // on the vi.fn() mock; matches createMockEdge's real setAttrs/getAttrs signatures.
-        const edge = cells.get('e1') as unknown as {
+        const edge = cells.get('e1') as {
           setAttrs: (attrs: Record<string, unknown>) => void;
           getAttrs: () => Record<string, unknown>;
         };
