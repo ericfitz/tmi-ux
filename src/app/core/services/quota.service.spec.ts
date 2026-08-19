@@ -33,16 +33,18 @@ describe('QuotaService', () => {
 
   const mockUserAPIQuota: UserAPIQuota = {
     user_id: testInternalUuid,
-    requests_per_day: 1000,
-    requests_per_hour: 100,
+    max_requests_per_minute: 1000,
+    max_requests_per_hour: 100,
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
   };
 
   const mockWebhookQuota: WebhookQuota = {
     owner_id: testInternalUuid,
-    max_webhooks: 10,
-    max_deliveries_per_day: 1000,
+    max_subscriptions: 10,
+    max_events_per_minute: 100,
+    max_subscription_requests_per_minute: 60,
+    max_subscription_requests_per_day: 1000,
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
   };
@@ -122,7 +124,7 @@ describe('QuotaService', () => {
 
   describe('updateUserAPIQuota()', () => {
     it('should call API with correct endpoint and data', () => {
-      const updateData = { requests_per_day: 2000 };
+      const updateData = { max_requests_per_minute: 2000 };
       mockApiService.put.mockReturnValue(of(mockUserAPIQuota));
 
       service.updateUserAPIQuota(testInternalUuid, updateData).subscribe(quota => {
@@ -155,7 +157,7 @@ describe('QuotaService', () => {
 
   describe('updateWebhookQuota()', () => {
     it('should call API with correct endpoint and data', () => {
-      const updateData = { max_webhooks: 20 };
+      const updateData = { max_subscriptions: 20 };
       mockApiService.put.mockReturnValue(of(mockWebhookQuota));
 
       service.updateWebhookQuota(testInternalUuid, updateData).subscribe(quota => {

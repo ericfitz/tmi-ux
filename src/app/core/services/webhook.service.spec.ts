@@ -37,10 +37,10 @@ describe('WebhookService', () => {
     id: 'webhook-123',
     owner_id: 'user-456',
     threat_model_id: 'tm-789',
+    name: 'Test webhook',
     url: 'https://example.com/webhook',
     events: ['threat_model.created', 'threat_model.updated'],
-    description: 'Test webhook',
-    enabled: true,
+    status: 'active',
     secret: 'secret-key',
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
@@ -48,10 +48,9 @@ describe('WebhookService', () => {
 
   const mockWebhookInput: WebhookSubscriptionInput = {
     threat_model_id: 'tm-789',
+    name: 'New webhook',
     url: 'https://example.com/webhook',
     events: ['threat_model.created'],
-    description: 'New webhook',
-    enabled: true,
   };
 
   const mockResponse = {

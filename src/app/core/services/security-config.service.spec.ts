@@ -2,7 +2,7 @@ import '@angular/compiler';
 
 import { expect, describe, it, beforeEach, vi } from 'vitest';
 
-import { SecurityConfigService } from './security-config.service';
+import { SecurityConfigService, SecurityHeaders } from './security-config.service';
 import { LoggerService } from './logger.service';
 
 const envMock: Record<string, unknown> = {
@@ -83,7 +83,7 @@ describe('SecurityConfigService', () => {
   });
 
   it('should generate recommended headers', async () => {
-    const headers = await new Promise(resolve => {
+    const headers = await new Promise<SecurityHeaders>(resolve => {
       service.recommendedHeaders$.subscribe(value => resolve(value));
     });
     expect(headers).toBeDefined();

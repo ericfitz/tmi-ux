@@ -34,11 +34,8 @@ describe('AddonService', () => {
     id: 'addon-123',
     threat_model_id: 'tm-456',
     name: 'Test Addon',
-    type: 'script',
-    config: { key: 'value' },
-    enabled: true,
+    webhook_id: 'webhook-789',
     created_at: '2024-01-01T00:00:00Z',
-    modified_at: '2024-01-01T00:00:00Z',
   };
 
   const mockListResponse: ListAddonsResponse = {
@@ -51,9 +48,7 @@ describe('AddonService', () => {
   const mockCreateRequest: CreateAddonRequest = {
     threat_model_id: 'tm-456',
     name: 'New Addon',
-    type: 'webhook',
-    config: { url: 'https://example.com' },
-    enabled: true,
+    webhook_id: 'webhook-789',
   };
 
   beforeEach(() => {
