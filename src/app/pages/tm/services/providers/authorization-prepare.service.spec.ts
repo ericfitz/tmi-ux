@@ -264,7 +264,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id is intentionally omitted since deriving
+      // it is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result).toEqual([
         {
@@ -291,7 +294,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id/email are intentionally omitted since
+      // deriving them is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result).toEqual([
         {
@@ -316,7 +322,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id/email are intentionally omitted since
+      // deriving them is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result[0]).not.toHaveProperty('_subject');
     });
@@ -334,7 +343,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id/email are intentionally omitted since
+      // deriving them is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result[0]).not.toHaveProperty('display_name');
     });
@@ -387,7 +399,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id is intentionally omitted since deriving
+      // it is exactly what this test exercises.
+      service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'Invalid authorization: Provider "tmi" does not support "group" principals',
@@ -423,7 +438,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id/email are intentionally omitted since
+      // deriving them is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({
@@ -469,7 +487,10 @@ describe('AuthorizationPrepareService', () => {
         },
       ];
 
-      const result = service.prepareForApi(authorizations as Authorization[]);
+      // _subject is a transient UI-only field prepareForApi() reads internally to
+      // derive provider_id/email; provider_id is intentionally omitted since deriving
+      // it is exactly what this test exercises.
+      const result = service.prepareForApi(authorizations as unknown as Authorization[]);
 
       expect(result[0]).toHaveProperty('custom_field', 'custom-value');
     });

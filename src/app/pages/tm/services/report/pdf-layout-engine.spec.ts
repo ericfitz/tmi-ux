@@ -200,10 +200,17 @@ describe('PdfLayoutEngine', () => {
       engine.drawText(cursor, 'Hi', font, 12, rgb(0, 0, 0), { centered: true });
 
       const call = drawTextSpy.mock.calls[0];
+      if (!call) {
+        throw new Error('drawText was not called');
+      }
+      const [, options] = call;
+      if (!options) {
+        throw new Error('drawText was not called with options');
+      }
       const textWidth = font.widthOfTextAtSize('Hi', 12);
       const expectedX = (612 - textWidth) / 2;
 
-      expect(call[1].x).toBeCloseTo(expectedX, 0);
+      expect(options.x).toBeCloseTo(expectedX, 0);
     });
 
     it('should use custom x when provided', () => {
@@ -212,7 +219,15 @@ describe('PdfLayoutEngine', () => {
 
       engine.drawText(cursor, 'Test', font, 10, rgb(0, 0, 0), { x: 100 });
 
-      expect(drawTextSpy.mock.calls[0][1].x).toBe(100);
+      const call = drawTextSpy.mock.calls[0];
+      if (!call) {
+        throw new Error('drawText was not called');
+      }
+      const [, options] = call;
+      if (!options) {
+        throw new Error('drawText was not called with options');
+      }
+      expect(options.x).toBe(100);
     });
   });
 
@@ -251,7 +266,14 @@ describe('PdfLayoutEngine', () => {
       });
 
       const call = drawTextSpy.mock.calls[0];
-      expect(call[1].x).toBe(engine.leftX + 20);
+      if (!call) {
+        throw new Error('drawText was not called');
+      }
+      const [, options] = call;
+      if (!options) {
+        throw new Error('drawText was not called with options');
+      }
+      expect(options.x).toBe(engine.leftX + 20);
     });
 
     it('should respect custom lineHeight', () => {

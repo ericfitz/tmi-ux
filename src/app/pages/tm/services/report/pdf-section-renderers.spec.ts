@@ -31,6 +31,7 @@ import type {
   Note,
   Threat,
 } from '../../models/threat-model.model';
+import type { Diagram } from '../../models/diagram.model';
 
 const config: LayoutConfig = {
   pageWidth: 612,
@@ -152,6 +153,7 @@ describe('pdf-section-renderers', () => {
         principal_type: 'user' as const,
         provider: 'google',
         provider_id: 'u@example.com',
+        email: 'u@example.com',
         display_name: 'Test User',
       };
       const tm = makeThreatModel({
@@ -340,7 +342,9 @@ describe('pdf-section-renderers', () => {
             modified_at: '2024-01-01',
           },
         ],
-        diagrams: [{ id: 'dg1', name: 'Linked Diagram' } as ThreatModel['diagrams'][number]],
+        // Diagram fixture intentionally omits type/created_at/modified_at — this test
+        // exercises name resolution for a linked diagram, not full Diagram validity.
+        diagrams: [{ id: 'dg1', name: 'Linked Diagram' } as unknown as Diagram],
         threats: [{ ...threat, asset_id: 'a1', diagram_id: 'dg1', issue_uri: 'https://x/issue/1' }],
       });
 
@@ -352,11 +356,13 @@ describe('pdf-section-renderers', () => {
     it('renders a diagram section with no image (image unavailable path)', async () => {
       const tm = makeThreatModel({
         diagrams: [
+          // Diagram fixture intentionally omits type/created_at/modified_at — this
+          // test exercises the no-image render path, not full Diagram validity.
           {
             id: 'dg1',
             name: 'Empty Diagram',
             include_in_report: true,
-          } as ThreatModel['diagrams'][number],
+          } as unknown as Diagram,
         ],
       });
 

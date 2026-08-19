@@ -8,6 +8,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ReferenceRewriterService } from './reference-rewriter.service';
 import type { IdTranslationService } from './id-translation.service';
+import type { components } from '@app/generated/api-types';
+
+type ApiThreatInput = components['schemas']['ThreatInput'];
 
 describe('ReferenceRewriterService', () => {
   let service: ReferenceRewriterService;
@@ -40,8 +43,10 @@ describe('ReferenceRewriterService', () => {
       mockIdTranslation.getDiagramId.mockReturnValue('new-diagram-123');
 
       const threat = {
-        id: 'threat-1',
         name: 'SQL Injection',
+        threat_type: ['spoofing'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'old-diagram-123',
       };
 
@@ -49,8 +54,10 @@ describe('ReferenceRewriterService', () => {
 
       expect(mockIdTranslation.getDiagramId).toHaveBeenCalledWith('old-diagram-123');
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'SQL Injection',
+        threat_type: ['spoofing'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'new-diagram-123',
       });
     });
@@ -61,8 +68,10 @@ describe('ReferenceRewriterService', () => {
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const threat = {
-        id: 'threat-1',
         name: 'SQL Injection',
+        threat_type: ['spoofing'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'unknown-diagram',
       };
 
@@ -70,8 +79,10 @@ describe('ReferenceRewriterService', () => {
 
       expect(mockIdTranslation.getDiagramId).toHaveBeenCalledWith('unknown-diagram');
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'SQL Injection',
+        threat_type: ['spoofing'],
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Threat references unknown diagram_id: unknown-diagram. Reference will be cleared.',
@@ -84,8 +95,10 @@ describe('ReferenceRewriterService', () => {
       mockIdTranslation.getAssetId.mockReturnValue('new-asset-456');
 
       const threat = {
-        id: 'threat-1',
         name: 'XSS Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: 'old-asset-456',
       };
 
@@ -93,8 +106,10 @@ describe('ReferenceRewriterService', () => {
 
       expect(mockIdTranslation.getAssetId).toHaveBeenCalledWith('old-asset-456');
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'XSS Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: 'new-asset-456',
       });
     });
@@ -105,8 +120,10 @@ describe('ReferenceRewriterService', () => {
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const threat = {
-        id: 'threat-1',
         name: 'XSS Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: 'unknown-asset',
       };
 
@@ -114,8 +131,10 @@ describe('ReferenceRewriterService', () => {
 
       expect(mockIdTranslation.getAssetId).toHaveBeenCalledWith('unknown-asset');
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'XSS Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
       });
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Threat references unknown asset_id: unknown-asset. Reference will be cleared.',
@@ -129,8 +148,10 @@ describe('ReferenceRewriterService', () => {
       mockIdTranslation.getAssetId.mockReturnValue('new-asset-101');
 
       const threat = {
-        id: 'threat-1',
         name: 'CSRF Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'old-diagram-789',
         asset_id: 'old-asset-101',
       };
@@ -140,8 +161,10 @@ describe('ReferenceRewriterService', () => {
       expect(mockIdTranslation.getDiagramId).toHaveBeenCalledWith('old-diagram-789');
       expect(mockIdTranslation.getAssetId).toHaveBeenCalledWith('old-asset-101');
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'CSRF Attack',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'new-diagram-789',
         asset_id: 'new-asset-101',
       });
@@ -149,16 +172,20 @@ describe('ReferenceRewriterService', () => {
 
     it('should preserve cell_id without rewriting', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         cell_id: 'client-cell-123',
       };
 
       const result = service.rewriteThreatReferences(threat);
 
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         cell_id: 'client-cell-123',
       });
       expect(mockIdTranslation.getDiagramId).not.toHaveBeenCalled();
@@ -167,8 +194,10 @@ describe('ReferenceRewriterService', () => {
 
     it('should handle threat with no references', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Generic Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         description: 'Some description',
       };
 
@@ -181,16 +210,20 @@ describe('ReferenceRewriterService', () => {
 
     it('should skip empty string diagram_id', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: '',
       };
 
       const result = service.rewriteThreatReferences(threat);
 
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: '',
       });
       expect(mockIdTranslation.getDiagramId).not.toHaveBeenCalled();
@@ -198,16 +231,20 @@ describe('ReferenceRewriterService', () => {
 
     it('should skip empty string asset_id', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: '',
       };
 
       const result = service.rewriteThreatReferences(threat);
 
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: '',
       });
       expect(mockIdTranslation.getAssetId).not.toHaveBeenCalled();
@@ -215,16 +252,20 @@ describe('ReferenceRewriterService', () => {
 
     it('should skip non-string diagram_id', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: null,
       };
 
       const result = service.rewriteThreatReferences(threat);
 
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: null,
       });
       expect(mockIdTranslation.getDiagramId).not.toHaveBeenCalled();
@@ -232,16 +273,21 @@ describe('ReferenceRewriterService', () => {
 
     it('should skip non-string asset_id', () => {
       const threat = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: 123,
-      };
+        // asset_id is intentionally a number (not string|null) to exercise the typeof guard for non-string values
+      } as unknown as ApiThreatInput;
 
       const result = service.rewriteThreatReferences(threat);
 
       expect(result).toEqual({
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         asset_id: 123,
       });
       expect(mockIdTranslation.getAssetId).not.toHaveBeenCalled();
@@ -251,8 +297,10 @@ describe('ReferenceRewriterService', () => {
       mockIdTranslation.getDiagramId.mockReturnValue('new-diagram-999');
 
       const original = {
-        id: 'threat-1',
         name: 'Threat',
+        threat_type: ['tampering'],
+        include_in_report: true,
+        timmy_enabled: true,
         diagram_id: 'old-diagram-999',
       };
 
@@ -474,9 +522,10 @@ describe('ReferenceRewriterService', () => {
   describe('rewriteNoteReferences()', () => {
     it('should return a copy of the note unchanged', () => {
       const note = {
-        id: 'note-1',
         name: 'Important Note',
         content: 'This is a note',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteNoteReferences(note);
@@ -487,11 +536,11 @@ describe('ReferenceRewriterService', () => {
 
     it('should handle note with all properties', () => {
       const note = {
-        id: 'note-1',
         name: 'Note',
         content: 'Content',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-02',
+        description: 'Some description',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteNoteReferences(note);
@@ -503,9 +552,11 @@ describe('ReferenceRewriterService', () => {
   describe('rewriteAssetReferences()', () => {
     it('should return a copy of the asset unchanged', () => {
       const asset = {
-        id: 'asset-1',
         name: 'Database Server',
         description: 'Main database',
+        type: 'infrastructure' as const,
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteAssetReferences(asset);
@@ -516,11 +567,12 @@ describe('ReferenceRewriterService', () => {
 
     it('should handle asset with all properties', () => {
       const asset = {
-        id: 'asset-1',
         name: 'Server',
         description: 'Description',
-        type: 'server',
+        type: 'hardware' as const,
         criticality: 'high',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteAssetReferences(asset);
@@ -532,9 +584,10 @@ describe('ReferenceRewriterService', () => {
   describe('rewriteDocumentReferences()', () => {
     it('should return a copy of the document unchanged', () => {
       const document = {
-        id: 'doc-1',
         name: 'Security Policy',
-        url: 'https://example.com/policy.pdf',
+        uri: 'https://example.com/policy.pdf',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteDocumentReferences(document);
@@ -545,10 +598,11 @@ describe('ReferenceRewriterService', () => {
 
     it('should handle document with all properties', () => {
       const document = {
-        id: 'doc-1',
         name: 'Document',
-        url: 'https://example.com/doc',
+        uri: 'https://example.com/doc',
         description: 'Description',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteDocumentReferences(document);
@@ -560,9 +614,10 @@ describe('ReferenceRewriterService', () => {
   describe('rewriteRepositoryReferences()', () => {
     it('should return a copy of the repository unchanged', () => {
       const repository = {
-        id: 'repo-1',
         name: 'Main Repository',
-        url: 'https://github.com/org/repo',
+        uri: 'https://github.com/org/repo',
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteRepositoryReferences(repository);
@@ -573,11 +628,12 @@ describe('ReferenceRewriterService', () => {
 
     it('should handle repository with all properties', () => {
       const repository = {
-        id: 'repo-1',
         name: 'Repository',
-        url: 'https://github.com/org/repo',
+        uri: 'https://github.com/org/repo',
         description: 'Description',
-        type: 'git',
+        type: 'git' as const,
+        include_in_report: true,
+        timmy_enabled: true,
       };
 
       const result = service.rewriteRepositoryReferences(repository);
