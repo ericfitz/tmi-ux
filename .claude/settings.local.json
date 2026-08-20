@@ -49,6 +49,10 @@
       "Skill(update_json_localization_file:*)"
     ]
   },
+  "skillOverrides": {
+    "amazon-bedrock": "off",
+    "aws-cloudformation": "off"
+  },
   "hooks": {
     "PostToolUse": [
       {
