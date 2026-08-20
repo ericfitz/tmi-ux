@@ -23,14 +23,16 @@ Read this first when resuming. Everything below is on `main` unless noted.
 - **Pi-hole (runs in-cluster, ns `pihole`, VIP 192.168.1.10; config via `pihole-FTL --config`)**: added `dns.hosts` entry `192.168.1.6 traefik.local`. The CNAME `tmi.efitz.net,traefik.local` was blocked by the session's permission classifier — see "user actions" below. Note: the record must target the Traefik VIP, not rp2 — nothing serves 443 on node IPs (MetalLB L2 pool 192.168.1.6-15).
 - **Step-up re-auth bug candidate**: expired-auth admin actions loop on "Wrong account — you must re-authenticate as charlie@tmi.local"; the silent re-auth doesn't pass the current user's login_hint to the dev tmi provider. Not yet filed.
 
-### Pending user actions (blocked by permission classifier)
+### Completed later the same evening (user-approved)
 
-1. Pi-hole CNAME: `kubectl --context k3s-rp -n pihole exec deploy/pihole -- pihole-FTL --config dns.cnameRecords '[ "rp2.efitz.net,rp2.local", "rp3.efitz.net,rp3.local", "rp4.efitz.net,rp4.local", "homeassistant.efitz.net,homeassistant.local", "tg-udm.efitz.net,tg-udm.local", "pihole,pi-hole.efitz.net", "pihole.local,pi-hole.efitz.net", "tmi.efitz.net,traefik.local" ]'`
-2. OAuth allowlist (patched YAML + merge patch already prepared in the session scratchpad; or re-derive): add `https://tmi.efitz.net/*` (and optionally `http://rp2:30081/*`) under `auth.oauth.client_callback_allowlist` in the live `tmi-server-config` ConfigMap, then `kubectl --context k3s-rp -n tmi-platform rollout restart deployment/tmi-server`. Remember `make dev-up CLUSTER=k3s` regenerates this ConfigMap from `tmi/config-development.yml`.
+- Pi-hole CNAME `tmi.efitz.net -> traefik.local` applied; resolves to 192.168.1.6.
+- OAuth allowlist patched in the live `tmi-server-config` ConfigMap (`https://tmi.efitz.net/*`, `http://rp2:30081/*`, `http://192.168.1.2:30081/*`) + tmi-server restart; verified 302-with-code for the allowed origin, 400 for others. Tracked in tmi#774: sync `tmi/config-development.yml` + docs with the live ConfigMap (`make dev-up` overwrites it).
+- Two more proxy-mode fixes (d20b561f): `changeOrigin: false` + top-level `/oauth2/authorize` pass-through in server.js (the server mirrors request host into provider auth_urls — with changeOrigin:true browsers were sent to `https://tmi-server:8080`), and the server-connection health check now uses a relative apiUrl as-is (stripping `/api` reduced it to `''` -> SPA page -> "Server offline").
+- **Verified end-to-end in Chrome: `https://tmi.efitz.net/` — login (dev user), dashboard, green connected indicator. `http://rp2:30081/` also boots.**
 
 ## Next session
 
-1. Verify a full browser login at `https://tmi.efitz.net/` once the CNAME + allowlist are in.
+1. ~~Verify a full browser login at `https://tmi.efitz.net/`~~ Done (see above).
 2. Re-seed the cluster DB with the e2e seed spec (tmi-dbtool) and rerun `test:e2e:field-coverage`; file the palette-slot stroke-propagation issue and the step-up re-auth issue.
 3. Decide whether to add the k3s origins to `tmi/config-development.yml` and whether to file the settings-precedence server issue.
 4. Pick from #865–#871 (start with #865 — real dead code behind a cast).
