@@ -10,7 +10,11 @@ import {
 } from '@angular/core';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { ThreatModelReportService } from './threat-model-report.service';
+import {
+  ThreatModelReportService,
+  type PageSize,
+  type MarginSize,
+} from './threat-model-report.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import type { LoggerService } from '../../../../core/services/logger.service';
 import type { TranslocoService } from '@jsverse/transloco';
@@ -27,8 +31,8 @@ import type { ThreatModel } from '../../models/threat-model.model';
  * typed instead of using an untyped `Record<string, unknown>` escape hatch.
  */
 interface ThreatModelReportServicePrivateAccess {
-  pageSize: 'usLetter' | 'A4';
-  marginSize: 'narrow' | 'standard' | 'wide';
+  pageSize: PageSize;
+  marginSize: MarginSize;
   loadUserPreferences: () => void;
 }
 

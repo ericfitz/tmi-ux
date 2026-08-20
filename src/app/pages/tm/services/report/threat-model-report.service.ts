@@ -30,7 +30,7 @@ const PAGE_SIZES = {
 } as const;
 
 // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: enumerate supported PDF page size keys (US Letter, A4) (pure)
-type PageSize = keyof typeof PAGE_SIZES;
+export type PageSize = keyof typeof PAGE_SIZES;
 
 /**
  * Margin configurations in PDF points.
@@ -42,7 +42,7 @@ const MARGINS = {
 } as const;
 
 // SEM@1cafa46a66ac309a41eca39407da0ab7c5628cb2: union type of valid PDF margin size keys (pure)
-type MarginSize = keyof typeof MARGINS;
+export type MarginSize = keyof typeof MARGINS;
 
 /**
  * Service responsible for generating PDF reports from threat models.
