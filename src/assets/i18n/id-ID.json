@@ -411,6 +411,11 @@
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
       "lastLogin": "Login Terakhir",
+      "linkedAccounts": {
+        "linkedAt": "Ditautkan",
+        "menuItem": "Akun tertaut",
+        "title": "Akun tertaut untuk {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Tambah Kredensial",

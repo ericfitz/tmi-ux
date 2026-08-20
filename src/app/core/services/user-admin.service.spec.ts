@@ -14,6 +14,7 @@ import { LoggerService } from './logger.service';
 import {
   AdminUser,
   AdminUserFilter,
+  AdminUserIdentitiesResponse,
   CreateAutomationAccountRequest,
   CreateAutomationAccountResponse,
   ListAdminUsersResponse,
@@ -333,6 +334,100 @@ describe('UserAdminService', () => {
             error,
           );
           expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('listUserIdentities()', () => {
+    const testUuid = '123e4567-e89b-12d3-a456-426614174000';
+
+    const mockIdentitiesResponse: AdminUserIdentitiesResponse = {
+      primary: {
+        provider: 'google',
+        email: 'test@example.com',
+        name: 'Test User',
+      },
+      linked: [
+        {
+          id: 'a1b2c3d4-e89b-12d3-a456-426614174111',
+          provider: 'github',
+          provider_user_id: 'gh_9876',
+          email: 'test@users.noreply.github.com',
+          name: 'Test User',
+          linked_at: '2024-02-01T00:00:00Z',
+          last_used_at: '2024-03-01T00:00:00Z',
+        },
+      ],
+    };
+
+    it('should GET admin/users/{uuid}/identities', () => {
+      mockApiService.get.mockReturnValue(of(mockIdentitiesResponse));
+
+      service.listUserIdentities(testUuid).subscribe(response => {
+        expect(mockApiService.get).toHaveBeenCalledWith(`admin/users/${testUuid}/identities`);
+        expect(response).toEqual(mockIdentitiesResponse);
+      });
+    });
+
+    it('should log debug on success with linked count', () => {
+      mockApiService.get.mockReturnValue(of(mockIdentitiesResponse));
+
+      service.listUserIdentities(testUuid).subscribe(() => {
+        expect(mockLoggerService.debug).toHaveBeenCalledWith('User identities loaded', {
+          internalUuid: testUuid,
+          linkedCount: 1,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('boom');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+
+      service.listUserIdentities(testUuid).subscribe({
+        next: () => expect.fail('should have errored'),
+        error: err => {
+          expect(err).toBe(error);
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to list user identities',
+            error,
+          );
+        },
+      });
+    });
+  });
+
+  describe('unlinkUserIdentity()', () => {
+    const testUuid = '123e4567-e89b-12d3-a456-426614174000';
+    const identityId = 'a1b2c3d4-e89b-12d3-a456-426614174111';
+
+    it('should DELETE admin/users/{uuid}/identities/{identityId}', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+
+      service.unlinkUserIdentity(testUuid, identityId).subscribe(() => {
+        expect(mockApiService.delete).toHaveBeenCalledWith(
+          `admin/users/${testUuid}/identities/${identityId}`,
+        );
+        expect(mockLoggerService.info).toHaveBeenCalledWith('User identity unlinked', {
+          internalUuid: testUuid,
+          identityId,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('boom');
+      mockApiService.delete.mockReturnValue(throwError(() => error));
+
+      service.unlinkUserIdentity(testUuid, identityId).subscribe({
+        next: () => expect.fail('should have errored'),
+        error: err => {
+          expect(err).toBe(error);
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to unlink user identity',
+            error,
+          );
         },
       });
     });

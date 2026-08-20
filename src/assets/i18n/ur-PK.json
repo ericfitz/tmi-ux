@@ -411,6 +411,11 @@
       "filterLabel": "صارفین فلٹر کریں",
       "filterPlaceholder": "ای میل، نام، فراہم کنندہ، یا گروپ کے نام سے تلاش کریں",
       "lastLogin": "آخری لاگ ان",
+      "linkedAccounts": {
+        "linkedAt": "منسلک",
+        "menuItem": "منسلک اکاؤنٹس",
+        "title": "{{userName}} کے منسلک اکاؤنٹس"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "اسناد شامل کریں",

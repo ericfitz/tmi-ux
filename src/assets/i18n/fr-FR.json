@@ -411,6 +411,11 @@
       "filterLabel": "Filtrer les utilisateurs",
       "filterPlaceholder": "Rechercher par email, nom, fournisseur ou nom de groupe",
       "lastLogin": "Dernière connexion",
+      "linkedAccounts": {
+        "linkedAt": "Lié le",
+        "menuItem": "Comptes liés",
+        "title": "Comptes liés de {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Ajouter un identifiant",

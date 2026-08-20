@@ -411,6 +411,11 @@
       "filterLabel": "Filtrar usuarios",
       "filterPlaceholder": "Buscar por correo electrónico, nombre, proveedor o nombre de grupo",
       "lastLogin": "Último inicio de sesión",
+      "linkedAccounts": {
+        "linkedAt": "Vinculada",
+        "menuItem": "Cuentas vinculadas",
+        "title": "Cuentas vinculadas de {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Agregar credencial",

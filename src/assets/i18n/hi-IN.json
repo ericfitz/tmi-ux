@@ -411,6 +411,11 @@
       "filterLabel": "उपयोगकर्ता फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या समूह के नाम से खोजें",
       "lastLogin": "अंतिम लॉगिन",
+      "linkedAccounts": {
+        "linkedAt": "लिंक किया गया",
+        "menuItem": "लिंक किए गए खाते",
+        "title": "{{userName}} के लिंक किए गए खाते"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "क्रेडेंशियल जोड़ें",

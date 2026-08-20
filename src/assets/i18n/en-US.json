@@ -475,6 +475,15 @@
       "filterLabel.comment": "Noun. Labels a form field or UI section: 'Filter users'.",
       "filterPlaceholder": "Search by email, name, provider, or group name",
       "lastLogin": "Last login",
+      "linkedAccounts": {
+        "linkedAt": "Linked",
+        "linkedAt.comment": "Column header: the date the sign-in account was linked to the user.",
+        "menuItem": "Linked accounts",
+        "menuItem.comment": "Row menu item on the admin users page that opens the linked-accounts dialog.",
+        "title": "Linked accounts for {{userName}}",
+        "title.comment": "Dialog title. {{userName}} is the display name or email of the user being administered.",
+        "title.lint-skip": "Dialog title, not a sentence; no trailing period."
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Add credential",

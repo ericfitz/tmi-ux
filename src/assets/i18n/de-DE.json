@@ -411,6 +411,11 @@
       "filterLabel": "Benutzer filtern",
       "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Gruppenname suchen",
       "lastLogin": "Letzte Anmeldung",
+      "linkedAccounts": {
+        "linkedAt": "Verknüpft",
+        "menuItem": "Verknüpfte Konten",
+        "title": "Verknüpfte Konten für {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Anmeldedaten hinzufügen",

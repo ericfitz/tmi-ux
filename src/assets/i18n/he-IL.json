@@ -411,6 +411,11 @@
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
       "lastLogin": "כניסה אחרונה",
+      "linkedAccounts": {
+        "linkedAt": "קושר",
+        "menuItem": "חשבונות מקושרים",
+        "title": "חשבונות מקושרים של {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "הוסף אישורים",

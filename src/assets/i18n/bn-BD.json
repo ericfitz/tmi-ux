@@ -433,6 +433,11 @@
       "filterLabel": "ব্যবহারকারী ফিল্টার করুন",
       "filterPlaceholder": "ইমেইল, নাম, প্রোভাইডার বা গ্রুপের নাম দিয়ে খুঁজুন",
       "lastLogin": "সর্বশেষ লগইন",
+      "linkedAccounts": {
+        "linkedAt": "সংযুক্ত",
+        "menuItem": "সংযুক্ত অ্যাকাউন্ট",
+        "title": "{{userName}}-এর সংযুক্ত অ্যাকাউন্ট"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "ক্রেডেনশিয়াল যোগ করুন",

@@ -411,6 +411,11 @@
       "filterLabel": "تصفية المستخدمين",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو اسم المجموعة",
       "lastLogin": "آخر تسجيل دخول",
+      "linkedAccounts": {
+        "linkedAt": "تاريخ الربط",
+        "menuItem": "الحسابات المرتبطة",
+        "title": "الحسابات المرتبطة لـ {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "إضافة بيانات اعتماد",

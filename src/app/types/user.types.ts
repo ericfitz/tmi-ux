@@ -22,6 +22,9 @@ export type CreateAutomationAccountRequest =
 export type CreateAutomationAccountResponse =
   components['schemas']['CreateAutomationAccountResponse'];
 
+/** Response from the admin list-user-identities endpoint (primary + linked sign-in identities) */
+export type AdminUserIdentitiesResponse = components['schemas']['AdminUserIdentitiesResponse'];
+
 /** Response from the SAML user lookup endpoint (same-provider autocomplete) */
 // SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for the SAML user lookup endpoint (pure)
 export type SAMLUsersResponse =
