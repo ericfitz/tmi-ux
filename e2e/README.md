@@ -4,12 +4,18 @@ Playwright-based integration tests for TMI-UX, running against a live local back
 
 ## Prerequisites
 
-Both services must be running:
+Only the backend must be running:
 
 1. **TMI backend** on `http://localhost:8080` (or set `E2E_API_URL`)
-2. **TMI-UX frontend** on `http://localhost:4200` (or set `E2E_APP_URL`)
 
 The backend must have the `tmi` OAuth provider configured (auto-grants tokens without IdP interaction).
+
+The frontend is started automatically: the `webServer` block in `playwright.config.ts` boots a fresh
+`ng serve --configuration=e2e` on `http://localhost:4200` for every run (`reuseExistingServer: false`),
+so tests can never silently target a stale, pre-existing dev server. Do **not** start `ng serve`
+manually — Playwright refuses to run if port 4200 is already in use. To test against an externally
+managed frontend instead, set `E2E_APP_URL`; that skips the managed server and health-checks the URL
+in global setup.
 
 ## Running Tests
 
@@ -38,19 +44,19 @@ pnpm run e2e:validate-schema
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `E2E_APP_URL` | `http://localhost:4200` | Frontend URL |
-| `E2E_API_URL` | `http://localhost:8080` | Backend API URL |
-| `E2E_OAUTH_PROVIDER` | `tmi` | OAuth provider for test login |
+| Variable             | Default                 | Description                                                                                 |
+| -------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| `E2E_APP_URL`        | `http://localhost:4200` | Frontend URL; when set, disables the managed `webServer` and targets an external deployment |
+| `E2E_API_URL`        | `http://localhost:8080` | Backend API URL                                                                             |
+| `E2E_OAUTH_PROVIDER` | `tmi`                   | OAuth provider for test login                                                               |
 
 ## Test Users
 
-| User ID | Role | Description |
-|---------|------|-------------|
-| `test-user` | Normal user | Dashboard, intake, TM creation |
-| `test-reviewer` | Security reviewer | + triage access |
-| `test-admin` | Admin | + admin panel access |
+| User ID         | Role              | Description                    |
+| --------------- | ----------------- | ------------------------------ |
+| `test-user`     | Normal user       | Dashboard, intake, TM creation |
+| `test-reviewer` | Security reviewer | + triage access                |
+| `test-admin`    | Admin             | + admin panel access           |
 
 Users are selected via the `login_hint` parameter in the TMI OAuth provider dialog.
 

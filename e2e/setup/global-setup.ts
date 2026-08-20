@@ -16,16 +16,21 @@ async function checkService(url: string, label: string): Promise<void> {
   }
 }
 
-// SEM@48c7d463773c81c64114653681810aa76ac2f5ae: validate frontend and backend services are reachable before e2e tests
+// SEM@48c7d463773c81c64114653681810aa76ac2f5ae: validate required external services are reachable before e2e tests
 async function globalSetup(): Promise<void> {
   console.log('\n=== E2E Test Setup ===\n');
 
   const errors: string[] = [];
 
-  try {
-    await checkService(testConfig.appUrl, 'Frontend');
-  } catch (e) {
-    errors.push((e as Error).message);
+  // The frontend is normally started and health-checked by the webServer block
+  // in playwright.config.ts; only verify it here when E2E_APP_URL points the
+  // tests at an externally managed deployment.
+  if (process.env['E2E_APP_URL']) {
+    try {
+      await checkService(testConfig.appUrl, 'Frontend');
+    } catch (e) {
+      errors.push((e as Error).message);
+    }
   }
 
   try {
@@ -37,7 +42,10 @@ async function globalSetup(): Promise<void> {
   if (errors.length > 0) {
     console.error('\n✗ Service check failed:\n');
     errors.forEach(e => console.error(`  ${e}`));
-    console.error('\nStart both services before running e2e tests.\n');
+    console.error(
+      `\nThe backend API must be running at ${testConfig.apiUrl} before running e2e tests` +
+        ' (start it from the tmi server repo, e.g. its dev-up target).\n',
+    );
     throw new Error('Required services are not available');
   }
 

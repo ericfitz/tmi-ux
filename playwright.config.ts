@@ -12,7 +12,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: process.env.CI ? 'json' : [['json', { outputFile: 'test-results/e2e-results.json' }], ['html']],
+  reporter: process.env.CI
+    ? 'json'
+    : [['json', { outputFile: 'test-results/e2e-results.json' }], ['html']],
 
   use: {
     baseURL: testConfig.appUrl,
@@ -20,6 +22,21 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
+
+  // Playwright owns the frontend dev-server lifecycle so tests can never run
+  // against a stale, pre-existing `ng serve` process (see #827). With
+  // reuseExistingServer: false, Playwright refuses to start if something is
+  // already listening on the port. Setting E2E_APP_URL skips this block to
+  // target an externally managed deployment. The backend (E2E_API_URL) is
+  // always external; global-setup health-checks it.
+  webServer: process.env.E2E_APP_URL
+    ? undefined
+    : {
+        command: 'pnpm run dev:e2e:server',
+        url: testConfig.appUrl,
+        reuseExistingServer: false,
+        timeout: 180_000,
+      },
 
   projects: [
     {
