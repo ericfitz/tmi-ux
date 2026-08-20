@@ -75,10 +75,19 @@ kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" rollout status deployment/tmi-u
 
 NODE_IP=$(kubectl --context "$K3S_CONTEXT" get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 NODE_PORT=$(kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" get svc tmi-ux -o jsonpath='{.spec.ports[0].nodePort}')
+PROXY_TARGET=$(kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" get deploy tmi-ux -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="TMI_PROXY_TARGET")].value}')
+INGRESS_HOST=$(kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" get ingress tmi-ux -o jsonpath='{.spec.rules[0].host}' 2>/dev/null || true)
 echo ""
 echo "=== Deployed ==="
+if [ -n "$INGRESS_HOST" ]; then
+  echo "UI:      https://${INGRESS_HOST}/  (Traefik ingress)"
+fi
 echo "UI:      http://rp2:${NODE_PORT}/  (also http://${NODE_IP}:${NODE_PORT}/)"
-echo "API:     $(kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" get deploy tmi-ux -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="TMI_API_URL")].value}')"
+echo "API:     same-origin /api -> ${PROXY_TARGET}"
 echo ""
-echo "Note: OAuth login from this origin requires http://rp2:${NODE_PORT}/* in the"
-echo "server's auth.oauth.client_callback_allowlist (runtime setting in the DB)."
+echo "Note: OAuth login requires the browser origins in the server's"
+echo "auth.oauth.client_callback_allowlist (live tmi-server-config ConfigMap):"
+if [ -n "$INGRESS_HOST" ]; then
+  echo "  https://${INGRESS_HOST}/*"
+fi
+echo "  http://rp2:${NODE_PORT}/*"
