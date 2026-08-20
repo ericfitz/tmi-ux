@@ -4261,6 +4261,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/admin/users/{user_id}/identities': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List a user's primary and linked sign-in identities (admin)
+     * @description Administrator-only listing of a target user's primary sign-in identity (from the user record) and linked identities.
+     */
+    get: operations['adminListUserIdentities'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/admin/users/{user_id}/identities/{identity_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Unlink a user's linked sign-in identity (admin)
+     * @description Administrator-only removal of a target user's linked sign-in identity. The primary identity lives on the user record and cannot be addressed by this operation; unknown identity ids return 404.
+     */
+    delete: operations['adminDeleteUserIdentity'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7312,7 +7352,8 @@ export interface components {
      *       "created_at": "2024-01-02T10:00:00Z",
      *       "modified_at": "2024-01-02T10:00:00Z",
      *       "used_in_admin_grants": false,
-     *       "used_in_authorizations": false
+     *       "used_in_authorizations": false,
+     *       "is_builtin": false
      *     }
      */
     AdminGroup: {
@@ -7347,6 +7388,8 @@ export interface components {
       readonly used_in_admin_grants?: boolean;
       /** @description Number of members in the group from IdP (enriched, if available) */
       readonly member_count?: number;
+      /** @description True only for server-seeded built-in groups; false for admin-created groups (which also use provider "tmi") */
+      readonly is_builtin?: boolean;
     };
     /**
      * @description Paginated list of groups for administrative management
@@ -7366,7 +7409,8 @@ export interface components {
      *           "last_used": "2024-01-15T14:30:00Z",
      *           "usage_count": 150,
      *           "used_in_authorizations": true,
-     *           "used_in_admin_grants": false
+     *           "used_in_admin_grants": false,
+     *           "is_builtin": false
      *         }
      *       ],
      *       "total": 1,
@@ -8093,7 +8137,8 @@ export interface components {
      *       "features": {
      *         "websocket_enabled": true,
      *         "saml_enabled": false,
-     *         "webhooks_enabled": true
+     *         "webhooks_enabled": true,
+     *         "timmy_enabled": false
      *       },
      *       "operator": {
      *         "name": "TMI Project",
@@ -8142,6 +8187,8 @@ export interface components {
         saml_enabled?: boolean;
         /** @description Whether webhook subscriptions are enabled */
         webhooks_enabled?: boolean;
+        /** @description Whether Timmy (AI chat) is enabled and fully configured on this server */
+        timmy_enabled?: boolean;
       };
       /** @description Operator information */
       operator?: {
@@ -8635,6 +8682,13 @@ export interface components {
        * @example 0
        */
       offset: number;
+      /** @description Server default quota values applied when a user has no quota row */
+      defaults: {
+        /** @description Default requests-per-minute limit */
+        max_requests_per_minute: number;
+        /** @description Default requests-per-hour limit */
+        max_requests_per_hour: number;
+      };
     };
     /** @description Paginated list of webhook quotas */
     ListWebhookQuotasResponse: {
@@ -8667,6 +8721,17 @@ export interface components {
        * @example 0
        */
       offset: number;
+      /** @description Server default quota values applied when a user has no quota row */
+      defaults: {
+        /** @description Default max subscriptions limit */
+        max_subscriptions: number;
+        /** @description Default max events-per-minute limit */
+        max_events_per_minute: number;
+        /** @description Default max subscription requests-per-minute limit */
+        max_subscription_requests_per_minute: number;
+        /** @description Default max subscription requests-per-day limit */
+        max_subscription_requests_per_day: number;
+      };
     };
     /** @description Paginated list of addon quotas */
     ListAddonQuotasResponse: {
@@ -8697,6 +8762,13 @@ export interface components {
        * @example 0
        */
       offset: number;
+      /** @description Server default quota values applied when a user has no quota row */
+      defaults: {
+        /** @description Default max active invocations limit */
+        max_active_invocations: number;
+        /** @description Default max invocations-per-hour limit */
+        max_invocations_per_hour: number;
+      };
     };
     /** @description Paginated list of client credentials */
     ListClientCredentialsResponse: {
@@ -11201,6 +11273,19 @@ export interface components {
       /** @description Additional linked identities */
       linked?: components['schemas']['LinkedIdentity'][];
     };
+    /** @description A user's primary sign-in identity plus any linked identities, as seen by an administrator */
+    AdminUserIdentitiesResponse: {
+      primary: {
+        /** @description Identity provider of the primary sign-in identity */
+        provider: string;
+        /** @description Email on the user record */
+        email: string;
+        /** @description Display name on the user record */
+        name: string;
+      };
+      /** @description Linked sign-in identities; the primary identity is not deletable and does not appear here */
+      linked?: components['schemas']['LinkedIdentity'][];
+    };
     /** @description Document data for bulk update operations, including required ID field */
     DocumentBulkUpdateItem: components['schemas']['DocumentBase'] & {
       /**
@@ -11673,6 +11758,8 @@ export interface components {
     GroupNameQueryParam: string;
     /** @description Filter groups used (true) or not used (false) in authorizations */
     UsedInAuthorizationsQueryParam: boolean;
+    /** @description Filter groups by built-in (server-seeded) status */
+    BuiltInQueryParam: boolean;
     /** @description Internal system UUID of the member to remove (user UUID when subject_type is user, group UUID when subject_type is group) */
     MemberUuidPathParam: string;
     /** @description Threat model UUID */
@@ -18799,6 +18886,7 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -18945,6 +19033,7 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -19761,6 +19850,7 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -22586,6 +22676,8 @@ export interface operations {
         group_name?: components['parameters']['GroupNameQueryParam'];
         /** @description Filter groups used (true) or not used (false) in authorizations */
         used_in_authorizations?: components['parameters']['UsedInAuthorizationsQueryParam'];
+        /** @description Filter groups by built-in (server-seeded) status */
+        built_in?: components['parameters']['BuiltInQueryParam'];
         /** @description Maximum number of results to return */
         limit?: components['parameters']['LimitQueryParam'];
         /** @description Number of results to skip */
@@ -22850,7 +22942,14 @@ export interface operations {
   };
   listSAMLUsers: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description Filter by email (case-insensitive substring match) */
+        email?: components['parameters']['EmailQueryParam'];
+        /** @description Maximum number of users to return. */
+        limit?: number;
+        /** @description Number of users to skip before starting to return results. */
+        offset?: number;
+      };
       header?: never;
       path: {
         /** @description Identity provider ID (e.g., saml_okta, saml_azure) */
@@ -23059,7 +23158,11 @@ export interface operations {
            *       ],
            *       "total": 25,
            *       "limit": 20,
-           *       "offset": 0
+           *       "offset": 0,
+           *       "defaults": {
+           *         "max_requests_per_minute": 1000,
+           *         "max_requests_per_hour": 60000
+           *       }
            *     }
            */
           'application/json': components['schemas']['ListUserQuotasResponse'];
@@ -23191,7 +23294,13 @@ export interface operations {
            *       ],
            *       "total": 15,
            *       "limit": 20,
-           *       "offset": 0
+           *       "offset": 0,
+           *       "defaults": {
+           *         "max_subscriptions": 10,
+           *         "max_events_per_minute": 12,
+           *         "max_subscription_requests_per_minute": 10,
+           *         "max_subscription_requests_per_day": 20
+           *       }
            *     }
            */
           'application/json': components['schemas']['ListWebhookQuotasResponse'];
@@ -23321,7 +23430,11 @@ export interface operations {
            *       ],
            *       "total": 8,
            *       "limit": 20,
-           *       "offset": 0
+           *       "offset": 0,
+           *       "defaults": {
+           *         "max_active_invocations": 3,
+           *         "max_invocations_per_hour": 10
+           *       }
            *     }
            */
           'application/json': components['schemas']['ListAddonQuotasResponse'];
@@ -34667,6 +34780,7 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -38891,6 +39005,83 @@ export interface operations {
     requestBody?: never;
     responses: {
       /** @description Token deleted (or was already absent). */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminListUserIdentities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The target user's primary and linked sign-in identities. */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminUserIdentitiesResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      401: components['responses']['Error'];
+      403: components['responses']['Error'];
+      404: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  adminDeleteUserIdentity: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        user_id: components['parameters']['UserIdPathParam'];
+        /** @description Linked identity unique identifier */
+        identity_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Linked identity unlinked. */
       204: {
         headers: {
           /** @description Maximum number of requests allowed in the current time window */

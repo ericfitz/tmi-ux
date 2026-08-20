@@ -411,6 +411,11 @@
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
       "lastLogin": "Последний вход",
+      "linkedAccounts": {
+        "linkedAt": "Связан",
+        "menuItem": "Связанные аккаунты",
+        "title": "Связанные аккаунты пользователя {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "Добавить учётные данные",

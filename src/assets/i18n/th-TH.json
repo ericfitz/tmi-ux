@@ -411,6 +411,11 @@
       "filterLabel": "กรองผู้ใช้",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
       "lastLogin": "เข้าสู่ระบบล่าสุด",
+      "linkedAccounts": {
+        "linkedAt": "เชื่อมโยงเมื่อ",
+        "menuItem": "บัญชีที่เชื่อมโยง",
+        "title": "บัญชีที่เชื่อมโยงของ {{userName}}"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "เพิ่มข้อมูลรับรอง",

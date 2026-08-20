@@ -411,6 +411,11 @@
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
       "lastLogin": "마지막 로그인",
+      "linkedAccounts": {
+        "linkedAt": "연결일",
+        "menuItem": "연결된 계정",
+        "title": "{{userName}}의 연결된 계정"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "자격 증명 추가",

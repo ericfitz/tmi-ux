@@ -411,6 +411,11 @@
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
       "lastLogin": "最后登录",
+      "linkedAccounts": {
+        "linkedAt": "关联时间",
+        "menuItem": "关联账号",
+        "title": "{{userName}} 的关联账号"
+      },
       "listTitle": "{{admin.sections.users.title}}",
       "manageCredentials": {
         "addCredential": "添加凭证",

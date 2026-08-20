@@ -169,6 +169,18 @@
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #userRowKebabMenu="matMenu">
+                    @if (!user.automation) {
+                      <button
+                        mat-menu-item
+                        data-testid="users-linked-accounts-item"
+                        (click)="onLinkedAccounts(user)"
+                      >
+                        <mat-icon>link</mat-icon>
+                        <span [transloco]="'admin.users.linkedAccounts.menuItem'"
+                          >Linked accounts</span
+                        >
+                      </button>
+                    }
                     <button
                       mat-menu-item
                       data-testid="users-transfer-ownership-item"

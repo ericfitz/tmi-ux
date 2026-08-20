@@ -39,6 +39,10 @@ import {
   ManageCredentialsDialogData,
 } from './manage-credentials-dialog/manage-credentials-dialog.component';
 import {
+  LinkedAccountsDialogComponent,
+  LinkedAccountsDialogData,
+} from './linked-accounts-dialog/linked-accounts-dialog.component';
+import {
   CreateAutomationUserDialogComponent,
   CreateAutomationUserDialogData,
 } from '../shared/create-automation-user-dialog/create-automation-user-dialog.component';
@@ -253,6 +257,21 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     this.dialog.open(ManageCredentialsDialogComponent, {
       width: '90vw',
       maxWidth: '1200px',
+      data: dialogData,
+    });
+  }
+
+  /**
+   * Open the linked-accounts dialog for a given user
+   */
+  onLinkedAccounts(user: AdminUser): void {
+    const dialogData: LinkedAccountsDialogData = {
+      internalUuid: user.internal_uuid,
+      userName: user.name || user.email,
+    };
+    this.dialog.open(LinkedAccountsDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
       data: dialogData,
     });
   }

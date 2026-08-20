@@ -6,6 +6,7 @@ import { LoggerService } from './logger.service';
 import {
   AdminUser,
   AdminUserFilter,
+  AdminUserIdentitiesResponse,
   CreateAutomationAccountRequest,
   CreateAutomationAccountResponse,
   ListAdminUsersResponse,
@@ -95,6 +96,43 @@ export class UserAdminService {
         }),
         catchError(error => {
           this.logger.error('Failed to create automation user', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * List a user's primary and linked sign-in identities
+   */
+  public listUserIdentities(internalUuid: string): Observable<AdminUserIdentitiesResponse> {
+    return this.apiService
+      .get<AdminUserIdentitiesResponse>(`admin/users/${internalUuid}/identities`)
+      .pipe(
+        tap(response => {
+          this.logger.debug('User identities loaded', {
+            internalUuid,
+            linkedCount: response.linked?.length ?? 0,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to list user identities', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Unlink a user's linked sign-in identity (the primary identity cannot be unlinked)
+   */
+  public unlinkUserIdentity(internalUuid: string, identityId: string): Observable<void> {
+    return this.apiService
+      .delete<void>(`admin/users/${internalUuid}/identities/${identityId}`)
+      .pipe(
+        tap(() => {
+          this.logger.info('User identity unlinked', { internalUuid, identityId });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to unlink user identity', error);
           throw error;
         }),
       );
