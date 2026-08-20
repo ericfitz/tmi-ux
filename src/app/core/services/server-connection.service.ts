@@ -394,9 +394,15 @@ export class ServerConnectionService implements OnDestroy {
 
     // this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
 
-    // Use the root API endpoint as defined in tmi-openapi.json
-    // Remove trailing /api if present (e.g., 'http://localhost:8080/api' -> 'http://localhost:8080')
-    const statusEndpoint = environment.apiUrl.replace(/\/api$/, '');
+    // Use the root API endpoint as defined in tmi-openapi.json.
+    // Absolute URLs may carry a legacy /api host-path suffix — the health root
+    // lives above it ('http://localhost:8080/api' -> 'http://localhost:8080').
+    // A relative apiUrl (same-origin proxy mode, e.g. '/api') IS the API mount
+    // and serves the health document at its root; stripping it would yield ''
+    // and the check would fetch the SPA page instead.
+    const statusEndpoint = environment.apiUrl.startsWith('/')
+      ? environment.apiUrl
+      : environment.apiUrl.replace(/\/api$/, '');
 
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {

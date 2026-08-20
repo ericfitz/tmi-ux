@@ -21,18 +21,35 @@ let apiProxy = null;
 if (apiProxyEnabled) {
   if (!apiProxyTarget) {
     console.error(
-      'TMI_ENABLE_API_PROXY=true but TMI_PROXY_TARGET is not set; refusing to start with misconfigured proxy.'
+      'TMI_ENABLE_API_PROXY=true but TMI_PROXY_TARGET is not set; refusing to start with misconfigured proxy.',
     );
     process.exit(1);
   }
+  // changeOrigin must stay false: the TMI server mirrors the request's
+  // scheme/host when building absolute URLs it hands to the browser (notably
+  // each provider's auth_url). Rewriting Host to the internal target
+  // (e.g. tmi-server:8080) would send browsers to an unresolvable host.
   apiProxy = createProxyMiddleware({
     target: apiProxyTarget,
-    changeOrigin: true,
+    changeOrigin: false,
     ws: true,
     pathRewrite: { [`^${API_PROXY_PATH}`]: '' },
     logger: console,
   });
   app.use(API_PROXY_PATH, apiProxy);
+
+  // The OAuth authorize endpoint is the one API path the BROWSER navigates to
+  // top-level (the server's generated auth_url is scheme://<this host>/oauth2/
+  // authorize when proxied). Pass it through un-prefixed. The SPA's own
+  // /oauth2/callback route must NOT be proxied — pathFilter matches only the
+  // authorize path.
+  const authorizeProxy = createProxyMiddleware({
+    target: apiProxyTarget,
+    changeOrigin: false,
+    pathFilter: '/oauth2/authorize',
+    logger: console,
+  });
+  app.use(authorizeProxy);
 }
 
 // Set up a basic rate limiter for static file server
@@ -128,7 +145,7 @@ app.use(
   express.static(path.join(__dirname, 'dist/tmi-ux/browser/assets/fonts'), {
     maxAge: '1y',
     immutable: true,
-  })
+  }),
 );
 
 // Serve static files from the Angular app build output
