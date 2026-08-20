@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "使用状況"
+        "referenceCount": "参照数"
       },
       "deleteTooltip": "グループを削除",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "このグループは脅威モデルまたはプロジェクトの認可設定で参照されています",
         "builtInBadge": "組み込み",
-        "builtInTooltip": "TMIが提供する組み込みグループです",
-        "refCount": "{{count}} 件の参照"
+        "builtInTooltip": "TMIが提供する組み込みグループです"
       },
       "viewMembersTooltip": "グループメンバーを表示・管理する..."
     },

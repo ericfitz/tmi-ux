@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "用量"
+        "referenceCount": "引用次数"
       },
       "deleteTooltip": "删除用户组",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "此组在威胁模型或项目的授权中被引用",
         "builtInBadge": "内置",
-        "builtInTooltip": "由TMI预置的内置组",
-        "refCount": "{{count}} 个引用"
+        "builtInTooltip": "由TMI预置的内置组"
       },
       "viewMembersTooltip": "查看和管理组成员..."
     },

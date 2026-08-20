@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "Использование"
+        "referenceCount": "Количество ссылок"
       },
       "deleteTooltip": "Удалить группу",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "Эта группа используется в разрешениях моделей угроз или проектов",
         "builtInBadge": "Встроенная",
-        "builtInTooltip": "Встроенная группа, созданная TMI",
-        "refCount": "{{count}} ссылок"
+        "builtInTooltip": "Встроенная группа, созданная TMI"
       },
       "viewMembersTooltip": "Просмотр и управление членами группы..."
     },

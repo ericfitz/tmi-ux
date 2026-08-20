@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "Penggunaan"
+        "referenceCount": "Jumlah referensi"
       },
       "deleteTooltip": "Hapus grup",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "Grup ini dirujuk dalam otorisasi model ancaman atau proyek",
         "builtInBadge": "Bawaan",
-        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI",
-        "refCount": "{{count}} referensi"
+        "builtInTooltip": "Grup bawaan yang disediakan oleh TMI"
       },
       "viewMembersTooltip": "Lihat dan kelola anggota grup..."
     },

@@ -16,7 +16,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
-import { ServerConnectionService } from '../../../../core/services/server-connection.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
@@ -130,7 +129,6 @@ export class AppDfdOrchestrator {
   constructor(
     private readonly logger: LoggerService,
     private readonly authService: AuthService,
-    private readonly serverConnectionService: ServerConnectionService,
     private readonly collaborationService: DfdCollaborationService,
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
@@ -1041,10 +1039,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('Graph not initialized'));
     }
 
-    // Determine if we should allow localStorage fallback (local provider without server)
-    const allowLocalStorageFallback = this._isLocalProviderOffline();
-
-    return this.appPersistenceCoordinator.load(loadOperation, allowLocalStorageFallback).pipe(
+    return this.appPersistenceCoordinator.load(loadOperation).pipe(
       tap(result => {
         if (result.success && result.data && result.data.cells) {
           this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
@@ -1890,31 +1885,6 @@ export class AppDfdOrchestrator {
       return;
     }
 
-    // Check if local provider without server connection (offline mode)
-    if (this._isLocalProviderOffline()) {
-      this.logger.debugComponent(
-        'AppDfdOrchestrator',
-        'Saving to localStorage (local provider offline)',
-        { diagramId },
-      );
-      this.appPersistenceCoordinator.saveToLocalStorage(diagramId, threatModelId, data).subscribe({
-        next: result => {
-          if (result.success) {
-            this._lastSavedHistoryIndex = historyIndex;
-            this._stats.autoSaves++;
-            this._updateState({
-              hasUnsavedChanges: false,
-              lastSaved: new Date(),
-            });
-          }
-        },
-        error: error => {
-          this.logger.error('LocalStorage autosave failed', { error, diagramId });
-        },
-      });
-      return;
-    }
-
     // Normal save - WebSocket (if in collaboration session) or REST
     // If isCollaborating() returns true, WebSocket is guaranteed to be connected
     const isCollaborating = this.collaborationService.isCollaborating();
@@ -1961,17 +1931,6 @@ export class AppDfdOrchestrator {
         });
       },
     });
-  }
-
-  /**
-   * Check if we're using local provider without server connection
-   */
-  // SEM@7e88e7cc5409cc02f33bcb81201e40a431315c47: validate whether the local auth provider is offline from the server (pure)
-  private _isLocalProviderOffline(): boolean {
-    const isLocalProvider = (this.authService as any).isUsingLocalProvider;
-    const isServerReachable = this.serverConnectionService.currentDetailedStatus.isServerReachable;
-
-    return isLocalProvider && !isServerReachable;
   }
 
   // SEM@629da63a9c7d9e6f04041836bc89aae48d2cde81: fetch normalized nodes and edges from the live graph for persistence

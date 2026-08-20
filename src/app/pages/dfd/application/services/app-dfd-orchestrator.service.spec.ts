@@ -65,7 +65,6 @@ describe('AppDfdOrchestrator', () => {
   let service: AppDfdOrchestrator;
   let mockLogger: any;
   let mockAuthService: any;
-  let mockServerConnectionService: any;
   let mockCollaborationService: any;
   let mockGraphOperationManager: any;
   let mockPersistenceCoordinator: any;
@@ -99,12 +98,6 @@ describe('AppDfdOrchestrator', () => {
     mockAuthService = {
       getCurrentUser: vi.fn().mockReturnValue(of({ id: 'user-1', email: 'test@example.com' })),
       isAuthenticated: vi.fn().mockReturnValue(of(true)),
-    };
-
-    mockServerConnectionService = {
-      isConnected: vi.fn().mockReturnValue(true),
-      serverMode: vi.fn().mockReturnValue('remote'),
-      currentDetailedStatus: { isServerReachable: true, mode: 'remote' },
     };
 
     mockCollaborationService = {
@@ -320,7 +313,6 @@ describe('AppDfdOrchestrator', () => {
     service = new AppDfdOrchestrator(
       mockLogger,
       mockAuthService,
-      mockServerConnectionService,
       mockCollaborationService,
       mockGraphOperationManager,
       mockPersistenceCoordinator,
@@ -575,7 +567,6 @@ describe('AppDfdOrchestrator', () => {
       const uninitializedService = new AppDfdOrchestrator(
         mockLogger,
         mockAuthService,
-        mockServerConnectionService,
         mockCollaborationService,
         mockGraphOperationManager,
         mockPersistenceCoordinator,
