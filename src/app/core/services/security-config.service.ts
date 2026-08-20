@@ -257,8 +257,10 @@ ${Object.entries(headers)
 
   // SEM@cf4afb3aa3fa6b6bc7a18caa9fe7c71b03af5311: build and inject a CSP meta tag into the document head (mutates shared state)
   private injectDynamicCSP(): void {
-    // Extract API URL components
-    const apiUrl = new URL(environment.apiUrl);
+    // Extract API URL components. The base argument makes relative API URLs
+    // (same-origin proxy mode, e.g. apiUrl '/api' from TMI_ENABLE_API_PROXY)
+    // resolve against the page origin instead of throwing.
+    const apiUrl = new URL(environment.apiUrl, window.location.origin);
     const apiOrigin = apiUrl.origin;
     const apiProtocol = apiUrl.protocol;
 
@@ -324,8 +326,12 @@ ${Object.entries(headers)
       cspDirectives.push(frameSrcDirective);
     }
 
-    // Add upgrade-insecure-requests only in production or when using HTTPS
-    if (environment.production || window.location.protocol === 'https:') {
+    // Add upgrade-insecure-requests only when the page itself is HTTPS.
+    // On an HTTP page the directive rewrites every same-origin request to
+    // https:// on a host that may not serve TLS at all, breaking the app
+    // (seen on the plain-HTTP k3s NodePort with production builds) while
+    // adding no transport security — the document is already plaintext.
+    if (window.location.protocol === 'https:') {
       cspDirectives.push('upgrade-insecure-requests');
     }
 

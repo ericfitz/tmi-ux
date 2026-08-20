@@ -15,11 +15,27 @@ Read this first when resuming. Everything below is on `main` unless noted.
 
 #865 `fix:` production `_isLocalProviderOffline()` reads phantom `authService.isUsingLocalProvider` via `as any` (always falsy) · #866 two divergent `LoadResult` types / `loadDiagram(): Observable<any>` · #867 validator param vs its `unknown` interface · #868 shared `createTestUser()` factories · #869 `'peer'` literal in related-dialog specs · #870 spec `as any` sweep (~750) · #871 export `PageSize`/`MarginSize`.
 
+## Update 2026-08-19 (evening session)
+
+- **#812 and #821 verified in a real browser** (all four palettes; search/no-match/clear/sort) against `ng serve --configuration=e2e` + port-forward to the k3s API. `#831 test:e2e:field-coverage` ran: 8 passed / ~106 failed / 3 not run — failures are environment seeding (the cluster DB was reseeded and has NO e2e seed users/entities; only `charlie` remains, in Administrators + Security Reviewers), plus one real finding: the stroke-color test reaches the hex input now but a palette-slot edit does not propagate to the node's `body/stroke` (`#ff0000` set, stays `#000000`) — candidate issue.
+- **The rp2:30081 blank page root cause was the app itself**: `SecurityConfigService.injectDynamicCSP()` injected `upgrade-insecure-requests` for any production build (container is production:true), upgrading every fetch from the plain-http origin to https → bootstrap death. Fixed (u-i-r only when page protocol is https) alongside relative-apiUrl support (`new URL(apiUrl, window.location.origin)`).
+- **TLS at `https://tmi.efitz.net`**: `tmi-ux.yml` now carries a cert-manager `Certificate` (ClusterIssuer `letsencrypt-route53`, secret `tmi-ux-tls`) and a Traefik `Ingress` (entrypoint websecure) at the MetalLB VIP `192.168.1.6`. The deployment switched from `TMI_API_URL=http://rp2:30080` to the same-origin proxy (`TMI_ENABLE_API_PROXY=true`, `TMI_PROXY_TARGET=http://tmi-server:8080`) → config.json serves `apiUrl: "/api"`; no mixed content, WebSockets proxied.
+- **Pi-hole (runs in-cluster, ns `pihole`, VIP 192.168.1.10; config via `pihole-FTL --config`)**: added `dns.hosts` entry `192.168.1.6 traefik.local`. The CNAME `tmi.efitz.net,traefik.local` was blocked by the session's permission classifier — see "user actions" below. Note: the record must target the Traefik VIP, not rp2 — nothing serves 443 on node IPs (MetalLB L2 pool 192.168.1.6-15).
+- **Step-up re-auth bug candidate**: expired-auth admin actions loop on "Wrong account — you must re-authenticate as charlie@tmi.local"; the silent re-auth doesn't pass the current user's login_hint to the dev tmi provider. Not yet filed.
+
+### Completed later the same evening (user-approved)
+
+- Pi-hole CNAME `tmi.efitz.net -> traefik.local` applied; resolves to 192.168.1.6.
+- OAuth allowlist patched in the live `tmi-server-config` ConfigMap (`https://tmi.efitz.net/*`, `http://rp2:30081/*`, `http://192.168.1.2:30081/*`) + tmi-server restart; verified 302-with-code for the allowed origin, 400 for others. Tracked in tmi#774: sync `tmi/config-development.yml` + docs with the live ConfigMap (`make dev-up` overwrites it).
+- Two more proxy-mode fixes (d20b561f): `changeOrigin: false` + top-level `/oauth2/authorize` pass-through in server.js (the server mirrors request host into provider auth_urls — with changeOrigin:true browsers were sent to `https://tmi-server:8080`), and the server-connection health check now uses a relative apiUrl as-is (stripping `/api` reduced it to `''` -> SPA page -> "Server offline").
+- **Verified end-to-end in Chrome: `https://tmi.efitz.net/` — login (dev user), dashboard, green connected indicator. `http://rp2:30081/` also boots.**
+
 ## Next session
 
-1. **Browser verification debt** (merged in v1.11.0, never exercised in a browser) — the k3s deployment now gives you a real target: #812 page-header close buttons white-on-red in all four palettes (light/dark × normal/colorblind); #821 triage search no-match state + column sort; #831 `pnpm run test:e2e:field-coverage` (needs `pnpm dev:e2e` + a backend on `:8080`).
-2. Smoke-test an actual browser login at `http://rp2:30081/` (only the authorize redirect was verified by curl); decide whether to add the k3s origins to `tmi/config-development.yml` and whether to file the settings-precedence server issue.
-3. Pick from #865–#871 (start with #865 — real dead code behind a cast).
+1. ~~Verify a full browser login at `https://tmi.efitz.net/`~~ Done (see above).
+2. Re-seed the cluster DB with the e2e seed spec (tmi-dbtool) and rerun `test:e2e:field-coverage`; file the palette-slot stroke-propagation issue and the step-up re-auth issue.
+3. Decide whether to add the k3s origins to `tmi/config-development.yml` and whether to file the settings-precedence server issue.
+4. Pick from #865–#871 (start with #865 — real dead code behind a cast).
 
 ## Gotchas (still true)
 

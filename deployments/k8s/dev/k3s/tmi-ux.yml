@@ -7,9 +7,19 @@
 # Dockerfile.chainguard for the host arch (Apple Silicon == Pi arm64), pushes
 # to rp2:30500, applies this file, and waits for the rollout.
 #
-# The browser talks to the API directly at http://rp2:30080 (TMI_API_URL); the
-# server's OAuth client_callback_allowlist must admit http://rp2:30081/* —
-# see deploy-k3s.sh's post-deploy note.
+# The app serves the API same-origin under /api (TMI_ENABLE_API_PROXY in
+# server.js proxies to the in-cluster tmi-server service, WebSockets included).
+# Same-origin avoids both mixed-content blocking under TLS and Chrome's
+# local-network-access blocking of cross-host fetches from insecure origins.
+#
+# Two entry points:
+#   - https://tmi.efitz.net — Traefik Ingress (MetalLB VIP 192.168.1.6) with a
+#     Let's Encrypt cert from the letsencrypt-route53 ClusterIssuer (DNS-01).
+#     Pi-hole resolves tmi.efitz.net via CNAME -> traefik.local (192.168.1.6).
+#   - http://rp2:30081 — NodePort, kept for direct access.
+# The server's OAuth client_callback_allowlist must admit
+# https://tmi.efitz.net/* and http://rp2:30081/* — see deploy-k3s.sh's
+# post-deploy note.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,8 +45,10 @@ spec:
             - containerPort: 8080
               name: http
           env:
-            - name: TMI_API_URL
-              value: http://rp2:30080
+            - name: TMI_ENABLE_API_PROXY
+              value: 'true'
+            - name: TMI_PROXY_TARGET
+              value: http://tmi-server:8080
             - name: TMI_OPERATOR_NAME
               value: TMI dev (k3s-rp)
             - name: TMI_LOG_LEVEL
@@ -76,3 +88,42 @@ spec:
       port: 8080
       targetPort: http
       nodePort: 30081
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tmi-ux-tls
+  namespace: tmi-platform
+spec:
+  commonName: tmi.efitz.net
+  dnsNames:
+    - tmi.efitz.net
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-route53
+  secretName: tmi-ux-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tmi-ux
+  namespace: tmi-platform
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: tmi.efitz.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: tmi-ux
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - tmi.efitz.net
+      secretName: tmi-ux-tls
