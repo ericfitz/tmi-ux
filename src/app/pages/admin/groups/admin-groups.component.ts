@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -110,7 +111,18 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
+    private clipboard: Clipboard,
   ) {}
+
+  /**
+   * Copy a text value to the system clipboard, logging on failure
+   */
+  copyToClipboard(text: string): void {
+    const success = this.clipboard.copy(text);
+    if (!success) {
+      this.logger.error('Failed to copy to clipboard');
+    }
+  }
 
   // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: attach the sort view child and configure column sort accessors (mutates shared state)
   ngAfterViewInit(): void {

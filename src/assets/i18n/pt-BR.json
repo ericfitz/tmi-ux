@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "Uso"
+        "referenceCount": "Número de referências"
       },
       "deleteTooltip": "Excluir grupo",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "Este grupo é referenciado em autorizações de modelos de ameaças ou projetos",
         "builtInBadge": "Integrado",
-        "builtInTooltip": "Grupo integrado provisionado pelo TMI",
-        "refCount": "{{count}} referências"
+        "builtInTooltip": "Grupo integrado provisionado pelo TMI"
       },
       "viewMembersTooltip": "Visualizar e gerenciar membros do grupo..."
     },

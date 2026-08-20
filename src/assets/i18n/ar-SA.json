@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "الاستخدام"
+        "referenceCount": "عدد الإشارات"
       },
       "deleteTooltip": "حذف المجموعة",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "تتم الإشارة إلى هذه المجموعة في منح التخويل على نماذج التهديد أو المشاريع",
         "builtInBadge": "مدمجة",
-        "builtInTooltip": "مجموعة مدمجة يوفرها TMI",
-        "refCount": "{{count}} مراجع"
+        "builtInTooltip": "مجموعة مدمجة يوفرها TMI"
       },
       "viewMembersTooltip": "عرض وإدارة أعضاء المجموعة..."
     },

@@ -34,6 +34,7 @@ describe('AdminGroupsComponent', () => {
     const mockDialog = { open: vi.fn() };
     const mockLogger = { info: vi.fn(), error: vi.fn(), debug: vi.fn() };
     const mockAuthService = { getAvailableProviders: vi.fn().mockReturnValue(of([])) };
+    const mockClipboard = { copy: vi.fn().mockReturnValue(true) };
 
     const mockDestroyRef = { onDestroy: vi.fn() };
     const injector = Injector.create({
@@ -48,6 +49,7 @@ describe('AdminGroupsComponent', () => {
         mockDialog as never,
         mockLogger as never,
         mockAuthService as never,
+        mockClipboard as never,
       );
     });
   });

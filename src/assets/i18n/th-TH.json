@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "การใช้งาน"
+        "referenceCount": "จำนวนการอ้างอิง"
       },
       "deleteTooltip": "ลบกลุ่ม",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "กลุ่มนี้ถูกอ้างอิงในการให้สิทธิ์ของโมเดลภัยคุกคามหรือโปรเจกต์",
         "builtInBadge": "ในตัว",
-        "builtInTooltip": "กลุ่มในตัวที่จัดเตรียมโดย TMI",
-        "refCount": "{{count}} รายการอ้างอิง"
+        "builtInTooltip": "กลุ่มในตัวที่จัดเตรียมโดย TMI"
       },
       "viewMembersTooltip": "ดูและจัดการสมาชิกกลุ่ม..."
     },

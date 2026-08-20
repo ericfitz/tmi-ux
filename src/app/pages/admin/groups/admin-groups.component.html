@@ -91,8 +91,33 @@
                       {{ getGroupDisplayName(group) }}
                     </div>
                   }
-                  <div class="group-identifier" [matTooltip]="getGroupIdentifier(group)">
-                    {{ getGroupIdentifier(group) }}
+                  <div class="group-line">
+                    <span class="group-identifier" [matTooltip]="getGroupIdentifier(group)">
+                      {{ getGroupIdentifier(group) }}
+                    </span>
+                    <button
+                      mat-icon-button
+                      class="copy-button"
+                      (click)="copyToClipboard(getGroupIdentifier(group))"
+                      [matTooltip]="'common.copyToClipboard' | transloco"
+                      [attr.aria-label]="'common.copyToClipboard' | transloco"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  </div>
+                  <div class="group-line">
+                    <span class="group-id" [matTooltip]="group.internal_uuid">
+                      {{ group.internal_uuid }}
+                    </span>
+                    <button
+                      mat-icon-button
+                      class="copy-button"
+                      (click)="copyToClipboard(group.internal_uuid)"
+                      [matTooltip]="'common.copyToClipboard' | transloco"
+                      [attr.aria-label]="'common.copyToClipboard' | transloco"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
                   </div>
                   @if (group.description) {
                     <div class="group-description" [matTooltip]="group.description">
@@ -106,13 +131,11 @@
             <!-- Usage Column -->
             <ng-container matColumnDef="usage">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="usage-column">
-                {{ 'admin.groups.columns.usage' | transloco }}
+                {{ 'admin.groups.columns.referenceCount' | transloco }}
               </th>
               <td mat-cell *matCellDef="let group" class="usage-column">
                 <div class="usage-info">
-                  <div class="usage-count">
-                    {{ 'admin.groups.usage.refCount' | transloco: { count: group.usage_count } }}
-                  </div>
+                  <div class="usage-count">{{ group.usage_count }}</div>
                   @if (group.used_in_authorizations) {
                     <span
                       class="usage-badge authz"

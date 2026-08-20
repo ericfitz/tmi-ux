@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "استعمال"
+        "referenceCount": "حوالوں کی تعداد"
       },
       "deleteTooltip": "گروپ حذف کریں",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "اس گروپ کا حوالہ تھریٹ ماڈلز یا پروجیکٹس کی اجازتوں میں دیا گیا ہے",
         "builtInBadge": "بلٹ اِن",
-        "builtInTooltip": "TMI کی طرف سے فراہم کردہ بلٹ اِن گروپ",
-        "refCount": "{{count}} حوالہ جات"
+        "builtInTooltip": "TMI کی طرف سے فراہم کردہ بلٹ اِن گروپ"
       },
       "viewMembersTooltip": "گروپ کے اراکین کو دیکھیں اور ان کا انتظام کریں..."
     },

@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "שימוש"
+        "referenceCount": "מספר הפניות"
       },
       "deleteTooltip": "מחק קבוצה",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "קבוצה זו מוזכרת בהרשאות של מודלי איומים או פרויקטים",
         "builtInBadge": "מובנית",
-        "builtInTooltip": "קבוצה מובנית שסופקה על ידי TMI",
-        "refCount": "{{count}} הפניות"
+        "builtInTooltip": "קבוצה מובנית שסופקה על ידי TMI"
       },
       "viewMembersTooltip": "הצג ונהל חברי קבוצה..."
     },

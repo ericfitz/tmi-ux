@@ -203,7 +203,7 @@
       "columns": {
         "group": "{{common.subjectTypes.group}}",
         "provider": "{{common.provider}}",
-        "usage": "사용량"
+        "referenceCount": "참조 수"
       },
       "deleteTooltip": "그룹 삭제",
       "filter": {
@@ -233,8 +233,7 @@
         "authzBadge": "Authz",
         "authzTooltip": "이 그룹은 위협 모델 또는 프로젝트의 권한 부여에서 참조됩니다",
         "builtInBadge": "기본 제공",
-        "builtInTooltip": "TMI에서 제공하는 기본 그룹입니다",
-        "refCount": "참조 {{count}}개"
+        "builtInTooltip": "TMI에서 제공하는 기본 그룹입니다"
       },
       "viewMembersTooltip": "그룹 멤버 보기 및 관리..."
     },
