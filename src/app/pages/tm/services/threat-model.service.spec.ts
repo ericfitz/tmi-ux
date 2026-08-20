@@ -156,7 +156,7 @@ describe('ThreatModelService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('API mode (offline mode removed)', () => {
+  describe('threat model API calls', () => {
     beforeEach(() => {
       // Mock API responses for threat model list
       const mockListItems = [testThreatModel1, testThreatModel2, testThreatModel3].map(tm => ({
@@ -357,7 +357,7 @@ describe('ThreatModelService', () => {
     }));
   });
 
-  describe('with offline mode disabled', () => {
+  describe('diagram API calls', () => {
     it('should make API calls for diagrams when mock data is disabled', waitForAsync(() => {
       const mockDiagrams = [{ id: 'diag1', name: 'Test Diagram' }];
       const mockResponse = { diagrams: mockDiagrams, total: 1, limit: 100, offset: 0 };
