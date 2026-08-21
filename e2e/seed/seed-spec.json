@@ -84,7 +84,6 @@
       "project_id": "Seed Project One",
       "security_reviewer": "test-reviewer",
       "issue_uri": "https://example.com/issues/1",
-      "alias": ["seed-tm-1", "full-fields-tm"],
       "metadata": [{ "key": "risk_level", "value": "high" }],
       "authorization": [
         { "user_id": "test-user", "role": "reader" },
