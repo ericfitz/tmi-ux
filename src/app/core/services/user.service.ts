@@ -49,7 +49,7 @@ export class UserService {
   // SEM@44287f3f5c43dfa5aaf5fa36290065fd39725079: fetch the authenticated user profile including admin status (reads DB)
   getCurrentUser(): Observable<UserProfile> {
     this.logger.info('Fetching current user profile');
-    return this.apiService.get<UserProfile>('users/me');
+    return this.apiService.get<UserProfile>('me');
   }
 
   /**
@@ -59,7 +59,7 @@ export class UserService {
   // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: request an account-deletion challenge token from the API (reads DB)
   requestDeleteChallenge(): Observable<DeleteChallengeResponse> {
     this.logger.info('Requesting account deletion challenge');
-    return this.apiService.delete<DeleteChallengeResponse>('users/me');
+    return this.apiService.delete<DeleteChallengeResponse>('me');
   }
 
   /**
@@ -70,7 +70,7 @@ export class UserService {
   // SEM@fbed61cffb1a9a41593309e41f1b6f8a61a5f4d2: delete the authenticated user account by confirming a challenge token (reads DB)
   confirmDeleteAccount(challenge: string): Observable<void> {
     this.logger.info('Confirming account deletion with challenge');
-    return this.apiService.deleteWithParams<void>('users/me', { challenge });
+    return this.apiService.deleteWithParams<void>('me', { challenge });
   }
 
   /**
