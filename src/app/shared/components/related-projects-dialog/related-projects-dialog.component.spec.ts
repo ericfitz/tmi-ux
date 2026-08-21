@@ -72,7 +72,7 @@ describe('RelatedProjectsDialogComponent', () => {
   });
 
   it('should create, copying the related projects', () => {
-    const related = [{ related_project_id: 'proj-2', relationship: 'parent' }] as RelatedProject[];
+    const related: RelatedProject[] = [{ related_project_id: 'proj-2', relationship: 'parent' }];
     const component = build({ project: makeProject(related) });
 
     expect(component.relatedProjects).toEqual(related);
@@ -102,7 +102,7 @@ describe('RelatedProjectsDialogComponent', () => {
   describe('addRelated', () => {
     it('does nothing when no project is selected', () => {
       const component = build({ project: makeProject() });
-      component.addForm.get('relationship')?.setValue('peer');
+      component.addForm.get('relationship')?.setValue('related');
 
       component.addRelated();
 
@@ -112,13 +112,13 @@ describe('RelatedProjectsDialogComponent', () => {
     it('adds the selected project with its relationship and resets the form', () => {
       const component = build({ project: makeProject() });
       component.selectedProject = otherProject;
-      component.addForm.get('relationship')?.setValue('peer');
+      component.addForm.get('relationship')?.setValue('related');
 
       component.addRelated();
 
       expect(component.relatedProjects).toHaveLength(1);
       expect(component.relatedProjects[0].related_project_id).toBe('proj-9');
-      expect(component.relatedProjects[0].relationship).toBe('peer');
+      expect(component.relatedProjects[0].relationship).toBe('related');
       expect(component.projectNames.get('proj-9')).toBe('Other Project');
       expect(component.dirty).toBe(true);
       expect(component.showAddForm).toBe(false);
@@ -126,9 +126,7 @@ describe('RelatedProjectsDialogComponent', () => {
 
     it('does not add a duplicate related project', () => {
       const component = build({
-        project: makeProject([
-          { related_project_id: 'proj-9', relationship: 'related' },
-        ] as RelatedProject[]),
+        project: makeProject([{ related_project_id: 'proj-9', relationship: 'related' }]),
       });
       component.selectedProject = otherProject;
       component.addForm.get('relationship')?.setValue('parent');
@@ -145,7 +143,7 @@ describe('RelatedProjectsDialogComponent', () => {
         project: makeProject([
           { related_project_id: 'proj-2', relationship: 'related' },
           { related_project_id: 'proj-3', relationship: 'parent' },
-        ] as RelatedProject[]),
+        ]),
       });
 
       component.removeRelated({
