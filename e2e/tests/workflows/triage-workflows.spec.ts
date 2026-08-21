@@ -276,8 +276,15 @@ test.describe.serial('Triage Workflows', () => {
     await expect(kitchenSinkRow.first()).toBeVisible({ timeout: 10000 });
     await expect(submittedRow).toHaveCount(0);
 
-    // Clear filters: both submitted-status seeds are visible again.
+    // The page-scope hint must be genuinely rendered, not merely present in
+    // the DOM: as a mat-hint it measured 0x0, because .filters-row hides every
+    // field's Material subscript wrapper. toBeVisible() rejects a zero-area box.
+    await expect(triagePage.searchScopeHint()).toBeVisible();
+
+    // Clear filters: both submitted-status seeds are visible again, and the
+    // page-scope hint goes away with the search term.
     await triageFlow.clearFilters();
+    await expect(triagePage.searchScopeHint()).toHaveCount(0);
     await expect(submittedRow.first()).toBeVisible({ timeout: 10000 });
     await expect(kitchenSinkRow.first()).toBeVisible({ timeout: 10000 });
   });

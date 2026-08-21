@@ -62,6 +62,16 @@
   }
 }
 
+// Lives outside .filters-row: that row hides every field's subscript wrapper to
+// save vertical space, which would render a mat-hint invisible. The negative top
+// margin sits the hint inside the row's existing 24px bottom margin, so the
+// layout is unchanged when no search is active.
+.search-scope-hint {
+  margin: -16px 0 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
 .loading-container,
 .error-container,
 .empty-state {
