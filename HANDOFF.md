@@ -1,4 +1,4 @@
-# HANDOFF — state as of 2026-08-20 (v1.13.0)
+# HANDOFF — state as of 2026-08-21 (v1.13.0)
 
 Read this first when resuming. Everything below is on `main` unless noted.
 
@@ -16,25 +16,22 @@ Read this first when resuming. Everything below is on `main` unless noted.
 - Uses the container's **same-origin API proxy** (`TMI_ENABLE_API_PROXY=true`, `TMI_PROXY_TARGET=http://tmi-server:8080`; config.json `apiUrl: "/api"`, WebSockets proxied). `changeOrigin: false` + top-level `/oauth2/authorize` pass-through in server.js are required (d20b561f).
 - **Login allowlist — behavior CHANGED (verified 2026-08-20)**: the server was redeployed with the new "bootstrap keys only" ConfigMap, and the allowlist is now **DB-first for real** (the #419 request-time DB preference the old YAML comment falsely claimed is now actual behavior; the old env>YAML>DB precedence note no longer applies). Probing `/oauth2/authorize` (now requires PKCE: `scope`, `response_type=code`, `code_challenge`, `code_challenge_method=S256`):
   - `http://rp2:30081/*` → **302 with code (login works)** — the `system_settings` DB row carries it.
-  - `https://tmi.efitz.net/*` → **400 "not in the allowlist"** — missing from the DB row. Fix is a DB update (see "Pending user actions"); no server restart should be needed (read at request time).
+  - `https://tmi.efitz.net/*` → **302 with code (login works)** — RESOLVED 2026-08-21; the origin is present in the `auth.oauth.client_callback_allowlist` DB row. No pending action.
   - ConfigMap patching is no longer the fix path; the YAML only carries localhost bootstrap entries. tmi#774 (sync config/docs) still open.
-- **Cluster DB state**: reseeded — e2e seed users/entities are GONE; only `charlie` remains (Administrators + Security Reviewers). `test:e2e:field-coverage` needs a re-seed first (tmi-dbtool, e2e seed spec).
+- **Cluster DB state** (re-checked 2026-08-21): **not bare** — 251 users, 241 threat models, 6 survey responses. But **`charlie` has lost `Administrators` and `Security Reviewers`** (only `CATS Test Group` remains — CATS fuzzing mutates group membership), so `/triage` and `/admin` bounce for charlie. Use **`testuser-44053170@tmi.local`**, which still holds both roles. `test:e2e:field-coverage` still needs a proper e2e re-seed (its named seed entities are absent).
 - Latest deploy: **v1.13.0 deployed 2026-08-20** (image digest `45a530a5…` confirmed running; `https://tmi.efitz.net/` 200, `http://rp2:30081/` serving) for the #812/#821 verification pass.
 
 ## Pending user actions
 
-- **Add `https://tmi.efitz.net/*` to the allowlist DB row** (classifier blocked `kubectl exec` into postgres). Inspect first, then update to match the stored format:
-  ```
-  kubectl --context k3s-rp -n tmi-platform exec deploy/postgres -- psql -U tmi_dev -d tmi_dev -c "SELECT key, value FROM system_settings WHERE key LIKE '%allowlist%';"
-  ```
-  Then append `https://tmi.efitz.net/*` to that row's value (format as shown by the SELECT — likely a JSON array) with an UPDATE, or via `tmi-dbtool` if it has a settings command. Re-verify with the PKCE probe (302 expected). Not blocking: #812/#821 can be verified at `http://rp2:30081/` right now.
+- None. (The previous allowlist DB update is done — `https://tmi.efitz.net/*` is in the `auth.oauth.client_callback_allowlist` row and the PKCE probe returns 302 with a code on both origins.)
 
 ## Next session — task list
 
-1. **Verify #812 and #821 in a browser against the k3s deployment** (`https://tmi.efitz.net/` or `http://rp2:30081/`):
-   - #812: fixed error tones 40/100/30 (white-on-red) in **all four palettes** — deliberate M3 break, user-approved.
-   - #821: threat-model list no-match message, clear, and sort behavior.
-   - (Both were previously verified only against `ng serve --configuration=e2e` + port-forward, never against the deployed container.)
+1. ~~**Verify #812 and #821 in a browser**~~ — **DONE 2026-08-21** against `https://tmi.efitz.net/` (v1.13.0 container), signed in as `testuser-44053170`.
+   - **#812 PASS**: white-on-red confirmed in all four palettes by computed style — Light/Dark + Normal `#BB1614` on white (~6.5:1), Light/Dark + Colorblind `#9D4400` on white (~6.4:1). The M3 dark inversion is correctly overridden. Static audit: exactly 26 close-icon buttons carry `.close-button`, zero `common.close` header buttons missed.
+   - **#821 PASS except one defect**: search narrows rows, typing issues **zero** API requests, no-match state is distinct with page-scope copy + Clear search, paginator stays mounted, Clear search drops only the term, and **column sorting works** (MatSort setter fix confirmed).
+   - **Defect found and fixed → PR #879**: the match-count hint never rendered. As a `<mat-hint>` it measured 0×0 because `triage-list.component.scss:60-62` hides `.mat-mdc-form-field-subscript-wrapper` for every field in `.filters-row` (rule predates #821). Moved out of the form field; added a Playwright `toBeVisible()` regression assert. The #821 unit tests only assert `visibleResponseCount`, so CSS invisibility was structurally uncatchable.
+   - **Open, not fixed**: `--color-text-secondary` resolves to `#6b6b6b` even in dark theme — `colors.scss:90` declares it on `:root` while `--theme-text-secondary` is set on `.dark-theme` (body), so the `var()` fallback wins. Affects `.submitter-email`, `.template-version` and the new hint (~3.1:1 on dark). App-wide; worth its own issue.
 2. **Run `pnpm run test:e2e:field-coverage`** against the cluster:
    - Prerequisite: re-seed the cluster DB with the e2e seed spec (tmi-dbtool) — last run was 8 passed / ~106 failed / 3 not run, almost all from the missing seed data.
    - One real finding from that run still open: palette-slot stroke edit doesn't propagate to the node's `body/stroke` (`#ff0000` set, stays `#000000`) — **file this issue**.
