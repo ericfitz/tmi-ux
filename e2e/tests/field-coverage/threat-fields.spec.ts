@@ -62,7 +62,7 @@ userTest.describe('Threat Field Coverage', () => {
     userTest(`field: ${field.apiName}`, async ({ userPage }) => {
       await userPage.goto('/dashboard');
       await userPage.waitForLoadState('networkidle');
-      await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
+      await new DashboardPage(userPage).openByName(SEEDED_TM);
       await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
       const tmEdit = new TmEditPage(userPage);

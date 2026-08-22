@@ -6,7 +6,7 @@ Playwright-based integration tests for TMI-UX, running against a live local back
 
 Only the backend must be running:
 
-1. **TMI backend** on `http://localhost:8080` (or set `E2E_API_URL`)
+1. **TMI backend** on `http://localhost:30080` (tmi-server NodePort; or set `E2E_API_URL`)
 
 The backend must have the `tmi` OAuth provider configured (auto-grants tokens without IdP interaction).
 
@@ -47,7 +47,7 @@ pnpm run e2e:validate-schema
 | Variable             | Default                 | Description                                                                                 |
 | -------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
 | `E2E_APP_URL`        | `http://localhost:4200` | Frontend URL; when set, disables the managed `webServer` and targets an external deployment |
-| `E2E_API_URL`        | `http://localhost:8080` | Backend API URL                                                                             |
+| `E2E_API_URL`        | `http://localhost:30080` | Backend API URL                                                                             |
 | `E2E_OAUTH_PROVIDER` | `tmi`                   | OAuth provider for test login                                                               |
 
 ## Test Users

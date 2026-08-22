@@ -31,6 +31,30 @@ export class DashboardPage {
     return this.tmCard(name).getByTestId('threat-model-delete-button');
   }
 
+  /**
+   * Open a threat model by name without depending on it being on the first
+   * page of the dashboard.
+   *
+   * The dashboard paginates, so `tmCard(name).click()` only works while the
+   * target happens to be on page 1. Specs that rely on a seeded threat model
+   * were silently dependent on how many other threat models existed: once
+   * leaked test data accumulated, the seeded TM slid onto a later page and
+   * unrelated specs began failing as if the app were broken.
+   *
+   * Applies the server-side name filter first so the match is found
+   * regardless of how many threat models exist.
+   */
+  // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: open a threat model by name via the server-side name filter, independent of pagination
+  async openByName(name: string, timeout = 10000): Promise<void> {
+    await this.waitForReady(timeout);
+    await this.moreFiltersButton().click();
+    await this.nameFilter().fill(name);
+
+    const card = this.tmCard(name).first();
+    await card.waitFor({ state: 'visible', timeout });
+    await card.click();
+  }
+
   // Filter locators
   readonly searchInput = () => this.page.getByTestId('dashboard-search-input');
   readonly searchClear = () => this.page.getByTestId('dashboard-search-clear');

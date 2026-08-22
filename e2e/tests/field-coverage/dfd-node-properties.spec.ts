@@ -3,7 +3,6 @@ import { test } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DiagramFlow } from '../../flows/diagram.flow';
-import { DashboardPage } from '../../pages/dashboard.page';
 import { DfdEditorPage } from '../../pages/dfd-editor.page';
 
 /**
@@ -24,7 +23,6 @@ test.describe.serial('DFD Node Properties', () => {
 
   let threatModelFlow: ThreatModelFlow;
   let diagramFlow: DiagramFlow;
-  let dashboardPage: DashboardPage;
   let dfdEditorPage: DfdEditorPage;
 
   const testTmName = `E2E Node Props TM ${Date.now()}`;
@@ -39,7 +37,6 @@ test.describe.serial('DFD Node Properties', () => {
 
     threatModelFlow = new ThreatModelFlow(page);
     diagramFlow = new DiagramFlow(page);
-    dashboardPage = new DashboardPage(page);
     dfdEditorPage = new DfdEditorPage(page);
 
     // Create fresh TM and diagram, open the DFD editor
@@ -52,15 +49,26 @@ test.describe.serial('DFD Node Properties', () => {
   });
 
   test.afterAll(async () => {
+    // Clean up over the API rather than through the dashboard. These specs end
+    // on the DFD editor, which holds a collaboration WebSocket open, so
+    // waitForLoadState('networkidle') never settles and the hook died on its
+    // 30s timeout -- reported as a failure of whichever test happened to run
+    // last, not of the teardown that actually hung.
+    //
+    // Surface cleanup failures instead of swallowing them: a leaked TM is not
+    // harmless, it accumulates on the dashboard until the seeded TM that other
+    // field-coverage specs look for is pushed off the first page. Close the
+    // context first so a cleanup failure cannot also leak a browser context.
+    let cleanupError: Error | undefined;
     try {
-      await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
-      await threatModelFlow.deleteFromDashboard(testTmName);
-      await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
-    } catch {
-      // Best effort cleanup
+      await threatModelFlow.deleteByNameViaApi(testTmName);
+    } catch (err) {
+      cleanupError = err instanceof Error ? err : new Error(String(err));
     }
     await context.close();
+    if (cleanupError) {
+      throw cleanupError;
+    }
   });
 
   /**
@@ -90,7 +98,10 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('label editing via double-click', async () => {
     const nodeId = await addProcessAndGetId();
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID, not index. beforeAll (not beforeEach) means the graph is
+    // shared and nodes accumulate, so index 0 is the node the FIRST test added
+    // while these specs assert on the node they just added. See #882.
+    await dfdEditorPage.selectNodeById(nodeId);
 
     // Wait for X6 to finish positioning/rendering the node
     await page.waitForTimeout(2000);
@@ -133,7 +144,10 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('stroke color via style panel', async () => {
     const nodeId = await addProcessAndGetId();
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID, not index. beforeAll (not beforeEach) means the graph is
+    // shared and nodes accumulate, so index 0 is the node the FIRST test added
+    // while these specs assert on the node they just added. See #882.
+    await dfdEditorPage.selectNodeById(nodeId);
     await ensureStylePanelOpen();
 
     // The stroke tab is selected by default (first tab).
@@ -164,7 +178,10 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('fill color via style panel', async () => {
     const nodeId = await addProcessAndGetId();
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID, not index. beforeAll (not beforeEach) means the graph is
+    // shared and nodes accumulate, so index 0 is the node the FIRST test added
+    // while these specs assert on the node they just added. See #882.
+    await dfdEditorPage.selectNodeById(nodeId);
     await ensureStylePanelOpen();
 
     // Click the fill tab (second tab — format_color_fill icon)
@@ -198,7 +215,10 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('fill opacity via style panel slider', async () => {
     const nodeId = await addProcessAndGetId();
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID, not index. beforeAll (not beforeEach) means the graph is
+    // shared and nodes accumulate, so index 0 is the node the FIRST test added
+    // while these specs assert on the node they just added. See #882.
+    await dfdEditorPage.selectNodeById(nodeId);
     await ensureStylePanelOpen();
 
     // Click the fill tab
@@ -228,7 +248,10 @@ test.describe.serial('DFD Node Properties', () => {
 
   test('label position via style panel grid', async () => {
     const nodeId = await addProcessAndGetId();
-    await dfdEditorPage.selectNodeByIndex(0);
+    // Select by ID, not index. beforeAll (not beforeEach) means the graph is
+    // shared and nodes accumulate, so index 0 is the node the FIRST test added
+    // while these specs assert on the node they just added. See #882.
+    await dfdEditorPage.selectNodeById(nodeId);
     await ensureStylePanelOpen();
 
     // Click the label position tab (third tab — "title" icon)

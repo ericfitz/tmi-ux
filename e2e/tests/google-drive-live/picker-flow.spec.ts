@@ -8,6 +8,7 @@ import {
   GOOGLE_DRIVE_SKIP_REASON,
   loadGoogleDriveConfig,
 } from '../../helpers/google-drive-config';
+import { testConfig } from '../../config/test.config';
 
 /**
  * Test #646 case 2: open the document-editor dialog, switch to Google
@@ -30,12 +31,12 @@ userTest.describe('Google Drive — picker flow attaches with picker_registratio
     // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: delete the user's Google Workspace OAuth token via the API (mutates shared state)
     const revokeToken = async () => {
       await userPage
-        .evaluate(async () => {
-          await fetch('http://localhost:8080/me/content_tokens/google_workspace', {
+        .evaluate(async (apiUrl: string) => {
+          await fetch(`${apiUrl}/me/content_tokens/google_workspace`, {
             method: 'DELETE',
             credentials: 'include',
           });
-        })
+        }, testConfig.apiUrl)
         .catch(() => undefined);
     };
 

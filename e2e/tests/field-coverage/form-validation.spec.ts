@@ -98,7 +98,11 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
 
     await angularFill(email, 'not-a-valid-email');
     await focusThenBlur(reviewerPage, email);
-    await expectErrorContaining(reviewerPage, /valid email/i);
+    // common.validation.email is "Email address must be valid." -- the words
+    // never appear in the order /valid email/ matched. Match the whole
+    // message: a bare /must be valid/ would also match invalidUrl,
+    // "URL must be valid."
+    await expectErrorContaining(reviewerPage, /email address must be valid/i);
 
     await closeDialog(reviewerPage);
   });
@@ -129,7 +133,7 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
   reviewerTest('create diagram — blank name shows required error', async ({ reviewerPage }) => {
     await reviewerPage.goto('/dashboard');
     await reviewerPage.waitForLoadState('networkidle');
-    await new DashboardPage(reviewerPage).tmCard(SEEDED_TM).first().click();
+    await new DashboardPage(reviewerPage).openByName(SEEDED_TM);
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
     const addDiagramBtn = reviewerPage.getByTestId('add-diagram-button');
@@ -137,7 +141,13 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
     await addDiagramBtn.click();
     await waitDialog(reviewerPage);
 
-    await focusThenBlur(reviewerPage, reviewerPage.getByTestId('diagram-name-input'));
+    // The dialog pre-populates a default diagram name
+    // (create-diagram-dialog.component.ts seeds the control with defaultName),
+    // so focus/blur alone leaves it valid and Material never projects a
+    // mat-error. Clear it first to actually make the name blank.
+    const diagramName = reviewerPage.getByTestId('diagram-name-input');
+    await angularFill(diagramName, '');
+    await focusThenBlur(reviewerPage, diagramName);
     await expectErrorContaining(reviewerPage, /required/i);
 
     await closeDialog(reviewerPage);
@@ -146,7 +156,7 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
   reviewerTest('threat editor — blank name shows required error', async ({ reviewerPage }) => {
     await reviewerPage.goto('/dashboard');
     await reviewerPage.waitForLoadState('networkidle');
-    await new DashboardPage(reviewerPage).tmCard(SEEDED_TM).first().click();
+    await new DashboardPage(reviewerPage).openByName(SEEDED_TM);
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
     const addThreatBtn = reviewerPage.getByTestId('add-threat-button');
