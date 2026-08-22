@@ -485,4 +485,64 @@ describe('AuthorizationPrepareService', () => {
       expect(result[0]).toHaveProperty('custom_field', 'custom-value');
     });
   });
+
+  describe('findIssues()', () => {
+    it('should return no issues when every entry is complete', () => {
+      const authorizations = [
+        { _subject: 'user-123', provider: 'tmi', principal_type: 'user', role: 'writer' },
+        { _subject: 'everyone', provider: 'tmi', principal_type: 'group', role: 'reader' },
+      ] as unknown as Authorization[];
+
+      expect(service.findIssues(authorizations)).toEqual([]);
+    });
+
+    it('should report the index of an entry with no subject', () => {
+      const authorizations = [
+        { _subject: 'user-123', provider: 'tmi', principal_type: 'user', role: 'writer' },
+        { _subject: '', provider: 'tmi', principal_type: 'user', role: 'reader' },
+      ] as unknown as Authorization[];
+
+      expect(service.findIssues(authorizations)).toEqual([
+        { index: 1, code: 'missing_subject', message: 'Either provider_id or email is required' },
+      ]);
+    });
+
+    it('should report an entry whose provider rejects its principal type', () => {
+      mockProviderAdapter.isValidForPrincipalType.mockReturnValue(false);
+      const authorizations = [
+        { _subject: 'engineering', provider: 'tmi', principal_type: 'group', role: 'reader' },
+      ] as unknown as Authorization[];
+
+      expect(service.findIssues(authorizations)).toEqual([
+        {
+          index: 0,
+          code: 'unsupported_principal_type',
+          message: 'Provider "tmi" does not support "group" principals',
+        },
+      ]);
+    });
+
+    it('should not log warnings for the entries it rejects', () => {
+      const authorizations = [
+        { _subject: '', provider: 'tmi', principal_type: 'user', role: 'reader' },
+      ] as unknown as Authorization[];
+
+      service.findIssues(authorizations);
+
+      expect(mockLogger.warn).not.toHaveBeenCalled();
+    });
+
+    it('should not mutate the authorizations it checks', () => {
+      const authorization = {
+        _subject: '',
+        provider: 'tmi',
+        principal_type: 'user',
+        role: 'reader',
+      } as unknown as Authorization;
+
+      service.findIssues([authorization]);
+
+      expect(authorization).toHaveProperty('_subject', '');
+    });
+  });
 });
