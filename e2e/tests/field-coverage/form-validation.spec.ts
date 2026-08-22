@@ -133,7 +133,7 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
   reviewerTest('create diagram — blank name shows required error', async ({ reviewerPage }) => {
     await reviewerPage.goto('/dashboard');
     await reviewerPage.waitForLoadState('networkidle');
-    await new DashboardPage(reviewerPage).tmCard(SEEDED_TM).first().click();
+    await new DashboardPage(reviewerPage).openByName(SEEDED_TM);
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
     const addDiagramBtn = reviewerPage.getByTestId('add-diagram-button');
@@ -156,7 +156,7 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
   reviewerTest('threat editor — blank name shows required error', async ({ reviewerPage }) => {
     await reviewerPage.goto('/dashboard');
     await reviewerPage.waitForLoadState('networkidle');
-    await new DashboardPage(reviewerPage).tmCard(SEEDED_TM).first().click();
+    await new DashboardPage(reviewerPage).openByName(SEEDED_TM);
     await reviewerPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
     const addThreatBtn = reviewerPage.getByTestId('add-threat-button');

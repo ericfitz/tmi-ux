@@ -59,7 +59,7 @@ const SKIPS: FieldSkip[] = [
 async function openSeededTmReviewProcess(page: Page): Promise<void> {
   await page.goto('/dashboard');
   await page.waitForLoadState('networkidle');
-  await new DashboardPage(page).tmCard(SEEDED_TM).first().click();
+  await new DashboardPage(page).openByName(SEEDED_TM);
   await page.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
   // Expand the Review Process panel so fields inside are visible

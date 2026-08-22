@@ -54,12 +54,21 @@ test.describe.serial('DFD Node Properties', () => {
     // waitForLoadState('networkidle') never settles and the hook died on its
     // 30s timeout -- reported as a failure of whichever test happened to run
     // last, not of the teardown that actually hung.
+    //
+    // Surface cleanup failures instead of swallowing them: a leaked TM is not
+    // harmless, it accumulates on the dashboard until the seeded TM that other
+    // field-coverage specs look for is pushed off the first page. Close the
+    // context first so a cleanup failure cannot also leak a browser context.
+    let cleanupError: unknown;
     try {
       await threatModelFlow.deleteByNameViaApi(testTmName);
-    } catch {
-      // Best effort cleanup
+    } catch (err) {
+      cleanupError = err;
     }
     await context.close();
+    if (cleanupError) {
+      throw cleanupError;
+    }
   });
 
   /**
