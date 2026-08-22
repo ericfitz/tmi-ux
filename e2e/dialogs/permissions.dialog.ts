@@ -55,13 +55,42 @@ export class PermissionsDialog {
     return this.deleteButtons().nth(index);
   }
 
+  // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: read the subject field values of every permission row in row order
+  async subjectValues(): Promise<string[]> {
+    await this.subjectInputs().first().waitFor({ state: 'visible', timeout: 10000 });
+    return this.subjectInputs().evaluateAll(inputs =>
+      inputs.map(input => (input as HTMLInputElement).value),
+    );
+  }
+
+  // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: find the row index holding the given subject, or -1 when absent
+  async rowIndexOf(subject: string): Promise<number> {
+    return (await this.subjectValues()).indexOf(subject);
+  }
+
+  // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: find the row index whose subject matches the pattern, or -1 when absent
+  async rowIndexMatching(pattern: RegExp): Promise<number> {
+    return (await this.subjectValues()).findIndex(value => pattern.test(value));
+  }
+
+  // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: read the localized role label shown on the row at the given index
+  async roleAt(index: number): Promise<string> {
+    return (await this.roleSelect(index).innerText()).trim();
+  }
+
   // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: add a permission entry with type, provider, subject, and role via the dialog
   async addPermission(type: string, provider: string, subject: string, role: string) {
+    // mat-dialog-container becomes visible before the table renders its rows, and
+    // count() does not auto-wait. Counting too early returns 0, so every field below
+    // targets row 0 — the owner's row — silently rewriting it and leaving the row
+    // this method appended blank. Every permission list has at least the owner.
+    await this.typeSelects().first().waitFor({ state: 'visible', timeout: 10000 });
     const prevCount = await this.typeSelects().count();
     await this.addButton().click();
     // Wait for the new row to appear in the table rather than using a fixed delay
     await this.page.waitForFunction(
-      expected => document.querySelectorAll('[data-testid="permissions-type-select"]').length >= expected,
+      expected =>
+        document.querySelectorAll('[data-testid="permissions-type-select"]').length >= expected,
       prevCount + 1,
       { timeout: 5000 },
     );
@@ -74,7 +103,10 @@ export class PermissionsDialog {
       new RegExp(`${escapeRegex(provider)}\\s*$`),
     );
 
-    await this.openSelectAndChoose(this.typeSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`));
+    await this.openSelectAndChoose(
+      this.typeSelect(lastIndex),
+      new RegExp(`\\b${escapeRegex(capitalize(type))}\\s*$`),
+    );
 
     // Type keystrokes one-by-one with pressSequentially and wait for the
     // bound input value to match before moving on. The atomic setter in
@@ -83,20 +115,25 @@ export class PermissionsDialog {
     await this.subjectInput(lastIndex).click();
     await this.subjectInput(lastIndex).fill('');
     await this.subjectInput(lastIndex).pressSequentially(subject, { delay: 20 });
-    await this.page.waitForFunction(
-      ({ idx, expected }) => {
-        const inputs = document.querySelectorAll<HTMLInputElement>(
-          '[data-testid="permissions-subject-input"]',
-        );
-        return inputs[idx]?.value === expected;
-      },
-      { idx: lastIndex, expected: subject },
-      { timeout: 3000 },
-    ).catch(() => {
-      /* continue; next assertion will catch a truly empty field */
-    });
+    await this.page
+      .waitForFunction(
+        ({ idx, expected }) => {
+          const inputs = document.querySelectorAll<HTMLInputElement>(
+            '[data-testid="permissions-subject-input"]',
+          );
+          return inputs[idx]?.value === expected;
+        },
+        { idx: lastIndex, expected: subject },
+        { timeout: 3000 },
+      )
+      .catch(() => {
+        /* continue; next assertion will catch a truly empty field */
+      });
 
-    await this.openSelectAndChoose(this.roleSelect(lastIndex), new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`));
+    await this.openSelectAndChoose(
+      this.roleSelect(lastIndex),
+      new RegExp(`\\b${escapeRegex(capitalize(role))}\\s*$`),
+    );
   }
 
   // SEM@81a32062eea63fd38be41293a7faaafddd14eef1: open a Material select overlay and choose the matching option

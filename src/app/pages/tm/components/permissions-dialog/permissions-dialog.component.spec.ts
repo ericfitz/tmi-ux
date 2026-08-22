@@ -15,6 +15,8 @@ import type { MatDialogRef } from '@angular/material/dialog';
 import type { Authorization, User } from '../../models/threat-model.model';
 import type { AuthService } from '@app/auth/services/auth.service';
 import type { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
+import { AuthorizationPrepareService } from '../../services/providers/authorization-prepare.service';
+import type { LoggerService } from '@app/core/services/logger.service';
 import type { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import type {
   PermissionsAutocompleteService,
@@ -33,11 +35,13 @@ describe('PermissionsDialogComponent', () => {
     getDefaultSubject: ReturnType<typeof vi.fn>;
     getBuiltInProviders: ReturnType<typeof vi.fn>;
     isValidForPrincipalType: ReturnType<typeof vi.fn>;
+    transformProviderForApi: ReturnType<typeof vi.fn>;
   };
   let mockAutocompleteService: {
     search: ReturnType<typeof vi.fn>;
   };
   let dialogData: PermissionsDialogData;
+  let authorizationPrepare: AuthorizationPrepareService;
 
   const mockOwner: User = {
     principal_type: 'user',
@@ -79,6 +83,7 @@ describe('PermissionsDialogComponent', () => {
           { id: 'tmi', name: 'TMI', icon: '', auth_url: '', redirect_uri: '', client_id: '' },
         ]),
       isValidForPrincipalType: vi.fn().mockReturnValue(true),
+      transformProviderForApi: vi.fn((provider: string) => provider),
     };
 
     mockAutocompleteService = {
@@ -90,12 +95,20 @@ describe('PermissionsDialogComponent', () => {
       owner: { ...mockOwner },
     };
 
+    // The real prepare service, so the save gate is exercised against the same
+    // validation the API submission path uses
+    authorizationPrepare = new AuthorizationPrepareService(
+      mockProviderAdapter as unknown as ProviderAdapterService,
+      { warn: vi.fn() } as unknown as LoggerService,
+    );
+
     component = new PermissionsDialogComponent(
       mockDialogRef as unknown as MatDialogRef<PermissionsDialogComponent>,
       dialogData,
       mockAuthService as unknown as AuthService,
       mockProviderAdapter as unknown as ProviderAdapterService,
       mockAutocompleteService as unknown as PermissionsAutocompleteService,
+      authorizationPrepare,
     );
   });
 
@@ -143,6 +156,7 @@ describe('PermissionsDialogComponent', () => {
         mockAuthService as unknown as AuthService,
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
+        authorizationPrepare,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
@@ -289,6 +303,104 @@ describe('PermissionsDialogComponent', () => {
     });
   });
 
+  describe('save validation gate', () => {
+    it('should not close the dialog when a row has no subject', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+
+      component.save();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.rowIssue(1)).toBe('missing_subject');
+      expect(component.rowIssue(0)).toBeUndefined();
+      expect(component.validationIssueKeys()).toEqual(['threatModels.permissionsSubjectRequired']);
+    });
+
+    it('should report the row whose provider rejects its principal type', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      mockProviderAdapter.isValidForPrincipalType.mockReturnValue(false);
+
+      component.save();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.validationIssueKeys()).toEqual([
+        'threatModels.permissionsProviderPrincipalUnsupported',
+      ]);
+    });
+
+    it('should clear a row issue once that row is edited', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      component.save();
+      expect(component.rowIssue(1)).toBe('missing_subject');
+
+      (component.permissionsDataSource.data[1] as AuthorizationWithSubject)['_subject'] =
+        'new@test.com';
+      component.onSubjectInput(1, {
+        target: { value: 'new@test.com' },
+      } as unknown as Event);
+
+      expect(component.rowIssue(1)).toBeUndefined();
+    });
+
+    it('should close the dialog once the incomplete row is filled in', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      component.save();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+
+      (component.permissionsDataSource.data[1] as AuthorizationWithSubject)['_subject'] =
+        'new@test.com';
+      component.save();
+
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+      expect(component.validationIssues.size).toBe(0);
+    });
+
+    it('should keep outstanding issues visible when another row is added', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      component.save();
+      expect(component.rowIssue(1)).toBe('missing_subject');
+
+      // The new row is appended, so index 1 still refers to the same offending row
+      component.addPermission();
+
+      expect(component.rowIssue(1)).toBe('missing_subject');
+    });
+
+    it('should re-index outstanding issues when an earlier row is deleted', () => {
+      dialogData.permissions = [createPermission(), createPermission()];
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      component.save();
+      expect(component.rowIssue(2)).toBe('missing_subject');
+
+      component.deletePermission(0);
+
+      expect(component.rowIssue(1)).toBe('missing_subject');
+      expect(component.rowIssue(2)).toBeUndefined();
+    });
+
+    it('should drop the recorded issue when the offending row itself is deleted', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      component.save();
+      expect(component.validationIssues.size).toBe(1);
+
+      component.deletePermission(1);
+
+      expect(component.validationIssues.size).toBe(0);
+    });
+  });
+
   describe('save', () => {
     it('should close dialog with permissions and owner', () => {
       component.permissionsTable = { renderRows: vi.fn() } as never;
@@ -339,16 +451,17 @@ describe('PermissionsDialogComponent', () => {
       expect(result.permissions[0]._subject).toBe('provider-user-id');
     });
 
-    it('should handle empty string when all subject fields are falsy', () => {
+    it('should refuse to submit when all subject fields are falsy', () => {
       dialogData.permissions = [createPermission({ email: '', provider_id: '' })];
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
 
       component.save();
 
-      const result = mockDialogRef.close.mock.calls[0][0];
-      // '' || '' || '' evaluates to ''
-      expect(result.permissions[0]._subject).toBe('');
+      // The API rejects an entry with neither provider_id nor email, taking every
+      // other permission edit in the dialog down with it
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+      expect(component.rowIssue(0)).toBe('missing_subject');
     });
   });
 
@@ -565,6 +678,7 @@ describe('PermissionsDialogComponent', () => {
         mockAuthService as unknown as AuthService,
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
+        authorizationPrepare,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();

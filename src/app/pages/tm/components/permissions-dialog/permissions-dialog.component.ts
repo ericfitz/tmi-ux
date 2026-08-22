@@ -1,9 +1,12 @@
 import {
   Component,
+  ElementRef,
   Inject,
   OnInit,
   OnDestroy,
+  QueryList,
   ViewChild,
+  ViewChildren,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -34,6 +37,10 @@ import {
   principalsEqual,
 } from '@app/shared/utils/principal-display.utils';
 import { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
+import {
+  AuthorizationIssueCode,
+  AuthorizationPrepareService,
+} from '../../services/providers/authorization-prepare.service';
 import {
   PermissionsAutocompleteService,
   AutocompleteSuggestion,
@@ -97,6 +104,18 @@ export interface PermissionsDialogData {
             </div>
           </div>
 
+          @if (validationIssues.size) {
+            <div
+              class="validation-error-message"
+              data-testid="permissions-validation-error"
+              role="alert"
+            >
+              @for (key of validationIssueKeys(); track key) {
+                <div>{{ key | transloco }}</div>
+              }
+            </div>
+          }
+
           <div class="table-container">
             <table
               mat-table
@@ -118,7 +137,11 @@ export interface PermissionsDialogData {
                   [matTooltipDisabled]="isNewPermission(auth)"
                 >
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field type-field">
+                    <mat-form-field
+                      appearance="outline"
+                      class="table-field type-field"
+                      [class.invalid-field]="rowIssue(i) === 'unsupported_principal_type'"
+                    >
                       <mat-select
                         data-testid="permissions-type-select"
                         [value]="auth.principal_type"
@@ -172,7 +195,11 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field provider-field">
+                    <mat-form-field
+                      appearance="outline"
+                      class="table-field provider-field"
+                      [class.invalid-field]="rowIssue(i) === 'unsupported_principal_type'"
+                    >
                       <mat-select
                         data-testid="permissions-provider-select"
                         [value]="auth.provider"
@@ -208,10 +235,16 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field">
+                    <mat-form-field
+                      appearance="outline"
+                      class="table-field"
+                      [class.invalid-field]="rowIssue(i) === 'missing_subject'"
+                    >
                       <input
                         matInput
+                        #subjectInput
                         data-testid="permissions-subject-input"
+                        [attr.aria-invalid]="rowIssue(i) === 'missing_subject'"
                         [(ngModel)]="auth._subject"
                         [placeholder]="getSubjectPlaceholderKey(auth) | transloco"
                         [attr.tabindex]="i * 5 + 3"
@@ -534,6 +567,18 @@ export interface PermissionsDialogData {
         font-style: italic;
       }
 
+      .validation-error-message {
+        color: var(--color-error);
+        padding: 8px 0 0;
+        font-size: 13px;
+      }
+
+      .table-field.invalid-field {
+        --mdc-outlined-text-field-outline-color: var(--color-error);
+        --mdc-outlined-text-field-hover-outline-color: var(--color-error);
+        --mdc-outlined-text-field-focus-outline-color: var(--color-error);
+      }
+
       mat-dialog-actions {
         padding: 16px 24px;
         margin: 0;
@@ -577,6 +622,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
   @ViewChild('permissionsSort') permissionsSort!: MatSort;
+  @ViewChildren('subjectInput') subjectInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   private _subscriptions: Subscription = new Subscription();
   private _originalPermissions: Authorization[] = [];
@@ -596,6 +642,9 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /** Current autocomplete suggestions */
   autocompleteSuggestions: AutocompleteSuggestion[] = [];
 
+  /** Rows that failed validation on the last save attempt, keyed by row index */
+  validationIssues = new Map<number, AuthorizationIssueCode>();
+
   /** Index of the row currently being edited (for autocomplete context) */
   private _activeRowIndex = -1;
 
@@ -606,6 +655,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private providerAdapter: ProviderAdapterService,
     private autocompleteService: PermissionsAutocompleteService,
+    private authorizationPrepare: AuthorizationPrepareService,
   ) {}
 
   // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: initialize permission table, columns, providers, and autocomplete pipeline (mutates shared state)
@@ -752,6 +802,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   // SEM@13ad524189c94573aeee64a7185463714eeb6821: update the principal type of a permission row and refresh the table (mutates shared state)
   updatePermissionPrincipalType(index: number, event: { value: 'user' | 'group' }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.clearRowIssue(index);
       this.permissionsDataSource.data[index].principal_type = event.value;
       this.permissionsTable.renderRows();
     }
@@ -765,6 +816,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   // SEM@6c8878fb5e0ec62d91e60e0de2293417ebc05238: update provider on a permission row, auto-adjusting principal type and default subject (mutates shared state)
   updatePermissionProvider(index: number, event: { value: string }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.clearRowIssue(index);
       const auth = this.permissionsDataSource.data[index];
       auth.provider = event.value;
 
@@ -807,10 +859,81 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * The validation issue recorded against a permission row on the last save attempt
+   * @param index The index of the permission row
+   * @returns The issue code, or undefined when the row is fine
+   */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: report the validation issue recorded against a permission row (pure)
+  rowIssue(index: number): AuthorizationIssueCode | undefined {
+    return this.validationIssues.get(index);
+  }
+
+  /**
+   * Distinct translation keys for the validation issues currently outstanding
+   * @returns Translation keys to render in the dialog's error message
+   */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: map outstanding validation issue codes to distinct translation keys (pure)
+  validationIssueKeys(): string[] {
+    const keys = new Set<string>();
+    for (const code of this.validationIssues.values()) {
+      keys.add(this.issueTranslationKey(code));
+    }
+    return [...keys];
+  }
+
+  /**
+   * Maps a validation issue code to its message translation key
+   * @param code The issue code reported by AuthorizationPrepareService
+   * @returns The translation key for the user-facing message
+   */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: map a validation issue code to its message translation key (pure)
+  private issueTranslationKey(code: AuthorizationIssueCode): string {
+    switch (code) {
+      case 'unsupported_principal_type':
+        return 'threatModels.permissionsProviderPrincipalUnsupported';
+      case 'missing_subject':
+        return 'threatModels.permissionsSubjectRequired';
+      default: {
+        // Compile-time guard: a new issue code must be given a message here
+        const unhandled: never = code;
+        return unhandled;
+      }
+    }
+  }
+
+  /**
+   * Clears the validation issue on a row the user has just edited
+   * @param index The index of the permission row that changed
+   */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: drop the validation issue recorded against an edited row (mutates shared state)
+  private clearRowIssue(index: number): void {
+    this.validationIssues.delete(index);
+  }
+
+  /**
+   * Re-keys recorded validation issues after a row is removed from the list
+   * @param removedIndex The index of the row that was removed
+   */
+  // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: shift recorded validation issues down past a removed row (mutates shared state)
+  private reindexIssuesAfterDelete(removedIndex: number): void {
+    const shifted = new Map<number, AuthorizationIssueCode>();
+    for (const [index, code] of this.validationIssues) {
+      if (index < removedIndex) {
+        shifted.set(index, code);
+      } else if (index > removedIndex) {
+        shifted.set(index - 1, code);
+      }
+    }
+    this.validationIssues = shifted;
+  }
+
+  /**
    * Adds a new permission to the list
    */
   // SEM@7f8cdb5e01b2b85cf804323f2143d47daf06299d: append a blank permission entry with default provider to the permissions list (mutates shared state)
   addPermission(): void {
+    // The new row is appended, so no recorded issue index shifts. Keeping them
+    // leaves the outstanding errors visible instead of appearing to accept them.
     const defaultProvider = this.availableProviders[0]?.id || 'google';
     this.permissionsDataSource.data.push({
       principal_type: 'user',
@@ -831,6 +954,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   // SEM@0648dcbaf3095e0e174d61f4feb92ebd8069af56: remove a permission entry by index from the permissions list (mutates shared state)
   deletePermission(index: number): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.reindexIssuesAfterDelete(index);
       this.permissionsDataSource.data.splice(index, 1);
       this.permissionsTable.renderRows();
     }
@@ -886,6 +1010,19 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
         _subject: authWithSubject._subject || auth.email || auth.provider_id,
       };
     });
+
+    // Entries the API would reject (an added-but-unfilled row, most commonly) are
+    // caught here rather than submitted. A rejected PATCH discards every other
+    // permission edit in the dialog along with the offending one.
+    const issues = this.authorizationPrepare.findIssues(permissions);
+    this.validationIssues = new Map(issues.map(issue => [issue.index, issue.code]));
+    if (issues.length > 0) {
+      this.permissionsTable.renderRows();
+      // The table scrolls, so the offending row and the message can both sit below
+      // the fold — focusing the row scrolls it into view and says which one it is
+      this.subjectInputs?.get(issues[0].index)?.nativeElement.focus();
+      return;
+    }
 
     this.dialogRef.close({
       permissions,
@@ -958,6 +1095,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const auth = this.permissionsDataSource.data[index];
 
+    this.clearRowIssue(index);
+
     if (!this.isAutocompleteActive(auth)) {
       this.autocompleteSuggestions = [];
       return;
@@ -979,6 +1118,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     const suggestion = event.option.value as AutocompleteSuggestion;
     const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
     auth._subject = suggestion.value;
+    this.clearRowIssue(index);
   }
 
   /**

@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { userTest, reviewerTest, multiRoleTest } from '../../fixtures/auth-fixtures';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { PermissionsFlow } from '../../flows/permissions.flow';
+import { PermissionsDialog } from '../../dialogs/permissions.dialog';
 import { CreateTmDialog } from '../../dialogs/create-tm.dialog';
 import { ExportDialog } from '../../dialogs/export.dialog';
 import { TmEditPage } from '../../pages/tm-edit.page';
@@ -147,7 +148,40 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
     await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'writer');
+
+    // Closing the dialog fires the PATCH. Wait for it to land before navigating,
+    // or the reload below aborts it in flight. Anchor on this TM's own URL so a
+    // PATCH to any sub-resource cannot satisfy the wait, and swallow the rejection
+    // so a saveAndClose() failure surfaces instead of an unhandled rejection.
+    const tmUrl = new URL(userPage.url()).pathname.replace('/tm/', '/threat_models/');
+    const permissionsPatch = userPage
+      .waitForResponse(
+        response =>
+          response.request().method() === 'PATCH' &&
+          new URL(response.url()).pathname === tmUrl,
+        { timeout: 15000 },
+      )
+      .catch(() => null);
     await permissionsFlow.saveAndClose();
+    const patchResponse = await permissionsPatch;
+    expect(patchResponse, 'no PATCH to the threat model was observed').not.toBeNull();
+    expect(patchResponse!.status(), 'permission PATCH was rejected').toBeLessThan(400);
+
+    // Every new TM is auto-granted to the security-reviewers group, so the reviewer
+    // sees it on their dashboard whether or not this share succeeded. Reload and
+    // reopen the dialog to assert the permission itself actually persisted.
+    await userPage.reload();
+    await userPage.getByTestId('threat-model-name').waitFor({ state: 'visible', timeout: 10000 });
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    const permissionsDialog = new PermissionsDialog(userPage);
+    // The server resolves a TMI provider_id to the account's email on read-back,
+    // so 'test-reviewer' comes back as 'test-reviewer@tmi.local'
+    const reviewerRow = await permissionsDialog.rowIndexMatching(/^test-reviewer(@|$)/);
+    expect(reviewerRow, 'test-reviewer permission was not saved').toBeGreaterThanOrEqual(0);
+    expect(await permissionsDialog.roleAt(reviewerRow)).toMatch(/writer/i);
+    await permissionsDialog.cancel();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
 
     await reviewerPage.goto('/dashboard');
     const reviewerDashboard = new DashboardPage(reviewerPage);
@@ -201,7 +235,12 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
 
     await reviewerPage.goto('/dashboard');
     await reviewerDashboard.waitForReady();
-    if (await reviewerDashboard.clearFiltersButton().isVisible().catch(() => false)) {
+    if (
+      await reviewerDashboard
+        .clearFiltersButton()
+        .isVisible()
+        .catch(() => false)
+    ) {
       await reviewerDashboard.clearFiltersButton().click();
     }
     const filterFlow = new DashboardFilterFlow(reviewerPage);
@@ -211,7 +250,12 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     // with reloads for up to ~30 seconds.
     let visible = false;
     for (let attempt = 0; attempt < 6; attempt++) {
-      if (await reviewerDashboard.tmCard(testName).isVisible({ timeout: 5000 }).catch(() => false)) {
+      if (
+        await reviewerDashboard
+          .tmCard(testName)
+          .isVisible({ timeout: 5000 })
+          .catch(() => false)
+      ) {
         visible = true;
         break;
       }

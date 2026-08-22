@@ -4,6 +4,23 @@ import { ProviderAdapterService } from './provider-adapter.service';
 import { LoggerService } from '@app/core/services/logger.service';
 
 /**
+ * Reason an authorization cannot be submitted
+ */
+export type AuthorizationIssueCode = 'missing_subject' | 'unsupported_principal_type';
+
+/**
+ * A validation problem found on a single authorization entry
+ */
+export interface AuthorizationIssue {
+  /** Index of the offending entry in the array that was checked */
+  index: number;
+  /** Machine-readable reason, for mapping to a localized message */
+  code: AuthorizationIssueCode;
+  /** Developer-facing description of the problem */
+  message: string;
+}
+
+/**
  * Service that prepares Authorization objects for API submission.
  * Handles subject field parsing, provider transformation, and validation.
  */
@@ -37,31 +54,7 @@ export class AuthorizationPrepareService {
   // SEM@265fc899a5fddc4756440804a488b1d550081e77: convert UI authorizations to API-ready form; parses subject, transforms provider, strips temp fields (pure)
   prepareForApi(authorizations: Authorization[]): Authorization[] {
     return authorizations.map(auth => {
-      // Extract subject from temporary field if it exists
-      interface AuthorizationWithSubject extends Authorization {
-        _subject?: string;
-        display_name?: string;
-      }
-      const authWithSubject = auth as AuthorizationWithSubject;
-      const subject = authWithSubject._subject || auth.email || auth.provider_id || '';
-
-      // Parse subject into provider_id and email based on rules
-      const parsed = this.parseSubject(subject, auth.provider, auth.principal_type);
-
-      // Create prepared authorization with transformed values
-      const prepared: Authorization = {
-        ...auth,
-        provider: this.providerAdapter.transformProviderForApi(auth.provider),
-        provider_id: parsed.provider_id,
-        email: parsed.email,
-      };
-
-      // Remove temporary _subject field if it exists
-      const preparedWithSubject = prepared as AuthorizationWithSubject;
-      delete preparedWithSubject._subject;
-
-      // Remove read-only display_name field (server-managed response-only field)
-      delete preparedWithSubject.display_name;
+      const prepared = this.toApiAuthorization(auth);
 
       // Validate (log warnings for invalid entries)
       const validationError = this.validate(prepared);
@@ -71,6 +64,67 @@ export class AuthorizationPrepareService {
 
       return prepared;
     });
+  }
+
+  /**
+   * Find validation problems in a set of UI authorizations, checked in exactly the
+   * shape they would be submitted in. Unlike prepareForApi, this logs nothing, so
+   * callers can use it to gate a save without emitting spurious warnings.
+   *
+   * @param authorizations - Array of authorizations from the UI
+   * @returns One issue per offending entry, indexed against the input array
+   */
+  // SEM@265fc899a5fddc4756440804a488b1d550081e77: report per-entry validation issues for UI authorizations without logging (pure)
+  findIssues(authorizations: Authorization[]): AuthorizationIssue[] {
+    const issues: AuthorizationIssue[] = [];
+
+    authorizations.forEach((auth, index) => {
+      // Principal-type rules are keyed by UI provider id, so check against the
+      // untransformed provider rather than the one bound for the API
+      const issue = this.check(this.toApiAuthorization(auth), auth.provider);
+      if (issue) {
+        issues.push({ index, ...issue });
+      }
+    });
+
+    return issues;
+  }
+
+  /**
+   * Convert a single UI authorization into its API submission shape
+   *
+   * @param auth - Authorization from the UI, possibly carrying a temporary _subject
+   * @returns Authorization with subject parsed, provider transformed, temp fields stripped
+   */
+  // SEM@265fc899a5fddc4756440804a488b1d550081e77: convert one UI authorization to API shape; parses subject, transforms provider, strips temp fields (pure)
+  private toApiAuthorization(auth: Authorization): Authorization {
+    // Extract subject from temporary field if it exists
+    interface AuthorizationWithSubject extends Authorization {
+      _subject?: string;
+      display_name?: string;
+    }
+    const authWithSubject = auth as AuthorizationWithSubject;
+    const subject = authWithSubject._subject || auth.email || auth.provider_id || '';
+
+    // Parse subject into provider_id and email based on rules
+    const parsed = this.parseSubject(subject, auth.provider, auth.principal_type);
+
+    // Create prepared authorization with transformed values
+    const prepared: Authorization = {
+      ...auth,
+      provider: this.providerAdapter.transformProviderForApi(auth.provider),
+      provider_id: parsed.provider_id,
+      email: parsed.email,
+    };
+
+    // Remove temporary _subject field if it exists
+    const preparedWithSubject = prepared as AuthorizationWithSubject;
+    delete preparedWithSubject._subject;
+
+    // Remove read-only display_name field (server-managed response-only field)
+    delete preparedWithSubject.display_name;
+
+    return prepared;
   }
 
   /**
@@ -119,19 +173,34 @@ export class AuthorizationPrepareService {
    */
   // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: validate authorization has supported principal type and required identity field (pure)
   validate(authorization: Authorization): string | null {
+    return this.check(authorization)?.message ?? null;
+  }
+
+  /**
+   * Check an authorization object, returning the reason it is invalid
+   *
+   * @param authorization - The authorization to check, in API submission shape
+   * @param uiProvider - Provider id as selected in the UI; principal-type rules are
+   *   keyed by UI provider id, which transformProviderForApi may have rewritten.
+   *   Defaults to the authorization's own provider.
+   * @returns Issue code and message if invalid, null if valid
+   */
+  // SEM@4898e0c966e5d38f3e8cf220acb5b62397a33fee: classify why an authorization is invalid, or null when valid (pure)
+  private check(
+    authorization: Authorization,
+    uiProvider: string = authorization.provider,
+  ): Omit<AuthorizationIssue, 'index'> | null {
     // Check if provider supports the principal type
-    if (
-      !this.providerAdapter.isValidForPrincipalType(
-        authorization.provider,
-        authorization.principal_type,
-      )
-    ) {
-      return `Provider "${authorization.provider}" does not support "${authorization.principal_type}" principals`;
+    if (!this.providerAdapter.isValidForPrincipalType(uiProvider, authorization.principal_type)) {
+      return {
+        code: 'unsupported_principal_type',
+        message: `Provider "${uiProvider}" does not support "${authorization.principal_type}" principals`,
+      };
     }
 
     // Check if provider_id is provided (required field)
     if (!authorization.provider_id?.trim() && !authorization.email?.trim()) {
-      return 'Either provider_id or email is required';
+      return { code: 'missing_subject', message: 'Either provider_id or email is required' };
     }
 
     // Validation passed
