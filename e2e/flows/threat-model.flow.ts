@@ -3,6 +3,7 @@ import { DashboardPage } from '../pages/dashboard.page';
 import { TmEditPage } from '../pages/tm-edit.page';
 import { CreateTmDialog } from '../dialogs/create-tm.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
+import { testConfig } from '../config/test.config';
 
 // SEM@13b76c5ab4901ec8f70a703f94076e186a33c951: E2E page-object facade orchestrating threat model CRUD flows
 export class ThreatModelFlow {
@@ -52,19 +53,22 @@ export class ThreatModelFlow {
    */
   // SEM@13b76c5ab4901ec8f70a703f94076e186a33c951: delete a threat model by name using the authenticated browser fetch API
   async deleteByNameViaApi(name: string): Promise<void> {
-    await this.page.evaluate(async (tmName: string) => {
-      const list = await fetch(
-        `http://localhost:8080/threat_models?limit=100&name=${encodeURIComponent(tmName)}`,
-        { credentials: 'include' },
-      ).then(r => (r.ok ? r.json() : { threat_models: [] }));
-      for (const tm of list.threat_models || []) {
-        if (tm.name === tmName) {
-          await fetch(`http://localhost:8080/threat_models/${tm.id}`, {
-            method: 'DELETE',
-            credentials: 'include',
-          });
+    await this.page.evaluate(
+      async ({ tmName, apiUrl }: { tmName: string; apiUrl: string }) => {
+        const list = await fetch(
+          `${apiUrl}/threat_models?limit=100&name=${encodeURIComponent(tmName)}`,
+          { credentials: 'include' },
+        ).then(r => (r.ok ? r.json() : { threat_models: [] }));
+        for (const tm of list.threat_models || []) {
+          if (tm.name === tmName) {
+            await fetch(`${apiUrl}/threat_models/${tm.id}`, {
+              method: 'DELETE',
+              credentials: 'include',
+            });
+          }
         }
-      }
-    }, name);
+      },
+      { tmName: name, apiUrl: testConfig.apiUrl },
+    );
   }
 }
