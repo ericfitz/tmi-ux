@@ -57,11 +57,11 @@ test.describe.serial('DFD Edge Properties', () => {
     // harmless, it accumulates on the dashboard until the seeded TM that other
     // field-coverage specs look for is pushed off the first page. Close the
     // context first so a cleanup failure cannot also leak a browser context.
-    let cleanupError: unknown;
+    let cleanupError: Error | undefined;
     try {
       await threatModelFlow.deleteByNameViaApi(testTmName);
     } catch (err) {
-      cleanupError = err;
+      cleanupError = err instanceof Error ? err : new Error(String(err));
     }
     await context.close();
     if (cleanupError) {
