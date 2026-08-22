@@ -9,6 +9,22 @@ import { SurveyFillFlow } from '../../flows/survey-fill.flow';
 userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => {
   userTest.setTimeout(60000);
 
+  /**
+   * Advance `pages` pages past the first one.
+   *
+   * Page 1 (basicInputs) declares `project_name` as `isRequired`, so SurveyJS
+   * refuses to leave it while that field is empty -- clicking Next just
+   * re-renders page 1 with a validation error. Every question on pages 2-4
+   * then resolves to "element(s) not found". Fill the required field first so
+   * navigation actually happens.
+   */
+  async function advancePages(fillFlow: SurveyFillFlow, pages: number): Promise<void> {
+    await fillFlow.fillTextField('project_name', 'E2E Field Coverage Project');
+    for (let i = 0; i < pages; i++) {
+      await fillFlow.nextPage();
+    }
+  }
+
   userTest('text input renders and accepts value', async ({ userPage }) => {
     await userPage.goto('/intake');
     await userPage.waitForLoadState('networkidle');
@@ -43,11 +59,14 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
 
-    const boolSwitch = userPage.locator(
-      '.sd-question[data-name="has_external_users"] .sd-boolean__switch'
-    );
+    // `.sd-boolean__switch` is the decorative track: it is present in the DOM
+    // but never visible, so asserting visibility on it always fails. The
+    // accessible control is the role=switch element.
+    const boolSwitch = userPage
+      .locator('.sd-question[data-name="has_external_users"]')
+      .getByRole('switch');
     await expect(boolSwitch).toBeVisible();
-    await boolSwitch.click();
+    await fillFlow.toggleBoolean('has_external_users');
     // Verify the toggle changed (aria state or CSS class)
     await expect(
       userPage.locator('.sd-question[data-name="has_external_users"]')
@@ -59,7 +78,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
-    await fillFlow.nextPage(); // Page 2: Selection Inputs
+    await advancePages(fillFlow, 1); // Page 2: Selection Inputs
 
     const question = userPage.locator(
       '.sd-question[data-name="data_sensitivity"]'
@@ -77,7 +96,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
-    await fillFlow.nextPage(); // Page 2
+    await advancePages(fillFlow, 1); // Page 2
 
     const question = userPage.locator(
       '.sd-question[data-name="compliance_frameworks"]'
@@ -94,7 +113,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
-    await fillFlow.nextPage(); // Page 2
+    await advancePages(fillFlow, 1); // Page 2
 
     const question = userPage.locator(
       '.sd-question[data-name="deployment_model"]'
@@ -108,10 +127,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
-    // Navigate to page 4 (grouped inputs)
-    await fillFlow.nextPage();
-    await fillFlow.nextPage();
-    await fillFlow.nextPage();
+    await advancePages(fillFlow, 3); // Page 4: Grouped Inputs
 
     // Panel should render with its child inputs
     const cloudProvider = userPage.locator(
@@ -127,10 +143,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
-    // Navigate to page 4
-    await fillFlow.nextPage();
-    await fillFlow.nextPage();
-    await fillFlow.nextPage();
+    await advancePages(fillFlow, 3); // Page 4: Grouped Inputs
 
     // paneldynamic should show the first panel with template fields
     const integrationName = userPage.locator(
