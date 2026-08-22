@@ -25,6 +25,15 @@
       "roles": { "is_admin": true, "is_security_reviewer": true },
       "oauth_provider": "tmi",
       "api_quota": { "rpm": 100000, "rph": 1000000 }
+    },
+    {
+      "id": "test-outsider",
+      "email": "test-outsider@tmi.local",
+      "display_name": "Test Outsider",
+      "roles": { "is_admin": false, "is_security_reviewer": false },
+      "oauth_provider": "tmi",
+      "api_quota": { "rpm": 100000, "rph": 1000000 },
+      "notes": "Owns nothing and is granted nothing, deliberately. Negative case for dashboard visibility: a non-reviewer with no owned threat models must see an empty dashboard. Do not grant this user access to any seeded entity."
     }
   ],
   "teams": [
@@ -38,18 +47,14 @@
         { "user_id": "test-user", "role": "engineer" },
         { "user_id": "test-reviewer", "role": "engineering_lead" }
       ],
-      "responsible_parties": [
-        { "user_id": "test-reviewer", "role": "engineering_lead" }
-      ],
+      "responsible_parties": [{ "user_id": "test-reviewer", "role": "engineering_lead" }],
       "metadata": [{ "key": "department", "value": "Engineering" }]
     },
     {
       "name": "Seed Team Beta",
       "status": "active",
       "description": "Secondary team for relationship testing",
-      "members": [
-        { "user_id": "test-user", "role": "member" }
-      ],
+      "members": [{ "user_id": "test-user", "role": "member" }],
       "metadata": []
     }
   ],
@@ -60,9 +65,7 @@
       "status": "active",
       "description": "Primary project for E2E testing",
       "uri": "https://example.com/projects/one",
-      "responsible_parties": [
-        { "user_id": "test-user", "role": "engineer" }
-      ],
+      "responsible_parties": [{ "user_id": "test-user", "role": "engineer" }],
       "metadata": [{ "key": "fiscal_year", "value": "2026" }]
     },
     {
@@ -77,19 +80,15 @@
     {
       "name": "Seed TM - Full Fields",
       "description": "Threat model with all fields populated for field-coverage testing",
-      "owner": "test-reviewer",
+      "owner": "test-user",
       "threat_model_framework": "STRIDE",
       "status": "active",
       "is_confidential": false,
       "project_id": "Seed Project One",
       "security_reviewer": "test-reviewer",
       "issue_uri": "https://example.com/issues/1",
-      "alias": ["seed-tm-1", "full-fields-tm"],
       "metadata": [{ "key": "risk_level", "value": "high" }],
-      "authorization": [
-        { "user_id": "test-user", "role": "reader" },
-        { "user_id": "test-reviewer", "role": "writer" }
-      ],
+      "authorization": [{ "user_id": "test-reviewer", "role": "writer" }],
       "threats": [
         {
           "name": "Seed Threat - All Fields",
@@ -103,7 +102,11 @@
           "mitigation": "Implement input validation and CSRF tokens",
           "cwe_id": ["CWE-79", "CWE-352"],
           "cvss": [
-            { "version": "3.1", "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", "score": 9.8 }
+            {
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "score": 9.8
+            }
           ],
           "issue_uri": "https://example.com/issues/2",
           "include_in_report": true
@@ -171,13 +174,38 @@
             { "id": "actor-ext", "type": "actor", "label": "External User", "x": 50, "y": 150 },
             { "id": "actor-int", "type": "actor", "label": "Internal Admin", "x": 50, "y": 450 },
             { "id": "process-gw", "type": "process", "label": "API Gateway", "x": 300, "y": 300 },
-            { "id": "process-auth", "type": "process", "label": "Auth Service", "x": 550, "y": 150 },
-            { "id": "process-core", "type": "process", "label": "Core Service", "x": 550, "y": 300 },
-            { "id": "process-notify", "type": "process", "label": "Notification Service", "x": 550, "y": 450 },
+            {
+              "id": "process-auth",
+              "type": "process",
+              "label": "Auth Service",
+              "x": 550,
+              "y": 150
+            },
+            {
+              "id": "process-core",
+              "type": "process",
+              "label": "Core Service",
+              "x": 550,
+              "y": 300
+            },
+            {
+              "id": "process-notify",
+              "type": "process",
+              "label": "Notification Service",
+              "x": 550,
+              "y": 450
+            },
             { "id": "store-db", "type": "store", "label": "Primary DB", "x": 800, "y": 200 },
             { "id": "store-cache", "type": "store", "label": "Redis Cache", "x": 800, "y": 400 },
             { "id": "store-queue", "type": "store", "label": "Message Queue", "x": 800, "y": 550 },
-            { "id": "process-embedded", "type": "process", "label": "Validator", "x": 320, "y": 320, "parent": "process-gw" }
+            {
+              "id": "process-embedded",
+              "type": "process",
+              "label": "Validator",
+              "x": 320,
+              "y": 320,
+              "parent": "process-gw"
+            }
           ],
           "edges": [
             { "source": "actor-ext", "target": "process-gw", "label": "HTTPS Request" },
@@ -209,41 +237,127 @@
             "name": "basicInputs",
             "title": "Basic Inputs",
             "elements": [
-              { "type": "text", "name": "project_name", "title": "Project Name", "isRequired": true },
-              { "type": "comment", "name": "project_description", "title": "Describe Your Project" },
-              { "type": "boolean", "name": "has_external_users", "title": "Does this project have external users?", "labelTrue": "Yes", "labelFalse": "No" }
+              {
+                "type": "text",
+                "name": "project_name",
+                "title": "Project Name",
+                "isRequired": true
+              },
+              {
+                "type": "comment",
+                "name": "project_description",
+                "title": "Describe Your Project"
+              },
+              {
+                "type": "boolean",
+                "name": "has_external_users",
+                "title": "Does this project have external users?",
+                "labelTrue": "Yes",
+                "labelFalse": "No"
+              }
             ]
           },
           {
             "name": "selectionInputs",
             "title": "Selection Inputs",
             "elements": [
-              { "type": "radiogroup", "name": "data_sensitivity", "title": "Data Sensitivity Level", "choices": [{ "value": "public", "text": "Public" }, { "value": "internal", "text": "Internal" }, { "value": "confidential", "text": "Confidential" }, { "value": "restricted", "text": "Restricted" }] },
-              { "type": "checkbox", "name": "compliance_frameworks", "title": "Applicable Compliance Frameworks", "choices": [{ "value": "soc2", "text": "SOC 2" }, { "value": "hipaa", "text": "HIPAA" }, { "value": "pci", "text": "PCI DSS" }, { "value": "gdpr", "text": "GDPR" }] },
-              { "type": "dropdown", "name": "deployment_model", "title": "Deployment Model", "choices": [{ "value": "cloud", "text": "Cloud (SaaS)" }, { "value": "on_prem", "text": "On-Premises" }, { "value": "hybrid", "text": "Hybrid" }] }
+              {
+                "type": "radiogroup",
+                "name": "data_sensitivity",
+                "title": "Data Sensitivity Level",
+                "choices": [
+                  { "value": "public", "text": "Public" },
+                  { "value": "internal", "text": "Internal" },
+                  { "value": "confidential", "text": "Confidential" },
+                  { "value": "restricted", "text": "Restricted" }
+                ]
+              },
+              {
+                "type": "checkbox",
+                "name": "compliance_frameworks",
+                "title": "Applicable Compliance Frameworks",
+                "choices": [
+                  { "value": "soc2", "text": "SOC 2" },
+                  { "value": "hipaa", "text": "HIPAA" },
+                  { "value": "pci", "text": "PCI DSS" },
+                  { "value": "gdpr", "text": "GDPR" }
+                ]
+              },
+              {
+                "type": "dropdown",
+                "name": "deployment_model",
+                "title": "Deployment Model",
+                "choices": [
+                  { "value": "cloud", "text": "Cloud (SaaS)" },
+                  { "value": "on_prem", "text": "On-Premises" },
+                  { "value": "hybrid", "text": "Hybrid" }
+                ]
+              }
             ]
           },
           {
             "name": "conditionalLogic",
             "title": "Conditional Logic",
             "elements": [
-              { "type": "radiogroup", "name": "stores_pii", "title": "Does this system store PII?", "choices": [{ "value": "yes", "text": "Yes" }, { "value": "no", "text": "No" }] },
-              { "type": "comment", "name": "pii_details", "title": "Describe what PII is stored and how it is protected", "visibleIf": "{stores_pii} = 'yes'" },
-              { "type": "text", "name": "pii_retention_days", "title": "PII retention period (days)", "inputType": "number", "visibleIf": "{stores_pii} = 'yes'" }
+              {
+                "type": "radiogroup",
+                "name": "stores_pii",
+                "title": "Does this system store PII?",
+                "choices": [
+                  { "value": "yes", "text": "Yes" },
+                  { "value": "no", "text": "No" }
+                ]
+              },
+              {
+                "type": "comment",
+                "name": "pii_details",
+                "title": "Describe what PII is stored and how it is protected",
+                "visibleIf": "{stores_pii} = 'yes'"
+              },
+              {
+                "type": "text",
+                "name": "pii_retention_days",
+                "title": "PII retention period (days)",
+                "inputType": "number",
+                "visibleIf": "{stores_pii} = 'yes'"
+              }
             ]
           },
           {
             "name": "groupedInputs",
             "title": "Grouped Inputs",
             "elements": [
-              { "type": "panel", "name": "infrastructure_panel", "title": "Infrastructure Details", "elements": [
-                { "type": "text", "name": "cloud_provider", "title": "Cloud Provider" },
-                { "type": "text", "name": "region", "title": "Primary Region" }
-              ]},
-              { "type": "paneldynamic", "name": "integrations", "title": "Third-Party Integrations", "templateTitle": "Integration #{panelIndex}", "templateElements": [
-                { "type": "text", "name": "integration_name", "title": "Integration Name" },
-                { "type": "dropdown", "name": "integration_type", "title": "Integration Type", "choices": [{ "value": "api", "text": "API" }, { "value": "sdk", "text": "SDK" }, { "value": "webhook", "text": "Webhook" }] }
-              ], "panelCount": 1, "minPanelCount": 0, "maxPanelCount": 5 }
+              {
+                "type": "panel",
+                "name": "infrastructure_panel",
+                "title": "Infrastructure Details",
+                "elements": [
+                  { "type": "text", "name": "cloud_provider", "title": "Cloud Provider" },
+                  { "type": "text", "name": "region", "title": "Primary Region" }
+                ]
+              },
+              {
+                "type": "paneldynamic",
+                "name": "integrations",
+                "title": "Third-Party Integrations",
+                "templateTitle": "Integration #{panelIndex}",
+                "templateElements": [
+                  { "type": "text", "name": "integration_name", "title": "Integration Name" },
+                  {
+                    "type": "dropdown",
+                    "name": "integration_type",
+                    "title": "Integration Type",
+                    "choices": [
+                      { "value": "api", "text": "API" },
+                      { "value": "sdk", "text": "SDK" },
+                      { "value": "webhook", "text": "Webhook" }
+                    ]
+                  }
+                ],
+                "panelCount": 1,
+                "minPanelCount": 0,
+                "maxPanelCount": 5
+              }
             ]
           }
         ]
@@ -265,7 +379,16 @@
             "elements": [
               { "type": "text", "name": "system_name", "title": "System Name", "isRequired": true },
               { "type": "comment", "name": "review_reason", "title": "Reason for Review Request" },
-              { "type": "radiogroup", "name": "urgency", "title": "Urgency", "choices": [{ "value": "low", "text": "Low" }, { "value": "medium", "text": "Medium" }, { "value": "high", "text": "High" }] }
+              {
+                "type": "radiogroup",
+                "name": "urgency",
+                "title": "Urgency",
+                "choices": [
+                  { "value": "low", "text": "Low" },
+                  { "value": "medium", "text": "Medium" },
+                  { "value": "high", "text": "High" }
+                ]
+              }
             ]
           }
         ]
@@ -278,13 +401,15 @@
       "survey": "Simple Workflow Survey",
       "user": "test-user",
       "status": "submitted",
-      "responses": { "system_name": "E2E Seed System", "review_reason": "Annual security review", "urgency": "medium" }
+      "responses": {
+        "system_name": "E2E Seed System",
+        "review_reason": "Annual security review",
+        "urgency": "medium"
+      }
     }
   ],
   "admin_entities": {
-    "groups": [
-      { "name": "Seed Group - Engineering", "members": ["test-user", "test-reviewer"] }
-    ],
+    "groups": [{ "name": "Seed Group - Engineering", "members": ["test-user", "test-reviewer"] }],
     "quotas": [],
     "webhooks": [
       {

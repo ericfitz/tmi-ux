@@ -54,7 +54,7 @@ describe('UserService', () => {
 
       service.requestDeleteChallenge().subscribe(response => {
         expect(response).toEqual(mockResponse);
-        expect(apiService.delete).toHaveBeenCalledWith('users/me');
+        expect(apiService.delete).toHaveBeenCalledWith('me');
         expect(loggerService.info).toHaveBeenCalledWith('Requesting account deletion challenge');
       });
     });
@@ -77,7 +77,7 @@ describe('UserService', () => {
       vi.mocked(apiService.deleteWithParams).mockReturnValue(of(undefined));
 
       service.confirmDeleteAccount(challenge).subscribe(() => {
-        expect(apiService.deleteWithParams).toHaveBeenCalledWith('users/me', { challenge });
+        expect(apiService.deleteWithParams).toHaveBeenCalledWith('me', { challenge });
         expect(loggerService.info).toHaveBeenCalledWith(
           'Confirming account deletion with challenge',
         );

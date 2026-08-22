@@ -2,7 +2,7 @@
  * Admin Route Guard
  *
  * This guard protects routes that require administrator privileges.
- * It verifies admin status by calling GET /users/me to ensure freshness.
+ * It verifies admin status by calling GET /me to ensure freshness.
  *
  * Key functionality:
  * - Uses Angular's functional guard pattern with dependency injection

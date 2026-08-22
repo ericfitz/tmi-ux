@@ -17,11 +17,9 @@ export class DashboardPage {
     await this.createTmButton().waitFor({ state: 'visible', timeout });
   }
 
-  readonly createTmButton = () =>
-    this.page.getByTestId('create-threat-model-button');
+  readonly createTmButton = () => this.page.getByTestId('create-threat-model-button');
 
-  readonly tmCards = () =>
-    this.page.getByTestId('threat-model-card');
+  readonly tmCards = () => this.page.getByTestId('threat-model-card');
 
   // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: locate a threat model card matching the given name (pure)
   tmCard(name: string) {
@@ -42,6 +40,8 @@ export class DashboardPage {
   readonly clearFiltersButton = () => this.page.getByTestId('dashboard-clear-filters-button');
   readonly descriptionFilter = () => this.page.getByTestId('dashboard-description-filter');
   readonly ownerFilter = () => this.page.getByTestId('dashboard-owner-filter');
+  readonly securityReviewerFilter = () =>
+    this.page.getByTestId('dashboard-security-reviewer-filter');
   readonly issueUriFilter = () => this.page.getByTestId('dashboard-issue-uri-filter');
   readonly createdAfter = () => this.page.getByTestId('dashboard-created-after');
   readonly createdBefore = () => this.page.getByTestId('dashboard-created-before');

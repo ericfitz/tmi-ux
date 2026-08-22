@@ -52,6 +52,19 @@ export const adminTest = base.extend<{ adminPage: Page }>({
 });
 
 /**
+ * Test fixture authenticated as a user who is neither a security reviewer nor
+ * the owner of (nor granted access to) any seeded entity. Exists so visibility
+ * rules can be asserted negatively — see the seed spec's `test-outsider` note.
+ */
+export const outsiderTest = base.extend<{ outsiderPage: Page }>({
+  outsiderPage: async ({ browser }, use) => {
+    const { page, cleanup } = await createAuthenticatedPage(browser, 'test-outsider');
+    await use(page);
+    await cleanup();
+  },
+});
+
+/**
  * Test fixture with all three roles for cross-role workflow tests.
  * Each role gets its own BrowserContext (separate sessions).
  */

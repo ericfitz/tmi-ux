@@ -160,7 +160,7 @@ adminTest.describe('Error Scenarios (Admin)', () => {
   });
 
   adminTest('admin check failure redirects away from /admin', async ({ adminPage }) => {
-    // Mocking /users/me to 500 trips the authGuard before reaching adminGuard,
+    // Mocking /me to 500 trips the authGuard before reaching adminGuard,
     // producing a session_expired redirect to /login rather than the
     // admin_check_failed redirect from adminGuard's error branch. The valuable
     // invariant is that /admin is never rendered when profile cannot be

@@ -71,19 +71,19 @@ export interface UserProfile {
 
   /**
    * Whether the user has administrator privileges
-   * Populated from JWT tmi_is_administrator claim and verified via GET /users/me
+   * Populated from JWT tmi_is_administrator claim and verified via GET /me
    */
   is_admin?: boolean;
 
   /**
    * Whether the user has security reviewer privileges
-   * Populated from JWT tmi_is_security_reviewer claim and verified via GET /users/me
+   * Populated from JWT tmi_is_security_reviewer claim and verified via GET /me
    */
   is_security_reviewer?: boolean;
 }
 
 /**
- * API response from GET /users/me endpoint
+ * API response from GET /me endpoint
  * Uses different field names than UserProfile (backend API naming)
  */
 export interface UserMeResponse {
