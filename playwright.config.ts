@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const testConfig = {
   appUrl: process.env.E2E_APP_URL || 'http://localhost:4200',
-  apiUrl: process.env.E2E_API_URL || 'http://localhost:8080',
+  apiUrl: process.env.E2E_API_URL || 'http://localhost:30080',
 };
 
 export default defineConfig({

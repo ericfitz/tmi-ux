@@ -10,7 +10,11 @@ export const environment: Environment = {
   production: false,
   logLevel: 'DEBUG',
   debugComponents: ['DFD', 'websocket-api', 'websocket-adapter'],
-  apiUrl: 'http://localhost:8080',
+  // 30080 is the tmi-server NodePort. A `kubectl port-forward` to :8080 drops
+  // every ~30-40s under E2E load, which surfaces as `status: 0` responses and
+  // spurious failures (afterAll timeouts, "element not found") that look like
+  // product bugs. The NodePort has no forwarding layer to drop.
+  apiUrl: 'http://localhost:30080',
   authTokenExpiryMinutes: 60,
   operatorName: 'TMI Operator (E2E Testing)',
   operatorContact: 'contact@example.com',
