@@ -3,7 +3,6 @@ import { test } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DiagramFlow } from '../../flows/diagram.flow';
-import { DashboardPage } from '../../pages/dashboard.page';
 import { DfdEditorPage } from '../../pages/dfd-editor.page';
 
 /**
@@ -24,7 +23,6 @@ test.describe.serial('DFD Icon Properties', () => {
 
   let threatModelFlow: ThreatModelFlow;
   let diagramFlow: DiagramFlow;
-  let dashboardPage: DashboardPage;
   let dfdEditorPage: DfdEditorPage;
 
   const testTmName = `E2E Icon Props TM ${Date.now()}`;
@@ -39,7 +37,6 @@ test.describe.serial('DFD Icon Properties', () => {
 
     threatModelFlow = new ThreatModelFlow(page);
     diagramFlow = new DiagramFlow(page);
-    dashboardPage = new DashboardPage(page);
     dfdEditorPage = new DfdEditorPage(page);
 
     // Create fresh TM and diagram, open the DFD editor
@@ -52,11 +49,13 @@ test.describe.serial('DFD Icon Properties', () => {
   });
 
   test.afterAll(async () => {
+    // Clean up over the API rather than through the dashboard. These specs end
+    // on the DFD editor, which holds a collaboration WebSocket open, so
+    // waitForLoadState('networkidle') never settles and the hook died on its
+    // 30s timeout -- reported as a failure of whichever test happened to run
+    // last, not of the teardown that actually hung.
     try {
-      await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
-      await threatModelFlow.deleteFromDashboard(testTmName);
-      await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
+      await threatModelFlow.deleteByNameViaApi(testTmName);
     } catch {
       // Best effort cleanup
     }
