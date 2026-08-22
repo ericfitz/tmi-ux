@@ -59,18 +59,26 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
 
-    // `.sd-boolean__switch` is the decorative track: it is present in the DOM
-    // but never visible, so asserting visibility on it always fails. The
-    // accessible control is the role=switch element.
-    const boolSwitch = userPage
-      .locator('.sd-question[data-name="has_external_users"]')
-      .getByRole('switch');
-    await expect(boolSwitch).toBeVisible();
+    // Assert on the rendered question, not on `.sd-boolean__switch`: that is
+    // the decorative track, present in the DOM but never visible, so the
+    // original visibility assert could only ever fail.
+    const question = userPage.locator('.sd-question[data-name="has_external_users"]');
+    await expect(question).toBeVisible();
+
+    // The control itself is an <input type="checkbox" role="switch"> that
+    // SurveyJS renders `sd-visuallyhidden` behind the styled track, so assert
+    // its state rather than its box. It starts indeterminate (neither
+    // Yes nor No), which reads as unchecked.
+    const boolSwitch = question.getByRole('switch');
+    await expect(boolSwitch).toBeEnabled();
+    await expect(boolSwitch).not.toBeChecked();
+
     await fillFlow.toggleBoolean('has_external_users');
-    // Verify the toggle changed (aria state or CSS class)
-    await expect(
-      userPage.locator('.sd-question[data-name="has_external_users"]')
-    ).toBeVisible();
+
+    // Verify the toggle actually took. The original assertion here only
+    // re-checked that the question was visible, which can never fail, so a
+    // silent no-op toggle would have passed.
+    await expect(boolSwitch).toBeChecked();
   });
 
   userTest('radiogroup renders and accepts selection', async ({ userPage }) => {

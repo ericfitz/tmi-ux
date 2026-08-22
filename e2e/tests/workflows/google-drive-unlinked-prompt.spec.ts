@@ -3,6 +3,7 @@ import { userTest } from '../../fixtures/auth-fixtures';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DocumentSourceFlow } from '../../flows/document-source.flow';
 import { DocumentEditorDialog } from '../../dialogs/document-editor.dialog';
+import { testConfig } from '../../config/test.config';
 
 /**
  * Test #646 case 3: an unlinked user who switches the source selector to
@@ -18,12 +19,12 @@ userTest.describe('Google Drive — unlinked user shows link prompt', () => {
     // server returns 204 whether or not the row existed.
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
-    await userPage.evaluate(async () => {
-      await fetch('http://localhost:8080/me/content_tokens/google_workspace', {
+    await userPage.evaluate(async (apiUrl: string) => {
+      await fetch(`${apiUrl}/me/content_tokens/google_workspace`, {
         method: 'DELETE',
         credentials: 'include',
       });
-    });
+    }, testConfig.apiUrl);
 
     const tmFlow = new ThreatModelFlow(userPage);
     const sourceFlow = new DocumentSourceFlow(userPage);

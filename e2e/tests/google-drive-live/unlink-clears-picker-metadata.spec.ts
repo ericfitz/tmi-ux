@@ -8,6 +8,7 @@ import {
   GOOGLE_DRIVE_SKIP_REASON,
   loadGoogleDriveConfig,
 } from '../../helpers/google-drive-config';
+import { testConfig } from '../../config/test.config';
 
 /**
  * Test #646 case 5: unlinking the Google Workspace source clears picker
@@ -29,12 +30,12 @@ userTest.describe('Google Drive — unlink clears picker metadata cascade', () =
     // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: delete the user's Google Workspace OAuth token via the API (mutates shared state)
     const revokeToken = async () => {
       await userPage
-        .evaluate(async () => {
-          await fetch('http://localhost:8080/me/content_tokens/google_workspace', {
+        .evaluate(async (apiUrl: string) => {
+          await fetch(`${apiUrl}/me/content_tokens/google_workspace`, {
             method: 'DELETE',
             credentials: 'include',
           });
-        })
+        }, testConfig.apiUrl)
         .catch(() => undefined);
     };
 
@@ -96,16 +97,16 @@ userTest.describe('Google Drive — unlink clears picker metadata cascade', () =
       // Verify the cascade: GET the document by id, assert access_status is
       // 'unknown'. Use the browser fetch so cookies/bearer flow.
       const updated = await userPage.evaluate(
-        async ({ tmId, docId }) => {
+        async ({ tmId, docId, apiUrl }) => {
           const resp = await fetch(
-            `http://localhost:8080/threat_models/${tmId}/documents/${docId}`,
+            `${apiUrl}/threat_models/${tmId}/documents/${docId}`,
             { credentials: 'include' },
           );
           if (!resp.ok) return { ok: false, status: resp.status };
           const body = (await resp.json()) as { access_status?: string };
           return { ok: true, access_status: body.access_status };
         },
-        { tmId: threatModelId, docId: documentId },
+        { tmId: threatModelId, docId: documentId, apiUrl: testConfig.apiUrl },
       );
 
       expect(updated.ok).toBe(true);

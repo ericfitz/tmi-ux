@@ -99,8 +99,10 @@ reviewerTest.describe('Form validation — reviewer-scoped dialogs', () => {
     await angularFill(email, 'not-a-valid-email');
     await focusThenBlur(reviewerPage, email);
     // common.validation.email is "Email address must be valid." -- the words
-    // never appear in the order /valid email/ matched.
-    await expectErrorContaining(reviewerPage, /must be valid/i);
+    // never appear in the order /valid email/ matched. Match the whole
+    // message: a bare /must be valid/ would also match invalidUrl,
+    // "URL must be valid."
+    await expectErrorContaining(reviewerPage, /email address must be valid/i);
 
     await closeDialog(reviewerPage);
   });

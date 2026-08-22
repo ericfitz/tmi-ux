@@ -8,7 +8,7 @@ on:
         default: 'http://localhost:4200'
       api_url:
         description: 'Backend API URL'
-        default: 'http://localhost:8080'
+        default: 'http://localhost:30080'
 
 jobs:
   e2e:
