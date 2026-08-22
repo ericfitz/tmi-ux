@@ -40,12 +40,6 @@
             [placeholder]="'triage.list.searchPlaceholder' | transloco"
             data-testid="triage-search-input"
           />
-          @if (isSearchActive) {
-            <mat-hint data-testid="triage-search-scope-hint">{{
-              'triage.list.searchScopeHint'
-                | transloco: { count: visibleResponseCount, total: dataSource.data.length }
-            }}</mat-hint>
-          }
           @if (filters.searchTerm) {
             <button
               matSuffix
@@ -109,6 +103,15 @@
           </button>
         }
       </div>
+
+      @if (isSearchActive) {
+        <p class="search-scope-hint" data-testid="triage-search-scope-hint">
+          {{
+            'triage.list.searchScopeHint'
+              | transloco: { count: visibleResponseCount, total: dataSource.data.length }
+          }}
+        </p>
+      }
 
       @if (isLoading && dataSource.data.length === 0) {
         <div class="loading-container">
