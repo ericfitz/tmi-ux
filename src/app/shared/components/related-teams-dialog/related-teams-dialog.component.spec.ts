@@ -72,7 +72,7 @@ describe('RelatedTeamsDialogComponent', () => {
   });
 
   it('should create, copying the related teams', () => {
-    const related = [{ related_team_id: 'team-2', relationship: 'parent' }] as RelatedTeam[];
+    const related: RelatedTeam[] = [{ related_team_id: 'team-2', relationship: 'parent' }];
     const component = build({ team: makeTeam(related) });
 
     expect(component.relatedTeams).toEqual(related);
@@ -100,7 +100,7 @@ describe('RelatedTeamsDialogComponent', () => {
   describe('addRelated', () => {
     it('does nothing when no team is selected', () => {
       const component = build({ team: makeTeam() });
-      component.addForm.get('relationship')?.setValue('peer');
+      component.addForm.get('relationship')?.setValue('related');
 
       component.addRelated();
 
@@ -110,13 +110,13 @@ describe('RelatedTeamsDialogComponent', () => {
     it('adds the selected team with its relationship and resets the form', () => {
       const component = build({ team: makeTeam() });
       component.selectedTeam = otherTeam;
-      component.addForm.get('relationship')?.setValue('peer');
+      component.addForm.get('relationship')?.setValue('related');
 
       component.addRelated();
 
       expect(component.relatedTeams).toHaveLength(1);
       expect(component.relatedTeams[0].related_team_id).toBe('team-9');
-      expect(component.relatedTeams[0].relationship).toBe('peer');
+      expect(component.relatedTeams[0].relationship).toBe('related');
       expect(component.teamNames.get('team-9')).toBe('Other Team');
       expect(component.dirty).toBe(true);
       expect(component.showAddForm).toBe(false);
@@ -124,7 +124,7 @@ describe('RelatedTeamsDialogComponent', () => {
 
     it('does not add a duplicate related team', () => {
       const component = build({
-        team: makeTeam([{ related_team_id: 'team-9', relationship: 'related' }] as RelatedTeam[]),
+        team: makeTeam([{ related_team_id: 'team-9', relationship: 'related' }]),
       });
       component.selectedTeam = otherTeam;
       component.addForm.get('relationship')?.setValue('parent');
@@ -141,7 +141,7 @@ describe('RelatedTeamsDialogComponent', () => {
         team: makeTeam([
           { related_team_id: 'team-2', relationship: 'related' },
           { related_team_id: 'team-3', relationship: 'parent' },
-        ] as RelatedTeam[]),
+        ]),
       });
 
       component.removeRelated({
