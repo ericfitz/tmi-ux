@@ -42,13 +42,48 @@ pnpm test:e2e:debug
 pnpm run e2e:validate-schema
 ```
 
+## Cleaning Up Leaked Test Data
+
+Every spec's cleanup is a best-effort `try`/`catch`, so any test that fails before its
+cleanup block leaves its `E2E `-prefixed entities behind — and deliberate negative-control
+runs (asserting that a test fails without its fix) leak by design.
+
+This matters more than it sounds. The dashboard paginates: once enough leaked threat
+models pile up, the seeded `Seed TM - Full Fields` slides off page one and unrelated specs
+start failing with a signature that points nowhere near the cause. A local database once
+reached 78 leaked threat models against 3 real ones, and diagnosing it cost hours.
+
+```bash
+# Report what would be removed, without removing it
+pnpm run e2e:clean -- --dry-run
+
+# Remove it
+pnpm run e2e:clean
+
+# Options
+pnpm run e2e:clean -- --help
+```
+
+The tool deletes through the API (never SQL — sixteen tables have a `NO ACTION` foreign
+key to `threat_models`, so a direct `DELETE` rolls back on the `assets` FK), authenticates
+each test user through the OAuth stub, and keys strictly off the `E2E ` name prefix, so
+seeded `Seed …` fixtures are never touched. It covers threat models, projects, teams,
+surveys and the survey responses that would otherwise block a survey's deletion. It exits
+non-zero if any deletion fails rather than swallowing the error.
+
+It needs the API and the OAuth stub, but **not** a browser or the app dev server — so it
+still works after a run has died hard, or while Playwright is holding port 4200.
+
+Run `--dry-run` first if the database matters to you.
+
 ## Environment Variables
 
-| Variable             | Default                 | Description                                                                                 |
-| -------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
-| `E2E_APP_URL`        | `http://localhost:4200` | Frontend URL; when set, disables the managed `webServer` and targets an external deployment |
+| Variable             | Default                  | Description                                                                                 |
+| -------------------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| `E2E_APP_URL`        | `http://localhost:4200`  | Frontend URL; when set, disables the managed `webServer` and targets an external deployment |
 | `E2E_API_URL`        | `http://localhost:30080` | Backend API URL                                                                             |
-| `E2E_OAUTH_PROVIDER` | `tmi`                   | OAuth provider for test login                                                               |
+| `E2E_OAUTH_PROVIDER` | `tmi`                    | OAuth provider for test login                                                               |
+| `E2E_OAUTH_STUB_URL` | `http://localhost:8079`  | OAuth stub, used by `e2e:clean` to authenticate without a browser                           |
 
 ## Test Users
 
