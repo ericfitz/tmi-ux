@@ -963,6 +963,15 @@ export class ThreatModelService implements OnDestroy {
       ) as typeof filteredUpdates.authorization;
     }
 
+    // Drop owner identity fields the server derives, when the UI has none to send.
+    // An empty email is rejected outright and takes the whole PATCH — every
+    // permission edit in the dialog with it — down with it.
+    if (filteredUpdates.owner) {
+      filteredUpdates.owner = this.fieldFilter.filterOwner(
+        filteredUpdates.owner,
+      ) as typeof filteredUpdates.owner;
+    }
+
     // Convert updates to JSON Patch operations
     // Note: Do not include modified_at - the server manages timestamps automatically
     const operations = Object.entries(filteredUpdates).map(([key, value]) => ({

@@ -16,6 +16,7 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
+import { ReadonlyFieldFilterService } from './import/readonly-field-filter.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -128,9 +129,13 @@ describe('ThreatModelService', () => {
       orchestrateImport: vi.fn(),
     } as any;
 
+    // filterOwner delegates to the real implementation so the owner-scrubbing
+    // assertions below test the service's payload, not a stub's return value
+    const realFieldFilter = new ReadonlyFieldFilterService(loggerService);
     const fieldFilter = {
       filterReadonlyFields: vi.fn(),
       filterAuthorizations: vi.fn((auths: unknown) => auths),
+      filterOwner: vi.fn((owner: any) => realFieldFilter.filterOwner(owner)),
     } as any;
 
     // ProviderAdapterService — transformProviderForDisplay maps '*' to 'tmi'
@@ -2896,6 +2901,42 @@ describe('ThreatModelService', () => {
                 expect(result.authorization?.[0].provider).toBe('tmi');
                 expect('display_name' in (result.authorization?.[0] ?? {})).toBe(false);
                 expect(authorizationService.updateAuthorization).toHaveBeenCalled();
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+      }));
+
+    // #895: the promoted row supplies no email, and an empty one is rejected outright,
+    // taking every permission edit in the same PATCH with it.
+    it('patchThreatModel drops an empty owner email from the operations it sends', () =>
+      new Promise<void>((resolve, reject) => {
+        vi.mocked(apiService.patch).mockReturnValue(of(testThreatModel1));
+
+        service
+          .patchThreatModel(tmId, {
+            owner: {
+              principal_type: 'user',
+              provider: 'tmi',
+              provider_id: 'test-reviewer',
+              display_name: 'test-reviewer',
+              email: '',
+            },
+          })
+          .subscribe({
+            next: () => {
+              try {
+                const operations = vi.mocked(apiService.patch).mock.calls[0][1] as {
+                  path: string;
+                  value: Record<string, unknown>;
+                }[];
+                const ownerOp = operations.find(op => op.path === '/owner');
+                expect(ownerOp).toBeDefined();
+                expect('email' in ownerOp!.value).toBe(false);
+                expect(ownerOp!.value['provider_id']).toBe('test-reviewer');
                 resolve();
               } catch (e) {
                 reject(e instanceof Error ? e : new Error(String(e)));

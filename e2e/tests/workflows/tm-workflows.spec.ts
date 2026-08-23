@@ -38,9 +38,9 @@ userTest.describe('TM Workflows - Single Role', () => {
     await tmFlow.createFromDashboard(testName);
 
     // The TM needs a second *user* permission to have anything to promote: the
-    // set-owner button is disabled on the owner's own row and on group rows, and
-    // it reads provider_id/email off the row, which the server only fills in once
-    // the entry has been saved.
+    // set-owner button is disabled on the owner's own row and on group rows. Saving
+    // first is not required since #895 — the unsaved-row case has its own test below —
+    // but it keeps this test focused on the cancel/revert behaviour.
     await openDetailsKebab(userPage);
     await userPage.getByTestId('tm-permissions-button').click();
     await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'writer');
@@ -93,6 +93,76 @@ userTest.describe('TM Workflows - Single Role', () => {
       await tmFlow.deleteFromDashboard(testName);
     } catch {
       /* best effort */
+    }
+  });
+
+  userTest('promoting an unsaved permission row to owner', async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    const permissionsFlow = new PermissionsFlow(userPage);
+    const permissionsDialog = new PermissionsDialog(userPage);
+    const testName = `E2E Owner Unsaved TM ${Date.now()}`;
+
+    await tmFlow.createFromDashboard(testName);
+
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    const originalOwner = await permissionsDialog.ownerText();
+    expect(originalOwner).toMatch(/Test User/i);
+
+    // Regression (#895): setAsOwner built the owner from the row's persisted
+    // provider_id/email, which are still empty on a row that has been added but not
+    // saved — the typed subject lives only in _subject until the save path parses it.
+    // The PATCH then carried provider_id: '' and 400'd, discarding every other
+    // permission edit in the dialog along with it. Add and promote in one session.
+    const rowsBefore = await permissionsDialog.subjectValues();
+    await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'writer');
+    const newRow = rowsBefore.length;
+    await permissionsFlow.setOwner(newRow);
+
+    // The dialog must show the promotion before the save, or the assertions below
+    // could pass with a set-owner button that did nothing at all.
+    await expect(permissionsDialog.ownerValue()).not.toHaveText(originalOwner);
+
+    const tmUrl = new URL(userPage.url()).pathname.replace('/tm/', '/threat_models/');
+    const permissionsPatch = userPage
+      .waitForResponse(
+        response =>
+          response.request().method() === 'PATCH' && new URL(response.url()).pathname === tmUrl,
+        { timeout: 15000 },
+      )
+      .catch(() => null);
+    await permissionsFlow.saveAndClose();
+    const patchResponse = await permissionsPatch;
+    expect(patchResponse, 'no PATCH to the threat model was observed').not.toBeNull();
+    expect(
+      patchResponse!.status(),
+      'PATCH rejected — the promoted row was submitted without an identity',
+    ).toBe(200);
+
+    // Reload rather than reopen: the owner has to have been persisted, not just
+    // written into the on-screen model the way #891 was.
+    await userPage.reload();
+    // networkidle does not reliably settle in this app; wait for the card instead
+    await userPage.locator('.details-card').waitFor({ state: 'visible', timeout: 15000 });
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    // The owner renders as the resolved display name, not the typed login:
+    // "test-reviewer" comes back as "Test Reviewer (TMI User)"
+    await expect(permissionsDialog.ownerValue()).toContainText(/Test Reviewer/i);
+    await permissionsDialog.cancel();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
+
+    // Cleanup via the API, not the dashboard: ownership has moved to test-reviewer, so
+    // the TM is no longer on test-user's dashboard and tmDeleteButton would wait for a
+    // card that never arrives until the test times out. test-user keeps its owner-role
+    // authorization entry, so the DELETE still succeeds.
+    try {
+      await tmFlow.deleteByNameViaApi(testName);
+    } catch (error) {
+      // Name the leak: silently swallowed cleanup is how the dev DB reached 78 stray
+      // threat models and started failing unrelated specs.
+       
+      console.warn(`cleanup failed for "${testName}": ${String(error)}`);
     }
   });
 

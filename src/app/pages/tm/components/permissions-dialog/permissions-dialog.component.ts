@@ -45,6 +45,7 @@ import {
   AutocompleteSuggestion,
 } from '../../services/permissions-autocomplete.service';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { LoggerService } from '@app/core/services/logger.service';
 
 /**
  * Authorization with temporary _subject field for UI state management
@@ -658,6 +659,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     private providerAdapter: ProviderAdapterService,
     private autocompleteService: PermissionsAutocompleteService,
     private authorizationPrepare: AuthorizationPrepareService,
+    private logger: LoggerService,
   ) {}
 
   // SEM@168dbc74d5ae125f3c4201fe5d17c3334874b6bf: initialize permission table, columns, providers, and autocomplete pipeline (mutates shared state)
@@ -963,17 +965,74 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Resolves the principal a permission row names, in the shape an owner is submitted in.
+   *
+   * What the user typed lives only in _subject until the save path parses it, so a row
+   * added but not yet saved has empty provider_id/email. Reading those straight off the
+   * row produced an owner with provider_id: '' — which the API rejects (provider_id is
+   * required, minLength 1), taking every other permission edit in the dialog with it.
+   *
+   * A saved row carries the identity the server assigned it, and provider_id there is the
+   * provider's own id (an OAuth sub), not the email the subject field displays — so that
+   * identity wins, but only while the row still names the same principal. ngOnInit seeds
+   * _subject from email || provider_id, so a subject matching neither means the user
+   * retyped the row. The save path submits what they typed; follow it here, or promoting
+   * would transfer ownership to the principal the row used to name.
+   *
+   * @param auth The permission row to resolve
+   * @returns The owner's provider_id and email, or null when the row names nobody
+   */
+  // SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: resolve the principal a permission row names into owner submission fields (pure)
+  private resolveOwnerIdentity(
+    auth: AuthorizationWithSubject,
+  ): { provider_id: string; email: string } | null {
+    const subject = (auth._subject ?? '').trim();
+    const rowRetyped =
+      subject !== (auth.email ?? '').trim() && subject !== (auth.provider_id ?? '').trim();
+    const parsed = this.authorizationPrepare.parseSubject(subject, auth.provider, 'user');
+
+    // An email subject parses to email with an empty provider_id, which is submittable as
+    // an authorization entry but not as an owner, so the email doubles as the provider_id.
+    // The API defines provider_id as "email or OAuth sub", so this is right wherever the
+    // provider keys users by email; where it does not, the server answers 404 and leaves
+    // the owner alone. The client has nothing better to send — the autocomplete's value is
+    // itself only "provider_user_id or email".
+    const providerId = rowRetyped
+      ? parsed.provider_id || parsed.email
+      : auth.provider_id?.trim() || parsed.provider_id || parsed.email;
+
+    if (!providerId) {
+      return null;
+    }
+
+    const email = rowRetyped ? parsed.email || '' : auth.email?.trim() || parsed.email || '';
+
+    return { provider_id: providerId, email };
+  }
+
+  /**
    * Sets the selected user as owner
    * @param index The index of the permission to set as owner
    */
   // SEM@85c97d704e5197f893d6e6ce1a6b8a0763d47d21: promote a user permission entry to owner and notify the parent via callback (mutates shared state)
   setAsOwner(index: number): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      const selectedAuth = this.permissionsDataSource.data[index];
+      const selectedAuth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
 
       // Ensure only users (not groups) can be set as owner
       if (selectedAuth.principal_type !== 'user') {
-        console.warn('Only users can be set as owner');
+        this.logger.warn('Only users can be set as owner');
+        return;
+      }
+
+      const identity = this.resolveOwnerIdentity(selectedAuth);
+
+      if (!identity) {
+        // Nothing identifies this row yet. Flag it the way save() does rather than
+        // building an owner the server will reject.
+        this.validationIssues.set(index, 'missing_subject');
+        this.permissionsTable.renderRows();
+        this.subjectInputs?.get(index)?.nativeElement.focus();
         return;
       }
 
@@ -981,9 +1040,9 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
       const newOwner: User = {
         principal_type: 'user',
         provider: selectedAuth.provider,
-        provider_id: selectedAuth.provider_id,
-        display_name: selectedAuth.display_name || selectedAuth.provider_id,
-        email: selectedAuth.email || '',
+        provider_id: identity.provider_id,
+        display_name: selectedAuth.display_name || identity.provider_id,
+        email: identity.email,
       };
 
       // Update the local owner value
