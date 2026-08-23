@@ -6,7 +6,11 @@
 import { Observable } from 'rxjs';
 import { Graph } from '@antv/x6';
 import { GraphOperation, OperationResult } from '../types/graph-operation.types';
-import { SaveResult, LoadResult } from '../types/persistence.types';
+import { SaveResult } from '../types/persistence.types';
+// loadDiagram() and loadCompleted$ carry what AppPersistenceCoordinator.load()
+// emits, so the contract is the coordinator's LoadResult — not the
+// strategy-level StrategyLoadResult in ../types/persistence.types (#866).
+import { LoadResult } from '../application/services/app-persistence-coordinator.service';
 import { AutoSaveState } from '../types/auto-save.types';
 
 /**

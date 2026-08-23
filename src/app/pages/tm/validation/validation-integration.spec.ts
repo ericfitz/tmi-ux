@@ -7,40 +7,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ThreatModelValidatorService } from './threat-model-validator.service';
 import { ValidationConfig } from './types';
 import { createMockLoggerService } from '../../../../testing/mocks/mock-logger.service';
-import type { ThreatModel, User } from '../models/threat-model.model';
+import { createTestAuthorization, createTestUser } from '../../../../testing/mocks';
+import type { ThreatModel } from '../models/threat-model.model';
 import type { Diagram, Cell } from '../models/diagram.model';
-
-// Helper to create a User (owner/created_by) fixture for test fixtures
-// SEM@0d8ef5842818f1be8b057536bbf346d0ac357fe6: build a user test fixture with email (pure)
-const createTestUser = (email: string): User => ({
-  principal_type: 'user',
-  provider: 'test',
-  provider_id: email,
-  email,
-  display_name: email.split('@')[0],
-});
-
-// Helper to create Authorization objects for test fixtures
-// SEM@c79a19c1ad822f1bf5be101c3a38dbd18347ccf0: build an authorization test fixture with email, role, and type (pure)
-const createTestAuthorization = (
-  email: string,
-  role: 'owner' | 'writer' | 'reader',
-  type: 'user' | 'group' = 'user',
-): {
-  principal_type: 'user' | 'group';
-  provider: string;
-  provider_id: string;
-  email: string;
-  display_name: string;
-  role: 'owner' | 'writer' | 'reader';
-} => ({
-  principal_type: type,
-  provider: 'test',
-  provider_id: email,
-  email,
-  display_name: email.split('@')[0],
-  role,
-});
 
 describe('ThreatModel Validation Integration', () => {
   let service: ThreatModelValidatorService;
@@ -53,15 +22,15 @@ describe('ThreatModel Validation Integration', () => {
   });
 
   it('should validate a minimal valid threat model', () => {
-    const validThreatModel = {
+    const validThreatModel: ThreatModel = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestUser('test@example.com'),
-      created_by: createTestUser('test@example.com'),
+      owner: createTestUser({ email: 'test@example.com' }),
+      created_by: createTestUser({ email: 'test@example.com' }),
       threat_model_framework: 'STRIDE',
-      authorization: [createTestAuthorization('test@example.com', 'owner')],
+      authorization: [createTestAuthorization({ email: 'test@example.com', role: 'owner' })],
     };
 
     const result = service.validate(validThreatModel);
@@ -79,7 +48,7 @@ describe('ThreatModel Validation Integration', () => {
     };
 
     // Intentionally missing required ThreatModel fields to exercise FIELD_REQUIRED errors.
-    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
+    const result = service.validate(invalidThreatModel);
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
@@ -94,15 +63,15 @@ describe('ThreatModel Validation Integration', () => {
       name: 123, // Should be string
       created_at: 'invalid-date',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestUser('test@example.com'),
-      created_by: createTestUser('test@example.com'),
+      owner: createTestUser({ email: 'test@example.com' }),
+      created_by: createTestUser({ email: 'test@example.com' }),
       threat_model_framework: 'INVALID_FRAMEWORK',
       authorization: 'not-an-array',
     };
 
     // Intentionally wrong field types (name, framework, authorization) to exercise
     // INVALID_TYPE / INVALID_ENUM_VALUE errors.
-    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
+    const result = service.validate(invalidThreatModel);
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
@@ -119,10 +88,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestUser('test@example.com'),
-      created_by: createTestUser('test@example.com'),
+      owner: createTestUser({ email: 'test@example.com' }),
+      created_by: createTestUser({ email: 'test@example.com' }),
       threat_model_framework: 'STRIDE',
-      authorization: [createTestAuthorization('test@example.com', 'owner')],
+      authorization: [createTestAuthorization({ email: 'test@example.com', role: 'owner' })],
       diagrams: [
         {
           id: 'diagram-1',
@@ -163,10 +132,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestUser('test@example.com'),
-      created_by: createTestUser('test@example.com'),
+      owner: createTestUser({ email: 'test@example.com' }),
+      created_by: createTestUser({ email: 'test@example.com' }),
       threat_model_framework: 'STRIDE',
-      authorization: [createTestAuthorization('test@example.com', 'owner')],
+      authorization: [createTestAuthorization({ email: 'test@example.com', role: 'owner' })],
       diagrams: [
         {
           id: 'diagram-1',
@@ -212,7 +181,7 @@ describe('ThreatModel Validation Integration', () => {
     };
 
     // Intentionally missing required ThreatModel fields to exercise the failFast config path.
-    const result = service.validate(invalidThreatModel as unknown as ThreatModel, config);
+    const result = service.validate(invalidThreatModel, config);
 
     expect(result.valid).toBe(false);
     expect(result.warnings).toHaveLength(0); // Warnings excluded
@@ -224,10 +193,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: createTestUser('test@example.com'),
-      created_by: createTestUser('test@example.com'),
+      owner: createTestUser({ email: 'test@example.com' }),
+      created_by: createTestUser({ email: 'test@example.com' }),
       threat_model_framework: 'STRIDE',
-      authorization: [createTestAuthorization('test@example.com', 'owner')],
+      authorization: [createTestAuthorization({ email: 'test@example.com', role: 'owner' })],
       diagrams: [
         {
           id: '123e4567-e89b-12d3-a456-426614174000',
@@ -253,7 +222,7 @@ describe('ThreatModel Validation Integration', () => {
     const threatModel = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test Threat Model',
-      authorization: [createTestAuthorization('test@example.com', 'owner')],
+      authorization: [createTestAuthorization({ email: 'test@example.com', role: 'owner' })],
       diagrams: [
         {
           id: 'diagram-1',
@@ -271,7 +240,7 @@ describe('ThreatModel Validation Integration', () => {
 
     // Intentionally missing created_at/modified_at/owner/created_by/threat_model_framework
     // since this test exercises reference-only validation, which doesn't need them.
-    const result = service.validateReferences(threatModel as unknown as ThreatModel);
+    const result = service.validateReferences(threatModel);
 
     expect(result.valid).toBe(false);
     const referenceError = result.errors.find(e => e.code === 'INVALID_THREAT_MODEL_REFERENCE');
@@ -287,7 +256,7 @@ describe('ThreatModel Validation Integration', () => {
 
   it('should return properly structured validation results', () => {
     // Intentionally empty to exercise the validation-result-structure path regardless of content.
-    const result = service.validate({} as unknown as ThreatModel);
+    const result = service.validate({});
 
     expect(result).toHaveProperty('valid');
     expect(result).toHaveProperty('errors');
@@ -311,7 +280,7 @@ describe('ThreatModel Validation Integration', () => {
 
     // Intentionally missing required fields and using a non-UUID id to exercise the
     // error-context path.
-    const result = service.validate(invalidThreatModel as unknown as ThreatModel);
+    const result = service.validate(invalidThreatModel);
 
     expect(result.errors.length).toBeGreaterThan(0);
 
@@ -328,13 +297,13 @@ describe('ThreatModel Validation Integration', () => {
       description: 'A comprehensive threat model for testing',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-02T00:00:00Z',
-      owner: createTestUser('owner@example.com'),
-      created_by: createTestUser('creator@example.com'),
+      owner: createTestUser({ email: 'owner@example.com' }),
+      created_by: createTestUser({ email: 'creator@example.com' }),
       threat_model_framework: 'STRIDE',
       issue_uri: 'https://example.com/issues/123',
       authorization: [
-        createTestAuthorization('owner@example.com', 'owner'),
-        createTestAuthorization('user@example.com', 'writer'),
+        createTestAuthorization({ email: 'owner@example.com', role: 'owner' }),
+        createTestAuthorization({ email: 'user@example.com', role: 'writer' }),
       ],
       metadata: [
         { key: 'version', value: '1.0' },

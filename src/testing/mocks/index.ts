@@ -40,6 +40,9 @@ export {
   type MockHttpClient,
 } from './mock-http-client.service';
 
+// Threat-model principal fixtures
+export { createTestUser, createTestAuthorization } from './threat-model-principals';
+
 // PlatformLocation service mocks
 export {
   createMockPlatformLocation,

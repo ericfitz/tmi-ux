@@ -9,7 +9,11 @@ import { of, BehaviorSubject } from 'rxjs';
 import { AuditTrailPageComponent } from './audit-trail-page.component';
 import { AuditEntry, ListAuditTrailResponse } from '../../models/audit-trail.model';
 import { ThreatModel, User } from '../../models/threat-model.model';
-import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import {
+  createTestUser,
+  createTypedMockLoggerService,
+  type MockLoggerService,
+} from '../../../../../testing/mocks';
 
 // Mock interfaces
 interface MockActivatedRoute {
@@ -69,13 +73,7 @@ describe('AuditTrailPageComponent', () => {
     offset: 0,
   };
 
-  const mockUser: User = {
-    principal_type: 'user',
-    provider: 'test',
-    provider_id: 'user1',
-    email: 'user1@example.com',
-    display_name: 'Test User',
-  };
+  const mockUser: User = createTestUser();
 
   const mockThreatModel: ThreatModel = {
     id: 'tm-1',

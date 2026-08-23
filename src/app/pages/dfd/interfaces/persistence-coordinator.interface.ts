@@ -7,7 +7,7 @@ import {
   SaveOperation,
   SaveResult,
   LoadOperation,
-  LoadResult,
+  StrategyLoadResult,
   SyncOperation,
   SyncResult,
   PersistenceStrategy,
@@ -29,7 +29,7 @@ export interface IPersistenceCoordinator {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store a diagram via the configured persistence strategy
   save(operation: SaveOperation): Observable<SaveResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch a diagram from the configured persistence strategy
-  load(operation: LoadOperation): Observable<LoadResult>;
+  load(operation: LoadOperation): Observable<StrategyLoadResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: synchronize local and remote diagram state via persistence strategy
   sync(operation: SyncOperation): Observable<SyncResult>;
 
@@ -37,7 +37,7 @@ export interface IPersistenceCoordinator {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store multiple diagrams as a batch via the persistence strategy
   saveBatch(operations: SaveOperation[]): Observable<SaveResult[]>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch multiple diagrams as a batch from the persistence strategy
-  loadBatch(operations: LoadOperation[]): Observable<LoadResult[]>;
+  loadBatch(operations: LoadOperation[]): Observable<StrategyLoadResult[]>;
 
   // Cache management
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: delete cached diagram data, optionally scoped to one diagram (mutates shared state)

@@ -89,9 +89,15 @@ export interface LoadOperation {
 }
 
 /**
- * Result of load operations
+ * Result of a single persistence strategy's load.
+ *
+ * Distinct from the coordinator's LoadResult in
+ * application/services/app-persistence-coordinator.service.ts, which is what the
+ * orchestrator's loadDiagram() actually emits. The two shapes differ
+ * (diagramData/Date/'cache' here versus data/epoch-ms/'local-storage' there), so
+ * they carry distinct names rather than one name meaning two things (#866).
  */
-export interface LoadResult {
+export interface StrategyLoadResult {
   readonly success: boolean;
   readonly diagramData?: any;
   readonly source: 'cache' | 'api' | 'websocket';
@@ -121,7 +127,7 @@ export interface PersistenceStrategy {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store a diagram via this persistence strategy; return save result observable
   save(operation: SaveOperation): Observable<SaveResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch a diagram via this persistence strategy; return load result observable
-  load(operation: LoadOperation): Observable<LoadResult>;
+  load(operation: LoadOperation): Observable<StrategyLoadResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this strategy can handle a given save or load operation (pure)
   canHandle(operation: SaveOperation | LoadOperation): boolean;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: validate whether this persistence strategy is currently operational (pure)
