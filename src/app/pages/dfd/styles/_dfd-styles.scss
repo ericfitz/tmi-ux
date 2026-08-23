@@ -157,7 +157,9 @@ circle.x6-port-body {
   font-weight: normal;
   pointer-events: none;
   z-index: 1000;
-  border: 1px solid var(--color-border);
+
+  // Fixed, like the background above it: an inverting border is invisible on white.
+  border: 1px solid var(--color-dfd-border);
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: none;
 }
