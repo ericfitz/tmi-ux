@@ -5,6 +5,7 @@ import { LayoutCell, LayoutGraph } from '../../types/layout-cell.types';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { LABEL_POSITION_ATTRS } from '../../types/label-position.types';
 import { StyleChangeEvent } from '../../presentation/components/style-panel/style-panel.component';
+import type { UpdateEdgeOperation, UpdateNodeOperation } from '../../types/graph-operation.types';
 
 /**
  * Mutable in-memory fake satisfying the `LayoutCell` structural surface used by
@@ -283,21 +284,21 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['n1'],
       };
 
-      const op = service.applyNodeStyleChange(node, event);
+      const op = service.applyNodeStyleChange(node, event) as UpdateNodeOperation | null;
 
       expect(getByPath(node.__attrs, 'body/fill')).toBe('#ff0000');
       expect(node.__data['customStyles']).toBe(true);
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
-      expect((op as any).nodeId).toBe('n1');
-      expect((op as any).updates.style).toEqual({ fill: '#ff0000' });
-      expect((op as any).updates.properties).toEqual({ customStyles: true });
+      expect(op!.nodeId).toBe('n1');
+      expect(op!.updates.style).toEqual({ fill: '#ff0000' });
+      expect(op!.updates.properties).toEqual({ customStyles: true });
       // previousState captures the unchanged body fields. (The `fill` field is
       // re-read from the live body attrs after mutation — a verbatim-preserved
       // quirk of the original component code.)
-      expect((op as any).previousState.style.stroke).toBe('#000');
-      expect((op as any).previousState.style.fillOpacity).toBe(1);
-      expect((op as any).previousState.properties).toEqual({ customStyles: false });
+      expect(op!.previousState!.style!['stroke']).toBe('#000');
+      expect(op!.previousState!.style!['fillOpacity']).toBe(1);
+      expect(op!.previousState!.properties).toEqual({ customStyles: false });
     });
 
     it('maps a strokeColor change to the body/stroke attr path', () => {
@@ -312,20 +313,20 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['n1'],
       };
 
-      const op = service.applyNodeStyleChange(node, event);
+      const op = service.applyNodeStyleChange(node, event) as UpdateNodeOperation | null;
 
       expect(getByPath(node.__attrs, 'body/stroke')).toBe('#123456');
       expect(node.__data['customStyles']).toBe(true);
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
-      expect((op as any).updates.style).toEqual({ stroke: '#123456' });
-      expect((op as any).updates.properties).toEqual({ customStyles: true });
+      expect(op!.updates.style).toEqual({ stroke: '#123456' });
+      expect(op!.updates.properties).toEqual({ customStyles: true });
       // previousState captures the unchanged body fields. (The `stroke` field is
       // re-read from the live body attrs after mutation — a verbatim-preserved
       // quirk of the original component code.)
-      expect((op as any).previousState.style.fill).toBe('#fff');
-      expect((op as any).previousState.style.fillOpacity).toBe(1);
-      expect((op as any).previousState.properties).toEqual({ customStyles: false });
+      expect(op!.previousState!.style!['fill']).toBe('#fff');
+      expect(op!.previousState!.style!['fillOpacity']).toBe(1);
+      expect(op!.previousState!.properties).toEqual({ customStyles: false });
     });
 
     it('maps a numeric fillOpacity change to the body/fillOpacity attr path', () => {
@@ -340,20 +341,20 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['n1'],
       };
 
-      const op = service.applyNodeStyleChange(node, event);
+      const op = service.applyNodeStyleChange(node, event) as UpdateNodeOperation | null;
 
       expect(getByPath(node.__attrs, 'body/fillOpacity')).toBe(0.25);
       expect(node.__data['customStyles']).toBe(true);
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
-      expect((op as any).updates.style).toEqual({ fillOpacity: 0.25 });
-      expect((op as any).updates.properties).toEqual({ customStyles: true });
+      expect(op!.updates.style).toEqual({ fillOpacity: 0.25 });
+      expect(op!.updates.properties).toEqual({ customStyles: true });
       // previousState captures the unchanged body fields. (The `fillOpacity`
       // field is re-read from the live body attrs after mutation — a
       // verbatim-preserved quirk of the original component code.)
-      expect((op as any).previousState.style.stroke).toBe('#000');
-      expect((op as any).previousState.style.fill).toBe('#fff');
-      expect((op as any).previousState.properties).toEqual({ customStyles: false });
+      expect(op!.previousState!.style!['stroke']).toBe('#000');
+      expect(op!.previousState!.style!['fill']).toBe('#fff');
+      expect(op!.previousState!.properties).toEqual({ customStyles: false });
     });
 
     it('applies a label position change and returns an update-node operation', () => {
@@ -368,7 +369,7 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['n1'],
       };
 
-      const op = service.applyNodeStyleChange(node, event);
+      const op = service.applyNodeStyleChange(node, event) as UpdateNodeOperation | null;
 
       const expected = LABEL_POSITION_ATTRS['top-left'];
       expect(getByPath(node.__attrs, 'text/refX')).toBe(expected.refX);
@@ -376,7 +377,7 @@ describe('DfdStylingService', () => {
       expect(node.__data['customStyles']).toBe(true);
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
-      expect((op as any).updates.style).toMatchObject({
+      expect(op!.updates.style).toMatchObject({
         refX: expected.refX,
         refY: expected.refY,
       });
@@ -390,7 +391,7 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['n1'],
       };
 
-      const op = service.applyNodeStyleChange(node, event);
+      const op = service.applyNodeStyleChange(node, event) as UpdateNodeOperation | null;
 
       expect(op).toBeNull();
       expect(getByPath(node.__attrs, 'text/refX')).toBeUndefined();
@@ -411,15 +412,19 @@ describe('DfdStylingService', () => {
         applicableCellIds: ['e1'],
       };
 
-      const op = service.applyEdgeStyleChange(edge, event);
+      const op = service.applyEdgeStyleChange(edge, event) as UpdateEdgeOperation;
 
       expect(getByPath(edge.__attrs, 'line/stroke')).toBe('#00ff00');
       expect(op.type).toBe('update-edge');
-      expect((op as any).edgeId).toBe('e1');
-      expect((op as any).updates.style).toEqual({ stroke: '#00ff00' });
+      expect(op.edgeId).toBe('e1');
+      expect(op.updates.style).toEqual({ stroke: '#00ff00' });
       // previousState.style.stroke is re-read from the live line attrs after
       // mutation — a verbatim-preserved quirk of the original component code.
-      expect((op as any).previousState.style).toHaveProperty('stroke');
+      // The declared `Partial<EdgeInfo>` has no `style`; that mismatch is the known
+      // drift recorded on UpdateEdgeOperation and tracked by #707, so read what the
+      // service actually emits rather than what the type claims.
+      const edgePrevious = op.previousState as unknown as { style: Record<string, unknown> };
+      expect(edgePrevious.style).toHaveProperty('stroke');
     });
   });
 
@@ -432,7 +437,7 @@ describe('DfdStylingService', () => {
         attrs: { body: { stroke: '#abc', fill: '#def', fillOpacity: 0.3 } },
       });
 
-      const op = service.clearCustomFormatting(node);
+      const op = service.clearCustomFormatting(node) as UpdateNodeOperation | null;
 
       const defaultFill = DFD_STYLING_HELPERS.getDefaultFill('process');
       const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke('process');
@@ -442,7 +447,7 @@ describe('DfdStylingService', () => {
       expect(node.__data['customStyles']).toBeUndefined();
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
-      expect((op as any).updates.style.fill).toBe(defaultFill);
+      expect(op!.updates.style!['fill']).toBe(defaultFill);
     });
 
     it('uses refY 55% for store nodes', () => {
@@ -466,12 +471,12 @@ describe('DfdStylingService', () => {
         attrs: { line: { stroke: '#abc' } },
       });
 
-      const op = service.clearCustomFormatting(edge);
+      const op = service.clearCustomFormatting(edge) as UpdateEdgeOperation | null;
 
       expect(getByPath(edge.__attrs, 'line/stroke')).toBe(DFD_STYLING.EDGES.DEFAULT_STROKE);
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-edge');
-      expect((op as any).updates.style.stroke).toBe(DFD_STYLING.EDGES.DEFAULT_STROKE);
+      expect(op!.updates.style!['stroke']).toBe(DFD_STYLING.EDGES.DEFAULT_STROKE);
     });
 
     it('returns null for a cell that is neither a node nor an edge', () => {
