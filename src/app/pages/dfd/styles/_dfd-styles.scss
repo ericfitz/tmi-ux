@@ -13,7 +13,7 @@
 
 // Common label styles mixin for all shapes
 @mixin shape-label-styles {
-  fill: var(--color-text-primary);
+  fill: var(--color-dfd-ink);
   font-size: 12px;
   font-family: 'Roboto Condensed', Arial, sans-serif;
   text-anchor: middle;
@@ -41,7 +41,7 @@
 .x6-graph text.security-boundary-label {
   font-family: 'Roboto Condensed', Arial, sans-serif;
   font-size: 12px;
-  fill: var(--color-text-primary); /* Ensure text color is consistent */
+  fill: var(--color-dfd-ink); /* Ensure text color is consistent */
 }
 
 // Target SVG text elements with font-family attribute
@@ -54,7 +54,7 @@ svg text[font-family] {
   width: 100%;
   height: 100%;
   min-height: 400px;
-  background-color: var(--color-background-light);
+  background-color: var(--color-dfd-surface);
   border: 1px solid #e0e0e0; // Solid border to match toolbar styling
 
   // Z-index hierarchy for elements within the graph
@@ -103,8 +103,8 @@ svg text[font-family] {
 circle.x6-port-body {
   cursor: pointer;
   display: block;
-  stroke: var(--color-text-primary);
-  fill: var(--color-background-white);
+  stroke: var(--color-dfd-ink);
+  fill: var(--color-dfd-paper);
   r: 5;
   transition: all 0.2s ease-in-out;
 
@@ -124,8 +124,8 @@ circle.x6-port-body {
 .x6-port-body.port-hovered {
   visibility: visible;
   opacity: 1;
-  stroke: var(--color-text-primary);
-  fill: var(--color-background-white);
+  stroke: var(--color-dfd-ink);
+  fill: var(--color-dfd-paper);
   stroke-width: 2;
 }
 
@@ -136,8 +136,8 @@ circle.x6-port-body {
   pointer-events: all;
   visibility: visible;
   opacity: 1;
-  stroke: var(--color-text-primary);
-  fill: var(--color-background-white);
+  stroke: var(--color-dfd-ink);
+  fill: var(--color-dfd-paper);
   stroke-width: 2;
 }
 
@@ -149,7 +149,7 @@ circle.x6-port-body {
 .dfd-port-tooltip {
   position: absolute;
   background-color: rgb(255 255 255 / 90%);
-  color: var(--color-text-primary);
+  color: var(--color-dfd-ink);
   padding: 5px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -157,7 +157,9 @@ circle.x6-port-body {
   font-weight: normal;
   pointer-events: none;
   z-index: 1000;
-  border: 1px solid var(--color-border);
+
+  // Fixed, like the background above it: an inverting border is invisible on white.
+  border: 1px solid var(--color-dfd-border);
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: none;
 }

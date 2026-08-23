@@ -36,6 +36,19 @@ export function buildStepUpState(returnUrl: string): string {
   return btoa(String.fromCharCode(...encoder.encode(stateJson)));
 }
 
+/** Optional inputs to buildStepUpRequestParams. */
+export interface StepUpRequestOptions {
+  /** Origin used to build client_callback. Defaults to the current window origin. */
+  origin?: string;
+  /**
+   * Email of the account being re-authenticated. Without it a provider that
+   * cannot infer the subject on its own (the dev `tmi` provider, for one)
+   * re-authenticates whoever it happens to have, and the callback rejects the
+   * mismatch with "Wrong account", looping forever (#883).
+   */
+  loginHint?: string;
+}
+
 /**
  * Build the query parameters for GET /oauth2/step_up. Single source of truth for
  * the request contract shared by AuthService.initiateStepUp (top-level redirect)
@@ -46,14 +59,19 @@ export function buildStepUpRequestParams(
   state: string,
   codeChallenge: string,
   codeChallengeMethod: string,
-  origin: string = window.location.origin,
+  options: StepUpRequestOptions = {},
 ): Record<string, string> {
-  return {
+  const { origin = window.location.origin, loginHint } = options;
+  const params: Record<string, string> = {
     client_callback: `${origin}/oauth2/callback`,
     state,
     code_challenge: codeChallenge,
     code_challenge_method: codeChallengeMethod,
   };
+  if (loginHint) {
+    params['login_hint'] = loginHint;
+  }
+  return params;
 }
 
 /**

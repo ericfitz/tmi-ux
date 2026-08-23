@@ -65,6 +65,36 @@ $role-presenter-color: #1500ffde;
 $role-host-color: #ffc107; // Gold color for session host
 
 // =============================================================================
+// THEME-DERIVED TOKENS
+// =============================================================================
+// These tokens read the --theme-* variables that material-theme.scss defines per
+// theme. Custom-property substitution resolves at the element where a property is
+// DECLARED, not where it is used, so declaring them only on :root freezes in
+// whatever --theme-* values :root sees — the light ones. `.dark-theme` is applied
+// to <body> and to the CDK overlay container, both descendants of :root, so the
+// dark values were never picked up (#881). Re-emit this block on every element
+// that redefines the --theme-* inputs.
+@mixin theme-derived-colors {
+  // Text Colors
+  --color-text-primary: var(--theme-text-primary, #{$text-primary});
+  --color-text-secondary: var(--theme-text-secondary, #{$text-secondary});
+  --color-text-disabled: var(--theme-text-disabled, #{$text-disabled});
+
+  // Background Colors
+  --color-background-light: var(--theme-surface, #{$background-light});
+  --color-background-lighter: var(--theme-surface, #{$background-lighter});
+  --color-background-white: var(--theme-card, #{$background-white});
+
+  // Border Colors
+  --color-border: var(--theme-divider, #{$border-color});
+  --color-border-light: var(--theme-divider, #{$border-light});
+  --color-border-material: var(--theme-divider, #{$border-material});
+
+  // Hover States
+  --color-hover-background: var(--theme-hover, rgb(0 0 0 / 4%));
+}
+
+// =============================================================================
 // CSS CUSTOM PROPERTIES (Modern theming support)
 // =============================================================================
 
@@ -85,23 +115,15 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-warning-dark: #f57c00;
   --color-info: #1976d2; // Primary blue for info
 
-  // Text Colors (use theme variables which are set in material-theme.scss)
-  --color-text-primary: var(--theme-text-primary, #{$text-primary});
-  --color-text-secondary: var(--theme-text-secondary, #{$text-secondary});
+  // Tokens that follow the active theme (text, background, border, hover)
+  @include theme-derived-colors;
+
+  // Text Colors
   --color-text-tertiary: #{$text-tertiary};
   --color-text-muted: #{$text-muted};
-  --color-text-disabled: var(--theme-text-disabled, #{$text-disabled});
 
-  // Background Colors (use theme variables)
-  --color-background-light: var(--theme-surface, #{$background-light});
-  --color-background-lighter: var(--theme-surface, #{$background-lighter});
+  // Background Colors
   --color-background-error: #{$background-error};
-  --color-background-white: var(--theme-card, #{$background-white});
-
-  // Border Colors (use theme variables)
-  --color-border: var(--theme-divider, #{$border-color});
-  --color-border-light: var(--theme-divider, #{$border-light});
-  --color-border-material: var(--theme-divider, #{$border-material});
 
   // OAuth Provider Colors
   --color-tmi: #{$tmi-color};
@@ -152,8 +174,32 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-heading-primary: #1976d2; // Blue 700 (same as --color-primary)
   --color-heading-secondary: #00695c; // Teal 800 (darker than original #00796b for AA)
 
-  // Hover States (use theme variables)
-  --color-hover-background: var(--theme-hover, rgb(0 0 0 / 4%));
+  // ---------------------------------------------------------------------------
+  // Deliberately theme-invariant tokens
+  // ---------------------------------------------------------------------------
+  // These must NOT follow the theme, and must never move into
+  // theme-derived-colors. Each pins a value that used to come from a
+  // theme-derived token only because that token was stuck on its light value
+  // (#881) — code that reads them depends on the constant, not on the theme.
+
+  // Ink for saturated accent fills (status/severity/classification chips). The
+  // chip backgrounds are theme-invariant accents, so their ink has to be too:
+  // resolving it to the card surface puts #424242 on #1976d2 (2.18:1).
+  --color-on-accent: #fff;
+
+  // Neutral chip fills. Previously borrowed from --color-text-secondary and
+  // --color-text-disabled, which now correctly invert in dark theme — as a chip
+  // background that turns near-white behind white ink.
+  --color-badge-neutral: #6b6b6b;
+  --color-badge-neutral-muted: #757575;
+
+  // The DFD canvas is a light document in every theme: node bodies (#FFFFFF) and
+  // labels (#000000) are written into the SVG by DFD_STYLING, not by CSS, so the
+  // canvas around them cannot invert on its own without hiding the shapes.
+  --color-dfd-surface: #f5f5f5; // canvas and grid backing
+  --color-dfd-paper: #fff; // node/port fill, preview and thumbnail backing
+  --color-dfd-ink: #212121; // labels, port strokes, tooltip text
+  --color-dfd-border: rgb(0 0 0 / 12%); // outlines drawn on the light paper
 
   // Overlays
   --color-overlay-light: rgb(255 255 255 / 90%);
@@ -218,8 +264,20 @@ $role-host-color: #ffc107; // Gold color for session host
 // =============================================================================
 // DARK THEME OVERRIDES
 // =============================================================================
-// Dark theme is now handled via classes in material-theme.scss
-// The --theme-* variables are set there and used here
+// The --theme-* variables are set on .dark-theme in material-theme.scss, which is
+// applied to <body> and to the CDK overlay container. The derived tokens have to
+// be re-emitted here so they resolve against the dark values instead of the light
+// ones they would inherit from :root.
+
+.dark-theme {
+  @include theme-derived-colors;
+
+  // Text tones with no --theme-* source of their own. The light values (#666 and
+  // #757575) fall to ~2.2:1 and ~2.8:1 against the dark surfaces; 60% white gives
+  // at least 4.8:1 on both --theme-background (#303030) and --theme-card (#424242).
+  --color-text-tertiary: rgb(255 255 255 / 60%);
+  --color-text-muted: rgb(255 255 255 / 60%);
+}
 
 // =============================================================================
 // UTILITY MIXINS

@@ -93,6 +93,20 @@ describe('StepUpService', () => {
     expect(options.context.get(SKIP_ERROR_HANDLING)).toBe(true);
   });
 
+  it('forwards the caller-supplied login_hint to /oauth2/step_up (#883)', async () => {
+    await new Promise(resolve =>
+      service.beginStepUp('tmi', 'charlie@tmi.local').subscribe(resolve),
+    );
+    const [, options] = http.get.mock.calls[0] as [string, { params: Record<string, string> }];
+    expect(options.params['login_hint']).toBe('charlie@tmi.local');
+  });
+
+  it('omits login_hint when the caller has no email to offer', async () => {
+    await new Promise(resolve => service.beginStepUp('tmi').subscribe(resolve));
+    const [, options] = http.get.mock.calls[0] as [string, { params: Record<string, string> }];
+    expect('login_hint' in options.params).toBe(false);
+  });
+
   it('stores oauth_provider for the callback token exchange on the strong path', async () => {
     http.get.mockReturnValue(of(strongResponse));
     dialog.open.mockReturnValue({ afterClosed: () => of(true) });
