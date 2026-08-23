@@ -42,6 +42,7 @@ describe('PermissionsDialogComponent', () => {
   };
   let dialogData: PermissionsDialogData;
   let authorizationPrepare: AuthorizationPrepareService;
+  let mockLogger: { warn: ReturnType<typeof vi.fn> };
 
   const mockOwner: User = {
     principal_type: 'user',
@@ -95,6 +96,8 @@ describe('PermissionsDialogComponent', () => {
       owner: { ...mockOwner },
     };
 
+    mockLogger = { warn: vi.fn() };
+
     // The real prepare service, so the save gate is exercised against the same
     // validation the API submission path uses
     authorizationPrepare = new AuthorizationPrepareService(
@@ -109,6 +112,7 @@ describe('PermissionsDialogComponent', () => {
       mockProviderAdapter as unknown as ProviderAdapterService,
       mockAutocompleteService as unknown as PermissionsAutocompleteService,
       authorizationPrepare,
+      mockLogger as unknown as LoggerService,
     );
   });
 
@@ -157,6 +161,7 @@ describe('PermissionsDialogComponent', () => {
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
         authorizationPrepare,
+        mockLogger as unknown as LoggerService,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
@@ -265,7 +270,6 @@ describe('PermissionsDialogComponent', () => {
     });
 
     it('should prevent group from becoming owner', () => {
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       dialogData.permissions = [createPermission({ principal_type: 'group' })];
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
@@ -275,9 +279,7 @@ describe('PermissionsDialogComponent', () => {
 
       // Owner should NOT change
       expect(component.data.owner.provider_id).toBe(originalOwner.provider_id);
-      expect(consoleSpy).toHaveBeenCalledWith('Only users can be set as owner');
-
-      consoleSpy.mockRestore();
+      expect(mockLogger.warn).toHaveBeenCalledWith('Only users can be set as owner');
     });
 
     it('should not crash on negative index', () => {
@@ -300,6 +302,138 @@ describe('PermissionsDialogComponent', () => {
       component.ngOnInit();
 
       expect(() => component.setAsOwner(0)).not.toThrow();
+    });
+    // #895: the typed subject lives only in _subject until save parses it, so an
+    // unsaved row promoted to owner used to yield provider_id: '' and a 400 that
+    // discarded every other permission edit in the dialog.
+    it('should take the owner from the subject typed into an unsaved row', () => {
+      const onOwnerChange = vi.fn();
+      dialogData.onOwnerChange = onOwnerChange;
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      (component.permissionsDataSource.data[1] as AuthorizationWithSubject)._subject =
+        'test-reviewer';
+
+      component.setAsOwner(1);
+
+      expect(component.data.owner).toEqual(
+        expect.objectContaining({
+          principal_type: 'user',
+          provider_id: 'test-reviewer',
+          display_name: 'test-reviewer',
+          email: '',
+        }),
+      );
+      expect(onOwnerChange).toHaveBeenCalledWith(
+        expect.objectContaining({ provider_id: 'test-reviewer' }),
+      );
+      expect(component.rowIssue(1)).toBeUndefined();
+    });
+
+    // An email subject parses to email with an empty provider_id, which the API accepts on an
+    // authorization entry but not on an owner (Principal.provider_id is required, minLength 1).
+    it('should give an email subject a non-empty provider_id as well', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      (component.permissionsDataSource.data[1] as AuthorizationWithSubject)._subject =
+        'new@test.com';
+
+      component.setAsOwner(1);
+
+      expect(component.data.owner).toEqual(
+        expect.objectContaining({
+          provider_id: 'new@test.com',
+          email: 'new@test.com',
+          display_name: 'new@test.com',
+        }),
+      );
+    });
+
+    // A saved row's provider_id is the identity the server assigned (an OAuth sub, not the
+    // email the subject field shows), so promoting it must not rewrite it from the subject.
+    it('should keep the persisted identity when promoting a saved row', () => {
+      dialogData.permissions = [
+        createPermission({ provider_id: 'oauth-sub-11223344', email: 'saved@test.com' }),
+      ];
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      component.setAsOwner(0);
+
+      expect(component.data.owner).toEqual(
+        expect.objectContaining({
+          provider_id: 'oauth-sub-11223344',
+          email: 'saved@test.com',
+        }),
+      );
+    });
+
+    // The save path submits what the user typed, so promoting must follow it: preferring
+    // the row's persisted identity here would transfer ownership to the principal the row
+    // used to name, silently and with the new name still on screen.
+    it('should follow the retyped subject on a saved row rather than its stale identity', () => {
+      dialogData.permissions = [
+        createPermission({ provider_id: 'oauth-sub-alice', email: 'alice@test.com' }),
+      ];
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      (component.permissionsDataSource.data[0] as AuthorizationWithSubject)._subject =
+        'bob@test.com';
+
+      component.setAsOwner(0);
+
+      expect(component.data.owner).toEqual(
+        expect.objectContaining({
+          provider_id: 'bob@test.com',
+          email: 'bob@test.com',
+        }),
+      );
+    });
+
+    it('should block promoting a saved row whose subject has been cleared', () => {
+      dialogData.permissions = [
+        createPermission({ provider_id: 'oauth-sub-alice', email: 'alice@test.com' }),
+      ];
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      (component.permissionsDataSource.data[0] as AuthorizationWithSubject)._subject = '';
+      const originalOwner = { ...component.data.owner };
+
+      component.setAsOwner(0);
+
+      expect(component.data.owner.provider_id).toBe(originalOwner.provider_id);
+      expect(component.rowIssue(0)).toBe('missing_subject');
+    });
+
+    it('should block promoting a row with no subject and flag it instead', () => {
+      const onOwnerChange = vi.fn();
+      dialogData.onOwnerChange = onOwnerChange;
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      const originalOwner = { ...component.data.owner };
+
+      component.setAsOwner(1);
+
+      expect(component.data.owner.provider_id).toBe(originalOwner.provider_id);
+      expect(onOwnerChange).not.toHaveBeenCalled();
+      expect(component.rowIssue(1)).toBe('missing_subject');
+      expect(component.validationIssueKeys()).toEqual(['threatModels.permissionsSubjectRequired']);
+    });
+
+    it('should treat a whitespace-only subject as no subject', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+      component.addPermission();
+      (component.permissionsDataSource.data[1] as AuthorizationWithSubject)._subject = '   ';
+      const originalOwner = { ...component.data.owner };
+
+      component.setAsOwner(1);
+
+      expect(component.data.owner.provider_id).toBe(originalOwner.provider_id);
+      expect(component.rowIssue(1)).toBe('missing_subject');
     });
   });
 
@@ -679,6 +813,7 @@ describe('PermissionsDialogComponent', () => {
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
         authorizationPrepare,
+        mockLogger as unknown as LoggerService,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { Metadata } from '../../models/threat-model.model';
+import type { Metadata, User } from '../../models/threat-model.model';
 import { LoggerService } from '../../../../core/services/logger.service';
 import {
   sanitizeCellsForApi,
@@ -22,6 +22,11 @@ type ApiDocumentInput = components['schemas']['DocumentInput'];
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API CreateDiagramRequest schema (pure)
 type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
+/**
+ * Owner as submitted to the API: the fields the server derives are optional, because
+ * the client omits them when it has no value the schema would accept.
+ */
+type ApiOwner = Omit<User, 'email' | 'display_name'> & { email?: string; display_name?: string };
 
 /**
  * Service for filtering read-only fields from objects before sending to the server.
@@ -42,6 +47,15 @@ export class ReadonlyFieldFilterService {
    * @see components['schemas']['Authorization'] in @app/generated/api-types
    */
   private readonly _authorizationReadOnlyFields = ['display_name'] as const;
+
+  /**
+   * Owner fields the server derives from provider + provider_id, and which the API
+   * schema will not accept empty: User.email must match the email pattern and
+   * display_name has minLength 1. The UI has neither for a principal the user has
+   * only just typed, so an empty one is dropped rather than submitted.
+   * @see components['schemas']['User'] in @app/generated/api-types
+   */
+  private readonly _ownerServerDerivedFields = ['email', 'display_name'] as const;
 
   /**
    * Constructs a typed ApiThreatModelInput from the input data, picking only
@@ -255,6 +269,30 @@ export class ReadonlyFieldFilterService {
   // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: strip server-managed read-only fields from an authorization object (pure)
   filterAuthorization(authorization: Record<string, unknown>): Record<string, unknown> {
     return this._filterFields(authorization, this._authorizationReadOnlyFields);
+  }
+
+  /**
+   * Strips owner fields the server derives, when the UI has no value for them.
+   *
+   * Sending `email: ''` is rejected outright (500, "email: failed to pass regex
+   * validation"), which discards the whole permissions PATCH along with it. The
+   * server resolves the account from provider + provider_id and fills both fields in.
+   *
+   * @param owner The owner object to filter
+   * @returns Owner object ready for API submission
+   */
+  // SEM@e6f1f6d3e3dcf79489800b4db20b247e10a3b305: drop empty server-derived identity fields from an owner object (pure)
+  filterOwner(owner: User): ApiOwner {
+    const filtered: ApiOwner = { ...owner };
+
+    for (const field of this._ownerServerDerivedFields) {
+      const value = filtered[field];
+      if (typeof value !== 'string' || value.trim() === '') {
+        delete filtered[field];
+      }
+    }
+
+    return filtered;
   }
 
   /**
