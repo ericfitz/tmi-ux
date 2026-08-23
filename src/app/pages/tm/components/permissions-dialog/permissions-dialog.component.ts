@@ -10,7 +10,6 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import {
   MatAutocompleteModule,
@@ -100,7 +99,9 @@ export interface PermissionsDialogData {
           <div class="info-section">
             <div class="info-field">
               <span class="info-label">{{ 'common.roles.owner' | transloco }}:</span>
-              <span class="info-value"><app-user-display [user]="data.owner" /></span>
+              <span class="info-value" data-testid="permissions-owner"
+                ><app-user-display [user]="data.owner"
+              /></span>
             </div>
           </div>
 
@@ -121,13 +122,11 @@ export interface PermissionsDialogData {
               mat-table
               [dataSource]="permissionsDataSource"
               #permissionsTable
-              matSort
-              #permissionsSort="matSort"
               class="permissions-table"
             >
               <!-- Principal Type Column -->
               <ng-container matColumnDef="principal_type">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef>
                   {{ 'common.type' | transloco }}
                 </th>
                 <td
@@ -190,7 +189,7 @@ export interface PermissionsDialogData {
 
               <!-- Provider Column -->
               <ng-container matColumnDef="provider">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef>
                   {{ 'threatModels.permissionsProvider' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
@@ -230,7 +229,7 @@ export interface PermissionsDialogData {
 
               <!-- Subject Column (replaces Provider ID and Email) -->
               <ng-container matColumnDef="subject">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef>
                   {{ 'threatModels.permissionsSubject' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
@@ -271,7 +270,7 @@ export interface PermissionsDialogData {
 
               <!-- Role Column -->
               <ng-container matColumnDef="role">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef>
                   {{ 'threatModels.permissionsRole' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
@@ -620,8 +619,11 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   /** IDs of providers that came from the SAML provider list */
   private _samlProviderIds = new Set<string>();
 
+  // Deliberately not sortable: every row handler below indexes permissionsDataSource.data
+  // by the *rendered* row index, and MatTableDataSource sorts a separate render copy —
+  // so edits would land on the wrong row. This is a small editable form grid, not a data
+  // table; sorting would also reorder rows under the user mid-edit whenever a select changes.
   @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
-  @ViewChild('permissionsSort') permissionsSort!: MatSort;
   @ViewChildren('subjectInput') subjectInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   private _subscriptions: Subscription = new Subscription();

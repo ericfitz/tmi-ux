@@ -8,10 +8,10 @@
 
   <mat-dialog-content class="dialog-content" appScrollIndicator>
     <div class="table-container">
-      <table mat-table [dataSource]="dataSource" class="threats-table" matSort>
+      <table mat-table [dataSource]="dataSource" class="threats-table">
         <!-- Severity Column -->
         <ng-container matColumnDef="severity">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'common.severity' | transloco }}
           </th>
           <td mat-cell *matCellDef="let threat">
@@ -23,7 +23,7 @@
 
         <!-- Description Column -->
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'common.description' | transloco }}
           </th>
           <td mat-cell *matCellDef="let threat">
