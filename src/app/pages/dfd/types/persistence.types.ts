@@ -89,13 +89,19 @@ export interface LoadOperation {
 }
 
 /**
- * Result of a single persistence strategy's load.
+ * Result of a single persistence strategy's load, as PersistenceStrategy below
+ * declares it.
  *
  * Distinct from the coordinator's LoadResult in
  * application/services/app-persistence-coordinator.service.ts, which is what the
  * orchestrator's loadDiagram() actually emits. The two shapes differ
  * (diagramData/Date/'cache' here versus data/epoch-ms/'local-storage' there), so
  * they carry distinct names rather than one name meaning two things (#866).
+ *
+ * Note that this shape is aspirational: neither InfraRestPersistenceStrategy nor
+ * WebSocketPersistenceStrategy declares `implements PersistenceStrategy`, and
+ * both return the coordinator's LoadResult instead. Reconciling that — or
+ * retiring the unimplemented interfaces — is tracked separately.
  */
 export interface StrategyLoadResult {
   readonly success: boolean;

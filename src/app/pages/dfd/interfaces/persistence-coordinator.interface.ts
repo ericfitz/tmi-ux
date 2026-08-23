@@ -3,11 +3,15 @@
  */
 
 import { Observable } from 'rxjs';
+// The load result is the coordinator's own, not the strategy-level
+// StrategyLoadResult: AppPersistenceCoordinator.load() and both real strategies
+// emit this shape. Pointing the interface at the other one would leave it
+// describing something nothing produces (#866).
+import { LoadResult } from '../application/services/app-persistence-coordinator.service';
 import {
   SaveOperation,
   SaveResult,
   LoadOperation,
-  StrategyLoadResult,
   SyncOperation,
   SyncResult,
   PersistenceStrategy,
@@ -29,7 +33,7 @@ export interface IPersistenceCoordinator {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store a diagram via the configured persistence strategy
   save(operation: SaveOperation): Observable<SaveResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch a diagram from the configured persistence strategy
-  load(operation: LoadOperation): Observable<StrategyLoadResult>;
+  load(operation: LoadOperation): Observable<LoadResult>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: synchronize local and remote diagram state via persistence strategy
   sync(operation: SyncOperation): Observable<SyncResult>;
 
@@ -37,7 +41,7 @@ export interface IPersistenceCoordinator {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: store multiple diagrams as a batch via the persistence strategy
   saveBatch(operations: SaveOperation[]): Observable<SaveResult[]>;
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: fetch multiple diagrams as a batch from the persistence strategy
-  loadBatch(operations: LoadOperation[]): Observable<StrategyLoadResult[]>;
+  loadBatch(operations: LoadOperation[]): Observable<LoadResult[]>;
 
   // Cache management
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: delete cached diagram data, optionally scoped to one diagram (mutates shared state)
