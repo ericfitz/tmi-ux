@@ -9,15 +9,12 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { UiPresenterSelectionService } from './ui-presenter-selection.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
+import type { Graph } from '@antv/x6';
 
 describe('UiPresenterSelectionService', () => {
   let service: UiPresenterSelectionService;
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    debugComponent: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockCollaborationService: {
     isCurrentUserPresenterModeActive: ReturnType<typeof vi.fn>;
     isCurrentUserPresenter: ReturnType<typeof vi.fn>;
@@ -28,10 +25,8 @@ describe('UiPresenterSelectionService', () => {
   let mockUiPresenterCursorDisplayService: {
     handlePresenterSelectionUpdate: ReturnType<typeof vi.fn>;
   };
-  let mockGraph: {
-    on: ReturnType<typeof vi.fn>;
-    getCells: ReturnType<typeof vi.fn>;
-  };
+  // Partial X6 Graph: only the members these tests drive.
+  let mockGraph: Graph & { on: ReturnType<typeof vi.fn>; getCells: ReturnType<typeof vi.fn> };
   let mockSelectionAdapter: {
     getSelectedCells: ReturnType<typeof vi.fn>;
     clearSelection: ReturnType<typeof vi.fn>;
@@ -43,12 +38,7 @@ describe('UiPresenterSelectionService', () => {
     vi.clearAllMocks();
 
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debugComponent: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create mock collaboration service
     mockCollaborationService = {
@@ -74,7 +64,7 @@ describe('UiPresenterSelectionService', () => {
         }
       }),
       getCells: vi.fn(() => []),
-    };
+    } as unknown as Graph & { on: ReturnType<typeof vi.fn>; getCells: ReturnType<typeof vi.fn> };
 
     // Create mock selection adapter
     mockSelectionAdapter = {
@@ -85,7 +75,7 @@ describe('UiPresenterSelectionService', () => {
 
     // Create service with mocks
     service = new UiPresenterSelectionService(
-      mockLogger as any,
+      mockLogger,
       mockCollaborationService as any,
       mockCollaborativeOperationService as any,
       mockUiPresenterCursorDisplayService as any,
@@ -108,14 +98,14 @@ describe('UiPresenterSelectionService', () => {
 
   describe('initialize()', () => {
     it('should initialize with graph and selection adapter', () => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
 
       expect(service.isInitialized).toBe(true);
       expect(mockGraph.on).toHaveBeenCalledWith('selection:changed', expect.any(Function));
     });
 
     it('should setup selection change listener', () => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
 
       expect(mockGraph.on).toHaveBeenCalledWith('selection:changed', expect.any(Function));
     });
@@ -132,7 +122,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('Selection Broadcasting', () => {
     beforeEach(() => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
     });
 
     it('should broadcast selection change when presenter mode is active', () => {
@@ -209,7 +199,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('handlePresenterSelectionUpdate()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
     });
 
     it('should apply selection update for non-presenter users', () => {
@@ -281,7 +271,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('broadcastCurrentSelection()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
     });
 
     it('should broadcast current selection when presenter mode active', () => {
@@ -309,7 +299,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('clearSelectionForNonPresenters()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
     });
 
     it('should clear selection for non-presenter users', () => {
@@ -349,7 +339,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('ngOnDestroy()', () => {
     it('should cleanup resources and reset state', () => {
-      service.initialize(mockGraph as any, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter as any);
 
       expect(service.isInitialized).toBe(true);
 

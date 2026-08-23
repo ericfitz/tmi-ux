@@ -9,21 +9,18 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { AbstractControl } from '@angular/forms';
 import { FormValidationService } from './form-validation.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
 
 describe('FormValidationService', () => {
   let service: FormValidationService;
-  let mockLogger: {
-    warn: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {
-      warn: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
-    service = new FormValidationService(mockLogger as any);
+    service = new FormValidationService(mockLogger);
   });
 
   describe('Service Initialization', () => {

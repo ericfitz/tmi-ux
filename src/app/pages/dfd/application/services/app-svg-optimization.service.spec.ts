@@ -8,6 +8,7 @@
 import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { AppSvgOptimizationService } from './app-svg-optimization.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVGO
 vi.mock('svgo/browser', () => ({
@@ -18,10 +19,7 @@ vi.mock('svgo/browser', () => ({
 
 describe('AppSvgOptimizationService', () => {
   let service: AppSvgOptimizationService;
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   const mockSvgString = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
@@ -33,13 +31,10 @@ describe('AppSvgOptimizationService', () => {
     vi.clearAllMocks();
 
     // Create mock logger
-    mockLogger = {
-      debugComponent: vi.fn(),
-      warn: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create service with mocks
-    service = new AppSvgOptimizationService(mockLogger as any);
+    service = new AppSvgOptimizationService(mockLogger);
   });
 
   describe('Service Initialization', () => {

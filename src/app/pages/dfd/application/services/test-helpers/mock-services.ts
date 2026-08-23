@@ -1,24 +1,34 @@
 /**
  * Shared mock services for DFD application service tests
  * Provides reusable mock implementations to reduce duplication
+ *
+ * Each factory returns `typeof stub & <the real type>`. The stubs implement only
+ * what the specs exercise, so they cannot satisfy the real types structurally —
+ * asserting once here is what lets the specs inject them without an `as any` at
+ * every constructor and call site, while the spy methods stay directly
+ * assertable (#870).
  */
 
 import { vi } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
-import type { Cell } from '@antv/x6';
+import type { Cell, Graph } from '@antv/x6';
+import type { AppStateService } from '../app-state.service';
+import type { AppHistoryService } from '../app-history.service';
+import type { AppOperationStateManager } from '../app-operation-state-manager.service';
+import type { AppDiagramService } from '../app-diagram.service';
+import type { InfraNodeConfigurationService } from '../../../infrastructure/services/infra-node-configuration.service';
+import type { InfraX6GraphAdapter } from '../../../infrastructure/adapters/infra-x6-graph.adapter';
+import {
+  createTypedMockLoggerService,
+  type MockLoggerService,
+} from '../../../../../../testing/mocks';
 
 /**
  * Create a mock LoggerService
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for LoggerService (pure)
-export function createMockLogger() {
-  return {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-    debugComponent: vi.fn(),
-  };
+export function createMockLogger(): MockLoggerService {
+  return createTypedMockLoggerService();
 }
 
 /**
@@ -26,7 +36,7 @@ export function createMockLogger() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for AppStateService with default idle state (pure)
 export function createMockAppStateService() {
-  return {
+  const stub = {
     getCurrentState: vi.fn(() => ({
       isApplyingRemoteChange: false,
       isBlockingOperations: false,
@@ -42,6 +52,7 @@ export function createMockAppStateService() {
       isApplyingUndoRedo: false,
     }),
   };
+  return stub as typeof stub & AppStateService;
 }
 
 /**
@@ -49,7 +60,7 @@ export function createMockAppStateService() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for AppHistoryService with empty undo/redo stacks (pure)
 export function createMockHistoryService() {
-  return {
+  const stub = {
     clear: vi.fn(),
     addHistoryEntry: vi.fn(),
     canUndo: vi.fn(() => false),
@@ -65,6 +76,7 @@ export function createMockHistoryService() {
       currentIndex: -1,
     })),
   };
+  return stub as typeof stub & AppHistoryService;
 }
 
 /**
@@ -72,10 +84,11 @@ export function createMockHistoryService() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for AppOperationStateManager drag-state tracking (pure)
 export function createMockOperationStateManager() {
-  return {
+  const stub = {
     setDragInProgress: vi.fn(),
     getDragInProgress: vi.fn(() => false),
   };
+  return stub as typeof stub & AppOperationStateManager;
 }
 
 /**
@@ -83,12 +96,13 @@ export function createMockOperationStateManager() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for AppDiagramService cell CRUD operations (pure)
 export function createMockDiagramService() {
-  return {
+  const stub = {
     loadDiagramCellsBatch: vi.fn(),
     createCell: vi.fn(),
     updateCell: vi.fn(),
     deleteCell: vi.fn(),
   };
+  return stub as typeof stub & AppDiagramService;
 }
 
 /**
@@ -96,13 +110,14 @@ export function createMockDiagramService() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for InfraNodeConfigurationService returning default node config (pure)
 export function createMockNodeConfigurationService() {
-  return {
+  const stub = {
     getNodeConfiguration: vi.fn(() => ({
       shape: 'process',
       size: { width: 100, height: 100 },
       ports: [],
     })),
   };
+  return stub as typeof stub & InfraNodeConfigurationService;
 }
 
 /**
@@ -110,12 +125,13 @@ export function createMockNodeConfigurationService() {
  */
 // SEM@784333e554874f7fa67bb4ceff5b013495877ea8: build a vitest spy stub for InfraX6GraphAdapter graph rendering methods (pure)
 export function createMockX6GraphAdapter() {
-  return {
+  const stub = {
     updateAllEmbeddingAppearances: vi.fn(),
     recalculateZOrder: vi.fn(),
     getGraph: vi.fn(),
     getCells: vi.fn(() => []),
   };
+  return stub as typeof stub & InfraX6GraphAdapter;
 }
 
 /**
@@ -123,7 +139,7 @@ export function createMockX6GraphAdapter() {
  */
 // SEM@4fb631d0431220cc47d07d47ff442af6cd5bcc57: build a vitest spy stub for an AntV X6 Graph instance (pure)
 export function createMockGraph() {
-  return {
+  const stub = {
     getCells: vi.fn((): Cell[] => []),
     clearCells: vi.fn(),
     addCell: vi.fn(),
@@ -134,4 +150,5 @@ export function createMockGraph() {
     off: vi.fn(),
     batchUpdate: vi.fn((callback: () => any) => callback()),
   };
+  return stub as typeof stub & Graph;
 }

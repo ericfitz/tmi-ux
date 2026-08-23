@@ -51,12 +51,12 @@ describe('AppDiagramLoadingService', () => {
 
     // Create service with mocks
     service = new AppDiagramLoadingService(
-      mockLogger as any,
-      mockNodeConfigurationService as any,
-      mockDiagramService as any,
-      mockOperationStateManager as any,
-      mockHistoryService as any,
-      mockAppStateService as any,
+      mockLogger,
+      mockNodeConfigurationService,
+      mockDiagramService,
+      mockOperationStateManager,
+      mockHistoryService,
+      mockAppStateService,
     );
   });
 
@@ -72,12 +72,7 @@ describe('AppDiagramLoadingService', () => {
 
   describe('loadCellsIntoGraph()', () => {
     it('should load cells with default options', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockDiagramService.loadDiagramCellsBatch).toHaveBeenCalledWith(
         mockCells,
@@ -92,15 +87,9 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should clear existing cells when clearExisting is true', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          clearExisting: true,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        clearExisting: true,
+      });
 
       expect(mockGraph.clearCells).toHaveBeenCalled();
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
@@ -110,26 +99,15 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should not clear cells when clearExisting is false', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          clearExisting: false,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        clearExisting: false,
+      });
 
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
     });
 
     it('should set and restore isApplyingRemoteChange flag', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(true);
       expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(false);
@@ -150,27 +128,16 @@ describe('AppDiagramLoadingService', () => {
         isApplyingUndoRedo: false,
       });
 
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       // Should be called once by getCurrentState check, but not restored
       expect(mockAppStateService.setApplyingRemoteChange).not.toHaveBeenCalled();
     });
 
     it('should update embedding appearances when updateEmbedding is true', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          updateEmbedding: true,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        updateEmbedding: true,
+      });
 
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).toHaveBeenCalled();
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
@@ -180,26 +147,15 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should not update embedding when updateEmbedding is false', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          updateEmbedding: false,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        updateEmbedding: false,
+      });
 
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).not.toHaveBeenCalled();
     });
 
     it('should always recalculate z-order after loading', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockX6GraphAdapter.recalculateZOrder).toHaveBeenCalled();
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
@@ -209,12 +165,7 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should zoom to fit when cells are loaded', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockGraph.zoomToFit).toHaveBeenCalledWith({ padding: 20, maxScale: 1.25 });
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
@@ -224,18 +175,13 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should not zoom to fit when no cells are loaded', () => {
-      service.loadCellsIntoGraph([], mockGraph as any, 'diagram-123', mockX6GraphAdapter as any);
+      service.loadCellsIntoGraph([], mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockGraph.zoomToFit).not.toHaveBeenCalled();
     });
 
     it('should clear history service after loading', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockHistoryService.clear).toHaveBeenCalled();
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
@@ -245,15 +191,9 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should log source when provided', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          source: 'initial-load',
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        source: 'initial-load',
+      });
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdDiagram',
@@ -265,12 +205,7 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should use "unknown" as default source', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdDiagram',
@@ -282,12 +217,7 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should log cell information before loading', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdDiagram',
@@ -311,12 +241,7 @@ describe('AppDiagramLoadingService', () => {
         { id: 'cell3' } as any,
       ]);
 
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'AppDiagramLoadingService',
@@ -336,12 +261,7 @@ describe('AppDiagramLoadingService', () => {
       });
 
       expect(() => {
-        service.loadCellsIntoGraph(
-          mockCells,
-          mockGraph as any,
-          'diagram-123',
-          mockX6GraphAdapter as any,
-        );
+        service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
       }).toThrow('Loading failed');
 
       // Verify cleanup happened despite error
@@ -355,12 +275,7 @@ describe('AppDiagramLoadingService', () => {
       });
 
       expect(() => {
-        service.loadCellsIntoGraph(
-          mockCells,
-          mockGraph as any,
-          'diagram-123',
-          mockX6GraphAdapter as any,
-        );
+        service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
       }).toThrow('Loading failed');
 
       expect(mockLogger.error).toHaveBeenCalledWith('Error loading diagram cells', error);
@@ -372,12 +287,7 @@ describe('AppDiagramLoadingService', () => {
       });
 
       expect(() => {
-        service.loadCellsIntoGraph(
-          mockCells,
-          mockGraph as any,
-          'diagram-123',
-          mockX6GraphAdapter as any,
-        );
+        service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
       }).toThrow('Loading failed');
     });
 
@@ -393,12 +303,7 @@ describe('AppDiagramLoadingService', () => {
       });
 
       expect(() => {
-        service.loadCellsIntoGraph(
-          mockCells,
-          mockGraph as any,
-          'diagram-123',
-          mockX6GraphAdapter as any,
-        );
+        service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
       }).toThrow('Loading failed');
 
       // Should not call setApplyingRemoteChange at all
@@ -408,7 +313,7 @@ describe('AppDiagramLoadingService', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty cell array', () => {
-      service.loadCellsIntoGraph([], mockGraph as any, 'diagram-123', mockX6GraphAdapter as any);
+      service.loadCellsIntoGraph([], mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockDiagramService.loadDiagramCellsBatch).toHaveBeenCalledWith(
         [],
@@ -422,12 +327,7 @@ describe('AppDiagramLoadingService', () => {
     it('should handle cells with minimal properties', () => {
       const minimalCells = [{ id: 'cell1', shape: 'process' }];
 
-      service.loadCellsIntoGraph(
-        minimalCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(minimalCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(mockDiagramService.loadDiagramCellsBatch).toHaveBeenCalledWith(
         minimalCells,
@@ -438,16 +338,10 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should handle all options set to false', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          clearExisting: false,
-          updateEmbedding: false,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        clearExisting: false,
+        updateEmbedding: false,
+      });
 
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).not.toHaveBeenCalled();
@@ -456,16 +350,10 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should handle all options set to true', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          clearExisting: true,
-          updateEmbedding: true,
-        },
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter, {
+        clearExisting: true,
+        updateEmbedding: true,
+      });
 
       expect(mockGraph.clearCells).toHaveBeenCalled();
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).toHaveBeenCalled();
@@ -484,12 +372,7 @@ describe('AppDiagramLoadingService', () => {
         callOrder.push('load');
       });
 
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 
       expect(callOrder).toEqual(['remote:true', 'load', 'remote:false']);
     });
@@ -500,12 +383,7 @@ describe('AppDiagramLoadingService', () => {
       });
 
       expect(() => {
-        service.loadCellsIntoGraph(
-          mockCells,
-          mockGraph as any,
-          'diagram-123',
-          mockX6GraphAdapter as any,
-        );
+        service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
       }).toThrow('Embedding update failed');
 
       // State should still be restored

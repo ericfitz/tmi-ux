@@ -9,7 +9,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { InfraEmbeddingService } from './infra-embedding.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 
@@ -75,7 +74,7 @@ describe('InfraEmbeddingService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new InfraEmbeddingService(mockLogger as unknown as LoggerService);
+    service = new InfraEmbeddingService(mockLogger);
 
     // Create container
     container = document.createElement('div');

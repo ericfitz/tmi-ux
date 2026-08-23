@@ -118,7 +118,7 @@ describe('ChatPageComponent', () => {
       mockRoute as any,
       mockRouter as any,
       mockTimmyChat as any,
-      mockLogger as any,
+      mockLogger,
       mockCdr as any,
       mockTransloco as any,
       mockThreatModelService as any,

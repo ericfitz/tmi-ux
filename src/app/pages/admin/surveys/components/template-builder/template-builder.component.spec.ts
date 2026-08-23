@@ -105,7 +105,7 @@ describe('TemplateBuilderComponent - Delete', () => {
       mockRoute as never,
       mockRouter as never,
       mockSurveyService as never,
-      mockLogger as never,
+      mockLogger,
       mockTransloco as never,
       mockSnackBar as never,
     );
@@ -235,7 +235,7 @@ describe('TemplateBuilderComponent - Builder', () => {
       mockRoute as never,
       mockRouter as never,
       mockSurveyService as never,
-      mockLogger as never,
+      mockLogger,
       mockTransloco as never,
       mockSnackBar as never,
     );

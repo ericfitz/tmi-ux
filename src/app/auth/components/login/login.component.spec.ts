@@ -12,6 +12,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { Params } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { OAuthProviderInfo, SAMLProviderInfo } from '../../models/auth.models';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -22,12 +23,7 @@ describe('LoginComponent', () => {
   };
   let mockRoute: { queryParams: BehaviorSubject<Params> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    debugComponent: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockDialog: { open: ReturnType<typeof vi.fn> };
   let mockCdr: { markForCheck: ReturnType<typeof vi.fn>; detectChanges: ReturnType<typeof vi.fn> };
 
@@ -86,12 +82,7 @@ describe('LoginComponent', () => {
       navigate: vi.fn().mockResolvedValue(true),
     };
 
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debugComponent: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     mockDialog = {
       open: vi.fn().mockReturnValue({
@@ -111,7 +102,7 @@ describe('LoginComponent', () => {
       mockAuthService as any,
       mockRoute as any,
       mockRouter as any,
-      mockLogger as any,
+      mockLogger,
       mockDialog as any,
       mockCdr as any,
     );

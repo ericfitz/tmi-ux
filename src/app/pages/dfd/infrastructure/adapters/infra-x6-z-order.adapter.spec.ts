@@ -127,9 +127,9 @@ describe('InfraX6ZOrderAdapter', () => {
 
     // Create mock logger and real services
     mockLogger = createTypedMockLoggerService();
-    zOrderService = new ZOrderService(mockLogger as any);
-    historyCoordinator = new AppOperationStateManager(mockLogger as any);
-    adapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService, historyCoordinator);
+    zOrderService = new ZOrderService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
+    adapter = new InfraX6ZOrderAdapter(mockLogger, zOrderService, historyCoordinator);
   });
 
   afterEach(() => {

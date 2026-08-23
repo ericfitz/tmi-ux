@@ -8,13 +8,11 @@
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { AppExportService } from './app-export.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 
 describe('AppExportService', () => {
   let service: AppExportService;
-  let mockLogger: {
-    warn: ReturnType<typeof vi.fn>;
-    debugComponent: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockSvgOptimizationService: {
     optimizeForThumbnail: ReturnType<typeof vi.fn>;
     optimizeForExport: ReturnType<typeof vi.fn>;
@@ -28,10 +26,7 @@ describe('AppExportService', () => {
     vi.clearAllMocks();
 
     // Create mock logger
-    mockLogger = {
-      warn: vi.fn(),
-      debugComponent: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create mock SVG optimization service
     mockSvgOptimizationService = {
@@ -51,7 +46,7 @@ describe('AppExportService', () => {
     };
 
     // Create service with mocks
-    service = new AppExportService(mockLogger as any, mockSvgOptimizationService as any);
+    service = new AppExportService(mockLogger, mockSvgOptimizationService as any);
   });
 
   afterEach(() => {
@@ -66,7 +61,7 @@ describe('AppExportService', () => {
 
   describe('prepareImageExport()', () => {
     it('should prepare export with default padding', () => {
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result).toBeDefined();
       expect(result?.bbox).toEqual({
@@ -85,7 +80,7 @@ describe('AppExportService', () => {
     });
 
     it('should prepare export with custom padding', () => {
-      const result = service.prepareImageExport(mockGraph as any, 50);
+      const result = service.prepareImageExport(mockGraph, 50);
 
       expect(result?.viewBox).toBe('50 50 500 400');
       expect(result?.exportOptions.padding).toBe(50);
@@ -99,13 +94,13 @@ describe('AppExportService', () => {
         height: 600,
       });
 
-      const result = service.prepareImageExport(mockGraph as any, 10);
+      const result = service.prepareImageExport(mockGraph, 10);
 
       expect(result?.viewBox).toBe('-10 -10 820 620');
     });
 
     it('should strip interactive tool overlays via beforeSerialize', () => {
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       const removeButton = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -125,7 +120,7 @@ describe('AppExportService', () => {
     it('should return null if no cells to export', () => {
       mockGraph.getCells.mockReturnValue([]);
 
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('No cells to export');
@@ -134,7 +129,7 @@ describe('AppExportService', () => {
     it('should return null if bounding box is not available', () => {
       mockGraph.getCellsBBox.mockReturnValue(null);
 
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('Could not get bounding box for cells');
@@ -148,7 +143,7 @@ describe('AppExportService', () => {
         height: 300,
       });
 
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result?.viewBox).toBe('');
       expect(result?.exportOptions.viewBox).toBeUndefined();
@@ -166,7 +161,7 @@ describe('AppExportService', () => {
         height: 300,
       });
 
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result?.viewBox).toBe('');
       expect(mockLogger.warn).toHaveBeenCalledWith(
@@ -184,7 +179,7 @@ describe('AppExportService', () => {
         height: 300,
       });
 
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       // The viewBox will contain 'NaN' which triggers the validation
       expect(result?.viewBox).toBe('');
@@ -195,7 +190,7 @@ describe('AppExportService', () => {
     });
 
     it('should log debug information for valid export', () => {
-      service.prepareImageExport(mockGraph as any);
+      service.prepareImageExport(mockGraph);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'AppExportService',
@@ -318,19 +313,19 @@ describe('AppExportService', () => {
 
   describe('Export Options', () => {
     it('should set copyStyles to false', () => {
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result?.exportOptions.copyStyles).toBe(false);
     });
 
     it('should set preserveAspectRatio to xMidYMid meet', () => {
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       expect(result?.exportOptions.preserveAspectRatio).toBe('xMidYMid meet');
     });
 
     it('should not include viewBox in export options', () => {
-      const result = service.prepareImageExport(mockGraph as any);
+      const result = service.prepareImageExport(mockGraph);
 
       // viewBox should not be in exportOptions to avoid duplicates
       expect(result?.exportOptions.viewBox).toBeUndefined();
@@ -346,7 +341,7 @@ describe('AppExportService', () => {
         height: 300,
       });
 
-      const result = service.prepareImageExport(mockGraph as any, 10);
+      const result = service.prepareImageExport(mockGraph, 10);
 
       expect(result?.viewBox).toBe('90 90 20 320');
     });
@@ -359,7 +354,7 @@ describe('AppExportService', () => {
         height: 0,
       });
 
-      const result = service.prepareImageExport(mockGraph as any, 10);
+      const result = service.prepareImageExport(mockGraph, 10);
 
       expect(result?.viewBox).toBe('90 90 420 20');
     });
@@ -372,20 +367,20 @@ describe('AppExportService', () => {
         height: 300,
       });
 
-      const result = service.prepareImageExport(mockGraph as any, 10);
+      const result = service.prepareImageExport(mockGraph, 10);
 
       expect(result?.viewBox).toBe('-60 -60 420 320');
     });
 
     it('should handle zero padding', () => {
-      const result = service.prepareImageExport(mockGraph as any, 0);
+      const result = service.prepareImageExport(mockGraph, 0);
 
       expect(result?.viewBox).toBe('100 100 400 300');
       expect(result?.exportOptions.padding).toBe(0);
     });
 
     it('should handle large padding values', () => {
-      const result = service.prepareImageExport(mockGraph as any, 100);
+      const result = service.prepareImageExport(mockGraph, 100);
 
       expect(result?.viewBox).toBe('0 0 600 500');
       expect(result?.exportOptions.padding).toBe(100);

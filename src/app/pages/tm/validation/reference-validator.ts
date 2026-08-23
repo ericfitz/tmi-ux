@@ -17,8 +17,13 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
    * Validate that all references are consistent within the threat model
    */
   // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate all internal references within a threat model and return errors (pure)
-  validateReferences(threatModel: ThreatModel, context: ValidationContext): ValidationError[] {
+  validateReferences(input: unknown, context: ValidationContext): ValidationError[] {
     this.clearErrors();
+
+    // `unknown` in, per the ReferenceValidator contract — the guard below is what
+    // this method is for, so it must run on a value the compiler has not vouched
+    // for. Narrow once here (#867, #870).
+    const threatModel = input as ThreatModel;
 
     if (!threatModel || typeof threatModel !== 'object') {
       this.addError(

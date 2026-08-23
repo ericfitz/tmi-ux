@@ -10,7 +10,6 @@ import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { ThreatModelValidatorService } from './threat-model-validator.service';
-import { LoggerService } from '../../../core/services/logger.service';
 import { ValidationConfig } from './types';
 import {
   createTestAuthorization,
@@ -35,7 +34,7 @@ describe('ThreatModelValidatorService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create the service directly with mocked dependencies
-    service = new ThreatModelValidatorService(mockLogger as unknown as LoggerService);
+    service = new ThreatModelValidatorService(mockLogger);
   });
 
   it('should be created', () => {

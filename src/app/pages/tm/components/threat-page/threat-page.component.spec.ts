@@ -194,7 +194,7 @@ describe('ThreatPageComponent', () => {
       fb,
       snackBar as any,
       dialog as any,
-      loggerService as any,
+      loggerService,
       languageService as any,
       translocoService as any,
       threatModelService as any,

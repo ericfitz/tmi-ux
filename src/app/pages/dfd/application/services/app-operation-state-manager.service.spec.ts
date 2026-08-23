@@ -22,7 +22,7 @@ describe('AppOperationStateManager', () => {
     mockLogger = createMockLogger();
     mockGraph = createMockGraph();
 
-    service = new AppOperationStateManager(mockLogger as any);
+    service = new AppOperationStateManager(mockLogger);
   });
 
   afterEach(() => {
@@ -36,7 +36,7 @@ describe('AppOperationStateManager', () => {
     });
 
     it('should expose stateEvents$ observable', () => {
-      const newService = new AppOperationStateManager(mockLogger as any);
+      const newService = new AppOperationStateManager(mockLogger);
       expect(newService.stateEvents$).toBeDefined();
       newService.dispose();
     });
@@ -263,7 +263,7 @@ describe('AppOperationStateManager', () => {
       service.stateEvents$.subscribe(event => events.push(event));
 
       const operation = vi.fn(() => 'result');
-      const result = service.executeRemoteOperation(mockGraph as any, operation);
+      const result = service.executeRemoteOperation(mockGraph, operation);
 
       expect(result).toBe('result');
       expect(events).toHaveLength(2);
@@ -276,7 +276,7 @@ describe('AppOperationStateManager', () => {
       service.stateEvents$.subscribe(event => events.push(event));
 
       expect(() => {
-        service.executeRemoteOperation(mockGraph as any, () => {
+        service.executeRemoteOperation(mockGraph, () => {
           throw new Error('Operation failed');
         });
       }).toThrow('Operation failed');
@@ -290,7 +290,7 @@ describe('AppOperationStateManager', () => {
       const events: any[] = [];
       service.stateEvents$.subscribe(event => events.push(event));
 
-      service.executeRemoteOperation(mockGraph as any, () => 'result');
+      service.executeRemoteOperation(mockGraph, () => 'result');
 
       expect(events[0].timestamp).toBeDefined();
       expect(events[1].timestamp).toBeDefined();
@@ -301,7 +301,7 @@ describe('AppOperationStateManager', () => {
     it('should execute atomic operation with batchUpdate', () => {
       const operation = vi.fn(() => 'result');
 
-      const result = service.executeAtomicOperation(mockGraph as any, operation, 'node-create');
+      const result = service.executeAtomicOperation(mockGraph, operation, 'node-create');
 
       expect(result).toBe('result');
       expect(mockGraph.batchUpdate).toHaveBeenCalled();
@@ -310,7 +310,7 @@ describe('AppOperationStateManager', () => {
     it('should execute compound operation with batchUpdate', () => {
       const operation = vi.fn(() => 'result');
 
-      const result = service.executeCompoundOperation(mockGraph as any, operation, 'multi-delete');
+      const result = service.executeCompoundOperation(mockGraph, operation, 'multi-delete');
 
       expect(result).toBe('result');
       expect(mockGraph.batchUpdate).toHaveBeenCalled();
@@ -319,11 +319,7 @@ describe('AppOperationStateManager', () => {
     it('should execute finalize drag operation with batchUpdate', () => {
       const operation = vi.fn(() => 'result');
 
-      const result = service.executeFinalizeDragOperation(
-        mockGraph as any,
-        operation,
-        'node-move-final',
-      );
+      const result = service.executeFinalizeDragOperation(mockGraph, operation, 'node-move-final');
 
       expect(result).toBe('result');
       expect(mockGraph.batchUpdate).toHaveBeenCalled();
@@ -332,7 +328,7 @@ describe('AppOperationStateManager', () => {
     it('should execute visual effect directly', () => {
       const operation = vi.fn();
 
-      service.executeVisualEffect(mockGraph as any, operation);
+      service.executeVisualEffect(mockGraph, operation);
 
       expect(operation).toHaveBeenCalled();
       expect(mockGraph.batchUpdate).not.toHaveBeenCalled();
@@ -341,7 +337,7 @@ describe('AppOperationStateManager', () => {
     it('should execute atomic transaction', () => {
       const operation = vi.fn(() => 'result');
 
-      const result = service.executeAtomicTransaction(mockGraph as any, operation, 'transaction');
+      const result = service.executeAtomicTransaction(mockGraph, operation, 'transaction');
 
       expect(result).toBe('result');
       expect(operation).toHaveBeenCalled();
@@ -436,7 +432,7 @@ describe('AppOperationStateManager', () => {
 
   describe('Edge Cases', () => {
     it('should handle drag tracking without AppStateService', () => {
-      const newService = new AppOperationStateManager(mockLogger as any);
+      const newService = new AppOperationStateManager(mockLogger);
 
       newService.startDragTracking('cell-1', 'move', { position: { x: 100, y: 200 } });
 
@@ -444,9 +440,9 @@ describe('AppOperationStateManager', () => {
     });
 
     it('should handle executeRemoteOperation without AppStateService', () => {
-      const newService = new AppOperationStateManager(mockLogger as any);
+      const newService = new AppOperationStateManager(mockLogger);
 
-      const result = newService.executeRemoteOperation(mockGraph as any, () => 'result');
+      const result = newService.executeRemoteOperation(mockGraph, () => 'result');
 
       expect(result).toBe('result');
     });

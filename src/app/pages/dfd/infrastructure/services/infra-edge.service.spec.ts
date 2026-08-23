@@ -9,7 +9,6 @@
 import { Graph, Node, Edge } from '@antv/x6';
 import { InfraEdgeService } from './infra-edge.service';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
@@ -42,20 +41,12 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create real service instances for integration testing
-    queryService = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
-    portStateManager = new InfraPortStateService(
-      queryService,
-      mockLogger as unknown as LoggerService,
-    );
-    x6CoreOps = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
+    queryService = new InfraEdgeQueryService(mockLogger);
+    portStateManager = new InfraPortStateService(queryService, mockLogger);
+    x6CoreOps = new InfraX6CoreOperationsService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
     // Create InfraEdgeService with real port management services
-    service = new InfraEdgeService(
-      mockLogger as unknown as LoggerService,
-      portStateManager,
-      x6CoreOps,
-      historyCoordinator,
-    );
+    service = new InfraEdgeService(mockLogger, portStateManager, x6CoreOps, historyCoordinator);
 
     // Create real X6 graph instance
     const container = document.createElement('div');

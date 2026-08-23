@@ -129,7 +129,7 @@ describe('AuditTrailPageComponent', () => {
       router as any,
       auditTrailService as any,
       languageService as any,
-      loggerService as any,
+      loggerService,
       destroyRef as any,
     );
   });

@@ -20,8 +20,13 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
    * Validate a diagram object
    */
   // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate a diagram object, its type, and all cells; return validation errors (pure)
-  validate(diagram: Diagram, context: ValidationContext): ValidationError[] {
+  validate(input: unknown, context: ValidationContext): ValidationError[] {
     this.clearErrors();
+
+    // `unknown` in, per the DiagramValidator contract — the checks below are the
+    // whole point of the method, so they must run on values the compiler has not
+    // vouched for. Narrow once here (#867, #870).
+    const diagram = input as Diagram;
 
     if (!diagram || typeof diagram !== 'object') {
       this.addError(
@@ -75,7 +80,7 @@ abstract class BaseDiagramValidator extends BaseValidator implements DiagramVali
    * Validate cells within the diagram (to be implemented by subclasses)
    */
   // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate all cells in a diagram and return collected errors (pure)
-  abstract validateCells(cells: Cell[], context: ValidationContext): ValidationError[];
+  abstract validateCells(cells: unknown[], context: ValidationContext): ValidationError[];
 
   /**
    * Perform diagram type-specific validation (to be implemented by subclasses)
@@ -106,8 +111,9 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   versionPattern = /^DFD-1\.0\.\d+$/;
 
   // SEM@3a2d6a8a032ee67d73aceada4a0db1f271b6cf2c: validate each DFD cell and cross-cell relationships; return all errors (pure)
-  validateCells(cells: Cell[], context: ValidationContext): ValidationError[] {
+  validateCells(input: unknown[], context: ValidationContext): ValidationError[] {
     const errors: ValidationError[] = [];
+    const cells = input as Cell[];
 
     if (!Array.isArray(cells)) {
       errors.push(

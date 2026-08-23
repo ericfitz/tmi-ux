@@ -98,7 +98,7 @@ describe('DfdDiagramValidator', () => {
     });
 
     it('should reject null diagram', () => {
-      const errors = validator.validate(null as any, baseContext);
+      const errors = validator.validate(null, baseContext);
       expect(hasError(errors, 'INVALID_DIAGRAM')).toBe(true);
     });
 
@@ -155,12 +155,13 @@ describe('DfdDiagramValidator', () => {
     });
 
     it('should reject null cell', () => {
-      const errors = validator.validateCells([null as any], baseContext);
+      const errors = validator.validateCells([null], baseContext);
       expect(hasError(errors, 'INVALID_CELL')).toBe(true);
     });
 
     it('should reject non-array cells', () => {
-      const errors = validator.validateCells('not-an-array' as any, baseContext);
+      // Deliberately not an array, to exercise the INVALID_CELLS guard.
+      const errors = validator.validateCells('not-an-array' as unknown as unknown[], baseContext);
       expect(hasError(errors, 'INVALID_CELLS')).toBe(true);
     });
 
@@ -239,7 +240,8 @@ describe('DfdDiagramValidator', () => {
 
     it('should reject nested position with non-numeric coordinates', () => {
       const cell = validNodeCell(validUUID, {
-        position: { x: 'abc' as any, y: 100 },
+        // Deliberately non-numeric, to exercise the INVALID_POSITION guard.
+        position: { x: 'abc' as unknown as number, y: 100 },
       });
       const errors = validator.validateCells([cell], baseContext);
       expect(hasError(errors, 'INVALID_POSITION')).toBe(true);
@@ -293,7 +295,8 @@ describe('DfdDiagramValidator', () => {
 
     it('should reject nested size with non-numeric dimensions', () => {
       const cell = validNodeCell(validUUID, {
-        size: { width: 'big' as any, height: 60 },
+        // Deliberately non-numeric, to exercise the INVALID_SIZE guard.
+        size: { width: 'big' as unknown as number, height: 60 },
       });
       const errors = validator.validateCells([cell], baseContext);
       expect(hasError(errors, 'INVALID_SIZE')).toBe(true);
@@ -348,7 +351,8 @@ describe('DfdDiagramValidator', () => {
       const cell: Cell = {
         id: validUUID,
         shape: 'flow',
-        source: { notCell: 'foo' } as any,
+        // Deliberately not a cell reference, to exercise the edge-source guard.
+        source: { notCell: 'foo' } as unknown as Cell['source'],
         target: validUUID2,
       };
       const errors = validator.validateCells([cell], baseContext);

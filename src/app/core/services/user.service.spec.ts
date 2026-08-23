@@ -8,7 +8,6 @@ import { of, throwError } from 'rxjs';
 
 import { UserService, DeleteChallengeResponse } from './user.service';
 import { ApiService } from './api.service';
-import { LoggerService } from './logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../testing/mocks';
 
 // Mock interfaces
@@ -32,10 +31,7 @@ describe('UserService', () => {
 
     loggerService = createTypedMockLoggerService();
 
-    service = new UserService(
-      apiService as unknown as ApiService,
-      loggerService as unknown as LoggerService,
-    );
+    service = new UserService(apiService as unknown as ApiService, loggerService);
   });
 
   it('should be created', () => {

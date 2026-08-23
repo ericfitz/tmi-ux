@@ -29,10 +29,14 @@ export function createMockLoggerService(): LoggerService {
 }
 
 /**
- * Type-safe interface for the mock LoggerService
- * Use this type when you need to access the mock functions directly
+ * Type-safe view of the mock LoggerService.
+ *
+ * Intersected with `LoggerService` so one value serves both jobs: it can be
+ * handed to a constructor that wants a real LoggerService, and its methods still
+ * read as vitest spies for assertions. Without the intersection every injection
+ * site needed an `as any` (#870).
  */
-export interface MockLoggerService {
+export type MockLoggerService = LoggerService & {
   info: ReturnType<typeof vi.fn>;
   debug: ReturnType<typeof vi.fn>;
   debugComponent: ReturnType<typeof vi.fn>;
@@ -42,7 +46,7 @@ export interface MockLoggerService {
   getLogEntries: ReturnType<typeof vi.fn>;
   exportAsJsonl: ReturnType<typeof vi.fn>;
   downloadLog: ReturnType<typeof vi.fn>;
-}
+};
 
 /**
  * Creates a typed mock LoggerService that allows easy access to mock functions

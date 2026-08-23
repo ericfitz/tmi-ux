@@ -8,7 +8,6 @@
 
 import { Node, Edge } from '@antv/x6';
 import { ZOrderService } from './infra-z-order.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 
@@ -35,7 +34,7 @@ describe('ZOrderService', () => {
   beforeEach(() => {
     mockLogger = createTypedMockLoggerService();
 
-    service = new ZOrderService(mockLogger as unknown as LoggerService);
+    service = new ZOrderService(mockLogger);
   });
 
   it('should be created', () => {

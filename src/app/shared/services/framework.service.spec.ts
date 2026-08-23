@@ -10,16 +10,14 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, throwError, lastValueFrom } from 'rxjs';
 import { FrameworkService } from './framework.service';
 import { Framework } from '../models/framework.model';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
 
 describe('FrameworkService', () => {
   let service: FrameworkService;
   let mockHttp: {
     get: ReturnType<typeof vi.fn>;
   };
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   const mockStrideFramework: Framework = {
     'framework-name': 'STRIDE',
@@ -45,12 +43,9 @@ describe('FrameworkService', () => {
       get: vi.fn(),
     };
 
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
-    service = new FrameworkService(mockHttp as any, mockLogger as any);
+    service = new FrameworkService(mockHttp as any, mockLogger);
   });
 
   describe('Service Initialization', () => {

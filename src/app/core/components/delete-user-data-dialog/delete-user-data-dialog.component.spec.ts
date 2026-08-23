@@ -11,7 +11,6 @@ import {
   DeleteUserDataDialogData,
 } from './delete-user-data-dialog.component';
 import { UserService, DeleteChallengeResponse } from '../../services/user.service';
-import { LoggerService } from '../../services/logger.service';
 import { IAuthService } from '../../interfaces';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
 
@@ -63,7 +62,7 @@ describe('DeleteUserDataDialogComponent', () => {
       mockDialogData,
       authService as unknown as IAuthService,
       userService as unknown as UserService,
-      loggerService as unknown as LoggerService,
+      loggerService,
     );
   });
 

@@ -97,12 +97,12 @@ describe('InternalReferenceValidator', () => {
 
   describe('validateReferences — invalid input', () => {
     it('should reject null threat model', () => {
-      const errors = validator.validateReferences(null as any, baseContext);
+      const errors = validator.validateReferences(null, baseContext);
       expect(hasError(errors, 'INVALID_THREAT_MODEL')).toBe(true);
     });
 
     it('should reject non-object threat model', () => {
-      const errors = validator.validateReferences('string' as any, baseContext);
+      const errors = validator.validateReferences('string', baseContext);
       expect(hasError(errors, 'INVALID_THREAT_MODEL')).toBe(true);
     });
   });

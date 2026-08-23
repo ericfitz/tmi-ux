@@ -108,16 +108,12 @@ describe('InfraX6EmbeddingAdapter', () => {
 
     // Create services
     mockLogger = createTypedMockLoggerService();
-    infraEmbeddingService = new InfraEmbeddingService(mockLogger as any);
-    zOrderService = new ZOrderService(mockLogger as any);
-    historyCoordinator = new AppOperationStateManager(mockLogger as any);
-    infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(
-      mockLogger as any,
-      zOrderService,
-      historyCoordinator,
-    );
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger);
+    zOrderService = new ZOrderService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
+    infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(mockLogger, zOrderService, historyCoordinator);
     adapter = new InfraX6EmbeddingAdapter(
-      mockLogger as any,
+      mockLogger,
       infraEmbeddingService,
       infraX6ZOrderAdapter,
       historyCoordinator,

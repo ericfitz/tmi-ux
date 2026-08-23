@@ -9,6 +9,7 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NotificationService } from './notification.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -16,10 +17,7 @@ describe('NotificationService', () => {
     open: ReturnType<typeof vi.fn>;
     dismiss: ReturnType<typeof vi.fn>;
   };
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockSnackBarRef: {
     onAction: ReturnType<typeof vi.fn>;
   };
@@ -46,13 +44,10 @@ describe('NotificationService', () => {
     };
 
     // Create mock logger
-    mockLogger = {
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create service with mocks
-    service = new NotificationService(mockSnackBar as any, mockLogger as any);
+    service = new NotificationService(mockSnackBar as any, mockLogger);
   });
 
   afterEach(() => {

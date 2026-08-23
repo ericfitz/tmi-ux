@@ -9,7 +9,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
@@ -69,7 +68,7 @@ describe('InfraEdgeQueryService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new InfraEdgeQueryService(mockLogger as unknown as LoggerService);
+    service = new InfraEdgeQueryService(mockLogger);
 
     // Create container
     container = document.createElement('div');

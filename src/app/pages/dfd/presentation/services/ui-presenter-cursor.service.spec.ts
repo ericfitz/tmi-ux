@@ -9,15 +9,12 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { UiPresenterCursorService } from './ui-presenter-cursor.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
+import type { Graph } from '@antv/x6';
 
 describe('UiPresenterCursorService', () => {
   let service: UiPresenterCursorService;
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    debugComponent: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockCollaborationService: {
     collaborationState$: BehaviorSubject<any>;
     isCurrentUserPresenter: ReturnType<typeof vi.fn>;
@@ -26,21 +23,15 @@ describe('UiPresenterCursorService', () => {
     sendPresenterCursor: ReturnType<typeof vi.fn>;
   };
   let mockGraphContainer: HTMLElement;
-  let mockGraph: {
-    clientToGraph: ReturnType<typeof vi.fn>;
-  };
+  // Partial X6 Graph: only the members these tests drive.
+  let mockGraph: Graph & { clientToGraph: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
 
     // Create mock logger
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debugComponent: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     // Create mock collaboration service
     mockCollaborationService = {
@@ -72,11 +63,11 @@ describe('UiPresenterCursorService', () => {
     // Create mock graph
     mockGraph = {
       clientToGraph: vi.fn((x: number, y: number) => ({ x, y })),
-    };
+    } as unknown as Graph & { clientToGraph: ReturnType<typeof vi.fn> };
 
     // Create service with mocks
     service = new UiPresenterCursorService(
-      mockLogger as any,
+      mockLogger,
       mockCollaborationService as any,
       mockCollaborativeOperationService as any,
     );
@@ -99,7 +90,7 @@ describe('UiPresenterCursorService', () => {
 
   describe('initialize()', () => {
     it('should initialize with graph container and graph', () => {
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       // Should not throw error
       expect(mockLogger.error).not.toHaveBeenCalled();
@@ -108,7 +99,7 @@ describe('UiPresenterCursorService', () => {
     it('should start tracking when presenter mode becomes active', () => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
 
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       // Activate presenter mode
       mockCollaborationService.collaborationState$.next({
@@ -122,7 +113,7 @@ describe('UiPresenterCursorService', () => {
     it('should not start tracking if user is not presenter', () => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(false);
 
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       // Activate presenter mode
       mockCollaborationService.collaborationState$.next({
@@ -135,7 +126,7 @@ describe('UiPresenterCursorService', () => {
     it('should stop tracking when presenter mode is deactivated', () => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
 
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       // Activate presenter mode
       mockCollaborationService.collaborationState$.next({
@@ -157,7 +148,7 @@ describe('UiPresenterCursorService', () => {
   describe('Mouse Event Handling', () => {
     beforeEach(() => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       // Activate presenter mode
       mockCollaborationService.collaborationState$.next({
@@ -237,7 +228,7 @@ describe('UiPresenterCursorService', () => {
   describe('Position Broadcasting', () => {
     beforeEach(() => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       mockCollaborationService.collaborationState$.next({
         isPresenterModeActive: true,
@@ -318,7 +309,7 @@ describe('UiPresenterCursorService', () => {
   describe('Mouse Event Validation', () => {
     beforeEach(() => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       mockCollaborationService.collaborationState$.next({
         isPresenterModeActive: true,
@@ -386,7 +377,7 @@ describe('UiPresenterCursorService', () => {
   describe('ngOnDestroy()', () => {
     it('should stop tracking and cleanup resources', () => {
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(true);
-      service.initialize(mockGraphContainer, mockGraph as any);
+      service.initialize(mockGraphContainer, mockGraph);
 
       mockCollaborationService.collaborationState$.next({
         isPresenterModeActive: true,

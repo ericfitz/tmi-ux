@@ -8,7 +8,6 @@
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { ArchitectureIconService } from './architecture-icon.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { ArchIconData, ArchIconManifest } from '../../types/arch-icon.types';
 
@@ -80,7 +79,7 @@ describe('ArchitectureIconService', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mockLogger = createTypedMockLoggerService();
-    service = new ArchitectureIconService(mockLogger as unknown as LoggerService);
+    service = new ArchitectureIconService(mockLogger);
   });
 
   describe('search before manifest loaded', () => {
