@@ -86,6 +86,8 @@ describe('JwtInterceptor', () => {
       handleAuthError: vi.fn(),
       logout: vi.fn(),
       userProfile: { provider: 'github', email: 'charlie@tmi.local' },
+      // Mirrors the real accessor, which is where the step-up login_hint comes from.
+      userEmail: 'charlie@tmi.local',
     };
 
     authService = mockAuthService as unknown as AuthService;

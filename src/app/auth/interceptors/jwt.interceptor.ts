@@ -156,7 +156,7 @@ export class JwtInterceptor implements HttpInterceptor {
       return throwError(() => originalError);
     }
     const providerId = this.authService.userProfile?.provider ?? '';
-    const loginHint = this.authService.userProfile?.email;
+    const loginHint = this.authService.userEmail;
     this.logger.info('Step-up challenge received - initiating step-up', {
       url: request.url,
       provider: providerId,

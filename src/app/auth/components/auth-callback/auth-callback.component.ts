@@ -219,10 +219,7 @@ export class AuthCallbackComponent implements OnInit {
             // without it the provider re-authenticates the same wrong account
             // and lands right back here (#883).
             this.stepUpService
-              .beginStepUp(
-                this.authService.userProfile?.provider ?? '',
-                this.authService.userProfile?.email,
-              )
+              .beginStepUp(this.authService.userProfile?.provider ?? '', this.authService.userEmail)
               .subscribe();
           }
         });

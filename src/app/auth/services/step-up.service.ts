@@ -63,6 +63,9 @@ export class StepUpService {
   // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: initiate step-up auth for a provider, deduplicating concurrent calls; return outcome observable (mutates shared state)
   public beginStepUp(providerId: string, loginHint?: string): Observable<StepUpOutcome> {
     if (this._inFlight$) {
+      // The in-flight flow keeps the login_hint the first caller supplied. Every
+      // caller reads it from the same auth profile, so a second caller cannot
+      // currently disagree; if one ever could, the dedup would silently win.
       return this._inFlight$;
     }
 

@@ -785,7 +785,7 @@ export class AuthService {
         state,
         pkceParams.codeChallenge,
         pkceParams.codeChallengeMethod,
-        { loginHint: this.userProfile?.email },
+        { loginHint: this.userEmail },
       );
       const stepUpUrl = buildStepUpUrl(environment.apiUrl, params);
 

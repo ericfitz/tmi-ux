@@ -171,9 +171,9 @@
 
   .x6-graph,
   .x6-graph-background {
-    background-color: var(
-      --color-background-lighter
-    ) !important; // Ensure X6 elements use same background as toolbar/collaboration
+    // Theme-invariant: the diagram's shapes and labels are written into the SVG
+    // as fixed colors, so the canvas behind them stays light in every theme.
+    background-color: var(--color-dfd-surface) !important;
   }
 
   // Grid dots use darker gray for better contrast against light background
