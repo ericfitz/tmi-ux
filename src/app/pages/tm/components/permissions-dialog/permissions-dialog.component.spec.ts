@@ -161,6 +161,7 @@ describe('PermissionsDialogComponent', () => {
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
         authorizationPrepare,
+        mockLogger as unknown as LoggerService,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();
@@ -812,6 +813,7 @@ describe('PermissionsDialogComponent', () => {
         mockProviderAdapter as unknown as ProviderAdapterService,
         mockAutocompleteService as unknown as PermissionsAutocompleteService,
         authorizationPrepare,
+        mockLogger as unknown as LoggerService,
       );
       component.permissionsTable = { renderRows: vi.fn() } as never;
       component.ngOnInit();

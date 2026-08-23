@@ -473,7 +473,7 @@ describe('ReadonlyFieldFilterService', () => {
     // validation"), discarding the whole permissions PATCH with it.
     it('should drop an empty email so the server can derive it', () => {
       const filtered = service.filterOwner({
-        principal_type: 'user',
+        principal_type: 'user' as const,
         provider: 'tmi',
         provider_id: 'test-reviewer',
         display_name: 'test-reviewer',
@@ -490,7 +490,7 @@ describe('ReadonlyFieldFilterService', () => {
 
     it('should drop a whitespace-only display_name', () => {
       const filtered = service.filterOwner({
-        principal_type: 'user',
+        principal_type: 'user' as const,
         provider: 'tmi',
         provider_id: 'test-reviewer',
         display_name: '   ',
@@ -507,7 +507,7 @@ describe('ReadonlyFieldFilterService', () => {
 
     it('should preserve a fully populated owner', () => {
       const owner = {
-        principal_type: 'user',
+        principal_type: 'user' as const,
         provider: 'google',
         provider_id: 'google-123',
         display_name: 'John Doe',
@@ -519,7 +519,7 @@ describe('ReadonlyFieldFilterService', () => {
 
     it('should not mutate the owner it was given', () => {
       const owner = {
-        principal_type: 'user',
+        principal_type: 'user' as const,
         provider: 'tmi',
         provider_id: 'test-reviewer',
         display_name: 'test-reviewer',
