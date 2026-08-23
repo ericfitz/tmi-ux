@@ -29,6 +29,73 @@ async function openDetailsKebab(page: import('@playwright/test').Page) {
 userTest.describe('TM Workflows - Single Role', () => {
   userTest.setTimeout(120000);
 
+  userTest('cancelling the permissions dialog reverts an owner change', async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    const permissionsFlow = new PermissionsFlow(userPage);
+    const permissionsDialog = new PermissionsDialog(userPage);
+    const testName = `E2E Owner Cancel TM ${Date.now()}`;
+
+    await tmFlow.createFromDashboard(testName);
+
+    // The TM needs a second *user* permission to have anything to promote: the
+    // set-owner button is disabled on the owner's own row and on group rows, and
+    // it reads provider_id/email off the row, which the server only fills in once
+    // the entry has been saved.
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'writer');
+
+    // Let the PATCH land before reopening, so the second dialog session cannot be
+    // disturbed by the response writing owner/modified_at back mid-test.
+    const tmUrl = new URL(userPage.url()).pathname.replace('/tm/', '/threat_models/');
+    const permissionsPatch = userPage
+      .waitForResponse(
+        response =>
+          response.request().method() === 'PATCH' && new URL(response.url()).pathname === tmUrl,
+        { timeout: 15000 },
+      )
+      .catch(() => null);
+    await permissionsFlow.saveAndClose();
+    const patchResponse = await permissionsPatch;
+    expect(patchResponse, 'no PATCH to the threat model was observed').not.toBeNull();
+    expect(patchResponse!.status(), 'permission PATCH was rejected').toBeLessThan(400);
+
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    // The owner renders as a display name, not the login: "Test User (TMI User)"
+    const originalOwner = await permissionsDialog.ownerText();
+    expect(originalOwner).toMatch(/Test User/i);
+
+    const reviewerRow = await permissionsDialog.rowIndexMatching(/^test-reviewer(@|$)/);
+    expect(reviewerRow, 'test-reviewer permission was not saved').toBeGreaterThanOrEqual(0);
+    await permissionsFlow.setOwner(reviewerRow);
+
+    // Assert the change actually landed before cancelling it. Without this the test
+    // would pass just as happily if the set-owner button did nothing at all.
+    await expect(permissionsDialog.ownerValue()).not.toHaveText(originalOwner);
+
+    await permissionsDialog.cancel();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
+
+    // Regression (#891): onOwnerChange wrote the new owner straight onto the threat
+    // model, but the PATCH only fires on save. Reopening has to show the original
+    // owner again without a reload.
+    await openDetailsKebab(userPage);
+    await userPage.getByTestId('tm-permissions-button').click();
+    await expect(permissionsDialog.ownerValue()).toHaveText(originalOwner);
+    await permissionsDialog.cancel();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
+
+    // Cleanup
+    await userPage.goto('/dashboard');
+    await userPage.waitForLoadState('networkidle');
+    try {
+      await tmFlow.deleteFromDashboard(testName);
+    } catch {
+      /* best effort */
+    }
+  });
+
   userTest('framework selection (STRIDE)', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const createDialog = new CreateTmDialog(userPage);
@@ -157,8 +224,7 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     const permissionsPatch = userPage
       .waitForResponse(
         response =>
-          response.request().method() === 'PATCH' &&
-          new URL(response.url()).pathname === tmUrl,
+          response.request().method() === 'PATCH' && new URL(response.url()).pathname === tmUrl,
         { timeout: 15000 },
       )
       .catch(() => null);

@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
@@ -63,8 +62,11 @@ export class ThreatsDialogComponent implements OnInit {
   dataSource = new MatTableDataSource<Threat>([]);
   displayedColumns: string[] = ['severity', 'description', 'actions'];
 
+  // Deliberately not sortable: deleteThreat() and the in-place row update below index
+  // dataSource.data by the *rendered* row index, and MatTableDataSource sorts a separate
+  // render copy — so those writes would hit the wrong row. See the same note in
+  // permissions-dialog and metadata-dialog.
   @ViewChild('threatsTable') threatsTable!: MatTable<Threat>;
-  @ViewChild('threatsSort') threatsSort!: MatSort;
 
   // SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: inject dialog, logger, threat model, framework, and translation dependencies (pure)
   constructor(

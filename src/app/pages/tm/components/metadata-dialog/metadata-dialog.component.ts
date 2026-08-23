@@ -7,7 +7,6 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -257,8 +256,10 @@ export class MetadataDialogComponent implements OnInit, OnDestroy {
   dataSource = new MatTableDataSource<Metadata>([]);
   displayedColumns: string[] = [];
 
+  // Deliberately not sortable: deleteItem() indexes dataSource.data by the *rendered*
+  // row index, and MatTableDataSource sorts a separate render copy — so a delete would
+  // remove the wrong row. This is a small editable form grid, not a data table.
   @ViewChild('metadataTable') metadataTable!: MatTable<Metadata>;
-  @ViewChild('metadataSort') metadataSort!: MatSort;
 
   private _subscriptions: Subscription = new Subscription();
 

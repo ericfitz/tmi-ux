@@ -1933,11 +1933,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Capture original state for rollback on error
+    // Capture original state for rollback on cancel or on a failed PATCH
     const originalAuthorizations: Authorization[] = this.threatModel.authorization
       ? (JSON.parse(JSON.stringify(this.threatModel.authorization)) as Authorization[])
       : [];
     const originalOwner: User = { ...this.threatModel.owner };
+    const originalModifiedAt = this.threatModel.modified_at;
 
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],
@@ -1962,7 +1963,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       dialogRef
         .afterClosed()
         .subscribe((result: { permissions: Authorization[]; owner: User } | undefined) => {
-          if (!result || !this.threatModel) {
+          if (!this.threatModel) {
+            return;
+          }
+
+          // onOwnerChange writes the new owner through the moment "set as owner" is
+          // clicked, but nothing is persisted until save. Cancelling has to put back
+          // what was on screen before the dialog opened, or the page shows an owner
+          // and a modified time the server never accepted until the next reload.
+          if (!result) {
+            this.threatModel.authorization = originalAuthorizations;
+            this.threatModel.owner = originalOwner;
+            this.threatModel.modified_at = originalModifiedAt;
             return;
           }
 
@@ -2008,6 +2020,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (this.threatModel) {
                   this.threatModel.authorization = originalAuthorizations;
                   this.threatModel.owner = originalOwner;
+                  this.threatModel.modified_at = originalModifiedAt;
                 }
 
                 // TODO: Show error notification to user

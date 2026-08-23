@@ -28,6 +28,7 @@ export class PermissionsDialog {
   readonly roleSelects = () => this.dialog.getByTestId('permissions-role-select');
   readonly deleteButtons = () => this.dialog.getByTestId('permissions-delete-button');
   readonly setOwnerButtons = () => this.dialog.getByTestId('permissions-set-owner-button');
+  readonly ownerValue = () => this.dialog.getByTestId('permissions-owner');
   readonly rows = () => this.dialog.locator('tr.mat-mdc-row');
 
   // SEM@bece9afbb4283fefea5c408379d798698a5459d8: fetch the principal-type select at the given row index (pure)
@@ -71,6 +72,12 @@ export class PermissionsDialog {
   // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: find the row index whose subject matches the pattern, or -1 when absent
   async rowIndexMatching(pattern: RegExp): Promise<number> {
     return (await this.subjectValues()).findIndex(value => pattern.test(value));
+  }
+
+  // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: read the owner name shown in the dialog header
+  async ownerText(): Promise<string> {
+    await this.ownerValue().waitFor({ state: 'visible', timeout: 10000 });
+    return (await this.ownerValue().innerText()).trim();
   }
 
   // SEM@94cbcab524fa83399b721d909b7dc4843b81e54a: read the localized role label shown on the row at the given index

@@ -21,10 +21,10 @@
 
   <mat-dialog-content class="dialog-content" appScrollIndicator>
     <div class="table-container">
-      <table mat-table [dataSource]="dataSource" class="metadata-table" matSort>
+      <table mat-table [dataSource]="dataSource" class="metadata-table">
         <!-- Key Column -->
         <ng-container matColumnDef="key">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'common.metadataKey' | transloco }}
           </th>
           <td mat-cell *matCellDef="let item; let i = index">
@@ -43,7 +43,7 @@
 
         <!-- Value Column -->
         <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'common.metadataValue' | transloco }}
           </th>
           <td mat-cell *matCellDef="let item; let i = index">
