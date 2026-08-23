@@ -501,6 +501,11 @@ describe('AuthService', () => {
       expect(window.location.href).toContain(`client_callback=${expectedCallback}`);
       expect(window.location.href).toContain('code_challenge=CH');
       expect(window.location.href).toContain('code_challenge_method=S256');
+      // Without login_hint the provider re-authenticates an arbitrary account and
+      // the callback loops on "Wrong account" (#883).
+      expect(window.location.href).toContain(
+        `login_hint=${encodeURIComponent('google@example.com')}`,
+      );
     });
   }); /* End of initiateStepUp describe block */
 

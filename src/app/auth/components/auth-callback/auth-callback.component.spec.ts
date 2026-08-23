@@ -595,7 +595,7 @@ describe('AuthCallbackComponent', () => {
       expect(sessionStorage.setItem).not.toHaveBeenCalled();
     });
 
-    it('calls beginStepUp with provider when user clicks Try again in mismatch dialog', async () => {
+    it('calls beginStepUp with provider and login_hint when user clicks Try again in mismatch dialog', async () => {
       (mockAuthService.decodeState as ReturnType<typeof vi.fn>).mockReturnValue({
         csrf: 'csrf-token',
         returnUrl: '/tm/list',
@@ -632,7 +632,9 @@ describe('AuthCallbackComponent', () => {
       // Simulate user clicking "Try again"
       afterClosedSubject.next(true);
 
-      expect(mockStepUpService.beginStepUp).toHaveBeenCalledWith('google');
+      // The email is the login_hint; without it the retry re-authenticates the same
+      // wrong account and lands back on this dialog (#883).
+      expect(mockStepUpService.beginStepUp).toHaveBeenCalledWith('google', 'user@example.com');
     });
 
     it('uses "/" as fallback target when returnUrl is missing or unsafe on identity_mismatch', async () => {

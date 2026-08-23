@@ -78,22 +78,47 @@ describe('buildStepUpState', () => {
 
 describe('buildStepUpRequestParams', () => {
   it('returns the 4 required keys', () => {
-    const p = buildStepUpRequestParams('mystate', 'challenge', 'S256', 'https://app.example.com');
+    const p = buildStepUpRequestParams('mystate', 'challenge', 'S256', {
+      origin: 'https://app.example.com',
+    });
     expect(Object.keys(p).sort()).toEqual(
       ['client_callback', 'code_challenge', 'code_challenge_method', 'state'].sort(),
     );
   });
 
   it('sets client_callback to origin/oauth2/callback', () => {
-    const p = buildStepUpRequestParams('s', 'c', 'S256', 'https://app.example.com');
+    const p = buildStepUpRequestParams('s', 'c', 'S256', { origin: 'https://app.example.com' });
     expect(p['client_callback']).toBe('https://app.example.com/oauth2/callback');
   });
 
   it('passes through state, challenge, and method unchanged', () => {
-    const p = buildStepUpRequestParams('mystate', 'mychallenge', 'S256', 'https://app.example.com');
+    const p = buildStepUpRequestParams('mystate', 'mychallenge', 'S256', {
+      origin: 'https://app.example.com',
+    });
     expect(p['state']).toBe('mystate');
     expect(p['code_challenge']).toBe('mychallenge');
     expect(p['code_challenge_method']).toBe('S256');
+  });
+
+  it('adds login_hint when the caller supplies one (#883)', () => {
+    const p = buildStepUpRequestParams('s', 'c', 'S256', {
+      origin: 'https://app.example.com',
+      loginHint: 'charlie@tmi.local',
+    });
+    expect(p['login_hint']).toBe('charlie@tmi.local');
+  });
+
+  it('omits login_hint entirely when the caller has no email', () => {
+    const p = buildStepUpRequestParams('s', 'c', 'S256', { origin: 'https://app.example.com' });
+    expect('login_hint' in p).toBe(false);
+  });
+
+  it('omits login_hint rather than sending an empty value', () => {
+    const p = buildStepUpRequestParams('s', 'c', 'S256', {
+      origin: 'https://app.example.com',
+      loginHint: '',
+    });
+    expect('login_hint' in p).toBe(false);
   });
 });
 

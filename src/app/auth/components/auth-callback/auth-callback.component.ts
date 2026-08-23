@@ -215,8 +215,14 @@ export class AuthCallbackComponent implements OnInit {
         .afterClosed()
         .subscribe((retry: boolean | undefined) => {
           if (retry) {
+            // The hint is what breaks the loop this dialog exists to report:
+            // without it the provider re-authenticates the same wrong account
+            // and lands right back here (#883).
             this.stepUpService
-              .beginStepUp(this.authService.userProfile?.provider ?? '')
+              .beginStepUp(
+                this.authService.userProfile?.provider ?? '',
+                this.authService.userProfile?.email,
+              )
               .subscribe();
           }
         });

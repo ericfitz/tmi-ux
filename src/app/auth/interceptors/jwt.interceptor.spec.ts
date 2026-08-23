@@ -85,7 +85,7 @@ describe('JwtInterceptor', () => {
       forceRefreshToken: vi.fn(),
       handleAuthError: vi.fn(),
       logout: vi.fn(),
-      userProfile: { provider: 'github' },
+      userProfile: { provider: 'github', email: 'charlie@tmi.local' },
     };
 
     authService = mockAuthService as unknown as AuthService;
@@ -718,7 +718,7 @@ describe('JwtInterceptor', () => {
       });
     });
 
-    it('should pass the user provider id to beginStepUp', async () => {
+    it('should pass the user provider id and email to beginStepUp', async () => {
       stepUpService.beginStepUp.mockReturnValue(of('cancelled'));
 
       const mockRequest = makeAdminRequest();
@@ -732,8 +732,9 @@ describe('JwtInterceptor', () => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
           next: () => expect(true).toBe(false),
           error: () => {
-            // mockAuthService.userProfile.provider = 'github'
-            expect(stepUpService.beginStepUp).toHaveBeenCalledWith('github');
+            // mockAuthService.userProfile = { provider: 'github', email: 'charlie@tmi.local' }.
+            // The email is the login_hint that keeps step-up on the same account (#883).
+            expect(stepUpService.beginStepUp).toHaveBeenCalledWith('github', 'charlie@tmi.local');
             resolve();
           },
         });

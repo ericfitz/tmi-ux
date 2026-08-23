@@ -51,13 +51,17 @@ export class StepUpService {
    * the same observable (via shareReplay(1)) is returned to all callers.
    *
    * @param providerId - The OAuth provider id (e.g. 'github', 'google')
+   * @param loginHint - Email of the account to re-authenticate. Callers must pass
+   *   it (this service deliberately has no AuthService dependency); without it a
+   *   provider that cannot infer the subject re-authenticates the wrong account
+   *   and the callback loops on "Wrong account" (#883).
    * @returns Observable<StepUpOutcome> emitting one of:
    *   - 'weak_complete'  — server short-circuited (user already step-up'd)
    *   - 'redirecting'    — user confirmed and browser is navigating to the IdP
    *   - 'cancelled'      — user dismissed the dialog, or an error occurred
    */
   // SEM@5d6ffa25a64745a8483f77e0c73e9c2589f1ac47: initiate step-up auth for a provider, deduplicating concurrent calls; return outcome observable (mutates shared state)
-  public beginStepUp(providerId: string): Observable<StepUpOutcome> {
+  public beginStepUp(providerId: string, loginHint?: string): Observable<StepUpOutcome> {
     if (this._inFlight$) {
       return this._inFlight$;
     }
@@ -72,6 +76,7 @@ export class StepUpService {
           state,
           pkceParams.codeChallenge,
           pkceParams.codeChallengeMethod,
+          { loginHint },
         );
 
         return this._http.get<StepUpResponse>(`${environment.apiUrl}/oauth2/step_up`, {
