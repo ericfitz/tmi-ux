@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -33,6 +33,7 @@
     "test:e2e:admin": "playwright test --project=admin",
     "test:e2e:google-drive": "playwright test --project=google-drive-live",
     "e2e:validate-schema": "uv run e2e/schema/validate-fields.py",
+    "e2e:clean": "node scripts/e2e-clean.mjs",
     "dev": "ng serve --open",
     "dev:test": "ng serve --configuration=test --open",
     "dev:e2e": "ng serve --configuration=e2e --open",
