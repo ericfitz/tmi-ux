@@ -19,6 +19,7 @@ import { NavbarComponent } from './navbar.component';
 import { ServerConnectionStatus } from '../../services/server-connection.service';
 import { WebSocketState } from '../../services/websocket.adapter';
 import { BrandingConfigService } from '../../services/branding-config.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -39,11 +40,7 @@ describe('NavbarComponent', () => {
     setLanguage: ReturnType<typeof vi.fn>;
   };
   let mockDialog: { open: ReturnType<typeof vi.fn> };
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockServerConnectionService: {
     connectionStatus$: BehaviorSubject<ServerConnectionStatus>;
   };
@@ -89,11 +86,7 @@ describe('NavbarComponent', () => {
 
     mockDialog = { open: vi.fn() };
 
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     mockServerConnectionService = {
       connectionStatus$: new BehaviorSubject<ServerConnectionStatus>(
@@ -143,7 +136,7 @@ describe('NavbarComponent', () => {
         mockAuthService as any,
         mockLanguageService as any,
         mockDialog as any,
-        mockLogger as any,
+        mockLogger,
         mockServerConnectionService as any,
         mockWebSocketAdapter as any,
         mockCollaborationService as any,

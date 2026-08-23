@@ -10,7 +10,6 @@ import '@angular/compiler';
 
 import { Cell, Node, Edge } from '@antv/x6';
 import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
@@ -82,7 +81,7 @@ describe('InfraVisualEffectsService', () => {
 
     // Create service instance with constructor injection
     service = new InfraVisualEffectsService(
-      mockLogger as unknown as LoggerService,
+      mockLogger,
       mockUserPreferencesService as unknown as UserPreferencesService,
     );
   });

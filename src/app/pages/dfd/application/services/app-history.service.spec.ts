@@ -13,15 +13,12 @@ import { AppHistoryService } from './app-history.service';
 import { HistoryEntry } from '../../types/history.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
 import { OperationContext } from '../../types/graph-operation.types';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
+import type { AppStateService } from './app-state.service';
 
 describe('AppHistoryService', () => {
   let service: AppHistoryService;
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockCollaborationService: {
     getCurrentUserEmail: ReturnType<typeof vi.fn>;
     isCollaborating: ReturnType<typeof vi.fn>;
@@ -29,7 +26,8 @@ describe('AppHistoryService', () => {
   let mockGraphOperationManager: {
     execute: ReturnType<typeof vi.fn>;
   };
-  let mockAppStateService: {
+  // Partial AppStateService: only the members these tests drive.
+  let mockAppStateService: AppStateService & {
     getCurrentState: ReturnType<typeof vi.fn>;
     setApplyingUndoRedo: ReturnType<typeof vi.fn>;
   };
@@ -84,12 +82,7 @@ describe('AppHistoryService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     mockCollaborationService = {
       getCurrentUserEmail: vi.fn(() => 'test@example.com'),
@@ -118,6 +111,9 @@ describe('AppHistoryService', () => {
         readOnly: false,
       })),
       setApplyingUndoRedo: vi.fn(),
+    } as unknown as AppStateService & {
+      getCurrentState: ReturnType<typeof vi.fn>;
+      setApplyingUndoRedo: ReturnType<typeof vi.fn>;
     };
 
     mockCellOperationConverter = {
@@ -137,10 +133,10 @@ describe('AppHistoryService', () => {
     };
 
     service = new AppHistoryService(
-      mockLogger as any,
+      mockLogger,
       mockCollaborationService as any,
       mockGraphOperationManager as any,
-      mockAppStateService as any,
+      mockAppStateService,
       mockCellOperationConverter as any,
     );
   });
@@ -346,10 +342,10 @@ describe('AppHistoryService', () => {
 
     it('should fail if not initialized', async () => {
       const uninitializedService = new AppHistoryService(
-        mockLogger as any,
+        mockLogger,
         mockCollaborationService as any,
         mockGraphOperationManager as any,
-        mockAppStateService as any,
+        mockAppStateService,
         mockCellOperationConverter as any,
       );
 

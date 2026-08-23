@@ -22,6 +22,7 @@ import { ThreatModelService } from '../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import type { ThreatModel, User } from '../models/threat-model.model';
+import { createTestUser } from '../../../../testing/mocks';
 
 // The resolver is typed as Angular's ResolveFn<ThreatModel | null>, whose return type is
 // the union `ThreatModel | null | RedirectCommand | Observable<...> | Promise<...>`. This
@@ -55,13 +56,11 @@ describe('threatModelResolver', () => {
   };
   let envInjector: EnvironmentInjector;
 
-  const mockUser: User = {
-    principal_type: 'user',
-    provider: 'test',
-    provider_id: 'user1',
+  const mockUser: User = createTestUser({
     email: 'user1@test.com',
+    provider_id: 'user1',
     display_name: 'Test User',
-  };
+  });
 
   const mockThreatModel: ThreatModel = {
     id: 'tm-123',

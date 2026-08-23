@@ -11,7 +11,6 @@ import '@angular/compiler';
 import { Graph, Node, Edge } from '@antv/x6';
 import { of } from 'rxjs';
 import { AppEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './app-edge.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
@@ -20,6 +19,7 @@ import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import type { AppStateService } from './app-state.service';
 
 // Mock interfaces for complex dependencies
 
@@ -168,18 +168,18 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         isApplyingUndoRedo: false,
         isApplyingRemoteChange: false,
       }),
-    };
+    } as unknown as AppStateService;
 
     // Create service instance
     service = new AppEdgeService(
-      mockLogger as unknown as LoggerService,
+      mockLogger,
       mockDfdValidation,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
       mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
       mockGraphOperationManager as any,
-      mockAppStateService as any,
+      mockAppStateService,
     );
   });
 

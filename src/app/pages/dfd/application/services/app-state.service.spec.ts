@@ -9,15 +9,11 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { Subject } from 'rxjs';
 import { AppStateService, DfdDiagramState, SyncState } from './app-state.service';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 
 describe('AppStateService', () => {
   let service: AppStateService;
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
   let mockWebSocketService: {
     domainEvents$: Subject<any>;
   };
@@ -45,12 +41,7 @@ describe('AppStateService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
     mockWebSocketService = {
       domainEvents$: new Subject(),
@@ -82,7 +73,7 @@ describe('AppStateService', () => {
     };
 
     service = new AppStateService(
-      mockLogger as any,
+      mockLogger,
       mockWebSocketService as any,
       mockCollaborationService as any,
       mockThreatModelService as any,

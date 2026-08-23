@@ -19,6 +19,22 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ThreatModel } from '../models/threat-model.model';
 import { DiagramValidator } from './types';
 
+/**
+ * Narrow untrusted input to the shape the validators read.
+ *
+ * The public entry points take `unknown` because that is what the
+ * ThreatModelValidator interface declares and what validation is for — callers
+ * hand over parsed JSON, not a value the compiler has vouched for. Every
+ * consumer downstream (SchemaValidator, the diagram validators and
+ * InternalReferenceValidator) guards its own shape at runtime and reports a
+ * ValidationError instead of throwing, so the assertion is made once here rather
+ * than at each of the call sites. See #867.
+ */
+// SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: narrow untrusted validator input to the threat model shape (pure)
+function asThreatModel(input: unknown): ThreatModel {
+  return input as ThreatModel;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,7 +50,8 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    * Validate a complete ThreatModel object
    */
   // SEM@9c0959c0ce98f97f6374bf3cfea728e1bddade74: validate a complete threat model through schema, diagram, reference, and custom rules
-  validate(threatModel: ThreatModel, config: Partial<ValidationConfig> = {}): ValidationResult {
+  validate(input: unknown, config: Partial<ValidationConfig> = {}): ValidationResult {
+    const threatModel = asThreatModel(input);
     const startTime = Date.now();
     const validationConfig = { ...DEFAULT_VALIDATION_CONFIG, ...config };
 
@@ -125,7 +142,8 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    * Validate just the schema (useful for quick validation)
    */
   // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: validate only the threat model schema fields, skipping diagrams and references
-  validateSchema(threatModel: ThreatModel): ValidationResult {
+  validateSchema(input: unknown): ValidationResult {
+    const threatModel = asThreatModel(input);
     const startTime = Date.now();
     const context: ValidationContext = {
       object: threatModel,
@@ -152,7 +170,8 @@ export class ThreatModelValidatorService implements ThreatModelValidator {
    * Validate just the references (useful for incremental validation)
    */
   // SEM@889878db9154c64c8f4c2de8e697a190a440d1e1: validate only internal reference consistency within a threat model
-  validateReferences(threatModel: ThreatModel): ValidationResult {
+  validateReferences(input: unknown): ValidationResult {
+    const threatModel = asThreatModel(input);
     const startTime = Date.now();
     const context: ValidationContext = {
       object: threatModel,

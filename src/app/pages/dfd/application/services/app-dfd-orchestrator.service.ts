@@ -18,7 +18,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
-import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
+import { AppPersistenceCoordinator, LoadResult } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { AppExportService } from './app-export.service';
 import { AppStateService } from './app-state.service';
@@ -989,11 +989,11 @@ export class AppDfdOrchestrator {
   }
 
   // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
-  loadDiagram(forceLoad?: boolean): Observable<any>;
+  loadDiagram(forceLoad?: boolean): Observable<LoadResult>;
   // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
-  loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
+  loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<LoadResult>;
   // SEM@a5d47afbe751f0027d056ced66949574212e626e: fetch and render a diagram's cells into the graph, updating local state (mutates shared state)
-  loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {
+  loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<LoadResult> {
     let targetDiagramId: string | undefined;
     let shouldForceLoad: boolean;
 

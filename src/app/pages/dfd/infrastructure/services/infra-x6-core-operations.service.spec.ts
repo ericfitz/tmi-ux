@@ -12,7 +12,6 @@ import {
   NodeCreationConfig,
   EdgeCreationConfig,
 } from './infra-x6-core-operations.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
@@ -28,7 +27,7 @@ describe('InfraX6CoreOperationsService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new InfraX6CoreOperationsService(mockLogger as unknown as LoggerService);
+    service = new InfraX6CoreOperationsService(mockLogger);
 
     // Create real X6 graph instance
     const container = document.createElement('div');

@@ -10,6 +10,7 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { AppCellOperationConverterService } from './app-cell-operation-converter.service';
 import { Cell } from '../../../../core/types/websocket-message.types';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 import {
   CreateNodeOperation,
   UpdateNodeOperation,
@@ -19,24 +20,14 @@ import {
 
 describe('AppCellOperationConverterService', () => {
   let service: AppCellOperationConverterService;
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {
-      debugComponent: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
-    service = new AppCellOperationConverterService(mockLogger as any);
+    service = new AppCellOperationConverterService(mockLogger);
   });
 
   describe('convertCellsToOperations', () => {

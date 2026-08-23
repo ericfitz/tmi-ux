@@ -56,9 +56,7 @@ vi.mock('@antv/x6', () => {
 
 import { AppDfdOrchestrator, DfdInitializationParams } from './app-dfd-orchestrator.service';
 import { OperationResult, CreateNodeOperation } from '../../types/graph-operation.types';
-// AppDfdOrchestrator.loadDiagram() forwards appPersistenceCoordinator.load()'s result
-// unmodified (reading result.data.cells), so tests must use this LoadResult shape, not
-// the differently-shaped one in ../../types/persistence.types.
+// The coordinator's LoadResult is loadDiagram()'s declared return type (#866).
 import { LoadResult } from './app-persistence-coordinator.service';
 
 describe('AppDfdOrchestrator', () => {

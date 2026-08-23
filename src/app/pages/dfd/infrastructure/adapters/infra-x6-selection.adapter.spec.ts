@@ -128,9 +128,9 @@ describe('InfraX6SelectionAdapter', () => {
 
     // Create services
     mockLogger = createTypedMockLoggerService();
-    selectionService = new SelectionService(mockLogger as any);
-    historyCoordinator = new AppOperationStateManager(mockLogger as any);
-    x6CoreOps = new InfraX6CoreOperationsService(mockLogger as any);
+    selectionService = new SelectionService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
+    x6CoreOps = new InfraX6CoreOperationsService(mockLogger);
 
     // Create mock services for InfraEdgeService
     infraEdgeService = {
@@ -138,7 +138,7 @@ describe('InfraX6SelectionAdapter', () => {
     } as any;
 
     adapter = new InfraX6SelectionAdapter(
-      mockLogger as any,
+      mockLogger,
       selectionService,
       historyCoordinator,
       x6CoreOps,

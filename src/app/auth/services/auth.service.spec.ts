@@ -11,7 +11,6 @@ import '@angular/compiler';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { LoggerService } from '../../core/services/logger.service';
 import {
   ServerConnectionService,
   ServerConnectionStatus,
@@ -252,7 +251,7 @@ describe('AuthService', () => {
     service = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
-      loggerService as unknown as LoggerService,
+      loggerService,
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
     );

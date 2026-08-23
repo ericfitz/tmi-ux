@@ -126,7 +126,7 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
     // Create adapter with minimal mocks — we only need the dependencies
     // that setReadOnlyMode() actually uses
     adapter = new InfraX6GraphAdapter(
-      mockLogger as any, // logger
+      mockLogger, // logger
       {} as any, // _edgeQueryService
       {} as any, // _nodeConfigurationService
       {} as any, // _embeddingService

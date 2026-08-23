@@ -10,6 +10,7 @@ import { FormBuilder } from '@angular/forms';
 import { ThreatPageComponent } from './threat-page.component';
 import { CVSSScore, ThreatModel, Threat, User } from '../../models/threat-model.model';
 import {
+  createTestUser,
   createTypedMockLoggerService,
   createTypedMockRouter,
   type MockLoggerService,
@@ -101,13 +102,7 @@ describe('ThreatPageComponent', () => {
     cvss: [{ vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', score: 9.8 }],
   };
 
-  const mockUser: User = {
-    principal_type: 'user',
-    provider: 'test',
-    provider_id: 'user1',
-    email: 'user1@example.com',
-    display_name: 'Test User',
-  };
+  const mockUser: User = createTestUser();
 
   const mockThreatModel: ThreatModel = {
     id: 'tm-1',
@@ -199,7 +194,7 @@ describe('ThreatPageComponent', () => {
       fb,
       snackBar as any,
       dialog as any,
-      loggerService as any,
+      loggerService,
       languageService as any,
       translocoService as any,
       threatModelService as any,

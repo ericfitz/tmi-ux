@@ -11,6 +11,7 @@ import { of } from 'rxjs';
 import { TriageDetailComponent } from './triage-detail.component';
 import { SurveyJsonSchema, SurveyResponse } from '@app/types/survey.types';
 import type { Language } from '@app/i18n/language-config';
+import { createTypedMockLoggerService } from '../../../../../testing/mocks';
 
 describe('TriageDetailComponent', () => {
   let component: TriageDetailComponent;
@@ -24,12 +25,7 @@ describe('TriageDetailComponent', () => {
   const mockResponseService = { getByIdTriage: vi.fn() };
   const mockSurveyService = { getSurveyJson: vi.fn() };
   const mockTriageNoteService = { list: vi.fn() };
-  const mockLogger = {
-    debug: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-  };
+  const mockLogger = createTypedMockLoggerService();
   const mockLanguage: Language = { code: 'en-US', name: 'English', localName: 'English' };
   const mockLanguageService = { currentLanguage$: of(mockLanguage) };
 
@@ -43,7 +39,7 @@ describe('TriageDetailComponent', () => {
       mockResponseService as any,
       mockSurveyService as any,
       mockTriageNoteService as any,
-      mockLogger as any,
+      mockLogger,
       mockLanguageService as never,
     );
   });

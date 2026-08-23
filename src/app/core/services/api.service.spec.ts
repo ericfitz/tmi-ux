@@ -11,7 +11,6 @@ import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
-import { LoggerService } from './logger.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { throwError } from 'rxjs';
 import { TimeoutError } from 'rxjs';
@@ -75,7 +74,7 @@ describe('ApiService', () => {
     // Note: authService removed - 401 handling now in JwtInterceptor
     service = new ApiService(
       httpClient as unknown as HttpClient,
-      loggerService as unknown as LoggerService,
+      loggerService,
       router as unknown as Router,
       dialog as unknown as MatDialog,
     );

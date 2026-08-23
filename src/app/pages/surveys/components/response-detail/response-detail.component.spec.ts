@@ -108,7 +108,7 @@ describe('ResponseDetailComponent', () => {
         mockSurveyService as unknown as SurveyService,
         mockResponseService as unknown as SurveyResponseService,
         mockProjectService as unknown as ProjectService,
-        mockLogger as any,
+        mockLogger,
         mockCdr as unknown as ChangeDetectorRef,
       );
     });

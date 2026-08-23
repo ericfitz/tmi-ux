@@ -11,7 +11,6 @@ import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { SelectionService } from './infra-selection.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -72,7 +71,7 @@ describe('SelectionService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service instance
-    service = new SelectionService(mockLogger as unknown as LoggerService);
+    service = new SelectionService(mockLogger);
 
     // Create container
     container = document.createElement('div');

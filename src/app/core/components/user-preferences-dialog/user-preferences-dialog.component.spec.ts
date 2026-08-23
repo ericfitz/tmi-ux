@@ -11,7 +11,6 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of } from 'rxjs';
 
 import { UserPreferencesDialogComponent } from './user-preferences-dialog.component';
-import { LoggerService } from '../../services/logger.service';
 import { IAuthService } from '../../interfaces';
 import { UserProfile } from '@app/auth/models/auth.models';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../testing/mocks';
@@ -66,7 +65,7 @@ describe('UserPreferencesDialogComponent', () => {
         dialogRef as any,
         {},
         authService as unknown as IAuthService,
-        loggerService as unknown as LoggerService,
+        loggerService,
         dialog as any,
         themeService as any,
         userPreferencesService as any,

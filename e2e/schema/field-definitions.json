@@ -71,9 +71,9 @@
       {
         "apiName": "alias",
         "uiSelector": "[data-testid='tm-alias-chips']",
-        "type": "chips",
+        "type": "text",
         "required": false,
-        "editable": true
+        "editable": false
       },
       {
         "apiName": "is_confidential",

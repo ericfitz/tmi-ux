@@ -14,7 +14,6 @@ import { vi, beforeEach, describe, it, expect } from 'vitest';
 import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { StepUpService } from '../services/step-up.service';
-import { LoggerService } from '../../core/services/logger.service';
 import { AuthSession } from '../models/auth.models';
 import {
   IS_AUTH_RETRY,
@@ -103,7 +102,7 @@ describe('JwtInterceptor', () => {
       }),
     } as unknown as Injector;
 
-    interceptor = new JwtInterceptor(mockInjector, loggerService as unknown as LoggerService);
+    interceptor = new JwtInterceptor(mockInjector, loggerService);
   });
 
   describe('Core Functionality', () => {

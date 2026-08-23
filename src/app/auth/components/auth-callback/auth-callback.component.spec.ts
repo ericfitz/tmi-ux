@@ -132,7 +132,7 @@ describe('AuthCallbackComponent', () => {
       mockAuthService as AuthService,
       mockActivatedRoute as ActivatedRoute,
       mockRouter as any,
-      mockLoggerService as any,
+      mockLoggerService,
       mockSnackBar as any,
       mockDialog as any,
       mockStepUpService as any,

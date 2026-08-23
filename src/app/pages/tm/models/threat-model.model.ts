@@ -162,7 +162,12 @@ export interface ThreatModel {
   is_confidential?: boolean;
   authorization: Authorization[];
   metadata?: Metadata[];
-  alias?: string[];
+  /**
+   * Server-assigned, monotonically increasing integer, globally unique across all
+   * threat models and immutable after creation. Never client-settable — the API's
+   * ThreatModelInput has no alias property at all (#884).
+   */
+  readonly alias?: number;
   security_reviewer?: User | null;
   project_id?: string | null;
   documents?: Document[];

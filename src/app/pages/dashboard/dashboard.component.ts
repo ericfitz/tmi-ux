@@ -926,7 +926,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      const validationResult = this.validator.validate(data as unknown as ThreatModel);
+      const validationResult = this.validator.validate(data);
       if (!validationResult.valid) {
         this.logger.error('Threat model validation failed', validationResult.errors);
         this.showError(

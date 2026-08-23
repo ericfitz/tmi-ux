@@ -2,6 +2,15 @@ import { describe, it, expect } from 'vitest';
 import { normalizeCell, normalizeCells } from './cell-normalization.util';
 import { Cell } from '../../../core/types/websocket-message.types';
 
+/**
+ * `Cell.attrs` is `Record<string, unknown>`, so reading into a selector group needs
+ * a type. This is the shape the normalizer produces: selector -> attribute bag.
+ */
+type CellAttrs = Record<string, Record<string, unknown>>;
+
+/** Edge label shape the normalizer preserves. */
+type CellLabel = { attrs: CellAttrs };
+
 describe('cell-normalization.util', () => {
   describe('normalizeCell', () => {
     describe('filter property removal', () => {
@@ -27,11 +36,11 @@ describe('cell-normalization.util', () => {
         const normalized = normalizeCell(cell);
 
         expect(normalized.attrs).toBeDefined();
-        expect((normalized.attrs as any).body).toBeDefined();
-        expect((normalized.attrs as any).body.fill).toBe('#ffffff');
-        expect((normalized.attrs as any).body.stroke).toBe('#000000');
-        expect((normalized.attrs as any).body.filter).toBeUndefined();
-        expect((normalized.attrs as any).text.text).toBe('Process');
+        expect((normalized.attrs as CellAttrs)['body']).toBeDefined();
+        expect((normalized.attrs as CellAttrs)['body']['fill']).toBe('#ffffff');
+        expect((normalized.attrs as CellAttrs)['body']['stroke']).toBe('#000000');
+        expect((normalized.attrs as CellAttrs)['body']['filter']).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['text']['text']).toBe('Process');
       });
 
       it('should remove text/filter from text-box attrs', () => {
@@ -52,10 +61,10 @@ describe('cell-normalization.util', () => {
         const normalized = normalizeCell(cell);
 
         expect(normalized.attrs).toBeDefined();
-        expect((normalized.attrs as any).text).toBeDefined();
-        expect((normalized.attrs as any).text.text).toBe('Note');
-        expect((normalized.attrs as any).text.fontSize).toBe(12);
-        expect((normalized.attrs as any).text.filter).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['text']).toBeDefined();
+        expect((normalized.attrs as CellAttrs)['text']['text']).toBe('Note');
+        expect((normalized.attrs as CellAttrs)['text']['fontSize']).toBe(12);
+        expect((normalized.attrs as CellAttrs)['text']['filter']).toBeUndefined();
       });
 
       it('should remove line/filter from edge attrs', () => {
@@ -76,10 +85,10 @@ describe('cell-normalization.util', () => {
         const normalized = normalizeCell(cell);
 
         expect(normalized.attrs).toBeDefined();
-        expect((normalized.attrs as any).line).toBeDefined();
-        expect((normalized.attrs as any).line.stroke).toBe('#333333');
-        expect((normalized.attrs as any).line.strokeWidth).toBe(2);
-        expect((normalized.attrs as any).line.filter).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['line']).toBeDefined();
+        expect((normalized.attrs as CellAttrs)['line']['stroke']).toBe('#333333');
+        expect((normalized.attrs as CellAttrs)['line']['strokeWidth']).toBe(2);
+        expect((normalized.attrs as CellAttrs)['line']['filter']).toBeUndefined();
       });
 
       it('should remove filters from multiple nested attrs', () => {
@@ -106,12 +115,12 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized.attrs as any).body.filter).toBeUndefined();
-        expect((normalized.attrs as any).body.fill).toBe('#ffffff');
-        expect((normalized.attrs as any).text.filter).toBeUndefined();
-        expect((normalized.attrs as any).text.text).toBe('Label');
-        expect((normalized.attrs as any).label.filter).toBeUndefined();
-        expect((normalized.attrs as any).label.text).toBe('Another label');
+        expect((normalized.attrs as CellAttrs)['body']['filter']).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['body']['fill']).toBe('#ffffff');
+        expect((normalized.attrs as CellAttrs)['text']['filter']).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['text']['text']).toBe('Label');
+        expect((normalized.attrs as CellAttrs)['label']['filter']).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['label']['text']).toBe('Another label');
       });
 
       it('should handle attrs without filter properties', () => {
@@ -133,9 +142,9 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized.attrs as any).body.fill).toBe('#ffffff');
-        expect((normalized.attrs as any).body.stroke).toBe('#000000');
-        expect((normalized.attrs as any).text.text).toBe('Clean');
+        expect((normalized.attrs as CellAttrs)['body']['fill']).toBe('#ffffff');
+        expect((normalized.attrs as CellAttrs)['body']['stroke']).toBe('#000000');
+        expect((normalized.attrs as CellAttrs)['text']['text']).toBe('Clean');
       });
 
       it('should preserve non-object attrs values', () => {
@@ -157,10 +166,10 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized.attrs as any).simpleString).toBe('value');
-        expect((normalized.attrs as any).simpleNumber).toBe(42);
-        expect((normalized.attrs as any).simpleBoolean).toBe(true);
-        expect((normalized.attrs as any).simpleNull).toBeNull();
+        expect((normalized.attrs as CellAttrs)['simpleString']).toBe('value');
+        expect((normalized.attrs as CellAttrs)['simpleNumber']).toBe(42);
+        expect((normalized.attrs as CellAttrs)['simpleBoolean']).toBe(true);
+        expect((normalized.attrs as CellAttrs)['simpleNull']).toBeNull();
       });
 
       it('should handle cells without attrs', () => {
@@ -209,7 +218,7 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).tools).toBeUndefined();
+        expect(normalized['tools']).toBeUndefined();
       });
 
       it('should handle cells without tools property', () => {
@@ -222,7 +231,7 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).tools).toBeUndefined();
+        expect(normalized['tools']).toBeUndefined();
       });
     });
 
@@ -286,8 +295,8 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).labels).toHaveLength(1);
-        expect((normalized as any).labels[0].attrs.text.text).toBe('First');
+        expect(normalized['labels']).toHaveLength(1);
+        expect((normalized['labels'] as CellLabel[])[0].attrs['text']['text']).toBe('First');
       });
 
       it('should preserve single label for edges', () => {
@@ -301,8 +310,8 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).labels).toHaveLength(1);
-        expect((normalized as any).labels[0].attrs.text.text).toBe('Only');
+        expect(normalized['labels']).toHaveLength(1);
+        expect((normalized['labels'] as CellLabel[])[0].attrs['text']['text']).toBe('Only');
       });
 
       it('should handle edges with empty labels array', () => {
@@ -316,7 +325,7 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).labels).toEqual([]);
+        expect(normalized['labels']).toEqual([]);
       });
 
       it('should not affect non-edge shapes with labels', () => {
@@ -330,7 +339,7 @@ describe('cell-normalization.util', () => {
 
         const normalized = normalizeCell(cell);
 
-        expect((normalized as any).labels).toHaveLength(2);
+        expect(normalized['labels']).toHaveLength(2);
       });
     });
 
@@ -358,11 +367,11 @@ describe('cell-normalization.util', () => {
         const normalized = normalizeCell(cell);
 
         // Check filter removal
-        expect((normalized.attrs as any).body.filter).toBeUndefined();
-        expect((normalized.attrs as any).text.filter).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['body']['filter']).toBeUndefined();
+        expect((normalized.attrs as CellAttrs)['text']['filter']).toBeUndefined();
 
         // Check tools removal
-        expect((normalized as any).tools).toBeUndefined();
+        expect(normalized['tools']).toBeUndefined();
 
         // Check coordinate rounding
         expect(normalized.position?.x).toBe(101);
@@ -371,9 +380,9 @@ describe('cell-normalization.util', () => {
         expect(normalized.size?.height).toBe(60);
 
         // Check preserved properties
-        expect((normalized.attrs as any).body.fill).toBe('#ffffff');
-        expect((normalized.attrs as any).body.stroke).toBe('#000000');
-        expect((normalized.attrs as any).text.text).toBe('Process');
+        expect((normalized.attrs as CellAttrs)['body']['fill']).toBe('#ffffff');
+        expect((normalized.attrs as CellAttrs)['body']['stroke']).toBe('#000000');
+        expect((normalized.attrs as CellAttrs)['text']['text']).toBe('Process');
       });
     });
   });
@@ -412,12 +421,12 @@ describe('cell-normalization.util', () => {
       expect(normalized).toHaveLength(2);
 
       // Check first cell
-      expect((normalized[0].attrs as any).body.filter).toBeUndefined();
+      expect((normalized[0].attrs as CellAttrs)['body']['filter']).toBeUndefined();
       expect(normalized[0].position?.x).toBe(101);
       expect(normalized[0].position?.y).toBe(201);
 
       // Check second cell
-      expect((normalized[1].attrs as any).body.filter).toBeUndefined();
+      expect((normalized[1].attrs as CellAttrs)['body']['filter']).toBeUndefined();
       expect(normalized[1].position?.x).toBe(301);
       expect(normalized[1].position?.y).toBe(401);
     });

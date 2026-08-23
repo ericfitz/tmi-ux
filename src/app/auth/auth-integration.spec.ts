@@ -18,7 +18,6 @@ import { AuthService } from './services/auth.service';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { authGuard } from './guards/auth.guard';
 
-import { LoggerService } from '../core/services/logger.service';
 import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
 import { JwtToken, UserProfile } from './models/auth.models';
@@ -122,7 +121,7 @@ describe('Authentication Integration', () => {
     authService = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
-      logger as unknown as LoggerService,
+      logger,
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
     );
@@ -165,7 +164,7 @@ describe('Authentication Integration', () => {
   describe('JWT Interceptor', () => {
     it('should be created', () => {
       const injector = Injector.create([{ provide: AuthService, useValue: authService }]);
-      const interceptor = new JwtInterceptor(injector, logger as unknown as LoggerService);
+      const interceptor = new JwtInterceptor(injector, logger);
       expect(interceptor).toBeTruthy();
     });
   });
@@ -435,7 +434,7 @@ describe('Authentication Integration', () => {
         const restoredAuthService = new AuthService(
           router as unknown as Router,
           httpClient as unknown as HttpClient,
-          logger as unknown as LoggerService,
+          logger,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
         );
@@ -460,7 +459,7 @@ describe('Authentication Integration', () => {
         const unauthService = new AuthService(
           router as unknown as Router,
           httpClient as unknown as HttpClient,
-          logger as unknown as LoggerService,
+          logger,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
         );
@@ -557,7 +556,7 @@ describe('Authentication Integration', () => {
     describe('JWT Interceptor Integration', () => {
       it('should integrate with JWT interceptor for API request handling', () => {
         const injector = Injector.create([{ provide: AuthService, useValue: authService }]);
-        const interceptor = new JwtInterceptor(injector, logger as unknown as LoggerService);
+        const interceptor = new JwtInterceptor(injector, logger);
 
         // Mock HTTP request and handler for a successful API call
         const mockRequest = {

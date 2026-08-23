@@ -3,11 +3,15 @@
  */
 
 import { Observable } from 'rxjs';
+// The load result is the coordinator's own, not the strategy-level
+// StrategyLoadResult: AppPersistenceCoordinator.load() and both real strategies
+// emit this shape. Pointing the interface at the other one would leave it
+// describing something nothing produces (#866).
+import { LoadResult } from '../application/services/app-persistence-coordinator.service';
 import {
   SaveOperation,
   SaveResult,
   LoadOperation,
-  LoadResult,
   SyncOperation,
   SyncResult,
   PersistenceStrategy,

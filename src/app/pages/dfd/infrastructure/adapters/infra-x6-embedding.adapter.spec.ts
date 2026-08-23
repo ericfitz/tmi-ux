@@ -108,16 +108,12 @@ describe('InfraX6EmbeddingAdapter', () => {
 
     // Create services
     mockLogger = createTypedMockLoggerService();
-    infraEmbeddingService = new InfraEmbeddingService(mockLogger as any);
-    zOrderService = new ZOrderService(mockLogger as any);
-    historyCoordinator = new AppOperationStateManager(mockLogger as any);
-    infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(
-      mockLogger as any,
-      zOrderService,
-      historyCoordinator,
-    );
+    infraEmbeddingService = new InfraEmbeddingService(mockLogger);
+    zOrderService = new ZOrderService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
+    infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(mockLogger, zOrderService, historyCoordinator);
     adapter = new InfraX6EmbeddingAdapter(
-      mockLogger as any,
+      mockLogger,
       infraEmbeddingService,
       infraX6ZOrderAdapter,
       historyCoordinator,
@@ -255,8 +251,11 @@ describe('InfraX6EmbeddingAdapter', () => {
 
       // Verify visual effects were applied
       expect(childNode.setAttrs).toHaveBeenCalled();
-      const setAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
-      expect(setAttrsCall.body.fill).toBe('rgb(230, 240, 255)'); // Depth 1 color from InfraEmbeddingService
+      const setAttrsCall = vi.mocked(childNode.setAttrs).mock.calls[0][0] as Record<
+        string,
+        Record<string, unknown>
+      >;
+      expect(setAttrsCall['body']['fill']).toBe('rgb(230, 240, 255)'); // Depth 1 color from InfraEmbeddingService
     });
 
     it('should update z-order on embedding', () => {
@@ -352,9 +351,12 @@ describe('InfraX6EmbeddingAdapter', () => {
 
       // Verify visual effects were reset to original color (depth 0)
       expect(childNode.setAttrs).toHaveBeenCalled();
-      const setAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
-      expect(setAttrsCall.body.fill).toBe('#FFFFFF'); // Original color for process shape
-      expect(setAttrsCall.body.fillOpacity).toBeUndefined(); // Opacity removed
+      const setAttrsCall = vi.mocked(childNode.setAttrs).mock.calls[0][0] as Record<
+        string,
+        Record<string, unknown>
+      >;
+      expect(setAttrsCall['body']['fill']).toBe('#FFFFFF'); // Original color for process shape
+      expect(setAttrsCall['body']['fillOpacity']).toBeUndefined(); // Opacity removed
     });
 
     it('should reset z-order on unembedding', () => {
@@ -520,16 +522,20 @@ describe('InfraX6EmbeddingAdapter', () => {
       adapter.embedNode(graph, grandchildNode, childNode);
 
       // Verify depth 1 color (light bluish) - actual InfraEmbeddingService calculation
-      const childSetAttrsCall = (childNode.setAttrs as any).mock.calls[0][0];
-      expect(childSetAttrsCall.body.fill).toBe('rgb(230, 240, 255)'); // Depth 1: 240-10, 250-10, 255
-      expect(childSetAttrsCall.body.fillOpacity).toBe(0.9);
+      const childSetAttrsCall = vi.mocked(childNode.setAttrs).mock.calls[0][0] as Record<
+        string,
+        Record<string, unknown>
+      >;
+      expect(childSetAttrsCall['body']['fill']).toBe('rgb(230, 240, 255)'); // Depth 1: 240-10, 250-10, 255
+      expect(childSetAttrsCall['body']['fillOpacity']).toBe(0.9);
 
       // Verify depth 2 color (darker bluish) - actual InfraEmbeddingService calculation
       // Check if grandchildNode.setAttrs was called
-      if ((grandchildNode.setAttrs as any).mock.calls.length > 0) {
-        const grandchildSetAttrsCall = (grandchildNode.setAttrs as any).mock.calls[0][0];
-        expect(grandchildSetAttrsCall.body.fill).toBe('rgb(220, 230, 255)'); // Depth 2: 240-20, 250-20, 255
-        expect(grandchildSetAttrsCall.body.fillOpacity).toBe(0.8);
+      if (vi.mocked(grandchildNode.setAttrs).mock.calls.length > 0) {
+        const grandchildSetAttrsCall = vi.mocked(grandchildNode.setAttrs).mock
+          .calls[0][0] as Record<string, Record<string, unknown>>;
+        expect(grandchildSetAttrsCall['body']['fill']).toBe('rgb(220, 230, 255)'); // Depth 2: 240-20, 250-20, 255
+        expect(grandchildSetAttrsCall['body']['fillOpacity']).toBe(0.8);
       }
     });
 

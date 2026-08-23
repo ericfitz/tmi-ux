@@ -9,25 +9,19 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { CellDataExtractionService } from './cell-data-extraction.service';
 import { ThreatModel } from '../../pages/tm/models/threat-model.model';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
+import type { Graph as X6Graph } from '@antv/x6';
 
 describe('CellDataExtractionService', () => {
   let service: CellDataExtractionService;
-  let mockLogger: {
-    debugComponent: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockLogger = {
-      debugComponent: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
-    service = new CellDataExtractionService(mockLogger as any);
+    service = new CellDataExtractionService(mockLogger);
   });
 
   describe('Service Initialization', () => {
@@ -418,9 +412,10 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle graph without getCells method', () => {
-      const mockGraph = {};
+      // Deliberately missing getCells, to exercise the defensive branch.
+      const mockGraph = {} as unknown as X6Graph;
 
-      const result = service.extractFromX6Graph(mockGraph as any, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
       expect(result.diagrams).toHaveLength(1);
       expect(result.cells).toEqual([]);

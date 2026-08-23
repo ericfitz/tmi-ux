@@ -127,9 +127,9 @@ describe('InfraX6ZOrderAdapter', () => {
 
     // Create mock logger and real services
     mockLogger = createTypedMockLoggerService();
-    zOrderService = new ZOrderService(mockLogger as any);
-    historyCoordinator = new AppOperationStateManager(mockLogger as any);
-    adapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService, historyCoordinator);
+    zOrderService = new ZOrderService(mockLogger);
+    historyCoordinator = new AppOperationStateManager(mockLogger);
+    adapter = new InfraX6ZOrderAdapter(mockLogger, zOrderService, historyCoordinator);
   });
 
   afterEach(() => {
@@ -198,7 +198,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should move selected cells forward in z-order', () => {
       // Mock selected cells
-      (graph.getSelectedCells as any).mockReturnValue([processNode1]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([processNode1]);
 
       adapter.moveSelectedCellsForward(graph);
 
@@ -211,7 +211,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should move selected cells backward in z-order', () => {
       // Mock selected cells
-      (graph.getSelectedCells as any).mockReturnValue([processNode2]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([processNode2]);
 
       adapter.moveSelectedCellsBackward(graph);
 
@@ -224,7 +224,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should move selected cells to front', () => {
       // Mock selected cells
-      (graph.getSelectedCells as any).mockReturnValue([processNode1]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([processNode1]);
 
       adapter.moveSelectedCellsToFront(graph);
 
@@ -237,7 +237,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should move selected cells to back', () => {
       // Mock selected cells
-      (graph.getSelectedCells as any).mockReturnValue([processNode2]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([processNode2]);
 
       adapter.moveSelectedCellsToBack(graph);
 
@@ -259,7 +259,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should respect security boundary z-order category separation', () => {
       // Mock selected cells
-      (graph.getSelectedCells as any).mockReturnValue([securityBoundary]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([securityBoundary]);
 
       adapter.moveSelectedCellsForward(graph);
 
@@ -273,7 +273,7 @@ describe('InfraX6ZOrderAdapter', () => {
     it('should enforce z-order invariants after manual changes', () => {
       // Mock the enforceZOrderInvariants method to verify it's called
       const enforceInvariantsSpy = vi.spyOn(adapter, 'enforceZOrderInvariants');
-      (graph.getSelectedCells as any).mockReturnValue([processNode1]);
+      vi.mocked(graph.getSelectedCells).mockReturnValue([processNode1]);
 
       adapter.moveSelectedCellsForward(graph);
 

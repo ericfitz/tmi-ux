@@ -11,17 +11,14 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { BehaviorSubject } from 'rxjs';
 import { Params } from '@angular/router';
 import { UnauthorizedComponent } from './unauthorized.component';
+import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
 
 describe('UnauthorizedComponent', () => {
   let component: UnauthorizedComponent;
   let queryParamsSubject: BehaviorSubject<Params>;
   let mockRoute: { queryParams: BehaviorSubject<Params> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
-  let mockLogger: {
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: MockLoggerService;
 
   beforeEach(() => {
     queryParamsSubject = new BehaviorSubject<Params>({});
@@ -34,13 +31,9 @@ describe('UnauthorizedComponent', () => {
       navigate: vi.fn().mockResolvedValue(true),
     };
 
-    mockLogger = {
-      warn: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-    };
+    mockLogger = createTypedMockLoggerService();
 
-    component = new UnauthorizedComponent(mockRoute as any, mockRouter as any, mockLogger as any);
+    component = new UnauthorizedComponent(mockRoute as any, mockRouter as any, mockLogger);
   });
 
   it('should create', () => {

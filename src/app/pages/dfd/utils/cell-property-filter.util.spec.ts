@@ -48,6 +48,17 @@ interface AttrsGroup {
   textVerticalAnchor?: unknown;
   targetMarker?: unknown;
   sourceMarker?: unknown;
+  // Ref-sizing and shape attrs the API sanitizer preserves verbatim.
+  refX2?: unknown;
+  refY2?: unknown;
+  rx?: unknown;
+  ry?: unknown;
+  lateral?: unknown;
+  refWidth?: unknown;
+  refHeight?: unknown;
+  fillOpacity?: unknown;
+  // Asserted to be dropped, so it has to be nameable.
+  customProp?: unknown;
 }
 interface TestCell extends Cell {
   attrs?: Record<string, AttrsGroup>;
@@ -631,13 +642,13 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(node);
 
-        expect((sanitized as any).tools).toBeUndefined();
-        expect((sanitized as any).type).toBeUndefined();
-        expect((sanitized as any).selected).toBeUndefined();
-        expect((sanitized as any).highlighted).toBeUndefined();
-        expect((sanitized as any).visible).toBeUndefined();
-        expect((sanitized as any).zIndex).toBeUndefined();
-        expect((sanitized as any).markup).toBeUndefined();
+        expect(sanitized['tools']).toBeUndefined();
+        expect(sanitized['type']).toBeUndefined();
+        expect(sanitized['selected']).toBeUndefined();
+        expect(sanitized['highlighted']).toBeUndefined();
+        expect(sanitized['visible']).toBeUndefined();
+        expect(sanitized['zIndex']).toBeUndefined();
+        expect(sanitized['markup']).toBeUndefined();
       });
 
       it('should preserve children property on nodes', () => {
@@ -649,7 +660,7 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(node);
 
-        expect((sanitized as any).children).toEqual(['node-1', 'node-2']);
+        expect(sanitized['children']).toEqual(['node-1', 'node-2']);
       });
 
       it('should warn about unknown properties', () => {
@@ -715,8 +726,8 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.attrs?.['body']?.filter).toBeUndefined();
 
         // Unknown properties should be removed with warning
-        expect((sanitized.attrs?.['body'] as any)?.customProp).toBeUndefined();
-        expect((sanitized.attrs as any)?.unknownSelector).toBeUndefined();
+        expect(sanitized.attrs?.['body']?.customProp).toBeUndefined();
+        expect(sanitized.attrs?.['unknownSelector']).toBeUndefined();
 
         // Should have warnings for customProp and unknownSelector
         expect(warnings.some(w => w.message.includes('customProp'))).toBe(true);
@@ -754,8 +765,8 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.attrs?.['text']?.refY).toBe(1);
         expect(sanitized.attrs?.['text']?.refDx).toBe(0);
         expect(sanitized.attrs?.['text']?.refDy).toBe(10);
-        expect((sanitized.attrs?.['text'] as any)?.refX2).toBe(5);
-        expect((sanitized.attrs?.['text'] as any)?.refY2).toBe('50%');
+        expect(sanitized.attrs?.['text']?.refX2).toBe(5);
+        expect(sanitized.attrs?.['text']?.refY2).toBe('50%');
         expect(sanitized.attrs?.['text']?.textAnchor).toBe('middle');
         expect(sanitized.attrs?.['text']?.textVerticalAnchor).toBe('top');
       });
@@ -785,14 +796,14 @@ describe('Cell Property Filter Utility', () => {
             warnings.push({ message: msg, context: ctx }),
         };
 
-        const sanitized = sanitizeCellForApi(node, logger);
+        const sanitized = sanitizeCellForApi(node, logger) as TestCell;
 
-        expect((sanitized.attrs?.['body'] as any)?.rx).toBe(10);
-        expect((sanitized.attrs?.['body'] as any)?.ry).toBe(10);
-        expect((sanitized.attrs?.['body'] as any)?.lateral).toBe(0.2);
-        expect((sanitized.attrs?.['body'] as any)?.refWidth).toBe('100%');
-        expect((sanitized.attrs?.['body'] as any)?.refHeight).toBe('100%');
-        expect((sanitized.attrs?.['body'] as any)?.fillOpacity).toBe(0.5);
+        expect(sanitized.attrs?.['body']?.rx).toBe(10);
+        expect(sanitized.attrs?.['body']?.ry).toBe(10);
+        expect(sanitized.attrs?.['body']?.lateral).toBe(0.2);
+        expect(sanitized.attrs?.['body']?.refWidth).toBe('100%');
+        expect(sanitized.attrs?.['body']?.refHeight).toBe('100%');
+        expect(sanitized.attrs?.['body']?.fillOpacity).toBe(0.5);
         expect(warnings).toHaveLength(0);
       });
     });
@@ -819,12 +830,10 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.shape).toBe('flow'); // Normalized to canonical 'flow'
         expect(sanitized.source).toEqual({ cell: 'node-1', port: 'port-out' });
         expect(sanitized.target).toEqual({ cell: 'node-2', port: 'port-in' });
-        expect((sanitized as any).labels).toEqual([
-          { attrs: { text: { text: 'Flow' } }, position: 0.5 },
-        ]);
-        expect((sanitized as any).vertices).toEqual([{ x: 150, y: 150 }]);
-        expect((sanitized as any).router).toEqual({ name: 'manhattan' });
-        expect((sanitized as any).connector).toEqual({ name: 'rounded' });
+        expect(sanitized['labels']).toEqual([{ attrs: { text: { text: 'Flow' } }, position: 0.5 }]);
+        expect(sanitized['vertices']).toEqual([{ x: 150, y: 150 }]);
+        expect(sanitized['router']).toEqual({ name: 'manhattan' });
+        expect(sanitized['connector']).toEqual({ name: 'rounded' });
       });
 
       it('should normalize edge shape to canonical "flow"', () => {
@@ -895,8 +904,8 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.attrs?.['line']?.filter).toBeUndefined();
 
         // Unknown properties should be removed with warning
-        expect((sanitized.attrs?.['line'] as any)?.customProp).toBeUndefined();
-        expect((sanitized.attrs as any)?.unknownSelector).toBeUndefined();
+        expect(sanitized.attrs?.['line']?.customProp).toBeUndefined();
+        expect(sanitized.attrs?.['unknownSelector']).toBeUndefined();
 
         // Should have warnings for customProp and unknownSelector
         expect(warnings.some(w => w.message.includes('customProp'))).toBe(true);
@@ -954,8 +963,8 @@ describe('Cell Property Filter Utility', () => {
       const sanitized = sanitizeCellsForApi(cells);
 
       expect(sanitized).toHaveLength(2);
-      expect((sanitized[0] as any).zIndex).toBeUndefined();
-      expect((sanitized[0] as any).tools).toBeUndefined();
+      expect(sanitized[0]['zIndex']).toBeUndefined();
+      expect(sanitized[0]['tools']).toBeUndefined();
       expect(sanitized[1].shape).toBe('flow'); // Normalized from 'edge' to 'flow'
     });
 
@@ -986,7 +995,7 @@ describe('Cell Property Filter Utility', () => {
       const sanitized = sanitizeCellsForApi(cells);
 
       // Boundary should retain children property (now preserved for API schema)
-      expect((sanitized[0] as any).children).toEqual(['node-1', 'node-2']);
+      expect(sanitized[0]['children']).toEqual(['node-1', 'node-2']);
 
       // Child nodes should have parent set (derived from children array)
       expect(sanitized[1]['parent']).toBe('boundary-1');

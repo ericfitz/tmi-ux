@@ -69,9 +69,9 @@ describe('AppDiagramResyncService', () => {
     };
 
     service = new AppDiagramResyncService(
-      mockLogger as any,
+      mockLogger,
       mockThreatModelService,
-      mockAppStateService as any,
+      mockAppStateService,
       mockDiagramLoadingService,
       mockDfdStateStore,
     );
@@ -88,7 +88,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should initialize with diagram context', () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       expect(service.isResyncInProgress()).toBe(false);
     });
@@ -152,7 +152,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should trigger resync after initialization', () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       service.triggerResync();
 
@@ -163,7 +163,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should debounce multiple resync triggers', async () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       service.triggerResync();
       service.triggerResync();
@@ -180,7 +180,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should restart debounce timer on new trigger', async () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       service.triggerResync();
 
@@ -206,7 +206,7 @@ describe('AppDiagramResyncService', () => {
 
   describe('Resync Execution', () => {
     beforeEach(() => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
     });
 
     it('should fetch diagram data from server', async () => {
@@ -382,7 +382,7 @@ describe('AppDiagramResyncService', () => {
 
   describe('Error Handling', () => {
     beforeEach(() => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
     });
 
     it('should handle diagram not found error', async () => {
@@ -541,7 +541,7 @@ describe('AppDiagramResyncService', () => {
 
   describe('State Management', () => {
     it('should reset service state', () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       service.reset();
 
@@ -557,7 +557,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should clear in-progress flag on reset', () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       (service as any)._isResyncInProgress = true;
 
@@ -575,7 +575,7 @@ describe('AppDiagramResyncService', () => {
     });
 
     it('should not process triggers after destroy', async () => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
       service.ngOnDestroy();
 
@@ -588,7 +588,7 @@ describe('AppDiagramResyncService', () => {
 
   describe('Observable Events', () => {
     beforeEach(() => {
-      service.initialize('diagram-1', 'tm-1', mockGraph as any, mockX6GraphAdapter);
+      service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
     });
 
     it('should provide resyncStarted observable', () => {
