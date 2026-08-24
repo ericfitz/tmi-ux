@@ -123,7 +123,7 @@
     "@angular-eslint/eslint-plugin-template": "^22.1.0",
     "@angular-eslint/schematics": "^22.1.0",
     "@angular-eslint/template-parser": "^22.1.0",
-    "@angular/build": "^22.1.4",
+    "@angular/build": "^22.1.5",
     "@angular/cli": "^22.1.4",
     "@angular/compiler-cli": "^22.1.2",
     "@axe-core/playwright": "^4.13.0",
