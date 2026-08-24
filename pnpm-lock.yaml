@@ -26,7 +26,7 @@ overrides:
   '@hono/node-server': '>=2.0.5'
   fast-uri: '>=4.1.2'
   '@babel/plugin-transform-modules-systemjs': '>=7.29.4 <8'
-  uuid: ^14.0.1
+  uuid: ^14.0.2
   postcss: '>=8.5.18'
   ip-address: '>=10.1.1'
   webpack-dev-server: '>=5.2.4'
@@ -136,8 +136,8 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
       uuid:
-        specifier: ^14.0.1
-        version: 14.0.1
+        specifier: ^14.0.2
+        version: 14.0.2
       zone.js:
         specifier: ~0.16.2
         version: 0.16.2
@@ -488,6 +488,7 @@ packages:
   '@angular/platform-browser-dynamic@22.1.2':
     resolution: {integrity: sha512-nNARbs9zXfoJL72zsTso6GHt1VuIGXWEpyZtzxcC32qQFG1YbzVqGkQTwZ0mZ2/Ctv8dAZ6PPiDo8sbYvAvUDw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
+    deprecated: '@angular/platform-browser-dynamic is deprecated. Use `@angular/platform-browser` instead.'
     peerDependencies:
       '@angular/common': 22.1.2
       '@angular/compiler': 22.1.2
@@ -4567,8 +4568,8 @@ packages:
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
 
-  uuid@14.0.1:
-    resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
+  uuid@14.0.2:
+    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
     hasBin: true
 
   validate-npm-package-name@8.0.0:
@@ -8052,7 +8053,7 @@ snapshots:
       roughjs: 4.6.6
       stylis: 4.4.0
       ts-dedent: 2.3.0
-      uuid: 14.0.1
+      uuid: 14.0.2
 
   micromatch@4.0.8:
     dependencies:
@@ -8987,7 +8988,7 @@ snapshots:
     dependencies:
       base64-arraybuffer: 1.0.2
 
-  uuid@14.0.1: {}
+  uuid@14.0.2: {}
 
   validate-npm-package-name@8.0.0: {}
 
