@@ -117,7 +117,7 @@
     "zone.js": "~0.16.2"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "^2.7.0",
+    "@analogjs/vite-plugin-angular": "^2.7.1",
     "@angular-eslint/builder": "^22.1.0",
     "@angular-eslint/eslint-plugin": "^22.1.0",
     "@angular-eslint/eslint-plugin-template": "^22.1.0",
