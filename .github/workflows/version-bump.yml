@@ -16,11 +16,17 @@ name: Version Bump
 #     version now on main. Tags live under refs/tags/* which the branch ruleset
 #     does not cover, so a tag push is allowed. Idempotent, so it also self-heals
 #     any version already on main that never got tagged.
-#   - check-bump (pull_request): fork and dependabot[bot] PRs run with a
-#     read-only token and no access to the App secret, so we cannot push a bump
-#     to them. Instead fail with an actionable message telling the author which
-#     version to set by hand. This check is not in the ruleset's required set, so
-#     it flags loudly without hard-blocking the merge.
+#   - Dependabot PRs: a dependabot[bot]-triggered run reads secrets from the
+#     repository's *Dependabot* secrets store, not the Actions store, so the two
+#     DEPS_BOT_APP_* secrets must exist in both. The read-only GITHUB_TOKEN is
+#     irrelevant — the push uses the App token. Once the App pushes the bump
+#     commit, Dependabot stops auto-rebasing that PR; `@dependabot rebase`
+#     force-pushes the bump away and the resulting synchronize re-applies it.
+#   - check-bump (pull_request): fork PRs run with a read-only token and no
+#     access to either secrets store, so we cannot push a bump to them. Instead
+#     fail with an actionable message telling the author which version to set
+#     by hand. This check is not in the ruleset's required set, so it flags
+#     loudly without hard-blocking the merge.
 #
 # Idempotency: the target is computed from the merge-base (the version on main),
 # never from the PR's current package.json, so re-running on `synchronize` — including
@@ -43,12 +49,11 @@ concurrency:
 
 jobs:
   bump:
-    # Auto-bump only PRs we can push to: same-repo head branch, not dependabot[bot].
-    # Fork and dependabot[bot] PRs are handled by check-bump below.
+    # Auto-bump only PRs we can push to: same-repo head branch (including
+    # dependabot[bot]). Fork PRs are handled by check-bump below.
     if: >-
       ${{ github.event_name == 'pull_request'
-      && github.event.pull_request.head.repo.full_name == github.repository
-      && github.actor != 'dependabot[bot]' }}
+      && github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
       - name: Mint GitHub App token
@@ -128,12 +133,11 @@ jobs:
           echo "Tagged $TAG."
 
   check-bump:
-    # Fork and dependabot[bot] PRs cannot be pushed to (read-only token, no App
-    # secret). Fail with an actionable message so the author bumps by hand.
+    # Fork PRs cannot be pushed to (read-only token, no App secret). Fail with
+    # an actionable message so the author bumps by hand.
     if: >-
       ${{ github.event_name == 'pull_request'
-      && (github.event.pull_request.head.repo.full_name != github.repository
-      || github.actor == 'dependabot[bot]') }}
+      && github.event.pull_request.head.repo.full_name != github.repository }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -167,5 +171,5 @@ jobs:
             exit 0
           fi
 
-          echo "::error title=Version bump required::This PR is not auto-version-bumped (fork or Dependabot). Set package.json \"version\" to $TARGET and push the change."
+          echo "::error title=Version bump required::This PR is not auto-version-bumped (fork PR). Set package.json \"version\" to $TARGET and push the change."
           exit 1
