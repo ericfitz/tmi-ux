@@ -1,0 +1,70 @@
+name: Dependabot Auto-merge
+
+# Hands-off patch/minor Dependabot PRs. Enables squash auto-merge, so GitHub
+# merges once the `main` ruleset's required checks pass on the final head
+# (including the version-bump commit that version-bump.yml pushes).
+#
+# Why the App token and not GITHUB_TOKEN: a merge performed on behalf of
+# GITHUB_TOKEN does not trigger `push: main` workflows, which would skip the
+# tag job in version-bump.yml. App-token actions do trigger them.
+#
+# Keyed on the PR author, not github.actor: the version-bump push re-fires
+# `synchronize` with the App as actor, and the run must still recognise the
+# PR as Dependabot's. Enabling auto-merge is idempotent, so re-runs are safe
+# and the synchronize run is the recovery path if the `opened` run lost a race.
+#
+# The DEPS_BOT_APP_* secrets must exist in the Dependabot secrets store as
+# well as the Actions store (see version-bump.yml).
+#
+# Majors are left open for a human. Dependabot stops auto-rebasing a PR once
+# the bump commit lands on it, so npm patch/minor updates are grouped into a
+# single weekly PR (dependabot.yml) to avoid sibling lockfile conflicts.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  auto-merge:
+    if: >-
+      ${{ github.event.pull_request.user.login == 'dependabot[bot]'
+      && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # The version-bump commit is not Dependabot's; without this the
+          # action emits no outputs on every run after that push.
+          skip-verification: true
+
+      - name: Mint GitHub App token
+        if: >-
+          ${{ steps.meta.outputs.update-type == 'version-update:semver-patch'
+          || steps.meta.outputs.update-type == 'version-update:semver-minor' }}
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
+
+      - name: Enable squash auto-merge
+        if: ${{ steps.app-token.outputs.token != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          set -euo pipefail
+          if [ "$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')" = "true" ]; then
+            echo "Auto-merge already enabled."
+            exit 0
+          fi
+          gh pr merge --auto --squash "$PR_URL"
+          echo "Auto-merge (squash) enabled for $PR_URL."

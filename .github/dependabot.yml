@@ -23,73 +23,20 @@ updates:
       day: "monday" # every Monday morning
     target-branch: "main" # Adjust if your default branch is different
 
-    # Ignore Angular 21 packages until Q1 2026 (tracked in issue #241)
-    # Remove these ignores when ready to upgrade (after AnalogJS and ngx-markdown support v21)
+    # One PR per week for all patch/minor updates. Required for hands-off
+    # merging (dependabot-auto-merge.yml): once the version-bump commit lands
+    # on a Dependabot branch, Dependabot stops rebasing it, so per-package PRs
+    # would deadlock on pnpm-lock.yaml conflicts. Majors stay one PR each.
+    groups:
+      npm-patch-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
     ignore:
-      # Angular core packages
-      - dependency-name: "@angular/animations"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/common"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/compiler"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/core"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/forms"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/platform-browser"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/platform-browser-dynamic"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/router"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-
-      # Angular Material/CDK
-      - dependency-name: "@angular/cdk"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/material"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-
-      # Angular CLI
-      - dependency-name: "@angular/cli"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular/compiler-cli"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular-devkit/build-angular"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-
-      # Angular ESLint
-      - dependency-name: "@angular-eslint/builder"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular-eslint/eslint-plugin"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular-eslint/eslint-plugin-template"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular-eslint/schematics"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "@angular-eslint/template-parser"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
-      - dependency-name: "angular-eslint"
-        update-types: ["version-update:semver-major"]
-        versions: [">=21.0.0", "<22.0.0"]
+      # @antv/x6 is exact-pinned with a pnpm patch (patches/@antv__x6@3.1.7.patch,
+      # antvis/X6#5048, issue #446). Any bump invalidates the patch and breaks
+      # `pnpm install`. Bump by hand after re-verifying the patch.
+      - dependency-name: "@antv/x6"
 
       # Zone.js
       - dependency-name: "zone.js"
