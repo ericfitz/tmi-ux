@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.14.4",
+  "version": "1.14.5",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -133,7 +133,7 @@
     "@playwright/test": "^1.63.0",
     "@testing-library/angular": "^19.5.0",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.5.1",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
     "@vitest/coverage-v8": "^4.1.11",
