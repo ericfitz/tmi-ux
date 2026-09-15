@@ -50,7 +50,7 @@ describe('IdentityLinkService', () => {
       idp: 'github',
       client_callback: `${window.location.origin}/oauth2/link/callback`,
     }).toString();
-    expect(api.post).toHaveBeenCalledWith(`me/identities/link/start?${qs}`, {});
+    expect(api.post).toHaveBeenCalledWith(`me/identities/link/start?${qs}`, null);
     expect(api.get).not.toHaveBeenCalled();
   });
 

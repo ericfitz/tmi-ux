@@ -49,7 +49,7 @@ export class SettingsAdminService {
    * Re-encrypt all secret-classified system settings with the current encryption key
    */
   reencryptSettings(): Observable<SettingsReencryptResult> {
-    return this.apiService.post<SettingsReencryptResult>('/admin/settings/reencrypt', {});
+    return this.apiService.post<SettingsReencryptResult>('/admin/settings/reencrypt', null);
   }
 
   /**

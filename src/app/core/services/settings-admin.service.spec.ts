@@ -160,7 +160,7 @@ describe('SettingsAdminService', () => {
       mockApiService.post.mockReturnValue(of(result));
 
       service.reencryptSettings().subscribe(response => {
-        expect(mockApiService.post).toHaveBeenCalledWith('/admin/settings/reencrypt', {});
+        expect(mockApiService.post).toHaveBeenCalledWith('/admin/settings/reencrypt', null);
         expect(response).toEqual(result);
       });
     });

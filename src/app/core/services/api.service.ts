@@ -142,10 +142,10 @@ export class ApiService {
   /**
    * Generic POST request
    * @param endpoint The API endpoint (without the base URL)
-   * @param body The request body
+   * @param body The request body; pass null for operations that define no request body
    */
   // SEM@6fc77c4b202f088273e8b94031e170a90f7e46d6: send a JSON POST request to the API and return the typed response
-  post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
+  post<T>(endpoint: string, body: Record<string, unknown> | null): Observable<T> {
     const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor

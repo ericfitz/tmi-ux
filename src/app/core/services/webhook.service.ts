@@ -81,7 +81,7 @@ export class WebhookService extends AdminServiceBase<WebhookSubscription, Webhoo
    */
   // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: trigger a test delivery for a webhook subscription
   public test(id: string): Observable<void> {
-    return this.apiService.post<void>(`${this.config.endpoint}/${id}/test`, {}).pipe(
+    return this.apiService.post<void>(`${this.config.endpoint}/${id}/test`, null).pipe(
       tap(() => this.logger.info('Webhook test triggered', { id })),
       catchError(error => {
         this.logger.error('Failed to test webhook', error);

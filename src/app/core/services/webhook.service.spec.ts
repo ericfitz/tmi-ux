@@ -425,7 +425,7 @@ describe('WebhookService', () => {
       service.test(testId).subscribe(() => {
         expect(mockApiService.post).toHaveBeenCalledWith(
           'admin/webhooks/subscriptions/webhook-123/test',
-          {},
+          null,
         );
       });
     });

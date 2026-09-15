@@ -25,7 +25,7 @@ export class PickerTokenService {
 
   // SEM@2bb8e215d328a4dfa2120c7644203ee293a9a7d0: fetch a short-lived picker token for a content provider from the API
   mint(providerId: ContentProviderId): Observable<PickerTokenResponse> {
-    return this.apiService.post<PickerTokenResponse>(`me/picker_tokens/${providerId}`, {}).pipe(
+    return this.apiService.post<PickerTokenResponse>(`me/picker_tokens/${providerId}`, null).pipe(
       tap(() => this.logger.debug('Picker token minted', { providerId })),
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 404) {
