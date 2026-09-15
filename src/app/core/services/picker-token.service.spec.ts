@@ -39,7 +39,7 @@ describe('PickerTokenService', () => {
 
     const result = await firstValueFrom(svc.mint('google_workspace'));
 
-    expect(mockApi.post).toHaveBeenCalledWith('me/picker_tokens/google_workspace', {});
+    expect(mockApi.post).toHaveBeenCalledWith('me/picker_tokens/google_workspace', null);
     expect(result).toEqual(response);
   });
 

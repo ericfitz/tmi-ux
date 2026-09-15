@@ -38,10 +38,10 @@ export class IdentityLinkService {
 
   // SEM@c7fdda9a5579025128240fafba77e4d5cb14fd1c: initiate an identity link flow for the given identity provider
   startLink(idp: string): Observable<IdentityLinkStartResponse> {
-    // POST with query params + empty body (ApiService.post takes no params arg).
+    // POST with query params and no body (ApiService.post takes no params arg).
     const qs = new URLSearchParams({ idp, client_callback: this.linkCallbackUrl }).toString();
     return this.api
-      .post<IdentityLinkStartResponse>(`me/identities/link/start?${qs}`, {})
+      .post<IdentityLinkStartResponse>(`me/identities/link/start?${qs}`, null)
       .pipe(this.mapStepUp());
   }
 
