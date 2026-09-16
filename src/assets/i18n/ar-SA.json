@@ -79,7 +79,11 @@
       "noAddons": "لم يتم العثور على ملحقات.",
       "objectTypesTooltip": "ينطبق على أنواع الكائنات هذه",
       "subtitle": "تكوين الملحقات لتوسيع وظائف TMI.",
-      "title": "إدارة الملحقات"
+      "title": "إدارة الملحقات",
+      "editDialog": {
+        "title": "تعديل الإضافة"
+      },
+      "errorUpdatingAddon": "فشل تحديث الإضافة."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "تكوين اشتراكات Webhook لإشعارات الأحداث.",
       "title": "إدارة Webhooks",
       "triggerEvents": "أحداث التشغيل",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "تعديل webhook"
+      }
     }
   },
   "adminSurveys": {

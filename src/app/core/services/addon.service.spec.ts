@@ -20,6 +20,7 @@ describe('AddonService', () => {
     get: ReturnType<typeof vi.fn>;
     post: ReturnType<typeof vi.fn>;
     put: ReturnType<typeof vi.fn>;
+    patch: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
   };
   let mockLoggerService: {
@@ -59,6 +60,7 @@ describe('AddonService', () => {
       get: vi.fn(),
       post: vi.fn(),
       put: vi.fn(),
+      patch: vi.fn(),
       delete: vi.fn(),
     };
 
@@ -338,55 +340,38 @@ describe('AddonService', () => {
     });
   });
 
-  describe('update()', () => {
+  describe('patch()', () => {
     const testId = 'addon-123';
+    const operations = [{ op: 'replace' as const, path: '/name', value: 'Renamed' }];
 
-    it('should call API with correct endpoint and data', () => {
-      mockApiService.put.mockReturnValue(of(mockAddon));
+    it('should send JSON Patch operations to the item endpoint', () => {
+      mockApiService.patch.mockReturnValue(of(mockAddon));
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.update(testId, mockCreateRequest).subscribe(addon => {
-        expect(mockApiService.put).toHaveBeenCalledWith('addons/addon-123', mockCreateRequest);
-        expect(addon).toEqual(mockAddon);
+      service.patch(testId, operations).subscribe(result => {
+        expect(mockApiService.patch).toHaveBeenCalledWith('addons/addon-123', operations);
+        expect(result).toEqual(mockAddon);
       });
     });
 
-    it('should log info message on success', () => {
-      mockApiService.put.mockReturnValue(of(mockAddon));
+    it('should log info and refresh the list on success', () => {
+      mockApiService.patch.mockReturnValue(of(mockAddon));
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.update(testId, mockCreateRequest).subscribe(() => {
+      service.patch(testId, operations).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Addon updated', { id: mockAddon.id });
-      });
-    });
-
-    it('should refresh addon list after update', () => {
-      mockApiService.put.mockReturnValue(of(mockAddon));
-      mockApiService.get.mockReturnValue(of(mockListResponse));
-
-      service.update(testId, mockCreateRequest).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('addons', undefined);
       });
     });
 
-    it('should handle API errors and log them', () => {
+    it('should log and rethrow API errors without refreshing', () => {
       const error = new Error('Update failed');
-      mockApiService.put.mockReturnValue(throwError(() => error));
+      mockApiService.patch.mockReturnValue(throwError(() => error));
 
-      service.update(testId, mockCreateRequest).subscribe({
-        error: err => {
+      service.patch(testId, operations).subscribe({
+        error: (err: unknown) => {
           expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to update addon', error);
           expect(err).toBe(error);
-        },
-      });
-    });
-
-    it('should not refresh list if update fails', () => {
-      const error = new Error('Update failed');
-      mockApiService.put.mockReturnValue(throwError(() => error));
-
-      service.update(testId, mockCreateRequest).subscribe({
-        error: () => {
           expect(mockApiService.get).not.toHaveBeenCalled();
         },
       });

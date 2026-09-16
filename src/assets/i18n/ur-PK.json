@@ -79,7 +79,11 @@
       "noAddons": "کوئی ایڈ آنز نہیں ملے۔",
       "objectTypesTooltip": "ان آبجیکٹ اقسام پر لاگو ہوتا ہے",
       "subtitle": "TMI کی فعالیت بڑھانے کے لیے ایڈ آنز ترتیب دیں۔",
-      "title": "ایڈ آنز کا انتظام"
+      "title": "ایڈ آنز کا انتظام",
+      "editDialog": {
+        "title": "ایڈ آن میں ترمیم کریں"
+      },
+      "errorUpdatingAddon": "ایڈ آن اپ ڈیٹ کرنے میں ناکامی۔"
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "ایونٹ نوٹیفیکیشنز کے لیے webhook سبسکرپشنز ترتیب دیں۔",
       "title": "Webhooks کا انتظام",
       "triggerEvents": "ٹرگر ایونٹس",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "ویب ہک میں ترمیم کریں"
+      }
     }
   },
   "adminSurveys": {

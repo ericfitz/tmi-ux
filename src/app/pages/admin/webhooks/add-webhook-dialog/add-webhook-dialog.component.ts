@@ -1,7 +1,15 @@
-import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+  Inject,
+  Optional,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -14,16 +22,23 @@ import {
   ConfirmActionDialogComponent,
   ConfirmActionDialogResult,
 } from '@app/shared/components/confirm-action-dialog/confirm-action-dialog.component';
-import { WebhookSubscriptionInput } from '@app/types/webhook.types';
+import { WebhookSubscription, WebhookSubscriptionInput } from '@app/types/webhook.types';
 import { WebhookService } from '@app/core/services/webhook.service';
+import { replaceOperations } from '@app/shared/utils/json-patch.util';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 import { LoggerService } from '@app/core/services/logger.service';
 
 /**
  * Add Webhook Dialog Component
  *
- * Dialog for creating new webhook subscriptions.
+ * Dialog for creating or editing webhook subscriptions.
  * Collects webhook name, URL, events, and optional configuration.
  */
+export interface AddWebhookDialogData {
+  /** When set, the dialog edits this subscription instead of creating one. */
+  webhook?: WebhookSubscription;
+}
+
 @Component({
   selector: 'app-add-webhook-dialog',
   standalone: true,
@@ -36,7 +51,12 @@ import { LoggerService } from '@app/core/services/logger.service';
     TranslocoModule,
   ],
   template: `
-    <h2 mat-dialog-title [transloco]="'admin.webhooks.addDialog.title'">Add Webhook</h2>
+    <h2
+      mat-dialog-title
+      [transloco]="isEdit ? 'admin.webhooks.editDialog.title' : 'admin.webhooks.addDialog.title'"
+    >
+      Add Webhook
+    </h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="webhook-form">
         <mat-form-field class="full-width">
@@ -120,26 +140,28 @@ import { LoggerService } from '@app/core/services/logger.service';
           }
         </mat-form-field>
 
-        <mat-form-field class="full-width">
-          <mat-label [transloco]="'admin.webhooks.addDialog.secret'">Secret (Optional)</mat-label>
-          <input
-            matInput
-            data-testid="add-webhook-secret-input"
-            formControlName="secret"
-            type="password"
-            autocomplete="off"
-            [placeholder]="'admin.webhooks.addDialog.secretPlaceholder' | transloco"
-          />
-          <mat-hint [transloco]="'admin.webhooks.addDialog.secretHint'"
-            >HMAC secret for signing payloads (auto-generated if empty)</mat-hint
-          >
-        </mat-form-field>
+        @if (!isEdit) {
+          <mat-form-field class="full-width">
+            <mat-label [transloco]="'admin.webhooks.addDialog.secret'">Secret (Optional)</mat-label>
+            <input
+              matInput
+              data-testid="add-webhook-secret-input"
+              formControlName="secret"
+              type="password"
+              autocomplete="off"
+              [placeholder]="'admin.webhooks.addDialog.secretPlaceholder' | transloco"
+            />
+            <mat-hint [transloco]="'admin.webhooks.addDialog.secretHint'"
+              >HMAC secret for signing payloads (auto-generated if empty)</mat-hint
+            >
+          </mat-form-field>
 
-        <mat-checkbox formControlName="createAutomationUser" class="full-width">
-          <span [transloco]="'admin.webhooks.addDialog.createAutomationUser'">
-            Create automation user for this webhook
-          </span>
-        </mat-checkbox>
+          <mat-checkbox formControlName="createAutomationUser" class="full-width">
+            <span [transloco]="'admin.webhooks.addDialog.createAutomationUser'">
+              Create automation user for this webhook
+            </span>
+          </mat-checkbox>
+        }
 
         @if (errorMessage) {
           <mat-error class="form-error">
@@ -162,7 +184,9 @@ import { LoggerService } from '@app/core/services/logger.service';
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
-        <span [transloco]="'admin.webhooks.addDialog.save'">Create Webhook</span>
+        <span [transloco]="isEdit ? 'common.save' : 'admin.webhooks.addDialog.save'"
+          >Create Webhook</span
+        >
       </button>
     </mat-dialog-actions>
   `,
@@ -208,6 +232,8 @@ export class AddWebhookDialogComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
+  /** Form value at open time; edit mode diffs the current value against this. */
+  private initial: { name: string; url: string; events: string[] } | null = null;
   saving = false;
   errorMessage = '';
   showHttpWarning = false;
@@ -254,17 +280,27 @@ export class AddWebhookDialogComponent implements OnInit {
     private webhookService: WebhookService,
     private fb: FormBuilder,
     private logger: LoggerService,
+    @Optional() @Inject(MAT_DIALOG_DATA) private data: AddWebhookDialogData | null,
   ) {}
+
+  /** True when editing an existing subscription. */
+  get isEdit(): boolean {
+    return !!this.data?.webhook;
+  }
 
   // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: build the webhook form and subscribe to URL changes for http-warning detection
   ngOnInit(): void {
+    const existing = this.data?.webhook;
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
-      events: [[], Validators.required],
+      name: [existing?.name ?? '', Validators.required],
+      url: [existing?.url ?? '', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
+      events: [existing?.events ?? [], Validators.required],
       secret: [''],
       createAutomationUser: [false],
     });
+    if (existing) {
+      this.initial = this.form.value as { name: string; url: string; events: string[] };
+    }
 
     this.form
       .get('url')!
@@ -286,7 +322,7 @@ export class AddWebhookDialogComponent implements OnInit {
         data: {
           title: 'admin.webhooks.addDialog.urlHttpWarningTitle',
           message: 'admin.webhooks.addDialog.urlHttpWarning',
-          confirmLabel: 'admin.webhooks.addDialog.save',
+          confirmLabel: this.isEdit ? 'common.save' : 'admin.webhooks.addDialog.save',
           confirmIsDestructive: false,
           icon: 'warning',
         },
@@ -298,12 +334,51 @@ export class AddWebhookDialogComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((result: ConfirmActionDialogResult | undefined) => {
           if (result?.confirmed) {
-            this.createWebhook();
+            this.saveWebhook();
           }
         });
     } else {
+      this.saveWebhook();
+    }
+  }
+
+  private saveWebhook(): void {
+    if (this.data?.webhook) {
+      this.patchWebhook(this.data.webhook);
+    } else {
       this.createWebhook();
     }
+  }
+
+  /** Send only the changed fields as JSON Patch; an unchanged form just closes. */
+  private patchWebhook(existing: WebhookSubscription): void {
+    const current = this.form.value as { name: string; url: string; events: string[] };
+    const operations = replaceOperations(this.initial ?? current, current, [
+      'name',
+      'url',
+      'events',
+    ]);
+    if (operations.length === 0) {
+      this.dialogRef.close(false);
+      return;
+    }
+
+    this.saving = true;
+    this.errorMessage = '';
+    this.webhookService
+      .patch(existing.id, operations)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: webhook => {
+          this.logger.info('Webhook updated successfully', { id: webhook.id });
+          this.dialogRef.close({ webhook, createAutomationUser: false });
+        },
+        error: (error: unknown) => {
+          this.logger.error('Failed to update webhook', error);
+          this.errorMessage = getErrorMessage(error, 'Failed to update webhook. Please try again.');
+          this.saving = false;
+        },
+      });
   }
 
   // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: store a new webhook subscription via the API and close the dialog on success
@@ -337,9 +412,9 @@ export class AddWebhookDialogComponent implements OnInit {
             createAutomationUser: formValue.createAutomationUser,
           });
         },
-        error: (error: { error?: { message?: string } }) => {
+        error: (error: unknown) => {
           this.logger.error('Failed to create webhook', error);
-          this.errorMessage = error.error?.message || 'Failed to create webhook. Please try again.';
+          this.errorMessage = getErrorMessage(error, 'Failed to create webhook. Please try again.');
           this.saving = false;
         },
       });

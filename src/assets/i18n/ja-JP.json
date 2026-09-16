@@ -79,7 +79,11 @@
       "noAddons": "アドオンが見つかりません。",
       "objectTypesTooltip": "これらのオブジェクトタイプに適用",
       "subtitle": "TMI機能を拡張するためのアドオンを設定します。",
-      "title": "アドオンの管理"
+      "title": "アドオンの管理",
+      "editDialog": {
+        "title": "アドオンを編集"
+      },
+      "errorUpdatingAddon": "アドオンの更新に失敗しました。"
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "イベント通知のWebhookサブスクリプションを設定します。",
       "title": "Webhookの管理",
       "triggerEvents": "トリガーイベント",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Webhook を編集"
+      }
     }
   },
   "adminSurveys": {

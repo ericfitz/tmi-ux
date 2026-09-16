@@ -79,7 +79,11 @@
       "noAddons": "ไม่พบส่วนเสริม",
       "objectTypesTooltip": "ใช้กับประเภทออบเจกต์เหล่านี้",
       "subtitle": "กำหนดค่าส่วนเสริมสำหรับขยายฟังก์ชันของ TMI",
-      "title": "จัดการส่วนเสริม"
+      "title": "จัดการส่วนเสริม",
+      "editDialog": {
+        "title": "แก้ไขส่วนเสริม"
+      },
+      "errorUpdatingAddon": "อัปเดตส่วนเสริมไม่สำเร็จ"
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "กำหนดค่าการสมัครรับ Webhook สำหรับการแจ้งเตือนเหตุการณ์",
       "title": "จัดการ Webhook",
       "triggerEvents": "เหตุการณ์ทริกเกอร์",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "แก้ไข webhook"
+      }
     }
   },
   "adminSurveys": {

@@ -79,7 +79,11 @@
       "noAddons": "Tidak ada addon ditemukan.",
       "objectTypesTooltip": "Berlaku untuk Jenis Objek Ini",
       "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI.",
-      "title": "Kelola Addon"
+      "title": "Kelola Addon",
+      "editDialog": {
+        "title": "Edit add-on"
+      },
+      "errorUpdatingAddon": "Gagal memperbarui add-on."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa.",
       "title": "Kelola Webhook",
       "triggerEvents": "Peristiwa pemicu",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Edit webhook"
+      }
     }
   },
   "adminSurveys": {

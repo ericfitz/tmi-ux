@@ -79,7 +79,11 @@
       "noAddons": "कोई ऐडऑन नहीं मिला",
       "objectTypesTooltip": "इन ऑब्जेक्ट प्रकार पर लागू होता है",
       "subtitle": "TMI कार्यक्षमता बढ़ाने के लिए ऐडऑन कॉन्फ़िगर करें",
-      "title": "ऐडऑन प्रबंधित करें"
+      "title": "ऐडऑन प्रबंधित करें",
+      "editDialog": {
+        "title": "ऐड-ऑन संपादित करें"
+      },
+      "errorUpdatingAddon": "ऐड-ऑन अपडेट करने में विफल।"
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "बाहरी एकीकरण के लिए webhooks कॉन्फ़िगर करें",
       "title": "Webhooks प्रबंधित करें",
       "triggerEvents": "ट्रिगर इवेंट",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "वेबहुक संपादित करें"
+      }
     }
   },
   "adminSurveys": {

@@ -1,4 +1,12 @@
-import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+  Inject,
+  Optional,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -7,7 +15,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -15,9 +23,11 @@ import {
   CORE_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { AddonObjectType, CreateAddonRequest } from '@app/types/addon.types';
+import { Addon, AddonObjectType, CreateAddonRequest } from '@app/types/addon.types';
 import { WebhookSubscription } from '@app/types/webhook.types';
 import { AddonService } from '@app/core/services/addon.service';
+import { replaceOperations } from '@app/shared/utils/json-patch.util';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
 
@@ -65,9 +75,21 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
 /**
  * Add Addon Dialog Component
  *
- * Dialog for creating new addons.
+ * Dialog for creating or editing addons.
  * Collects addon configuration including webhook association and object types.
  */
+interface AddonFormValue {
+  name: string;
+  description: string;
+  icon: string;
+  objects: AddonObjectType[];
+}
+
+export interface AddAddonDialogData {
+  /** When set, the dialog edits this addon instead of creating one. */
+  addon?: Addon;
+}
+
 @Component({
   selector: 'app-add-addon-dialog',
   standalone: true,
@@ -79,7 +101,12 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
     TranslocoModule,
   ],
   template: `
-    <h2 mat-dialog-title [transloco]="'admin.addons.addDialog.title'">Add Addon</h2>
+    <h2
+      mat-dialog-title
+      [transloco]="isEdit ? 'admin.addons.editDialog.title' : 'admin.addons.addDialog.title'"
+    >
+      Add Addon
+    </h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="addon-form">
         <mat-form-field class="full-width">
@@ -199,7 +226,9 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
-        <span [transloco]="'admin.addons.addDialog.save'">Create Addon</span>
+        <span [transloco]="isEdit ? 'common.save' : 'admin.addons.addDialog.save'"
+          >Create Addon</span
+        >
       </button>
     </mat-dialog-actions>
   `,
@@ -276,6 +305,8 @@ export class AddAddonDialogComponent implements OnInit {
   ];
   saving = false;
   errorMessage = '';
+  /** Form value at open time; edit mode diffs the current value against this. */
+  private initial: AddonFormValue | null = null;
 
   // SEM@2232d9288b6a3a6d9c17e100a4d04fdb902f92d5: inject addon, webhook, form, logger, and translation dependencies (pure)
   constructor(
@@ -285,17 +316,30 @@ export class AddAddonDialogComponent implements OnInit {
     private fb: FormBuilder,
     private logger: LoggerService,
     private transloco: TranslocoService,
+    @Optional() @Inject(MAT_DIALOG_DATA) private data: AddAddonDialogData | null,
   ) {}
+
+  /** True when editing an existing addon; the webhook association is then read-only. */
+  get isEdit(): boolean {
+    return !!this.data?.addon;
+  }
 
   // SEM@54e7d611dc1f2c8ef1c351a57a5968d8be72defc: build the addon form and fetch active webhooks for selection (reads DB)
   ngOnInit(): void {
+    const existing = this.data?.addon;
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
-      webhook_id: ['', Validators.required],
-      icon: ['material-symbols:extension', iconFormatValidator],
-      objects: [[]],
+      name: [existing?.name ?? '', Validators.required],
+      description: [existing?.description ?? ''],
+      webhook_id: [
+        { value: existing?.webhook_id ?? '', disabled: this.isEdit },
+        Validators.required,
+      ],
+      icon: [existing?.icon ?? 'material-symbols:extension', iconFormatValidator],
+      objects: [existing?.objects ?? []],
     });
+    if (existing) {
+      this.initial = this.form.value as AddonFormValue;
+    }
 
     this.webhookService
       .list()
@@ -313,6 +357,10 @@ export class AddAddonDialogComponent implements OnInit {
 
   // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: validate the form and create the addon via the API, then close (mutates shared state)
   onSave(): void {
+    if (this.data?.addon) {
+      this.patchAddon(this.data.addon);
+      return;
+    }
     if (this.form.valid && !this.saving) {
       this.saving = true;
       this.errorMessage = '';
@@ -339,14 +387,54 @@ export class AddAddonDialogComponent implements OnInit {
             this.logger.info('Addon created successfully');
             this.dialogRef.close(true);
           },
-          error: (error: { error?: { message?: string } }) => {
+          error: (error: unknown) => {
             this.logger.error('Failed to create addon', error);
-            this.errorMessage =
-              error.error?.message || this.transloco.translate('admin.addons.errorCreatingAddon');
+            this.errorMessage = getErrorMessage(
+              error,
+              this.transloco.translate('admin.addons.errorCreatingAddon'),
+            );
             this.saving = false;
           },
         });
     }
+  }
+
+  /** Send only the changed fields as JSON Patch; an unchanged form just closes. */
+  private patchAddon(existing: Addon): void {
+    if (!this.form.valid || this.saving) {
+      return;
+    }
+    const current = this.form.value as AddonFormValue;
+    const operations = replaceOperations(this.initial ?? current, current, [
+      'name',
+      'description',
+      'icon',
+      'objects',
+    ]);
+    if (operations.length === 0) {
+      this.dialogRef.close(false);
+      return;
+    }
+
+    this.saving = true;
+    this.errorMessage = '';
+    this.addonService
+      .patch(existing.id, operations)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.logger.info('Addon updated successfully', { id: existing.id });
+          this.dialogRef.close(true);
+        },
+        error: (error: unknown) => {
+          this.logger.error('Failed to update addon', error);
+          this.errorMessage = getErrorMessage(
+            error,
+            this.transloco.translate('admin.addons.errorUpdatingAddon'),
+          );
+          this.saving = false;
+        },
+      });
   }
 
   // SEM@36c98b471f199ad07ab7f890bf1fd25427d95e56: dismiss the dialog without saving (pure)

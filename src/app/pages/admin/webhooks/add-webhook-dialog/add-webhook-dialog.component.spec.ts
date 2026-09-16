@@ -9,20 +9,24 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
-import { AddWebhookDialogComponent } from './add-webhook-dialog.component';
+import { AddWebhookDialogComponent, AddWebhookDialogData } from './add-webhook-dialog.component';
 
 describe('AddWebhookDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockDialog: { open: ReturnType<typeof vi.fn> };
-  let mockWebhookService: { create: ReturnType<typeof vi.fn> };
+  let mockWebhookService: {
+    create: ReturnType<typeof vi.fn>;
+    patch: ReturnType<typeof vi.fn>;
+  };
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let envInjector: EnvironmentInjector;
 
   // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build an AddWebhookDialogComponent with mocked dependencies for testing (pure)
-  function build(): AddWebhookDialogComponent {
+  function build(data: AddWebhookDialogData | null = null): AddWebhookDialogComponent {
     const component = runInInjectionContext(
       envInjector,
       () =>
@@ -32,6 +36,7 @@ describe('AddWebhookDialogComponent', () => {
           mockWebhookService as never,
           new FormBuilder(),
           mockLogger as never,
+          data,
         ),
     );
     component.ngOnInit();
@@ -41,7 +46,10 @@ describe('AddWebhookDialogComponent', () => {
   beforeEach(() => {
     mockDialogRef = { close: vi.fn() };
     mockDialog = { open: vi.fn() };
-    mockWebhookService = { create: vi.fn(() => of({ id: 'wh-1' })) };
+    mockWebhookService = {
+      create: vi.fn(() => of({ id: 'wh-1' })),
+      patch: vi.fn(() => of({ id: 'wh-1', status: 'pending_verification' })),
+    };
     mockLogger = {
       debug: vi.fn(),
       debugComponent: vi.fn(),
@@ -165,7 +173,13 @@ describe('AddWebhookDialogComponent', () => {
 
     it('surfaces the server error message on failure', () => {
       mockWebhookService.create.mockReturnValue(
-        throwError(() => ({ error: { message: 'url unreachable' } })),
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 400,
+              error: { error: 'invalid_request', error_description: 'url unreachable' },
+            }),
+        ),
       );
       const component = build();
       fillValidForm(component, 'https://example.com/hook');
@@ -183,6 +197,66 @@ describe('AddWebhookDialogComponent', () => {
 
       component.onCancel();
 
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+  });
+  describe('edit mode', () => {
+    const existing = {
+      id: 'wh-1',
+      name: 'Old',
+      url: 'https://old.example.com/hook',
+      events: ['threat.created'],
+    } as never;
+
+    it('pre-fills the form from the subscription and reports isEdit', () => {
+      const component = build({ webhook: existing });
+
+      expect(component.isEdit).toBe(true);
+      expect(component.form.value).toMatchObject({
+        name: 'Old',
+        url: 'https://old.example.com/hook',
+        events: ['threat.created'],
+      });
+    });
+
+    it('sends only the changed fields as JSON Patch and closes with the result', () => {
+      const component = build({ webhook: existing });
+      component.form.patchValue({ url: 'https://new.example.com/hook' });
+
+      component.onSave();
+
+      expect(mockWebhookService.patch).toHaveBeenCalledWith('wh-1', [
+        { op: 'replace', path: '/url', value: 'https://new.example.com/hook' },
+      ]);
+      expect(mockWebhookService.create).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        webhook: { id: 'wh-1', status: 'pending_verification' },
+        createAutomationUser: false,
+      });
+    });
+
+    it('routes an http url through the confirm dialog and then patches', () => {
+      mockDialog.open.mockReturnValue({ afterClosed: () => of({ confirmed: true }) });
+      const component = build({ webhook: existing });
+      component.form.patchValue({ url: 'http://plain.example.com/hook' });
+
+      component.onSave();
+
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ data: expect.objectContaining({ confirmLabel: 'common.save' }) }),
+      );
+      expect(mockWebhookService.patch).toHaveBeenCalledWith('wh-1', [
+        { op: 'replace', path: '/url', value: 'http://plain.example.com/hook' },
+      ]);
+    });
+
+    it('closes without a request when nothing changed', () => {
+      const component = build({ webhook: existing });
+
+      component.onSave();
+
+      expect(mockWebhookService.patch).not.toHaveBeenCalled();
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
   });
