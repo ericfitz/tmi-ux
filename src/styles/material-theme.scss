@@ -121,6 +121,69 @@ $dark-colorblind-theme: mat.define-theme(
 );
 
 // =============================================================================
+// SURFACE TOKEN OVERRIDES
+// =============================================================================
+
+// Material's component stylesheets paint surfaces from their own tokens, which
+// all-component-colors emits as literal M3 values (near-black in dark mode).
+// Point those tokens at the app's --theme-* variables so every component
+// follows the app palette. Must be included inside each theme block so the
+// override outranks the tokens emitted there.
+@mixin app-surface-tokens {
+  @include mat.card-overrides(
+    (
+      elevated-container-color: var(--theme-card),
+      outlined-container-color: var(--theme-card),
+    )
+  );
+  @include mat.dialog-overrides(
+    (
+      container-color: var(--theme-card),
+    )
+  );
+  @include mat.expansion-overrides(
+    (
+      container-background-color: var(--theme-card),
+    )
+  );
+  @include mat.paginator-overrides(
+    (
+      container-background-color: var(--theme-card),
+    )
+  );
+  @include mat.table-overrides(
+    (
+      background-color: var(--theme-card),
+    )
+  );
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--theme-surface),
+    )
+  );
+  @include mat.menu-overrides(
+    (
+      container-color: var(--theme-card),
+    )
+  );
+  @include mat.select-overrides(
+    (
+      panel-background-color: var(--theme-card),
+    )
+  );
+  @include mat.autocomplete-overrides(
+    (
+      background-color: var(--theme-card),
+    )
+  );
+  @include mat.datepicker-overrides(
+    (
+      calendar-container-background-color: var(--theme-card),
+    )
+  );
+}
+
+// =============================================================================
 // APPLY THEMES
 // =============================================================================
 
@@ -128,16 +191,19 @@ $dark-colorblind-theme: mat.define-theme(
 // Apply all Material 3 component styles (color, typography, density)
 html {
   @include mat.all-component-themes($light-normal-theme);
+  @include app-surface-tokens;
 }
 
 // Light + Colorblind (colorblind-palette class)
 .colorblind-palette {
   @include mat.all-component-colors($light-colorblind-theme);
+  @include app-surface-tokens;
 }
 
 // Dark + Normal (dark-theme class)
 .dark-theme {
   @include mat.all-component-colors($dark-normal-theme);
+  @include app-surface-tokens;
 
   // Dark theme custom CSS variables for application-specific styling
   --theme-background: #303030;
@@ -176,6 +242,7 @@ html {
 // Dark + Colorblind (both classes)
 .dark-theme.colorblind-palette {
   @include mat.all-component-colors($dark-colorblind-theme);
+  @include app-surface-tokens;
 
   // Colorblind-safe accents that still pass contrast on dark background.
   // Use a lighter sky-blue that achieves WCAG AA on --theme-surface (#424242).

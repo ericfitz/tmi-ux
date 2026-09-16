@@ -17,7 +17,6 @@
 mat-toolbar,
 .mat-toolbar,
 .mat-mdc-toolbar {
-  background-color: var(--theme-surface);
   color: var(--theme-text-primary);
 }
 
@@ -181,21 +180,6 @@ $dark-colorblind-theme: mat.define-theme(
 }
 
 // =============================================================================
-// CARD STYLING
-// =============================================================================
-
-// Cards with theme-aware colors and enhanced visibility
-mat-card,
-.mat-mdc-card {
-  background-color: var(--theme-card);
-  border: 1px solid var(--theme-divider);
-  box-shadow:
-    0 4px 8px rgb(0 0 0 / 12%),
-    0 2px 4px rgb(0 0 0 / 8%);
-  border-radius: 20px;
-}
-
-// =============================================================================
 // LIST ITEM STYLING
 // =============================================================================
 
@@ -256,7 +240,6 @@ body {
 }
 
 .mat-mdc-dialog-container {
-  background-color: var(--theme-card);
   color: var(--theme-text-primary);
 
   .mat-mdc-dialog-content {
@@ -274,8 +257,6 @@ body {
 // =============================================================================
 
 .mat-mdc-menu-panel {
-  background-color: var(--theme-card);
-
   .mat-mdc-menu-item {
     color: var(--theme-text-primary);
 
@@ -324,15 +305,6 @@ body {
 }
 
 // =============================================================================
-// TOOLTIP STYLING
-// =============================================================================
-
-.mat-mdc-tooltip {
-  background-color: var(--theme-surface);
-  color: var(--theme-text-primary);
-}
-
-// =============================================================================
 // SNACKBAR STYLING
 // =============================================================================
 
@@ -345,8 +317,6 @@ body {
 // =============================================================================
 
 .mat-mdc-table {
-  background-color: var(--theme-card);
-
   .mat-mdc-header-cell {
     color: var(--theme-text-primary);
     border-bottom-color: var(--theme-divider);
@@ -367,8 +337,6 @@ body {
 // =============================================================================
 
 .mat-mdc-select-panel {
-  background-color: var(--theme-card);
-
   .mat-mdc-option {
     color: var(--theme-text-primary);
 
@@ -387,7 +355,6 @@ body {
 // =============================================================================
 
 .mat-expansion-panel {
-  background-color: var(--theme-card);
   color: var(--theme-text-primary);
 
   .mat-expansion-panel-header {
@@ -472,9 +439,6 @@ body {
   // Card styling adjustments
   mat-card,
   .mat-mdc-card {
-    // Dark theme cards get slightly elevated surface color
-    background-color: var(--theme-surface);
-    border-color: var(--theme-divider);
     box-shadow:
       0 4px 8px rgb(0 0 0 / 24%),
       0 2px 4px rgb(0 0 0 / 16%);

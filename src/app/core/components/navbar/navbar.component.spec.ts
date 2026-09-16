@@ -59,6 +59,7 @@ describe('NavbarComponent', () => {
   let mockCdr: { detectChanges: ReturnType<typeof vi.fn> };
   let mockBrandingConfigService: {
     logoImageUrl$: BehaviorSubject<string>;
+    isDefaultLogo$: BehaviorSubject<boolean>;
     organizationName$: BehaviorSubject<string | null>;
   };
 
@@ -113,6 +114,7 @@ describe('NavbarComponent', () => {
 
     mockBrandingConfigService = {
       logoImageUrl$: new BehaviorSubject('/TMI-FullLogo-Transparent-512x512.png'),
+      isDefaultLogo$: new BehaviorSubject(true),
       organizationName$: new BehaviorSubject<string | null>(null),
     };
 

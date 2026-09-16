@@ -126,6 +126,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private readonly brandingConfig = inject(BrandingConfigService);
   readonly logoImageUrl$ = this.brandingConfig.logoImageUrl$;
+  readonly isDefaultLogo$ = this.brandingConfig.isDefaultLogo$;
   readonly brandingOrgName$ = this.brandingConfig.organizationName$;
 
   // SEM@a9c8199869c71a6a4b94e2341d3d1e5a8c80d310: inject dependencies and load available UI languages (pure)
