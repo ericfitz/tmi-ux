@@ -24,7 +24,10 @@ import { Addon } from '@app/types/addon.types';
 import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { AddAddonDialogComponent } from './add-addon-dialog/add-addon-dialog.component';
+import {
+  AddAddonDialogComponent,
+  AddAddonDialogData,
+} from './add-addon-dialog/add-addon-dialog.component';
 import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
@@ -192,6 +195,20 @@ export class AdminAddonsComponent implements OnInit {
     });
 
     dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result) {
+          this.loadAddons();
+        }
+      });
+  }
+
+  /** Open the addon dialog in edit mode and reload the list if it saved. */
+  onEditAddon(addon: Addon): void {
+    const data: AddAddonDialogData = { addon };
+    this.dialog
+      .open(AddAddonDialogComponent, { width: '700px', data })
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {

@@ -24,6 +24,7 @@ describe('WebhookService', () => {
     get: ReturnType<typeof vi.fn>;
     post: ReturnType<typeof vi.fn>;
     put: ReturnType<typeof vi.fn>;
+    patch: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
   };
   let mockLoggerService: {
@@ -68,6 +69,7 @@ describe('WebhookService', () => {
       get: vi.fn(),
       post: vi.fn(),
       put: vi.fn(),
+      patch: vi.fn(),
       delete: vi.fn(),
     };
 
@@ -300,60 +302,43 @@ describe('WebhookService', () => {
     });
   });
 
-  describe('update()', () => {
+  describe('patch()', () => {
     const testId = 'webhook-123';
+    const operations = [{ op: 'replace' as const, path: '/name', value: 'Renamed' }];
 
-    it('should call API with correct endpoint and data', () => {
-      mockApiService.put.mockReturnValue(of(mockWebhook));
+    it('should send JSON Patch operations to the item endpoint', () => {
+      mockApiService.patch.mockReturnValue(of(mockWebhook));
       mockApiService.get.mockReturnValue(of(mockResponse));
 
-      service.update(testId, mockWebhookInput).subscribe(webhook => {
-        expect(mockApiService.put).toHaveBeenCalledWith(
+      service.patch(testId, operations).subscribe(result => {
+        expect(mockApiService.patch).toHaveBeenCalledWith(
           'admin/webhooks/subscriptions/webhook-123',
-          mockWebhookInput,
+          operations,
         );
-        expect(webhook).toEqual(mockWebhook);
+        expect(result).toEqual(mockWebhook);
       });
     });
 
-    it('should log info message on success', () => {
-      mockApiService.put.mockReturnValue(of(mockWebhook));
+    it('should log info and refresh the list on success', () => {
+      mockApiService.patch.mockReturnValue(of(mockWebhook));
       mockApiService.get.mockReturnValue(of(mockResponse));
 
-      service.update(testId, mockWebhookInput).subscribe(() => {
+      service.patch(testId, operations).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Webhook updated', {
           id: mockWebhook.id,
         });
-      });
-    });
-
-    it('should refresh webhook list after update', () => {
-      mockApiService.put.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of(mockResponse));
-
-      service.update(testId, mockWebhookInput).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
       });
     });
 
-    it('should handle API errors and log them', () => {
+    it('should log and rethrow API errors without refreshing', () => {
       const error = new Error('Update failed');
-      mockApiService.put.mockReturnValue(throwError(() => error));
+      mockApiService.patch.mockReturnValue(throwError(() => error));
 
-      service.update(testId, mockWebhookInput).subscribe({
-        error: err => {
+      service.patch(testId, operations).subscribe({
+        error: (err: unknown) => {
           expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to update webhook', error);
           expect(err).toBe(error);
-        },
-      });
-    });
-
-    it('should not refresh list if update fails', () => {
-      const error = new Error('Update failed');
-      mockApiService.put.mockReturnValue(throwError(() => error));
-
-      service.update(testId, mockWebhookInput).subscribe({
-        error: () => {
           expect(mockApiService.get).not.toHaveBeenCalled();
         },
       });

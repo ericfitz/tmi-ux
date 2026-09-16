@@ -79,7 +79,11 @@
       "noAddons": "未找到插件。",
       "objectTypesTooltip": "适用于这些对象类型",
       "subtitle": "配置插件以扩展 TMI 功能。",
-      "title": "管理插件"
+      "title": "管理插件",
+      "editDialog": {
+        "title": "编辑插件"
+      },
+      "errorUpdatingAddon": "更新插件失败。"
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "配置 webhook 订阅以接收事件通知。",
       "title": "管理 webhook",
       "triggerEvents": "触发事件",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "编辑 Webhook"
+      }
     }
   },
   "adminSurveys": {

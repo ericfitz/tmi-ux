@@ -79,7 +79,11 @@
       "noAddons": "애드온을 찾을 수 없습니다.",
       "objectTypesTooltip": "다음 객체 유형에 적용됩니다",
       "subtitle": "TMI 기능 확장을 위한 애드온을 구성합니다.",
-      "title": "애드온 관리"
+      "title": "애드온 관리",
+      "editDialog": {
+        "title": "애드온 편집"
+      },
+      "errorUpdatingAddon": "애드온을 업데이트하지 못했습니다."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "이벤트 알림을 위한 웹훅 구독을 구성합니다.",
       "title": "Webhooks 관리",
       "triggerEvents": "트리거 이벤트",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "웹훅 편집"
+      }
     }
   },
   "adminSurveys": {

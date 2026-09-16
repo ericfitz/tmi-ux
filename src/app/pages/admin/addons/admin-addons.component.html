@@ -78,6 +78,10 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #addonKebabMenu="matMenu">
+                  <button mat-menu-item data-testid="addons-edit-item" (click)="onEditAddon(addon)">
+                    <mat-icon>edit</mat-icon>
+                    <span [transloco]="'common.edit'">Edit</span>
+                  </button>
                   <button mat-menu-item (click)="onDeleteAddon(addon)">
                     <mat-icon>delete</mat-icon>
                     <span [transloco]="'admin.addons.deleteTooltip'">Delete</span>

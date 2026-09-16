@@ -79,7 +79,11 @@
       "noAddons": "Дополнения не найдены.",
       "objectTypesTooltip": "Применяется к этим типам объектов",
       "subtitle": "Настройка дополнений для расширения функциональности TMI.",
-      "title": "Управление дополнениями"
+      "title": "Управление дополнениями",
+      "editDialog": {
+        "title": "Изменить дополнение"
+      },
+      "errorUpdatingAddon": "Не удалось обновить дополнение."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "Настройка подписок вебхуков для уведомлений о событиях.",
       "title": "Управление вебхуками",
       "triggerEvents": "Триггерные события",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Изменить вебхук"
+      }
     }
   },
   "adminSurveys": {

@@ -79,7 +79,11 @@
       "noAddons": "לא נמצאו תוספים.",
       "objectTypesTooltip": "חל על סוגי אובייקטים אלה",
       "subtitle": "הגדר תוספים להרחבת פונקציונליות TMI.",
-      "title": "ניהול תוספים"
+      "title": "ניהול תוספים",
+      "editDialog": {
+        "title": "עריכת תוסף"
+      },
+      "errorUpdatingAddon": "עדכון התוסף נכשל."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "הגדר מנויי webhook להתראות אירועים.",
       "title": "ניהול webhooks",
       "triggerEvents": "אירועי הפעלה",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "עריכת webhook"
+      }
     }
   },
   "adminSurveys": {

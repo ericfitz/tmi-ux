@@ -11,6 +11,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
+import { JsonPatchOperation } from '@app/shared/utils/json-patch.util';
 
 /**
  * Configuration for an admin service
@@ -124,18 +125,17 @@ export abstract class AdminServiceBase<T, F extends object = object> {
   }
 
   /**
-   * Update an existing item.
+   * Partially update an existing item with JSON Patch operations.
    * @param id The item's ID
-   * @param request The update request data
-   * @param refreshAfter Whether to refresh the list after update (default: true)
+   * @param operations JSON Patch operations (application/json-patch+json)
+   * @param refreshAfter Whether to refresh the list after the update (default: true)
    */
-  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: update an existing admin entity by ID via PUT and optionally refresh the list
-  protected updateItem(
+  protected patchItem(
     id: string,
-    request: Record<string, unknown>,
+    operations: JsonPatchOperation[],
     refreshAfter = true,
   ): Observable<T> {
-    return this.apiService.put<T>(`${this.config.endpoint}/${id}`, request).pipe(
+    return this.apiService.patch<T>(`${this.config.endpoint}/${id}`, operations).pipe(
       tap(item => {
         this.logger.info(`${this.capitalize(this.config.entityName)} updated`, {
           id: this.getItemId(item),

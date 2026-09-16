@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AdminServiceBase } from './admin-service-base';
+import { JsonPatchOperation } from '@app/shared/utils/json-patch.util';
 import {
   ListWebhookSubscriptionsResponse,
   WebhookFilter,
@@ -61,11 +62,10 @@ export class WebhookService extends AdminServiceBase<WebhookSubscription, Webhoo
   }
 
   /**
-   * Update an existing webhook subscription
+   * Partially update an existing webhook subscription with JSON Patch operations
    */
-  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: update an existing webhook subscription by ID (reads DB)
-  public update(id: string, input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
-    return this.updateItem(id, input as unknown as Record<string, unknown>);
+  public patch(id: string, operations: JsonPatchOperation[]): Observable<WebhookSubscription> {
+    return this.patchItem(id, operations);
   }
 
   /**

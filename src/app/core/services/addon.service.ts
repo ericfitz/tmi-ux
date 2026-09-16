@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AdminServiceBase } from './admin-service-base';
+import { JsonPatchOperation } from '@app/shared/utils/json-patch.util';
 import {
   Addon,
   AddonFilter,
@@ -67,11 +68,10 @@ export class AddonService extends AdminServiceBase<Addon, AddonFilter> {
   }
 
   /**
-   * Update an existing addon
+   * Partially update an existing addon with JSON Patch operations
    */
-  // SEM@e19c6684da148f53fab89e000721a9721f83d6d2: update an existing addon by ID via the API and refresh the addon list (reads DB)
-  public update(id: string, request: CreateAddonRequest): Observable<Addon> {
-    return this.updateItem(id, request as unknown as Record<string, unknown>);
+  public patch(id: string, operations: JsonPatchOperation[]): Observable<Addon> {
+    return this.patchItem(id, operations);
   }
 
   /**

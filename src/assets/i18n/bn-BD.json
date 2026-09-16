@@ -101,7 +101,11 @@
       "noAddons": "কোনো অ্যাডঅন পাওয়া যায়নি",
       "objectTypesTooltip": "এই অবজেক্ট টাইপগুলিতে প্রযোজ্য",
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
-      "title": "অ্যাডঅন পরিচালনা করুন"
+      "title": "অ্যাডঅন পরিচালনা করুন",
+      "editDialog": {
+        "title": "অ্যাডঅন সম্পাদনা করুন"
+      },
+      "errorUpdatingAddon": "অ্যাডঅন আপডেট করা যায়নি।"
     },
     "audit": {
       "columns": {
@@ -503,7 +507,10 @@
       "subtitle": "ইভেন্ট বিজ্ঞপ্তির জন্য ওয়েবহুক সাবস্ক্রিপশন কনফিগার করুন",
       "title": "Webhooks পরিচালনা করুন",
       "triggerEvents": "ট্রিগার ইভেন্ট",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "ওয়েবহুক সম্পাদনা করুন"
+      }
     }
   },
   "admin.addons.addDialog.iconHint": "UI আইকন (উদাহরণ: \"material-symbols:security\", \"fa-regular fa-user-shield\")।",

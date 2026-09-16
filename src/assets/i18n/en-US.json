@@ -94,7 +94,11 @@
       "noAddons": "No addons found.",
       "objectTypesTooltip": "Applies to these object types",
       "subtitle": "Configure addons for extending TMI functionality.",
-      "title": "Manage addons"
+      "title": "Manage addons",
+      "editDialog": {
+        "title": "Edit addon"
+      },
+      "errorUpdatingAddon": "Failed to update addon."
     },
     "audit": {
       "columns": {
@@ -565,7 +569,10 @@
       "subtitle": "Configure webhook subscriptions for event notifications.",
       "title": "Manage webhooks",
       "triggerEvents": "Trigger events",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Edit webhook"
+      }
     }
   },
   "adminSurveys": {

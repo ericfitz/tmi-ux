@@ -25,7 +25,10 @@ import { WebhookSubscription } from '@app/types/webhook.types';
 import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
+import {
+  AddWebhookDialogComponent,
+  AddWebhookDialogData,
+} from './add-webhook-dialog/add-webhook-dialog.component';
 import { navigateFromAdminPage } from '../shared/admin-navigation.util';
 import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dialog.component';
 import {
@@ -223,6 +226,20 @@ export class AdminWebhooksComponent implements OnInit {
           }
         },
       );
+  }
+
+  /** Open the webhook dialog in edit mode; the list reloads so a URL change shows its re-verification status. */
+  onEditWebhook(webhook: WebhookSubscription): void {
+    const data: AddWebhookDialogData = { webhook };
+    this.dialog
+      .open(AddWebhookDialogComponent, { width: '700px', data })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: { webhook: WebhookSubscription } | false | undefined) => {
+        if (result) {
+          this.loadWebhooks();
+        }
+      });
   }
 
   // SEM@b8643f16acb6c8737803e96d52ba242ba11b46d2: open a modal displaying the one-time HMAC secret after webhook creation

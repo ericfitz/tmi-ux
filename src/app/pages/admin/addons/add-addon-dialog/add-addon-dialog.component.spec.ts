@@ -9,22 +9,26 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import type { TranslocoService } from '@jsverse/transloco';
 
-import { AddAddonDialogComponent } from './add-addon-dialog.component';
+import { AddAddonDialogComponent, AddAddonDialogData } from './add-addon-dialog.component';
 
 describe('AddAddonDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
-  let mockAddonService: { create: ReturnType<typeof vi.fn> };
+  let mockAddonService: {
+    create: ReturnType<typeof vi.fn>;
+    patch: ReturnType<typeof vi.fn>;
+  };
   let mockWebhookService: { list: ReturnType<typeof vi.fn> };
   let mockLogger: Record<string, ReturnType<typeof vi.fn>>;
   let mockTransloco: TranslocoService;
   let envInjector: EnvironmentInjector;
 
   // SEM@dbadf722798f788abc017ecdcf6998ca55d12ed5: build an initialized AddAddonDialogComponent for tests (pure)
-  function build(): AddAddonDialogComponent {
+  function build(data: AddAddonDialogData | null = null): AddAddonDialogComponent {
     const component = runInInjectionContext(
       envInjector,
       () =>
@@ -35,6 +39,7 @@ describe('AddAddonDialogComponent', () => {
           new FormBuilder(),
           mockLogger as never,
           mockTransloco,
+          data,
         ),
     );
     component.ngOnInit();
@@ -43,7 +48,10 @@ describe('AddAddonDialogComponent', () => {
 
   beforeEach(() => {
     mockDialogRef = { close: vi.fn() };
-    mockAddonService = { create: vi.fn(() => of({ id: 'addon-1' })) };
+    mockAddonService = {
+      create: vi.fn(() => of({ id: 'addon-1' })),
+      patch: vi.fn(() => of({ id: 'addon-1' })),
+    };
     mockWebhookService = {
       list: vi.fn(() =>
         of({
@@ -182,7 +190,13 @@ describe('AddAddonDialogComponent', () => {
 
     it('surfaces the server error message on failure', () => {
       mockAddonService.create.mockReturnValue(
-        throwError(() => ({ error: { message: 'addon name taken' } })),
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 400,
+              error: { error: 'invalid_request', error_description: 'addon name taken' },
+            }),
+        ),
       );
       const component = build();
       component.form.patchValue({ name: 'My Addon', webhook_id: 'wh-1' });
@@ -200,6 +214,58 @@ describe('AddAddonDialogComponent', () => {
 
       component.onCancel();
 
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+  });
+  describe('edit mode', () => {
+    const existing = {
+      id: 'addon-1',
+      name: 'Scanner',
+      webhook_id: 'wh-1',
+      description: 'scans things',
+      icon: 'material-symbols:security',
+      objects: ['threat'],
+    } as never;
+
+    it('pre-fills the form and makes the webhook read-only', () => {
+      const component = build({ addon: existing });
+
+      expect(component.isEdit).toBe(true);
+      expect(component.form.get('webhook_id')?.disabled).toBe(true);
+      expect(component.form.get('webhook_id')?.value).toBe('wh-1');
+      expect(component.form.value).toMatchObject({ name: 'Scanner', objects: ['threat'] });
+    });
+
+    it('sends only the changed fields as JSON Patch', () => {
+      const component = build({ addon: existing });
+      component.form.patchValue({ name: 'Scanner v2', objects: ['threat', 'diagram'] });
+
+      component.onSave();
+
+      expect(mockAddonService.patch).toHaveBeenCalledWith('addon-1', [
+        { op: 'replace', path: '/name', value: 'Scanner v2' },
+        { op: 'replace', path: '/objects', value: ['threat', 'diagram'] },
+      ]);
+      expect(mockAddonService.create).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
+
+    it('closes without a request when nothing changed', () => {
+      const component = build({ addon: existing });
+
+      component.onSave();
+
+      expect(mockAddonService.patch).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+
+    it('does not patch optional fields the server omitted when the form is untouched', () => {
+      const sparse = { id: 'addon-2', name: 'Bare', webhook_id: 'wh-1' } as never;
+      const component = build({ addon: sparse });
+
+      component.onSave();
+
+      expect(mockAddonService.patch).not.toHaveBeenCalled();
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
   });

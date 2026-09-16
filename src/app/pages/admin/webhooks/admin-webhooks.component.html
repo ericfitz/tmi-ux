@@ -89,6 +89,14 @@
                 <mat-menu #webhookKebabMenu="matMenu">
                   <button
                     mat-menu-item
+                    data-testid="webhooks-edit-item"
+                    (click)="onEditWebhook(webhook)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                    <span [transloco]="'common.edit'">Edit</span>
+                  </button>
+                  <button
+                    mat-menu-item
                     data-testid="webhooks-delete-item"
                     (click)="onDeleteWebhook(webhook)"
                   >

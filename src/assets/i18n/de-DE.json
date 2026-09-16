@@ -79,7 +79,11 @@
       "noAddons": "Keine Erweiterungen gefunden.",
       "objectTypesTooltip": "Gilt für diese Objekttypen",
       "subtitle": "Erweiterungen zur Erweiterung der TMI-Funktionalität konfigurieren.",
-      "title": "Erweiterungen verwalten"
+      "title": "Erweiterungen verwalten",
+      "editDialog": {
+        "title": "Add-on bearbeiten"
+      },
+      "errorUpdatingAddon": "Add-on konnte nicht aktualisiert werden."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "Webhook-Abonnements für Ereignisbenachrichtigungen konfigurieren.",
       "title": "Webhooks verwalten",
       "triggerEvents": "Auslösende Ereignisse",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Webhook bearbeiten"
+      }
     }
   },
   "adminSurveys": {

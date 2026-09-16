@@ -79,7 +79,11 @@
       "noAddons": "Nenhum complemento encontrado.",
       "objectTypesTooltip": "Aplica-se a estes tipos de objeto",
       "subtitle": "Configure complementos para estender a funcionalidade do TMI.",
-      "title": "Gerenciar complementos"
+      "title": "Gerenciar complementos",
+      "editDialog": {
+        "title": "Editar complemento"
+      },
+      "errorUpdatingAddon": "Falha ao atualizar o complemento."
     },
     "audit": {
       "columns": {
@@ -481,7 +485,10 @@
       "subtitle": "Configure assinaturas de webhook para notificações de eventos.",
       "title": "Gerenciar webhooks",
       "triggerEvents": "Eventos de acionamento",
-      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}",
+      "editDialog": {
+        "title": "Editar webhook"
+      }
     }
   },
   "adminSurveys": {
