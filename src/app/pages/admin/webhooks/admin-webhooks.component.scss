@@ -228,12 +228,12 @@
 
     &.status-active {
       background-color: var(--color-success);
-      color: white;
+      color: var(--color-on-success);
     }
 
     &.status-pending_verification {
       background-color: var(--color-warning);
-      color: white;
+      color: var(--color-on-warning);
     }
 
     &.status-pending_delete {

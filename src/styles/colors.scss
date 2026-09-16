@@ -187,6 +187,18 @@ $role-host-color: #ffc107; // Gold color for session host
   // resolving it to the card surface puts #424242 on #1976d2 (2.18:1).
   --color-on-accent: #fff;
 
+  // Ink per accent fill, chosen for >= 4.5:1 against that fill in THIS palette
+  // (#901). White only carries the darker fills; the yellow-to-orange and green
+  // ones need dark ink. The colorblind palette re-emits these for its own fills.
+  --color-on-info: #fff; // 4.60 on #1976d2
+  --color-on-success: #212121; // 5.79 on #4caf50
+  --color-on-warning: #212121; // 7.47 on #ff9800
+  --color-on-severity-critical: #fff; // 4.98 on #d32f2f
+  --color-on-severity-high: #212121; // 5.95 on #f57c00
+  --color-on-severity-medium: #212121; // 9.72 on #fbc02d
+  --color-on-severity-low: #212121; // 5.06 on #689f38
+  --color-on-severity-none: #212121; // 5.65 on #9e9e9e
+
   // Neutral chip fills. Previously borrowed from --color-text-secondary and
   // --color-text-disabled, which now correctly invert in dark theme — as a chip
   // background that turns near-white behind white ink.
@@ -241,6 +253,17 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-severity-medium: #f0e442; // Yellow rgb(240, 228, 66)
   --color-severity-low: #009e73; // Bluish Green (safe)
   --color-severity-none: #999; // Neutral gray
+
+  // Ink per accent fill for the Okabe-Ito fills (see :root). Only the neutral
+  // greys carry white here; vermilion needs full black to reach AA.
+  --color-on-info: #212121; // 6.98 on #56b4e9
+  --color-on-success: #212121; // 4.71 on #009e73
+  --color-on-warning: #212121; // 7.15 on #e69f00
+  --color-on-severity-critical: #000; // 6.4 on #d55e00 (white 3.87, #212121 4.16)
+  --color-on-severity-high: #212121; // 7.15 on #e69f00
+  --color-on-severity-medium: #212121; // 12.18 on #f0e442
+  --color-on-severity-low: #212121; // 4.71 on #009e73
+  --color-on-severity-none: #212121; // 5.65 on #999
 
   // Link Colors
   --color-link-visited: #cc79a7; // Reddish Purple rgb(204, 121, 167)
