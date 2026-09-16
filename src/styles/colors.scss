@@ -28,7 +28,7 @@ $info-color: #2196f3;
 $text-primary: #333;
 $text-secondary: #555;
 $text-tertiary: #666;
-$text-muted: #757575;
+$text-muted: #6f6f6f;
 $text-disabled: rgb(0 0 0 / 54%);
 
 // Background Colors
@@ -273,7 +273,7 @@ $role-host-color: #ffc107; // Gold color for session host
   @include theme-derived-colors;
 
   // Text tones with no --theme-* source of their own. The light values (#666 and
-  // #757575) fall to ~2.2:1 and ~2.8:1 against the dark surfaces; 60% white gives
+  // #6f6f6f) fall to ~2.2:1 and ~2.8:1 against the dark surfaces; 60% white gives
   // at least 4.8:1 on both --theme-background (#303030) and --theme-card (#424242).
   --color-text-tertiary: rgb(255 255 255 / 60%);
   --color-text-muted: rgb(255 255 255 / 60%);
