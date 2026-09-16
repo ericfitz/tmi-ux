@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  distinctUntilChanged,
+  map,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
+import { ContentProvidersService } from './content-providers.service';
 import { CONTENT_PROVIDERS } from './content-provider-registry';
 import {
   ContentTokenProviderNotConfiguredError,
@@ -15,6 +26,15 @@ interface ContentTokenListResponse {
   content_tokens: ContentTokenInfo[];
 }
 
+/** True for the server's 404 `feature_not_available` (delegated providers not configured). */
+function isFeatureNotAvailable(err: unknown): boolean {
+  return (
+    err instanceof HttpErrorResponse &&
+    err.status === 404 &&
+    (err.error as { error?: string } | null)?.error === 'feature_not_available'
+  );
+}
+
 /**
  * Provider-agnostic HTTP wrapper for /me/content_tokens/*. Lists, authorizes,
  * and unlinks delegated content tokens. Cached observable invalidated on
@@ -25,7 +45,7 @@ interface ContentTokenListResponse {
 export class ContentTokenService {
   private readonly _cache$ = new BehaviorSubject<ContentTokenInfo[] | null>(null);
 
-  readonly contentTokens$: Observable<ContentTokenInfo[]> = this._cache$.pipe(
+  private readonly _cachedTokens$: Observable<ContentTokenInfo[]> = this._cache$.pipe(
     switchMap(cached => {
       if (cached !== null) {
         return of(cached);
@@ -34,11 +54,25 @@ export class ContentTokenService {
     }),
   );
 
-  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: inject API and logger dependencies; cache is initialized lazily on first subscription (pure)
+  /**
+   * Linked tokens, or a constant empty list when the server advertises no
+   * delegated content provider: the subsystem is then off and
+   * /me/content_tokens answers 404 feature_not_available (#930).
+   */
+  readonly contentTokens$: Observable<ContentTokenInfo[]>;
+
+  // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: inject API, logger and provider config; token stream is gated on an advertised delegated provider and cached lazily (pure)
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
-  ) {}
+    private contentProviders: ContentProvidersService,
+  ) {
+    this.contentTokens$ = this.contentProviders.selectableSources$.pipe(
+      map(sources => sources.some(source => source.kind === 'delegated')),
+      distinctUntilChanged(),
+      switchMap(enabled => (enabled ? this._cachedTokens$ : of([]))),
+    );
+  }
 
   /** Fetches the current user's linked content tokens. */
   // SEM@783cb9d933ae3d70720c399ba93aba42ca663804: fetch the current user's linked content tokens from the API (reads DB)
@@ -46,7 +80,11 @@ export class ContentTokenService {
     return this.apiService.get<ContentTokenListResponse>('me/content_tokens').pipe(
       tap(res => this.logger.debug('Content tokens loaded', { count: res.content_tokens.length })),
       map(res => res.content_tokens),
-      catchError(err => {
+      catchError((err: unknown) => {
+        if (isFeatureNotAvailable(err)) {
+          this.logger.warn('Content token subsystem is not enabled on this server');
+          return of([]);
+        }
         this.logger.error('Failed to list content tokens', err);
         throw err;
       }),
