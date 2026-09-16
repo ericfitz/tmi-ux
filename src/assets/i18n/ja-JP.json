@@ -2471,7 +2471,12 @@
         "namePlaceholder": "My API credential",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "名前は100文字以内でなければなりません。",
-        "title": "クライアント資格情報を作成"
+        "title": "クライアント資格情報を作成",
+        "directWrite": "直接書き込みを許可（自動化）",
+        "directWriteHint": "この認証情報のトークンは、所有者が書き込み権限または所有権を持つ脅威モデルを変更できます。管理者が所有する認証情報では許可されません。",
+        "addon": "リンクされたアドオン",
+        "addonNone": "なし",
+        "addonHint": "任意: この認証情報で行った書き込みは、リンクされたアドオン自身の Webhook には通知されません。"
       },
       "createdOn": "{{common.created}}",
       "credential": "認証情報",
@@ -2486,7 +2491,8 @@
         "title": "クライアント資格情報が作成されました",
         "warning": "これらの資格情報を今すぐ保存してください。クライアントシークレットは再度表示されません。"
       },
-      "title": "クライアント資格情報"
+      "title": "クライアント資格情報",
+      "directWrite": "直接書き込み"
     },
     "dashboardListView": "ダッシュボードをリスト表示にする",
     "deleteMyData": {

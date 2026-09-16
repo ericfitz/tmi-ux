@@ -2469,7 +2469,12 @@
         "namePlaceholder": "Meine API-Anmeldedaten",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Der Name darf maximal 100 Zeichen lang sein.",
-        "title": "Client-Anmeldedaten erstellen"
+        "title": "Client-Anmeldedaten erstellen",
+        "directWrite": "Direktes Schreiben erlauben (Automatisierung)",
+        "directWriteHint": "Token aus diesen Anmeldedaten können Bedrohungsmodelle ändern, auf die der Besitzer Schreib- oder Eigentümerzugriff hat. Für Anmeldedaten eines Administrators nicht zulässig.",
+        "addon": "Verknüpftes Add-on",
+        "addonNone": "Keines",
+        "addonHint": "Optional: Mit diesen Anmeldedaten vorgenommene Änderungen werden nicht an den Webhook des verknüpften Add-ons zurückgemeldet."
       },
       "createdOn": "{{common.created}}",
       "credential": "Anmeldedaten",
@@ -2484,7 +2489,8 @@
         "title": "Client-Anmeldedaten erstellt",
         "warning": "Speichern Sie diese Anmeldedaten jetzt. Das Client-Geheimnis wird nicht erneut angezeigt."
       },
-      "title": "API-Anmeldedaten"
+      "title": "API-Anmeldedaten",
+      "directWrite": "Direktes Schreiben"
     },
     "dashboardListView": "Dashboard als Listenansicht anzeigen",
     "deleteMyData": {

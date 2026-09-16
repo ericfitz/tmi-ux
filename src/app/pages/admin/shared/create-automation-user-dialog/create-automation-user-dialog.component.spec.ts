@@ -131,6 +131,18 @@ describe('CreateAutomationUserDialogComponent', () => {
       expect(mockUserAdminService.createAutomationUser).toHaveBeenCalledWith({ name: 'My Bot' });
     });
 
+    it('sends direct_write without addon_id when no addon is linked', () => {
+      const component = build(null);
+      component.form.patchValue({ name: 'My Bot', email: '', directWrite: true });
+
+      component.onSave();
+
+      expect(mockUserAdminService.createAutomationUser).toHaveBeenCalledWith({
+        name: 'My Bot',
+        direct_write: true,
+      });
+    });
+
     it('does nothing when the form is invalid', () => {
       const component = build(null);
       // name empty

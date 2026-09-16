@@ -2469,7 +2469,12 @@
         "namePlaceholder": "我的 API 凭证",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "名称不能超过 100 个字符。",
-        "title": "创建客户端凭证"
+        "title": "创建客户端凭证",
+        "directWrite": "允许直接写入（自动化）",
+        "directWriteHint": "此凭据的令牌可以修改所有者拥有写入或所有者权限的威胁模型。管理员拥有的凭据不允许启用。",
+        "addon": "关联的插件",
+        "addonNone": "无",
+        "addonHint": "可选：使用此凭据进行的写入不会回传到关联插件自身的 Webhook。"
       },
       "createdOn": "{{common.created}}",
       "credential": "凭证",
@@ -2484,7 +2489,8 @@
         "title": "客户端凭证已创建",
         "warning": "请立即保存这些凭证。客户端密钥不会再次显示。"
       },
-      "title": "API 凭证"
+      "title": "API 凭证",
+      "directWrite": "直接写入"
     },
     "dashboardListView": "将仪表板显示为列表视图",
     "deleteMyData": {

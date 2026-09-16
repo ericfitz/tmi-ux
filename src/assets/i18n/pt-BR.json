@@ -2498,7 +2498,12 @@
         "namePlaceholder": "Minha credencial de API",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "O nome deve ter no máximo 100 caracteres.",
-        "title": "Criar credencial de cliente"
+        "title": "Criar credencial de cliente",
+        "directWrite": "Permitir gravações diretas (automação)",
+        "directWriteHint": "Tokens desta credencial podem modificar modelos de ameaças aos quais o proprietário tem acesso de escrita ou propriedade. Não permitido para credenciais de um administrador.",
+        "addon": "Complemento vinculado",
+        "addonNone": "Nenhum",
+        "addonHint": "Opcional: gravações feitas com esta credencial não são reenviadas ao webhook do complemento vinculado."
       },
       "createdOn": "{{common.created}}",
       "credential": "Credencial",
@@ -2513,7 +2518,8 @@
         "title": "Credencial de cliente criada",
         "warning": "Salve estas credenciais agora. O segredo do cliente não será exibido novamente."
       },
-      "title": "Credenciais de cliente"
+      "title": "Credenciais de cliente",
+      "directWrite": "Gravação direta"
     },
     "dashboardListView": "Exibir painel como lista",
     "deleteMyData": {

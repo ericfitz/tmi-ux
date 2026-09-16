@@ -2467,7 +2467,12 @@
         "namePlaceholder": "내 API 자격 증명",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "이름은 100자 이하여야 합니다.",
-        "title": "클라이언트 자격 증명 생성"
+        "title": "클라이언트 자격 증명 생성",
+        "directWrite": "직접 쓰기 허용(자동화)",
+        "directWriteHint": "이 자격 증명의 토큰은 소유자가 쓰기 또는 소유자 권한을 가진 위협 모델을 수정할 수 있습니다. 관리자가 소유한 자격 증명에는 허용되지 않습니다.",
+        "addon": "연결된 애드온",
+        "addonNone": "없음",
+        "addonHint": "선택 사항: 이 자격 증명으로 수행한 쓰기는 연결된 애드온의 웹훅으로 다시 전달되지 않습니다."
       },
       "createdOn": "{{common.created}}",
       "credential": "자격 증명",
@@ -2482,7 +2487,8 @@
         "title": "클라이언트 자격 증명 생성됨",
         "warning": "지금 이 자격 증명을 저장하세요. 클라이언트 시크릿은 다시 표시되지 않습니다."
       },
-      "title": "API 자격증명"
+      "title": "API 자격증명",
+      "directWrite": "직접 쓰기"
     },
     "dashboardListView": "대시보드를 목록 보기로 표시",
     "deleteMyData": {
