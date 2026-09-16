@@ -617,7 +617,7 @@ mat-card-header {
   text-transform: capitalize;
   white-space: nowrap;
   background-color: var(--color-info);
-  color: var(--color-on-accent);
+  color: var(--color-on-info);
 }
 
 // ============================================
@@ -834,18 +834,18 @@ mat-card-header {
 
   &.status-open {
     background-color: var(--color-info);
-    color: var(--color-on-accent);
+    color: var(--color-on-info);
   }
 
   &.status-in-progress,
   &.status-in_progress {
     background-color: var(--color-warning);
-    color: var(--color-text-primary);
+    color: var(--color-on-warning);
   }
 
   &.status-resolved {
     background-color: var(--color-success);
-    color: var(--color-on-accent);
+    color: var(--color-on-success);
   }
 
   &.status-closed {
@@ -874,28 +874,28 @@ mat-card-header {
 
   &.severity-critical {
     background-color: var(--color-severity-critical);
-    color: var(--color-on-accent);
+    color: var(--color-on-severity-critical);
   }
 
   &.severity-high {
     background-color: var(--color-severity-high);
-    color: var(--color-on-accent);
+    color: var(--color-on-severity-high);
   }
 
   &.severity-medium {
     background-color: var(--color-severity-medium);
-    color: var(--color-text-primary);
+    color: var(--color-on-severity-medium);
   }
 
   &.severity-low {
     background-color: var(--color-severity-low);
-    color: var(--color-on-accent);
+    color: var(--color-on-severity-low);
   }
 
   &.severity-informational,
   &.severity-unknown {
     background-color: var(--color-severity-none);
-    color: var(--color-on-accent);
+    color: var(--color-on-severity-none);
   }
 }
 
@@ -924,7 +924,7 @@ mat-card-header {
   text-transform: capitalize;
   white-space: nowrap;
   background-color: var(--color-warning);
-  color: var(--color-on-accent);
+  color: var(--color-on-warning);
 }
 
 // Thumbnail in table
