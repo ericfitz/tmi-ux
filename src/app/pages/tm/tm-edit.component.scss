@@ -65,7 +65,9 @@
   margin: 0;
   border: none;
   border-radius: 8px;
-  background-color: var(--theme-surface);
+
+  // Same tier as the surrounding mat-cards in every theme
+  background-color: var(--mat-card-elevated-container-color);
   cursor: pointer;
   font-family: var(--font-family-primary);
   color: var(--theme-text-primary);
@@ -351,11 +353,6 @@ mat-card-header {
 .review-process-panel,
 .audit-panel {
   margin-top: 8px;
-}
-
-// Recessed relative to the surrounding cards
-.audit-panel {
-  background-color: var(--theme-surface);
 }
 
 // Collapsed panel summary
