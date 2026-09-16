@@ -2902,7 +2902,12 @@
         "namePlaceholder": "My API credential",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Name must be 100 characters or less.",
-        "title": "Create client credential"
+        "title": "Create client credential",
+        "directWrite": "Enable direct write",
+        "directWriteHint": "Tokens from this credential can modify threat models the owner has writer or owner access to. Not allowed for credentials owned by an administrator.",
+        "addon": "Linked addon",
+        "addonNone": "None",
+        "addonHint": "Optional: writes made with this credential are not echoed to the linked addon's own webhook."
       },
       "createdOn": "{{common.created}}",
       "credential": "Credential",
@@ -2917,7 +2922,8 @@
         "title": "Client credential created",
         "warning": "Save these credentials now. The client secret will not be shown again."
       },
-      "title": "Client credentials"
+      "title": "Client credentials",
+      "directWrite": "Direct write"
     },
     "dashboardListView": "Show dashboard as list view",
     "deleteMyData": {

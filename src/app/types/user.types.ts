@@ -14,8 +14,12 @@ export type ListAdminUsersResponse = components['schemas']['AdminUserListRespons
 
 /** Request to create an automation account */
 // SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API request type for creating an automation account (pure)
-export type CreateAutomationAccountRequest =
-  components['schemas']['CreateAutomationAccountRequest'];
+// direct_write has `default: false` in the spec, which openapi-typescript renders as required;
+// the server treats an omitted field as false, so it is optional here.
+export type CreateAutomationAccountRequest = Omit<
+  components['schemas']['CreateAutomationAccountRequest'],
+  'direct_write'
+> & { direct_write?: boolean };
 
 /** Response from creating an automation account (includes user + credential) */
 // SEM@5081e618139a8f00af65190c90a19136eebd7a1b: API response type for creating an automation account, including credential (pure)

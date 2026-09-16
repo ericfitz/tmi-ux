@@ -2469,7 +2469,12 @@
         "namePlaceholder": "Kredensial API Saya",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Nama harus 100 karakter atau kurang.",
-        "title": "Buat Kredensial Klien"
+        "title": "Buat Kredensial Klien",
+        "directWrite": "Izinkan tulis langsung",
+        "directWriteHint": "Token dari kredensial ini dapat mengubah model ancaman yang pemiliknya memiliki akses penulis atau pemilik. Tidak diizinkan untuk kredensial milik administrator.",
+        "addon": "Add-on tertaut",
+        "addonNone": "Tidak ada",
+        "addonHint": "Opsional: penulisan yang dilakukan dengan kredensial ini tidak diteruskan kembali ke webhook add-on yang tertaut."
       },
       "createdOn": "{{common.created}}",
       "credential": "Kredensial",
@@ -2484,7 +2489,8 @@
         "title": "Kredensial Klien Dibuat",
         "warning": "Simpan kredensial ini sekarang. Rahasia klien tidak akan ditampilkan lagi."
       },
-      "title": "Kredensial API"
+      "title": "Kredensial API",
+      "directWrite": "Tulis langsung"
     },
     "dashboardListView": "Tampilkan Dasbor sebagai Tampilan Daftar",
     "deleteMyData": {

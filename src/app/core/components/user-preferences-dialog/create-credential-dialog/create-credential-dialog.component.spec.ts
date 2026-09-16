@@ -9,6 +9,7 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
@@ -110,6 +111,19 @@ describe('CreateCredentialDialogComponent', () => {
       );
     });
 
+    it('sends direct_write and addon_id only when direct writes are enabled', () => {
+      const component = build(null);
+      component.form.patchValue({ name: 'Key', directWrite: true, addonId: 'addon-1' });
+
+      component.onSave();
+
+      expect(mockCredentialService.create).toHaveBeenCalledWith({
+        name: 'Key',
+        direct_write: true,
+        addon_id: 'addon-1',
+      });
+    });
+
     it('returns the request without calling the service when returnFormOnly is set', () => {
       const component = build({ returnFormOnly: true });
       component.form.patchValue({ name: 'Key' });
@@ -130,7 +144,13 @@ describe('CreateCredentialDialogComponent', () => {
 
     it('surfaces the server error message on failure', () => {
       mockCredentialService.create.mockReturnValue(
-        throwError(() => ({ error: { message: 'name taken' } })),
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status: 400,
+              error: { error: 'invalid_request', error_description: 'name taken' },
+            }),
+        ),
       );
       const component = build(null);
       component.form.patchValue({ name: 'Key' });

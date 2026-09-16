@@ -1507,7 +1507,11 @@ export interface paths {
     delete: operations['deleteAddon'];
     options?: never;
     head?: never;
-    patch?: never;
+    /**
+     * Partially update add-on
+     * @description Apply JSON Patch operations to partially update an add-on (administrators only). Only /name, /description, /icon, /objects, /parameters and /threat_model_id may be modified; an operation targeting any other path, including /webhook_id, is rejected with 400.
+     */
+    patch: operations['patchAddon'];
     trace?: never;
   };
   '/addons/{id}/invoke': {
@@ -3209,7 +3213,11 @@ export interface paths {
     delete: operations['deleteWebhookSubscription'];
     options?: never;
     head?: never;
-    patch?: never;
+    /**
+     * Partially update webhook subscription
+     * @description Apply JSON Patch operations to partially update a webhook subscription. Requires administrator privileges. Only /name, /events, /threat_model_id and /url may be modified; an operation targeting any other path is rejected with 400. Changing /url resets the subscription to pending_verification and issues a new challenge, because the destination URL must prove ownership again.
+     */
+    patch: operations['patchAdminWebhookSubscription'];
     trace?: never;
   };
   '/admin/webhooks/subscriptions/{webhook_id}/test': {
@@ -6696,7 +6704,12 @@ export interface components {
      *       "attempts": 1,
      *       "created_at": "2024-01-20T15:45:30Z",
      *       "delivered_at": "2024-01-20T15:45:31Z",
-     *       "payload": {},
+     *       "payload": {
+     *         "type": "test",
+     *         "subscription_id": "11111111-1111-4111-8111-111111111111",
+     *         "timestamp": "2026-01-01T00:00:00Z",
+     *         "message": "This is a test webhook delivery"
+     *       },
      *       "addon_id": "00000000-0000-0000-0000-000000000000",
      *       "invoked_by": {
      *         "principal_type": "user",
@@ -7680,7 +7693,9 @@ export interface components {
      *       "is_active": true,
      *       "expires_at": "2025-12-31T23:59:59Z",
      *       "created_at": "2024-01-21T11:00:00Z",
-     *       "modified_at": "2024-01-21T11:00:00Z"
+     *       "modified_at": "2024-01-21T11:00:00Z",
+     *       "direct_write": false,
+     *       "addon_id": "fed11e3a-0000-4000-8000-000000000000"
      *     }
      */
     ClientCredentialResponse: {
@@ -7707,6 +7722,13 @@ export interface components {
        * @description Optional expiration timestamp (ISO 8601)
        */
       expires_at?: string;
+      /** @description Whether direct_write was enabled for this credential (see ClientCredentialInfo.direct_write). */
+      direct_write?: boolean;
+      /**
+       * Format: uuid
+       * @description Addon this credential is linked to for self-delivery suppression, if any (see ClientCredentialInfo.addon_id).
+       */
+      addon_id?: string;
     };
     /**
      * @description Client credential information without the secret
@@ -7719,7 +7741,9 @@ export interface components {
      *       "is_active": true,
      *       "last_used_at": "2024-01-21T09:00:00Z",
      *       "created_at": "2024-01-15T10:00:00Z",
-     *       "modified_at": "2024-01-15T10:00:00Z"
+     *       "modified_at": "2024-01-15T10:00:00Z",
+     *       "direct_write": false,
+     *       "addon_id": "fed11e3a-0000-4000-8000-000000000000"
      *     }
      */
     ClientCredentialInfo: {
@@ -7756,6 +7780,13 @@ export interface components {
        * @description Optional expiration timestamp (ISO 8601)
        */
       expires_at?: string;
+      /** @description When true, tokens minted from this credential may write threat-model sub-resources (notes, threats, diagrams, metadata, ...) that are otherwise reserved for interactive users; the owner's roles still apply. Never true for credentials owned by an administrator. */
+      direct_write?: boolean;
+      /**
+       * Format: uuid
+       * @description Addon this credential is linked to, if any. Events caused by writes made with this credential's tokens are not delivered to that addon's own webhook subscription. Only set on direct_write credentials.
+       */
+      addon_id?: string;
     };
     /**
      * @description Minimal diagram representation optimized for automated threat modeling, containing threat model context and simplified cell data without visual styling
@@ -8220,18 +8251,19 @@ export interface components {
     /**
      * @description A system-wide configuration setting
      * @example {
-     *       "key": "rate_limit.requests_per_minute",
-     *       "value": "100",
+     *       "key": "websocket.max_participants",
+     *       "value": "10",
      *       "type": "int",
-     *       "description": "Maximum API requests per minute per user",
+     *       "description": "Maximum participants in a collaboration session",
      *       "modified_at": "2026-01-15T10:30:00Z",
      *       "modified_by": "550e8400-e29b-41d4-a716-446655440000",
      *       "source": "database",
-     *       "read_only": false
+     *       "read_only": false,
+     *       "origin": "explicit"
      *     }
      */
     SystemSetting: {
-      /** @description Unique setting identifier using dot notation (e.g., rate_limit.requests_per_minute) */
+      /** @description Unique setting identifier using dot notation (e.g., websocket.max_participants) */
       key: string;
       /** @description Setting value as a string (interpreted based on type) */
       value: string;
@@ -8239,7 +8271,7 @@ export interface components {
        * @description Data type of the setting value
        * @enum {string}
        */
-      type: 'string' | 'int' | 'bool' | 'json';
+      type: 'string' | 'int' | 'bool' | 'json' | 'float';
       /** @description Human-readable description of the setting */
       description?: string;
       /**
@@ -8253,12 +8285,17 @@ export interface components {
        */
       modified_by?: string;
       /**
-       * @description Where the effective value of this setting comes from. Server-managed, not writable.
+       * @description Where the effective value of this setting comes from. Server-managed, not writable. Read together with origin: source says which layer wins for this key; origin says whether the database row (if any) was deliberately set.
        * @enum {string}
        */
       readonly source?: 'database' | 'config' | 'environment' | 'vault';
       /** @description Whether this setting can be modified via the API. True when source is not database. */
       readonly read_only?: boolean;
+      /**
+       * @description How the database row for this setting came to exist. seeded: inserted with a registry default at first boot (an explicitly configured config or environment value outranks it). explicit: deliberately set by an operator via the admin API, tmi-dbtool --import-config, or SettingsService.Set (it outranks config). Absent when the setting has no database row (source is config, environment, or vault). Server-managed, not writable.
+       * @enum {string}
+       */
+      readonly origin?: 'seeded' | 'explicit';
     };
     /**
      * @description Request body for creating or updating a system setting
@@ -8275,7 +8312,7 @@ export interface components {
        * @description Data type of the setting value
        * @enum {string}
        */
-      type: 'string' | 'int' | 'bool' | 'json';
+      type: 'string' | 'int' | 'bool' | 'json' | 'float';
       /** @description Human-readable description of the setting */
       description?: string;
     };
@@ -10208,6 +10245,16 @@ export interface components {
        * @description Optional custom email address. If not provided, defaults to tmi-automation-{normalized_name}@tmi.local.
        */
       email?: string;
+      /**
+       * @description Opt in to direct writes for the initial client credential: tokens from it may modify threat-model sub-resources, authorized by the automation user's roles. Omitting the field is the same as false.
+       * @default false
+       */
+      direct_write: boolean;
+      /**
+       * Format: uuid
+       * @description Optional addon to link this credential to (only valid with direct_write=true; 400 otherwise, or if the addon does not exist). Events caused by writes made with tokens from this credential are not delivered to the linked addon's own webhook subscription, matching the suppression applied to delegation-token write-backs. Not a foreign key: deleting the addon leaves the credential intact and simply stops the suppression.
+       */
+      addon_id?: string;
     };
     /**
      * @description Response from creating an automation account. Contains the created user and a client credential with the plaintext secret (shown only once).
@@ -10234,7 +10281,9 @@ export interface components {
      *         "name": "webhook-analyzer",
      *         "created_at": "2024-01-01T00:00:00Z",
      *         "description": "example",
-     *         "expires_at": "2026-01-01T00:00:00Z"
+     *         "expires_at": "2026-01-01T00:00:00Z",
+     *         "direct_write": true,
+     *         "addon_id": "fed11e3a-0000-4000-8000-000000000000"
      *       }
      *     }
      */
@@ -11648,7 +11697,7 @@ export interface components {
     ClientCallbackQueryParam: string;
     /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
     StateQueryParam: string;
-    /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Valid characters: letters, digits, periods, underscores, percent signs, plus signs, and hyphens. */
+    /** @description User identity hint forwarded to the provider (login_hint), so the provider knows which account to authenticate. For the TMI provider this selects the test identity: either a username (alice) or its address form (alice@tmi.local); other providers receive it as an email address or username, per their own login_hint semantics. Valid characters: letters, digits, periods, underscores, percent signs, plus signs, at signs, and hyphens. */
     LoginHintQueryParam: string;
     /** @description OAuth 2.0 scope parameter. For OpenID Connect, must include "openid". Supports "profile" and "email" scopes. Other scopes are silently ignored. Space-separated values. */
     ScopeQueryParam: string;
@@ -12489,7 +12538,7 @@ export interface operations {
         client_callback?: components['parameters']['ClientCallbackQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
-        /** @description User identity hint for TMI OAuth provider. Allows specifying a desired user identity for testing and automation. Only supported by the TMI provider (ignored by production providers like Google, GitHub, etc.). Valid characters: letters, digits, periods, underscores, percent signs, plus signs, and hyphens. */
+        /** @description User identity hint forwarded to the provider (login_hint), so the provider knows which account to authenticate. For the TMI provider this selects the test identity: either a username (alice) or its address form (alice@tmi.local); other providers receive it as an email address or username, per their own login_hint semantics. Valid characters: letters, digits, periods, underscores, percent signs, plus signs, at signs, and hyphens. */
         login_hint?: components['parameters']['LoginHintQueryParam'];
         /** @description OAuth 2.0 scope parameter. For OpenID Connect, must include "openid". Supports "profile" and "email" scopes. Other scopes are silently ignored. Space-separated values. */
         scope: components['parameters']['ScopeQueryParam'];
@@ -14577,6 +14626,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -14712,6 +14776,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -15731,6 +15810,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -15866,6 +15960,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -16716,6 +16825,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -16851,6 +16975,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -17346,6 +17485,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -17477,6 +17631,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -18472,6 +18641,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -18607,6 +18791,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -19551,6 +19750,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -19686,6 +19900,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -20773,6 +21002,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -20908,6 +21152,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -21466,6 +21725,65 @@ export interface operations {
           'application/json': components['schemas']['Error'];
         };
       };
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  patchAddon: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Resource identifier */
+        id: components['parameters']['GenericId'];
+      };
+      cookie?: never;
+    };
+    /** @description JSON Patch operations to apply to the add-on */
+    requestBody: {
+      content: {
+        /**
+         * @example [
+         *       {
+         *         "op": "replace",
+         *         "path": "/name",
+         *         "value": "Updated Add-on"
+         *       },
+         *       {
+         *         "op": "add",
+         *         "path": "/description",
+         *         "value": "New description"
+         *       }
+         *     ]
+         */
+        'application/json-patch+json': components['schemas']['JsonPatchDocument'];
+      };
+    };
+    responses: {
+      /** @description Successfully patched add-on */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AddonResponse'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
@@ -24073,7 +24391,9 @@ export interface operations {
            *           "created_at": "2024-01-15T10:00:00Z",
            *           "modified_at": "2024-01-15T10:00:00Z",
            *           "expires_at": "2026-01-01T00:00:00Z",
-           *           "last_used_at": "2026-01-01T00:00:00Z"
+           *           "last_used_at": "2026-01-01T00:00:00Z",
+           *           "direct_write": false,
+           *           "addon_id": "fed11e3a-0000-4000-8000-000000000000"
            *         }
            *       ],
            *       "total": 4,
@@ -24188,6 +24508,16 @@ export interface operations {
            * @example 2027-01-17T00:00:00Z
            */
           expires_at?: string;
+          /**
+           * @description Opt in to direct writes: tokens from this credential may modify threat-model sub-resources, authorized by your normal roles. Omitting the field is the same as false. Rejected with 400 when the owner is a member of the Administrators group.
+           * @default false
+           */
+          direct_write?: boolean;
+          /**
+           * Format: uuid
+           * @description Optional addon to link this credential to (only valid with direct_write=true; 400 otherwise, or if the addon does not exist). Events caused by writes made with tokens from this credential are not delivered to the linked addon's own webhook subscription, matching the suppression applied to delegation-token write-backs. Not a foreign key: deleting the addon leaves the credential intact and simply stops the suppression.
+           */
+          addon_id?: string;
         };
       };
     };
@@ -27263,6 +27593,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -27394,6 +27739,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -27745,6 +28105,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -27876,6 +28251,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -29823,6 +30213,21 @@ export interface operations {
       };
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -30008,6 +30413,21 @@ export interface operations {
       };
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -31280,6 +31700,21 @@ export interface operations {
       };
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -31465,6 +31900,21 @@ export interface operations {
       };
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
+      /** @description Conflict - A concurrent write collided with this bulk operation; refetch and retry */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -33140,6 +33590,67 @@ export interface operations {
       503: components['responses']['ServiceUnavailable'];
     };
   };
+  patchAdminWebhookSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook subscription identifier */
+        webhook_id: components['parameters']['WebhookId'];
+      };
+      cookie?: never;
+    };
+    /** @description JSON Patch operations to apply to the webhook subscription */
+    requestBody: {
+      content: {
+        /**
+         * @example [
+         *       {
+         *         "op": "replace",
+         *         "path": "/name",
+         *         "value": "Updated Subscription"
+         *       },
+         *       {
+         *         "op": "replace",
+         *         "path": "/events",
+         *         "value": [
+         *           "threat_model.created"
+         *         ]
+         *       }
+         *     ]
+         */
+        'application/json-patch+json': components['schemas']['JsonPatchDocument'];
+      };
+    };
+    responses: {
+      /** @description Successfully patched webhook subscription */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WebhookSubscription'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthorized'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      409: components['responses']['Conflict'];
+      415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
   testWebhookSubscription: {
     parameters: {
       query?: never;
@@ -34780,7 +35291,21 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
-      409: components['responses']['Conflict'];
+      /** @description Conflict - The chat session is not active (it has ended or been terminated). Start a new session; refetching does not help. */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -35842,6 +36367,8 @@ export interface operations {
         code_challenge: components['parameters']['CodeChallengeQueryParam'];
         /** @description PKCE code challenge method (RFC 7636) - Specifies the transformation applied to the code_verifier. Only "S256" (SHA256) is supported for security. The "plain" method is not supported. */
         code_challenge_method: components['parameters']['CodeChallengeMethodQueryParam'];
+        /** @description User identity hint forwarded to the provider (login_hint), so the provider knows which account to authenticate. For the TMI provider this selects the test identity: either a username (alice) or its address form (alice@tmi.local); other providers receive it as an email address or username, per their own login_hint semantics. Valid characters: letters, digits, periods, underscores, percent signs, plus signs, at signs, and hyphens. */
+        login_hint?: components['parameters']['LoginHintQueryParam'];
       };
       header?: never;
       path?: never;
@@ -38736,6 +39263,16 @@ export interface operations {
            * @example 2027-01-17T00:00:00Z
            */
           expires_at?: string;
+          /**
+           * @description Opt in to direct writes for this automation account: tokens from this credential may modify threat-model sub-resources, authorized by the automation user's roles. Omitting the field is the same as false. Rejected with 400 when the automation user is a member of the Administrators group.
+           * @default false
+           */
+          direct_write?: boolean;
+          /**
+           * Format: uuid
+           * @description Optional addon to link this credential to (only valid with direct_write=true; 400 otherwise, or if the addon does not exist). Events caused by writes made with tokens from this credential are not delivered to the linked addon's own webhook subscription, matching the suppression applied to delegation-token write-backs. Not a foreign key: deleting the addon leaves the credential intact and simply stops the suppression.
+           */
+          addon_id?: string;
         };
       };
     };

@@ -485,6 +485,17 @@ interface CheckboxChangeEvent {
                           </div>
                         }
                         <div class="client-id">{{ row.credential.client_id }}</div>
+                        @if (row.credential.direct_write) {
+                          <span
+                            class="group-badge direct-write-badge"
+                            [matTooltip]="
+                              'userPreferences.credentials.createDialog.directWriteHint' | transloco
+                            "
+                            [transloco]="'userPreferences.credentials.directWrite'"
+                          >
+                            Direct write
+                          </span>
+                        }
                       </td>
                     </ng-container>
 
@@ -811,6 +822,12 @@ interface CheckboxChangeEvent {
         border-radius: 12px;
         font-size: 13px;
         font-weight: 500;
+      }
+
+      .direct-write-badge {
+        margin-top: 4px;
+        font-size: 11px;
+        padding: 2px 8px;
       }
 
       /* Credentials tab styles */

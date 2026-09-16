@@ -2469,7 +2469,12 @@
         "namePlaceholder": "Mon identifiant API",
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Le nom doit comporter 100 caractères ou moins.",
-        "title": "Créer un identifiant client"
+        "title": "Créer un identifiant client",
+        "directWrite": "Autoriser les écritures directes",
+        "directWriteHint": "Les jetons de cet identifiant peuvent modifier les modèles de menaces sur lesquels le propriétaire dispose d'un accès en écriture ou en propriété. Non autorisé pour les identifiants d'un administrateur.",
+        "addon": "Module complémentaire lié",
+        "addonNone": "Aucun",
+        "addonHint": "Facultatif : les écritures effectuées avec cet identifiant ne sont pas renvoyées au webhook du module complémentaire lié."
       },
       "createdOn": "{{common.created}}",
       "credential": "Identifiant",
@@ -2484,7 +2489,8 @@
         "title": "Identifiant client créé",
         "warning": "Enregistrez ces identifiants maintenant. Le secret client ne sera plus affiché."
       },
-      "title": "Identifiants clients"
+      "title": "Identifiants clients",
+      "directWrite": "Écriture directe"
     },
     "dashboardListView": "Afficher le tableau de bord en vue liste",
     "deleteMyData": {

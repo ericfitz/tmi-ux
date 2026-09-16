@@ -75,7 +75,20 @@ export interface ManageCredentialsDialogData {
         >
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ 'common.name' | transloco }}</th>
-            <td mat-cell *matCellDef="let cred">{{ cred.name }}</td>
+            <td mat-cell *matCellDef="let cred">
+              {{ cred.name }}
+              @if (cred.direct_write) {
+                <span
+                  class="direct-write-badge"
+                  [matTooltip]="
+                    'userPreferences.credentials.createDialog.directWriteHint' | transloco
+                  "
+                  [transloco]="'userPreferences.credentials.directWrite'"
+                >
+                  Direct write
+                </span>
+              }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="client_id">
@@ -163,6 +176,15 @@ export interface ManageCredentialsDialogData {
         width: 100%;
       }
 
+      .direct-write-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        background-color: var(--theme-surface-variant, rgba(0, 0, 0, 0.05));
+      }
       .monospace {
         font-family: monospace;
         font-size: 13px;

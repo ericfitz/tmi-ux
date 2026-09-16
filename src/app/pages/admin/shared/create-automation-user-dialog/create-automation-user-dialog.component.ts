@@ -20,6 +20,11 @@ import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { CreateAutomationAccountResponse } from '@app/types/user.types';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+import {
+  DIRECT_WRITE_CONTROLS,
+  DirectWriteFieldsComponent,
+  directWriteRequestFields,
+} from '@app/core/components/user-preferences-dialog/create-credential-dialog/direct-write-fields.component';
 
 export interface CreateAutomationUserDialogData {
   suggestedName?: string;
@@ -39,6 +44,7 @@ export interface CreateAutomationUserDialogData {
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
+    DirectWriteFieldsComponent,
   ],
   template: `
     <h2 mat-dialog-title [transloco]="'admin.createAutomationUserDialog.title'">
@@ -103,6 +109,8 @@ export interface CreateAutomationUserDialogData {
             Optional email address for the automation user
           </mat-hint>
         </mat-form-field>
+
+        <app-direct-write-fields [form]="form"></app-direct-write-fields>
 
         @if (errorMessage) {
           <mat-error class="form-error">
@@ -196,6 +204,7 @@ export class CreateAutomationUserDialogComponent implements OnInit {
         ],
       ],
       email: [generatedEmail],
+      ...DIRECT_WRITE_CONTROLS,
     });
   }
 
@@ -224,7 +233,11 @@ export class CreateAutomationUserDialogComponent implements OnInit {
       const email = formValue.email || undefined;
 
       this.userAdminService
-        .createAutomationUser({ name, ...(email && { email }) })
+        .createAutomationUser({
+          name,
+          ...(email && { email }),
+          ...directWriteRequestFields(this.form),
+        })
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (response: CreateAutomationAccountResponse) => {

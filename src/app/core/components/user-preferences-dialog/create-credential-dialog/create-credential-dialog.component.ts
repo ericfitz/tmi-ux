@@ -21,10 +21,16 @@ import {
 } from '@app/shared/imports';
 import { ClientCredentialService } from '@app/core/services/client-credential.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 import {
   ClientCredentialResponse,
   CreateClientCredentialRequest,
 } from '@app/types/client-credential.types';
+import {
+  DIRECT_WRITE_CONTROLS,
+  DirectWriteFieldsComponent,
+  directWriteRequestFields,
+} from './direct-write-fields.component';
 
 export interface CreateCredentialDialogData {
   returnFormOnly?: boolean;
@@ -46,6 +52,7 @@ export interface CreateCredentialDialogData {
     ...FEEDBACK_MATERIAL_IMPORTS,
     MatDatepickerModule,
     TranslocoModule,
+    DirectWriteFieldsComponent,
   ],
   providers: [provideNativeDateAdapter()],
   template: `
@@ -119,6 +126,8 @@ export interface CreateCredentialDialogData {
             Optional: Leave blank for no expiration
           </mat-hint>
         </mat-form-field>
+
+        <app-direct-write-fields [form]="form"></app-direct-write-fields>
 
         @if (errorMessage) {
           <mat-error class="form-error">
@@ -203,6 +212,7 @@ export class CreateCredentialDialogComponent implements OnInit {
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
       expiresAt: [null],
+      ...DIRECT_WRITE_CONTROLS,
     });
   }
 
@@ -219,6 +229,7 @@ export class CreateCredentialDialogComponent implements OnInit {
         name: formValue.name.trim(),
         ...(formValue.description && { description: formValue.description.trim() }),
         ...(formValue.expiresAt && { expires_at: formValue.expiresAt.toISOString() }),
+        ...directWriteRequestFields(this.form),
       };
 
       if (this.data?.returnFormOnly) {
@@ -237,10 +248,12 @@ export class CreateCredentialDialogComponent implements OnInit {
             this.logger.info('Client credential created successfully');
             this.dialogRef.close(credential);
           },
-          error: (error: { error?: { message?: string } }) => {
+          error: (error: unknown) => {
             this.logger.error('Failed to create client credential', error);
-            this.errorMessage =
-              error.error?.message || 'Failed to create credential. Please try again.';
+            this.errorMessage = getErrorMessage(
+              error,
+              'Failed to create credential. Please try again.',
+            );
             this.saving = false;
           },
         });
