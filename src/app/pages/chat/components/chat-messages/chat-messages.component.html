@@ -2,7 +2,7 @@
   <div class="chat-messages" #messagesContainer>
     @if (messages.length === 0 && !loading && !preparationStatus) {
       <div class="empty-state">
-        <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="empty-icon" />
+        <mat-icon svgIcon="timmy" aria-hidden="true" class="empty-icon"></mat-icon>
         <h3>{{ t('chat.emptyState.title') }}</h3>
         <p>{{ t('chat.emptyState.description') }}</p>
         <mat-chip-listbox
@@ -52,7 +52,7 @@
           @if (message.role === 'user') {
             <mat-icon>person</mat-icon>
           } @else {
-            <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+            <mat-icon svgIcon="timmy" aria-hidden="true" class="timmy-avatar"></mat-icon>
           }
         </div>
         <div class="message-content">
@@ -82,7 +82,7 @@
     @if (preparationStatus) {
       <div class="message assistant status-bubble">
         <div class="message-avatar">
-          <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+          <mat-icon svgIcon="timmy" aria-hidden="true" class="timmy-avatar"></mat-icon>
         </div>
         <div class="message-content status-content">
           @if (preparationStatus.ready) {
@@ -117,7 +117,7 @@
     @if (loading && !preparationStatus) {
       <div class="message assistant loading">
         <div class="message-avatar">
-          <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+          <mat-icon svgIcon="timmy" aria-hidden="true" class="timmy-avatar"></mat-icon>
         </div>
         <div class="message-content">
           <mat-spinner diameter="24"></mat-spinner>

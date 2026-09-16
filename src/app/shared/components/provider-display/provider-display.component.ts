@@ -1,5 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { OAuthProviderInfo, SAMLProviderInfo } from '@app/auth/models/auth.models';
 import { environment } from '../../../../environments/environment';
 
@@ -14,7 +15,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-provider-display',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './provider-display.component.html',
   styleUrl: './provider-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +55,13 @@ export class ProviderDisplayComponent {
       return this.providerInfo.icon;
     }
     return '';
+  }
+
+  /**
+   * Whether this is the built-in TMI provider, whose logo is rendered inline so it follows the theme
+   */
+  isTmiProvider(): boolean {
+    return (this.providerInfo?.id ?? this.provider).toLowerCase() === 'tmi';
   }
 
   /**

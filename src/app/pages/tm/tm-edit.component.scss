@@ -6,12 +6,14 @@
 .timmy-header-button {
   width: 48px;
   height: 48px;
+
+  --mat-icon-button-icon-size: 40px;
 }
 
 .timmy-header-icon {
   width: 40px;
   height: 40px;
-  object-fit: contain;
+  color: var(--logo-elephant-color);
 }
 
 .tm-edit-container {
@@ -351,8 +353,9 @@ mat-card-header {
   margin-top: 8px;
 }
 
+// Recessed relative to the surrounding cards
 .audit-panel {
-  background-color: var(--theme-surface, var(--color-background-secondary));
+  background-color: var(--theme-surface);
 }
 
 // Collapsed panel summary

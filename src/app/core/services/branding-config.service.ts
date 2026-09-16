@@ -46,6 +46,11 @@ export class BrandingConfigService {
   // Derived observables for template binding
   readonly logoImageUrl$: Observable<string> = this.logoImageUrl.asObservable();
 
+  /** True while the built-in TMI logo is shown (rendered inline so it follows the theme). */
+  readonly isDefaultLogo$: Observable<boolean> = this.logoImageUrl$.pipe(
+    map(url => url === DEFAULT_LOGO_PATH),
+  );
+
   readonly organizationName$: Observable<string | null> = this.config$.pipe(
     map(c => c?.ui?.organization_name ?? null),
   );

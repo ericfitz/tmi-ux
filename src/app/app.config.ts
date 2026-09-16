@@ -87,7 +87,7 @@ function initializeDialogDirection(_dialogDirection: DialogDirectionService): ()
 // SEM@96bfe8da61b5343fe0c953128a1143a44c53a5a2: register Material Symbols Outlined as the default icon font set (mutates shared state)
 function initializeMaterialIcons(
   iconRegistry: MatIconRegistry,
-  _sanitizer: DomSanitizer,
+  sanitizer: DomSanitizer,
 ): () => void {
   return () => {
     // Register the Material Symbols Outlined font set
@@ -95,6 +95,12 @@ function initializeMaterialIcons(
     // which applies font-family: 'Material Symbols Outlined' via SCSS
     iconRegistry.registerFontClassAlias('material-symbols-outlined', 'material-symbols-outlined');
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+    // Inline SVG logos so their fills follow the theme's CSS variables
+    iconRegistry.addSvgIcon('timmy', sanitizer.bypassSecurityTrustResourceUrl('TMI-IconOnly.svg'));
+    iconRegistry.addSvgIcon(
+      'tmi-logo',
+      sanitizer.bypassSecurityTrustResourceUrl('TMI-FullLogo-Transparent.svg'),
+    );
   };
 }
 

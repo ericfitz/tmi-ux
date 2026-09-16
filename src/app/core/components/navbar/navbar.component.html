@@ -8,15 +8,20 @@
           mat-icon-button
           [matMenuTriggerFor]="homeMenu"
           class="logo-button home-menu-trigger"
+          [attr.aria-label]="(brandingOrgName$ | async) || 'TMI Logo'"
           [matTooltip]="'navbar.home' | transloco"
           matTooltipPosition="below"
           data-testid="navbar-home-menu"
         >
-          <img
-            [src]="logoImageUrl$ | async"
-            [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
-            class="tmi-logo"
-          />
+          @if (isDefaultLogo$ | async) {
+            <mat-icon svgIcon="tmi-logo" class="tmi-logo" aria-hidden="true"></mat-icon>
+          } @else {
+            <img
+              [src]="logoImageUrl$ | async"
+              [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+              class="tmi-logo"
+            />
+          }
           <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
         </button>
 
@@ -63,14 +68,19 @@
           mat-icon-button
           [routerLink]="homeLink"
           class="logo-button"
+          [attr.aria-label]="(brandingOrgName$ | async) || 'TMI Logo'"
           [matTooltip]="'navbar.home' | transloco"
           matTooltipPosition="below"
         >
-          <img
-            [src]="logoImageUrl$ | async"
-            [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
-            class="tmi-logo"
-          />
+          @if (isDefaultLogo$ | async) {
+            <mat-icon svgIcon="tmi-logo" class="tmi-logo" aria-hidden="true"></mat-icon>
+          } @else {
+            <img
+              [src]="logoImageUrl$ | async"
+              [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+              class="tmi-logo"
+            />
+          }
         </button>
       }
       <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>

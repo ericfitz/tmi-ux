@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   isAuthenticated = false;
   readonly logoImageUrl$ = this.brandingConfig.logoImageUrl$;
+  readonly isDefaultLogo$ = this.brandingConfig.isDefaultLogo$;
   private authSubscription: Subscription | null = null;
 
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: inject router and auth service dependencies for HomeComponent

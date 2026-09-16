@@ -1,5 +1,7 @@
 @if (isFontAwesomeIcon()) {
   <i [class]="getFontAwesomeIcon() + ' provider-logo-icon'"></i>
+} @else if (isTmiProvider()) {
+  <mat-icon svgIcon="tmi-logo" class="provider-logo" aria-hidden="true"></mat-icon>
 } @else if (getProviderLogoPath()) {
   <img [src]="getProviderLogoPath()" [alt]="getProviderName() + ' logo'" class="provider-logo" />
 }
