@@ -105,6 +105,12 @@ echo '{}' > "$DIST_DIR/config.json"
 # So: add everything new first (no --delete), publish the entry points, and
 # only then prune what is no longer referenced. Between passes 1 and 3 the
 # bucket holds both builds and serves the old one correctly.
+#
+# The prune must also spare the previous build for a while. A browser that
+# loaded the old index.html before the deploy still lazy-loads that build's
+# route chunks by their old hashed names; deleting them immediately turns the
+# next route change into a failed dynamic import (issue #924). Chunk hashes
+# churn on every build even for untouched routes, so this hits every deploy.
 # ---------------------------------------------------------------------------
 
 # Pass 1 — hash-named build output, added alongside the previous build's.
@@ -146,8 +152,20 @@ aws s3 cp "$DIST_DIR/config.json" "s3://$BUCKET/config.json" \
 # deletes for keys the current build no longer produces (the previous build's
 # hashed bundles, removed assets). --size-only keeps it from re-uploading and
 # clobbering the per-class Cache-Control set above.
-echo "==> Pass 4/4: pruning objects no longer in dist/"
-aws s3 sync "$DIST_DIR" "s3://$BUCKET" --delete --size-only
+# Pass 4 — prune only objects that are both absent from dist/ and older than
+# the retention window, so sessions on the previous build keep working.
+PRUNE_AFTER_HOURS="${PRUNE_AFTER_HOURS:-24}"
+CUTOFF="$(date -u -d "$PRUNE_AFTER_HOURS hours ago" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+    || date -u -v"-${PRUNE_AFTER_HOURS}H" +%Y-%m-%dT%H:%M:%SZ)"
+echo "==> Pass 4/4: pruning objects not in dist/ and last modified before $CUTOFF"
+aws s3api list-objects-v2 --bucket "$BUCKET" \
+    --query "Contents[?LastModified<'$CUTOFF'].Key" --output text \
+    | tr '\t' '\n' \
+    | while IFS= read -r key; do
+        [[ -z "$key" || "$key" == "None" ]] && continue
+        [[ -e "$DIST_DIR/$key" ]] && continue
+        aws s3 rm "s3://$BUCKET/$key"
+    done
 
 # Hashed files never need invalidating and the entry points sit on
 # CachingDisabled behaviors; this exists for the stable-named assets above.
