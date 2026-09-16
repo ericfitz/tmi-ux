@@ -52,74 +52,79 @@ import {
     <div class="document-sources-tab">
       <h3 class="section-header" [transloco]="'documentSources.tabTitle'">Document sources</h3>
 
-      @if ((tokens$ | async)?.length === 0) {
-        <div class="document-sources-empty" data-testid="document-sources-empty">
-          <mat-icon class="empty-icon">cloud_off</mat-icon>
-          <p class="empty-text" [transloco]="'documentSources.empty.title'">
-            No document sources connected
-          </p>
-          <p class="empty-description" [transloco]="'documentSources.empty.description'">
-            Link a cloud storage account...
-          </p>
-        </div>
-      } @else {
-        <table mat-table [dataSource]="(tokens$ | async) ?? []" class="document-sources-table">
-          <ng-container matColumnDef="source">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ 'documentSources.columns.source' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let token" data-testid="document-sources-row">
-              {{ providerName(token.provider_id) | async }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="account">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ 'documentSources.columns.account' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let token">
-              {{ token.provider_account_label || '—' }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ 'documentSources.columns.status' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let token">
-              <mat-chip [color]="token.status === 'active' ? 'primary' : 'warn'" [disabled]="true">
-                {{
-                  'documentSources.status.' +
-                    (token.status === 'active' ? 'active' : 'refreshFailed') | transloco
-                }}
-              </mat-chip>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let token">
-              @if (token.status !== 'active') {
-                <button
-                  mat-flat-button
-                  color="primary"
-                  (click)="onConnect(token.provider_id)"
-                  [attr.data-testid]="'document-sources-relink-' + token.provider_id"
+      @if (tokens$ | async; as tokens) {
+        @if (tokens.length === 0) {
+          <div class="document-sources-empty" data-testid="document-sources-empty">
+            <mat-icon class="empty-icon">cloud_off</mat-icon>
+            <p class="empty-text" [transloco]="'documentSources.empty.title'">
+              No document sources connected
+            </p>
+            <p class="empty-description" [transloco]="'documentSources.empty.description'">
+              Link a cloud storage account...
+            </p>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="tokens" class="document-sources-table">
+            <ng-container matColumnDef="source">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'documentSources.columns.source' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let token" data-testid="document-sources-row">
+                {{ providerName(token.provider_id) | async }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="account">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'documentSources.columns.account' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let token">
+                {{ token.provider_account_label || '—' }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'documentSources.columns.status' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let token">
+                <mat-chip
+                  [color]="token.status === 'active' ? 'primary' : 'warn'"
+                  [disabled]="true"
                 >
-                  {{ 'documentSources.relink' | transloco }}
+                  {{
+                    'documentSources.status.' +
+                      (token.status === 'active' ? 'active' : 'refreshFailed') | transloco
+                  }}
+                </mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let token">
+                @if (token.status !== 'active') {
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="onConnect(token.provider_id)"
+                    [attr.data-testid]="'document-sources-relink-' + token.provider_id"
+                  >
+                    {{ 'documentSources.relink' | transloco }}
+                  </button>
+                }
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="onUnlink(token.provider_id)"
+                  [matTooltip]="'documentSources.unlink' | transloco"
+                  [attr.data-testid]="'document-sources-unlink-' + token.provider_id"
+                >
+                  <mat-icon>link_off</mat-icon>
                 </button>
-              }
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="onUnlink(token.provider_id)"
-                [matTooltip]="'documentSources.unlink' | transloco"
-                [attr.data-testid]="'document-sources-unlink-' + token.provider_id"
-              >
-                <mat-icon>link_off</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        }
       }
 
       <div class="document-sources-actions">

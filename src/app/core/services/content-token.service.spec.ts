@@ -3,10 +3,12 @@
 
 import '@angular/compiler';
 
-import { of, firstValueFrom, throwError } from 'rxjs';
+import { BehaviorSubject, of, firstValueFrom, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { ContentTokenService, buildContentAuthorizeErrorMessage } from './content-token.service';
+import type { ContentProvidersService } from './content-providers.service';
 import type { ApiService } from './api.service';
 import type { LoggerService } from './logger.service';
 import type { TranslocoService } from '@jsverse/transloco';
@@ -29,6 +31,7 @@ describe('ContentTokenService', () => {
     warn: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
   };
+  let sources$: BehaviorSubject<Array<{ kind: string }>>;
 
   beforeEach(() => {
     mockApi = {
@@ -42,9 +45,11 @@ describe('ContentTokenService', () => {
       warn: vi.fn(),
       error: vi.fn(),
     };
+    sources$ = new BehaviorSubject<Array<{ kind: string }>>([{ kind: 'delegated' }]);
     svc = new ContentTokenService(
       mockApi as unknown as ApiService,
       mockLogger as unknown as LoggerService,
+      { selectableSources$: sources$ } as unknown as ContentProvidersService,
     );
   });
 
@@ -117,6 +122,53 @@ describe('ContentTokenService', () => {
     svc.refresh();
     await firstValueFrom(svc.contentTokens$);
     expect(mockApi.get).toHaveBeenCalledTimes(2);
+  });
+
+  it('contentTokens$ never calls the API when no delegated provider is advertised', async () => {
+    sources$.next([{ kind: 'direct' }]);
+
+    const result = await firstValueFrom(svc.contentTokens$);
+
+    expect(result).toEqual([]);
+    expect(mockApi.get).not.toHaveBeenCalled();
+  });
+
+  it('contentTokens$ starts fetching once config later advertises a delegated provider', () => {
+    sources$.next([]);
+    mockApi.get.mockReturnValue(of({ content_tokens: [] }));
+    const emissions: unknown[] = [];
+    const sub = svc.contentTokens$.subscribe(v => emissions.push(v));
+
+    expect(emissions).toEqual([[]]);
+    expect(mockApi.get).not.toHaveBeenCalled();
+
+    sources$.next([{ kind: 'delegated' }]);
+
+    expect(mockApi.get).toHaveBeenCalledTimes(1);
+    sub.unsubscribe();
+  });
+
+  it('list() treats 404 feature_not_available as an empty list with a warning', async () => {
+    mockApi.get.mockReturnValue(
+      throwError(
+        () => new HttpErrorResponse({ status: 404, error: { error: 'feature_not_available' } }),
+      ),
+    );
+
+    const result = await firstValueFrom(svc.list());
+
+    expect(result).toEqual([]);
+    expect(mockLogger.warn).toHaveBeenCalled();
+    expect(mockLogger.error).not.toHaveBeenCalled();
+  });
+
+  it('list() still rethrows other 404s', async () => {
+    mockApi.get.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 404, error: { error: 'not_found' } })),
+    );
+
+    await expect(firstValueFrom(svc.list())).rejects.toBeInstanceOf(HttpErrorResponse);
+    expect(mockLogger.error).toHaveBeenCalled();
   });
 
   it('unlink() invalidates the cache', async () => {
