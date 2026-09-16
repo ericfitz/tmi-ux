@@ -126,9 +126,11 @@ $dark-colorblind-theme: mat.define-theme(
 
 // Material's component stylesheets paint surfaces from their own tokens, which
 // all-component-colors emits as literal M3 values (near-black in dark mode).
-// Point those tokens at the app's --theme-* variables so every component
-// follows the app palette. Must be included inside each theme block so the
-// override outranks the tokens emitted there.
+// In the dark themes, point those tokens at the app's flat --theme-* grays.
+// Light themes keep Material's tonal surface tiers (cards, menus and dialogs
+// sit on distinct light greys), so this is NOT included there. Must be
+// included inside each dark theme block so the override outranks the tokens
+// emitted there.
 @mixin app-surface-tokens {
   @include mat.card-overrides(
     (
@@ -191,13 +193,11 @@ $dark-colorblind-theme: mat.define-theme(
 // Apply all Material 3 component styles (color, typography, density)
 html {
   @include mat.all-component-themes($light-normal-theme);
-  @include app-surface-tokens;
 }
 
 // Light + Colorblind (colorblind-palette class)
 .colorblind-palette {
   @include mat.all-component-colors($light-colorblind-theme);
-  @include app-surface-tokens;
 }
 
 // Dark + Normal (dark-theme class)
