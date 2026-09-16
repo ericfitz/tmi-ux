@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -37,7 +44,10 @@ export function directWriteRequestFields(form: FormGroup): {
       <mat-checkbox formControlName="directWrite" data-testid="direct-write-checkbox">
         {{ 'userPreferences.credentials.createDialog.directWrite' | transloco }}
       </mat-checkbox>
-      <p class="field-hint" [transloco]="'userPreferences.credentials.createDialog.directWriteHint'">
+      <p
+        class="field-hint"
+        [transloco]="'userPreferences.credentials.createDialog.directWriteHint'"
+      >
         Tokens from this credential can modify threat models the owner has writer or owner access
         to. Not allowed for credentials owned by an administrator.
       </p>

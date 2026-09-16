@@ -2499,7 +2499,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "O nome deve ter no máximo 100 caracteres.",
         "title": "Criar credencial de cliente",
-        "directWrite": "Permitir gravações diretas (automação)",
+        "directWrite": "Permitir gravações diretas",
         "directWriteHint": "Tokens desta credencial podem modificar modelos de ameaças aos quais o proprietário tem acesso de escrita ou propriedade. Não permitido para credenciais de um administrador.",
         "addon": "Complemento vinculado",
         "addonNone": "Nenhum",

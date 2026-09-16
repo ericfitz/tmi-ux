@@ -2470,7 +2470,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Nama harus 100 karakter atau kurang.",
         "title": "Buat Kredensial Klien",
-        "directWrite": "Izinkan tulis langsung (otomatisasi)",
+        "directWrite": "Izinkan tulis langsung",
         "directWriteHint": "Token dari kredensial ini dapat mengubah model ancaman yang pemiliknya memiliki akses penulis atau pemilik. Tidak diizinkan untuk kredensial milik administrator.",
         "addon": "Add-on tertaut",
         "addonNone": "Tidak ada",

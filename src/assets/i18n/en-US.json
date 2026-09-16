@@ -2903,7 +2903,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Name must be 100 characters or less.",
         "title": "Create client credential",
-        "directWrite": "Allow direct writes (automation)",
+        "directWrite": "Enable direct write",
         "directWriteHint": "Tokens from this credential can modify threat models the owner has writer or owner access to. Not allowed for credentials owned by an administrator.",
         "addon": "Linked addon",
         "addonNone": "None",

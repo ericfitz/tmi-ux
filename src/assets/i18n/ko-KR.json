@@ -2468,7 +2468,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "이름은 100자 이하여야 합니다.",
         "title": "클라이언트 자격 증명 생성",
-        "directWrite": "직접 쓰기 허용(자동화)",
+        "directWrite": "직접 쓰기 허용",
         "directWriteHint": "이 자격 증명의 토큰은 소유자가 쓰기 또는 소유자 권한을 가진 위협 모델을 수정할 수 있습니다. 관리자가 소유한 자격 증명에는 허용되지 않습니다.",
         "addon": "연결된 애드온",
         "addonNone": "없음",

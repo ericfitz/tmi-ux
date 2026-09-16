@@ -2470,7 +2470,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
         "title": "Crear credencial de cliente",
-        "directWrite": "Permitir escrituras directas (automatización)",
+        "directWrite": "Permitir escrituras directas",
         "directWriteHint": "Los tokens de esta credencial pueden modificar los modelos de amenazas en los que el propietario tiene acceso de escritura o propiedad. No se permite en credenciales de un administrador.",
         "addon": "Complemento vinculado",
         "addonNone": "Ninguno",

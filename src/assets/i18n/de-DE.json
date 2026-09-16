@@ -2470,7 +2470,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "Der Name darf maximal 100 Zeichen lang sein.",
         "title": "Client-Anmeldedaten erstellen",
-        "directWrite": "Direktes Schreiben erlauben (Automatisierung)",
+        "directWrite": "Direktes Schreiben erlauben",
         "directWriteHint": "Token aus diesen Anmeldedaten können Bedrohungsmodelle ändern, auf die der Besitzer Schreib- oder Eigentümerzugriff hat. Für Anmeldedaten eines Administrators nicht zulässig.",
         "addon": "Verknüpftes Add-on",
         "addonNone": "Keines",

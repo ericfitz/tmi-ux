@@ -2472,7 +2472,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "名前は100文字以内でなければなりません。",
         "title": "クライアント資格情報を作成",
-        "directWrite": "直接書き込みを許可（自動化）",
+        "directWrite": "直接書き込みを許可",
         "directWriteHint": "この認証情報のトークンは、所有者が書き込み権限または所有権を持つ脅威モデルを変更できます。管理者が所有する認証情報では許可されません。",
         "addon": "リンクされたアドオン",
         "addonNone": "なし",

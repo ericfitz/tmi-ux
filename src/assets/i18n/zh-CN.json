@@ -2470,7 +2470,7 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "nameTooLong": "名称不能超过 100 个字符。",
         "title": "创建客户端凭证",
-        "directWrite": "允许直接写入（自动化）",
+        "directWrite": "允许直接写入",
         "directWriteHint": "此凭据的令牌可以修改所有者拥有写入或所有者权限的威胁模型。管理员拥有的凭据不允许启用。",
         "addon": "关联的插件",
         "addonNone": "无",
