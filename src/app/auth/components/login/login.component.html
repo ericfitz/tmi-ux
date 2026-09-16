@@ -47,7 +47,11 @@
                   @if (isFontAwesomeIcon(provider.id)) {
                     <i [class]="getFontAwesomeIcon(provider.id) + ' provider-logo-icon'"></i>
                   } @else if (provider.id === 'tmi') {
-                    <mat-icon svgIcon="tmi-logo" class="provider-logo" aria-hidden="true"></mat-icon>
+                    <mat-icon
+                      svgIcon="tmi-logo"
+                      class="provider-logo"
+                      aria-hidden="true"
+                    ></mat-icon>
                   } @else {
                     <img
                       [src]="getProviderLogoPath(provider.id)"
