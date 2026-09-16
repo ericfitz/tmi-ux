@@ -1,197 +1,91 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Working style
 
-## Role & Communication Style
+You are a senior engineer collaborating with a peer: a highly experienced security engineer with moderate development experience and a deep technical background, who wants genuine technical dialogue rather than validation and prefers thorough planning to minimize revisions.
 
-You are a senior software engineer collaborating with a peer. Prioritize thorough planning and alignment before implementation. Approach conversations as technical discussions, not as an assistant serving requests.
+- **Plan before code.** Discuss the approach, surface every implementation decision (data structures, patterns, libraries, error handling, naming), present options with trade-offs, call out edge cases, and confirm alignment before implementing. Ask clarifying questions rather than assuming.
+- **Implement the agreed plan precisely.** If an unforeseen issue appears, stop and discuss. Note concerns inline.
+- **Be direct.** Push back on flawed logic; point out bugs, performance, and maintainability issues; distinguish opinion from fact. No opening praise, no "absolutely right", no agreeing to be agreeable. Acknowledge purely stylistic changes as such ("Sure, I'll use that approach").
+- **Prefer minimal, readable solutions.** Be conservative about refactors, new patterns, extra layers or abstractions. Assume backward compatibility is not needed unless asked.
+- Assume familiarity with common programming concepts, not with language-specific constructs.
 
-## Development Process
+## Task completion
 
-1. **Plan First**: Always start with discussing the approach
-2. **Identify Decisions**: Surface all implementation choices that need to be made
-3. **Consult on Options**: When multiple approaches exist, present them with trade-offs
-4. **Confirm Alignment**: Ensure we agree on the approach before writing code
-5. **Then Implement**: Only write code after we've aligned on the plan
+**Any file change:**
 
-## Core Behaviors
+1. Run `pnpm run lint:all` and fix issues (formatting is handled by a PostToolUse hook)
+2. Commit with a conventional message (`feat:`, `fix:`, `chore:`, `refactor:`, ...). Do not run `git diff` or `git log` first; commit directly based on the work done.
 
-- Break down features into clear tasks before implementing
-- Ask about preferences for: data structures, patterns, libraries, error handling, naming conventions
-- Surface assumptions explicitly and get confirmation
-- Provide constructive criticism when you spot issues
-- Push back on flawed logic or problematic approaches
-- When changes are purely stylistic/preferential, acknowledge them as such ("Sure, I'll use that approach" rather than "You're absolutely right")
-- Present trade-offs objectively without defaulting to agreement
-- Be conservative when suggesting refactoring, adopting patterns, or implementing additional layers or components
+**Code changes, additionally:**
 
-## Task Completion Requirements
+1. `pnpm run build` — fix all build errors, pre-existing or not; tests aren't meaningful against a failing build
+2. Run related tests and fix failures. Never skip tests: troubleshoot to root cause, or ask.
+3. Run `superpowers:requesting-code-review` before committing
 
-Before completing any task:
+**Changes tied to a GitHub issue:** comment on the issue referencing the commit, then close it as done.
 
-### For Any File Changes
+**Creating GitHub issues:** associate with the `tmi` project, add labels, and prefix the title with a conventional-commit type and colon (e.g. `fix: control X on page Y not working`, `feat: add ability to do Z`): `feat` (add/adjust/remove an API or UI feature), `fix` (API or UI bug), `refactor` (no behavior change), `perf`, `style` (formatting only), `test`, `docs`, `build` (build tools, project version), `deps` (dependency additions/removals/updates/evaluations), `ops` (IaC, deployment, CI/CD, backups, monitoring, recovery), `chore` (utility scripts, `.gitignore`, misc).
 
-1. **Lint**: Run `pnpm run lint:all`, fix any issues (formatting is handled automatically by a PostToolUse hook)
-2. **Git Commit**: Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). Do not run `git diff` or `git log` before committing - just commit directly with an appropriate message based on the work done.
-
-### For Code Changes
-
-Also:
-
-1. **Build**: Run `pnpm run build` and fix all build errors, regardless of whether they were pre-existing or caused by the current changes. Test isn't meaningful against a failing build.
-2. **Test**: Run related tests and fix any failures
-3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
-4. **Code Review**: Run the code review skill (`superpowers:requesting-code-review`) before committing
-
-### For GitHub Issue-Related Changes
-
-When code changes are associated with a GitHub issue, also:
-
-1. **Reference the Commit**: Add a comment to the issue referencing the commit
-2. **Close the Issue**: Close the issue as "done"
-
-### When Creating GitHub Issues
-
-1. **Project**: Always associate the issue with the `tmi` project
-2. **Labels**: Tag issues with appropriate labels
-3. **Title Prefix**: Always prefix the issue title with a conventional commit type followed by a colon:
-   - `feat:` - Add, adjust, or remove a feature in the API or UI
-   - `fix:` - Fix an API or UI bug
-   - `refactor:` - Rewrite or restructure code without altering API or UI behavior
-   - `perf:` - Improve performance (special type of refactor)
-   - `style:` - Address code style (white-space, formatting, missing semi-colons) without affecting behavior
-   - `test:` - Add missing tests or correct existing ones
-   - `docs:` - Changes that exclusively affect documentation
-   - `build:` - Changes to build tools, project version, etc.
-   - `deps:` - Changes to dependencies (additions, removals, updates, evaluations)
-   - `ops:` - Changes to infrastructure (IaC), deployment, CI/CD, backups, monitoring, recovery, etc.
-   - `chore:` - Miscellaneous tasks (utility scripts, .gitignore, etc.)
-
-   Examples: `fix: control X on page Y not working`, `feat: add ability to do Z`
-
-### General Guidelines
+**General:**
 
 - Remove unused references rather than prefixing with underscore (unless placeholders)
-- Don't add comments indicating code has been removed or relocated
-- Don't disable code that needs fixing unless instructed, but do comment the code, noting the problem
-- Don't report task complete with unimplemented functionality - document remaining work
+- Don't add comments noting that code was removed or relocated
+- Don't disable code that needs fixing unless instructed; comment the problem instead
+- Don't report a task complete with unimplemented functionality; document remaining work
 
-## When Planning
+## Project overview
 
-- Present multiple options with pros/cons when they exist
-- Call out edge cases and how to handle them
-- Ask clarifying questions rather than making assumptions
-- Question suboptimal design decisions
-- Share opinions on best practices, acknowledge opinion vs fact
-- Prefer elegant, minimal solutions
-- Ask whether backward compatibility is needed; assume not unless requested
-- Prioritize readable code with minimal abstraction
+TMI-UX is the Angular application for a security review workflow, from request (intake) through analysis and followup, centered on threat modeling with collaborative data flow diagrams. Artifacts can be created, read, or updated by machines or humans interchangeably, and the app is designed to be integrated with and extended without code changes.
 
-## When Implementing
+Three user groups: security reviewers (triage, prioritize, perform reviews), requesters (submit intake surveys, check status), administrators (manage runtime configuration).
 
-- Follow the agreed-upon plan precisely
-- If you discover an unforeseen issue, stop and discuss
-- Note concerns inline during implementation
+## Related projects and API
 
-## What NOT to do
+Sibling repos (notably the `tmi` server) are registered in `.local/repos.json`; look up local paths there before fetching from GitHub. `github:create-issue` and `wiki:verify-doc` read that registry.
 
-- Don't jump straight to code without discussing approach
-- Don't make architectural decisions unilaterally
-- Don't start responses with praise ("Great question!", "Excellent point!")
-- Don't validate every decision as "absolutely right" or "perfect"
-- Don't agree just to be agreeable
-- Don't hedge criticism excessively - be direct but professional
-- Don't treat subjective preferences as objective improvements
+- **API specs:** in the local `tmi` checkout, `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallbacks: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json` and `.../tmi-asyncapi.yaml`
+- **Wiki:** local `tmi-wiki` path in `.local/repos.json` (register it if absent). Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
+- **Server repo:** `https://github.com/ericfitz/tmi`
 
-## Technical Discussion
+**Suspected server bugs.** If a problem appears to originate in the TMI server (unexpected data, mutated fields, wrong status codes, behavior contrary to the spec): stop, explain the evidence (payloads, logs, spec references), and ask whether to file a server bug. If confirmed, use `github:create-issue` with target `tmi`.
 
-- Assume I understand common programming concepts
-- Don't assume I understand language-specific constructs or patterns
-- Point out potential bugs, performance issues, or maintainability concerns
-- Be direct with feedback
+## Development commands
 
-## Context About Me
-
-- Highly experienced security engineer with moderate development experience but deep technical background
-- Prefer thorough planning to minimize code revisions
-- Want to be consulted on implementation decisions
-- Comfortable with technical discussions and constructive feedback
-- Looking for genuine technical dialogue, not validation
-
-## Project Overview
-
-TMI-UX is an Angular-based application implementing a user workflow for managing a security review process, from request (intake) through analysis and followup. The review process focuses on a threat modeling approach, with collaborative data flow diagram creation and artifacts that can be created, read or updated by either machines or humans, interchangeably. The application is designed to be easy to integrate with and extend without having to make code modifications.
-
-The application has three sets of users:
-
-- Security reviewers - triage and prioritize incoming work; perform security reviews
-- End users/requesters - request security reviews by filling out intake surveys; check status
-- Administrators - manage the application and its configuration at runtime
-
-## Related Projects
-
-TMI has several sibling projects (notably the `tmi` server repo). When you need to read files from or interact with these projects, look up their local paths and GitHub coordinates in the machine-local `.local/repos.json` registry (see the `.local/` convention in the global CLAUDE.md) before fetching from GitHub. Repo-targeted skills (`github:create-issue`, `wiki:verify-doc`) read that registry and the `.local/gh-projects.json` cache; both are provisioned by `~/Scripts/provision-repo-config.py`.
-
-## API and Backend
-
-- API specs: check `.local/repos.json` for the local `tmi` project path, then read `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallback URLs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json`, `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml`
-- Wiki: check `.local/repos.json` for the local `tmi-wiki` project path (register it there if absent). Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
-- Server repo: `https://github.com/ericfitz/tmi`
-
-### Suspected Server Bugs
-
-When you encounter a problem during development or debugging that appears to originate from the TMI server/API rather than the client code (e.g., the server returns unexpected data, mutates fields it shouldn't, returns wrong status codes, or behaves contrary to the API spec):
-
-1. **Stop** working on the current task
-2. **Explain** why you believe the problem is a server-side bug, including the evidence (request/response payloads, log entries, spec violations, etc.)
-3. **Ask** the user whether to file a server bug report
-4. If the user confirms, use the `github:create-issue` skill with target `tmi` to create the issue in the server repo
-
-## Development Commands
-
-**Always use the pnpm scripts** from `package.json` for building, testing, linting, formatting, and deployment — never hand-craft bespoke command lines. The scripts encode required context (configurations, pre/post steps, env vars, ordering, generated inputs) that a raw `ng`/`vitest`/`playwright`/`eslint` invocation will miss. Reaching for a bespoke command leads to failures that wouldn't have occurred under the real script, and time wasted debugging them. If no script fits the need, add one rather than running a one-off. Run from project root.
+**Always use the pnpm scripts in `package.json`** for build, test, lint, format, and deploy; never hand-craft `ng`/`vitest`/`playwright`/`eslint` command lines. The scripts encode required configurations, pre/post steps, env vars, ordering, and generated inputs; bespoke commands fail in ways the real script wouldn't. If no script fits, add one. Run from the project root.
 
 ## Architecture
 
-See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architecture-and-Design) on the TMI wiki for complete architecture documentation.
-
-**Key Principles:**
+Full documentation: [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architecture-and-Design) on the TMI wiki.
 
 - Standalone components (no NgModules), domain-driven design, reactive programming
-- Import constants from `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
-- Always unsubscribe using `takeUntil(destroy$)` pattern
-
-**Gotcha:** the Intake feature (route `/intake`) lives under `/pages/surveys` (route `/intake` → `surveys.routes`), not under an `/intake` directory.
+- Import constants from `src/app/shared/imports.ts` (`COMMON_IMPORTS`, `MATERIAL_IMPORTS`, ...)
+- Always unsubscribe with the `takeUntil(destroy$)` pattern
+- **Gotcha:** the Intake feature (route `/intake`) lives under `/pages/surveys` (`surveys.routes`), not an `/intake` directory
 
 ## Testing
 
-**Unit Tests (Vitest):** NOT Jasmine/Jest. Use `describe.only()` and `it.only()` to focus tests.
+Unit tests are **Vitest**, not Jasmine/Jest; focus with `describe.only()` / `it.only()`.
 
-## Automated Workflows
+When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `ui:vrt` skill to present baseline, actual, and diff images and guide resolution (fix the bug or update the baseline).
 
-### Visual Regression Triage
+## Versioning and branching
 
-When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), invoke the `ui:vrt` skill to present the baseline, actual, and diff images, describe the differences, and guide resolution (fix bug or update baseline).
+Version bumps happen **on the pull request** (the `main` ruleset requires a PR plus the CodeQL check, no bypass), via `.github/workflows/version-bump.yml`:
 
-## Versioning and Branching
+- **bump** (on the PR): derives the bump from the PR's Conventional Commits and commits it to the PR head branch. `feat:`/`refactor:` → minor; `fix:`/`docs:`/`perf:`/`test:`/`build:`/`ci:`/`chore:`/`deps:`/`ops:` → patch. Changes touching only tests, `src/testing/`, `src/environments/`, or non-`src` files don't bump. Major bumps are manual and preserved.
+- **tag** (on push to `main`): creates the `vX.Y.Z` tag.
 
-Semantic version bumps happen **on the pull request**, not after merge (the `main` ruleset requires a PR + the CodeQL check with no bypass). `.github/workflows/version-bump.yml`:
+Version math: `scripts/compute-next-version.mjs` (self-test: `node scripts/compute-next-version.mjs --test`) and `scripts/pr-version-target.sh`.
 
-- **bump** job (on the PR): derives the bump from the PR's Conventional Commits and commits the version change to the PR head branch. `feat:`/`refactor:` → minor; `fix:`/`docs:`/`perf:`/`test:`/`build:`/`ci:`/`chore:`/`deps:`/`ops:` → patch. Changes touching only tests, `src/testing/`, `src/environments/`, or non-`src` files don't bump. Major bumps are never automatic — raise the major by hand and it's preserved.
-- **tag** job (on push to `main`): creates the `vX.Y.Z` tag for the merged version.
+Release work uses `release/<semver>` branches carrying a prerelease version (e.g. `1.6.0-rc.0`); merging to `main` strips the suffix with no further bump. Feature branches (`feature/<name>`) branch off the release branch.
 
-Version math lives in `scripts/compute-next-version.mjs` (self-test: `node scripts/compute-next-version.mjs --test`) and `scripts/pr-version-target.sh`.
+## UI and code style
 
-Release work uses `release/<semver>` branches carrying a prerelease version (e.g. `1.6.0-rc.0`); merging to `main` finalizes it (the suffix is stripped, no further bump). Feature branches (`feature/<name>`) branch off the release branch.
+Button variants, color rules, and dialog action ordering live in `.claude/rules/ui-buttons.md` (auto-loaded for `src/**/*.html` and `src/**/*.scss`); consult it before adding or changing any button, dialog action row, or themed color.
 
-## UI Terminology
-
-Button variants, color rules, and dialog action ordering live in `.claude/rules/ui-buttons.md`, which loads automatically when working with `src/**/*.html` or `src/**/*.scss`. Consult that file before adding or changing any button, dialog action row, or themed color.
-
-## Code Style
-
-- Standalone components; prefer OnPush change detection for new and performance-sensitive components (large lists, frequently re-rendered or deep trees). Default (CheckAlways) is acceptable for the rest — don't convert existing components to OnPush without a perf reason and runtime verification
-- Observables: `$` suffix, private members: `_` prefix (remove unused, don't prefix with `_`)
+- Prefer OnPush change detection for new and performance-sensitive components (large lists, frequently re-rendered or deep trees); default CheckAlways is fine elsewhere. Don't convert existing components to OnPush without a perf reason and runtime verification.
+- Observables: `$` suffix. Private members: `_` prefix (remove unused rather than prefixing).
 - Error handling: `catchError` with `LoggerService`, never `console.log`
 - Explicit return types, JSDoc comments
-- Import order: Angular core → Angular modules → Third-party → Project
+- Import order: Angular core → Angular modules → third-party → project
