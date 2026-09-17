@@ -214,7 +214,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
         setting.key.toLowerCase().includes(filter) ||
         setting.value.toLowerCase().includes(filter) ||
         (setting.description || '').toLowerCase().includes(filter) ||
-        (setting.source || '').toLowerCase().includes(filter),
+        (setting.source || '').toLowerCase().includes(filter) ||
+        (setting.origin || '').toLowerCase().includes(filter),
     );
   }
 
@@ -352,6 +353,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
           setting.modified_at = updated.modified_at;
           setting.modified_by = updated.modified_by;
           setting.source = updated.source;
+          setting.origin = updated.origin;
           setting.read_only = updated.read_only;
           setting.editing = false;
           setting.editValues = undefined;

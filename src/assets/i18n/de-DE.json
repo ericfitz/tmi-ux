@@ -367,6 +367,14 @@
       "filterPlaceholder": "Nach Schlüssel, Wert, Beschreibung oder Quelle filtern",
       "listTitle": "Systemeinstellungen",
       "noSettings": "Keine Einstellungen gefunden.",
+      "originTooltips": {
+        "explicit": "Bewusst von einem Operator über die Admin-API oder einen Import gesetzt. Hat Vorrang vor der Konfiguration.",
+        "seeded": "Beim ersten Start mit einem Registry-Standardwert eingefügt. Ein explizit konfigurierter Wert hat Vorrang."
+      },
+      "origins": {
+        "explicit": "Explizit",
+        "seeded": "Vorbelegt"
+      },
       "readOnlyTooltip": "Diese Einstellung ist schreibgeschützt und kann hier nicht geändert werden",
       "reencrypt": {
         "button": "Gespeicherte Einstellungen neu verschlüsseln...",

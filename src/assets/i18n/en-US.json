@@ -425,6 +425,16 @@
       "filterPlaceholder": "Filter by key, value, description, or source",
       "listTitle": "System settings",
       "noSettings": "No settings found.",
+      "originTooltips": {
+        "explicit": "Set deliberately by an operator through the admin API or an import. Takes precedence over configuration.",
+        "seeded": "Inserted with a registry default at first boot. An explicitly configured value takes precedence over it."
+      },
+      "origins": {
+        "explicit": "Explicit",
+        "explicit.comment": "Adjective, shown in parentheses after the source: 'Database (Explicit)'.",
+        "seeded": "Seeded",
+        "seeded.comment": "Adjective, shown in parentheses after the source: 'Database (Seeded)'."
+      },
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "reencrypt": {
         "button": "Re-encrypt stored settings...",

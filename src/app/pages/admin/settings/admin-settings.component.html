@@ -145,6 +145,14 @@
                 @if (setting.source) {
                   {{ 'admin.settings.sources.' + setting.source | transloco }}
                 }
+                @if (setting.origin) {
+                  <span
+                    class="setting-origin"
+                    [matTooltip]="'admin.settings.originTooltips.' + setting.origin | transloco"
+                  >
+                    ({{ 'admin.settings.origins.' + setting.origin | transloco }})
+                  </span>
+                }
               </td>
             </ng-container>
 
