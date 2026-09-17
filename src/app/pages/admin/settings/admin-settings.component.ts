@@ -214,7 +214,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
         setting.key.toLowerCase().includes(filter) ||
         setting.value.toLowerCase().includes(filter) ||
         (setting.description || '').toLowerCase().includes(filter) ||
-        (setting.source || '').toLowerCase().includes(filter),
+        (setting.source || '').toLowerCase().includes(filter) ||
+        (setting.origin || '').toLowerCase().includes(filter),
     );
   }
 
