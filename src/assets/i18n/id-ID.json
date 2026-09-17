@@ -367,6 +367,14 @@
       "filterPlaceholder": "Filter berdasarkan kunci, nilai, deskripsi, atau sumber",
       "listTitle": "Pengaturan Sistem",
       "noSettings": "Tidak ada pengaturan ditemukan.",
+      "originTooltips": {
+        "explicit": "Ditetapkan secara sengaja oleh operator melalui API admin atau impor. Diutamakan di atas konfigurasi.",
+        "seeded": "Disisipkan dengan nilai bawaan registri saat boot pertama. Nilai yang dikonfigurasi secara eksplisit lebih diutamakan."
+      },
+      "origins": {
+        "explicit": "Eksplisit",
+        "seeded": "Bawaan"
+      },
       "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
       "reencrypt": {
         "button": "Enkripsi ulang pengaturan tersimpan...",

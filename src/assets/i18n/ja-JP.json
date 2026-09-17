@@ -367,6 +367,14 @@
       "filterPlaceholder": "キー、値、説明、またはソースでフィルター",
       "listTitle": "システム設定",
       "noSettings": "設定が見つかりません。",
+      "originTooltips": {
+        "explicit": "管理APIまたはインポートで運用者が明示的に設定した値です。設定ファイルより優先されます。",
+        "seeded": "初回起動時にレジストリの既定値で挿入された値です。明示的に設定された値が優先されます。"
+      },
+      "origins": {
+        "explicit": "明示的",
+        "seeded": "初期値"
+      },
       "readOnlyTooltip": "この設定は読み取り専用で、ここでは変更できません",
       "reencrypt": {
         "button": "保存済み設定を再暗号化...",

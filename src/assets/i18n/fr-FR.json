@@ -367,6 +367,14 @@
       "filterPlaceholder": "Filtrer par clé, valeur, description ou source",
       "listTitle": "Paramètres système",
       "noSettings": "Aucun paramètre trouvé.",
+      "originTooltips": {
+        "explicit": "Défini délibérément par un opérateur via l'API d'administration ou un import. Prioritaire sur la configuration.",
+        "seeded": "Inséré avec une valeur par défaut du registre au premier démarrage. Une valeur configurée explicitement est prioritaire."
+      },
+      "origins": {
+        "explicit": "Explicite",
+        "seeded": "Prédéfini"
+      },
       "readOnlyTooltip": "Ce paramètre est en lecture seule et ne peut pas être modifié ici",
       "reencrypt": {
         "button": "Rechiffrer les paramètres stockés...",

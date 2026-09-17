@@ -367,6 +367,14 @@
       "filterPlaceholder": "Filtrar por chave, valor, descrição ou origem",
       "listTitle": "Configurações do sistema",
       "noSettings": "Nenhuma configuração encontrada.",
+      "originTooltips": {
+        "explicit": "Definido deliberadamente por um operador pela API de administração ou por uma importação. Tem precedência sobre a configuração.",
+        "seeded": "Inserido com um valor padrão do registro na primeira inicialização. Um valor configurado explicitamente tem precedência."
+      },
+      "origins": {
+        "explicit": "Explícito",
+        "seeded": "Predefinido"
+      },
       "readOnlyTooltip": "Esta configuração é somente leitura e não pode ser modificada aqui",
       "reencrypt": {
         "button": "Recriptografar configurações armazenadas...",

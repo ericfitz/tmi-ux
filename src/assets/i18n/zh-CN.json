@@ -367,6 +367,14 @@
       "filterPlaceholder": "按键名、值、描述或来源筛选",
       "listTitle": "系统设置",
       "noSettings": "未找到设置。",
+      "originTooltips": {
+        "explicit": "由操作员通过管理 API 或导入有意设置。优先于配置。",
+        "seeded": "首次启动时以注册表默认值插入。显式配置的值优先于它。"
+      },
+      "origins": {
+        "explicit": "显式",
+        "seeded": "预置"
+      },
       "readOnlyTooltip": "此设置为只读，无法在此处修改",
       "reencrypt": {
         "button": "重新加密已存储的设置...",

@@ -367,6 +367,14 @@
       "filterPlaceholder": "키, 값, 설명 또는 출처로 필터링",
       "listTitle": "시스템 설정",
       "noSettings": "설정을 찾을 수 없습니다.",
+      "originTooltips": {
+        "explicit": "운영자가 관리 API 또는 가져오기를 통해 의도적으로 설정한 값입니다. 구성보다 우선합니다.",
+        "seeded": "최초 부팅 시 레지스트리 기본값으로 삽입된 값입니다. 명시적으로 구성된 값이 우선합니다."
+      },
+      "origins": {
+        "explicit": "명시적",
+        "seeded": "초기값"
+      },
       "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
       "reencrypt": {
         "button": "저장된 설정 다시 암호화...",

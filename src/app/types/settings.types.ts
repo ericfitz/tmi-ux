@@ -10,6 +10,9 @@ export type SettingType = 'string' | 'int' | 'bool' | 'json';
 // SEM@c1b74b47ac4be6cb7de402ea149e6f0131e2acab: enumerate origins from which a system setting value may derive (pure)
 export type SettingSource = 'database' | 'config' | 'environment' | 'vault';
 
+/** seeded: registry default written at first boot; explicit: deliberately set by an operator. */
+export type SettingOrigin = 'seeded' | 'explicit';
+
 /**
  * System setting returned from the API
  */
@@ -21,6 +24,8 @@ export interface SystemSetting {
   modified_at?: string;
   modified_by?: string;
   source?: SettingSource;
+  /** How the database row came to exist; absent when the setting has no database row. */
+  origin?: SettingOrigin;
   read_only?: boolean;
 }
 
