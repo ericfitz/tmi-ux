@@ -412,7 +412,7 @@ export class AppEventHandlersService {
                   interface ThreatFormResult {
                     name: string;
                     description: string;
-                    severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+                    severity: string;
                     threat_type: string[];
                     diagram_id?: string;
                     cell_id?: string;
@@ -433,15 +433,15 @@ export class AppEventHandlersService {
                     description: formResult.description || '',
                     created_at: now,
                     modified_at: now,
-                    severity: formResult.severity || 'High',
+                    severity: formResult.severity || 'high',
                     threat_type: formResult.threat_type || ['Information Disclosure'],
                     diagram_id: formResult.diagram_id || dfdId || '',
                     cell_id: formResult.cell_id || selectedCell?.id || '',
                     score: formResult.score || 10.0,
-                    priority: formResult.priority || 'High',
+                    priority: formResult.priority || 'high',
                     issue_uri: formResult.issue_uri || '',
                     mitigated: formResult.mitigated || false,
-                    status: formResult.status || 'Open',
+                    status: formResult.status || 'open',
                     metadata: formResult.metadata || [],
                   };
 
