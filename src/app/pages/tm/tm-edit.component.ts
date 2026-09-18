@@ -180,7 +180,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   threatPriorityOptions: FieldOption[] = [];
   threatTypeOptions: string[] = [];
   threatSortActive = 'severity';
-  threatSortDirection: 'asc' | 'desc' | '' = 'asc';
+  threatSortDirection: 'asc' | 'desc' | '' = 'desc';
   private threatNameFilterChanged$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
