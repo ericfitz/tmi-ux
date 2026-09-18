@@ -37,15 +37,17 @@ test.describe.serial('Admin Users Workflows', () => {
 
   test('sorting by a column header reorders the rows', async () => {
     const header = adminUsersPage.table().locator('th[mat-sort-header]').nth(1);
-    const firstRow = () => adminUsersPage.rows().first();
-    expect(await adminUsersPage.rows().count()).toBeGreaterThan(1);
+    const column = () => page.locator('[data-testid=users-row] td:nth-child(2)').allInnerTexts();
+    const unsorted = await column();
+    expect(new Set(unsorted).size).toBeGreaterThan(1);
 
     await header.click();
     await expect(header).toHaveAttribute('aria-sort', 'ascending');
-    const asc = await firstRow().innerText();
+    const asc = await column();
     await header.click();
     await expect(header).toHaveAttribute('aria-sort', 'descending');
-    await expect(firstRow()).not.toHaveText(asc);
+    // The header state alone proves nothing: the rows themselves have to move
+    await expect.poll(column).not.toEqual(asc);
     // Third click clears the sort so later tests see the server order
     await header.click();
   });
@@ -55,14 +57,10 @@ test.describe.serial('Admin Users Workflows', () => {
     expect(initialCount).toBeGreaterThan(0);
 
     await adminUsersPage.filterInput().fill('nonexistent-xyz-filter');
-    await page.waitForTimeout(500);
-    const filteredCount = await adminUsersPage.rows().count();
-    expect(filteredCount).toBe(0);
+    await expect(adminUsersPage.rows()).toHaveCount(0, { timeout: 10000 });
 
     await adminUsersPage.filterInput().fill('');
-    await page.waitForTimeout(500);
-    const restoredCount = await adminUsersPage.rows().count();
-    expect(restoredCount).toBeGreaterThan(0);
+    await expect(adminUsersPage.rows()).not.toHaveCount(0, { timeout: 10000 });
   });
 
   test('automation-only toggle filters correctly', async () => {
@@ -74,9 +72,7 @@ test.describe.serial('Admin Users Workflows', () => {
     expect(automationCount).toBeLessThanOrEqual(allCount);
 
     await adminUsersPage.automationToggle().click();
-    await page.waitForTimeout(500);
-    const restoredCount = await adminUsersPage.rows().count();
-    expect(restoredCount).toBe(allCount);
+    await expect(adminUsersPage.rows()).toHaveCount(allCount, { timeout: 10000 });
   });
 
   test('more menu opens with transfer and delete items', async () => {
@@ -111,8 +107,10 @@ test.describe.serial('Admin Users Workflows', () => {
     await expect(page.getByTestId('manage-credentials-dialog')).toBeVisible({ timeout: 5000 });
 
     // The creation flow already made one credential; verify the list has 1
+    await expect(page.getByTestId('manage-credentials-row')).not.toHaveCount(0, {
+      timeout: 10000,
+    });
     const initialRows = await page.getByTestId('manage-credentials-row').count();
-    expect(initialRows).toBeGreaterThanOrEqual(1);
 
     await page.getByTestId('manage-credentials-add-button').click();
     await expect(page.getByTestId('create-credential-name-input')).toBeVisible({
