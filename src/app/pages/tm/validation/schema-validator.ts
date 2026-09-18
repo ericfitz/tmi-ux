@@ -146,8 +146,7 @@ export class SchemaValidator extends BaseValidator {
       type: 'array',
     },
     // severity is a freeform string per OpenAPI (maxLength: 50)
-    // The app uses numeric keys ('0'-'5') internally which map to translations:
-    // 0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown
+    // Canonical values are lowercase keys (critical, high, ...); legacy rows may hold '0'-'5'
     // We validate as string, not enum, to allow flexibility
     { field: 'severity', required: true, type: 'string', maxLength: 50 },
     { field: 'created_at', required: true, type: 'date-time' },

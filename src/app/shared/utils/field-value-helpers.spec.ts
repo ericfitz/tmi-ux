@@ -151,6 +151,12 @@ describe('field-value-helpers', () => {
       ).toBeNull();
     });
 
+    it('should match a key case-insensitively', () => {
+      expect(
+        migrateFieldValue('High', 'threatEditor.threatPriority', mockTranslocoService as never),
+      ).toBe('high');
+    });
+
     it('should pass through already-valid snake_case keys', () => {
       expect(
         migrateFieldValue('high', 'threatEditor.threatSeverity', mockTranslocoService as never),

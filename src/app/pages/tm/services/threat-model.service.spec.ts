@@ -697,8 +697,7 @@ describe('ThreatModelService', () => {
                   expect(cached?.threats).toBeDefined();
                   expect(cached!.threats!.length).toBe(1);
                   expect(cached!.threats![0].name).toBe('Updated Name');
-                  // 'critical' is migrated to '0' by migrateLegacyThreatFieldValues
-                  expect(cached!.threats![0].severity).toBe('0');
+                  expect(cached!.threats![0].severity).toBe('critical');
                   resolve();
                 });
               });
@@ -2209,7 +2208,7 @@ describe('ThreatModelService', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Threat query params + legacy field migration
+  // Threat query params
   // ---------------------------------------------------------------------------
   describe('getThreatsForThreatModel and query params', () => {
     const tmId = '550e8400-e29b-41d4-a716-446655440000';
@@ -2272,11 +2271,11 @@ describe('ThreatModelService', () => {
           });
       }));
 
-    it('migrates legacy string severity/priority/status on returned threats', () =>
+    it('returns threat severity/priority/status exactly as the API sent them', () =>
       new Promise<void>((resolve, reject) => {
         vi.mocked(apiService.get).mockReturnValue(
           of({
-            threats: [{ id: 't1', severity: 'High', priority: 'Immediate', status: 'Open' }],
+            threats: [{ id: 't1', severity: 'high', priority: 'immediate', status: 'open' }],
             total: 1,
             limit: 10,
             offset: 0,
@@ -2286,35 +2285,9 @@ describe('ThreatModelService', () => {
         service.getThreatsForThreatModel(tmId).subscribe({
           next: result => {
             try {
-              expect(result.threats[0].severity).toBe('1');
-              expect(result.threats[0].priority).toBe('0');
-              expect(result.threats[0].status).toBe('0');
-              resolve();
-            } catch (e) {
-              reject(e instanceof Error ? e : new Error(String(e)));
-            }
-          },
-          error: err => reject(err instanceof Error ? err : new Error(String(err))),
-        });
-      }));
-
-    it('leaves already-numeric and unknown threat field values unchanged', () =>
-      new Promise<void>((resolve, reject) => {
-        vi.mocked(apiService.get).mockReturnValue(
-          of({
-            threats: [{ id: 't1', severity: '2', priority: 'bogus', status: '9' }],
-            total: 1,
-            limit: 10,
-            offset: 0,
-          }),
-        );
-
-        service.getThreatsForThreatModel(tmId).subscribe({
-          next: result => {
-            try {
-              expect(result.threats[0].severity).toBe('2');
-              expect(result.threats[0].priority).toBe('bogus');
-              expect(result.threats[0].status).toBe('9');
+              expect(result.threats[0].severity).toBe('high');
+              expect(result.threats[0].priority).toBe('immediate');
+              expect(result.threats[0].status).toBe('open');
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));
@@ -3197,7 +3170,7 @@ describe('ThreatModelService', () => {
         });
       }));
 
-    it('migrates legacy threat field values on the loaded model', () =>
+    it('leaves threat field values on the loaded model as the API sent them', () =>
       new Promise<void>((resolve, reject) => {
         const tmId = testThreatModel1.id;
         vi.mocked(apiService.get).mockReturnValue(
@@ -3210,9 +3183,9 @@ describe('ThreatModelService', () => {
         service.getThreatModelById(tmId, true).subscribe({
           next: result => {
             try {
-              expect(result?.threats?.[0].severity).toBe('3');
-              expect(result?.threats?.[0].priority).toBe('4');
-              expect(result?.threats?.[0].status).toBe('9');
+              expect(result?.threats?.[0].severity).toBe('low');
+              expect(result?.threats?.[0].priority).toBe('deferred');
+              expect(result?.threats?.[0].status).toBe('closed');
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));

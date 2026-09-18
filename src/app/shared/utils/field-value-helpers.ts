@@ -86,6 +86,12 @@ export function migrateFieldValue(
     return value;
   }
 
+  // Old title-case spelling of a key ("High", "Critical")
+  const lower = value.toLowerCase();
+  if (keys.includes(lower)) {
+    return lower;
+  }
+
   // If numeric, map by index position to the corresponding camelCase key
   if (/^\d+$/.test(value)) {
     const idx = parseInt(value, 10);

@@ -588,7 +588,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   private populateForm(): void {
     if (!this.threat) return;
 
-    // Migrate old string values to numeric keys
+    // Migrate legacy values (numeric keys, old localized strings) to canonical keys
     const migratedSeverity = migrateFieldValue(
       this.threat.severity,
       'threatEditor.threatSeverity',

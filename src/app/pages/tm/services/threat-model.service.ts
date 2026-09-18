@@ -298,13 +298,6 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
       map(threatModel => {
         if (threatModel) {
-          // Migrate legacy field values in all threats
-          if (threatModel.threats) {
-            threatModel.threats = threatModel.threats.map(threat =>
-              this.migrateLegacyThreatFieldValues(threat),
-            );
-          }
-
           // Transform providers for display (* → tmi) and remove read-only fields
           if (threatModel.authorization) {
             threatModel.authorization = threatModel.authorization.map(auth => {
@@ -372,8 +365,6 @@ export class ThreatModelService implements OnDestroy {
           ),
           assets: this.fetchAllPages<Asset>(`threat_models/${id}/assets`, 'assets'),
           diagrams: this.fetchAllDiagrams(id),
-          // fetchAllThreats delegates to getThreatsForThreatModel which
-          // already applies migrateLegacyThreatFieldValues per-threat
           threats: this.fetchAllThreats(id),
         }).pipe(
           map(subEntities => ({
@@ -1089,71 +1080,6 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Migrate legacy string field values from API to numeric keys for frontend
-   * The backend returns string values like 'critical', 'high', 'low', etc.
-   * The frontend uses numeric keys: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
-   */
-  // SEM@750f4a1335b6c8222b9e2bc6c90915fba450dca8: convert legacy string severity/priority/status values to numeric keys (pure)
-  private migrateLegacyThreatFieldValues(threat: Threat): Threat {
-    const migratedThreat = { ...threat };
-
-    // Severity: string to numeric key
-    if (migratedThreat.severity && !/^\d+$/.test(migratedThreat.severity)) {
-      const severityMap: Record<string, string> = {
-        critical: '0',
-        high: '1',
-        medium: '2',
-        low: '3',
-        informational: '4',
-        info: '4',
-        unknown: '5',
-        none: '5',
-      };
-      const key = migratedThreat.severity.toLowerCase();
-      if (severityMap[key]) {
-        migratedThreat.severity = severityMap[key];
-      }
-    }
-
-    // Priority: string to numeric key
-    if (migratedThreat.priority && !/^\d+$/.test(migratedThreat.priority)) {
-      const priorityMap: Record<string, string> = {
-        immediate: '0',
-        high: '1',
-        medium: '2',
-        low: '3',
-        deferred: '4',
-      };
-      const key = migratedThreat.priority.toLowerCase();
-      if (priorityMap[key]) {
-        migratedThreat.priority = priorityMap[key];
-      }
-    }
-
-    // Status: string to numeric key
-    if (migratedThreat.status && !/^\d+$/.test(migratedThreat.status)) {
-      const statusMap: Record<string, string> = {
-        open: '0',
-        confirmed: '1',
-        'mitigation planned': '2',
-        'mitigation in progress': '3',
-        'verification pending': '4',
-        resolved: '5',
-        accepted: '6',
-        'false positive': '7',
-        deferred: '8',
-        closed: '9',
-      };
-      const key = migratedThreat.status.toLowerCase();
-      if (statusMap[key]) {
-        migratedThreat.status = statusMap[key];
-      }
-    }
-
-    return migratedThreat;
-  }
-
-  /**
    * Get threats for a threat model with optional filtering, sorting, and pagination
    */
   // SEM@6e22d874fca2906477bada6894288c7d35ac6298: fetch a filtered, sorted, paginated list of threats for a threat model (reads DB)
@@ -1166,10 +1092,6 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService
       .get<ListThreatsResponse>(`threat_models/${threatModelId}/threats`, params)
       .pipe(
-        map(response => ({
-          ...response,
-          threats: response.threats.map(threat => this.migrateLegacyThreatFieldValues(threat)),
-        })),
         catchError(error => {
           this.logger.error(`Error fetching threats for threat model ID: ${threatModelId}`, error);
           return of({ threats: [], total: 0, limit: 0, offset: 0 });
@@ -1246,10 +1168,7 @@ export class ThreatModelService implements OnDestroy {
         tap(newThreat => {
           const cached = this._cachedThreatModels.get(threatModelId);
           if (cached) {
-            cached.threats = [
-              ...(cached.threats || []),
-              this.migrateLegacyThreatFieldValues(newThreat),
-            ];
+            cached.threats = [...(cached.threats || []), newThreat];
             this._cachedThreatModels.set(threatModelId, cached);
           }
         }),
@@ -1280,7 +1199,7 @@ export class ThreatModelService implements OnDestroy {
           if (cached?.threats) {
             const index = cached.threats.findIndex(t => t.id === threatId);
             if (index !== -1) {
-              cached.threats[index] = this.migrateLegacyThreatFieldValues(updatedThreat);
+              cached.threats[index] = updatedThreat;
               this._cachedThreatModels.set(threatModelId, cached);
             }
           }
