@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
   inject,
@@ -70,12 +69,28 @@ import {
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 // SEM@913973c2390b7180140950023b498e5c44ca2678: admin page component for listing, filtering, editing, and deleting system settings
-export class AdminSettingsComponent implements OnInit, AfterViewInit {
+export class AdminSettingsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table and paginator sit behind `@if` blocks (loading spinner, empty state), so neither
+   * exists when ngAfterViewInit runs and both are destroyed and recreated on every reload.
+   * Setters rebind whenever they (re)appear; a teardown never clears a working binding.
+   */
+  @ViewChild(MatPaginator)
+  set paginator(paginator: MatPaginator | undefined) {
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
+
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   displayedColumns = ['key', 'value', 'source', 'actions'];
 
@@ -101,11 +116,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private transloco: TranslocoService,
     private notificationService: NotificationService,
-  ) {}
-
-  // SEM@0c7f78eabc5e5a9eff8f9c5b0075722122ac3806: wire paginator sort and custom sort accessor to the settings data source (mutates shared state)
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+  ) {
     this.dataSource.sortingDataAccessor = (
       item: EditableSystemSetting,
       property: string,
@@ -138,6 +149,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       .subscribe(filterValue => {
         this.filterText = filterValue;
         this.pageIndex = 0;
+        this.dataSource.paginator?.firstPage();
         this.applyFilter();
         this.updateUrl();
       });
@@ -221,18 +233,25 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
 
   // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: open add-setting dialog and reload settings list on confirmation
   onAddSetting(): void {
-    const dialogRef = this.dialog.open(AddSettingDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
-      disableClose: false,
-    });
+    const dialogRef = this.dialog.open<AddSettingDialogComponent, void, string | false>(
+      AddSettingDialogComponent,
+      {
+        width: '600px',
+        maxWidth: '90vw',
+        disableClose: false,
+      },
+    );
 
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
-        if (result) {
+      .subscribe(createdKey => {
+        if (createdKey) {
+          // Filter to the new row so the admin sees it wherever it sorts in the paged table
+          this.filterText = createdKey;
+          this.pageIndex = 0;
           this.loadSettings();
+          this.updateUrl();
         }
       });
   }
@@ -383,7 +402,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
           next: () => {
             this.logger.info('System setting deleted', { key: setting.key });
 
-            const itemsOnPageAfterDelete = this.dataSource.data.length - 1;
+            const itemsOnPageAfterDelete =
+              this.dataSource.data.length - this.pageIndex * this.pageSize - 1;
             const newTotal = this.totalSettings - 1;
             this.pageIndex = adjustPageAfterDeletion(
               this.pageIndex,
