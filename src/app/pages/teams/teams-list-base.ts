@@ -94,8 +94,6 @@ export abstract class TeamsListBase implements OnInit {
     this.loadTeams();
   }
 
-  // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: wire the sort instance to the table data source (mutates shared state)
-
   /** Handle filter input changes with debounce. */
   // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: dispatch a filter value to the debounced filter subject (mutates shared state)
   onFilterChange(value: string): void {

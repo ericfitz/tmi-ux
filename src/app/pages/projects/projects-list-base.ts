@@ -133,8 +133,6 @@ export abstract class ProjectsListBase implements OnInit {
     this.loadProjects();
   }
 
-  // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: bind the MatSort instance to the table data source (mutates shared state)
-
   /** Handle name filter input changes with debounce. */
   // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: dispatch a debounced name filter value to trigger project reload (mutates shared state)
   onNameFilterChange(value: string): void {
