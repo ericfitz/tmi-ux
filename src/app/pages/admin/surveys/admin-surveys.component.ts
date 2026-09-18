@@ -60,7 +60,16 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
   private destroyRef = inject(DestroyRef);
   private elementRef = inject(ElementRef);
 
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   templates: SurveyListItem[] = [];
   dataSource = new MatTableDataSource<SurveyListItem>([]);
@@ -102,7 +111,6 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
 
   // SEM@c50936627d50362a9daa41662314d8d0c41dd4b7: attach MatSort to the data source with field-appropriate sort accessors (mutates shared state)
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (
       item: SurveyListItem,
       property: string,

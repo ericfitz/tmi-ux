@@ -1,4 +1,4 @@
-import { AfterViewInit, DestroyRef, Directive, inject, OnInit, ViewChild } from '@angular/core';
+import { DestroyRef, Directive, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -45,7 +45,7 @@ import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialo
  */
 @Directive()
 // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: abstract base providing shared project list, filter, pagination, and CRUD handlers
-export abstract class ProjectsListBase implements OnInit, AfterViewInit {
+export abstract class ProjectsListBase implements OnInit {
   protected destroyRef = inject(DestroyRef);
   protected projectService = inject(ProjectService);
   protected teamService = inject(TeamService);
@@ -58,7 +58,16 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   private teamSearchSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   displayedColumns = ['name', 'status', 'team', 'modified', 'actions'];
   dataSource = new MatTableDataSource<ProjectListItem>([]);
@@ -125,9 +134,6 @@ export abstract class ProjectsListBase implements OnInit, AfterViewInit {
   }
 
   // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: bind the MatSort instance to the table data source (mutates shared state)
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-  }
 
   /** Handle name filter input changes with debounce. */
   // SEM@d1c968115ea613576d4d8fd7aba936afcbcc6d57: dispatch a debounced name filter value to trigger project reload (mutates shared state)

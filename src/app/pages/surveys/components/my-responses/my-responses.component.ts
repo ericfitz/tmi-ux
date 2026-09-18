@@ -48,7 +48,16 @@ import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types'
 export class MyResponsesComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   responses: SurveyResponseListItem[] = [];
   dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
@@ -85,7 +94,6 @@ export class MyResponsesComponent implements OnInit, AfterViewInit {
 
   // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: wire the sort control and custom sort accessor to the response table data source (mutates shared state)
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (
       item: SurveyResponseListItem,
       property: string,

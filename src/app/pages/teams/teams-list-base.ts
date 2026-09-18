@@ -1,4 +1,4 @@
-import { AfterViewInit, DestroyRef, Directive, OnInit, ViewChild, inject } from '@angular/core';
+import { DestroyRef, Directive, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -42,7 +42,7 @@ import { MetadataDialogComponent } from '@app/pages/tm/components/metadata-dialo
  */
 @Directive()
 // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: abstract base providing shared team list, filter, pagination, and dialog actions
-export abstract class TeamsListBase implements OnInit, AfterViewInit {
+export abstract class TeamsListBase implements OnInit {
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly teamService = inject(TeamService);
   protected readonly router = inject(Router);
@@ -53,7 +53,16 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   displayedColumns = ['name', 'status', 'members', 'projects', 'modified', 'actions'];
   dataSource = new MatTableDataSource<TeamListItem>([]);
@@ -86,9 +95,6 @@ export abstract class TeamsListBase implements OnInit, AfterViewInit {
   }
 
   // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: wire the sort instance to the table data source (mutates shared state)
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-  }
 
   /** Handle filter input changes with debounce. */
   // SEM@c90b77ccf2b99ab38c62a818460252f2a1a1073f: dispatch a filter value to the debounced filter subject (mutates shared state)

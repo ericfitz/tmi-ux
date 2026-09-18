@@ -35,6 +35,21 @@ test.describe.serial('Admin Users Workflows', () => {
     expect(count).toBeGreaterThan(0);
   });
 
+  test('sorting by a column header reorders the rows', async () => {
+    const header = adminUsersPage.table().locator('th[mat-sort-header]').nth(1);
+    const firstRow = () => adminUsersPage.rows().first();
+    expect(await adminUsersPage.rows().count()).toBeGreaterThan(1);
+
+    await header.click();
+    await expect(header).toHaveAttribute('aria-sort', 'ascending');
+    const asc = await firstRow().innerText();
+    await header.click();
+    await expect(header).toHaveAttribute('aria-sort', 'descending');
+    await expect(firstRow()).not.toHaveText(asc);
+    // Third click clears the sort so later tests see the server order
+    await header.click();
+  });
+
   test('filter narrows the list', async () => {
     const initialCount = await adminUsersPage.rows().count();
     expect(initialCount).toBeGreaterThan(0);
@@ -76,10 +91,7 @@ test.describe.serial('Admin Users Workflows', () => {
     await adminUsersPage.createAutomationButton().click();
     await expect(page.locator('mat-dialog-container')).toBeVisible({ timeout: 5000 });
 
-    await angularFill(
-      page.getByTestId('create-automation-user-name-input'),
-      automationUserName,
-    );
+    await angularFill(page.getByTestId('create-automation-user-name-input'), automationUserName);
 
     await page.getByTestId('create-automation-user-submit').click();
 
