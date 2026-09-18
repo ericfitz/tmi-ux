@@ -395,7 +395,8 @@ export class AdminSettingsComponent implements OnInit {
           next: () => {
             this.logger.info('System setting deleted', { key: setting.key });
 
-            const itemsOnPageAfterDelete = this.dataSource.data.length - 1;
+            const itemsOnPageAfterDelete =
+              this.dataSource.data.length - this.pageIndex * this.pageSize - 1;
             const newTotal = this.totalSettings - 1;
             this.pageIndex = adjustPageAfterDeletion(
               this.pageIndex,
