@@ -121,7 +121,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModels: TMListItem[] = [];
   dataSource = new MatTableDataSource<TMListItem>([]);
 
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   // Pagination state
@@ -327,9 +336,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // SEM@618b8d0249e05a55c21a5669e27afa77b21d0145: wire sort and custom sort ordering that pins active-session threat models first
   ngAfterViewInit(): void {
-    // Set up sorting after view is initialized
-    this.dataSource.sort = this.sort;
-
     // Custom sorting accessor to handle nested properties and date columns
     this.dataSource.sortingDataAccessor = (item: TMListItem, property: string): string | number =>
       this._getSortValue(item, property);

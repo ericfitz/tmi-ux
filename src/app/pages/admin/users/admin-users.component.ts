@@ -96,7 +96,16 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   users: AdminUser[] = [];
   dataSource = new MatTableDataSource<AdminUser>([]);
@@ -128,7 +137,6 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
 
   // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: bind the paginator sort accessor to the user data source (mutates shared state)
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item: AdminUser, property: string): string | number => {
       switch (property) {
         case 'provider':

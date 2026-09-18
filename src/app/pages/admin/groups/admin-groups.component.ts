@@ -75,7 +75,16 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  /**
+   * The table sits behind an `@if`, so MatSort does not exist when ngAfterViewInit runs and is
+   * recreated on every reload; bind whenever it appears and never clear a working binding.
+   */
+  @ViewChild(MatSort)
+  set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
 
   groups: AdminGroup[] = [];
   dataSource = new MatTableDataSource<AdminGroup>([]);
@@ -126,7 +135,6 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
 
   // SEM@5285fcec42154b0b377e4669a8dac28afa2f2f9f: attach the sort view child and configure column sort accessors (mutates shared state)
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item: AdminGroup, property: string): string | number => {
       switch (property) {
         case 'provider':
