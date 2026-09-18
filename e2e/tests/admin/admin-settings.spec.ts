@@ -36,8 +36,8 @@ test.describe.serial('Admin Settings Workflows', () => {
 
   test('create a setting', async () => {
     await adminSettingsFlow.createSetting(settingKey, 'e2e_value', 'E2E test setting');
-    // The table pages client-side, so the new row may sit on a later page: filter to it
-    await adminSettingsPage.filterInput().fill(settingKey);
+    // The page filters to the new key so the row is visible wherever it sorts
+    await expect(adminSettingsPage.filterInput()).toHaveValue(settingKey);
     await expect(adminSettingsPage.row(settingKey)).toBeVisible({ timeout: 10000 });
   });
 

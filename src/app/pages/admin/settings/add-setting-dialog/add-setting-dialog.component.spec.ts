@@ -112,7 +112,7 @@ describe('AddSettingDialogComponent', () => {
         value: 'TMI',
         type: 'string',
       });
-      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+      expect(mockDialogRef.close).toHaveBeenCalledWith(expect.any(String));
     });
 
     it('serializes the bool toggle to a "true"/"false" string', () => {

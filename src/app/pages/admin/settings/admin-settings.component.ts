@@ -233,18 +233,25 @@ export class AdminSettingsComponent implements OnInit {
 
   // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: open add-setting dialog and reload settings list on confirmation
   onAddSetting(): void {
-    const dialogRef = this.dialog.open(AddSettingDialogComponent, {
-      width: '600px',
-      maxWidth: '90vw',
-      disableClose: false,
-    });
+    const dialogRef = this.dialog.open<AddSettingDialogComponent, void, string | false>(
+      AddSettingDialogComponent,
+      {
+        width: '600px',
+        maxWidth: '90vw',
+        disableClose: false,
+      },
+    );
 
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
-        if (result) {
+      .subscribe(createdKey => {
+        if (createdKey) {
+          // Filter to the new row so the admin sees it wherever it sorts in the paged table
+          this.filterText = createdKey;
+          this.pageIndex = 0;
           this.loadSettings();
+          this.updateUrl();
         }
       });
   }

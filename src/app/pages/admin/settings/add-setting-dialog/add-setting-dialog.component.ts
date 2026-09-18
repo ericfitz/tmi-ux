@@ -276,7 +276,7 @@ export class AddSettingDialogComponent implements OnInit {
         .subscribe({
           next: () => {
             this.logger.info('Setting created successfully', { key });
-            this.dialogRef.close(true);
+            this.dialogRef.close(key);
           },
           error: (error: { error?: { message?: string } }) => {
             this.logger.error('Failed to create setting', error);
