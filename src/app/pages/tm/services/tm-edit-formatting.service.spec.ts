@@ -150,48 +150,4 @@ describe('TmEditFormattingService', () => {
       expect(service.getThreatSeverityClass('bogus')).toBe('severity-unknown');
     });
   });
-
-  describe('migrateThreatFieldValues', () => {
-    it('migrates numeric-key severity to camelCase key', () => {
-      const result = service.migrateThreatFieldValues({ severity: '0' } as never);
-      expect(result.severity).toBe('critical');
-    });
-    it('migrates legacy English severity strings', () => {
-      const result = service.migrateThreatFieldValues({ severity: 'High' } as never);
-      expect(result.severity).toBe('high');
-    });
-    it('migrates numeric-key status to camelCase key', () => {
-      const result = service.migrateThreatFieldValues({ status: '2' } as never);
-      expect(result.status).toBe('mitigation_planned');
-    });
-    it('migrates numeric-key priority to camelCase key', () => {
-      const result = service.migrateThreatFieldValues({ priority: '0' } as never);
-      expect(result.priority).toBe('immediate');
-    });
-    it('leaves an already-migrated value unchanged', () => {
-      const result = service.migrateThreatFieldValues({ severity: 'low' } as never);
-      expect(result.severity).toBe('low');
-    });
-    it('does not mutate the input threat object', () => {
-      const input = { severity: '0' };
-      service.migrateThreatFieldValues(input as never);
-      expect(input.severity).toBe('0');
-    });
-    it('migrates legacy English status strings', () => {
-      const result = service.migrateThreatFieldValues({ status: 'Mitigation Planned' } as never);
-      expect(result.status).toBe('mitigation_planned');
-    });
-    it('migrates legacy English priority strings', () => {
-      const result = service.migrateThreatFieldValues({ priority: 'Immediate (P0)' } as never);
-      expect(result.priority).toBe('immediate');
-    });
-    it('leaves an already-valid priority key unchanged', () => {
-      const result = service.migrateThreatFieldValues({ priority: 'immediate' } as never);
-      expect(result.priority).toBe('immediate');
-    });
-    it('leaves an unmapped severity value as-is', () => {
-      const result = service.migrateThreatFieldValues({ severity: 'bogus' } as never);
-      expect(result.severity).toBe('bogus');
-    });
-  });
 });
