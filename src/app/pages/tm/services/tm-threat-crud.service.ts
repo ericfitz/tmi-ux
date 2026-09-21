@@ -30,8 +30,7 @@ export interface ThreatQueryState {
 /**
  * Threat CRUD orchestration extracted from TmEditComponent. Owns the
  * ThreatListParams construction and the create/update field mapping.
- * Does NOT own filter/sort UI state, ThreatFilterStateService, or the
- * formattingService.migrateThreatFieldValues view-mapping pass — those stay
+ * Does NOT own filter/sort UI state or ThreatFilterStateService — those stay
  * in the component.
  */
 @Injectable({ providedIn: 'root' })
@@ -61,8 +60,7 @@ export class TmThreatCrudService {
   }
 
   /**
-   * Load one page of threats. Returns raw threats — the component applies
-   * migrateThreatFieldValues.
+   * Load one page of threats.
    */
   // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: fetch one page of threats for a threat model with sort and filter state (reads DB)
   loadThreats(threatModelId: string, state: ThreatQueryState): Observable<ThreatsPage> {

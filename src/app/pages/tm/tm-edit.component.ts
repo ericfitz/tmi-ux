@@ -2758,11 +2758,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatCrud.loadThreats(threatModelId, this.buildThreatQueryState()).subscribe({
         next: page => {
           if (this.threatModel) {
-            const threats = page.threats.map(t =>
-              this.formattingService.migrateThreatFieldValues(t),
-            );
-            this.threatModel.threats = threats;
-            this.threatsDataSource.data = threats;
+            this.threatModel.threats = page.threats;
+            this.threatsDataSource.data = page.threats;
             this.totalThreats = page.total;
           }
         },
