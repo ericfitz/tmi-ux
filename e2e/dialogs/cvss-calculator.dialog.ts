@@ -9,11 +9,9 @@ export class CvssCalculatorDialog {
     this.dialog = page.locator('mat-dialog-container');
   }
 
-  readonly versionToggle = (v: string) =>
-    this.dialog.getByTestId(`cvss-version-${v}`);
+  readonly versionToggle = (v: string) => this.dialog.getByTestId(`cvss-version-${v}`);
 
-  readonly metricGroup = (shortName: string) =>
-    this.dialog.getByTestId(`cvss-metric-${shortName}`);
+  readonly metricGroup = (shortName: string) => this.dialog.getByTestId(`cvss-metric-${shortName}`);
 
   readonly metricValue = (metric: string, value: string) =>
     this.dialog.getByTestId(`cvss-metric-value-${metric}-${value}`);
@@ -23,17 +21,26 @@ export class CvssCalculatorDialog {
   readonly applyButton = () => this.dialog.getByTestId('cvss-apply-button');
   readonly cancelButton = () => this.dialog.getByTestId('cvss-cancel-button');
 
+  /**
+   * Material binds aria-checked (and the group's content query) in the first
+   * change-detection pass after the dialog opens; a click dispatched before
+   * that throws inside MatButtonToggle. Wait for the bound button.
+   */
+  private async toggleButton(toggle: Locator): Promise<Locator> {
+    const button = toggle.locator('button[aria-checked]');
+    await button.waitFor({ state: 'attached' });
+    return button;
+  }
+
   // SEM@d7e72d2d50ea886ef5f55e0c39b76aab799f9a74: select a CVSS version in the calculator dialog, skipping if already active
   async selectVersion(v: '3.1' | '4.0') {
-    // Check if the version toggle is already selected (active) — skip if so.
     // When the dialog auto-selects a version (e.g., 4.0 when 3.1 exists),
-    // the toggle group may be locked and clicking it would fail.
-    const toggle = this.versionToggle(v);
-    const isChecked = await toggle.getAttribute('class');
-    if (isChecked?.includes('mat-button-toggle-checked')) {
+    // the toggle group is locked and clicking it would fail.
+    const button = await this.toggleButton(this.versionToggle(v));
+    if ((await button.getAttribute('aria-checked')) === 'true') {
       return;
     }
-    await toggle.locator('button').dispatchEvent('click');
+    await button.dispatchEvent('click');
   }
 
   // SEM@d7e72d2d50ea886ef5f55e0c39b76aab799f9a74: set a CVSS metric value by clicking its toggle in the calculator dialog
@@ -42,7 +49,7 @@ export class CvssCalculatorDialog {
     // Scroll into view first — metric may be outside the dialog viewport
     await toggle.scrollIntoViewIfNeeded();
     // Use dispatchEvent to bypass tooltip overlay interception
-    await toggle.locator('button').dispatchEvent('click');
+    await (await this.toggleButton(toggle)).dispatchEvent('click');
   }
 
   // SEM@e15bebe5e59e4b6516150171ca189d73b0206f1c: apply the computed CVSS score and close the calculator dialog
