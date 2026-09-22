@@ -95,6 +95,19 @@ import { SettingType } from '@app/types/settings.types';
                 }
               </mat-form-field>
             }
+            @case ('float') {
+              <mat-form-field class="full-width">
+                <mat-label [transloco]="'admin.settings.addDialog.value'">Value</mat-label>
+                <input matInput type="number" step="any" formControlName="value" required />
+                @if (form.get('value')?.hasError('required') && form.get('value')?.touched) {
+                  <mat-error>
+                    <span [transloco]="'admin.settings.addDialog.valueRequired'">
+                      Value is required
+                    </span>
+                  </mat-error>
+                }
+              </mat-form-field>
+            }
             @case ('json') {
               <mat-form-field class="full-width">
                 <mat-label [transloco]="'admin.settings.addDialog.value'">Value</mat-label>
@@ -213,7 +226,7 @@ export class AddSettingDialogComponent implements OnInit {
   form!: FormGroup;
   saving = false;
   errorMessage = '';
-  readonly settingTypes: SettingType[] = ['string', 'int', 'bool', 'json'];
+  readonly settingTypes: SettingType[] = ['string', 'int', 'float', 'bool', 'json'];
 
   // SEM@d1e52bd6d3a360bc27bbec029ce4c7b716b7f787: inject dialog ref, settings service, form builder, and logger dependencies (pure)
   constructor(

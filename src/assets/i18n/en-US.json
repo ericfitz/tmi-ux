@@ -460,6 +460,7 @@
       "title": "Manage settings",
       "types": {
         "bool": "Boolean",
+        "float": "Float",
         "int": "Integer",
         "json": "JSON",
         "string": "String"

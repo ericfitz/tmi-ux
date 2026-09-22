@@ -397,6 +397,7 @@
       "title": "設定の管理",
       "types": {
         "bool": "ブール値",
+        "float": "浮動小数点数",
         "int": "整数",
         "json": "JSON",
         "string": "文字列"

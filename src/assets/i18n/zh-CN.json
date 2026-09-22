@@ -397,6 +397,7 @@
       "title": "管理设置",
       "types": {
         "bool": "布尔值",
+        "float": "浮点数",
         "int": "整数",
         "json": "JSON",
         "string": "字符串"

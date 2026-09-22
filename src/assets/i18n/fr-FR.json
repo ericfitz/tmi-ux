@@ -397,6 +397,7 @@
       "title": "Gérer les paramètres",
       "types": {
         "bool": "Booléen",
+        "float": "Nombre décimal",
         "int": "Entier",
         "json": "JSON",
         "string": "Chaîne de caractères"

@@ -397,6 +397,7 @@
       "title": "Einstellungen verwalten",
       "types": {
         "bool": "Boolean",
+        "float": "Gleitkommazahl",
         "int": "Integer",
         "json": "JSON",
         "string": "String"
