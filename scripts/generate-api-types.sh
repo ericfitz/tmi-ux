@@ -11,8 +11,10 @@ CONFIG="$PROJECT_ROOT/.local/repos.json"
 OUTPUT_FILE="$PROJECT_ROOT/src/app/generated/api-types.d.ts"
 FALLBACK_SPEC="https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json"
 
-SPEC=""
-if [ -f "$CONFIG" ]; then
+# TMI_SPEC=<path or URL> overrides the lookup below (e.g. a spec from tmi's main
+# when the local checkout carries unreleased API changes).
+SPEC="${TMI_SPEC:-}"
+if [ -z "$SPEC" ] && [ -f "$CONFIG" ]; then
   TMI_PATH=$(jq -r '.tmi.path // empty' "$CONFIG")
   if [ -n "$TMI_PATH" ] && [ -f "$TMI_PATH/api-schema/tmi-openapi.json" ]; then
     SPEC="$TMI_PATH/api-schema/tmi-openapi.json"

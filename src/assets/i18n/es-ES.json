@@ -2046,9 +2046,7 @@
       "low": "Baja",
       "low.description": "Impacto mínimo o baja probabilidad; impacto empresarial insignificante, requiere condiciones específicas o interacción del usuario.",
       "medium": "Media",
-      "medium.description": "Impacto o probabilidad moderados; exposición limitada de datos, deterioro parcial de funcionalidad o requiere exploits encadenados.",
-      "unknown": "Desconocida",
-      "unknown.description": "La severidad de la amenaza aún no ha sido evaluada."
+      "medium.description": "Impacto o probabilidad moderados; exposición limitada de datos, deterioro parcial de funcionalidad o requiere exploits encadenados."
     },
     "threatStatus": {
       "0": "Open",

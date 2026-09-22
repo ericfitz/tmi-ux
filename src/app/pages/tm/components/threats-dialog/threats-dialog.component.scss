@@ -99,7 +99,7 @@
     }
 
     &.severity-informational,
-    &.severity-unknown {
+    &.severity-none {
       background-color: var(--color-severity-none);
       color: var(--color-on-severity-none);
     }

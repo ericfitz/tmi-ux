@@ -11738,7 +11738,7 @@ export interface components {
      */
     ThreatTypeQueryParam: string[];
     /** @description Filter by severity level (OR logic). Returns threats matching ANY of the specified severities. Example: ?severity=high&severity=critical */
-    SeverityQueryParam: ('unknown' | 'informational' | 'low' | 'medium' | 'high' | 'critical')[];
+    SeverityQueryParam: ('informational' | 'low' | 'medium' | 'high' | 'critical')[];
     /**
      * @description Filter by priority (OR logic). Returns threats matching ANY of the specified priorities. Example: ?priority=high&priority=critical
      * @example [

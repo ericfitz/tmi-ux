@@ -136,9 +136,9 @@ describe('TmEditFormattingService', () => {
   });
 
   describe('getThreatSeverityClass', () => {
-    it('returns severity-unknown for null/undefined', () => {
-      expect(service.getThreatSeverityClass(null)).toBe('severity-unknown');
-      expect(service.getThreatSeverityClass(undefined)).toBe('severity-unknown');
+    it('returns severity-none for null/undefined', () => {
+      expect(service.getThreatSeverityClass(null)).toBe('severity-none');
+      expect(service.getThreatSeverityClass(undefined)).toBe('severity-none');
     });
     it('prefixes a camelCase key with severity-', () => {
       expect(service.getThreatSeverityClass('high')).toBe('severity-high');
@@ -146,8 +146,8 @@ describe('TmEditFormattingService', () => {
     it('migrates a numeric-key severity through migrateFieldValue', () => {
       expect(service.getThreatSeverityClass('0')).toBe('severity-critical');
     });
-    it('returns severity-unknown for an unmapped value', () => {
-      expect(service.getThreatSeverityClass('bogus')).toBe('severity-unknown');
+    it('returns severity-none for an unmapped value', () => {
+      expect(service.getThreatSeverityClass('bogus')).toBe('severity-none');
     });
   });
 });

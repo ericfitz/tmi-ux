@@ -2462,9 +2462,7 @@
       "low": "Low",
       "low.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
       "medium": "Medium",
-      "medium.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
-      "unknown": "Unknown",
-      "unknown.description": "Threat severity has not yet been assessed."
+      "medium.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits."
     },
     "threatStatus": {
       "accepted": "Accepted",

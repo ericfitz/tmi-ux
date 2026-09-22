@@ -106,8 +106,8 @@ describe('field-value-helpers', () => {
   });
 
   describe('getFieldKeysForFieldType', () => {
-    it('should return 6 keys for threatSeverity', () => {
-      expect(getFieldKeysForFieldType('threatEditor.threatSeverity')).toHaveLength(6);
+    it('should return 5 keys for threatSeverity', () => {
+      expect(getFieldKeysForFieldType('threatEditor.threatSeverity')).toHaveLength(5);
     });
 
     it('should return 10 keys for threatStatus', () => {
@@ -128,7 +128,7 @@ describe('field-value-helpers', () => {
 
     it('should return snake_case keys in order', () => {
       const keys = getFieldKeysForFieldType('threatEditor.threatSeverity');
-      expect(keys).toEqual(['critical', 'high', 'medium', 'low', 'informational', 'unknown']);
+      expect(keys).toEqual(['critical', 'high', 'medium', 'low', 'informational']);
     });
   });
 
@@ -179,7 +179,7 @@ describe('field-value-helpers', () => {
       ).toBe('high');
       expect(
         migrateFieldValue('5', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('unknown');
+      ).toBeNull();
     });
 
     it('should return null for out-of-range numeric key', () => {
@@ -254,9 +254,9 @@ describe('field-value-helpers', () => {
   });
 
   describe('getFieldOptions', () => {
-    it('should return 6 options for threatSeverity', () => {
+    it('should return 5 options for threatSeverity', () => {
       const options = getFieldOptions('threatEditor.threatSeverity', mockTranslocoService as never);
-      expect(options).toHaveLength(6);
+      expect(options).toHaveLength(5);
     });
 
     it('should return 10 options for threatStatus', () => {

@@ -2046,9 +2046,7 @@
       "low": "低",
       "low.description": "最小影响或低可能性；业务影响可忽略不计，需要特定条件或用户交互。",
       "medium": "中等",
-      "medium.description": "中等影响或可能性；有限的数据暴露、部分功能受损或需要链式利用。",
-      "unknown": "未知",
-      "unknown.description": "威胁严重程度尚未评估。"
+      "medium.description": "中等影响或可能性；有限的数据暴露、部分功能受损或需要链式利用。"
     },
     "threatStatus": {
       "0": "Open",

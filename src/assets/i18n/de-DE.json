@@ -2046,9 +2046,7 @@
       "low": "Niedrig",
       "low.description": "Minimale Auswirkungen oder geringe Wahrscheinlichkeit; vernachlässigbare Geschäftsauswirkungen, erfordert bestimmte Bedingungen oder Benutzerinteraktion.",
       "medium": "Mittel",
-      "medium.description": "Moderate Auswirkungen oder Wahrscheinlichkeit; begrenzte Datenexposition, teilweise Funktionsbeeinträchtigung oder erfordert verkettete Exploits.",
-      "unknown": "Unbekannt",
-      "unknown.description": "Schweregrad der Bedrohung wurde noch nicht bewertet."
+      "medium.description": "Moderate Auswirkungen oder Wahrscheinlichkeit; begrenzte Datenexposition, teilweise Funktionsbeeinträchtigung oder erfordert verkettete Exploits."
     },
     "threatStatus": {
       "0": "Open",
