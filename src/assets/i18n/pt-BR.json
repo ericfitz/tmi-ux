@@ -397,6 +397,7 @@
       "title": "Gerenciar configurações",
       "types": {
         "bool": "Booleano",
+        "float": "Decimal",
         "int": "Inteiro",
         "json": "JSON",
         "string": "String"

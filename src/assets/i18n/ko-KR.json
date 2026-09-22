@@ -397,6 +397,7 @@
       "title": "설정 관리",
       "types": {
         "bool": "부울",
+        "float": "부동소수점",
         "int": "정수",
         "json": "JSON",
         "string": "문자열"

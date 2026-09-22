@@ -397,6 +397,7 @@
       "title": "Kelola Pengaturan",
       "types": {
         "bool": "Boolean",
+        "float": "Desimal",
         "int": "Integer",
         "json": "JSON",
         "string": "String"

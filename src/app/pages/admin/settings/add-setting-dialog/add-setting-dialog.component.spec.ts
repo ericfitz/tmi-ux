@@ -60,7 +60,7 @@ describe('AddSettingDialogComponent', () => {
 
     expect(component).toBeTruthy();
     expect(component.form.get('type')?.value).toBe('string');
-    expect(component.settingTypes).toEqual(['string', 'int', 'bool', 'json']);
+    expect(component.settingTypes).toEqual(['string', 'int', 'float', 'bool', 'json']);
   });
 
   describe('key validation', () => {
