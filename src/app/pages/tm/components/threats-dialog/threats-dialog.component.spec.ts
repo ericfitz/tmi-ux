@@ -116,10 +116,10 @@ describe('ThreatsDialogComponent', () => {
       expect(component.getSeverityClass('high')).toBe('severity-high');
     });
 
-    it('falls back to "unknown" for a null severity', () => {
+    it('falls back to "none" for a null severity', () => {
       const component = build({ threats: [] });
 
-      expect(component.getSeverityClass(null)).toBe('severity-unknown');
+      expect(component.getSeverityClass(null)).toBe('severity-none');
     });
   });
 

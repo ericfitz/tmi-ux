@@ -2046,9 +2046,7 @@
       "low": "Faible",
       "low.description": "Impact minimal ou faible probabilite ; impact negligeable sur l'activite, necessite des conditions specifiques ou une interaction utilisateur.",
       "medium": "Moyen",
-      "medium.description": "Impact ou probabilite modere ; exposition limitee des donnees, alteration partielle des fonctionnalites ou necessite des exploits chaines.",
-      "unknown": "Inconnu",
-      "unknown.description": "La severite de la menace n'a pas encore ete evaluee."
+      "medium.description": "Impact ou probabilite modere ; exposition limitee des donnees, alteration partielle des fonctionnalites ou necessite des exploits chaines."
     },
     "threatStatus": {
       "0": "Open",

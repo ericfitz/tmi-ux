@@ -2046,9 +2046,7 @@
       "low": "Rendah",
       "low.description": "Dampak minimal atau kemungkinan rendah; dampak bisnis dapat diabaikan, memerlukan kondisi spesifik atau interaksi pengguna.",
       "medium": "Sedang",
-      "medium.description": "Dampak atau kemungkinan moderat; paparan data terbatas, gangguan fungsionalitas parsial, atau memerlukan eksploitasi berantai.",
-      "unknown": "Tidak Diketahui",
-      "unknown.description": "Tingkat keparahan ancaman belum dinilai."
+      "medium.description": "Dampak atau kemungkinan moderat; paparan data terbatas, gangguan fungsionalitas parsial, atau memerlukan eksploitasi berantai."
     },
     "threatStatus": {
       "0": "Open",

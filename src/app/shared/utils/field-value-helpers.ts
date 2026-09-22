@@ -53,7 +53,7 @@ export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
         'closed',
       ];
     case 'threatEditor.threatSeverity':
-      return ['critical', 'high', 'medium', 'low', 'informational', 'unknown'];
+      return ['critical', 'high', 'medium', 'low', 'informational'];
     case 'threatEditor.threatPriority':
       return ['immediate', 'high', 'medium', 'low', 'deferred'];
     default:

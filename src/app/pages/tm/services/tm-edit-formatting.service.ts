@@ -226,8 +226,8 @@ export class TmEditFormattingService {
   // SEM@8ce527710785f547d639734901d5ca517fa01c19: map a threat severity value to its CSS class string (pure)
   getThreatSeverityClass(severity: string | null | undefined): string {
     const key = severity
-      ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'unknown')
-      : 'unknown';
+      ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'none')
+      : 'none';
     return 'severity-' + key;
   }
 }

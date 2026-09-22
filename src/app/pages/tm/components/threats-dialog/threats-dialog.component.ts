@@ -107,7 +107,7 @@ export class ThreatsDialogComponent implements OnInit {
    */
   // SEM@d47739de2acf5e281b60be208f2dfa034ea03423: map a threat severity value to its CSS class name (pure)
   getSeverityClass(severity: string | null): string {
-    return 'severity-' + (severity ?? 'unknown');
+    return 'severity-' + (severity ?? 'none');
   }
 
   /**
