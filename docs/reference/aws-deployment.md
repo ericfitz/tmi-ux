@@ -32,9 +32,9 @@ forwards the `--` to the script as a literal argument on this pnpm version.)
 `**/backend.hcl` rule). Recreate `terraform/aws/backend.hcl` on a fresh clone:
 
 ```hcl
-bucket         = "tmi-tfstate-967218005408"
-region         = "us-east-1"
-dynamodb_table = "tmi-tf-locks"
+bucket       = "tmi-tfstate-967218005408"
+region       = "us-east-1"
+use_lockfile = true
 ```
 
 Then:
@@ -79,10 +79,11 @@ Unbounded growth is bounded by lifecycle rules on the content bucket:
 noncurrent versions expire after 30 days and incomplete multipart uploads are
 aborted after 7.
 
-`terraform init` warns that the backend's `dynamodb_table` argument is
-deprecated in favour of S3 native locking (`use_lockfile = true`). The argument
-still works; migrating is a deliberate decision to make alongside the tmi repo,
-not unilaterally here.
+State locking uses S3 native locking (`use_lockfile = true`): a plan or apply
+holds `tmi-ux/aws-public/terraform.tfstate.tflock` in the state bucket. The
+deprecated DynamoDB lock table (`tmi-tf-locks`) is no longer used. A checkout
+whose `backend.hcl` still sets `dynamodb_table` must switch that line and run
+`terraform init -reconfigure -backend-config=backend.hcl`.
 
 ## Caching model
 
