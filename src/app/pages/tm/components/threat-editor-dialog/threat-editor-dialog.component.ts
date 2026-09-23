@@ -775,7 +775,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this.dialogRef.close({
       name: formValues.name,
       description: formValues.description || '',
-      severity: formValues.severity || '',
+      severity: formValues.severity || null,
       threat_type: formValues.threat_type || [],
       asset_id:
         formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE

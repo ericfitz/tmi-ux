@@ -96,7 +96,8 @@
       "subtitle": "Configure addons for extending TMI functionality.",
       "title": "Manage addons",
       "editDialog": {
-        "title": "Edit addon"
+        "title": "Edit addon",
+        "title.comment": "Verb phrase. Title of a dialog: 'Edit addon'."
       },
       "errorUpdatingAddon": "Failed to update addon."
     },
@@ -582,7 +583,8 @@
       "triggerEvents": "Trigger events",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}",
       "editDialog": {
-        "title": "Edit webhook"
+        "title": "Edit webhook",
+        "title.comment": "Verb phrase. Title of a dialog: 'Edit webhook'."
       }
     }
   },
@@ -2804,7 +2806,7 @@
       "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Search by submitter or survey...",
       "searchPlaceholder.lint-skip": "Placeholder text; ellipsis (...) signals input context",
-      "searchScopeHint": "Matching {{count}} of {{total}} responses on this page",
+      "searchScopeHint": "Matching {{count}} of {{total}} responses on this page.",
       "submitted": "Submitted",
       "submitter": "Submitter"
     },
@@ -2923,7 +2925,8 @@
         "directWriteHint": "Tokens from this credential can modify threat models the owner has writer or owner access to. Not allowed for credentials owned by an administrator.",
         "addon": "Linked addon",
         "addonNone": "None",
-        "addonHint": "Optional: writes made with this credential are not echoed to the linked addon's own webhook."
+        "addonHint": "Optional: writes made with this credential are not echoed to the linked addon's own webhook.",
+        "addonHint.lint-skip": "Rendered as a mat-hint under a form field, not a placeholder; a complete sentence that ends with a period."
       },
       "createdOn": "{{common.created}}",
       "credential": "Credential",

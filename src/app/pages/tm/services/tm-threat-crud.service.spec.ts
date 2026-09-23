@@ -151,6 +151,20 @@ describe('TmThreatCrudService', () => {
       });
       expect(updated).toEqual({ id: 't1', name: 'New' });
     });
+
+    it('sends a null severity through rather than falling back to the existing one', () => {
+      service
+        .updateThreat('tm1', { id: 't1', severity: 'low', threat_type: [] } as never, {
+          name: 'New',
+          severity: null,
+        })
+        .subscribe();
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm1',
+        't1',
+        expect.objectContaining({ severity: null }),
+      );
+    });
   });
 
   describe('deleteThreat', () => {
