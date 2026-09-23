@@ -94,10 +94,10 @@ export class TmThreatCrudService {
     const data: Partial<ApiThreatInput> = {
       name: result.name,
       description: result.description,
-      severity: result.severity || 'high',
+      severity: result.severity || null,
       threat_type: result.threat_type || [],
       mitigated: result.mitigated || false,
-      status: result.status || 'open',
+      status: result.status || null,
       metadata: [],
     };
     this.copyDefinedFields(result, data, [

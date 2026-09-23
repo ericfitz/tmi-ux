@@ -433,15 +433,15 @@ export class AppEventHandlersService {
                     description: formResult.description || '',
                     created_at: now,
                     modified_at: now,
-                    severity: formResult.severity || 'high',
+                    severity: formResult.severity || null,
                     threat_type: formResult.threat_type || ['Information Disclosure'],
                     diagram_id: formResult.diagram_id || dfdId || '',
                     cell_id: formResult.cell_id || selectedCell?.id || '',
                     score: formResult.score || 10.0,
-                    priority: formResult.priority || 'high',
+                    priority: formResult.priority || null,
                     issue_uri: formResult.issue_uri || '',
                     mitigated: formResult.mitigated || false,
-                    status: formResult.status || 'open',
+                    status: formResult.status || null,
                     metadata: formResult.metadata || [],
                   };
 
