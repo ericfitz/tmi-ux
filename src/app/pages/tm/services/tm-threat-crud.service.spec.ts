@@ -120,15 +120,15 @@ describe('TmThreatCrudService', () => {
   });
 
   describe('createThreat', () => {
-    it('defaults severity/status/mitigated and copies defined optional fields', () => {
+    it('sends null for missing severity/status, defaults mitigated and copies defined optional fields', () => {
       service.createThreat('tm1', { name: 'N', score: 5 }).subscribe();
       expect(threatModelService.createThreat).toHaveBeenCalledWith('tm1', {
         name: 'N',
         description: undefined,
-        severity: 'high',
+        severity: null,
         threat_type: [],
         mitigated: false,
-        status: 'open',
+        status: null,
         metadata: [],
         score: 5,
       });

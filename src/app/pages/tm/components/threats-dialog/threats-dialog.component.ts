@@ -221,9 +221,9 @@ export class ThreatsDialogComponent implements OnInit {
           diagram_id: result.diagram_id,
           cell_id: result.cell_id,
           score: result.score,
-          priority: result.priority ?? '',
+          priority: result.priority ?? null,
           mitigated: result.mitigated,
-          status: result.status ?? '',
+          status: result.status ?? null,
           issue_uri: result.issue_uri,
           metadata: result.metadata || threat.metadata || [],
         };

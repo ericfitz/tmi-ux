@@ -737,9 +737,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
           ? formValues.cell_id
           : null,
       score: formValues.score ?? undefined, // see ericfitz/tmi#208 for server-side clearing
-      priority: formValues.priority || '',
+      priority: formValues.priority || null,
       mitigated: formValues.mitigated,
-      status: formValues.status || '',
+      status: formValues.status || null,
       mitigation: formValues.mitigation || '',
       issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
