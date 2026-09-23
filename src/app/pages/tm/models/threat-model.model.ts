@@ -128,7 +128,7 @@ export interface Threat {
   modified_at: string;
   diagram_id?: string;
   cell_id?: string;
-  severity?: string;
+  severity?: string | null;
   score?: number;
   priority?: string | null;
   mitigated?: boolean;
