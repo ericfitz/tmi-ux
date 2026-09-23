@@ -253,7 +253,7 @@
             <mat-form-field appearance="outline" floatLabel="always" class="severity-field">
               <mat-label>{{ 'common.severity' | transloco }}</mat-label>
               <mat-select formControlName="severity" data-testid="threat-page-severity-select">
-                <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                <mat-option [value]="null">{{ 'common.notSet' | transloco }}</mat-option>
                 @for (option of severityOptions; track option.key) {
                   <mat-option [value]="option.key" [matTooltip]="option.tooltip">
                     {{ option.label }}

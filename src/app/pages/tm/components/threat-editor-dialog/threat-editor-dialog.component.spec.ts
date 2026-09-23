@@ -139,6 +139,17 @@ describe('ThreatEditorDialogComponent', () => {
       component.ngOnDestroy();
     });
 
+    it('leaves score, severity and priority unset (null) in create mode', () => {
+      const component = build({ threatModelId: 'tm-1', mode: 'create' });
+
+      component.ngOnInit();
+
+      expect(component.threatForm.get('score')?.value).toBeNull();
+      expect(component.threatForm.get('severity')?.value).toBeNull();
+      expect(component.threatForm.get('priority')?.value).toBeNull();
+      component.ngOnDestroy();
+    });
+
     it('populates the form from an existing threat in edit mode', () => {
       const threat = makeThreat({ name: 'XSS', description: 'reflected', score: 7 });
       const component = build({ threatModelId: 'tm-1', mode: 'edit', threat });

@@ -130,7 +130,7 @@
           tabindex="7"
           data-testid="threat-editor-severity-select"
         >
-          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+          <mat-option [value]="null">{{ 'common.notSet' | transloco }}</mat-option>
           @for (option of severityOptions; track option.key) {
             <mat-option [value]="option.key" [matTooltip]="option.tooltip">
               {{ option.label }}

@@ -95,7 +95,7 @@ export class ThreatsDialogComponent implements OnInit {
   // SEM@7f8b7a5dd18ae9c991ae27e35e7c953ec2a7d982: convert a threat severity key to its localized display label (pure)
   getSeverityLabel(severity: string | null): string {
     if (!severity) {
-      return this.translocoService.translate('common.none');
+      return this.translocoService.translate('common.notSet');
     }
     return getFieldLabel(severity, 'threatEditor.threatSeverity', this.translocoService);
   }
