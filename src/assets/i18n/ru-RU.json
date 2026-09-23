@@ -902,6 +902,7 @@
     "noMetadata": "Метаданные недоступны",
     "noThreats": "Угрозы недоступны.",
     "none": "Нет",
+    "notSet": "Не задано",
     "objectTypes": {
       "asset": "Актив",
       "assets": "Активы",

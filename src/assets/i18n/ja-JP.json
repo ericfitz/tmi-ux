@@ -902,6 +902,7 @@
     "noMetadata": "メタデータがありません",
     "noThreats": "脅威がありません。",
     "none": "なし",
+    "notSet": "未設定",
     "objectTypes": {
       "asset": "アセット",
       "assets": "アセット",

@@ -902,6 +902,7 @@
     "noMetadata": "사용 가능한 메타데이터 없음",
     "noThreats": "사용 가능한 위협 없음.",
     "none": "없음",
+    "notSet": "설정 안 됨",
     "objectTypes": {
       "asset": "자산",
       "assets": "자산",

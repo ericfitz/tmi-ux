@@ -93,10 +93,10 @@ describe('ThreatsDialogComponent', () => {
   });
 
   describe('getSeverityLabel', () => {
-    it('returns the "none" label for a null severity', () => {
+    it('returns the "not set" label for a null severity', () => {
       const component = build({ threats: [] });
 
-      expect(component.getSeverityLabel(null)).toBe('common.none');
+      expect(component.getSeverityLabel(null)).toBe('common.notSet');
     });
 
     it('resolves a label for a known severity via the severity translation key', () => {
