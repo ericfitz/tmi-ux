@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Removes `E2E `-prefixed residue left in a dev database by E2E runs.
+ * Removes `E2E `-prefixed residue left in a dev database by E2E runs, plus the
+ * automation users (`e2e_auto_`) and system settings (`e2e_admin_setting_`) the admin
+ * specs name with their own prefixes.
  *
  * Every spec's cleanup is `try { … } catch { /* best effort *\/ }`, so any test that
  * fails before its cleanup block leaks — and deliberate negative-control runs leak by
@@ -71,6 +73,29 @@ const ENTITIES = [
     scope: 'admin',
     idField: 'internal_uuid',
     paginated: false,
+  },
+  {
+    label: 'automation users',
+    path: 'admin/users',
+    collection: 'users',
+    scope: 'admin',
+    idField: 'internal_uuid',
+    // admin-users.spec.ts names them `e2e_auto_<timestamp>`, which the server stores
+    // behind a fixed display prefix. Only automation accounts qualify, so a human account
+    // can never match however it is named.
+    prefix: 'TMI Automation: e2e_auto_',
+    filter: item => item.automation === true,
+  },
+  {
+    label: 'system settings',
+    path: 'admin/settings',
+    // The list response is a bare array, not an envelope.
+    collection: null,
+    scope: 'admin',
+    idField: 'key',
+    nameField: 'key',
+    paginated: false,
+    prefix: 'e2e_admin_setting_',
   },
 ];
 
@@ -241,7 +266,7 @@ async function fetchJson(url, init) {
 async function listAll(entity, token, { apiUrl }) {
   if (entity.paginated === false) {
     const page = await fetchJson(`${apiUrl}/${entity.path}`, authHeaders(token));
-    return page[entity.collection] ?? [];
+    return (entity.collection ? page[entity.collection] : page) ?? [];
   }
 
   const items = [];
@@ -331,6 +356,8 @@ async function clearDependents(dependent, parentId, tokens, caches, options) {
 async function cleanEntity(entity, user, tokens, caches, options) {
   const token = tokens.get(user);
   const idField = entity.idField ?? 'id';
+  const nameField = entity.nameField ?? 'name';
+  const prefix = entity.prefix ?? options.prefix;
   let all;
 
   try {
@@ -343,7 +370,10 @@ async function cleanEntity(entity, user, tokens, caches, options) {
   }
 
   const matches = all.filter(
-    item => typeof item.name === 'string' && item.name.startsWith(options.prefix),
+    item =>
+      typeof item[nameField] === 'string' &&
+      item[nameField].startsWith(prefix) &&
+      (entity.filter?.(item) ?? true),
   );
   const failures = [];
   let deleted = 0;
@@ -371,11 +401,11 @@ async function cleanEntity(entity, user, tokens, caches, options) {
       await deleteEntity(entity, item[idField], token, options);
       deleted++;
     } catch (error) {
-      failures.push(`${entity.label}: "${item.name}" as ${user} — ${describe(error)}`);
+      failures.push(`${entity.label}: "${item[nameField]}" as ${user} — ${describe(error)}`);
     }
   }
 
-  return { skipped: null, deleted, dependents, failures, names: matches.map(m => m.name) };
+  return { skipped: null, deleted, dependents, failures, names: matches.map(m => m[nameField]) };
 }
 
 async function main() {
@@ -385,7 +415,7 @@ async function main() {
   process.stdout.write(
     `\n=== e2e:clean ${options.dryRun ? '(dry run) ' : ''}===\n` +
       `API:    ${options.apiUrl}\n` +
-      `Prefix: ${JSON.stringify(options.prefix)}\n\n`,
+      `Prefix: ${JSON.stringify(options.prefix)} (automation users and settings use their own)\n\n`,
   );
 
   // Sequentially, deliberately: one flow takes upwards of fifteen seconds, but starting
