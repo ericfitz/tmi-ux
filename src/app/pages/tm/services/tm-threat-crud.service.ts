@@ -118,7 +118,8 @@ export class TmThreatCrudService {
     const data: Partial<ApiThreatInput> = {
       name: result.name,
       description: result.description,
-      severity: result.severity ?? existing.severity,
+      // null clears severity (unassessed); only an absent field keeps the existing value
+      severity: result.severity === undefined ? existing.severity : result.severity,
       threat_type: result.threat_type ?? existing.threat_type ?? [],
     };
     this.copyDefinedFields(result, data, [

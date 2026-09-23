@@ -216,7 +216,7 @@ export class ThreatsDialogComponent implements OnInit {
         const updatedThreatData: Partial<ApiThreatInput> = {
           name: result.name,
           description: result.description,
-          severity: result.severity ?? '',
+          severity: result.severity ?? null,
           threat_type: result.threat_type,
           diagram_id: result.diagram_id,
           cell_id: result.cell_id,
