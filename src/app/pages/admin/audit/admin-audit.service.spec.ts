@@ -61,13 +61,17 @@ describe('AdminAuditService', () => {
     expect(api.get).toHaveBeenCalledWith('admin/audit/threat_models/t1');
   });
 
-  it('exports system audit as a blob with format param', async () => {
+  it('exports system audit as a blob, selecting the format via Accept', async () => {
     api.getBlob.mockReturnValue(of(new Blob(['x'])));
     await lastValueFrom(service.exportSystem({ actor_email: 'a@b.c' }, 'ndjson'));
-    expect(api.getBlob).toHaveBeenCalledWith('admin/audit/system', {
-      actor_email: 'a@b.c',
-      format: 'ndjson',
-    });
+    expect(api.getBlob).toHaveBeenCalledWith(
+      'admin/audit/system',
+      { actor_email: 'a@b.c' },
+      'application/x-ndjson',
+    );
+
+    await lastValueFrom(service.exportSystem({}, 'csv'));
+    expect(api.getBlob).toHaveBeenLastCalledWith('admin/audit/system', undefined, 'text/csv');
   });
 
   it('logs and rethrows on list error', async () => {

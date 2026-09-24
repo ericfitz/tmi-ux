@@ -125,8 +125,9 @@ export class AdminAuditService {
    */
   // SEM@38e2613a41430b49e6261b3a1edfcd81623f8db0: fetch system audit entries as a downloadable blob in CSV or NDJSON format
   exportSystem(filter: SystemAuditFilter, format: AuditExportFormat): Observable<Blob> {
-    const params = buildHttpParams(clean({ ...filter, format }));
-    return this.apiService.getBlob(SYSTEM_PATH, params).pipe(
+    const params = buildHttpParams(clean(filter));
+    const accept = format === 'csv' ? 'text/csv' : 'application/x-ndjson';
+    return this.apiService.getBlob(SYSTEM_PATH, params, accept).pipe(
       tap(() => this.logger.info('System audit export downloaded', { format })),
       catchError(error => {
         this.logger.error('Failed to export system audit', error);

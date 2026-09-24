@@ -518,6 +518,21 @@ describe('ApiService', () => {
 
       expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
         params: undefined,
+        headers: undefined,
+        responseType: 'text',
+      });
+    });
+
+    it('should send the Accept header when given', () => {
+      vi.mocked(httpClient.get).mockReturnValueOnce({
+        pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+      } as any);
+
+      service.getText(testEndpoint, undefined, 'application/yaml');
+
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
+        params: undefined,
+        headers: { Accept: 'application/yaml' },
         responseType: 'text',
       });
     });
