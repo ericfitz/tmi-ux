@@ -66,11 +66,7 @@ describe('AppPersistenceCoordinator', () => {
     };
 
     // Create service directly
-    service = new AppPersistenceCoordinator(
-      mockLogger,
-      mockRestStrategy,
-      mockWebSocketStrategy,
-    );
+    service = new AppPersistenceCoordinator(mockLogger, mockRestStrategy, mockWebSocketStrategy);
   });
 
   describe('Service Initialization', () => {
