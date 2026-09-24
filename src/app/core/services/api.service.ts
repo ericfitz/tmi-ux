@@ -101,15 +101,19 @@ export class ApiService {
    * GET request that returns text response (for non-JSON content types)
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
+   * @param accept Optional Accept header selecting the response media type
    */
   // SEM@1cd05fb52ad1628a779738433156c42bb9c818a0: fetch a plain-text resource from the API with retry on transient errors
   getText(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+    accept?: string,
   ): Observable<string> {
     const url = this.buildUrl(endpoint);
 
-    return this.http.get(url, { params, responseType: 'text' }).pipe(
+    const headers = accept ? { Accept: accept } : undefined;
+
+    return this.http.get(url, { params, headers, responseType: 'text' }).pipe(
       retry({
         count: 1,
         delay: (error: HttpErrorResponse) => this.getRetryDelay(error),
@@ -122,15 +126,19 @@ export class ApiService {
    * GET request that returns a Blob (for streamed file exports).
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
+   * @param accept Optional Accept header selecting the response media type
    */
   // SEM@ba5d0e1d381b7e38396c9091df6b2e69266a7a1d: fetch a binary blob resource from the API for file export downloads
   getBlob(
     endpoint: string,
     params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+    accept?: string,
   ): Observable<Blob> {
     const url = this.buildUrl(endpoint);
 
-    return this.http.get(url, { params, responseType: 'blob' }).pipe(
+    const headers = accept ? { Accept: accept } : undefined;
+
+    return this.http.get(url, { params, headers, responseType: 'blob' }).pipe(
       retry({
         count: 1,
         delay: (error: HttpErrorResponse) => this.getRetryDelay(error),

@@ -2989,7 +2989,6 @@ describe('ThreatModelService', () => {
               expect(result).toBe(JSON.stringify({ cells: [] }, null, 2));
               expect(apiService.get).toHaveBeenCalledWith(
                 `threat_models/${tmId}/diagrams/${diagramId}/model`,
-                { format: 'json' },
               );
               resolve();
             } catch (e) {
@@ -3010,7 +3009,8 @@ describe('ThreatModelService', () => {
               expect(result).toBe('cells: []');
               expect(apiService.getText).toHaveBeenCalledWith(
                 `threat_models/${tmId}/diagrams/${diagramId}/model`,
-                { format: 'yaml' },
+                undefined,
+                'application/yaml',
               );
               resolve();
             } catch (e) {
@@ -3030,6 +3030,11 @@ describe('ThreatModelService', () => {
           error: err => {
             try {
               expect((err as Error).message).toBe('export failed');
+              expect(apiService.getText).toHaveBeenCalledWith(
+                `threat_models/${tmId}/diagrams/${diagramId}/model`,
+                undefined,
+                'application/graphml+xml',
+              );
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));

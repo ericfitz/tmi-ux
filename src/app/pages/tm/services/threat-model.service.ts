@@ -1677,10 +1677,11 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<string> {
     const endpoint = `threat_models/${threatModelId}/diagrams/${diagramId}/model`;
 
+    // The server selects the format from the Accept header.
     // For JSON, use the standard get method and stringify the response
     // For YAML and GraphML, use getText to avoid JSON parsing
     if (format === 'json') {
-      return this.apiService.get<object>(endpoint, { format }).pipe(
+      return this.apiService.get<object>(endpoint).pipe(
         map(response => JSON.stringify(response, null, 2)),
         catchError(error => {
           this.logger.error(
@@ -1693,7 +1694,8 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // YAML and GraphML return text content
-    return this.apiService.getText(endpoint, { format }).pipe(
+    const accept = format === 'yaml' ? 'application/yaml' : 'application/graphml+xml';
+    return this.apiService.getText(endpoint, undefined, accept).pipe(
       catchError(error => {
         this.logger.error(
           `Error getting diagram model for diagram ID: ${diagramId} in format: ${format}`,
