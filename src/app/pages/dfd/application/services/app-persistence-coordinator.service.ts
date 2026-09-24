@@ -4,15 +4,13 @@
  * Responsibilities:
  * - Always load diagrams from REST API
  * - Save via WebSocket (collaboration) or REST (solo editing)
- * - Fallback to LocalStorage for local provider offline mode
  */
 
 import { Injectable } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
-import { InfraLocalStorageAdapter } from '../../infrastructure/adapters/infra-local-storage.adapter';
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
 import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
 
@@ -42,7 +40,7 @@ export interface LoadResult {
   readonly success: boolean;
   readonly diagramId: string;
   readonly data?: any;
-  readonly source: 'api' | 'local-storage';
+  readonly source: 'api';
   readonly timestamp: number;
   readonly error?: string;
 }
@@ -55,7 +53,7 @@ export interface SaveStatusEvent {
 }
 
 @Injectable()
-// SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: coordinate diagram save and load across REST, WebSocket, and localStorage strategies
+// SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: coordinate diagram save and load across REST and WebSocket strategies
 export class AppPersistenceCoordinator {
   private readonly _saveStatus$ = new Subject<SaveStatusEvent>();
   private readonly _loadStatus$ = new Subject<SaveStatusEvent>();
@@ -73,7 +71,6 @@ export class AppPersistenceCoordinator {
   // SEM@b9478a782fe203a4c5d4c0b9c744a0fb140c1b68: inject persistence adapters and log initialization (mutates shared state)
   constructor(
     private readonly logger: LoggerService,
-    private readonly localStorageAdapter: InfraLocalStorageAdapter,
     private readonly restStrategy: InfraRestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
   ) {
@@ -86,7 +83,6 @@ export class AppPersistenceCoordinator {
   /**
    * Save diagram data
    * Uses WebSocket if in collaboration mode, otherwise REST API
-   * Falls back to localStorage if both fail and local provider is detected
    */
   // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store diagram data via WebSocket or REST, emitting save status events (reads DB)
   save(operation: SaveOperation, useWebSocket: boolean): Observable<SaveResult> {
@@ -161,39 +157,11 @@ export class AppPersistenceCoordinator {
   }
 
   /**
-   * Save to localStorage (for local provider offline mode)
-   */
-  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: store diagram data to localStorage for offline local-provider mode
-  saveToLocalStorage(diagramId: string, threatModelId: string, data: any): Observable<SaveResult> {
-    this.logger.debugComponent('AppPersistenceCoordinator', 'Saving to localStorage', {
-      diagramId,
-    });
-
-    return this.localStorageAdapter.saveDiagram(diagramId, threatModelId, data).pipe(
-      map(success => ({
-        success,
-        operationId: `local-save-${Date.now()}`,
-        diagramId,
-        timestamp: Date.now(),
-        metadata: { source: 'local-storage' },
-      })),
-      tap(result => {
-        if (result.success) {
-          this._stats.successfulSaves++;
-        } else {
-          this._stats.failedSaves++;
-        }
-      }),
-    );
-  }
-
-  /**
    * Load diagram data
    * Always loads from REST API (never from cache)
-   * Falls back to localStorage only if REST fails and local provider detected
    */
-  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: fetch diagram data from REST API, falling back to localStorage if allowed (reads DB)
-  load(operation: LoadOperation, allowLocalStorageFallback = false): Observable<LoadResult> {
+  // SEM@5363e7c4d0b545fa288ba6d19aab2853773b39dc: fetch diagram data from REST API (reads DB)
+  load(operation: LoadOperation): Observable<LoadResult> {
     this.logger.debugComponent('AppPersistenceCoordinator', 'Loading diagram from REST API', {
       diagramId: operation.diagramId,
       threatModelId: operation.threatModelId,
@@ -223,49 +191,6 @@ export class AppPersistenceCoordinator {
           error,
           diagramId: operation.diagramId,
         });
-
-        // Try localStorage fallback only if explicitly allowed (local provider offline mode)
-        if (allowLocalStorageFallback) {
-          this.logger.info('Attempting localStorage fallback', {
-            diagramId: operation.diagramId,
-          });
-
-          return this.localStorageAdapter.loadDiagram(operation.diagramId).pipe(
-            map(localData => {
-              if (localData) {
-                this.logger.debugComponent(
-                  'AppPersistenceCoordinator',
-                  'Loaded from localStorage fallback',
-                  {
-                    diagramId: operation.diagramId,
-                  },
-                );
-                return {
-                  success: true,
-                  diagramId: operation.diagramId,
-                  data: localData.data,
-                  source: 'local-storage' as const,
-                  timestamp: Date.now(),
-                };
-              } else {
-                return {
-                  success: false,
-                  diagramId: operation.diagramId,
-                  source: 'local-storage' as const,
-                  timestamp: Date.now(),
-                  error: 'No data found in localStorage',
-                };
-              }
-            }),
-            catchError(localError => {
-              this.logger.error('localStorage fallback also failed', {
-                error: localError,
-                diagramId: operation.diagramId,
-              });
-              return throwError(() => error); // Return original REST error
-            }),
-          );
-        }
 
         return throwError(() => error);
       }),

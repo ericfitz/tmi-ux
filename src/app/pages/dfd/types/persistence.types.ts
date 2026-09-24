@@ -95,7 +95,7 @@ export interface LoadOperation {
  * Distinct from the coordinator's LoadResult in
  * application/services/app-persistence-coordinator.service.ts, which is what the
  * orchestrator's loadDiagram() actually emits. The two shapes differ
- * (diagramData/Date/'cache' here versus data/epoch-ms/'local-storage' there), so
+ * (diagramData/Date/'cache' here versus data/epoch-ms/'api' there), so
  * they carry distinct names rather than one name meaning two things (#866).
  *
  * Note that this shape is aspirational: neither InfraRestPersistenceStrategy nor

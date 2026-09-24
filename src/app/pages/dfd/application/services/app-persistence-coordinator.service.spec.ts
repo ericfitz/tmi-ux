@@ -16,7 +16,6 @@ import {
 describe('AppPersistenceCoordinator', () => {
   let service: AppPersistenceCoordinator;
   let mockLogger: any;
-  let mockLocalStorageAdapter: any;
   let mockRestStrategy: any;
   let mockWebSocketStrategy: any;
 
@@ -28,12 +27,6 @@ describe('AppPersistenceCoordinator', () => {
       debugComponent: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
-    };
-
-    // Create localStorage adapter mock
-    mockLocalStorageAdapter = {
-      saveDiagram: vi.fn().mockReturnValue(of(true)),
-      loadDiagram: vi.fn().mockReturnValue(of(null)),
     };
 
     // Create REST strategy mock
@@ -73,12 +66,7 @@ describe('AppPersistenceCoordinator', () => {
     };
 
     // Create service directly
-    service = new AppPersistenceCoordinator(
-      mockLogger,
-      mockLocalStorageAdapter,
-      mockRestStrategy,
-      mockWebSocketStrategy,
-    );
+    service = new AppPersistenceCoordinator(mockLogger, mockRestStrategy, mockWebSocketStrategy);
   });
 
   describe('Service Initialization', () => {
@@ -223,40 +211,6 @@ describe('AppPersistenceCoordinator', () => {
     });
   });
 
-  describe('Save to LocalStorage', () => {
-    it('should save to localStorage adapter', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.saveToLocalStorage('test-diagram', 'test-tm', { cells: [] }).subscribe({
-          next: result => {
-            expect(result.success).toBe(true);
-            expect(mockLocalStorageAdapter.saveDiagram).toHaveBeenCalledWith(
-              'test-diagram',
-              'test-tm',
-              {
-                cells: [],
-              },
-            );
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should track localStorage save statistics', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.saveToLocalStorage('test-diagram', 'test-tm', { cells: [] }).subscribe({
-          next: () => {
-            const stats = service.getStats();
-            expect(stats.successfulSaves).toBe(1);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-  });
-
   describe('Load Operations', () => {
     const loadOperation: LoadOperation = {
       diagramId: 'test-diagram',
@@ -308,39 +262,14 @@ describe('AppPersistenceCoordinator', () => {
       });
     });
 
-    it('should fallback to localStorage when allowed and REST fails', () => {
-      return new Promise<void>((resolve, reject) => {
-        mockRestStrategy.load.mockReturnValue(throwError(() => new Error('REST failed')));
-        mockLocalStorageAdapter.loadDiagram.mockReturnValue(
-          of({
-            diagramId: 'test-diagram',
-            threatModelId: 'test-tm',
-            data: { cells: [] },
-            timestamp: Date.now(),
-          }),
-        );
-
-        service.load(loadOperation, true).subscribe({
-          next: result => {
-            expect(result.success).toBe(true);
-            expect(result.source).toBe('local-storage');
-            expect(mockLocalStorageAdapter.loadDiagram).toHaveBeenCalledWith('test-diagram');
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should not fallback to localStorage when not allowed', () => {
+    it('should propagate the REST load error', () => {
       return new Promise<void>((resolve, reject) => {
         mockRestStrategy.load.mockReturnValue(throwError(() => new Error('REST failed')));
 
-        service.load(loadOperation, false).subscribe({
+        service.load(loadOperation).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: error => {
             expect(error.message).toBe('REST failed');
-            expect(mockLocalStorageAdapter.loadDiagram).not.toHaveBeenCalled();
             resolve();
           },
         });
