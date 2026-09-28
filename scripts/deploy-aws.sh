@@ -64,9 +64,9 @@ fi
 # browser.
 #
 # The fingerprint is environment.aws.ts's operatorName, NOT its apiUrl. Since
-# the server moved to api.tmi.dev, apiUrl is no longer unique — the container,
-# hosted-container and oci configurations all point at https://api.tmi.dev, so
-# grepping for the host would let an `ng build --configuration=oci` output pass
+# the server moved to api.tmi.dev, apiUrl is no longer unique — the container
+# configuration also points at https://api.tmi.dev, so grepping for the host
+# would let an `ng build --configuration=container` output pass
 # this gate. operatorName is unique across src/environments/*.ts, and
 # environment.aws.spec.ts pins it so a rename here cannot go unnoticed.
 # This runs for built and --no-build deploys alike.

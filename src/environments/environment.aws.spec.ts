@@ -26,8 +26,8 @@ describe('AWS deployment environment', () => {
     // deploy-aws.sh greps the built bundles for this exact string to prove
     // dist/ was compiled with configuration=aws before publishing to
     // www.tmi.dev. apiUrl cannot serve that purpose any more: since the server
-    // moved to api.tmi.dev, environment.{container,hosted-container,oci}.ts
-    // share that host, so a bundle built from any of them would pass a
+    // moved to api.tmi.dev, environment.container.ts
+    // shares that host, so a bundle built from it would pass a
     // host-based check. This value must stay UNIQUE across src/environments/*.ts
     // — if you rename it, update AWS_BUILD_FINGERPRINT in deploy-aws.sh too.
     expect(environment.operatorName).toBe(AWS_BUILD_FINGERPRINT);

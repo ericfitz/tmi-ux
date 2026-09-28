@@ -118,9 +118,9 @@ configuration emits to the same `dist/tmi-ux/browser`, so without that check
 pointed at the wrong API.
 
 The fingerprint is deliberately **not** the API hostname. When the server moved
-to `api.tmi.dev` that host stopped being unique — `environment.container.ts`,
-`environment.hosted-container.ts` and `environment.oci.ts` all use it — so a
-host-based check would wave an `ng build --configuration=oci` output through.
+to `api.tmi.dev` that host stopped being unique — `environment.container.ts` uses
+it too — so a host-based check would wave an `ng build --configuration=container`
+output through.
 `environment.aws.spec.ts` pins `operatorName` so renaming it cannot silently
 disarm the gate; if you do rename it, update `AWS_BUILD_FINGERPRINT` in
 `deploy-aws.sh` to match.
