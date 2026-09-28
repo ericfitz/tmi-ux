@@ -156,7 +156,7 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist/tmi-ux/browser/index.html'));
 });
 
-// Use the port provided by Heroku or default to 8080
+// Use the port from the environment or default to 8080
 const port = process.env.PORT || 8080;
 const httpServer = app.listen(port, () => {
   console.log(`Server running on port ${port}`);

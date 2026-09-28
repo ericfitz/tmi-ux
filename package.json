@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.22.0",
+  "version": "1.22.1",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -69,11 +69,6 @@
     "loc-dedupe": "uv run scripts/find_duplicate_localizations.py --skippolicy --reference",
     "bump": "pnpm update --verbose && pnpm install --verbose",
     "check:security": "tsx scripts/check-security.ts",
-    "build:hosted-container": "ng build --configuration=hosted-container",
-    "heroku-postbuild": "ng build --configuration=hosted-container",
-    "deploy:heroku": "./scripts/push-heroku.sh",
-    "build:oci": "ng build --configuration=oci",
-    "deploy:oci": "OCI_COMPARTMENT_ID=tmi ./scripts/push-oci.sh",
     "build:container": "ng build --configuration=container",
     "deploy:chainguard": "./scripts/push-chainguard.sh",
     "deploy:aws:ecr": "./scripts/push-ecr.sh",

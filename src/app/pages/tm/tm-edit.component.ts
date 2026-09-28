@@ -2519,7 +2519,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const updates = this.autoSaveService.buildUpdates(formValues, this._originalFormValues!);
     const safeUpdates = updates as Record<string, unknown>;
 
-    // Log what fields are being updated (INFO level for Heroku debugging)
+    // Log what fields are being updated
     this.logger.info('Auto-save PATCH request', {
       threatModelId: this.threatModel.id,
       updateKeys: Object.keys(safeUpdates),
