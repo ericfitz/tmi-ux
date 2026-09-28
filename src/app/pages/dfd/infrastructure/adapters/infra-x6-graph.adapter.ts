@@ -56,7 +56,12 @@ import { AppNotificationService } from '../../application/services/app-notificat
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './infra-x6-shape-definitions';
-import { getCellLabel, getNodeTypeInfo, setApplicationMetadata, setCellLabel } from '../../utils/x6-cell-extensions';
+import {
+  getCellLabel,
+  getNodeTypeInfo,
+  setApplicationMetadata,
+  setCellLabel,
+} from '../../utils/x6-cell-extensions';
 import { Metadata } from '../../domain/value-objects/metadata';
 
 /**

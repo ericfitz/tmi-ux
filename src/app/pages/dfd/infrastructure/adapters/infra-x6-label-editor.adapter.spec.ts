@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
 import { X6LabelEditorAdapter } from './infra-x6-label-editor.adapter';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createMockLoggerService } from '../../../../../testing/mocks';
 
 // Mock SVG methods for X6 compatibility
@@ -47,8 +47,8 @@ describe('X6LabelEditorAdapter', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    // Initialize X6 cell extensions
-    initializeX6CellExtensions();
+    // Register DFD shapes (needed for the text-box node type test)
+    registerCustomShapes();
 
     // Create mock logger
     mockLogger = createMockLoggerService();
@@ -715,15 +715,12 @@ describe('X6LabelEditorAdapter', () => {
 
     it('should handle text-box node type specifically', () => {
       const textBoxNode = graph.addNode({
-        shape: 'rect',
+        shape: 'text-box',
         x: 100,
         y: 100,
         width: 100,
         height: 50,
       });
-
-      // Mock getNodeTypeInfo method
-      (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
 
       graph.trigger('cell:dblclick', { cell: textBoxNode });
 

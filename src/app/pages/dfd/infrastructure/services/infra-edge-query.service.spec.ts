@@ -474,33 +474,35 @@ describe('InfraEdgeQueryService', () => {
       edge1 = graph.addEdge({
         source: node1.id,
         target: node2.id,
+        data: {
+          _metadata: [
+            { key: 'type', value: 'data-flow' },
+            { key: 'priority', value: 'high' },
+          ],
+        },
       });
 
       edge2 = graph.addEdge({
         source: node2.id,
         target: node3.id,
+        data: {
+          _metadata: [
+            { key: 'type', value: 'control-flow' },
+            { key: 'priority', value: 'low' },
+          ],
+        },
       });
 
       edge3 = graph.addEdge({
         source: node1.id,
         target: node3.id,
+        data: {
+          _metadata: [
+            { key: 'type', value: 'data-flow' },
+            { key: 'priority', value: 'medium' },
+          ],
+        },
       });
-
-      // Mock metadata for edges
-      (edge1 as any).getMetadata = vi.fn().mockReturnValue([
-        { key: 'type', value: 'data-flow' },
-        { key: 'priority', value: 'high' },
-      ]);
-
-      (edge2 as any).getMetadata = vi.fn().mockReturnValue([
-        { key: 'type', value: 'control-flow' },
-        { key: 'priority', value: 'low' },
-      ]);
-
-      (edge3 as any).getMetadata = vi.fn().mockReturnValue([
-        { key: 'type', value: 'data-flow' },
-        { key: 'priority', value: 'medium' },
-      ]);
     });
 
     it('should find edges by single metadata criterion', () => {
@@ -536,7 +538,7 @@ describe('InfraEdgeQueryService', () => {
         target: graph.getNodes()[1].id,
       });
 
-      // Don't mock getMetadata for this edge, so it returns undefined
+      // No data set for this edge, so getData()?._metadata is undefined
       const edgesWithType = service.findEdgesByMetadata(graph, { type: 'any-type' });
 
       expect(edgesWithType).not.toContain(edgeWithoutMetadata);
@@ -546,9 +548,8 @@ describe('InfraEdgeQueryService', () => {
       const edgeWithEmptyMetadata = graph.addEdge({
         source: graph.getNodes()[0].id,
         target: graph.getNodes()[1].id,
+        data: { _metadata: [] },
       });
-
-      (edgeWithEmptyMetadata as any).getMetadata = vi.fn().mockReturnValue([]);
 
       const edgesWithType = service.findEdgesByMetadata(graph, { type: 'any-type' });
 

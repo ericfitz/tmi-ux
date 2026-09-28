@@ -21,10 +21,13 @@ import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-emb
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
 import { AppNotificationService } from '../application/services/app-notification.service';
 import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
+import { registerCustomShapes } from './adapters/infra-x6-shape-definitions';
 
 // Test helpers
 // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: build a minimal X6 graph instance for integration test setup (mutates shared state)
 function createTestGraph(): Graph {
+  registerCustomShapes();
+
   const container = document.createElement('div');
   container.style.width = '800px';
   container.style.height = '600px';
@@ -52,7 +55,7 @@ function createSecurityBoundary(
 ): Node {
   const node = graph.addNode({
     id,
-    shape: 'rect', // Use basic shape instead of custom
+    shape: 'security-boundary',
     x,
     y,
     width,
@@ -62,8 +65,6 @@ function createSecurityBoundary(
       body: { fill: '#ffffff', stroke: '#333333' },
     },
   });
-  // Mark as security boundary for type checking
-  (node as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
   return node;
 }
 
@@ -79,7 +80,7 @@ function createProcessNode(
 ): Node {
   const node = graph.addNode({
     id,
-    shape: 'rect', // Use basic shape instead of custom
+    shape: 'process',
     x,
     y,
     width,
@@ -89,8 +90,6 @@ function createProcessNode(
       body: { fill: '#ffffff', stroke: '#333333' },
     },
   });
-  // Mark as process for type checking
-  (node as any).getNodeTypeInfo = () => ({ type: 'process' });
   return node;
 }
 
@@ -105,7 +104,7 @@ function createTextBoxNode(
 ): Node {
   const node = graph.addNode({
     id,
-    shape: 'rect', // Use basic shape instead of custom
+    shape: 'text-box',
     x,
     y,
     width,
@@ -115,8 +114,6 @@ function createTextBoxNode(
       body: { fill: 'transparent', stroke: 'none' },
     },
   });
-  // Mark as text-box for type checking
-  (node as any).getNodeTypeInfo = () => ({ type: 'text-box' });
   return node;
 }
 

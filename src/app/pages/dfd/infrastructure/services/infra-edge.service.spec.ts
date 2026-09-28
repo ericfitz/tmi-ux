@@ -14,7 +14,6 @@ import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -33,8 +32,7 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
   let mockLogger: MockLoggerService;
 
   beforeEach(() => {
-    // Initialize X6 cell extensions and custom shapes
-    initializeX6CellExtensions();
+    // Register custom shapes
     registerCustomShapes();
 
     // Create mock for LoggerService (cross-cutting concern)

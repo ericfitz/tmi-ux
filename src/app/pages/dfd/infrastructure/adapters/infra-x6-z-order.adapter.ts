@@ -6,7 +6,12 @@ import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
 } from '../../application/services/app-operation-state-manager.service';
-import { getApplicationMetadata, getNodeTypeInfo, removeApplicationMetadata, setApplicationMetadata } from '../../utils/x6-cell-extensions';
+import {
+  getApplicationMetadata,
+  getNodeTypeInfo,
+  removeApplicationMetadata,
+  setApplicationMetadata,
+} from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Z-Order Adapter

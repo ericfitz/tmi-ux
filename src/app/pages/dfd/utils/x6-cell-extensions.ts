@@ -8,7 +8,7 @@
  * casts and need no startup initialization.
  */
 
-import { Cell, Edge } from '@antv/x6';
+import { Cell } from '@antv/x6';
 import { DFD_STYLING } from '../constants/styling-constants';
 import { Metadata } from '../domain/value-objects/metadata';
 
@@ -43,7 +43,7 @@ export function setCellLabel(cell: Cell, label: string): void {
   if (cell.isNode()) {
     cell.setAttrByPath('text/text', label);
   } else if (cell.isEdge()) {
-    const edge = cell as Edge;
+    const edge = cell;
     const existingLabels = edge.getLabels();
     if (existingLabels && existingLabels.length > 0) {
       const updatedLabels = existingLabels.map(existingLabel => {
@@ -98,7 +98,7 @@ export function getCellLabel(cell: Cell): string {
     return typeof textValue === 'string' ? textValue : '';
   }
   if (cell.isEdge()) {
-    const firstLabel = (cell as Edge).getLabels()[0];
+    const firstLabel = cell.getLabels()[0];
     const text = (firstLabel?.attrs as any)?.['text']?.['text'];
     return typeof text === 'string' ? text : '';
   }
@@ -119,10 +119,13 @@ export function getApplicationMetadata(cell: Cell, key: string): string {
 export function setApplicationMetadata(cell: Cell, key: string, value: string): void {
   const currentData = cell.getData() || {};
   const existingMetadata: Metadata[] = currentData._metadata || [];
-  cell.setData({
-    ...currentData,
-    _metadata: [...existingMetadata.filter(entry => entry.key !== key), { key, value }],
-  });
+  cell.setData(
+    {
+      ...currentData,
+      _metadata: [...existingMetadata.filter(entry => entry.key !== key), { key, value }],
+    },
+    { overwrite: true },
+  );
 }
 
 /**
@@ -131,10 +134,13 @@ export function setApplicationMetadata(cell: Cell, key: string, value: string): 
 export function removeApplicationMetadata(cell: Cell, key: string): void {
   const currentData = cell.getData() || {};
   const existingMetadata: Metadata[] = currentData._metadata || [];
-  cell.setData({
-    ...currentData,
-    _metadata: existingMetadata.filter(entry => entry.key !== key),
-  });
+  cell.setData(
+    {
+      ...currentData,
+      _metadata: existingMetadata.filter(entry => entry.key !== key),
+    },
+    { overwrite: true },
+  );
 }
 
 /**

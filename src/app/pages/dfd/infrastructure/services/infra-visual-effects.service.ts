@@ -3,7 +3,12 @@ import { Cell, Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
-import { getApplicationMetadata, getNodeTypeInfo, removeApplicationMetadata, setApplicationMetadata } from '../../utils/x6-cell-extensions';
+import {
+  getApplicationMetadata,
+  getNodeTypeInfo,
+  removeApplicationMetadata,
+  setApplicationMetadata,
+} from '../../utils/x6-cell-extensions';
 
 /**
  * Interface for tracking active visual effects

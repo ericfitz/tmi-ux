@@ -19,7 +19,7 @@ interface MockNode {
   getParent: ReturnType<typeof vi.fn>;
   getChildren: ReturnType<typeof vi.fn>;
   isNode: ReturnType<typeof vi.fn>;
-  getNodeTypeInfo?: ReturnType<typeof vi.fn>;
+  shape?: string;
 }
 
 interface MockEdge {
@@ -196,14 +196,13 @@ describe('ZOrderService', () => {
         getZIndex: vi.fn(),
         getParent: vi.fn(),
         getChildren: vi.fn(),
-        isNode: vi.fn(),
-        getNodeTypeInfo: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
       };
     });
 
     it('should return parent z-index + 1 for regular nodes', () => {
       parentNode.getZIndex.mockReturnValue(10);
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'process' });
+      childNode.shape = 'process';
 
       const result = service.calculateEmbeddedNodeZIndex(
         parentNode as unknown as Node,
@@ -222,7 +221,7 @@ describe('ZOrderService', () => {
 
     it('should handle security boundary child nodes with special rules', () => {
       parentNode.getZIndex.mockReturnValue(10);
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'security-boundary' });
+      childNode.shape = 'security-boundary';
 
       const result = service.calculateEmbeddedNodeZIndex(
         parentNode as unknown as Node,
@@ -234,7 +233,7 @@ describe('ZOrderService', () => {
 
     it('should ensure minimum z-index of 2 for embedded security boundaries', () => {
       parentNode.getZIndex.mockReturnValue(1);
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'security-boundary' });
+      childNode.shape = 'security-boundary';
 
       const result = service.calculateEmbeddedNodeZIndex(
         parentNode as unknown as Node,
@@ -246,7 +245,7 @@ describe('ZOrderService', () => {
 
     it('should handle undefined parent z-index', () => {
       parentNode.getZIndex.mockReturnValue(undefined);
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'process' });
+      childNode.shape = 'process';
 
       const result = service.calculateEmbeddedNodeZIndex(
         parentNode as unknown as Node,
@@ -366,7 +365,6 @@ describe('ZOrderService', () => {
         getParent: vi.fn(),
         getChildren: vi.fn(),
         isNode: vi.fn(),
-        getNodeTypeInfo: vi.fn(),
       };
     });
 
@@ -388,7 +386,8 @@ describe('ZOrderService', () => {
       parentNode.isNode.mockReturnValue(true);
       childNode.getParent.mockReturnValue(parentNode);
       childNode.getZIndex.mockReturnValue(8); // Lower than parent
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'process' });
+      childNode.isNode.mockReturnValue(true);
+      childNode.shape = 'process';
 
       const result = service.validateEmbeddingZOrderHierarchy([
         parentNode as unknown as Node,
@@ -417,7 +416,8 @@ describe('ZOrderService', () => {
       parentNode.isNode.mockReturnValue(true);
       childNode.getParent.mockReturnValue(parentNode);
       childNode.getZIndex.mockReturnValue(10); // Equal to parent
-      childNode.getNodeTypeInfo!.mockReturnValue({ type: 'process' });
+      childNode.isNode.mockReturnValue(true);
+      childNode.shape = 'process';
 
       const result = service.validateEmbeddingZOrderHierarchy([
         parentNode as unknown as Node,
@@ -437,8 +437,8 @@ describe('ZOrderService', () => {
         getZIndex: vi.fn().mockReturnValue(5),
         getParent: vi.fn().mockReturnValue(null), // Not embedded
         getChildren: vi.fn(),
-        isNode: vi.fn(),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'security-boundary' }),
+        isNode: vi.fn().mockReturnValue(true),
+        shape: 'security-boundary',
       };
 
       // Act
@@ -455,8 +455,8 @@ describe('ZOrderService', () => {
         getZIndex: vi.fn().mockReturnValue(15),
         getParent: vi.fn().mockReturnValue(null), // Not embedded
         getChildren: vi.fn(),
-        isNode: vi.fn(),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'security-boundary' }),
+        isNode: vi.fn().mockReturnValue(true),
+        shape: 'security-boundary',
       };
 
       // Act
@@ -473,8 +473,8 @@ describe('ZOrderService', () => {
         getZIndex: vi.fn().mockReturnValue(12),
         getParent: vi.fn().mockReturnValue(null), // No longer embedded
         getChildren: vi.fn(),
-        isNode: vi.fn(),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'security-boundary' }),
+        isNode: vi.fn().mockReturnValue(true),
+        shape: 'security-boundary',
       };
 
       // Act

@@ -322,18 +322,22 @@ describe('CellDataExtractionService', () => {
             id: 'cell1',
             isNode: () => true,
             isEdge: () => false,
-            getLabel: () => ({ attrs: { text: { value: 'Node A' } } }),
+            getAttrByPath: (path: string) => (path === 'text/text' ? 'Node A' : undefined),
           },
           {
             id: 'cell2',
             isNode: () => false,
             isEdge: () => true,
-            getLabel: () => ({ attrs: { text: { value: 'Edge B' } } }),
+            getLabels: () => [{ attrs: { text: { text: 'Edge B' } } }],
           },
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(
+        mockGraph as unknown as X6Graph,
+        'diag1',
+        'Diagram 1',
+      );
 
       expect(result.diagrams).toHaveLength(1);
       expect(result.diagrams[0]).toEqual({ id: 'diag1', name: 'Diagram 1' });
@@ -366,7 +370,11 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(
+        mockGraph as unknown as X6Graph,
+        'diag1',
+        'Diagram 1',
+      );
 
       expect(result.cells[0].label).toBe('Node A');
     });
@@ -378,12 +386,16 @@ describe('CellDataExtractionService', () => {
             id: 'edge1',
             isNode: () => false,
             isEdge: () => true,
-            getLabels: () => [{ attrs: { text: { value: 'Edge Label' } } }],
+            getLabels: () => [{ attrs: { text: { text: 'Edge Label' } } }],
           },
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(
+        mockGraph as unknown as X6Graph,
+        'diag1',
+        'Diagram 1',
+      );
 
       expect(result.cells[0].label).toBe('Edge Label');
     });
@@ -399,7 +411,11 @@ describe('CellDataExtractionService', () => {
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(
+        mockGraph as unknown as X6Graph,
+        'diag1',
+        'Diagram 1',
+      );
 
       expect(result.cells[0].label).toBe('cell1');
     });
@@ -443,12 +459,17 @@ describe('CellDataExtractionService', () => {
             id: 'cell1',
             isNode: () => true,
             isEdge: () => false,
-            getLabel: () => ({ attrs: { text: { value: 'Multi\nLine\nLabel' } } }),
+            getAttrByPath: (path: string) =>
+              path === 'text/text' ? 'Multi\nLine\nLabel' : undefined,
           },
         ]),
       };
 
-      const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
+      const result = service.extractFromX6Graph(
+        mockGraph as unknown as X6Graph,
+        'diag1',
+        'Diagram 1',
+      );
 
       expect(result.cells[0].label).toBe('Multi Line Label');
     });

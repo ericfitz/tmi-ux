@@ -15,24 +15,6 @@ import { AppOperationStateManager } from '../../application/services/app-operati
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
-// Helper to add getNodeTypeInfo extension mock to nodes
-// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: attach a mock getNodeTypeInfo extension to a test node (mutates shared state)
-function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
-  // Mock the getNodeTypeInfo extension that's added in the real application
-  (node as any).getNodeTypeInfo = vi.fn(() => ({
-    type: nodeType,
-    label: node.getAttrByPath('label') || 'Test Node',
-  }));
-  return node;
-}
-
-// Helper to create a node with proper mocks
-// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build and add a graph node with a mocked node type extension for tests (mutates shared state)
-function createTestNode(graph: Graph, config: any, nodeType: string = 'process'): Node {
-  const node = graph.addNode(config);
-  return addNodeTypeInfoExtension(node, nodeType);
-}
-
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
   getCTM: vi.fn(() => ({
@@ -185,11 +167,6 @@ describe('InfraX6ZOrderAdapter', () => {
         zIndex: 1,
       });
 
-      // Mock getNodeTypeInfo methods
-      (processNode1 as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (processNode2 as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (securityBoundary as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-
       // Mock setZIndex methods
       processNode1.setZIndex = vi.fn();
       processNode2.setZIndex = vi.fn();
@@ -317,11 +294,6 @@ describe('InfraX6ZOrderAdapter', () => {
         zIndex: 1,
       });
 
-      // Mock getNodeTypeInfo methods
-      (processNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (securityBoundary1 as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (securityBoundary2 as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-
       // Mock setZIndex methods
       processNode.setZIndex = vi.fn();
       securityBoundary1.setZIndex = vi.fn();
@@ -396,18 +368,14 @@ describe('InfraX6ZOrderAdapter', () => {
     });
 
     it('should apply node creation z-index based on shape', () => {
-      const textBoxNode = createTestNode(
-        graph,
-        {
-          x: 400,
-          y: 200,
-          width: 100,
-          height: 40,
-          shape: 'text-box',
-          label: 'Text Box',
-        },
-        'text-box',
-      );
+      const textBoxNode = graph.addNode({
+        x: 400,
+        y: 200,
+        width: 100,
+        height: 40,
+        shape: 'text-box',
+        label: 'Text Box',
+      });
 
       textBoxNode.setZIndex = vi.fn();
 
@@ -457,11 +425,6 @@ describe('InfraX6ZOrderAdapter', () => {
         label: 'Grandchild',
         zIndex: 11,
       });
-
-      // Mock getNodeTypeInfo methods
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (grandchildNode as any).getNodeTypeInfo = () => ({ type: 'process' });
 
       // Set up embedding hierarchy
       childNode.setParent(parentNode);
@@ -555,7 +518,6 @@ describe('InfraX6ZOrderAdapter', () => {
         label: 'Unembedded Boundary',
       });
 
-      (securityBoundary as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
       securityBoundary.setZIndex = vi.fn();
 
       adapter.applyUnembeddedSecurityBoundaryZIndex(graph, securityBoundary);
@@ -735,30 +697,23 @@ describe('InfraX6ZOrderAdapter', () => {
         zIndex: 1,
       });
 
-      // Mock getNodeTypeInfo methods
-      (processNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (securityBoundary as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-
       // Mock methods
       processNode.setZIndex = vi.fn();
       securityBoundary.setZIndex = vi.fn();
-      processNode.getData = vi.fn();
-      securityBoundary.getData = vi.fn();
     });
 
     it('should handle node moved z-order restoration', () => {
-      // Mock stored original z-index
-      (processNode as any).getApplicationMetadata = vi.fn().mockReturnValue('12');
-      (processNode as any).setApplicationMetadata = vi.fn();
+      // Store original z-index via real cell metadata
+      processNode.setData({ _metadata: [{ key: '_originalZIndex', value: '12' }] });
       processNode.getParent = vi.fn().mockReturnValue(null); // Not embedded
 
       adapter.handleNodeMovedZOrderRestoration(graph, processNode);
 
       // Should restore original z-index
       expect(processNode.setZIndex).toHaveBeenCalledWith(12);
-      expect((processNode as any).setApplicationMetadata).toHaveBeenCalledWith(
-        '_originalZIndex',
-        '',
+      // Temporary metadata is removed, not left behind
+      expect(processNode.getData()._metadata).not.toContainEqual(
+        expect.objectContaining({ key: '_originalZIndex' }),
       );
 
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -774,33 +729,28 @@ describe('InfraX6ZOrderAdapter', () => {
     });
 
     it('should handle security boundary z-index restoration correctly', () => {
-      // Mock stored original z-index for security boundary
-      (securityBoundary as any).getApplicationMetadata = vi.fn().mockReturnValue('2');
-      (securityBoundary as any).setApplicationMetadata = vi.fn();
+      // Store original z-index via real cell metadata
+      securityBoundary.setData({ _metadata: [{ key: '_originalZIndex', value: '2' }] });
       securityBoundary.getParent = vi.fn().mockReturnValue(null); // Not embedded
 
-      // The method might not call setZIndex for security boundaries if they already have correct z-index
-      // Let's check if the method is actually called by the implementation
+      // The implementation might not call setZIndex for security boundaries if they already have correct z-index
       adapter.handleNodeMovedZOrderRestoration(graph, securityBoundary);
 
-      // The implementation might not call setZIndex if the security boundary already has the correct z-index
-      // Let's verify the metadata is cleared regardless
-      expect((securityBoundary as any).setApplicationMetadata).toHaveBeenCalledWith(
-        '_originalZIndex',
-        '',
+      // Security boundary is already at its correct z-index (1), so no restoration is needed
+      expect(securityBoundary.setZIndex).not.toHaveBeenCalled();
+      expect(securityBoundary.getData()._metadata).not.toContainEqual(
+        expect.objectContaining({ key: '_originalZIndex' }),
       );
     });
 
     it('should set temporary embedding z-index', () => {
-      (processNode as any).setApplicationMetadata = vi.fn();
-
       adapter.setTemporaryEmbeddingZIndex(processNode);
 
       // Should store original z-index and set temporary one
-      expect((processNode as any).setApplicationMetadata).toHaveBeenCalledWith(
-        '_originalZIndex',
-        '10',
-      );
+      expect(processNode.getData()._metadata).toContainEqual({
+        key: '_originalZIndex',
+        value: '10',
+      });
       expect(processNode.setZIndex).toHaveBeenCalledWith(1); // Default security boundary z-index as temp
     });
 
@@ -816,28 +766,6 @@ describe('InfraX6ZOrderAdapter', () => {
   });
 
   describe('Error Handling and Edge Cases', () => {
-    it('should handle nodes without getNodeTypeInfo gracefully', () => {
-      const nodeWithoutTypeInfo = graph.addNode({
-        x: 100,
-        y: 100,
-        width: 80,
-        height: 60,
-        shape: 'process',
-        label: 'No Type Info',
-      });
-
-      nodeWithoutTypeInfo.setZIndex = vi.fn();
-
-      adapter.applyNodeCreationZIndex(graph, nodeWithoutTypeInfo);
-
-      // Should default to 'unknown' type and get z-index 10 (default case)
-      expect(nodeWithoutTypeInfo.setZIndex).toHaveBeenCalledWith(10);
-      expect(mockLogger.warn).toHaveBeenCalledWith('Node missing getNodeTypeInfo extension', {
-        nodeId: nodeWithoutTypeInfo.id,
-        shape: 'process',
-      });
-    });
-
     it('should handle nodes without setZIndex method in test environment', () => {
       const sourceNode = graph.addNode({
         x: 100,

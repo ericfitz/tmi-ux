@@ -19,22 +19,11 @@ import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operatio
 import { InfraEdgeService } from '../services/infra-edge.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
-// Helper to add getNodeTypeInfo extension mock to nodes
-// SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: attach a mocked getNodeTypeInfo extension to a test node (mutates shared state)
-function addNodeTypeInfoExtension(node: Node, nodeType: string = 'process') {
-  // Mock the getNodeTypeInfo extension that's added in the real application
-  (node as any).getNodeTypeInfo = vi.fn(() => ({
-    type: nodeType,
-    label: node.getAttrByPath('label') || 'Test Node',
-  }));
-  return node;
-}
-
-// Helper to create a node with proper mocks
-// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node with mocked node type info for tests (mutates shared state)
-function createTestNode(graph: Graph, config: any, nodeType: string = 'process'): Node {
-  const node = graph.addNode(config);
-  return addNodeTypeInfoExtension(node, nodeType);
+// Helper to create a node; getNodeTypeInfo derives node type from `shape`, which the
+// caller's config already sets, so this simply forwards to graph.addNode.
+// SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node for tests (mutates shared state)
+function createTestNode(graph: Graph, config: any, _nodeType: string = 'process'): Node {
+  return graph.addNode(config);
 }
 
 // Mock SVG methods that X6 expects
@@ -198,7 +187,7 @@ describe('InfraX6SelectionAdapter', () => {
     let edge: Edge;
 
     beforeEach(() => {
-      // Create test nodes and edges with proper getNodeTypeInfo mocks
+      // Create test nodes and edges
       node = createTestNode(
         graph,
         {
@@ -257,9 +246,6 @@ describe('InfraX6SelectionAdapter', () => {
         },
         'text-box',
       );
-
-      // Mock getNodeTypeInfo method
-      (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
 
       // Simulate mouse enter event
       graph.trigger('cell:mouseenter', { cell: textBoxNode });
@@ -781,7 +767,6 @@ describe('InfraX6SelectionAdapter', () => {
       graph.trigger('selection:changed', { added: [nodes[0]], removed: [] });
       const pasted = nodes[0].clone();
       graph.addCell(pasted);
-      addNodeTypeInfoExtension(pasted, 'process');
 
       expect(pasted.getTools()).toBeDefined();
       expect(pasted.attr('body/filter')).not.toBe('none');
