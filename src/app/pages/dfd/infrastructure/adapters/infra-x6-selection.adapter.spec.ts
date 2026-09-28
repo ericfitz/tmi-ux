@@ -22,7 +22,7 @@ import { createTypedMockLoggerService, type MockLoggerService } from '../../../.
 // Helper to create a node; getNodeTypeInfo derives node type from `shape`, which the
 // caller's config already sets, so this simply forwards to graph.addNode.
 // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node for tests (mutates shared state)
-function createTestNode(graph: Graph, config: any, _nodeType: string = 'process'): Node {
+function createTestNode(graph: Graph, config: any): Node {
   return graph.addNode(config);
 }
 
@@ -188,31 +188,23 @@ describe('InfraX6SelectionAdapter', () => {
 
     beforeEach(() => {
       // Create test nodes and edges
-      node = createTestNode(
-        graph,
-        {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Test Process',
-        },
-        'process',
-      );
+      node = createTestNode(graph, {
+        x: 100,
+        y: 100,
+        width: 80,
+        height: 60,
+        shape: 'process',
+        label: 'Test Process',
+      });
 
-      const sourceNode = createTestNode(
-        graph,
-        {
-          x: 200,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Source',
-        },
-        'actor',
-      );
+      const sourceNode = createTestNode(graph, {
+        x: 200,
+        y: 200,
+        width: 80,
+        height: 60,
+        shape: 'actor',
+        label: 'Source',
+      });
 
       edge = graph.addEdge({
         source: node,
@@ -234,18 +226,14 @@ describe('InfraX6SelectionAdapter', () => {
     });
 
     it('should apply hover effect to text-box node on text element', () => {
-      const textBoxNode = createTestNode(
-        graph,
-        {
-          x: 300,
-          y: 300,
-          width: 100,
-          height: 40,
-          shape: 'text-box',
-          label: 'Text Box',
-        },
-        'text-box',
-      );
+      const textBoxNode = createTestNode(graph, {
+        x: 300,
+        y: 300,
+        width: 100,
+        height: 40,
+        shape: 'text-box',
+        label: 'Text Box',
+      });
 
       // Simulate mouse enter event
       graph.trigger('cell:mouseenter', { cell: textBoxNode });
@@ -323,42 +311,30 @@ describe('InfraX6SelectionAdapter', () => {
     beforeEach(() => {
       // Create multiple test nodes with proper mocks
       nodes = [
-        createTestNode(
-          graph,
-          {
-            x: 100,
-            y: 100,
-            width: 80,
-            height: 60,
-            shape: 'process',
-            label: 'Process 1',
-          },
-          'process',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 200,
-            y: 200,
-            width: 80,
-            height: 60,
-            shape: 'actor',
-            label: 'Actor 1',
-          },
-          'actor',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 300,
-            y: 300,
-            width: 80,
-            height: 60,
-            shape: 'store',
-            label: 'Store 1',
-          },
-          'store',
-        ),
+        createTestNode(graph, {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Process 1',
+        }),
+        createTestNode(graph, {
+          x: 200,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Actor 1',
+        }),
+        createTestNode(graph, {
+          x: 300,
+          y: 300,
+          width: 80,
+          height: 60,
+          shape: 'store',
+          label: 'Store 1',
+        }),
       ];
 
       adapter.setupSelectionEvents(graph);
@@ -498,31 +474,23 @@ describe('InfraX6SelectionAdapter', () => {
     let deletionCallback: any;
 
     beforeEach(() => {
-      node = createTestNode(
-        graph,
-        {
-          x: 100,
-          y: 100,
-          width: 80,
-          height: 60,
-          shape: 'process',
-          label: 'Test Process',
-        },
-        'process',
-      );
+      node = createTestNode(graph, {
+        x: 100,
+        y: 100,
+        width: 80,
+        height: 60,
+        shape: 'process',
+        label: 'Test Process',
+      });
 
-      const targetNode = createTestNode(
-        graph,
-        {
-          x: 200,
-          y: 200,
-          width: 80,
-          height: 60,
-          shape: 'actor',
-          label: 'Target',
-        },
-        'actor',
-      );
+      const targetNode = createTestNode(graph, {
+        x: 200,
+        y: 200,
+        width: 80,
+        height: 60,
+        shape: 'actor',
+        label: 'Target',
+      });
 
       edge = graph.addEdge({
         source: node,
@@ -649,30 +617,22 @@ describe('InfraX6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(
-          graph,
-          {
-            x: 100,
-            y: 100,
-            width: 80,
-            height: 60,
-            shape: 'process',
-            label: 'Process 1',
-          },
-          'process',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 200,
-            y: 200,
-            width: 80,
-            height: 60,
-            shape: 'actor',
-            label: 'Actor 1',
-          },
-          'actor',
-        ),
+        createTestNode(graph, {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Process 1',
+        }),
+        createTestNode(graph, {
+          x: 200,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Actor 1',
+        }),
       ];
     });
 
@@ -791,42 +751,30 @@ describe('InfraX6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(
-          graph,
-          {
-            x: 100,
-            y: 100,
-            width: 80,
-            height: 60,
-            shape: 'process',
-            label: 'Process 1',
-          },
-          'process',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 200,
-            y: 150,
-            width: 80,
-            height: 60,
-            shape: 'actor',
-            label: 'Actor 1',
-          },
-          'actor',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 300,
-            y: 200,
-            width: 80,
-            height: 60,
-            shape: 'store',
-            label: 'Store 1',
-          },
-          'store',
-        ),
+        createTestNode(graph, {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Process 1',
+        }),
+        createTestNode(graph, {
+          x: 200,
+          y: 150,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Actor 1',
+        }),
+        createTestNode(graph, {
+          x: 300,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'store',
+          label: 'Store 1',
+        }),
       ];
     });
 
@@ -944,30 +892,22 @@ describe('InfraX6SelectionAdapter', () => {
 
     beforeEach(() => {
       nodes = [
-        createTestNode(
-          graph,
-          {
-            x: 100,
-            y: 100,
-            width: 80,
-            height: 60,
-            shape: 'process',
-            label: 'Process 1',
-          },
-          'process',
-        ),
-        createTestNode(
-          graph,
-          {
-            x: 200,
-            y: 200,
-            width: 80,
-            height: 60,
-            shape: 'actor',
-            label: 'Actor 1',
-          },
-          'actor',
-        ),
+        createTestNode(graph, {
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 60,
+          shape: 'process',
+          label: 'Process 1',
+        }),
+        createTestNode(graph, {
+          x: 200,
+          y: 200,
+          width: 80,
+          height: 60,
+          shape: 'actor',
+          label: 'Actor 1',
+        }),
       ];
     });
 

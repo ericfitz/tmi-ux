@@ -22,7 +22,6 @@
 import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Metadata } from '../../domain/value-objects/metadata';
 
 /**
  * Edge Query Service
@@ -211,20 +210,6 @@ export class InfraEdgeQueryService {
       connectedPorts: connectedPorts.length,
       unconnectedPorts: allPorts.length - connectedPorts.length,
     };
-  }
-
-  /**
-   * Find edges by metadata criteria
-   */
-  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges whose metadata matches all given key-value criteria (pure)
-  findEdgesByMetadata(graph: any, criteria: Record<string, string>): Edge[] {
-    const edges = graph.getEdges();
-    return edges.filter((edge: Edge) => {
-      const metadata: Metadata[] = edge.getData()?._metadata || [];
-      return Object.entries(criteria).every(([key, value]) =>
-        metadata.some(entry => entry.key === key && entry.value === value),
-      );
-    });
   }
 
   /**

@@ -1634,7 +1634,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Get cell label for display
-          const cellLabel = (targetCell && getCellLabel(targetCell)) || cellId;
+          const cellLabel = getCellLabel(targetCell) || cellId;
 
           // Open the threats dialog
           const dialogData: ThreatsDialogData = {

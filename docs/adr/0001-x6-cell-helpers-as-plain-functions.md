@@ -13,9 +13,9 @@ accessors, and others) through `(Cell.prototype as any)`, from `initializeX6Cell
 called in two constructors. Nothing declared the methods to TypeScript, so every caller cast to
 `any` to reach them (about 86 production sites plus a large spec cluster tracked in #870).
 
-Five of the ten methods had no callers. The untyped access also hid three latent bugs:
+Five of the ten methods had no callers. The untyped access also hid latent bugs:
 `InfraEdgeQueryService.findEdgesByMetadata` called a `getMetadata()` method that was never
-installed; `InfraVisualEffectsService` passed `null` to a `string` parameter to "clear" metadata;
+installed (it had no production callers and is deleted); `InfraVisualEffectsService` passed `null` to a `string` parameter to "clear" metadata;
 and `CellDataExtractionService` treated `getLabel()` as returning a label object when it returns a
 string, so the DFD threat dialog never showed live cell labels.
 
@@ -37,7 +37,7 @@ Option 2. The prototype extensions and `initializeX6CellExtensions()` are remove
 plain functions in `x6-cell-extensions.ts`. Unused methods (`hasApplicationMetadata`, `isNodeType`,
 `updatePortVisibility`, `getPortConnectionState` on `Cell`) are deleted; `removeApplicationMetadata`
 is kept because the metadata cleanup fixes use it. `getNodeTypeInfo` keeps its
-`NodeTypeInfo | null` return so callers must handle non-nodes. The three latent bugs above are
+`NodeTypeInfo | null` return so callers must handle non-nodes. The latent bugs above are
 fixed in the same change.
 
 ## Consequences
@@ -45,3 +45,6 @@ fixed in the same change.
 - Do not add methods to X6 prototypes; add a function to `x6-cell-extensions.ts` instead.
 - Temporary metadata (`_originalZIndex`, `_originalStroke`, `_originalStrokeWidth`) is now
   removed on cleanup rather than left behind as empty or `null` entries in `data._metadata`.
+- The metadata setters pass `{ overwrite: true }` to `setData`. X6 `setData` deep-merges by
+  default, merging arrays index-wise without truncating, so a shorter `_metadata` array never
+  removed anything. Any new `setData` call that shrinks an array in cell data must do the same.
