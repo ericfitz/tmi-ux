@@ -213,22 +213,6 @@ export class InfraEdgeQueryService {
   }
 
   /**
-   * Find edges by metadata criteria
-   */
-  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: filter graph edges whose metadata matches all given key-value criteria (pure)
-  findEdgesByMetadata(graph: any, criteria: Record<string, string>): Edge[] {
-    const edges = graph.getEdges();
-    return edges.filter((edge: Edge) => {
-      const metadata = (edge as any).getMetadata ? (edge as any).getMetadata() : [];
-
-      return Object.entries(criteria).every(([key, value]) => {
-        const metadataEntry = metadata.find((m: any) => m.key === key);
-        return metadataEntry && metadataEntry.value === value;
-      });
-    });
-  }
-
-  /**
    * Find edge between specific ports on nodes
    */
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: search for an edge connecting two nodes, optionally constrained to specific ports (pure)

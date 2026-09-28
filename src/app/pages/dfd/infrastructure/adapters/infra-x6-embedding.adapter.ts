@@ -25,6 +25,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
+import { getNodeTypeInfo } from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Embedding Adapter
@@ -586,9 +587,7 @@ export class InfraX6EmbeddingAdapter {
         this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
 
         // Reset z-order - check if this is a security boundary node
-        const nodeType = (node as any).getNodeTypeInfo
-          ? (node as any).getNodeTypeInfo().type
-          : 'process';
+        const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
         if (nodeType === 'security-boundary') {
           // Use specific rule for unembedded security boundary nodes
@@ -635,9 +634,7 @@ export class InfraX6EmbeddingAdapter {
       if (parent && parent.isNode()) {
         // Recalculate based on parent's current z-index
         const parentZIndex = parent.getZIndex() ?? 10;
-        const childType = (descendant as any).getNodeTypeInfo
-          ? (descendant as any).getNodeTypeInfo().type
-          : 'process';
+        const childType = getNodeTypeInfo(descendant)?.type ?? 'process';
 
         let correctZIndex: number;
         if (childType === 'security-boundary') {

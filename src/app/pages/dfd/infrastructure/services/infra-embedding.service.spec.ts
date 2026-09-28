@@ -10,12 +10,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node } from '@antv/x6';
 import { InfraEmbeddingService } from './infra-embedding.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
-
-// Ensure cell extensions are initialized (as they are in production)
-// This makes tests deterministic regardless of execution order since
-// other test files may also initialize extensions on the shared Cell prototype
-initializeX6CellExtensions();
+import { registerCustomShapes } from '../adapters/infra-x6-shape-definitions';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -70,6 +65,9 @@ describe('InfraEmbeddingService', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
+    // Register custom shapes so nodes created with DFD shape names behave correctly
+    registerCustomShapes();
+
     // Create mock logger
     mockLogger = createTypedMockLoggerService();
 
@@ -103,27 +101,22 @@ describe('InfraEmbeddingService', () => {
     vi.clearAllMocks();
   });
 
-  // Helper function to create a mock node with node type info
-  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node with a stubbed node-type for embedding service tests (pure)
+  // Helper function to create a node whose shape drives its node type
+  // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a graph node with a given DFD shape/type for embedding service tests (pure)
   function createMockNodeWithType(
     id: string,
     type: string,
     position: { x: number; y: number } = { x: 100, y: 100 },
     size: { width: number; height: number } = { width: 100, height: 50 },
   ): Node {
-    const node = graph.addNode({
+    return graph.addNode({
       id,
-      shape: 'rect',
+      shape: type,
       x: position.x,
       y: position.y,
       width: size.width,
       height: size.height,
     });
-
-    // Mock the getNodeTypeInfo method
-    (node as any).getNodeTypeInfo = () => ({ type });
-
-    return node;
   }
 
   describe('Embedding Depth Calculations', () => {
@@ -305,10 +298,10 @@ describe('InfraEmbeddingService', () => {
     });
 
     it('should handle nodes with generic rect shape (no DFD-specific shape)', () => {
-      // In production, initializeX6CellExtensions() adds getNodeTypeInfo to
-      // Cell.prototype, so it's always available. A node with shape 'rect'
-      // (X6 built-in) gets type 'rect' from getNodeTypeInfo(), not a DFD
-      // type like 'process'. This verifies embedding handles non-DFD shapes.
+      // getNodeTypeInfo() derives node type directly from the cell's `shape`
+      // property. A node with shape 'rect' (X6 built-in) gets type 'rect',
+      // not a DFD type like 'process'. This verifies embedding handles
+      // non-DFD shapes.
       const node = graph.addNode({
         id: 'node1',
         shape: 'rect',

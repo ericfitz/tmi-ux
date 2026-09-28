@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { getCellLabel } from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Event Logger Service
@@ -494,18 +495,7 @@ export class InfraX6EventLoggerAdapter {
   // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label from a graph node safely, returning empty string on failure (pure)
   private _getNodeLabel(node: Node): string {
     try {
-      // Use X6 cell extensions if available
-      if ((node as any).getLabel) {
-        return (node as any).getLabel();
-      }
-
-      // Fallback to attrs
-      const attrs = node.getAttrs();
-      if (attrs && attrs['text'] && typeof attrs['text'] === 'object' && 'text' in attrs['text']) {
-        return String((attrs['text'] as any)['text']);
-      }
-
-      return '';
+      return getCellLabel(node);
     } catch {
       return '';
     }

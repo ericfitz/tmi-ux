@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Cell, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Metadata } from '../../domain/value-objects/metadata';
+import { getCellLabel, getNodeTypeInfo } from '../../utils/x6-cell-extensions';
 
 /**
  * Interface for port object structure
@@ -154,9 +155,9 @@ export class UiTooltipService {
 
     try {
       // Get node label or name
-      const label = (node as any).getLabel ? (node as any).getLabel() : '';
+      const label = getCellLabel(node);
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (node as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(node);
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
       if (label && label.trim() !== '') {

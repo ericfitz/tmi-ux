@@ -15,7 +15,7 @@ import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-o
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { getCellLabel } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -52,8 +52,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let mockGraphHistoryCoordinator: MockAppOperationStateManager;
 
   beforeEach(() => {
-    // Initialize X6 cell extensions and register DFD shapes
-    initializeX6CellExtensions();
+    // Register DFD shapes
     registerCustomShapes();
 
     // Create real X6 graph for integration testing
@@ -632,17 +631,14 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         id: 'test-edge',
         source: { cell: 'source' },
         target: { cell: 'target' },
+        labels: [{ attrs: { text: { text: 'Test Label' } } }],
       });
-
-      // Mock the setLabel method
-      (testEdge as any).setLabel = vi.fn();
-      (testEdge as any).getLabel = vi.fn().mockReturnValue('Test Label');
     });
 
     it('should update edge label', () => {
       service.updateEdgeLabel(testEdge, 'New Label');
 
-      expect((testEdge as any).setLabel).toHaveBeenCalledWith('New Label');
+      expect(getCellLabel(testEdge)).toBe('New Label');
       expect(mockLogger.info).toHaveBeenCalledWith('Edge label updated', {
         edgeId: testEdge.id,
         label: 'New Label',
@@ -652,7 +648,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     it('should remove edge label', () => {
       service.removeEdgeLabel(testEdge);
 
-      expect((testEdge as any).setLabel).toHaveBeenCalledWith('');
+      expect(getCellLabel(testEdge)).toBe('');
       expect(mockLogger.info).toHaveBeenCalledWith('Edge label removed', {
         edgeId: testEdge.id,
       });
@@ -662,21 +658,6 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       const result = service.getEdgeLabel(testEdge);
 
       expect(result).toBe('Test Label');
-      expect((testEdge as any).getLabel).toHaveBeenCalled();
-    });
-
-    it('should handle missing setLabel method gracefully', () => {
-      // Mock an edge without setLabel method
-      const mockEdgeWithoutSetLabel = {
-        id: 'edge-without-setlabel',
-        setLabel: undefined,
-      } as any;
-
-      service.updateEdgeLabel(mockEdgeWithoutSetLabel, 'New Label');
-
-      expect(mockLogger.warn).toHaveBeenCalledWith('Edge does not support setLabel method', {
-        edgeId: mockEdgeWithoutSetLabel.id,
-      });
     });
   });
 
@@ -1187,7 +1168,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         target: { cell: 'target' },
       });
 
-      (testEdge as any).setLabel = vi.fn().mockImplementation(() => {
+      testEdge.setLabels = vi.fn().mockImplementation(() => {
         throw new Error('Label method failed');
       });
 

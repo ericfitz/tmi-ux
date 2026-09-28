@@ -399,8 +399,10 @@ describe('UiTooltipService', () => {
     it('should return node type and label when label exists', () => {
       const mockNode = {
         id: 'node-1',
-        getLabel: vi.fn().mockReturnValue('Database Server'),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'process' }),
+        shape: 'process',
+        isNode: () => true,
+        isEdge: () => false,
+        getAttrByPath: (path: string) => (path === 'text/text' ? 'Database Server' : undefined),
       } as unknown as Node;
 
       const result = service.getNodeTooltipContent(mockNode);
@@ -411,8 +413,10 @@ describe('UiTooltipService', () => {
     it('should return node type and ID when label is empty', () => {
       const mockNode = {
         id: 'node-1',
-        getLabel: vi.fn().mockReturnValue(''),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'data-store' }),
+        shape: 'data-store',
+        isNode: () => true,
+        isEdge: () => false,
+        getAttrByPath: (path: string) => (path === 'text/text' ? '' : undefined),
       } as unknown as Node;
 
       const result = service.getNodeTooltipContent(mockNode);
@@ -423,8 +427,10 @@ describe('UiTooltipService', () => {
     it('should return node type and ID when label is whitespace', () => {
       const mockNode = {
         id: 'node-1',
-        getLabel: vi.fn().mockReturnValue('   '),
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'external-entity' }),
+        shape: 'external-entity',
+        isNode: () => true,
+        isEdge: () => false,
+        getAttrByPath: (path: string) => (path === 'text/text' ? '   ' : undefined),
       } as unknown as Node;
 
       const result = service.getNodeTooltipContent(mockNode);
@@ -432,22 +438,13 @@ describe('UiTooltipService', () => {
       expect(result).toBe('external-entity (node-1)');
     });
 
-    it('should handle missing getLabel method', () => {
+    it('should use "unknown" type when node has no shape', () => {
       const mockNode = {
         id: 'node-1',
-        getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'process' }),
-      } as unknown as Node;
-
-      const result = service.getNodeTooltipContent(mockNode);
-
-      expect(result).toBe('process (node-1)');
-    });
-
-    it('should use "unknown" type when getNodeTypeInfo returns no type', () => {
-      const mockNode = {
-        id: 'node-1',
-        getLabel: vi.fn().mockReturnValue('Node Label'),
-        getNodeTypeInfo: vi.fn().mockReturnValue({}),
+        shape: undefined,
+        isNode: () => true,
+        isEdge: () => false,
+        getAttrByPath: (path: string) => (path === 'text/text' ? 'Node Label' : undefined),
       } as unknown as Node;
 
       const result = service.getNodeTooltipContent(mockNode);
@@ -464,10 +461,11 @@ describe('UiTooltipService', () => {
     it('should handle errors gracefully', () => {
       const mockNode = {
         id: 'node-1',
-        getLabel: vi.fn().mockImplementation(() => {
+        isNode: () => true,
+        isEdge: () => false,
+        getAttrByPath: vi.fn().mockImplementation(() => {
           throw new Error('Label access error');
         }),
-        getNodeTypeInfo: vi.fn(),
       } as unknown as Node;
 
       const result = service.getNodeTooltipContent(mockNode);

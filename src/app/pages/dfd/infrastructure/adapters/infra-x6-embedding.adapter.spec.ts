@@ -156,9 +156,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Test Node',
       });
 
-      // Mock getNodeTypeInfo method
-      (node as any).getNodeTypeInfo = () => ({ type: 'process' });
-
       // Trigger node moved event to verify handler is set up
       graph.trigger('node:moved', { node });
 
@@ -189,10 +186,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         shape: 'process',
         label: 'Child Process',
       });
-
-      // Mock getNodeTypeInfo methods
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'process' });
     });
 
     it('should successfully embed a valid child into parent', () => {
@@ -217,8 +210,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Text Box',
       });
 
-      (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
-
       const processNode = graph.addNode({
         x: 110,
         y: 110,
@@ -226,8 +217,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         height: 50,
         shape: 'process',
       });
-
-      (processNode as any).getNodeTypeInfo = () => ({ type: 'process' });
 
       const result = adapter.embedNode(graph, processNode, textBoxNode);
 
@@ -293,10 +282,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         shape: 'process',
         label: 'Child Process',
       });
-
-      // Mock getNodeTypeInfo methods
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'process' });
 
       // Embed the child first
       childNode.setParent(parentNode);
@@ -403,11 +388,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Child',
       });
 
-      // Mock getNodeTypeInfo methods
-      (grandparentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-
       // Create hierarchy: grandparent -> parent -> child
       parentNode.setParent(grandparentNode);
       childNode.setParent(parentNode);
@@ -500,11 +480,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Grandchild',
       });
 
-      // Mock getNodeTypeInfo methods
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (grandchildNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-
       // Mock node attributes
       childNode.getAttrs = vi.fn().mockReturnValue({ body: { fill: '#ffffff' } });
       childNode.setAttrs = vi.fn();
@@ -549,7 +524,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Text Box',
       });
 
-      (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
       textBoxNode.getAttrs = vi.fn().mockReturnValue({ body: { fill: 'transparent' } });
       textBoxNode.setAttrs = vi.fn();
 
@@ -607,10 +581,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         shape: 'process',
         label: 'Child',
       });
-
-      // Mock getNodeTypeInfo methods
-      (parentNode as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (childNode as any).getNodeTypeInfo = () => ({ type: 'process' });
 
       // Mock visual effect methods
       childNode.getAttrs = vi.fn().mockReturnValue({ body: { fill: '#ffffff' } });
@@ -754,11 +724,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         shape: 'text-box',
         label: 'Text Box',
       });
-
-      // Mock getNodeTypeInfo methods
-      (securityBoundary as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
-      (processNode as any).getNodeTypeInfo = () => ({ type: 'process' });
-      (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
     });
 
     it('should allow valid embedding combinations', () => {
@@ -782,7 +747,6 @@ describe('InfraX6EmbeddingAdapter', () => {
         shape: 'security-boundary',
         label: 'Another Boundary',
       });
-      (anotherBoundary as any).getNodeTypeInfo = () => ({ type: 'security-boundary' });
       anotherBoundary.setParent = vi.fn().mockImplementation(() => {
         anotherBoundary.getParent = vi.fn().mockReturnValue(securityBoundary);
       });
@@ -853,10 +817,10 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Parent',
       });
 
-      // Mock methods to throw errors
-      (node as any).getNodeTypeInfo = () => {
+      // Force an error inside the embedded-event visual effect handling
+      vi.spyOn(infraEmbeddingService, 'getEmbeddingConfiguration').mockImplementation(() => {
         throw new Error('Test error');
-      };
+      });
 
       // Trigger embedding event
       graph.trigger('node:embedded', { node, parent });
@@ -878,10 +842,10 @@ describe('InfraX6EmbeddingAdapter', () => {
         label: 'Test Node',
       });
 
-      // Mock methods to throw errors
-      (node as any).getNodeTypeInfo = () => {
+      // Force an error inside the unembedded-event visual effect handling
+      vi.spyOn(infraEmbeddingService, 'calculateEmbeddingDepth').mockImplementation(() => {
         throw new Error('Test error');
-      };
+      });
 
       // Trigger unembedding event
       graph.trigger('node:unembedded', { node });

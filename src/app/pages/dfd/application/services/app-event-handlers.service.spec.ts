@@ -107,13 +107,16 @@ describe('AppEventHandlersService', () => {
       container: { style: { width: '', height: '' } },
     };
 
+    const mockCellAttrs: Record<string, unknown> = { 'text/text': 'Test Label' };
     mockCell = {
       id: 'cell-1',
       shape: 'process',
       isNode: vi.fn(() => true),
       isEdge: vi.fn(() => false),
-      getLabel: vi.fn(() => 'Test Label'),
-      setLabel: vi.fn(),
+      getAttrByPath: vi.fn((path: string) => mockCellAttrs[path]),
+      setAttrByPath: vi.fn((path: string, value: unknown) => {
+        mockCellAttrs[path] = value;
+      }),
     };
 
     mockBroadcaster = {
@@ -526,11 +529,14 @@ describe('AppEventHandlersService', () => {
       const label = service.getCellLabel(mockCell);
 
       expect(label).toBe('Test Label');
-      expect(mockCell.getLabel).toHaveBeenCalled();
+      expect(mockCell.getAttrByPath).toHaveBeenCalledWith('text/text');
     });
 
-    it('should return empty string for cell without getLabel', () => {
-      const cellWithoutLabel = { ...mockCell, getLabel: undefined };
+    it('should return empty string when cell has no label set', () => {
+      const cellWithoutLabel = {
+        ...mockCell,
+        getAttrByPath: vi.fn(() => undefined),
+      };
       const label = service.getCellLabel(cellWithoutLabel);
 
       expect(label).toBe('');
@@ -543,7 +549,7 @@ describe('AppEventHandlersService', () => {
       const success = service.setCellLabel(mockCell, 'New Label');
 
       expect(success).toBe(true);
-      expect(mockCell.setLabel).toHaveBeenCalledWith('New Label');
+      expect(mockCell.setAttrByPath).toHaveBeenCalledWith('text/text', 'New Label');
       expect(results).toHaveLength(1);
       expect(results[0]).toEqual({
         cellId: 'cell-1',
@@ -557,7 +563,7 @@ describe('AppEventHandlersService', () => {
       const success = service.setCellLabel(mockCell, 'Test Label');
 
       expect(success).toBe(false);
-      expect(mockCell.setLabel).not.toHaveBeenCalled();
+      expect(mockCell.setAttrByPath).not.toHaveBeenCalled();
     });
 
     it('should validate label length', () => {
@@ -577,16 +583,18 @@ describe('AppEventHandlersService', () => {
       expect(sanitized).toBe('Test Label');
     });
 
-    it('should check if cell can be edited', () => {
-      const canEdit = service.canEditCellLabel(mockCell);
-
-      expect(canEdit).toBe(true);
-    });
-
     it('should batch update labels', () => {
+      const secondCell = {
+        id: 'cell-2',
+        shape: 'process',
+        isNode: vi.fn(() => true),
+        isEdge: vi.fn(() => false),
+        getAttrByPath: vi.fn(() => 'Old'),
+        setAttrByPath: vi.fn(),
+      };
       const updates = [
         { cell: mockCell, label: 'Label 1' },
-        { cell: { ...mockCell, id: 'cell-2', getLabel: () => 'Old' }, label: 'Label 2' },
+        { cell: secondCell, label: 'Label 2' },
       ];
 
       const results = service.batchUpdateLabels(mockGraph, updates);

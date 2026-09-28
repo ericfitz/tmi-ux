@@ -25,11 +25,11 @@ interface MockCell {
   isNode: Mock;
   isEdge: Mock;
   attr: Mock;
-  getNodeTypeInfo?: Mock;
+  shape?: string;
 }
 
 interface MockNode extends MockCell {
-  getNodeTypeInfo: Mock;
+  shape: string;
 }
 
 // MockEdge uses the same interface as MockCell
@@ -50,7 +50,7 @@ describe('InfraVisualEffectsService', () => {
     isNode: vi.fn().mockReturnValue(true),
     isEdge: vi.fn().mockReturnValue(false),
     attr: vi.fn(),
-    getNodeTypeInfo: vi.fn().mockReturnValue({ type: nodeType }),
+    shape: nodeType,
   });
 
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub diagram edge with a given id for tests (pure)
@@ -67,7 +67,7 @@ describe('InfraVisualEffectsService', () => {
     isNode: vi.fn().mockReturnValue(true),
     isEdge: vi.fn().mockReturnValue(false),
     attr: vi.fn(),
-    getNodeTypeInfo: vi.fn().mockReturnValue({ type: 'text-box' }),
+    shape: 'text-box',
   });
 
   beforeEach(() => {

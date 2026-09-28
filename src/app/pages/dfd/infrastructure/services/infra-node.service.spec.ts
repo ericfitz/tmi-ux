@@ -9,7 +9,6 @@
 import { Graph } from '@antv/x6';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
 import { InfraNodeConfigurationService } from './infra-node-configuration.service';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../adapters/infra-x6-shape-definitions';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
 import { expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -19,8 +18,7 @@ describe('InfraNodeService - Core Functionality Tests', () => {
   let infraNodeConfigurationService: InfraNodeConfigurationService;
 
   beforeEach(() => {
-    // Initialize X6 cell extensions and register DFD shapes
-    initializeX6CellExtensions();
+    // Register DFD shapes
     registerCustomShapes();
 
     // Create real X6 graph for integration testing

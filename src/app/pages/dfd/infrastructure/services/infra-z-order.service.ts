@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { getNodeTypeInfo } from '../../utils/x6-cell-extensions';
 
 /**
  * Z-Order Service
@@ -22,9 +23,7 @@ export class ZOrderService {
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: check whether a diagram cell is a security boundary node type (pure)
   isSecurityBoundaryCell(cell: Cell): boolean {
     if (cell.isNode()) {
-      const nodeType = (cell as any).getNodeTypeInfo
-        ? (cell as any).getNodeTypeInfo().type
-        : 'process';
+      const nodeType = getNodeTypeInfo(cell)?.type ?? 'process';
       return nodeType === 'security-boundary';
     }
     return false;
@@ -269,9 +268,7 @@ export class ZOrderService {
 
     // Categorize nodes by type
     nodes.forEach(node => {
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
+      const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
       if (nodeType === 'security-boundary') {
         securityBoundaries.push(node);
@@ -335,9 +332,7 @@ export class ZOrderService {
     };
 
     nodes.forEach(node => {
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
+      const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
       const isEmbedded = !!node.getParent();
 
       if (nodeType === 'security-boundary') {
@@ -487,9 +482,7 @@ export class ZOrderService {
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the minimum z-index for a child node embedded into a parent node (pure)
   calculateEmbeddedNodeZIndex(parentNode: Node, childNode: Node): number {
     const parentZIndex = parentNode.getZIndex() ?? this.getDefaultZIndex('process');
-    const childType = (childNode as any).getNodeTypeInfo
-      ? (childNode as any).getNodeTypeInfo().type
-      : 'process';
+    const childType = getNodeTypeInfo(childNode)?.type ?? 'process';
 
     let baseChildZIndex: number;
 
@@ -617,7 +610,7 @@ export class ZOrderService {
    */
   // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: return the node type string from a node's type info, defaulting to process (pure)
   private getNodeType(node: Node): string {
-    return (node as any).getNodeTypeInfo ? (node as any).getNodeTypeInfo().type : 'process';
+    return getNodeTypeInfo(node)?.type ?? 'process';
   }
 
   /**
@@ -627,9 +620,7 @@ export class ZOrderService {
    */
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute the default z-index when a security boundary node is unembedded (pure)
   calculateUnembeddedSecurityBoundaryZIndex(node: Node): number {
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
+    const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     if (nodeType === 'security-boundary') {
       const defaultZIndex = this.getDefaultZIndex('security-boundary');

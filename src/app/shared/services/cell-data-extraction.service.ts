@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Cell } from '@antv/x6';
 import { ThreatModel } from '../../pages/tm/models/threat-model.model';
 import {
   DiagramOption,
@@ -6,37 +7,14 @@ import {
 } from '../../pages/tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { LoggerService } from '../../core/services/logger.service';
 import { CANONICAL_EDGE_SHAPE } from '../../pages/dfd/utils/cell-property-filter.util';
+import { getCellLabel } from '../../pages/dfd/utils/x6-cell-extensions';
 
 /**
  * Interface for X6 Graph basic operations
  */
 interface X6Graph {
   // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: list all cells in an X6 graph (pure)
-  getCells(): X6Cell[];
-}
-
-/**
- * Interface for X6 Cell operations
- */
-interface X6Cell {
-  id: string;
-  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: check whether a diagram cell is a node (pure)
-  isNode(): boolean;
-  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: check whether a diagram cell is an edge (pure)
-  isEdge(): boolean;
-  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: fetch the primary label of a diagram cell (pure)
-  getLabel?(): X6CellLabel;
-  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: list all labels on a diagram cell (pure)
-  getLabels?(): X6CellLabel[];
-  // SEM@fde089a9df7229c2b08ae0dc8c2e0f60997deea1: fetch a cell attribute value at a given path (pure)
-  getAttrByPath?(path: string): unknown;
-}
-
-/**
- * Interface for X6 Cell Label
- */
-interface X6CellLabel {
-  attrs?: { [key: string]: { value?: string } };
+  getCells(): Cell[];
 }
 
 /**
@@ -192,7 +170,7 @@ export class CellDataExtractionService {
           totalCells: x6Cells.length,
         });
 
-        x6Cells.forEach((cell: X6Cell) => {
+        x6Cells.forEach((cell: Cell) => {
           const cellLabel = this.extractCellLabel(cell, 'x6');
           cells.push({
             id: cell.id,
@@ -225,7 +203,7 @@ export class CellDataExtractionService {
    * @returns The cell label as a string
    */
   // SEM@18b5b056436f5b56f58815b0bb5bfe9b18b41346: extract a human-readable label from a stored or runtime diagram cell (pure)
-  private extractCellLabel(cell: X6Cell | StoredCell, cellType: 'stored' | 'x6'): string {
+  private extractCellLabel(cell: Cell | StoredCell, cellType: 'stored' | 'x6'): string {
     if (!cell || !cell.id) {
       return 'Unknown Cell';
     }
@@ -233,8 +211,8 @@ export class CellDataExtractionService {
     try {
       const label =
         cellType === 'x6'
-          ? this.extractX6CellLabel(cell as X6Cell)
-          : this.extractStoredCellLabel(cell);
+          ? this.extractX6CellLabel(cell as Cell)
+          : this.extractStoredCellLabel(cell as StoredCell);
 
       return this.cleanLabel(label, cell.id);
     } catch (error) {
@@ -248,36 +226,10 @@ export class CellDataExtractionService {
   }
 
   /**
-   * Extracts label from an X6 runtime cell using getLabel() or manual fallback.
+   * Extracts label from an X6 runtime cell.
    */
-  // SEM@ae48a36a6dc6b6223757be6fcf33bc9ab342c036: extract the display label from a live X6 cell object (pure)
-  private extractX6CellLabel(x6Cell: X6Cell): string | null {
-    if (typeof x6Cell.getLabel === 'function') {
-      const extractedLabel = x6Cell.getLabel();
-      const labelText = this.extractLabelText(extractedLabel);
-      if (labelText?.trim()) {
-        return labelText.trim();
-      }
-      return null;
-    }
-
-    // Fallback manual extraction for X6 cells
-    if (x6Cell.isNode?.()) {
-      const textValue = x6Cell.getAttrByPath?.('text/text');
-      if (textValue && typeof textValue === 'string') {
-        return textValue.trim();
-      }
-    } else if (x6Cell.isEdge?.()) {
-      const labels = x6Cell.getLabels?.();
-      if (labels && labels.length > 0) {
-        const firstLabelValue = labels[0]?.attrs?.['text']?.value;
-        if (firstLabelValue) {
-          return firstLabelValue.trim();
-        }
-      }
-    }
-
-    return null;
+  private extractX6CellLabel(x6Cell: Cell): string | null {
+    return getCellLabel(x6Cell).trim() || null;
   }
 
   /**
@@ -335,30 +287,11 @@ export class CellDataExtractionService {
   }
 
   /**
-   * Extracts text from an X6 cell label object
-   */
-  // SEM@016cf91ed31dd9e800b8d2c22c26718ea531c7d4: extract a string value from an X6 cell label attrs object (pure)
-  private extractLabelText(label: X6CellLabel | undefined): string | null {
-    if (!label) return null;
-
-    // Try to extract text from label attrs
-    if (label.attrs) {
-      for (const [_key, attr] of Object.entries(label.attrs)) {
-        if (attr && typeof attr === 'object' && 'value' in attr && typeof attr.value === 'string') {
-          return attr.value;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /**
    * Generates a more user-friendly label from cell data when no proper label is available.
    * This is used as a fallback for stored cells that don't preserve label information.
    */
   // SEM@016cf91ed31dd9e800b8d2c22c26718ea531c7d4: build a human-readable fallback label from a cell ID (pure)
-  private generateFriendlyLabel(cell: X6Cell | StoredCell): string {
+  private generateFriendlyLabel(cell: Cell | StoredCell): string {
     // Try to create a more meaningful label based on cell properties
     const cellId = cell.id || 'unknown';
 
