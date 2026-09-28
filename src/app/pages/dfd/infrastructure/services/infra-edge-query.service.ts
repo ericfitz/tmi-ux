@@ -22,6 +22,7 @@
 import { Injectable } from '@angular/core';
 import { Edge, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { Metadata } from '../../domain/value-objects/metadata';
 
 /**
  * Edge Query Service
@@ -219,12 +220,10 @@ export class InfraEdgeQueryService {
   findEdgesByMetadata(graph: any, criteria: Record<string, string>): Edge[] {
     const edges = graph.getEdges();
     return edges.filter((edge: Edge) => {
-      const metadata = (edge as any).getMetadata ? (edge as any).getMetadata() : [];
-
-      return Object.entries(criteria).every(([key, value]) => {
-        const metadataEntry = metadata.find((m: any) => m.key === key);
-        return metadataEntry && metadataEntry.value === value;
-      });
+      const metadata: Metadata[] = edge.getData()?._metadata || [];
+      return Object.entries(criteria).every(([key, value]) =>
+        metadata.some(entry => entry.key === key && entry.value === value),
+      );
     });
   }
 

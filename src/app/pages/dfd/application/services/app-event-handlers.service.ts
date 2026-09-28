@@ -22,6 +22,7 @@ import {
   CellPropertiesDialogData,
 } from '../../presentation/components/cell-properties-dialog/cell-properties-dialog.component';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+import { getCellLabel, setCellLabel } from '../../utils/x6-cell-extensions';
 
 /**
  * Interface for label change events
@@ -652,7 +653,7 @@ export class AppEventHandlersService {
   // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label text for a diagram cell (pure)
   getCellLabel(cell: Cell): string {
     // Use X6 cell extensions for unified label handling
-    return (cell as any).getLabel ? (cell as any).getLabel() : '';
+    return getCellLabel(cell);
   }
 
   /**
@@ -683,16 +684,7 @@ export class AppEventHandlersService {
       return false;
     }
 
-    // Apply the label change using X6 cell extensions
-    if ((cell as any).setLabel) {
-      (cell as any).setLabel(text);
-    } else {
-      this.logger.warn('[CellLabelService] Cell does not support setLabel method', {
-        cellId: cell.id,
-        cellType: cell.isNode() ? 'node' : 'edge',
-      });
-      return false;
-    }
+    setCellLabel(cell, text);
 
     // Emit label change event
     this._labelChanged$.next({
@@ -768,17 +760,6 @@ export class AppEventHandlersService {
     sanitized = sanitized.replace(/\p{Cc}/gu, match => (/[\n\r]/.test(match) ? match : ''));
 
     return sanitized;
-  }
-
-  /**
-   * Check if a cell supports label editing
-   */
-  // SEM@a068b149611f54ba065b375e8dcbfceef992cb9a: check whether a diagram cell supports label editing via its extension methods (pure)
-  canEditCellLabel(cell: Cell): boolean {
-    // Check if cell has the necessary extension methods
-    return (
-      typeof (cell as any).setLabel === 'function' && typeof (cell as any).getLabel === 'function'
-    );
   }
 
   /**

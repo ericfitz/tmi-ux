@@ -6,6 +6,7 @@ import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
 } from '../../application/services/app-operation-state-manager.service';
+import { getApplicationMetadata, getNodeTypeInfo, removeApplicationMetadata, setApplicationMetadata } from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Z-Order Adapter
@@ -302,18 +303,14 @@ export class InfraX6ZOrderAdapter {
     }
 
     // Check if this node has a stored original z-index from embedding attempt
-    const originalZIndexValue = (node as any).getApplicationMetadata
-      ? (node as any).getApplicationMetadata('_originalZIndex')
-      : '';
+    const originalZIndexValue = getApplicationMetadata(node, '_originalZIndex');
     const originalZIndex = originalZIndexValue ? Number(originalZIndexValue) : null;
 
     // If we have an original z-index stored and the node is not currently embedded,
     // restore the original z-index (this handles the case where dragging was just for movement)
     if (typeof originalZIndex === 'number' && !isNaN(originalZIndex) && !node.getParent()) {
       // Get the node type to determine the correct default z-index
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
+      const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
       // Use ZOrderService to get correct z-index
       const correctZIndex = nodeType === 'security-boundary' ? 1 : originalZIndex;
@@ -335,9 +332,7 @@ export class InfraX6ZOrderAdapter {
       }
 
       // Clean up the temporary metadata
-      if ((node as any).setApplicationMetadata) {
-        (node as any).setApplicationMetadata('_originalZIndex', '');
-      }
+      removeApplicationMetadata(node, '_originalZIndex');
     }
 
     // Always enforce z-order invariants after any node movement
@@ -351,9 +346,7 @@ export class InfraX6ZOrderAdapter {
   setTemporaryEmbeddingZIndex(node: Node): void {
     // Store the original z-index before temporarily changing it using metadata
     const originalZIndex = node.getZIndex();
-    if ((node as any).setApplicationMetadata) {
-      (node as any).setApplicationMetadata('_originalZIndex', String(originalZIndex));
-    }
+    setApplicationMetadata(node, '_originalZIndex', String(originalZIndex));
 
     // Use InfraEmbeddingService to get temporary z-index
     const tempZIndex = this.zOrderService.getDefaultZIndex('security-boundary'); // This will be enhanced
@@ -386,9 +379,7 @@ export class InfraX6ZOrderAdapter {
    */
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: reset a node and its edges to default z-index after unembedding (mutates shared state)
   applyUnembeddingZIndex(graph: Graph, node: Node): void {
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
+    const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // Reset to default z-index based on type
     const nodeZIndex = this.zOrderService.getDefaultZIndex(nodeType);
@@ -430,29 +421,7 @@ export class InfraX6ZOrderAdapter {
    */
   // SEM@822261a3efc4f8a3dd9938b78529667058f40c9e: assign the default z-index to a newly created diagram node by type (mutates shared state)
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
-    // Get node type using getNodeTypeInfo for reliable node type detection
-    // Default to 'unknown' for nodes without type info or when getNodeTypeInfo fails
-    let nodeType = 'unknown';
-
-    if (typeof (node as any).getNodeTypeInfo === 'function') {
-      try {
-        const nodeTypeInfo = (node as any).getNodeTypeInfo();
-        nodeType = nodeTypeInfo?.type || 'unknown';
-      } catch (error) {
-        // If getNodeTypeInfo call fails, keep default 'unknown'
-        this.logger.warn('Error calling getNodeTypeInfo extension', {
-          nodeId: node.id,
-          shape: node.shape,
-          error,
-        });
-      }
-    } else {
-      // If getNodeTypeInfo method doesn't exist, log warning and keep default 'unknown'
-      this.logger.warn('Node missing getNodeTypeInfo extension', {
-        nodeId: node.id,
-        shape: node.shape,
-      });
-    }
+    const nodeType = getNodeTypeInfo(node)?.type || 'unknown';
 
     // Use getDefaultZIndex for all node types
     const zIndex = this.zOrderService.getDefaultZIndex(nodeType);

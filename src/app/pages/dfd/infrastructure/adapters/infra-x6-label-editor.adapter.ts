@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Graph, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { getCellLabel, getNodeTypeInfo, setCellLabel } from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Label Editor Adapter
@@ -168,7 +169,7 @@ export class X6LabelEditorAdapter {
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: validate whether a diagram cell supports inline label editing (pure)
   private canEditLabel(cell: Cell): boolean {
     // Get node type info if available
-    const nodeTypeInfo = (cell as any).getNodeTypeInfo ? (cell as any).getNodeTypeInfo() : null;
+    const nodeTypeInfo = getNodeTypeInfo(cell);
 
     // All nodes and edges can have labels edited by default
     // Special handling for specific node types if needed
@@ -246,15 +247,7 @@ export class X6LabelEditorAdapter {
    */
   // SEM@30f828164ac850acd8c5327d89735462337b332b: fetch the current label text from a diagram cell (pure)
   private getCurrentLabelText(cell: Cell): string {
-    // Use standardized getLabel method from x6-cell-extensions
-    if ((cell as any).getLabel) {
-      const labelText = (cell as any).getLabel();
-      // Ensure we return a string, not undefined
-      return typeof labelText === 'string' ? labelText : '';
-    } else {
-      this.logger.warn('Cell does not support getLabel method', { cellId: cell.id });
-      return '';
-    }
+    return getCellLabel(cell);
   }
 
   /**
@@ -331,12 +324,7 @@ export class X6LabelEditorAdapter {
    */
   // SEM@30f828164ac850acd8c5327d89735462337b332b: store new label text on a diagram cell (mutates shared state)
   private updateCellLabel(cell: Cell, newText: string): void {
-    // Use standardized setLabel method from x6-cell-extensions
-    if ((cell as any).setLabel) {
-      (cell as any).setLabel(newText);
-    } else {
-      this.logger.warn('Cell does not support setLabel method', { cellId: cell.id });
-    }
+    setCellLabel(cell, newText);
   }
 
   /**

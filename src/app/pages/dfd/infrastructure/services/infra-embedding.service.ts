@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { getNodeTypeInfo } from '../../utils/x6-cell-extensions';
 
 /**
  * Embedding Service
@@ -85,9 +86,7 @@ export class InfraEmbeddingService {
     const fillColor = this.calculateEmbeddingFillColor(depth);
 
     // Determine if color should be updated based on node type
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
+    const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // Don't update color for text-box nodes (they should remain transparent)
     // Don't override user-set custom fill colors
@@ -175,12 +174,8 @@ export class InfraEmbeddingService {
     isValid: boolean;
     reason?: string;
   } {
-    const parentType = (parent as any).getNodeTypeInfo
-      ? (parent as any).getNodeTypeInfo().type
-      : 'process';
-    const childType = (child as any).getNodeTypeInfo
-      ? (child as any).getNodeTypeInfo().type
-      : 'process';
+    const parentType = getNodeTypeInfo(parent)?.type ?? 'process';
+    const childType = getNodeTypeInfo(child)?.type ?? 'process';
 
     // Prevent circular embedding: check if parent is a descendant of child
     if (this.isDescendant(child, parent)) {
@@ -219,9 +214,7 @@ export class InfraEmbeddingService {
    */
   // SEM@98bf9546a1fa99e7b4209fedfbc1204e9beaa03e: compute the default z-index to restore when a node is unembedded, by node type (pure)
   calculateUnembeddingZIndex(node: Node): number {
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
+    const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // Reset to default z-index based on type
     if (nodeType === 'security-boundary') {
@@ -238,9 +231,7 @@ export class InfraEmbeddingService {
    */
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: compute a temporary elevated z-index for a node during an embedding drag operation (pure)
   getTemporaryEmbeddingZIndex(node: Node): number {
-    const nodeType = (node as any).getNodeTypeInfo
-      ? (node as any).getNodeTypeInfo().type
-      : 'process';
+    const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // When a node is being embedded, ensure it appears in front temporarily
     // But respect the node type - security boundaries should stay behind regular nodes

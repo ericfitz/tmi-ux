@@ -10,6 +10,7 @@ import {
 } from '../../application/services/app-operation-state-manager.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
+import { getNodeTypeInfo } from '../../utils/x6-cell-extensions';
 
 /**
  * X6 Selection Adapter
@@ -532,7 +533,7 @@ export class InfraX6SelectionAdapter {
   private applyHoverEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
       if (nodeType === 'text-box') {
         // For text-box shapes, apply hover glow to text element since body is transparent
@@ -554,7 +555,7 @@ export class InfraX6SelectionAdapter {
   private removeHoverEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
       if (nodeType === 'text-box') {
         // For text-box shapes, remove hover glow from text element
@@ -576,7 +577,7 @@ export class InfraX6SelectionAdapter {
   private applySelectionEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
       if (nodeType === 'text-box') {
@@ -611,7 +612,7 @@ export class InfraX6SelectionAdapter {
   private removeSelectionEffect(cell: Cell): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
       if (nodeType === 'text-box') {
         // For text-box shapes, remove glow from text element

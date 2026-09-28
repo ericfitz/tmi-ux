@@ -41,6 +41,7 @@ import { AppGraphOperationManager } from './app-graph-operation-manager.service'
 import { AppStateService } from './app-state.service';
 import { CreateEdgeOperation, OperationContext } from '../../types/graph-operation.types';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { getCellLabel, setCellLabel } from '../../utils/x6-cell-extensions';
 
 /**
  * Consolidated service for edge handling, operations, and management in DFD diagrams
@@ -286,7 +287,7 @@ export class AppEdgeService {
 
     // Get the original edge's vertices, label, and metadata
     const originalVertices = edge.getVertices();
-    const originalLabel = (edge as any).getLabel() || this.getLocalizedFlowLabel();
+    const originalLabel = getCellLabel(edge) || this.getLocalizedFlowLabel();
     const originalMetadata = edge.getData() || {};
 
     // Process label for inverse edge
@@ -593,12 +594,7 @@ export class AppEdgeService {
   // SEM@30f828164ac850acd8c5327d89735462337b332b: update the display label of a graph edge (mutates shared state)
   updateEdgeLabel(edge: Edge, label: string): void {
     try {
-      // Use standardized setLabel method from x6-cell-extensions
-      if ((edge as any).setLabel) {
-        (edge as any).setLabel(label);
-      } else {
-        this.logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
-      }
+      setCellLabel(edge, label);
 
       this.logger.info('Edge label updated', { edgeId: edge.id, label });
     } catch (error) {
@@ -612,12 +608,7 @@ export class AppEdgeService {
   // SEM@30f828164ac850acd8c5327d89735462337b332b: clear the display label from a graph edge (mutates shared state)
   removeEdgeLabel(edge: Edge): void {
     try {
-      // Use standardized setLabel method to set empty label
-      if ((edge as any).setLabel) {
-        (edge as any).setLabel('');
-      } else {
-        this.logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
-      }
+      setCellLabel(edge, '');
       this.logger.info('Edge label removed', { edgeId: edge.id });
     } catch (error) {
       this.logger.error('Failed to remove edge label', { error, edgeId: edge.id });
@@ -630,13 +621,7 @@ export class AppEdgeService {
   // SEM@30f828164ac850acd8c5327d89735462337b332b: fetch the current display label text of a graph edge (pure)
   getEdgeLabel(edge: Edge): string {
     try {
-      // Use standardized getLabel method from x6-cell-extensions
-      if ((edge as any).getLabel) {
-        return (edge as any).getLabel();
-      } else {
-        this.logger.warn('Edge does not support getLabel method', { edgeId: edge.id });
-        return '';
-      }
+      return getCellLabel(edge);
     } catch (error) {
       this.logger.error('Failed to get edge label', { error, edgeId: edge.id });
       return '';

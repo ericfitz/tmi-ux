@@ -3,6 +3,7 @@ import { Cell, Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { getApplicationMetadata, getNodeTypeInfo, removeApplicationMetadata, setApplicationMetadata } from '../../utils/x6-cell-extensions';
 
 /**
  * Interface for tracking active visual effects
@@ -329,10 +330,8 @@ export class InfraVisualEffectsService {
     const strokeStr = typeof originalStroke === 'string' ? originalStroke : '#333333';
     const strokeWidthStr = String(Number(originalStrokeWidth));
 
-    if ((cell as any).setApplicationMetadata) {
-      (cell as any).setApplicationMetadata('_originalStroke', strokeStr);
-      (cell as any).setApplicationMetadata('_originalStrokeWidth', strokeWidthStr);
-    }
+    setApplicationMetadata(cell, '_originalStroke', strokeStr);
+    setApplicationMetadata(cell, '_originalStrokeWidth', strokeWidthStr);
 
     // Apply red stroke to indicate invalid target (using constants)
     cell.attr('body/stroke', DFD_STYLING.HIGHLIGHTING.INVALID_EMBEDDING.STROKE_COLOR);
@@ -367,22 +366,17 @@ export class InfraVisualEffectsService {
     let originalStroke = '#333333';
     let originalStrokeWidth = 2;
 
-    if ((cell as any).getApplicationMetadata) {
-      const storedStroke = (cell as any).getApplicationMetadata('_originalStroke');
-      const storedWidth = (cell as any).getApplicationMetadata('_originalStrokeWidth');
-
-      if (storedStroke) originalStroke = storedStroke;
-      if (storedWidth) originalStrokeWidth = Number(storedWidth);
-    }
+    const storedStroke = getApplicationMetadata(cell, '_originalStroke');
+    const storedWidth = getApplicationMetadata(cell, '_originalStrokeWidth');
+    if (storedStroke) originalStroke = storedStroke;
+    if (storedWidth) originalStrokeWidth = Number(storedWidth);
 
     cell.attr('body/stroke', originalStroke);
     cell.attr('body/strokeWidth', originalStrokeWidth);
 
     // Clean up metadata and tracking
-    if ((cell as any).setApplicationMetadata) {
-      (cell as any).setApplicationMetadata('_originalStroke', null);
-      (cell as any).setApplicationMetadata('_originalStrokeWidth', null);
-    }
+    removeApplicationMetadata(cell, '_originalStroke');
+    removeApplicationMetadata(cell, '_originalStrokeWidth');
     this.activeEffects.delete(cell.id);
 
     this.logger.debugComponent('DfdVisualEffects', 'Removed invalid embedding feedback', {
@@ -478,7 +472,7 @@ export class InfraVisualEffectsService {
   ): void {
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
       // Log critical information for debugging
@@ -540,7 +534,7 @@ export class InfraVisualEffectsService {
 
     if (cell.isNode()) {
       // Use getNodeTypeInfo for reliable node type detection
-      const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+      const nodeTypeInfo = getNodeTypeInfo(cell);
       const nodeType = nodeTypeInfo?.type || 'unknown';
 
       if (nodeType === 'text-box') {
@@ -564,7 +558,7 @@ export class InfraVisualEffectsService {
     try {
       if (cell.isNode()) {
         // Use getNodeTypeInfo for reliable node type detection
-        const nodeTypeInfo = (cell as any).getNodeTypeInfo();
+        const nodeTypeInfo = getNodeTypeInfo(cell);
         const nodeType = nodeTypeInfo?.type || 'unknown';
 
         if (nodeType === 'text-box') {

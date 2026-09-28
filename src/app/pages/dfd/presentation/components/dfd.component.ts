@@ -37,7 +37,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -134,6 +133,7 @@ import { DfdLayoutService } from '../services/dfd-layout.service';
 import { DfdIconService } from '../services/dfd-icon.service';
 import { DfdStylingService } from '../services/dfd-styling.service';
 import { GraphOperation } from '../../types/graph-operation.types';
+import { getCellLabel } from '../../utils/x6-cell-extensions';
 
 // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: enumerate supported diagram export image formats (pure)
 type ExportFormat = 'png' | 'jpeg' | 'svg';
@@ -302,13 +302,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private dfdLayout: DfdLayoutService,
     private dfdIcon: DfdIconService,
     private dfdStyling: DfdStylingService,
-  ) {
-    // this.logger.info('DfdComponent v2 constructor called');
-
-    // Initialize X6 cell extensions first
-    // this.logger.info('Initializing X6 cell extensions');
-    initializeX6CellExtensions();
-  }
+  ) {}
 
   // SEM@f27ffdf4b41e57e775742a3de7caa83658a4af47: extract route params, set diagram context, and configure auto-save on init (mutates shared state)
   ngOnInit(): void {
@@ -1640,7 +1634,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           // Get cell label for display
-          const cellLabel = targetCell.getLabel?.() || cellId;
+          const cellLabel = (targetCell && getCellLabel(targetCell)) || cellId;
 
           // Open the threats dialog
           const dialogData: ThreatsDialogData = {

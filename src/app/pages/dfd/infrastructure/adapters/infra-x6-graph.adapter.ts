@@ -30,7 +30,6 @@ import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
 import { InfraNodeService } from '../services/infra-node.service';
@@ -57,6 +56,8 @@ import { AppNotificationService } from '../../application/services/app-notificat
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './infra-x6-shape-definitions';
+import { getCellLabel, getNodeTypeInfo, setApplicationMetadata, setCellLabel } from '../../utils/x6-cell-extensions';
+import { Metadata } from '../../domain/value-objects/metadata';
 
 /**
  * X6 Graph Adapter that provides abstraction over X6 Graph operations
@@ -172,9 +173,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
     private readonly _injector: Injector,
   ) {
-    // Initialize X6 cell extensions once when the adapter is created
-    initializeX6CellExtensions();
-
     // Register custom shapes for DFD diagrams
     registerCustomShapes();
   }
@@ -697,14 +695,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       }
 
       // Set metadata using X6 cell extensions
-      if (edgeData.data && (createdEdge as any).setApplicationMetadata) {
-        const metadata = (edgeData.data as { _metadata?: { key: string; value: unknown }[] })
-          ._metadata;
-        if (Array.isArray(metadata)) {
-          metadata.forEach((entry: { key: string; value: unknown }) => {
-            (createdEdge as any).setApplicationMetadata(entry.key, entry.value);
-          });
-        }
+      const metadata = (edgeData.data as { _metadata?: Metadata[] } | undefined)?._metadata;
+      if (Array.isArray(metadata)) {
+        metadata.forEach(entry => setApplicationMetadata(createdEdge, entry.key, entry.value));
       }
 
       // Update port visibility after edge creation
@@ -1109,7 +1102,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   // SEM@19c70fdb173818dda68c02efbfeac2d382411f98: fetch the display label text from a graph cell (pure)
   getCellLabel(cell: Cell): string {
     // Use X6 cell extensions for unified label handling
-    return (cell as any).getLabel ? (cell as any).getLabel() : '';
+    return getCellLabel(cell);
   }
 
   /**
@@ -1132,16 +1125,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Batch all label changes into a single history command
     // This ensures multiple attribute changes are grouped as one undoable operation
     this._graph.batchUpdate(() => {
-      // Apply the label change using X6 cell extensions
-      if ((cell as any).setLabel) {
-        (cell as any).setLabel(text);
-      } else {
-        this.logger.warn('Cell does not support setLabel method', {
-          cellId: cell.id,
-          cellType: cell.isNode() ? 'node' : 'edge',
-        });
-        return;
-      }
+      setCellLabel(cell, text);
     });
 
     // Emit label change event for history tracking (only if actually changed)
@@ -1770,7 +1754,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     if (!node) return undefined;
 
     // Use getNodeTypeInfo for reliable node type detection
-    const nodeTypeInfo = (node as any).getNodeTypeInfo();
+    const nodeTypeInfo = getNodeTypeInfo(node);
     return nodeTypeInfo?.type || 'unknown';
   }
 
@@ -1911,12 +1895,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         }
 
         // Update the edge metadata with new vertices
-        if ((edge as any).setApplicationMetadata) {
-          (edge as any).setApplicationMetadata(
-            'vertices',
-            JSON.stringify(vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y }))),
-          );
-        }
+        setApplicationMetadata(
+          edge,
+          'vertices',
+          JSON.stringify(vertices.map((v: { x: number; y: number }) => ({ x: v.x, y: v.y }))),
+        );
 
         // Always emit immediate vertex change event for UI responsiveness
         this._edgeVerticesChanged$.next({

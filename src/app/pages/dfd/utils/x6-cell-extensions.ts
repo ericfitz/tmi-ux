@@ -1,38 +1,16 @@
 /**
  * X6 Cell Extensions
  *
- * This file provides extensions and utility functions for X6 Cell objects,
- * adding consistent interfaces and behavior across different cell types.
+ * Helper functions for DFD-specific operations on X6 cells: unified label access across nodes
+ * and edges, application metadata stored in `data._metadata`, and node type detection.
  *
- * Key functionality:
- * - Extends X6 Cell prototype with custom methods for DFD-specific operations
- * - Provides unified interfaces for cell metadata management
- * - Adds consistent label and text handling across node and edge types
- * - Implements port connection state tracking and management
- * - Provides cell type detection and validation utilities
- * - Adds application-specific data management for cells
- * - Implements selection and highlighting state management
- * - Provides cell styling and visual property management
- * - Adds serialization and persistence utilities for cell data
- * - Implements cell validation and business rule checking
- * - Provides cell relationship and connectivity utilities
- * - Initializes cell extensions on application startup
+ * These are plain functions rather than methods on `Cell.prototype`, so they are typed without
+ * casts and need no startup initialization.
  */
 
 import { Cell, Edge } from '@antv/x6';
 import { DFD_STYLING } from '../constants/styling-constants';
-
-/**
- * X6 Cell Extensions
- *
- * These extensions provide unified interfaces for common operations across different cell types,
- * handling the underlying differences between nodes and edges in X6's implementation.
- *
- * Key principles:
- * - Use X6 native properties for X6 native state
- * - Use metadata array only for application-specific data
- * - Provide consistent API regardless of cell type
- */
+import { Metadata } from '../domain/value-objects/metadata';
 
 /**
  * Node type information interface
@@ -58,213 +36,135 @@ export interface PortConnectionState {
 }
 
 /**
- * Initialize X6 cell extensions by adding methods to prototypes
- * This must be called once during application initialization
+ * Set a cell's label. Nodes store it in `text/text`; edges store it in the first label's
+ * `attrs.text.text`, preserving existing label position and styling.
  */
-// SEM@4b4d1bf7d365f081f736dd2852791d9e153e73f2: register label, metadata, and node-type methods on the X6 Cell prototype at startup (mutates shared state)
-export function initializeX6CellExtensions(): void {
-  // Add setLabel method to Cell prototype
-  (Cell.prototype as any).setLabel = function (label: string): void {
-    if (this.isNode()) {
-      // For nodes, set the text attribute directly
-      this.setAttrByPath('text/text', label);
-    } else if (this.isEdge()) {
-      // For edges, preserve existing label position while using correct attrs.text structure
-      const existingLabels = (this as Edge).getLabels();
-      if (existingLabels && existingLabels.length > 0) {
-        // Update labels, ensuring we use the correct attrs.text.text structure
-        const updatedLabels = existingLabels.map(existingLabel => {
-          if (existingLabel && typeof existingLabel === 'object') {
-            // Extract existing text styling from the correct location (attrs.text)
-            const existingAttrs = existingLabel.attrs as any;
-            const existingTextAttrs = existingAttrs?.text || {};
+export function setCellLabel(cell: Cell, label: string): void {
+  if (cell.isNode()) {
+    cell.setAttrByPath('text/text', label);
+  } else if (cell.isEdge()) {
+    const edge = cell as Edge;
+    const existingLabels = edge.getLabels();
+    if (existingLabels && existingLabels.length > 0) {
+      const updatedLabels = existingLabels.map(existingLabel => {
+        if (existingLabel && typeof existingLabel === 'object') {
+          const existingAttrs = existingLabel.attrs as any;
+          const existingTextAttrs = existingAttrs?.text || {};
 
-            // Build the correct label structure with attrs.text.text
-            return {
-              position: (existingLabel as any).position ?? 0.5,
-              attrs: {
-                text: {
-                  fontSize: existingTextAttrs.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
-                  fill: existingTextAttrs.fill || '#333',
-                  fontFamily: existingTextAttrs.fontFamily || DFD_STYLING.TEXT_FONT_FAMILY,
-                  textAnchor: existingTextAttrs.textAnchor || 'middle',
-                  dominantBaseline: existingTextAttrs.dominantBaseline || 'middle',
-                  text: label,
-                },
-              },
-            };
-          }
-          return existingLabel;
-        });
-        (this as Edge).setLabels(updatedLabels);
-      } else {
-        // Fallback for edges without existing labels - use default styling
-        (this as Edge).setLabels([
-          {
-            position: 0.5,
+          return {
+            position: (existingLabel as any).position ?? 0.5,
             attrs: {
               text: {
+                fontSize: existingTextAttrs.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+                fill: existingTextAttrs.fill || '#333',
+                fontFamily: existingTextAttrs.fontFamily || DFD_STYLING.TEXT_FONT_FAMILY,
+                textAnchor: existingTextAttrs.textAnchor || 'middle',
+                dominantBaseline: existingTextAttrs.dominantBaseline || 'middle',
                 text: label,
-                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                fill: '#333',
-                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                textAnchor: 'middle',
-                dominantBaseline: 'middle',
               },
             },
-          },
-        ]);
-      }
-    }
-  };
-
-  // Add getLabel method to Cell prototype
-  (Cell.prototype as any).getLabel = function (): string {
-    if (this.isNode()) {
-      // For nodes, get from text attribute
-      const textValue = this.getAttrByPath('text/text');
-      return (typeof textValue === 'string' ? textValue : '') || '';
-    } else if (this.isEdge()) {
-      // For edges, get from the first label
-      const labels = (this as Edge).getLabels();
-      if (labels && labels.length > 0) {
-        const firstLabel = labels[0];
-        if (firstLabel && typeof firstLabel === 'object' && 'attrs' in firstLabel) {
-          const labelAttrs = firstLabel.attrs as any;
-          if (labelAttrs?.['text']?.['text']) {
-            return labelAttrs['text']['text'];
-          }
+          };
         }
-      }
-      return '';
-    }
-    return '';
-  };
-
-  // Add setApplicationMetadata method to Cell prototype
-  (Cell.prototype as any).setApplicationMetadata = function (key: string, value: string): void {
-    // Get existing metadata array or create new one
-    const existingMetadata = this.getData()?._metadata || [];
-
-    // Remove existing entry with same key
-    const filteredMetadata = existingMetadata.filter((entry: any) => entry.key !== key);
-
-    // Add new entry
-    const newMetadata = [...filteredMetadata, { key, value }];
-
-    // Update the cell's data
-    const currentData = this.getData() || {};
-    this.setData({ ...currentData, _metadata: newMetadata });
-  };
-
-  // Add getApplicationMetadata method to Cell prototype
-  (Cell.prototype as any).getApplicationMetadata = function (
-    key?: string,
-  ): string | Record<string, string> {
-    const metadata = this.getData()?._metadata || [];
-
-    if (key) {
-      // Return specific key value
-      const entry = metadata.find((entry: any) => entry.key === key);
-      return entry ? entry.value : '';
-    } else {
-      // Return all metadata as record
-      const record: Record<string, string> = {};
-      metadata.forEach((entry: any) => {
-        record[entry.key] = entry.value;
+        return existingLabel;
       });
-      return record;
+      edge.setLabels(updatedLabels);
+    } else {
+      edge.setLabels([
+        {
+          position: 0.5,
+          attrs: {
+            text: {
+              text: label,
+              fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+              fill: '#333',
+              fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+          },
+        },
+      ]);
     }
-  };
+  }
+}
 
-  // Add removeApplicationMetadata method to Cell prototype
-  (Cell.prototype as any).removeApplicationMetadata = function (key: string): void {
-    const existingMetadata = this.getData()?._metadata || [];
-    const filteredMetadata = existingMetadata.filter((entry: any) => entry.key !== key);
+/**
+ * Get a cell's label: `text/text` for nodes, the first label's `attrs.text.text` for edges.
+ * Returns '' when there is no label.
+ */
+export function getCellLabel(cell: Cell): string {
+  if (cell.isNode()) {
+    const textValue = cell.getAttrByPath('text/text');
+    return typeof textValue === 'string' ? textValue : '';
+  }
+  if (cell.isEdge()) {
+    const firstLabel = (cell as Edge).getLabels()[0];
+    const text = (firstLabel?.attrs as any)?.['text']?.['text'];
+    return typeof text === 'string' ? text : '';
+  }
+  return '';
+}
 
-    const currentData = this.getData() || {};
-    this.setData({ ...currentData, _metadata: filteredMetadata });
-  };
+/**
+ * Get an application metadata value from `data._metadata`, or '' if the key is absent.
+ */
+export function getApplicationMetadata(cell: Cell, key: string): string {
+  const metadata: Metadata[] = cell.getData()?._metadata || [];
+  return metadata.find(entry => entry.key === key)?.value ?? '';
+}
 
-  // Add hasApplicationMetadata method to Cell prototype
-  (Cell.prototype as any).hasApplicationMetadata = function (key: string): boolean {
-    const metadata = this.getData()?._metadata || [];
-    return metadata.some((entry: any) => entry.key === key);
-  };
+/**
+ * Set an application metadata value in `data._metadata`, replacing any entry with the same key.
+ */
+export function setApplicationMetadata(cell: Cell, key: string, value: string): void {
+  const currentData = cell.getData() || {};
+  const existingMetadata: Metadata[] = currentData._metadata || [];
+  cell.setData({
+    ...currentData,
+    _metadata: [...existingMetadata.filter(entry => entry.key !== key), { key, value }],
+  });
+}
 
-  // Add getNodeTypeInfo method to Cell prototype
-  (Cell.prototype as any).getNodeTypeInfo = function (): NodeTypeInfo | null {
-    if (!this.isNode()) {
-      return null;
-    }
+/**
+ * Remove an application metadata entry from `data._metadata`.
+ */
+export function removeApplicationMetadata(cell: Cell, key: string): void {
+  const currentData = cell.getData() || {};
+  const existingMetadata: Metadata[] = currentData._metadata || [];
+  cell.setData({
+    ...currentData,
+    _metadata: existingMetadata.filter(entry => entry.key !== key),
+  });
+}
 
-    const nodeType = this.shape || 'unknown';
+/**
+ * Get DFD node type information, derived from the cell's shape. Returns null for non-nodes.
+ */
+export function getNodeTypeInfo(cell: Cell): NodeTypeInfo | null {
+  if (!cell.isNode()) {
+    return null;
+  }
 
-    const isTextbox = nodeType === 'text-box';
-    const isSecurityBoundary = nodeType === 'security-boundary';
+  const nodeType = cell.shape || 'unknown';
 
-    // Determine default z-index based on node type
-    let defaultZIndex = 10; // Default for regular nodes
-    if (isSecurityBoundary) {
-      defaultZIndex = 1; // Security boundaries stay behind
-    } else if (isTextbox) {
-      defaultZIndex = 20; // Textboxes appear above all other shapes
-    }
+  const isTextbox = nodeType === 'text-box';
+  const isSecurityBoundary = nodeType === 'security-boundary';
 
-    // Determine X6 shape based on node type
-    let shape = 'rect'; // Default shape
-    switch (nodeType) {
-      case 'process':
-        shape = 'rect';
-        break;
-      case 'store':
-        shape = 'store';
-        break;
-      case 'actor':
-      case 'security-boundary':
-      case 'text-box':
-        shape = 'rect';
-        break;
-    }
+  // Determine default z-index based on node type
+  let defaultZIndex = 10; // Default for regular nodes
+  if (isSecurityBoundary) {
+    defaultZIndex = 1; // Security boundaries stay behind
+  } else if (isTextbox) {
+    defaultZIndex = 20; // Textboxes appear above all other shapes
+  }
 
-    return {
-      type: nodeType,
-      isTextbox,
-      isSecurityBoundary,
-      defaultZIndex,
-      hasTools: !isTextbox, // Textboxes typically don't have tools
-      hasPorts: !isTextbox, // Textboxes don't have ports
-      shape,
-    };
-  };
-
-  // Add isNodeType method to Cell prototype
-  (Cell.prototype as any).isNodeType = function (type: string): boolean {
-    if (!this.isNode()) {
-      return false;
-    }
-    const nodeType = this.shape || 'unknown';
-    return nodeType === type;
-  };
-
-  // Add updatePortVisibility method to Cell prototype
-  (Cell.prototype as any).updatePortVisibility = function (): void {
-    if (!this.isNode()) {
-      return;
-    }
-  };
-
-  // Add getPortConnectionState method to Cell prototype
-  (Cell.prototype as any).getPortConnectionState = function (): PortConnectionState | null {
-    if (!this.isNode()) {
-      return null;
-    }
-
-    return {
-      nodeId: this.id,
-      connectedPorts: new Set<string>(),
-      visiblePorts: new Set<string>(),
-      lastUpdated: new Date(),
-    };
+  return {
+    type: nodeType,
+    isTextbox,
+    isSecurityBoundary,
+    defaultZIndex,
+    hasTools: !isTextbox, // Textboxes typically don't have tools
+    hasPorts: !isTextbox, // Textboxes don't have ports
+    shape: nodeType === 'store' ? 'store' : 'rect',
   };
 }
