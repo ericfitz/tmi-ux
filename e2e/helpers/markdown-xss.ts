@@ -74,6 +74,8 @@ export function buildHostileMarkdownCases(token: string): XssCase[] {
       id: 'data-uri-href',
       kind: 'link',
       visibleText: `DataUriLink-${token}`,
+      // The client render pipeline drops this anchor entirely (text kept); safe.
+      anchorMayBeStripped: true,
       markdown: `[DataUriLink-${token}](data:text/html;base64,${Buffer.from(
         `<script>window.${XSS_FLAG_PROP}=1</script>`,
       ).toString('base64')})`,
