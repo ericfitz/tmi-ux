@@ -1,0 +1,6 @@
+{
+  "context": "my-k3s-context",
+  "registry": "k3s-node.example:30500",
+  "node_host": "k3s-node.example",
+  "ui_host": "tmi.example.com"
+}
