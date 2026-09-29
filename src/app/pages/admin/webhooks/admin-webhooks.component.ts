@@ -313,6 +313,8 @@ export class AdminWebhooksComponent implements OnInit {
     switch (status) {
       case 'active':
         return 'check';
+      case 'inactive':
+        return 'pause_circle';
       case 'pending_verification':
         return 'pending_actions';
       case 'pending_delete':

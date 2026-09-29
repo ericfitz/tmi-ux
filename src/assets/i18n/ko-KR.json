@@ -487,6 +487,7 @@
       "secret": "HMAC 시크릿",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "비활성",
         "pending_delete": "삭제 대기 중",
         "pending_verification": "확인 대기 중"
       },

@@ -573,6 +573,7 @@
       "secret": "HMAC secret",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "Inactive",
         "pending_delete": "Pending delete",
         "pending_delete.comment": "Noun. Used as a label or identifier: 'Pending delete'. Surface not identified in source scan.",
         "pending_verification": "Pending verification"

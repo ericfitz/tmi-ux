@@ -487,6 +487,7 @@
       "secret": "HMACシークレット",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "無効",
         "pending_delete": "削除保留中",
         "pending_verification": "確認保留中"
       },

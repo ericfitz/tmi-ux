@@ -93,7 +93,13 @@ async function setTriageResponseStatus(
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json-patch+json' },
         credentials: 'include',
-        body: JSON.stringify([{ op: 'replace', path: '/status', value: args.status }]),
+        body: JSON.stringify([
+          { op: 'replace', path: '/status', value: args.status },
+          // The server requires non-empty revision_notes for needs_revision.
+          ...(args.status === 'needs_revision'
+            ? [{ op: 'add', path: '/revision_notes', value: 'E2E revision notes' }]
+            : []),
+        ]),
       });
       return { ok: res.ok, status: res.status };
     },

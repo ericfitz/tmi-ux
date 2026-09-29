@@ -487,6 +487,7 @@
       "secret": "مفتاح HMAC السري",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "غير نشط",
         "pending_delete": "في انتظار الحذف",
         "pending_verification": "في انتظار التحقق"
       },

@@ -487,6 +487,7 @@
       "secret": "Secreto HMAC",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "Inactiva",
         "pending_delete": "Pendiente de eliminación",
         "pending_verification": "Pendiente de verificación"
       },

@@ -111,24 +111,27 @@ test.describe.serial('Survey Admin Workflows', () => {
     // Clones the seeded Kitchen Sink Survey, which other suites locate by exact
     // name (survey-fill.spec.ts, the field-coverage specs). The clone is deleted
     // at the end of this test so the shared fixture is not left duplicated.
-    clonedSurveyName = 'Kitchen Sink Survey';
+    const originalName = 'Kitchen Sink Survey';
+    clonedSurveyName = `${originalName} (Copy)`;
 
     await page.goto('/admin/surveys');
-    const before = await adminSurveys.surveyRow(clonedSurveyName).count();
+    // Wait for the table to render before counting, or `before` reads 0.
+    await expect(adminSurveys.surveyRowExact(originalName).first()).toBeVisible({
+      timeout: 10000,
+    });
+    const before = await adminSurveys.surveyRowExact(clonedSurveyName).count();
 
-    await adminFlow.cloneSurvey(clonedSurveyName);
+    await adminFlow.cloneSurvey(originalName);
 
-    // The clone must actually appear: one more row matching the name than
-    // before. `not.toHaveCount(0)` was true before the clone ran, so it could
-    // not fail if cloning silently did nothing.
-    await expect(adminSurveys.surveyRow(clonedSurveyName)).toHaveCount(before + 1, {
+    // The clone must actually appear: one more exact "(Copy)" row than before.
+    await expect(adminSurveys.surveyRowExact(clonedSurveyName)).toHaveCount(before + 1, {
       timeout: 10000,
     });
 
     await adminFlow.deleteSurvey(clonedSurveyName);
     await expect(
-      adminSurveys.surveyRow(clonedSurveyName),
-      'cleanup: cloned survey was not removed, leaving the shared fixture duplicated',
+      adminSurveys.surveyRowExact(clonedSurveyName),
+      'cleanup: cloned survey was not removed',
     ).toHaveCount(before, { timeout: 10000 });
   });
 

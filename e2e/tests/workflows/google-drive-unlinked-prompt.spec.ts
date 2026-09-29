@@ -4,6 +4,7 @@ import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DocumentSourceFlow } from '../../flows/document-source.flow';
 import { DocumentEditorDialog } from '../../dialogs/document-editor.dialog';
 import { testConfig } from '../../config/test.config';
+import { contentProviderSkipReason, serverHasContentProvider } from '../../helpers/content-providers';
 
 /**
  * Test #646 case 3: an unlinked user who switches the source selector to
@@ -15,6 +16,10 @@ userTest.describe('Google Drive — unlinked user shows link prompt', () => {
   userTest.setTimeout(60000);
 
   userTest('shows link prompt when no google_workspace token', async ({ userPage }) => {
+    userTest.skip(
+      !(await serverHasContentProvider('google_workspace')),
+      contentProviderSkipReason('google_workspace'),
+    );
     // Ensure clean state: revoke any pre-existing google_workspace token. The
     // server returns 204 whether or not the row existed.
     await userPage.goto('/dashboard');
@@ -34,11 +39,12 @@ userTest.describe('Google Drive — unlinked user shows link prompt', () => {
     await tmFlow.createFromDashboard(tmName);
 
     // The radio only renders if the picker provider registry includes
-    // google_workspace with supportsPicker=true. Guard explicitly so a
-    // registry change produces a clear failure rather than a misleading
+    // google_workspace with supportsPicker=true. Assert it before selecting so
+    // a registry change produces a clear failure rather than a misleading
     // selectSource timeout.
-    await sourceFlow.openCreateAndSelectSource('google_workspace');
+    await sourceFlow.openCreateDialog();
     await expect(editor.sourceRadio('google_workspace')).toBeVisible();
+    await editor.selectSource('google_workspace');
 
     await expect(editor.linkSourceButton()).toBeVisible({ timeout: 5000 });
     await expect(editor.pickButton()).toHaveCount(0);

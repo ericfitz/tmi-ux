@@ -487,6 +487,7 @@
       "secret": "HMAC密钥",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "未激活",
         "pending_delete": "待删除",
         "pending_verification": "待验证"
       },

@@ -3,14 +3,15 @@ import { userTest } from '../../fixtures/auth-fixtures';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DocumentFlow } from '../../flows/document.flow';
 import { DocumentEditorDialog } from '../../dialogs/document-editor.dialog';
+import { contentProviderSkipReason, serverHasContentProvider } from '../../helpers/content-providers';
 
 /**
  * Test #646 case 4: a document whose URL points at a Google Drive file the
  * service account can't reach renders the diagnostics panel and at least one
  * remediation control when re-opened in the editor.
  *
- * The local TMI dev backend has the google_drive service-account source
- * enabled (see CLAUDE.md / dev config). Creating a doc with a Google Drive
+ * Requires the server to advertise the google_drive service-account content
+ * provider in GET /config (skipped otherwise). Creating a doc with a Google Drive
  * URL pointing at a non-existent file triggers ValidateAccess to return
  * (false, nil), which the create handler maps to access_status=pending_access
  * with a diagnostic reason_code persisted on the row. On subsequent GET, the
@@ -21,6 +22,7 @@ userTest.describe('Document access diagnostics panel', () => {
   userTest.setTimeout(120000);
 
   userTest('renders diagnostics + remediation for unreachable Drive URL', async ({ userPage }) => {
+    userTest.skip(!(await serverHasContentProvider('google_drive')), contentProviderSkipReason('google_drive'));
     const tmFlow = new ThreatModelFlow(userPage);
     const docFlow = new DocumentFlow(userPage);
     const editor = new DocumentEditorDialog(userPage);
