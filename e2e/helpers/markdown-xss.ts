@@ -15,6 +15,11 @@ export interface XssCase {
   markdown: string;
   /** Text (link label or image alt) that must remain visible after sanitization. */
   visibleText: string;
+  /**
+   * The server-side sanitizer may drop the whole anchor (leaving only the text)
+   * rather than neutering its href; both outcomes are safe.
+   */
+  anchorMayBeStripped?: true;
 }
 
 /**
@@ -42,8 +47,12 @@ export function buildHostileMarkdownCases(token: string): XssCase[] {
       // marked.parse()), which would neuter the payload before the
       // sanitizer gets a chance to prove anything. Raw HTML preserves the
       // literal tab and mixed case so this actually exercises the
-      // ALLOWED_URI_REGEXP / attribute-whitespace-stripping path.
+      // ALLOWED_URI_REGEXP / attribute-whitespace-stripping path. The server's
+      // sanitizer may strip the whole element (the tab makes the URL
+      // unparseable), leaving just the text; the client ALLOWED_URI_REGEXP
+      // path is unit-covered in src/app/shared/markdown-providers.spec.ts.
       markdown: `<a href="JaVa\tSCRIPT:window.${XSS_FLAG_PROP}=1">ObfuscatedLink-${token}</a>`,
+      anchorMayBeStripped: true,
     },
     {
       id: 'title-attribute-breakout',
@@ -140,7 +149,27 @@ export async function assertSanitizedRender(container: Locator, cases: XssCase[]
   for (const c of cases) {
     if (c.kind === 'link') {
       const anchor = container.locator('a', { hasText: c.visibleText });
-      await expect(anchor, `link text "${c.visibleText}" was not preserved`).toHaveCount(1);
+      if (c.anchorMayBeStripped) {
+        await expect(
+          container.getByText(c.visibleText),
+          `link text "${c.visibleText}" was not preserved`,
+        ).toHaveCount(1);
+        const anchorCount = await anchor.count();
+        expect(anchorCount, `duplicate anchors for ${c.id}`).toBeLessThanOrEqual(1);
+        if (anchorCount === 0) {
+          const hrefs = await container
+            .locator('a[href]')
+            .evaluateAll(els => els.map(el => el.getAttribute('href') ?? ''));
+          for (const href of hrefs) {
+            expect(href, `dangerous href survived near ${c.id}: ${href}`).not.toMatch(
+              DANGEROUS_HREF_PATTERN,
+            );
+          }
+          continue;
+        }
+      } else {
+        await expect(anchor, `link text "${c.visibleText}" was not preserved`).toHaveCount(1);
+      }
       await expect(anchor).toBeVisible();
 
       const href = await anchor.getAttribute('href');

@@ -21,12 +21,17 @@ export class DocumentSourceFlow {
    */
   // SEM@b3ead44cf22347220a308a3b5d954272ebc12eb5: open the create-document dialog and select a source type (mutates shared state)
   async openCreateAndSelectSource(value: string): Promise<void> {
+    await this.openCreateDialog();
+    await this.editor.selectSource(value);
+  }
+
+  /** Open the create-document dialog from the tm-edit page without selecting a source. */
+  async openCreateDialog(): Promise<void> {
     const addButton = this.page.getByTestId('add-document-button');
     await addButton.scrollIntoViewIfNeeded();
     await this.page.waitForTimeout(500);
     await addButton.click();
     await this.page.locator('mat-dialog-container').waitFor({ state: 'visible', timeout: 5000 });
-    await this.editor.selectSource(value);
   }
 
   /**

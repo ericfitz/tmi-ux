@@ -487,6 +487,7 @@
       "secret": "HMAC راز",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "غیر فعال",
         "pending_delete": "حذف زیر التواء",
         "pending_verification": "تصدیق زیر التواء"
       },

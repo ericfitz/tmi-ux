@@ -487,6 +487,7 @@
       "secret": "סוד HMAC",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "לא פעיל",
         "pending_delete": "ממתין למחיקה",
         "pending_verification": "ממתין לאימות"
       },

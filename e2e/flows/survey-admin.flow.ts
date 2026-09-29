@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { AdminSurveysPage } from '../pages/admin-surveys.page';
 import { CreateSurveyDialog } from '../dialogs/create-survey.dialog';
 import { DeleteConfirmDialog } from '../dialogs/delete-confirm.dialog';
@@ -49,17 +49,22 @@ export class SurveyAdminFlow {
 
   // SEM@a2b11c7450c617ac1ba0c8f95c47efc49d0635c3: duplicate a survey via the more-menu and await API confirmation
   async cloneSurvey(name: string) {
-    // Use the first matching row so "Kitchen Sink Survey" doesn't also pick
-    // up a prior "Kitchen Sink Survey (Copy)" leftover from earlier runs.
-    const row = this.adminSurveysPage.surveyRow(name).first();
+    // Exact-name match so "Kitchen Sink Survey" never picks up a
+    // "Kitchen Sink Survey (Copy)" leftover from earlier runs.
+    const row = this.adminSurveysPage.surveyRowExact(name).first();
     await row.getByTestId('admin-surveys-more-button').click();
     const cloneItem = this.adminSurveysPage.cloneItem();
     await cloneItem.waitFor({ state: 'visible', timeout: 5000 });
-    await cloneItem.click();
-    await this.page.waitForResponse(
-      (resp) => resp.url().includes('/surveys') && resp.status() < 300,
+    // The list GET also matches /surveys, so key on the clone POST itself.
+    const postPromise = this.page.waitForResponse(
+      resp => resp.url().includes('/surveys') && resp.request().method() === 'POST',
       { timeout: 10000 },
     );
+    await cloneItem.click();
+    const resp = await postPromise;
+    if (!resp.ok()) {
+      throw new Error(`clone survey POST failed: ${resp.status()} ${resp.url()}`);
+    }
   }
 
   // SEM@8f4bc8b208830c08587730fd41c0e3df7e687005: archive a survey via the more-menu and await API confirmation
@@ -78,11 +83,13 @@ export class SurveyAdminFlow {
     this.page.once('dialog', dialog => {
       void dialog.accept();
     });
-    await this.adminSurveysPage.moreButton(name).click();
+    const rows = this.adminSurveysPage.surveyRowExact(name);
+    const before = await rows.count();
+    await rows.first().getByTestId('admin-surveys-more-button').click();
     const deleteItem = this.adminSurveysPage.deleteItem();
     await deleteItem.waitFor({ state: 'visible', timeout: 5000 });
     await deleteItem.click();
     // Wait for the row to disappear from the list
-    await this.adminSurveysPage.surveyRow(name).first().waitFor({ state: 'hidden', timeout: 10000 });
+    await expect(rows).toHaveCount(before - 1, { timeout: 10000 });
   }
 }

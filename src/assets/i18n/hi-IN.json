@@ -487,6 +487,7 @@
       "secret": "HMAC सीक्रेट",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "निष्क्रिय",
         "pending_delete": "हटाना लंबित",
         "pending_verification": "सत्यापन लंबित"
       },

@@ -487,6 +487,7 @@
       "secret": "รหัสลับ HMAC",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "ไม่ได้ใช้งาน",
         "pending_delete": "รอการลบ",
         "pending_verification": "รอการยืนยัน"
       },

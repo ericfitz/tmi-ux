@@ -509,6 +509,7 @@
       "secret": "HMAC সিক্রেট",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "নিষ্ক্রিয়",
         "pending_delete": "মুছে ফেলা মুলতুবি",
         "pending_verification": "যাচাই মুলতুবি"
       },

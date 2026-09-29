@@ -487,6 +487,7 @@
       "secret": "Rahasia HMAC",
       "status": {
         "active": "{{common.active}}",
+        "inactive": "Tidak Aktif",
         "pending_delete": "Menunggu Penghapusan",
         "pending_verification": "Menunggu Verifikasi"
       },

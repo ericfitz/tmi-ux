@@ -231,6 +231,11 @@
       color: var(--color-on-success);
     }
 
+    &.status-inactive {
+      background-color: var(--color-warning);
+      color: var(--color-on-warning);
+    }
+
     &.status-pending_verification {
       background-color: var(--color-warning);
       color: var(--color-on-warning);

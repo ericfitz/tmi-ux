@@ -15,6 +15,13 @@ export class AdminSurveysPage {
     this.page.getByTestId('admin-surveys-row');
   readonly surveyRow = (name: string) =>
     this.surveyRows().filter({ hasText: name });
+  /** Rows whose name cell equals `name` exactly (not a substring such as "<name> (Copy)"). */
+  readonly surveyRowExact = (name: string) =>
+    this.surveyRows().filter({
+      has: this.page.locator('.template-name', {
+        hasText: new RegExp(`^\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`),
+      }),
+    });
   readonly editButton = (name: string) =>
     this.surveyRow(name).getByTestId('admin-surveys-edit-button');
   readonly toggleStatusButton = (name: string) =>

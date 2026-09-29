@@ -24,6 +24,9 @@
  * neither a browser nor the app dev server — it still works after a run has died hard,
  * or while Playwright holds port 4200.
  *
+ * Also clears responses to the seeded fixture surveys (the surveys stay) and deletes
+ * `<fixture survey> (Copy)` clones.
+ *
  * Usage:
  *   pnpm run e2e:clean
  *   pnpm run e2e:clean -- --dry-run
@@ -38,6 +41,13 @@ const DEFAULTS = {
   users: ['test-user', 'test-reviewer', 'test-admin', 'test-outsider'],
   adminUser: 'test-admin',
 };
+
+/**
+ * Seeded fixture surveys (e2e/seed/seed-spec.json). The surveys themselves are never
+ * deleted, but responses to them accumulate across runs, so those are cleared. This also
+ * removes the seeded response, which `make e2e-seed` (tmi repo) recreates.
+ */
+const FIXTURE_SURVEYS = ['Kitchen Sink Survey', 'Simple Workflow Survey'];
 
 /**
  * Entity types an E2E run can leave behind, each with the collection key its list
@@ -56,6 +66,10 @@ const ENTITIES = [
     path: 'admin/surveys',
     collection: 'surveys',
     scope: 'admin',
+    // Clones made by admin-surveys specs (`<name> (Copy)`, see `adminSurveys.cloneSuffix`)
+    // are test-created; the fixture surveys themselves are not, so only the suffixed
+    // names match beyond the E2E prefix.
+    extraPrefixes: FIXTURE_SURVEYS.map(name => `${name} (Copy)`),
     // Deleting a survey that has responses is a 409. The responses carry no name of
     // their own and belong to whoever submitted them, so they are found by survey id
     // and cleared as each user before the survey itself is deleted.
@@ -357,7 +371,7 @@ async function cleanEntity(entity, user, tokens, caches, options) {
   const token = tokens.get(user);
   const idField = entity.idField ?? 'id';
   const nameField = entity.nameField ?? 'name';
-  const prefix = entity.prefix ?? options.prefix;
+  const prefixes = [entity.prefix ?? options.prefix, ...(entity.extraPrefixes ?? [])];
   let all;
 
   try {
@@ -372,7 +386,7 @@ async function cleanEntity(entity, user, tokens, caches, options) {
   const matches = all.filter(
     item =>
       typeof item[nameField] === 'string' &&
-      item[nameField].startsWith(prefix) &&
+      prefixes.some(prefix => item[nameField].startsWith(prefix)) &&
       (entity.filter?.(item) ?? true),
   );
   const failures = [];
@@ -406,6 +420,33 @@ async function cleanEntity(entity, user, tokens, caches, options) {
   }
 
   return { skipped: null, deleted, dependents, failures, names: matches.map(m => m[nameField]) };
+}
+
+/**
+ * Deletes every user's responses to the fixture surveys, leaving the surveys in place.
+ * Survey ids are resolved by exact name and responses are matched on `survey_id`
+ * client-side (see `clearDependents`), never by a server-side filter.
+ */
+async function cleanFixtureResponses(tokens, caches, options) {
+  const survey = ENTITIES.find(e => e.path === 'admin/surveys');
+  let surveys;
+
+  try {
+    surveys = await listAll(survey, tokens.get(options.adminUser), options);
+  } catch (error) {
+    return { skipped: describe(error), cleared: 0, failures: [] };
+  }
+
+  let cleared = 0;
+  const failures = [];
+
+  for (const item of surveys.filter(s => FIXTURE_SURVEYS.includes(s.name))) {
+    const result = await clearDependents(survey.dependent, item.id, tokens, caches, options);
+    cleared += result.cleared;
+    failures.push(...result.failures);
+  }
+
+  return { skipped: null, cleared, failures };
 }
 
 async function main() {
@@ -456,6 +497,26 @@ async function main() {
         for (const name of result.names ?? []) {
           process.stdout.write(`      ${name}\n`);
         }
+      }
+    }
+  }
+
+  const fixtures = await cleanFixtureResponses(tokens, caches, options);
+  if (fixtures.skipped) {
+    process.stdout.write(`  fixture survey responses: skipped — ${fixtures.skipped}\n`);
+  } else {
+    failures.push(...fixtures.failures);
+    total += fixtures.cleared;
+    if (fixtures.cleared > 0 || fixtures.failures.length > 0) {
+      process.stdout.write(
+        `  fixture survey responses: ${verb.toLowerCase()} ${fixtures.cleared}` +
+          `${fixtures.failures.length ? `, ${fixtures.failures.length} failed` : ''}\n`,
+      );
+      if (!options.dryRun && fixtures.cleared > 0) {
+        process.stdout.write(
+          '  → this removed the seeded survey response; re-run `make e2e-seed` in the tmi repo\n' +
+            '    before the field-coverage suite.\n',
+        );
       }
     }
   }

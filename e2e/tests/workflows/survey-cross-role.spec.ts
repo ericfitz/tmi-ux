@@ -248,7 +248,9 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
       await expect(revisionRow.first()).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 30000, intervals: [2000, 5000] });
 
-    await revisionRow.first().getByTestId('my-responses-edit-button').click();
+    // The edit button renders only for drafts; needs_revision rows get the view
+    // button, which routes to the fill page.
+    await revisionRow.first().getByTestId('my-responses-view-button').click();
     await userPage.waitForURL(/\/intake\/fill\//, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');
 
