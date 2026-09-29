@@ -8,7 +8,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph, Node, Edge } from '@antv/x6';
-import { JSDOM } from 'jsdom';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { ZOrderService } from '../services/infra-z-order.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
@@ -53,27 +52,19 @@ const mockSVGElement = {
   })),
 };
 
-// Setup JSDOM environment for X6
-const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
-  pretendToBeVisual: true,
-  resources: 'usable',
-});
-
-// Mock SVG elements
-Object.defineProperty(dom.window.SVGElement.prototype, 'getCTM', {
+// Mock SVG geometry methods that jsdom does not implement (X6 needs them)
+Object.defineProperty(SVGElement.prototype, 'getCTM', {
   value: mockSVGElement.getCTM,
+  configurable: true,
 });
-Object.defineProperty(dom.window.SVGElement.prototype, 'getScreenCTM', {
+Object.defineProperty(SVGElement.prototype, 'getScreenCTM', {
   value: mockSVGElement.getScreenCTM,
+  configurable: true,
 });
-Object.defineProperty(dom.window.SVGSVGElement.prototype, 'createSVGMatrix', {
+Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: mockSVGElement.createSVGMatrix,
+  configurable: true,
 });
-
-// Set global window and document
-global.window = dom.window as any;
-global.document = dom.window.document;
-global.navigator = dom.window.navigator;
 
 describe('InfraX6ZOrderAdapter', () => {
   let adapter: InfraX6ZOrderAdapter;

@@ -78,9 +78,7 @@ export class SurveyFillFlow {
     const trigger = this.page.locator(`.sd-question[data-name="${name}"] .sd-dropdown`);
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
-    const option = this.page
-      .locator('.sv-popup__container .sv-list__item')
-      .filter({ hasText: new RegExp(`^\\s*${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`) });
+    const option = this.page.getByRole('listbox').getByRole('option', { name: value, exact: true });
     await option.first().waitFor({ state: 'visible', timeout: 5000 });
     await option.first().click({ force: true });
   }

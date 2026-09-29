@@ -203,11 +203,11 @@ export class ResponseDetailComponent implements OnInit {
     // Set the data
     this.surveyModel.data = this.response.answers;
 
-    // Set to read-only/display mode
-    this.surveyModel.mode = 'display';
+    // Read-only display
+    this.surveyModel.readOnly = true;
 
     // Show all questions at once
-    this.surveyModel.showNavigationButtons = 'none';
+    this.surveyModel.showNavigationButtons = false;
     this.surveyModel.questionsOnPageMode = 'singlePage';
 
     this.logger.debug('Survey initialized in display mode', {

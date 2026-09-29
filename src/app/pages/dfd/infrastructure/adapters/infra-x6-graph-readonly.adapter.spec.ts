@@ -9,7 +9,6 @@ import '@angular/compiler';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
-import { JSDOM } from 'jsdom';
 import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -52,27 +51,19 @@ const mockSVGElement = {
   })),
 };
 
-// Setup JSDOM environment for X6
-const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
-  pretendToBeVisual: true,
-  resources: 'usable',
-});
-
-// Mock SVG elements
-Object.defineProperty(dom.window.SVGElement.prototype, 'getCTM', {
+// Mock SVG geometry methods that jsdom does not implement (X6 needs them)
+Object.defineProperty(SVGElement.prototype, 'getCTM', {
   value: mockSVGElement.getCTM,
+  configurable: true,
 });
-Object.defineProperty(dom.window.SVGElement.prototype, 'getScreenCTM', {
+Object.defineProperty(SVGElement.prototype, 'getScreenCTM', {
   value: mockSVGElement.getScreenCTM,
+  configurable: true,
 });
-Object.defineProperty(dom.window.SVGSVGElement.prototype, 'createSVGMatrix', {
+Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: mockSVGElement.createSVGMatrix,
+  configurable: true,
 });
-
-// Set global window and document
-global.window = dom.window as any;
-global.document = dom.window.document;
-global.navigator = dom.window.navigator;
 
 describe('InfraX6GraphAdapter - Read-Only Mode', () => {
   let adapter: InfraX6GraphAdapter;
