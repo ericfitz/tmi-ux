@@ -22,7 +22,6 @@ describe('LanguageService', () => {
   // Save original window properties
   let originalLocation: Location;
   let originalNavigator: Navigator;
-  let originalLocalStorage: Storage;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,11 +29,10 @@ describe('LanguageService', () => {
     // Save originals
     originalLocation = window.location;
     originalNavigator = window.navigator;
-    originalLocalStorage = window.localStorage;
 
     // Mock localStorage
     const localStorageMock: Record<string, string> = {};
-    global.localStorage = {
+    vi.stubGlobal('localStorage', {
       getItem: vi.fn((key: string) => localStorageMock[key] || null),
       setItem: vi.fn((key: string, value: string) => {
         localStorageMock[key] = value;
@@ -47,7 +45,7 @@ describe('LanguageService', () => {
       }),
       key: vi.fn(),
       length: 0,
-    };
+    });
 
     // Mock window.location
     delete (window as { location?: Location }).location;
@@ -103,7 +101,7 @@ describe('LanguageService', () => {
       writable: true,
       configurable: true,
     });
-    global.localStorage = originalLocalStorage;
+    vi.unstubAllGlobals();
     Object.defineProperty(window, 'navigator', {
       value: originalNavigator,
       writable: true,
