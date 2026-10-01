@@ -1,11 +1,12 @@
-# tmi-ux on the local Raspberry Pi k3s cluster (kube context `k3s-rp`).
+# tmi-ux on the local k3s dev cluster.
 #
 # Companion to the server's k3s dev overlay in the tmi repo
-# (deployments/k8s/dev/k3s/): same namespace, same in-cluster registry
-# (rp2:30500), served on NodePort 30081 next to the server's 30080.
+# (deployments/k8s/dev/k3s/): same namespace, same in-cluster registry,
+# served on NodePort 30081 next to the server's 30080.
 # Deploy with `pnpm run deploy:k3s` (scripts/deploy-k3s.sh), which builds
-# Dockerfile.chainguard for the host arch (Apple Silicon == Pi arm64), pushes
-# to rp2:30500, applies this file, and waits for the rollout.
+# Dockerfile.chainguard for the host arch, pushes to the cluster registry,
+# renders the __PLACEHOLDERS__ below from .local/k3s.json (see
+# deployments/k8s/dev/k3s/k3s.json.example), applies, and waits for the rollout.
 #
 # The app serves the API same-origin under /api (TMI_ENABLE_API_PROXY in
 # server.js proxies to the in-cluster tmi-server service, WebSockets included).
@@ -13,13 +14,11 @@
 # local-network-access blocking of cross-host fetches from insecure origins.
 #
 # Two entry points:
-#   - https://tmi.efitz.net — Traefik Ingress (MetalLB VIP 192.168.1.6) with a
-#     Let's Encrypt cert from the letsencrypt-route53 ClusterIssuer (DNS-01).
-#     Pi-hole resolves tmi.efitz.net via CNAME -> traefik.local (192.168.1.6).
-#   - http://rp2:30081 — NodePort, kept for direct access.
-# The server's OAuth client_callback_allowlist must admit
-# https://tmi.efitz.net/* and http://rp2:30081/* — see deploy-k3s.sh's
-# post-deploy note.
+#   - https://__UI_HOST__ — Traefik Ingress with a Let's Encrypt cert from the
+#     letsencrypt-route53 ClusterIssuer (DNS-01).
+#   - http://__NODE_HOST__:30081 — NodePort, kept for direct access.
+# The server's OAuth client_callback_allowlist must admit both origins — see
+# deploy-k3s.sh's post-deploy note.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,7 +38,7 @@ spec:
     spec:
       containers:
         - name: tmi-ux
-          image: rp2:30500/tmi-ux:dev
+          image: __K3S_REGISTRY__/tmi-ux:__IMAGE_TAG__
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -50,7 +49,7 @@ spec:
             - name: TMI_PROXY_TARGET
               value: http://tmi-server:8080
             - name: TMI_OPERATOR_NAME
-              value: TMI dev (k3s-rp)
+              value: TMI dev (k3s)
             - name: TMI_LOG_LEVEL
               value: debug
           readinessProbe:
@@ -95,9 +94,9 @@ metadata:
   name: tmi-ux-tls
   namespace: tmi-platform
 spec:
-  commonName: tmi.efitz.net
+  commonName: __UI_HOST__
   dnsNames:
-    - tmi.efitz.net
+    - __UI_HOST__
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-route53
@@ -113,7 +112,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: tmi.efitz.net
+    - host: __UI_HOST__
       http:
         paths:
           - backend:
@@ -125,5 +124,5 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - tmi.efitz.net
+        - __UI_HOST__
       secretName: tmi-ux-tls

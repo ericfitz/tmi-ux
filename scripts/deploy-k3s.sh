@@ -1,21 +1,26 @@
 #!/bin/bash
-# Deploy tmi-ux to the local Raspberry Pi k3s cluster (kube context k3s-rp).
+# Deploy tmi-ux to the local k3s dev cluster.
 #
-# Builds Dockerfile.chainguard for the host architecture (Apple Silicon and the
-# Pi 5 nodes are both arm64, so no buildx/--platform is needed), pushes the image
-# to the in-cluster registry at rp2:30500, applies deployments/k8s/dev/k3s/tmi-ux.yml
-# and waits for the rollout. Mirrors the server repo's `make dev-up CLUSTER=k3s`
-# image path (see tmi/deployments/k8s/dev/k3s/README-node-setup.md for the
-# one-time host/node setup: rp2 in /etc/hosts, rp2:30500 as an insecure registry
-# in Docker Desktop, and the containerd mirror on each node).
+# Builds Dockerfile.chainguard for the host architecture (no buildx/--platform:
+# the host and the cluster nodes must share an architecture), pushes the image
+# to the in-cluster registry, renders deployments/k8s/dev/k3s/tmi-ux.yml from
+# .local/k3s.json, applies it and waits for the rollout. Mirrors the server
+# repo's `make dev-up CLUSTER=k3s` image path (see the tmi repo's k3s node setup
+# notes for the one-time host/node setup: the node host in /etc/hosts, the
+# registry as an insecure registry in Docker Desktop, and the containerd mirror
+# on each node).
 #
 # Usage:
 #   pnpm run deploy:k3s            # build, push, apply, rollout
 #   pnpm run deploy:k3s -- --skip-build   # re-apply/restart with the existing image
 #
-# Environment:
-#   K3S_CONTEXT   kube context (default: k3s-rp)
-#   K3S_REGISTRY  registry host:port (default: rp2:30500)
+# Cluster details are machine-local and never tracked: copy
+# deployments/k8s/dev/k3s/k3s.json.example to .local/k3s.json and fill it in
+# (context, registry, node_host, ui_host). Environment overrides:
+#   K3S_CONTEXT   kube context
+#   K3S_REGISTRY  registry host:port
+#   K3S_NODE_HOST node hostname for the NodePort URL
+#   K3S_UI_HOST   public hostname for the Traefik ingress
 #   IMAGE_TAG     image tag (default: dev)
 
 set -euo pipefail
@@ -23,8 +28,21 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-K3S_CONTEXT="${K3S_CONTEXT:-k3s-rp}"
-K3S_REGISTRY="${K3S_REGISTRY:-rp2:30500}"
+LOCAL_CONFIG="$PROJECT_ROOT/.local/k3s.json"
+local_setting() {
+  [ -f "$LOCAL_CONFIG" ] && jq -r --arg k "$1" '.[$k] // empty' "$LOCAL_CONFIG" || true
+}
+K3S_CONTEXT="${K3S_CONTEXT:-$(local_setting context)}"
+K3S_REGISTRY="${K3S_REGISTRY:-$(local_setting registry)}"
+K3S_NODE_HOST="${K3S_NODE_HOST:-$(local_setting node_host)}"
+K3S_UI_HOST="${K3S_UI_HOST:-$(local_setting ui_host)}"
+for var in K3S_CONTEXT K3S_REGISTRY K3S_NODE_HOST K3S_UI_HOST; do
+  if [ -z "${!var}" ]; then
+    echo "$var is not set. Copy deployments/k8s/dev/k3s/k3s.json.example to" >&2
+    echo ".local/k3s.json and fill it in, or export $var." >&2
+    exit 1
+  fi
+done
 IMAGE_TAG="${IMAGE_TAG:-dev}"
 NAMESPACE="tmi-platform"
 MANIFEST="$PROJECT_ROOT/deployments/k8s/dev/k3s/tmi-ux.yml"
@@ -48,7 +66,7 @@ echo ""
 kubectl --context "$K3S_CONTEXT" get svc registry -n "$NAMESPACE" >/dev/null
 if ! docker info 2>/dev/null | grep -A5 "Insecure Registries" | grep -q "$K3S_REGISTRY"; then
   echo "Docker daemon does not list ${K3S_REGISTRY} as an insecure registry; push will fail." >&2
-  echo "See tmi/deployments/k8s/dev/k3s/README-node-setup.md." >&2
+  echo "See the tmi repo's k3s node setup notes." >&2
   exit 1
 fi
 
@@ -67,7 +85,11 @@ if [ "$SKIP_BUILD" = false ]; then
 fi
 
 echo "Applying manifest..."
-kubectl --context "$K3S_CONTEXT" apply -f "$MANIFEST"
+sed -e "s|__K3S_REGISTRY__|${K3S_REGISTRY}|g" \
+  -e "s|__IMAGE_TAG__|${IMAGE_TAG}|g" \
+  -e "s|__UI_HOST__|${K3S_UI_HOST}|g" \
+  -e "s|__NODE_HOST__|${K3S_NODE_HOST}|g" \
+  "$MANIFEST" | kubectl --context "$K3S_CONTEXT" apply -f -
 # imagePullPolicy: Always + a fixed tag means a re-push needs a restart to pick
 # up the new digest.
 kubectl --context "$K3S_CONTEXT" -n "$NAMESPACE" rollout restart deployment/tmi-ux
@@ -82,7 +104,7 @@ echo "=== Deployed ==="
 if [ -n "$INGRESS_HOST" ]; then
   echo "UI:      https://${INGRESS_HOST}/  (Traefik ingress)"
 fi
-echo "UI:      http://rp2:${NODE_PORT}/  (also http://${NODE_IP}:${NODE_PORT}/)"
+echo "UI:      http://${K3S_NODE_HOST}:${NODE_PORT}/  (also http://${NODE_IP}:${NODE_PORT}/)"
 echo "API:     same-origin /api -> ${PROXY_TARGET}"
 echo ""
 echo "Note: OAuth login requires the browser origins in the server's"
@@ -90,4 +112,4 @@ echo "auth.oauth.client_callback_allowlist (live tmi-server-config ConfigMap):"
 if [ -n "$INGRESS_HOST" ]; then
   echo "  https://${INGRESS_HOST}/*"
 fi
-echo "  http://rp2:${NODE_PORT}/*"
+echo "  http://${K3S_NODE_HOST}:${NODE_PORT}/*"
