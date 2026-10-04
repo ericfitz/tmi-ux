@@ -73,7 +73,7 @@ When visual regression E2E tests fail (screenshot mismatch in `pnpm test:e2e`), 
 
 Version bumps happen **on the pull request** (the `main` ruleset requires a PR plus the CodeQL check, no bypass), via `.github/workflows/version-bump.yml`:
 
-- **bump** (on the PR): derives the bump from the PR's Conventional Commits and commits it to the PR head branch. `feat:`/`refactor:` → minor; `fix:`/`docs:`/`perf:`/`test:`/`build:`/`ci:`/`chore:`/`deps:`/`ops:` → patch. Changes touching only tests, `src/testing/`, `src/environments/`, or non-`src` files don't bump. Major bumps are manual and preserved.
+- **bump** (on the PR): derives the bump from the PR's Conventional Commits and commits it to the PR head branch. `feat:`/`refactor:` → minor; `fix:`/`docs:`/`perf:`/`test:`/`build:`/`ci:`/`chore:`/`deps:`/`ops:` → patch; other types don't bump. Only changes to `package.json` or `src/` count, excluding `*.spec.ts`, `src/testing/`, and `src/environments/`. Major bumps are manual and preserved.
 - **tag** (on push to `main`): creates the `vX.Y.Z` tag.
 
 Version math: `scripts/compute-next-version.mjs` (self-test: `node scripts/compute-next-version.mjs --test`) and `scripts/pr-version-target.sh`.
