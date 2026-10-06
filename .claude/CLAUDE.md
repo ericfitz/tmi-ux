@@ -15,11 +15,12 @@ You are a senior engineer collaborating with a peer: a highly experienced securi
 **Any file change:**
 
 1. Run `pnpm run lint:all` and fix issues (formatting is handled by a PostToolUse hook)
-2. Commit with a conventional message (`feat:`, `fix:`, `chore:`, `refactor:`, ...). Do not run `git diff` or `git log` first; commit directly based on the work done.
+2. Done gate: `pnpm run verify` (build, both tsc projects, prettier, eslint/stylelint/i18n checks, JSON validators, Vitest; mirrors `.github/workflows/quality.yml`). Show its last lines before claiming done. Playwright (`pnpm test:e2e*`) and `build:aws` are separate; the build step inlines Google Fonts and needs network.
+3. Commit with a conventional message (`feat:`, `fix:`, `chore:`, `refactor:`, ...). Do not run `git diff` or `git log` first; commit directly based on the work done.
 
 **Code changes, additionally:**
 
-1. `pnpm run build` — fix all build errors, pre-existing or not; tests aren't meaningful against a failing build
+1. `pnpm run verify` — fix all build errors, pre-existing or not; Vitest does not type-check, so `pnpm run test` alone is never the gate
 2. Run related tests and fix failures. Never skip tests: troubleshoot to root cause, or ask.
 3. Run `superpowers:requesting-code-review` before committing
 
