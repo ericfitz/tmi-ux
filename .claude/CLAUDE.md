@@ -90,3 +90,7 @@ Button variants, color rules, and dialog action ordering live in `.claude/rules/
 - Error handling: `catchError` with `LoggerService`, never `console.log`
 - Explicit return types, JSDoc comments
 - Import order: Angular core → Angular modules → third-party → project
+
+## Learned Preferences
+
+- `pnpm run check-i18n` is not read-only (it passes -y and rewrites/sorts every locale file): gate i18n with `pnpm run lint:all:check` instead, regenerate `en-US.usage.json` first with `uv run scripts/build-i18n-usage-map.py` (never concurrently with `graphify update`), and if you did run check-i18n, `git checkout` the locale files and reapply only your intended keys.
