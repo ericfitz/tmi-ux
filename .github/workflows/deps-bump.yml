@@ -2,7 +2,7 @@ name: Dependency Bump (Claude)
 
 on:
   schedule:
-    - cron: '0 13 * * *'   # daily Dependabot-alert check (bumps only when open alerts exist)
+    - cron: '0 13 * * *' # daily Dependabot-alert check (bumps only when open alerts exist)
   workflow_dispatch:
     inputs:
       branch:
@@ -90,7 +90,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
         with:
-          run_install: false   # version is read from package.json "packageManager"
+          run_install: false # version is read from package.json "packageManager"
 
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -100,20 +100,47 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Vendor the bump skill into the runner
+      - name: Vendor the deps plugin into the runner
+        id: plugin
         env:
-          # Pin ericfitz/skills to a reviewed commit so the high-privilege agent
-          # run below cannot execute an unreviewed change to the skill. Bump this
-          # SHA deliberately when adopting skill updates.
-          SKILL_SHA: "804ee39f7d594e896f6dab8501b59cb92556b8df"
+          # Pin ericfitz/skills to a reviewed deps release so the high-privilege
+          # agent run below cannot execute an unreviewed change to the skill
+          # (ADR 0004). A release is the commit that set the version in
+          # deps/.claude-plugin/plugin.json. Move this SHA deliberately when
+          # adopting a newer release; the check below warns when it falls behind.
+          SKILL_SHA: '4cd8a52ab54091f7167a1ad247784336ebe5c319' # deps v2.0.6
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
           git clone --filter=blob:none https://github.com/ericfitz/skills "$tmp/skills"
+          manifest=deps/.claude-plugin/plugin.json
+          # Versions come from the repo the pin distrusts: accept only plain
+          # version strings, and never let the warn-only check fail the job.
+          version_of() {
+            local v
+            v="$(jq -r 'if (.version | type) == "string" and (.version | test("\\A[0-9A-Za-z.+-]{1,40}\\z")) then .version else "unknown" end' 2>/dev/null || true)"
+            echo "${v:-unknown}"
+          }
+          latest="$({ git -C "$tmp/skills" show "origin/HEAD:$manifest" 2>/dev/null || true; } | version_of)"
           git -C "$tmp/skills" checkout -q "$SKILL_SHA"
-          mkdir -p .claude/skills/bump
-          cp -R "$tmp/skills/deps/skills/bump/." .claude/skills/bump/
-          test -f .claude/skills/bump/SKILL.md && echo "skill vendored @ $SKILL_SHA"
+          pinned="$(version_of < "$tmp/skills/$manifest")"
+          for f in skills/bump/SKILL.md scripts/bump.py; do
+            if [ ! -f "$tmp/skills/deps/$f" ]; then
+              echo "::error::SKILL_SHA $SKILL_SHA has no deps/$f; pin a deps release that has it."
+              exit 1
+            fi
+          done
+          echo "deps plugin vendored @ $SKILL_SHA (v$pinned)"
+          note=""
+          if [ "$pinned" != "$latest" ]; then
+            note="Skill pin differs from the latest release: SKILL_SHA is deps v$pinned, ericfitz/skills main has v$latest. Review and move SKILL_SHA in .github/workflows/deps-bump.yml."
+            echo "::warning::$note"
+            echo "$note" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo "dir=$tmp/skills/deps"
+            echo "pin_note=$note"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create working branch
         id: wb
@@ -133,6 +160,7 @@ jobs:
       - name: Run headless bump (commit only — no push, no PR, no session-completion)
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PLUGIN_DIR: ${{ steps.plugin.outputs.dir }}
           # Intentionally NO GH_TOKEN: the agent must not perform GitHub writes.
         run: |
           set -euo pipefail
@@ -140,9 +168,34 @@ jobs:
             echo "::error::CLAUDE_CODE_OAUTH_TOKEN is empty (secret missing on this ref)."
             exit 1
           fi
-          claude -p "Run the dependency bump skill (/bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
+          claude -p "Run the dependency bump skill (deps:bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
+            --plugin-dir "$PLUGIN_DIR" \
             --dangerously-skip-permissions \
             --allowedTools "Bash,Read,Write,Edit,Glob,Grep" | tee /tmp/bump-plan.txt
+
+      # pnpm's frozen-lockfile check is what CI's install runs; a lockfile that
+      # disagrees with package.json or its overrides (#984) fails here instead
+      # of opening a PR whose every check fails.
+      - name: Verify the lockfile matches package.json
+        env:
+          BASE: ${{ steps.wb.outputs.base }}
+        run: |
+          set -euo pipefail
+          if [ "$(git rev-list --count "origin/${BASE}..HEAD")" -eq 0 ]; then
+            echo "No commits relative to ${BASE}; nothing to verify."
+            exit 0
+          fi
+          # The push sends HEAD, so the check must see exactly what was committed.
+          if ! git diff --quiet HEAD -- package.json pnpm-lock.yaml; then
+            git status --porcelain
+            echo "::error::package.json or pnpm-lock.yaml differs from the bump commit; not opening a PR."
+            exit 1
+          fi
+          if ! pnpm install --frozen-lockfile --lockfile-only --ignore-scripts; then
+            git --no-pager show --stat HEAD
+            echo "::error::pnpm-lock.yaml does not match package.json after the bump; not opening a PR."
+            exit 1
+          fi
 
       # Minted AFTER the agent step so the write-capable token never exists while
       # the --dangerously-skip-permissions agent is running. Ephemeral (~1h),
@@ -160,6 +213,7 @@ jobs:
           BASE: ${{ steps.wb.outputs.base }}
           WB: ${{ steps.wb.outputs.wb }}
           REPO: ${{ github.repository }}
+          PIN_NOTE: ${{ steps.plugin.outputs.pin_note }}
         run: |
           set -euo pipefail
           if [ "$(git rev-list --count "origin/${BASE}..HEAD")" -eq 0 ]; then
@@ -173,6 +227,11 @@ jobs:
             echo
             echo "Generated by the \`deps:bump\` skill running headless in CI. Review before merging."
             echo
+            if [ -n "$PIN_NOTE" ]; then
+              echo "> [!WARNING]"
+              echo "> $PIN_NOTE"
+              echo
+            fi
             echo '<details><summary>Skill output / manual-review plan</summary>'
             echo
             echo '```'
