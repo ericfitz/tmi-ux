@@ -8,9 +8,10 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { reviewerGuard } from './reviewer.guard';
 import { AuthService } from '../services/auth.service';
@@ -32,6 +33,9 @@ describe('reviewerGuard', () => {
     debugComponent: ReturnType<typeof vi.fn>;
   };
   let envInjector: EnvironmentInjector;
+
+  const mockRoute = partialMock<ActivatedRouteSnapshot>({});
+  const mockState = partialMock<RouterStateSnapshot>({});
 
   beforeEach(() => {
     mockAuthService = {
@@ -57,9 +61,9 @@ describe('reviewerGuard', () => {
         { provide: LoggerService, useValue: mockLogger },
       ],
       // Use a minimal parent injector
-      {
+      partialMock<EnvironmentInjector>({
         get: () => null,
-      } as unknown as EnvironmentInjector,
+      }),
     );
   });
 
@@ -80,7 +84,7 @@ describe('reviewerGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(reviewerProfile));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = reviewerGuard({} as any, {} as any);
+      const result$ = reviewerGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -105,7 +109,7 @@ describe('reviewerGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(regularProfile));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = reviewerGuard({} as any, {} as any);
+      const result$ = reviewerGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -123,7 +127,7 @@ describe('reviewerGuard', () => {
     );
 
     runInInjectionContext(envInjector, () => {
-      const result$ = reviewerGuard({} as any, {} as any);
+      const result$ = reviewerGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -146,7 +150,7 @@ describe('reviewerGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(profileWithoutReviewer));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = reviewerGuard({} as any, {} as any);
+      const result$ = reviewerGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {

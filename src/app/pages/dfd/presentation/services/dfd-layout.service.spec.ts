@@ -1,8 +1,10 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DfdLayoutService } from './dfd-layout.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { LayoutCell, LayoutGraph } from '../../types/layout-cell.types';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { partialMock } from '@testing/partial-mock';
 
 /**
  * Mutable in-memory fake satisfying the `LayoutCell` structural surface.
@@ -179,7 +181,8 @@ describe('DfdLayoutService', () => {
   beforeEach(() => {
     userPrefs = { getPreferences: vi.fn() };
     setPrefs();
-    service = new DfdLayoutService(userPrefs as any);
+    // Partial UserPreferencesService: only getPreferences is stubbed
+    service = new DfdLayoutService(partialMock<UserPreferencesService>(userPrefs));
   });
 
   describe('applyIconOnlyFit', () => {
@@ -332,7 +335,7 @@ describe('DfdLayoutService', () => {
         parent: null,
       });
       // Re-point the start cell at the parent now that parent exists.
-      (start as any).getParent = (): LayoutCell => parent;
+      start.getParent = (): LayoutCell => parent;
       const graph = fakeGraph([parent, start]);
       service.cascadeContainerLayout(start, graph);
       const autoFit = parent.getData()['_archAutoFit'] as { kind: string };

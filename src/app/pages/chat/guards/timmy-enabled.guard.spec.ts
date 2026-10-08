@@ -8,12 +8,13 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { timmyEnabledGuard } from './timmy-enabled.guard';
 import { BrandingConfigService } from '@app/core/services/branding-config.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { partialMock } from '@testing/partial-mock';
 
 describe('timmyEnabledGuard', () => {
   let mockBrandingConfig: {
@@ -31,14 +32,15 @@ describe('timmyEnabledGuard', () => {
   let envInjector: EnvironmentInjector;
 
   const fakeUrlTree = {} as UrlTree;
-  const mockState = { url: '/tm/tm-123/chat' } as any;
+  // Only the members the guard reads are provided.
+  const mockState = { url: '/tm/tm-123/chat' } as RouterStateSnapshot;
 
   const routeWithId = {
     paramMap: { get: (key: string) => (key === 'id' ? 'tm-123' : null) },
-  } as any;
+  } as unknown as ActivatedRouteSnapshot;
   const routeWithoutId = {
     paramMap: { get: () => null },
-  } as any;
+  } as unknown as ActivatedRouteSnapshot;
 
   beforeEach(() => {
     mockBrandingConfig = {
@@ -62,9 +64,9 @@ describe('timmyEnabledGuard', () => {
         { provide: Router, useValue: mockRouter },
         { provide: LoggerService, useValue: mockLogger },
       ],
-      {
+      partialMock<EnvironmentInjector>({
         get: () => null,
-      } as unknown as EnvironmentInjector,
+      }),
     );
   });
 

@@ -14,6 +14,7 @@ import { EdgeAttrs } from './edge-attrs';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { EdgeLabel } from './edge-label';
 import { Point } from './point';
+import type { EdgeConnector, EdgeRouter } from './x6-types';
 
 describe('EdgeInfo', () => {
   describe('Construction', () => {
@@ -121,7 +122,8 @@ describe('EdgeInfo', () => {
       // Act & Assert
       const source: EdgeTerminal = { cell: 'source' };
       const target: EdgeTerminal = { cell: 'target' };
-      const invalidVertex = { x: 'invalid', y: 200 } as any;
+      // Deliberately malformed vertex
+      const invalidVertex = { x: 'invalid', y: 200 } as unknown as Point;
       expect(
         () => new EdgeInfo('edge-1', 'edge', source, target, 1, true, {}, [], [invalidVertex]),
       ).toThrow('Vertex at index 0 must be a Point object');
@@ -791,7 +793,7 @@ describe('EdgeInfo', () => {
           id: 'test-edge',
           source: { cell: 'source-node' },
           target: { cell: 'target-node' },
-          router: 'invalid-router' as any, // Invalid router type
+          router: 'invalid-router' as unknown as EdgeRouter, // Deliberately invalid router type
         });
       }).toThrow('Invalid router type: invalid-router');
     });
@@ -803,7 +805,7 @@ describe('EdgeInfo', () => {
           id: 'test-edge',
           source: { cell: 'source-node' },
           target: { cell: 'target-node' },
-          connector: 'invalid-connector' as any, // Invalid connector type
+          connector: 'invalid-connector' as unknown as EdgeConnector, // Deliberately invalid connector type
         });
       }).toThrow('Invalid connector type: invalid-connector');
     });

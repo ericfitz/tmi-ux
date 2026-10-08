@@ -7,6 +7,8 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { HttpClient } from '@angular/common/http';
+import { partialMock } from '@testing/partial-mock';
 import { of, throwError, lastValueFrom } from 'rxjs';
 import { FrameworkService } from './framework.service';
 import { Framework } from '../models/framework.model';
@@ -45,7 +47,7 @@ describe('FrameworkService', () => {
 
     mockLogger = createTypedMockLoggerService();
 
-    service = new FrameworkService(mockHttp as any, mockLogger);
+    service = new FrameworkService(partialMock<HttpClient>(mockHttp), mockLogger);
   });
 
   describe('Service Initialization', () => {

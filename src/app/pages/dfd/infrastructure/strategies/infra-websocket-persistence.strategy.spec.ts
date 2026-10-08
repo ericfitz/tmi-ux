@@ -22,6 +22,7 @@ import {
 } from '../../application/services/app-persistence-coordinator.service';
 import { WebSocketPersistenceStrategy } from './infra-websocket-persistence.strategy';
 import { createMockLoggerService } from '@testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock normalizeCells to pass through unchanged (isolates strategy logic from normalization)
 vi.mock('../../utils/cell-normalization.util', () => ({
@@ -54,9 +55,9 @@ describe('WebSocketPersistenceStrategy', () => {
 
     strategy = new WebSocketPersistenceStrategy(
       loggerService,
-      mockWebSocketAdapter as unknown as WebSocketAdapter,
-      mockCollaborationAdapter as unknown as InfraWebsocketCollaborationAdapter,
-      mockHistoryService as unknown as AppHistoryService,
+      partialMock<WebSocketAdapter>(mockWebSocketAdapter),
+      partialMock<InfraWebsocketCollaborationAdapter>(mockCollaborationAdapter),
+      partialMock<AppHistoryService>(mockHistoryService),
     );
   });
 
@@ -405,14 +406,14 @@ describe('WebSocketPersistenceStrategy', () => {
       const cellB = makeCell('cell-1', { attrs: { text: { text: 'B' } } });
 
       // Access private method
-      const result = (strategy as any)._cellsAreDifferent(cellA, cellB);
+      const result = strategy['_cellsAreDifferent'](cellA, cellB);
       expect(result).toBe(true);
     });
 
     it('should return false for identical cells', () => {
       const cell = makeCell('cell-1', { attrs: { text: { text: 'Same' } } });
 
-      const result = (strategy as any)._cellsAreDifferent(cell, cell);
+      const result = strategy['_cellsAreDifferent'](cell, cell);
       expect(result).toBe(false);
     });
 
@@ -421,7 +422,7 @@ describe('WebSocketPersistenceStrategy', () => {
       const cellA: Cell = { id: 'cell-1', shape: 'rect', attrs: {} };
       const cellB: Cell = { shape: 'rect', id: 'cell-1', attrs: {} };
 
-      const result = (strategy as any)._cellsAreDifferent(cellA, cellB);
+      const result = strategy['_cellsAreDifferent'](cellA, cellB);
       // JSON.stringify preserves property order, so different order = "different"
       // This is a known limitation — documenting behavior rather than asserting correctness
       // If properties are inserted in different order, this WILL report a false positive
@@ -439,32 +440,32 @@ describe('WebSocketPersistenceStrategy', () => {
         edges: [{ id: 'e1', source: 'n1', target: 'n2' }],
       };
 
-      const ops: CellOperation[] = (strategy as any)._convertDiagramDataToCellOperations(data);
+      const ops: CellOperation[] = strategy['_convertDiagramDataToCellOperations'](data);
       expect(ops).toHaveLength(3);
       expect(ops.every((op: CellOperation) => op.operation === 'update')).toBe(true);
       expect(ops.map((op: CellOperation) => op.id)).toEqual(['n1', 'n2', 'e1']);
     });
 
     it('should return empty array for null data', () => {
-      const ops: CellOperation[] = (strategy as any)._convertDiagramDataToCellOperations(null);
+      const ops: CellOperation[] = strategy['_convertDiagramDataToCellOperations'](null);
       expect(ops).toEqual([]);
     });
 
     it('should return empty array for undefined data', () => {
-      const ops: CellOperation[] = (strategy as any)._convertDiagramDataToCellOperations(undefined);
+      const ops: CellOperation[] = strategy['_convertDiagramDataToCellOperations'](undefined);
       expect(ops).toEqual([]);
     });
 
     it('should handle data with only nodes', () => {
       const data = { nodes: [{ id: 'n1' }] };
-      const ops: CellOperation[] = (strategy as any)._convertDiagramDataToCellOperations(data);
+      const ops: CellOperation[] = strategy['_convertDiagramDataToCellOperations'](data);
       expect(ops).toHaveLength(1);
       expect(ops[0].id).toBe('n1');
     });
 
     it('should handle data with only edges', () => {
       const data = { edges: [{ id: 'e1' }] };
-      const ops: CellOperation[] = (strategy as any)._convertDiagramDataToCellOperations(data);
+      const ops: CellOperation[] = strategy['_convertDiagramDataToCellOperations'](data);
       expect(ops).toHaveLength(1);
       expect(ops[0].id).toBe('e1');
     });

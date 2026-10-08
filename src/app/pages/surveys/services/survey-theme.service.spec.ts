@@ -8,10 +8,11 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject } from 'rxjs';
 import { ITheme } from 'survey-core';
 import { SurveyThemeService } from './survey-theme.service';
-import { ThemeConfig } from '@app/core/services/theme.service';
+import { ThemeConfig, ThemeService } from '@app/core/services/theme.service';
 
 describe('SurveyThemeService', () => {
   let service: SurveyThemeService;
@@ -37,7 +38,7 @@ describe('SurveyThemeService', () => {
       }),
     };
 
-    service = new SurveyThemeService(mockThemeService as any);
+    service = new SurveyThemeService(partialMock<ThemeService>(mockThemeService));
   });
 
   describe('getTheme', () => {

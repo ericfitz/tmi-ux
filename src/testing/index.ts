@@ -16,4 +16,5 @@ export * from './matchers/graph-matchers';
 
 // Test utilities
 export * from './async-utils';
+export * from './partial-mock';
 export * from './component-test-harness';

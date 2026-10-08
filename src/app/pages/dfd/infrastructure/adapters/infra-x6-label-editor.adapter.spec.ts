@@ -180,7 +180,7 @@ describe('X6LabelEditorAdapter', () => {
         if (tagName === 'input') {
           const inputElement = element as HTMLInputElement;
           inputElement.focus = focusSpy;
-          (inputElement as any).select = selectSpy;
+          inputElement.select = selectSpy;
         }
         return element;
       });
@@ -738,8 +738,10 @@ describe('X6LabelEditorAdapter', () => {
       });
 
       // Mock canEditLabel to return false
-      const originalCanEditLabel = (adapter as any).canEditLabel;
-      (adapter as any).canEditLabel = vi.fn().mockReturnValue(false);
+      // canEditLabel is private and has no public seam, so stub it through a narrow accessor
+      const privateAdapter = adapter as unknown as { canEditLabel: (cell: unknown) => boolean };
+      const originalCanEditLabel = privateAdapter.canEditLabel;
+      privateAdapter.canEditLabel = vi.fn().mockReturnValue(false);
 
       graph.trigger('cell:dblclick', { cell: node });
 
@@ -750,7 +752,7 @@ describe('X6LabelEditorAdapter', () => {
       });
 
       // Restore original method
-      (adapter as any).canEditLabel = originalCanEditLabel;
+      privateAdapter.canEditLabel = originalCanEditLabel;
     });
   });
 });

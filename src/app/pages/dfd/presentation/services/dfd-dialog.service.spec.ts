@@ -1,5 +1,6 @@
 import '@angular/compiler';
 import { describe, it, expect, vi } from 'vitest';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
 import { DfdDialogService } from './dfd-dialog.service';
@@ -12,6 +13,7 @@ import { MetadataDialogComponent } from '../../../tm/components/metadata-dialog/
 import { ThreatEditorDialogComponent } from '../../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import { ThreatsDialogComponent } from '../../../tm/components/threats-dialog/threats-dialog.component';
 import { ConfirmActionDialogComponent } from '../../../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
+import { partialMock } from '@testing/partial-mock';
 
 describe('DfdDialogService', () => {
   // SEM@7f466de323f861b38be13a53d4c3f3bcd8ee0346: build a DfdDialogService with a mocked MatDialog for unit tests (pure)
@@ -20,7 +22,8 @@ describe('DfdDialogService', () => {
     matDialog: { open: ReturnType<typeof vi.fn> };
   } {
     const matDialog = { open: vi.fn() };
-    const service = new DfdDialogService(matDialog as any);
+    // Partial MatDialog: the service only calls open()
+    const service = new DfdDialogService(partialMock<MatDialog>(matDialog));
     return { service, matDialog };
   }
 
@@ -56,7 +59,9 @@ describe('DfdDialogService', () => {
     it('opens HistoryDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { historyState: {}, historyService: {} } as any;
+      const data = { historyState: {}, historyService: {} } as unknown as Parameters<
+        DfdDialogService['openHistory']
+      >[0]; // opaque payload, only forwarded
 
       service.openHistory(data);
 
@@ -72,7 +77,7 @@ describe('DfdDialogService', () => {
     it('opens GraphDataDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { graph: {} } as any;
+      const data = { graph: {} } as unknown as Parameters<DfdDialogService['openGraphData']>[0]; // opaque payload, only forwarded
 
       service.openGraphData(data);
 
@@ -100,7 +105,7 @@ describe('DfdDialogService', () => {
     it('opens ClipboardDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { graph: {} } as any;
+      const data = { graph: {} } as unknown as Parameters<DfdDialogService['openClipboard']>[0]; // opaque payload, only forwarded
 
       service.openClipboard(data);
 
@@ -116,7 +121,7 @@ describe('DfdDialogService', () => {
     it('opens CellPropertiesDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { cell: {} } as any;
+      const data = { cell: {} } as unknown as Parameters<DfdDialogService['openCellProperties']>[0]; // opaque payload, only forwarded
 
       service.openCellProperties(data);
 
@@ -132,7 +137,9 @@ describe('DfdDialogService', () => {
     it('opens MetadataDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { threatModelId: 'tm-1', cellId: 'c-1', metadata: [] } as any;
+      const data = { threatModelId: 'tm-1', cellId: 'c-1', metadata: [] } as unknown as Parameters<
+        DfdDialogService['openMetadata']
+      >[0]; // opaque payload, only forwarded
 
       service.openMetadata(data);
 
@@ -148,7 +155,9 @@ describe('DfdDialogService', () => {
     it('opens ThreatEditorDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { threatModelId: 'tm-1', mode: 'create' } as any;
+      const data = { threatModelId: 'tm-1', mode: 'create' } as unknown as Parameters<
+        DfdDialogService['openThreatEditor']
+      >[0]; // opaque payload, only forwarded
 
       service.openThreatEditor(data);
 
@@ -167,7 +176,9 @@ describe('DfdDialogService', () => {
     it('opens ThreatsDialogComponent with the supplied data', () => {
       const { service, matDialog } = setup();
       matDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
-      const data = { threats: [], isReadOnly: false, objectType: 'node' } as any;
+      const data = { threats: [], isReadOnly: false, objectType: 'node' } as unknown as Parameters<
+        DfdDialogService['openThreats']
+      >[0]; // opaque payload, only forwarded
 
       service.openThreats(data);
 

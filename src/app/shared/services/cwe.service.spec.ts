@@ -3,6 +3,9 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { LoggerService } from '@app/core/services/logger.service';
+import { HttpClient } from '@angular/common/http';
+import { partialMock } from '@testing/partial-mock';
 import { of, firstValueFrom } from 'rxjs';
 
 import { CweService } from './cwe.service';
@@ -62,7 +65,10 @@ describe('CweService', () => {
       info: vi.fn(),
       debug: vi.fn(),
     };
-    service = new CweService(httpClient as any, loggerService as any);
+    service = new CweService(
+      partialMock<HttpClient>(httpClient),
+      partialMock<LoggerService>(loggerService),
+    );
   });
 
   describe('loadWeaknesses', () => {

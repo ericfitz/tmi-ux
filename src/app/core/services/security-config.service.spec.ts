@@ -1,9 +1,11 @@
 import '@angular/compiler';
 
 import { expect, describe, it, beforeEach, vi } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { SecurityConfigService, SecurityHeaders } from './security-config.service';
 import { LoggerService } from './logger.service';
+import { createMockLoggerService } from '@testing/mocks';
 
 const envMock: Record<string, unknown> = {
   production: false,
@@ -24,6 +26,7 @@ describe('SecurityConfigService', () => {
   let service: SecurityConfigService;
   let loggerSpy: LoggerService;
   let documentMock: Document;
+  let mockMeta: { httpEquiv: string; content: string };
 
   beforeEach(() => {
     // Mock window properties
@@ -42,19 +45,14 @@ describe('SecurityConfigService', () => {
     });
 
     // Create a mock logger
-    loggerSpy = {
-      debug: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-    } as any;
+    loggerSpy = createMockLoggerService();
 
     // Create a mock document
-    const mockMeta = {
+    mockMeta = {
       httpEquiv: '',
       content: '',
     };
-    documentMock = {
+    documentMock = partialMock<Document>({
       createElement: vi.fn().mockReturnValue(mockMeta),
       head: {
         appendChild: vi.fn(),
@@ -65,7 +63,7 @@ describe('SecurityConfigService', () => {
         },
         nextSibling: null,
       }),
-    } as any;
+    });
 
     // Create service instance directly
     service = new SecurityConfigService(loggerSpy, documentMock);
@@ -149,12 +147,12 @@ describe('SecurityConfigService', () => {
     expect(documentMock.createElement).toHaveBeenCalledWith('meta');
 
     // Get the created meta element
-    const createElementCalls = (documentMock.createElement as any).mock.calls;
-    const metaCall = createElementCalls.find((call: any[]) => call[0] === 'meta');
+    const createElementCalls = vi.mocked(documentMock.createElement).mock.calls;
+    const metaCall = createElementCalls.find(call => call[0] === 'meta');
     expect(metaCall).toBeDefined();
 
     // Verify CSP content includes API URL
-    const metaElement = (documentMock.createElement as any).mock.results[0].value;
+    const metaElement = mockMeta;
     expect(metaElement.httpEquiv).toBe('Content-Security-Policy');
     expect(metaElement.content).toContain('connect-src');
     expect(metaElement.content).toContain('http://localhost:8080'); // Default API URL from environment
@@ -166,14 +164,14 @@ describe('SecurityConfigService', () => {
     // SEM@338c179e5efb196ff54ba21d43c47c6330789216: instantiate SecurityConfigService with a mock document and return the injected CSP value (pure)
     function instantiateAndGetCsp(): string {
       const meta = { httpEquiv: '', content: '' };
-      const doc = {
+      const doc = partialMock<Document>({
         createElement: vi.fn().mockReturnValue(meta),
         head: { appendChild: vi.fn() },
         querySelector: vi.fn().mockReturnValue({
           parentNode: { insertBefore: vi.fn() },
           nextSibling: null,
         }),
-      } as any;
+      });
       new SecurityConfigService(loggerSpy, doc);
       return meta.content;
     }

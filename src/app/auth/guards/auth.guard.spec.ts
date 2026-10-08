@@ -8,9 +8,10 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
@@ -32,8 +33,8 @@ describe('authGuard', () => {
   };
   let envInjector: EnvironmentInjector;
 
-  const mockRoute = {} as any;
-  const mockState = { url: '/threat-models/123' } as any;
+  const mockRoute = partialMock<ActivatedRouteSnapshot>({});
+  const mockState = partialMock<RouterStateSnapshot>({ url: '/threat-models/123' });
 
   beforeEach(() => {
     mockAuthService = {
@@ -58,9 +59,9 @@ describe('authGuard', () => {
         { provide: Router, useValue: mockRouter },
         { provide: LoggerService, useValue: mockLogger },
       ],
-      {
+      partialMock<EnvironmentInjector>({
         get: () => null,
-      } as unknown as EnvironmentInjector,
+      }),
     );
   });
 
@@ -115,7 +116,9 @@ describe('authGuard', () => {
 
   it('should preserve the intended destination URL in returnUrl query param', () => {
     mockAuthService.isAuthenticated$.next(false);
-    const deepLinkState = { url: '/threat-models/456/diagrams/789' } as any;
+    const deepLinkState = partialMock<RouterStateSnapshot>({
+      url: '/threat-models/456/diagrams/789',
+    });
 
     runInInjectionContext(envInjector, () => {
       const result$ = authGuard(mockRoute, deepLinkState);

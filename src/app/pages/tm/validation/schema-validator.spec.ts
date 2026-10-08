@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { SchemaValidator } from './schema-validator';
+import { ThreatModel } from '../models/threat-model.model';
 import { ValidationContext, ValidationError } from './types';
 
 describe('SchemaValidator', () => {
@@ -127,12 +128,18 @@ describe('SchemaValidator', () => {
 
   describe('validateThreatModel — null/invalid input', () => {
     it('should reject null input', () => {
-      const errors = validator.validateThreatModel(null as any, baseContext);
+      const errors = validator.validateThreatModel(
+        null as unknown as ThreatModel, // deliberately invalid input
+        baseContext,
+      );
       expect(hasError(errors, 'INVALID_OBJECT')).toBe(true);
     });
 
     it('should reject non-object input', () => {
-      const errors = validator.validateThreatModel('not-an-object' as any, baseContext);
+      const errors = validator.validateThreatModel(
+        'not-an-object' as unknown as ThreatModel, // deliberately invalid input
+        baseContext,
+      );
       expect(hasError(errors, 'INVALID_OBJECT')).toBe(true);
     });
   });

@@ -7,12 +7,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import {
   GraphOperation,
+  GraphOperationType,
+  NodeData,
   OperationContext,
   OperationResult,
   CreateNodeOperation,
 } from '../../types/graph-operation.types';
+import { partialMock } from '@testing/partial-mock';
 
 describe('AppGraphOperationManager', () => {
   let service: AppGraphOperationManager;
@@ -45,7 +49,11 @@ describe('AppGraphOperationManager', () => {
     const mockNodeService = {
       removeNode: vi.fn().mockReturnValue(true),
     };
-    service = new AppGraphOperationManager(mockLogger, mockNodeService as any);
+    // Partial InfraNodeService: only removeNode is stubbed
+    service = new AppGraphOperationManager(
+      mockLogger,
+      partialMock<InfraNodeService>(mockNodeService),
+    );
 
     // Create operation context
     operationContext = {
@@ -100,7 +108,7 @@ describe('AppGraphOperationManager', () => {
       return new Promise<void>((resolve, reject) => {
         // Mock successful node creation
         const mockNode = { id: 'node-123' };
-        mockGraph.addNode.mockReturnValue(mockNode as any);
+        mockGraph.addNode.mockReturnValue(mockNode);
 
         service.execute(createNodeOperation, operationContext).subscribe({
           next: (result: OperationResult) => {
@@ -140,7 +148,7 @@ describe('AppGraphOperationManager', () => {
 
     it('should track operation statistics', () => {
       return new Promise<void>((resolve, reject) => {
-        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' });
 
         service.execute(createNodeOperation, operationContext).subscribe({
           next: () => {
@@ -157,7 +165,7 @@ describe('AppGraphOperationManager', () => {
 
     it('should emit operation completed event', () => {
       return new Promise<void>(resolve => {
-        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' });
 
         // Subscribe to events
         service.operationCompleted$.subscribe(event => {
@@ -208,8 +216,8 @@ describe('AppGraphOperationManager', () => {
         ];
 
         mockGraph.addNode
-          .mockReturnValueOnce({ id: 'node-1' } as any)
-          .mockReturnValueOnce({ id: 'node-2' } as any);
+          .mockReturnValueOnce({ id: 'node-1' })
+          .mockReturnValueOnce({ id: 'node-2' });
 
         service.executeBatch(operations, operationContext).subscribe({
           next: (results: OperationResult[]) => {
@@ -254,7 +262,7 @@ describe('AppGraphOperationManager', () => {
           },
         };
 
-        mockGraph.addNode.mockReturnValue({ id: 'node-1' } as any);
+        mockGraph.addNode.mockReturnValue({ id: 'node-1' });
 
         service.executeBatch([operation], operationContext).subscribe({
           next: (results: OperationResult[]) => {
@@ -309,8 +317,8 @@ describe('AppGraphOperationManager', () => {
           timestamp: Date.now(),
           nodeData: {
             // Invalid data
-            position: undefined as any,
-          } as any,
+            position: undefined,
+          } as unknown as NodeData, // deliberately invalid payload
         };
 
         service.validate(operation, operationContext).subscribe({
@@ -373,7 +381,7 @@ describe('AppGraphOperationManager', () => {
         service.canExecute(
           {
             id: 'test',
-            type: 'custom' as any,
+            type: 'custom' as unknown as GraphOperationType, // deliberately unregistered type
             source: 'test',
             priority: 'normal',
             timestamp: Date.now(),
@@ -398,7 +406,7 @@ describe('AppGraphOperationManager', () => {
         service.canExecute(
           {
             id: 'test',
-            type: 'custom' as any,
+            type: 'custom' as unknown as GraphOperationType, // deliberately unregistered type
             source: 'test',
             priority: 'normal',
             timestamp: Date.now(),
@@ -428,7 +436,7 @@ describe('AppGraphOperationManager', () => {
           },
         };
 
-        mockGraph.addNode.mockReturnValue({ id: 'node-123' } as any);
+        mockGraph.addNode.mockReturnValue({ id: 'node-123' });
 
         service.execute(operation, operationContext).subscribe({
           next: () => {

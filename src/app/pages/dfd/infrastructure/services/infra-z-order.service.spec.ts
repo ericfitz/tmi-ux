@@ -6,10 +6,11 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
-import { Node, Edge } from '@antv/x6';
+import { Cell, Node, Edge } from '@antv/x6';
 import { ZOrderService } from './infra-z-order.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock interfaces for type safety
 
@@ -91,8 +92,8 @@ describe('ZOrderService', () => {
       targetNode.getZIndex.mockReturnValue(8);
 
       const result = service.getNewEdgeZIndex(
-        sourceNode as unknown as Node,
-        targetNode as unknown as Node,
+        partialMock<Node>(sourceNode),
+        partialMock<Node>(targetNode),
       );
       expect(result).toBe(8);
     });
@@ -102,8 +103,8 @@ describe('ZOrderService', () => {
       targetNode.getZIndex.mockReturnValue(7);
 
       const result = service.getNewEdgeZIndex(
-        sourceNode as unknown as Node,
-        targetNode as unknown as Node,
+        partialMock<Node>(sourceNode),
+        partialMock<Node>(targetNode),
       );
       expect(result).toBe(12);
     });
@@ -113,8 +114,8 @@ describe('ZOrderService', () => {
       targetNode.getZIndex.mockReturnValue(15);
 
       const result = service.getNewEdgeZIndex(
-        sourceNode as unknown as Node,
-        targetNode as unknown as Node,
+        partialMock<Node>(sourceNode),
+        partialMock<Node>(targetNode),
       );
       expect(result).toBe(15);
     });
@@ -124,8 +125,8 @@ describe('ZOrderService', () => {
       targetNode.getZIndex.mockReturnValue(undefined);
 
       const result = service.getNewEdgeZIndex(
-        sourceNode as unknown as Node,
-        targetNode as unknown as Node,
+        partialMock<Node>(sourceNode),
+        partialMock<Node>(targetNode),
       );
       expect(result).toBe(10); // Default z-index for process nodes
     });
@@ -162,9 +163,9 @@ describe('ZOrderService', () => {
       targetNode.getZIndex.mockReturnValue(8);
 
       const result = service.updateEdgeZIndexOnReconnection(
-        edge as unknown as Edge,
-        sourceNode as unknown as Node,
-        targetNode as unknown as Node,
+        partialMock<Edge>(edge),
+        partialMock<Node>(sourceNode),
+        partialMock<Node>(targetNode),
       );
 
       expect(result).toBe(8);
@@ -205,8 +206,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'process';
 
       const result = service.calculateEmbeddedNodeZIndex(
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       );
 
       expect(result).toBe(11);
@@ -224,8 +225,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'security-boundary';
 
       const result = service.calculateEmbeddedNodeZIndex(
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       );
 
       expect(result).toBe(11); // Math.max(10 + 1, 2) = 11
@@ -236,8 +237,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'security-boundary';
 
       const result = service.calculateEmbeddedNodeZIndex(
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       );
 
       expect(result).toBe(2); // Math.max(1 + 1, 2) = 2
@@ -248,8 +249,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'process';
 
       const result = service.calculateEmbeddedNodeZIndex(
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       );
 
       expect(result).toBe(11); // Default 10 + 1
@@ -296,7 +297,7 @@ describe('ZOrderService', () => {
     it('should return empty array when node has no children', () => {
       parentNode.getChildren.mockReturnValue([]);
 
-      const result = service.getDescendantNodesForCascadingUpdate(parentNode as unknown as Node);
+      const result = service.getDescendantNodesForCascadingUpdate(partialMock<Node>(parentNode));
 
       expect(result).toEqual([]);
     });
@@ -309,7 +310,7 @@ describe('ZOrderService', () => {
 
       parentNode.getChildren.mockReturnValue([childNode1, childNode2]);
 
-      const result = service.getDescendantNodesForCascadingUpdate(parentNode as unknown as Node);
+      const result = service.getDescendantNodesForCascadingUpdate(partialMock<Node>(parentNode));
 
       expect(result).toEqual([childNode1, childNode2]);
     });
@@ -325,7 +326,7 @@ describe('ZOrderService', () => {
 
       parentNode.getChildren.mockReturnValue([childNode1, childNode2]);
 
-      const result = service.getDescendantNodesForCascadingUpdate(parentNode as unknown as Node);
+      const result = service.getDescendantNodesForCascadingUpdate(partialMock<Node>(parentNode));
 
       expect(result).toEqual([childNode1, grandchildNode, childNode2]);
     });
@@ -341,7 +342,7 @@ describe('ZOrderService', () => {
 
       parentNode.getChildren.mockReturnValue([childNode1, nonNodeChild]);
 
-      const result = service.getDescendantNodesForCascadingUpdate(parentNode as unknown as Node);
+      const result = service.getDescendantNodesForCascadingUpdate(partialMock<Node>(parentNode));
 
       expect(result).toEqual([childNode1]);
     });
@@ -374,8 +375,8 @@ describe('ZOrderService', () => {
       childNode.getZIndex.mockReturnValue(15);
 
       const result = service.validateEmbeddingZOrderHierarchy([
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       ]);
 
       expect(result).toEqual([]);
@@ -390,8 +391,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'process';
 
       const result = service.validateEmbeddingZOrderHierarchy([
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       ]);
 
       expect(result).toHaveLength(1);
@@ -406,7 +407,7 @@ describe('ZOrderService', () => {
       childNode.getParent.mockReturnValue(null);
       childNode.getZIndex.mockReturnValue(5);
 
-      const result = service.validateEmbeddingZOrderHierarchy([childNode as unknown as Node]);
+      const result = service.validateEmbeddingZOrderHierarchy([partialMock<Node>(childNode)]);
 
       expect(result).toEqual([]);
     });
@@ -420,8 +421,8 @@ describe('ZOrderService', () => {
       childNode.shape = 'process';
 
       const result = service.validateEmbeddingZOrderHierarchy([
-        parentNode as unknown as Node,
-        childNode as unknown as Node,
+        partialMock<Node>(parentNode),
+        partialMock<Node>(childNode),
       ]);
 
       expect(result).toHaveLength(1);
@@ -442,7 +443,7 @@ describe('ZOrderService', () => {
       };
 
       // Act
-      const result = service.calculateUnembeddedSecurityBoundaryZIndex(mockNode as unknown as Node);
+      const result = service.calculateUnembeddedSecurityBoundaryZIndex(partialMock<Node>(mockNode));
 
       // Assert
       expect(result).toBe(1); // Default security boundary z-index
@@ -460,7 +461,7 @@ describe('ZOrderService', () => {
       };
 
       // Act
-      const result = service.calculateUnembeddedSecurityBoundaryZIndex(mockNode as unknown as Node);
+      const result = service.calculateUnembeddedSecurityBoundaryZIndex(partialMock<Node>(mockNode));
 
       // Assert
       expect(result).toBe(1); // Always reset to default security boundary z-index
@@ -478,7 +479,7 @@ describe('ZOrderService', () => {
       };
 
       // Act
-      const result = service.calculateUnembeddedSecurityBoundaryZIndex(mockNode as unknown as Node);
+      const result = service.calculateUnembeddedSecurityBoundaryZIndex(partialMock<Node>(mockNode));
 
       // Assert
       expect(result).toBe(1); // Reset to default security boundary z-index
@@ -487,7 +488,7 @@ describe('ZOrderService', () => {
 
   describe('recalculateZOrder', () => {
     it('should fix parent-child z-index violations', () => {
-      // Create mock cells
+      // Create mock cells (partial stubs: only the members the service reads)
       const parent = {
         id: 'parent',
         getZIndex: vi.fn().mockReturnValue(10),
@@ -509,7 +510,7 @@ describe('ZOrderService', () => {
       const cells = [parent, child];
 
       // Act
-      const iterations = service.recalculateZOrder(cells as any);
+      const iterations = service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert
       expect(child.setZIndex).toHaveBeenCalledWith(13); // parent (10) + 3
@@ -549,7 +550,7 @@ describe('ZOrderService', () => {
       const cells = [sourceNode, targetNode, edge];
 
       // Act
-      const iterations = service.recalculateZOrder(cells as any);
+      const iterations = service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert
       expect(edge.setZIndex).toHaveBeenCalledWith(15); // max(10, 15)
@@ -579,7 +580,7 @@ describe('ZOrderService', () => {
       const cells = [parent, child];
 
       // Act
-      const iterations = service.recalculateZOrder(cells as any);
+      const iterations = service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert
       expect(child.setZIndex).not.toHaveBeenCalled();
@@ -627,7 +628,7 @@ describe('ZOrderService', () => {
       const cells = [grandparent, parent, child];
 
       // Act
-      const iterations = service.recalculateZOrder(cells as any);
+      const iterations = service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert
       expect(parent.setZIndex).toHaveBeenCalled();
@@ -658,7 +659,7 @@ describe('ZOrderService', () => {
       const cells = [parent, child];
 
       // Act
-      service.recalculateZOrder(cells as any);
+      service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert
       expect(mockLogger.error).toHaveBeenCalledWith(

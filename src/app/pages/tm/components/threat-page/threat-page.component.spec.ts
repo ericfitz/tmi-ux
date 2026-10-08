@@ -4,7 +4,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { of, BehaviorSubject } from 'rxjs';
+import { of, BehaviorSubject, Subscription } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
 import { ThreatPageComponent } from './threat-page.component';
@@ -16,6 +16,7 @@ import {
   type MockLoggerService,
   type MockRouter,
 } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock interfaces
 interface MockActivatedRoute {
@@ -70,6 +71,8 @@ interface MockAddonService {
 interface MockCweService {
   loadWeaknesses: ReturnType<typeof vi.fn>;
 }
+
+type Deps = ConstructorParameters<typeof ThreatPageComponent>;
 
 describe('ThreatPageComponent', () => {
   let component: ThreatPageComponent;
@@ -189,20 +192,20 @@ describe('ThreatPageComponent', () => {
     };
 
     component = new ThreatPageComponent(
-      route as any,
-      router as any,
+      partialMock<Deps[0]>(route),
+      partialMock<Deps[1]>(router),
       fb,
-      snackBar as any,
-      dialog as any,
+      partialMock<Deps[3]>(snackBar),
+      partialMock<Deps[4]>(dialog),
       loggerService,
-      languageService as any,
-      translocoService as any,
-      threatModelService as any,
-      authorizationService as any,
-      cellDataExtractionService as any,
-      frameworkService as any,
-      addonService as any,
-      cweService as any,
+      partialMock<Deps[6]>(languageService),
+      partialMock<Deps[7]>(translocoService),
+      partialMock<Deps[8]>(threatModelService),
+      partialMock<Deps[9]>(authorizationService),
+      partialMock<Deps[10]>(cellDataExtractionService),
+      partialMock<Deps[11]>(frameworkService),
+      partialMock<Deps[12]>(addonService),
+      partialMock<Deps[13]>(cweService),
     );
   });
 
@@ -633,8 +636,9 @@ describe('ThreatPageComponent', () => {
     it('should unsubscribe from diagram change subscription', () => {
       component.ngOnInit();
       // Set up a mock subscription
-      const mockSubscription = { unsubscribe: vi.fn() };
-      component['diagramChangeSubscription'] = mockSubscription as any;
+      const mockSubscription = new Subscription();
+      vi.spyOn(mockSubscription, 'unsubscribe');
+      component['diagramChangeSubscription'] = mockSubscription;
 
       component.ngOnDestroy();
 

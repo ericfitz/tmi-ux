@@ -13,6 +13,8 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 import { FormBuilder } from '@angular/forms';
 import { of } from 'rxjs';
 import {
@@ -71,11 +73,11 @@ describe('CreateProjectDialogComponent', () => {
 
     runInInjectionContext(envInjector, () => {
       component = new CreateProjectDialogComponent(
-        mockDialogRef as any,
+        partialMock<MatDialogRef<CreateProjectDialogComponent>>(mockDialogRef),
         new FormBuilder(),
-        mockDialog as any,
-        mockTeamService as unknown as TeamService,
-        mockLoggerService as unknown as LoggerService,
+        partialMock<MatDialog>(mockDialog),
+        partialMock<TeamService>(mockTeamService),
+        partialMock<LoggerService>(mockLoggerService),
       );
     });
   });

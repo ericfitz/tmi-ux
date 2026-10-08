@@ -8,6 +8,8 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { ChangeDetectorRef, ElementRef } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { of } from 'rxjs';
 import { AppEventHandlersService } from './app-event-handlers.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -18,6 +20,7 @@ import { CellDataExtractionService } from '../../../../shared/services/cell-data
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { partialMock } from '@testing/partial-mock';
 
 describe('AppEventHandlersService', () => {
   let service: AppEventHandlersService;
@@ -141,13 +144,13 @@ describe('AppEventHandlersService', () => {
     };
 
     service = new AppEventHandlersService(
-      mockLogger as unknown as LoggerService,
-      mockSelectionAdapter as unknown as InfraX6SelectionAdapter,
-      mockThreatModelService as unknown as ThreatModelService,
-      mockFrameworkService as unknown as FrameworkService,
-      mockDialog as unknown as MatDialog,
-      mockRouter as unknown as Router,
-      mockCellDataExtractionService as unknown as CellDataExtractionService,
+      partialMock<LoggerService>(mockLogger),
+      partialMock<InfraX6SelectionAdapter>(mockSelectionAdapter),
+      partialMock<ThreatModelService>(mockThreatModelService),
+      partialMock<FrameworkService>(mockFrameworkService),
+      partialMock<MatDialog>(mockDialog),
+      partialMock<Router>(mockRouter),
+      partialMock<CellDataExtractionService>(mockCellDataExtractionService),
     );
   });
 
@@ -257,8 +260,10 @@ describe('AppEventHandlersService', () => {
     it('should debounce resize events', () => {
       vi.useFakeTimers();
 
-      const container = { nativeElement: { clientWidth: 800, clientHeight: 600 } };
-      const timeoutId = service.onWindowResize(container as any, null, mockX6GraphAdapter);
+      const container = {
+        nativeElement: { clientWidth: 800, clientHeight: 600 },
+      } as ElementRef;
+      const timeoutId = service.onWindowResize(container, null, mockX6GraphAdapter);
 
       expect(timeoutId).toBeDefined();
 
@@ -273,9 +278,11 @@ describe('AppEventHandlersService', () => {
       vi.useFakeTimers();
 
       const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
-      const container = { nativeElement: { clientWidth: 800, clientHeight: 600 } };
+      const container = {
+        nativeElement: { clientWidth: 800, clientHeight: 600 },
+      } as ElementRef;
 
-      service.onWindowResize(container as any, 123, mockX6GraphAdapter);
+      service.onWindowResize(container, 123, mockX6GraphAdapter);
 
       expect(clearTimeoutSpy).toHaveBeenCalledWith(123);
 
@@ -324,7 +331,14 @@ describe('AppEventHandlersService', () => {
       const mockMenuTrigger = { openMenu: vi.fn() };
       const mockCdr = { detectChanges: vi.fn() };
 
-      service.openCellContextMenu(mockCell, 150, 250, mockMenuTrigger as any, mockCdr as any);
+      // Partial MatMenuTrigger / ChangeDetectorRef: only the members under test are stubbed
+      service.openCellContextMenu(
+        mockCell,
+        150,
+        250,
+        partialMock<MatMenuTrigger>(mockMenuTrigger),
+        partialMock<ChangeDetectorRef>(mockCdr),
+      );
 
       expect(service.contextMenuPosition).toEqual({ x: '150px', y: '250px' });
       expect(mockMenuTrigger.openMenu).toHaveBeenCalled();
@@ -344,13 +358,13 @@ describe('AppEventHandlersService', () => {
 
     it('should warn when no cell selected for properties', () => {
       const newService = new AppEventHandlersService(
-        mockLogger as unknown as LoggerService,
-        mockSelectionAdapter as unknown as InfraX6SelectionAdapter,
-        mockThreatModelService as unknown as ThreatModelService,
-        mockFrameworkService as unknown as FrameworkService,
-        mockDialog as unknown as MatDialog,
-        mockRouter as unknown as Router,
-        mockCellDataExtractionService as unknown as CellDataExtractionService,
+        partialMock<LoggerService>(mockLogger),
+        partialMock<InfraX6SelectionAdapter>(mockSelectionAdapter),
+        partialMock<ThreatModelService>(mockThreatModelService),
+        partialMock<FrameworkService>(mockFrameworkService),
+        partialMock<MatDialog>(mockDialog),
+        partialMock<Router>(mockRouter),
+        partialMock<CellDataExtractionService>(mockCellDataExtractionService),
       );
 
       newService.showCellProperties();
@@ -376,13 +390,13 @@ describe('AppEventHandlersService', () => {
 
     it('should warn when no cell selected for editing', () => {
       const newService = new AppEventHandlersService(
-        mockLogger as unknown as LoggerService,
-        mockSelectionAdapter as unknown as InfraX6SelectionAdapter,
-        mockThreatModelService as unknown as ThreatModelService,
-        mockFrameworkService as unknown as FrameworkService,
-        mockDialog as unknown as MatDialog,
-        mockRouter as unknown as Router,
-        mockCellDataExtractionService as unknown as CellDataExtractionService,
+        partialMock<LoggerService>(mockLogger),
+        partialMock<InfraX6SelectionAdapter>(mockSelectionAdapter),
+        partialMock<ThreatModelService>(mockThreatModelService),
+        partialMock<FrameworkService>(mockFrameworkService),
+        partialMock<MatDialog>(mockDialog),
+        partialMock<Router>(mockRouter),
+        partialMock<CellDataExtractionService>(mockCellDataExtractionService),
       );
 
       newService.editCellText(mockX6GraphAdapter);

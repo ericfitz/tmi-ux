@@ -48,11 +48,11 @@ describe('PkceService', () => {
     });
 
     it('should have correct storage key', () => {
-      expect((service as any).VERIFIER_STORAGE_KEY).toBe('pkce_verifier');
+      expect(service['VERIFIER_STORAGE_KEY']).toBe('pkce_verifier');
     });
 
     it('should have 5-minute expiration', () => {
-      expect((service as any).VERIFIER_MAX_AGE_MS).toBe(5 * 60 * 1000);
+      expect(service['VERIFIER_MAX_AGE_MS']).toBe(5 * 60 * 1000);
     });
   });
 

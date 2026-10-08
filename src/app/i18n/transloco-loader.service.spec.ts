@@ -7,6 +7,8 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { HttpClient } from '@angular/common/http';
+import { partialMock } from '@testing/partial-mock';
 import { of, lastValueFrom, throwError } from 'rxjs';
 import { TranslocoHttpLoader } from './transloco-loader.service';
 
@@ -35,7 +37,7 @@ describe('TranslocoHttpLoader', () => {
       get: vi.fn(),
     };
 
-    loader = new TranslocoHttpLoader(mockHttp as any);
+    loader = new TranslocoHttpLoader(partialMock<HttpClient>(mockHttp));
   });
 
   describe('Service Initialization', () => {

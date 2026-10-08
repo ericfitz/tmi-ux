@@ -747,7 +747,7 @@ describe('InfraX6ZOrderAdapter', () => {
 
     it('should skip restoration for nodes without getData method', () => {
       // Remove getData method to simulate test environment
-      processNode.getData = undefined as any;
+      Object.assign(processNode, { getData: undefined });
 
       adapter.handleNodeMovedZOrderRestoration(graph, processNode);
 
@@ -782,7 +782,7 @@ describe('InfraX6ZOrderAdapter', () => {
       });
 
       // Remove setZIndex to simulate test environment
-      edge.setZIndex = undefined as any;
+      Object.assign(edge, { setZIndex: undefined });
       sourceNode.getZIndex = vi.fn().mockReturnValue(10);
       targetNode.getZIndex = vi.fn().mockReturnValue(15);
 
@@ -826,8 +826,8 @@ describe('InfraX6ZOrderAdapter', () => {
       });
 
       // Remove getZIndex to simulate test environment
-      sourceNode.getZIndex = undefined as any;
-      targetNode.getZIndex = undefined as any;
+      Object.assign(sourceNode, { getZIndex: undefined });
+      Object.assign(targetNode, { getZIndex: undefined });
       edge.setZIndex = vi.fn();
 
       // Mock edge methods to return null for source/target IDs when getZIndex is missing
@@ -905,7 +905,7 @@ describe('InfraX6ZOrderAdapter', () => {
   describe('recalculateZOrder', () => {
     it('should call service recalculateZOrder with graph cells', () => {
       // Add history methods to graph
-      (graph as any).isHistoryEnabled = vi.fn().mockReturnValue(false);
+      graph.isHistoryEnabled = vi.fn().mockReturnValue(false);
 
       const parent = graph.addNode({ id: 'parent', x: 0, y: 0, width: 100, height: 100 });
       const child = graph.addNode({ id: 'child', x: 10, y: 10, width: 50, height: 50 });
@@ -930,9 +930,9 @@ describe('InfraX6ZOrderAdapter', () => {
       const enableHistorySpy = vi.fn();
       const isHistoryEnabledSpy = vi.fn().mockReturnValue(true);
 
-      (graph as any).disableHistory = disableHistorySpy;
-      (graph as any).enableHistory = enableHistorySpy;
-      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+      graph.disableHistory = disableHistorySpy;
+      graph.enableHistory = enableHistorySpy;
+      graph.isHistoryEnabled = isHistoryEnabledSpy;
 
       graph.addNode({ id: 'node1', x: 0, y: 0, width: 100, height: 100 });
 
@@ -948,9 +948,9 @@ describe('InfraX6ZOrderAdapter', () => {
       const enableHistorySpy = vi.fn();
       const isHistoryEnabledSpy = vi.fn().mockReturnValue(true);
 
-      (graph as any).disableHistory = vi.fn();
-      (graph as any).enableHistory = enableHistorySpy;
-      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+      graph.disableHistory = vi.fn();
+      graph.enableHistory = enableHistorySpy;
+      graph.isHistoryEnabled = isHistoryEnabledSpy;
 
       vi.spyOn(zOrderService, 'recalculateZOrder').mockImplementation(() => {
         throw new Error('Test error');
@@ -971,9 +971,9 @@ describe('InfraX6ZOrderAdapter', () => {
       const enableHistorySpy = vi.fn();
       const isHistoryEnabledSpy = vi.fn().mockReturnValue(false);
 
-      (graph as any).disableHistory = disableHistorySpy;
-      (graph as any).enableHistory = enableHistorySpy;
-      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+      graph.disableHistory = disableHistorySpy;
+      graph.enableHistory = enableHistorySpy;
+      graph.isHistoryEnabled = isHistoryEnabledSpy;
 
       graph.addNode({ id: 'node1', x: 0, y: 0, width: 100, height: 100 });
 

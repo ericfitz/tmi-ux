@@ -10,6 +10,7 @@ import {
   CvssCalculatorDialogData,
   CvssCalculatorDialogResult,
 } from './cvss-calculator-dialog.types';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockDialogRef {
   close: ReturnType<typeof vi.fn>;
@@ -34,6 +35,8 @@ interface MockTranslocoService {
   translate: ReturnType<typeof vi.fn>;
   langChanges$: Observable<string>;
 }
+
+type Deps = ConstructorParameters<typeof CvssCalculatorDialogComponent>;
 
 describe('CvssCalculatorDialogComponent', () => {
   let component: CvssCalculatorDialogComponent;
@@ -64,13 +67,13 @@ describe('CvssCalculatorDialogComponent', () => {
     };
 
     component = new CvssCalculatorDialogComponent(
-      dialogRef as any,
+      partialMock<Deps[0]>(dialogRef),
       data,
-      { markForCheck: vi.fn() } as any,
-      loggerService as any,
-      languageService as any,
-      translocoService as any,
-      snackBar as any,
+      partialMock<Deps[2]>({ markForCheck: vi.fn() }),
+      partialMock<Deps[3]>(loggerService),
+      partialMock<Deps[4]>(languageService),
+      partialMock<Deps[5]>(translocoService),
+      partialMock<Deps[6]>(snackBar),
     );
   }
 

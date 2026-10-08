@@ -8,11 +8,15 @@
 import '@angular/compiler';
 
 import {
+  ChangeDetectorRef,
   EnvironmentInjector,
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { MatSelectChange } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 import { of, throwError, Subject } from 'rxjs';
 import { ProjectPickerComponent } from './project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';
@@ -78,10 +82,10 @@ describe('ProjectPickerComponent', () => {
 
     runInInjectionContext(envInjector, () => {
       component = new ProjectPickerComponent(
-        mockDialog as any,
-        mockProjectService as unknown as ProjectService,
-        mockLoggerService as unknown as LoggerService,
-        mockCdr as any,
+        partialMock<MatDialog>(mockDialog),
+        partialMock<ProjectService>(mockProjectService),
+        partialMock<LoggerService>(mockLoggerService),
+        partialMock<ChangeDetectorRef>(mockCdr),
       );
     });
   });
@@ -137,7 +141,7 @@ describe('ProjectPickerComponent', () => {
     it('should emit selected project id', () => {
       const emitSpy = vi.spyOn(component.projectChange, 'emit');
 
-      component.onSelectionChange({ value: 'proj-1' } as any);
+      component.onSelectionChange(partialMock<MatSelectChange>({ value: 'proj-1' }));
 
       expect(emitSpy).toHaveBeenCalledWith('proj-1');
     });
@@ -145,7 +149,7 @@ describe('ProjectPickerComponent', () => {
     it('should emit null when no project selected', () => {
       const emitSpy = vi.spyOn(component.projectChange, 'emit');
 
-      component.onSelectionChange({ value: null } as any);
+      component.onSelectionChange(partialMock<MatSelectChange>({ value: null }));
 
       expect(emitSpy).toHaveBeenCalledWith(null);
     });

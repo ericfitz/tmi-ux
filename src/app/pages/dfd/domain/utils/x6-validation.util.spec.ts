@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import type { CellTool, MarkupElement } from '../value-objects/x6-types';
 import { validateMarkupElements, validateCellTools, hybridDataEquals } from './x6-validation.util';
+import { partialMock } from '@testing/partial-mock';
 
 describe('validateMarkupElements', () => {
   it('should accept valid markup elements', () => {
@@ -26,19 +28,25 @@ describe('validateMarkupElements', () => {
   });
 
   it('should throw on non-string selector', () => {
-    expect(() => validateMarkupElements([{ tagName: 'rect', selector: 123 as any }])).toThrow(
+    // Deliberately malformed element
+    const element = { tagName: 'rect', selector: 123 } as unknown as MarkupElement;
+    expect(() => validateMarkupElements([element])).toThrow(
       'Markup element at index 0 selector must be a string',
     );
   });
 
   it('should throw on non-object attrs', () => {
-    expect(() => validateMarkupElements([{ tagName: 'rect', attrs: 'invalid' as any }])).toThrow(
+    // Deliberately malformed element
+    const element = { tagName: 'rect', attrs: 'invalid' } as unknown as MarkupElement;
+    expect(() => validateMarkupElements([element])).toThrow(
       'Markup element at index 0 attrs must be an object',
     );
   });
 
   it('should throw on non-array children', () => {
-    expect(() => validateMarkupElements([{ tagName: 'rect', children: 'invalid' as any }])).toThrow(
+    // Deliberately malformed element
+    const element = { tagName: 'rect', children: 'invalid' } as unknown as MarkupElement;
+    expect(() => validateMarkupElements([element])).toThrow(
       'Markup element at index 0 children must be an array',
     );
   });
@@ -78,9 +86,9 @@ describe('validateCellTools', () => {
   });
 
   it('should throw on non-object args', () => {
-    expect(() => validateCellTools([{ name: 'boundary', args: 'invalid' as any }])).toThrow(
-      'Tool at index 0 args must be an object',
-    );
+    // Deliberately malformed tool
+    const tool = partialMock<CellTool>({ name: 'boundary', args: 'invalid' });
+    expect(() => validateCellTools([tool])).toThrow('Tool at index 0 args must be an object');
   });
 
   it('should use custom error prefix', () => {

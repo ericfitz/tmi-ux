@@ -185,7 +185,7 @@ describe('AppOperationStateManager', () => {
       service.dragCompletions$.subscribe(event => completions.push(event));
 
       service.startDragTracking('cell-1', 'move', { position: { x: 100, y: 200 } });
-      service.finalizeDragTracking('cell-1', undefined as any);
+      service.finalizeDragTracking('cell-1', undefined);
 
       expect(completions[0].finalState).toEqual({});
     });

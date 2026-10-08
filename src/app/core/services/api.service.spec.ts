@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { partialMock } from '@testing/partial-mock';
 import { TimeoutError } from 'rxjs';
 import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import {
@@ -73,10 +74,10 @@ describe('ApiService', () => {
     // Create the service directly with mocked dependencies
     // Note: authService removed - 401 handling now in JwtInterceptor
     service = new ApiService(
-      httpClient as unknown as HttpClient,
+      partialMock<HttpClient>(httpClient),
       loggerService,
-      router as unknown as Router,
-      dialog as unknown as MatDialog,
+      partialMock<Router>(router),
+      partialMock<MatDialog>(dialog),
     );
   });
 
@@ -508,11 +509,13 @@ describe('ApiService', () => {
 
   describe('getText Requests', () => {
     it('should make GET request with text responseType', () => {
-      vi.mocked(httpClient.get).mockReturnValue(throwError(() => 'should not be called') as any);
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => 'should not be called'));
       // Override for this specific call pattern
-      vi.mocked(httpClient.get).mockReturnValueOnce({
-        pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
-      } as any);
+      vi.mocked(httpClient.get).mockReturnValueOnce(
+        partialMock<Observable<string>>({
+          pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+        }),
+      );
 
       service.getText(testEndpoint);
 
@@ -524,9 +527,11 @@ describe('ApiService', () => {
     });
 
     it('should send the Accept header when given', () => {
-      vi.mocked(httpClient.get).mockReturnValueOnce({
-        pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
-      } as any);
+      vi.mocked(httpClient.get).mockReturnValueOnce(
+        partialMock<Observable<string>>({
+          pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+        }),
+      );
 
       service.getText(testEndpoint, undefined, 'application/yaml');
 
