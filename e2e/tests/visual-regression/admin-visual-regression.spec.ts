@@ -32,7 +32,15 @@ const PLATES: AdminPlate[] = [
   { slug: 'admin-projects', route: '/admin/projects' },
   { slug: 'admin-groups', route: '/admin/groups' },
   { slug: 'admin-quotas', route: '/admin/quotas' },
-  { slug: 'admin-webhooks', route: '/admin/webhooks' },
+  {
+    slug: 'admin-webhooks',
+    route: '/admin/webhooks',
+    maskSelectors: [
+      // The seeded webhook's URL never verifies, so the server moves its status
+      // from pending verification to pending delete on its own clock.
+      '.status-chip',
+    ],
+  },
   { slug: 'admin-settings', route: '/admin/settings' },
 ];
 
@@ -62,7 +70,7 @@ test.describe('Admin Visual Regression', () => {
         }
 
         const mask = (plate.maskSelectors ?? []).map(sel => page.locator(sel));
-        await takeThemeScreenshots(page, plate.slug, { mask, fullPage: true });
+        await takeThemeScreenshots(page, plate.slug, { freezeVolatileText: true, mask, fullPage: true });
 
         // Basic sanity: page rendered something testable
         await expect(page.locator('body')).toBeVisible();

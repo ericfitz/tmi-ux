@@ -33,7 +33,7 @@
       "roles": { "is_admin": false, "is_security_reviewer": false },
       "oauth_provider": "tmi",
       "api_quota": { "rpm": 100000, "rph": 1000000 },
-      "notes": "Owns nothing and is granted nothing, deliberately. Negative case for dashboard visibility: a non-reviewer with no owned threat models must see an empty dashboard. Do not grant this user access to any seeded entity."
+      "_comment": "Owns nothing and is granted nothing, deliberately. Negative case for dashboard visibility: a non-reviewer with no owned threat models must see an empty dashboard. Do not grant this user access to any seeded entity."
     }
   ],
   "teams": [

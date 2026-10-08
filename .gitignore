@@ -86,6 +86,9 @@ workspace/**
 .playwright-mcp/**
 .superpowers/**
 e2e/tests/visual-regression/tm-visual-regression.spec.ts-snapshots/**
+e2e/tests/visual-regression/admin-visual-regression.spec.ts-snapshots/**
+e2e/tests/visual-regression/survey-visual-regression.spec.ts-snapshots/**
+e2e/tests/visual-regression/team-project-visual-regression.spec.ts-snapshots/**
 .claude/scheduled_tasks.lock
 .local/
 
