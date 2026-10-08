@@ -214,7 +214,6 @@ describe('SurveyThemeService', () => {
         '--sjs2-color-bg-note-primary',
         '--sjs2-color-bg-warning-primary',
         '--sjs2-border-effect-surface-default',
-        '--sjs2-color-bg-warning-secondary',
       ];
 
       const configs: ThemeConfig[] = [

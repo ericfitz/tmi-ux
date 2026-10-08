@@ -59,18 +59,24 @@ test.describe('DFD Visual Regression', () => {
    * Helper: delete a fresh diagram's TM and close its context. Deletes through
    * the API: the reviewer's default dashboard filter can hide a TM it just
    * created, and waiting for its dashboard card used up the test timeout and
-   * leaked the TM (#830). A failed delete fails the test rather than leaking.
+   * leaked the TM (#830). A failed delete fails the test (softly, so it never
+   * masks the test's own failure) rather than leaking silently.
    */
   async function cleanupFreshDiagram(
     threatModelFlow: ThreatModelFlow,
     tmName: string,
     context: BrowserContext,
   ): Promise<void> {
+    let cleanupError: unknown;
     try {
       await threatModelFlow.deleteByNameViaApi(tmName);
+    } catch (error) {
+      cleanupError = error;
     } finally {
       await context.close();
     }
+    // Soft: a failed delete fails the test without replacing the body's own error.
+    expect.soft(cleanupError, `deleting ${tmName}`).toBeUndefined();
   }
 
   /**

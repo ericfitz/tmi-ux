@@ -177,6 +177,8 @@ reviewerTest.describe('Survey Visual Regression (Reviewer)', () => {
     const timestamps = reviewerPage.locator('.mat-column-submitted_at');
 
     // The unassigned-reviews count depends on every TM on the bed, not on seed data.
+    // The badge renders only when the count is > 0, which a seeded bed always has
+    // (seed TMs have no security reviewer); replaceText fails if it is missing.
     await takeThemeScreenshots(reviewerPage, 'survey-triage-list', {
       freezeVolatileText: true,
       mask: [timestamps],

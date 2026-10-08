@@ -41,15 +41,24 @@ export interface ScreenshotOptions {
   replaceText?: { selector: string; text: string }[];
 }
 
-/** Sets the text content of every element matching each rule's selector. */
+/**
+ * Sets the text content of every element matching each rule's selector.
+ * Fails if a selector matches nothing, so a renamed element or a page that
+ * hasn't rendered yet can't silently leave volatile text in the screenshot.
+ */
 async function replaceText(page: Page, rules: { selector: string; text: string }[]): Promise<void> {
-  await page.evaluate(list => {
-    for (const { selector, text } of list) {
-      document.querySelectorAll(selector).forEach(el => {
+  const counts = await page.evaluate(list => {
+    return list.map(({ selector, text }) => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
         el.textContent = text;
       });
-    }
+      return elements.length;
+    });
   }, rules);
+  rules.forEach((rule, i) => {
+    expect(counts[i], `replaceText selector ${rule.selector}`).toBeGreaterThan(0);
+  });
 }
 
 /** Rewrites volatile text (see VOLATILE_TEXT_SOURCE) in every text node under body. */
