@@ -347,8 +347,19 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
     // Handle data properties
     if (updates.properties) {
+      // X6 setData() deep-merges by default, which never shortens arrays (e.g.
+      // removing a metadata entry). Compute the full target data locally and
+      // pass { overwrite: true }, as the node executor does.
       const currentData = edge.getData() || {};
-      edge.setData({ ...currentData, ...updates.properties });
+      const merged: Record<string, unknown> = { ...currentData };
+      for (const [k, v] of Object.entries(updates.properties)) {
+        if (v === null || v === undefined) {
+          delete merged[k];
+        } else {
+          merged[k] = v;
+        }
+      }
+      edge.setData(merged, { overwrite: true });
     }
 
     return null;
