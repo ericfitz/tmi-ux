@@ -12,12 +12,12 @@ export { ALL_THEME_MODES };
 export const DATE_TEXT = /\d{1,2}\/\d{1,2}\/\d{2,4}|\b[A-Z][a-z]{2,8}\.? \d{1,2}, \d{4}|\d{4}-\d{2}-\d{2}/;
 
 /**
- * Matches text that changes with every seed: UUIDs, and dates (formats as in
- * DATE_TEXT) with an optional trailing time such as `, 11:53:05 PM`.
+ * Matches text that changes with every seed: UUIDs, and dates (DATE_TEXT) with
+ * an optional trailing time such as `, 11:53:05 PM`.
  */
 const VOLATILE_TEXT_SOURCE =
   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' +
-  '|(?:\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}|\\b[A-Z][a-z]{2,8}\\.? \\d{1,2}, \\d{4}|\\d{4}-\\d{2}-\\d{2})' +
+  `|(?:${DATE_TEXT.source})` +
   '(?:,?\\s\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s?[AP]M)?)?';
 
 export interface ScreenshotOptions {
@@ -28,7 +28,8 @@ export interface ScreenshotOptions {
   /**
    * Replace UUIDs and dates in the page's text with fixed placeholders before
    * each screenshot. Unlike a mask, this also removes the layout shift that
-   * variable-width timestamps cause in auto-sized table columns.
+   * variable-width timestamps cause in auto-sized table columns. Trade-off:
+   * a change in date format is invisible to screenshots taken this way.
    */
   freezeVolatileText?: boolean;
 }
