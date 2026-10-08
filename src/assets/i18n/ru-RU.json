@@ -426,7 +426,7 @@
       "lastLogin": "Последний вход",
       "linkedAccounts": {
         "linkedAt": "Связан",
-        "menuItem": "Связанные аккаунты",
+        "menuItem": "Связанные аккаунты...",
         "title": "Связанные аккаунты пользователя {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

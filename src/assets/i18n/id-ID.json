@@ -426,7 +426,7 @@
       "lastLogin": "Login Terakhir",
       "linkedAccounts": {
         "linkedAt": "Ditautkan",
-        "menuItem": "Akun tertaut",
+        "menuItem": "Akun tertaut...",
         "title": "Akun tertaut untuk {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

@@ -426,7 +426,7 @@
       "lastLogin": "כניסה אחרונה",
       "linkedAccounts": {
         "linkedAt": "קושר",
-        "menuItem": "חשבונות מקושרים",
+        "menuItem": "חשבונות מקושרים...",
         "title": "חשבונות מקושרים של {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

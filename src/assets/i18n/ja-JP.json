@@ -426,7 +426,7 @@
       "lastLogin": "最終ログイン",
       "linkedAccounts": {
         "linkedAt": "リンク日時",
-        "menuItem": "リンク済みアカウント",
+        "menuItem": "リンク済みアカウント...",
         "title": "{{userName}} のリンク済みアカウント"
       },
       "listTitle": "{{admin.sections.users.title}}",
