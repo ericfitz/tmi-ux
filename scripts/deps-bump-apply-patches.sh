@@ -59,7 +59,7 @@ refuse() {
 
 # Both package-manager fields, as one comparable string.
 package_managers() {
-  jq -c '[.packageManager, .devEngines.packageManager]' package.json
+  jq -c '[.packageManager, (.devEngines | objects | .packageManager)]' package.json
 }
 
 if ! pm_before="$(package_managers 2>/dev/null)"; then
@@ -91,6 +91,7 @@ if git diff --cached --quiet; then
   echo "changes=false"
   exit 0
 fi
-git -c core.hooksPath=/dev/null commit -q --no-verify -m "$COMMIT_MESSAGE"
+git -c core.hooksPath=/dev/null commit -q --no-verify -m "$COMMIT_MESSAGE" ||
+  refuse "Could not commit the squashed bump"
 
 echo "changes=true"
