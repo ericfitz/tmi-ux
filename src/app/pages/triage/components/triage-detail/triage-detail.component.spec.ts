@@ -355,4 +355,34 @@ describe('TriageDetailComponent', () => {
       expect(component.responsesDisplayedColumns).toEqual(['question', 'answer']);
     });
   });
+
+  describe('showRevisionCard', () => {
+    const responseWith = (fields: Partial<SurveyResponse>): SurveyResponse =>
+      ({ id: 'r1', status: 'submitted', ...fields }) as SurveyResponse;
+
+    it('should be false before a response loads', () => {
+      component.response = null;
+      expect(component.showRevisionCard).toBe(false);
+    });
+
+    it('should be false for a response never returned for revision', () => {
+      component.response = responseWith({ status: 'submitted' });
+      expect(component.showRevisionCard).toBe(false);
+    });
+
+    it('should be true when the response needs revision, even without notes', () => {
+      component.response = responseWith({ status: 'needs_revision' });
+      expect(component.showRevisionCard).toBe(true);
+    });
+
+    it('should be true when the response has revision notes', () => {
+      component.response = responseWith({ status: 'submitted', revision_notes: 'Add the data flow' });
+      expect(component.showRevisionCard).toBe(true);
+    });
+
+    it('should be false for blank revision notes', () => {
+      component.response = responseWith({ status: 'submitted', revision_notes: '   ' });
+      expect(component.showRevisionCard).toBe(false);
+    });
+  });
 });
