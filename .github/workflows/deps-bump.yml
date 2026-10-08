@@ -71,17 +71,23 @@ jobs:
   # bump: the headless agent runs with --dangerously-skip-permissions and
   #   CLAUDE_CODE_OAUTH_TOKEN. It can reach this job's workspace, $GITHUB_ENV,
   #   $GITHUB_PATH, background processes and ACTIONS_RUNTIME_TOKEN (artifact
-  #   upload). It holds no GitHub write token and no App credentials. Everything
-  #   it produces (patches, plan text) is untrusted data.
+  #   upload and Actions cache writes, so workflows that hold secrets must not
+  #   restore caches). It holds no GitHub write token and no App credentials.
+  #   Everything it produces (patches, plan text) is untrusted data.
   # publish: a fresh runner and a fresh checkout. It applies the patches only if
-  #   they touch package.json and pnpm-lock.yaml alone and leave
-  #   "packageManager" unchanged, checks the lockfile, and only then mints the
-  #   App token to push and open the PR. No agent-written file, hook, env var,
-  #   PATH entry or process exists on this runner.
+  #   they modify package.json and pnpm-lock.yaml alone and leave the package
+  #   manager fields unchanged, squashes them into one commit of its own,
+  #   checks the lockfile, and only then mints the App token to push and open
+  #   the PR. No agent-written file, hook, env var, PATH entry or process exists
+  #   on this runner.
   bump:
     needs: discover
     if: ${{ needs.discover.outputs.branches != '[]' && needs.discover.outputs.branches != '' }}
     runs-on: ubuntu-latest
+    # Set by the plugin step, which finishes before the agent starts; a step's
+    # outputs can't be changed after it ends. The same for every leg.
+    outputs:
+      pin_note: ${{ steps.plugin.outputs.pin_note }}
     strategy:
       fail-fast: false
       matrix:
@@ -112,6 +118,9 @@ jobs:
           # before someone reviews it. Move this deliberately, like SKILL_SHA;
           # the check below warns when it falls behind.
           CLAUDE_CODE_VERSION: '2.1.293'
+          # Keep the pin: no background self-update.
+          DISABLE_UPDATES: '1'
+          DISABLE_AUTOUPDATER: '1'
         run: |
           set -euo pipefail
           npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
@@ -174,12 +183,17 @@ jobs:
           git config user.name "deps-bot"
           git config user.email "deps-bot@users.noreply.github.com"
           git checkout -b "deps/auto-bump/${BASE}/${{ github.run_id }}"
-          echo "artifact=deps-bump-$(printf '%s' "$BASE" | tr -c 'A-Za-z0-9._-' '_')" >> "$GITHUB_OUTPUT"
+          echo "artifact=deps-bump-$(printf '%s' "$BASE" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
       - name: Run headless bump (commit only — no push, no PR, no session-completion)
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           PLUGIN_DIR: ${{ steps.plugin.outputs.dir }}
+          # Keep the CLI pinned and fetch no unpinned plugin code at startup.
+          DISABLE_UPDATES: '1'
+          DISABLE_AUTOUPDATER: '1'
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+          CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL: '1'
           # Intentionally NO GH_TOKEN: the agent must not perform GitHub writes.
         run: |
           set -euo pipefail
@@ -196,14 +210,12 @@ jobs:
       - name: Export the bump as patches
         env:
           BASE: ${{ matrix.branch }}
-          PIN_NOTE: ${{ steps.plugin.outputs.pin_note }}
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/deps-bump-out"
           mkdir -p "$out/patches"
           git format-patch -o "$out/patches" "origin/${BASE}..HEAD"
           cp "$RUNNER_TEMP/bump-plan.txt" "$out/plan.txt"
-          printf '%s' "$PIN_NOTE" > "$out/pin-note.txt"
 
       - name: Upload the bump
         uses: actions/upload-artifact@v7
@@ -247,7 +259,7 @@ jobs:
         id: name
         env:
           BASE: ${{ matrix.branch }}
-        run: echo "artifact=deps-bump-$(printf '%s' "$BASE" | tr -c 'A-Za-z0-9._-' '_')" >> "$GITHUB_OUTPUT"
+        run: echo "artifact=deps-bump-$(printf '%s' "$BASE" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
       # A leg whose bump job failed uploaded nothing; that leg publishes nothing.
       - name: Download the bump
@@ -308,13 +320,19 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           BASE: ${{ matrix.branch }}
           REPO: ${{ github.repository }}
+          PIN_NOTE: ${{ needs.bump.outputs.pin_note }}
         run: |
           set -euo pipefail
           in="$RUNNER_TEMP/deps-bump-in"
           WB="$(git branch --show-current)"
           # persist-credentials was false, so push with the App token explicitly.
           git push "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/${WB}"
-          PIN_NOTE="$(cat "$in/pin-note.txt" 2>/dev/null || true)"
+          # plan.txt is agent output: strip CRs and fence it with more backticks
+          # than its longest run, so it can't close the fence and inject markdown.
+          plan="$(tail -c 60000 "$in/plan.txt" 2>/dev/null | tr -d '\r' || true)"
+          longest="$(printf '%s' "$plan" | { grep -oE '`+' || true; } | awk '{ if (length > m) m = length } END { print m + 0 }')"
+          fence='```'
+          while [ "${#fence}" -le "$longest" ]; do fence="${fence}\`"; done
           {
             echo "Automated dependency bump for \`${BASE}\` (safe patch/minor only)."
             echo
@@ -327,9 +345,9 @@ jobs:
             fi
             echo '<details><summary>Skill output / manual-review plan</summary>'
             echo
-            echo '```'
-            tail -c 60000 "$in/plan.txt" 2>/dev/null || true
-            echo '```'
+            echo "$fence"
+            printf '%s\n' "$plan"
+            echo "$fence"
             echo '</details>'
           } > "$RUNNER_TEMP/pr-body.md"
           gh pr create --repo "${REPO}" --base "${BASE}" --head "${WB}" \
