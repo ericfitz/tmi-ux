@@ -510,6 +510,7 @@ describe('ZOrderService', () => {
       const cells = [parent, child];
 
       // Act
+      // cells are partial stubs; this cast is repeated in the recalculateZOrder tests below
       const iterations = service.recalculateZOrder(cells as unknown as Cell[]);
 
       // Assert

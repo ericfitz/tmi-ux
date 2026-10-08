@@ -75,11 +75,11 @@ describe('UiPresenterSelectionService', () => {
     });
 
     // Create mock selection adapter
-    mockSelectionAdapter = {
+    mockSelectionAdapter = partialMock<typeof mockSelectionAdapter>({
       getSelectedCells: vi.fn(() => []),
       clearSelection: vi.fn(),
       selectCells: vi.fn(),
-    } as unknown as typeof mockSelectionAdapter;
+    });
 
     // Create service with mocks
     service = new UiPresenterSelectionService(

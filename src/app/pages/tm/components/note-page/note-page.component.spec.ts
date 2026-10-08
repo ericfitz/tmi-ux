@@ -403,7 +403,7 @@ describe('NotePageComponent', () => {
           selectionStart: 0,
           selectionEnd: 5,
         },
-      } as unknown as Event;
+      } as unknown as Event; // partial event: only target.selection* is read
 
       component.onTextareaSelect(mockEvent);
       expect(component.hasSelection).toBe(true);
@@ -413,7 +413,7 @@ describe('NotePageComponent', () => {
           selectionStart: 0,
           selectionEnd: 0,
         },
-      } as unknown as Event;
+      } as unknown as Event; // partial event: only target.selection* is read
 
       component.onTextareaSelect(noSelectionEvent);
       expect(component.hasSelection).toBe(false);

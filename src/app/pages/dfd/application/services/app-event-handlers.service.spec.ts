@@ -469,7 +469,7 @@ describe('AppEventHandlersService', () => {
       const dialogRefSubject = new Subject();
       mockDialog.open.mockReturnValue({
         afterClosed: () => dialogRefSubject.asObservable(),
-      } as MatDialogRef<any>);
+      } as MatDialogRef<unknown>);
 
       mockThreatModelService.getThreatModelById.mockReturnValue(
         of({ id: 'tm-1', threat_model_framework: 'STRIDE' }),
@@ -496,7 +496,7 @@ describe('AppEventHandlersService', () => {
       const dialogRefSubject = new Subject();
       mockDialog.open.mockReturnValue({
         afterClosed: () => dialogRefSubject.asObservable(),
-      } as MatDialogRef<any>);
+      } as MatDialogRef<unknown>);
 
       mockThreatModelService.getThreatModelById.mockReturnValue(
         of({ id: 'tm-1', threat_model_framework: 'STRIDE' }),

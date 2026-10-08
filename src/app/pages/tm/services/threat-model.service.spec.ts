@@ -136,11 +136,10 @@ describe('ThreatModelService', () => {
     // filterOwner delegates to the real implementation so the owner-scrubbing
     // assertions below test the service's payload, not a stub's return value
     const realFieldFilter = new ReadonlyFieldFilterService(loggerService);
-    const fieldFilter = {
-      filterReadonlyFields: vi.fn(),
+    const fieldFilter = partialMock<ReadonlyFieldFilterService>({
       filterAuthorizations: vi.fn((auths: unknown) => auths),
       filterOwner: vi.fn((owner: User) => realFieldFilter.filterOwner(owner)),
-    } as unknown as ReadonlyFieldFilterService; // partial mock; includes a member absent from the real type
+    });
 
     // ProviderAdapterService — transformProviderForDisplay maps '*' to 'tmi'
     const providerAdapter = partialMock<ProviderAdapterService>({

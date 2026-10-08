@@ -11,7 +11,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
 import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
+import { InfraPortStateService } from '../services/infra-port-state.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
@@ -64,12 +66,6 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
   value: mockSVGElement.createSVGMatrix,
   configurable: true,
 });
-
-// Deliberately partial stub for constructor dependencies this suite never exercises;
-// T is inferred from the constructor parameter being filled.
-function partialStub<T>(partial: object = {}): T {
-  return partial as T;
-}
 
 describe('InfraX6GraphAdapter - Read-Only Mode', () => {
   let adapter: InfraX6GraphAdapter;
@@ -124,21 +120,21 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
     // that setReadOnlyMode() actually uses
     adapter = new InfraX6GraphAdapter(
       mockLogger, // logger
-      partialStub(), // _edgeQueryService
-      partialStub(), // _nodeConfigurationService
-      partialStub(), // _embeddingService
-      partialStub({ setHistoryCoordinator: vi.fn() }), // _portStateManager
-      partialStub(), // _visualEffectsService
+      partialMock({}), // _edgeQueryService
+      partialMock({}), // _nodeConfigurationService
+      partialMock({}), // _embeddingService
+      partialMock<InfraPortStateService>({ setHistoryCoordinator: vi.fn() }), // _portStateManager
+      partialMock({}), // _visualEffectsService
       mockKeyboardHandler, // _keyboardHandler
-      partialStub(), // _zOrderAdapter
-      partialStub(), // _embeddingAdapter
+      partialMock({}), // _zOrderAdapter
+      partialMock({}), // _embeddingAdapter
       mockSelectionAdapter, // _selectionAdapter
-      partialStub(), // _x6EventLogger
-      partialStub(), // _tooltipAdapter
-      partialStub(), // _dfdValidation
-      partialStub(), // _historyCoordinator
-      partialStub(), // _x6CoreOps
-      partialStub(), // _injector
+      partialMock({}), // _x6EventLogger
+      partialMock({}), // _tooltipAdapter
+      partialMock({}), // _dfdValidation
+      partialMock({}), // _historyCoordinator
+      partialMock({}), // _x6CoreOps
+      partialMock({}), // _injector
     );
 
     // Inject the graph directly into the adapter's private field

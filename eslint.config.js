@@ -29,25 +29,19 @@ export default [
       'unused-imports': unusedImports,
     },
     rules: {
-      complexity: ['warn', 20],
+      'complexity': ['warn', 20],
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': 'off', // We use @typescript-eslint/no-unused-vars
-      '@typescript-eslint/explicit-function-return-type': [
-        'warn',
-        {
-          allowExpressions: true,
-        },
-      ],
+      '@typescript-eslint/explicit-function-return-type': ['warn', {
+        allowExpressions: true
+      }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/member-ordering': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
       'no-unused-imports': 'off', // We use @typescript-eslint/no-unused-vars instead
       '@typescript-eslint/unbound-method': ['warn', { ignoreStatic: true }],
       '@typescript-eslint/no-floating-promises': 'warn',
@@ -57,25 +51,22 @@ export default [
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       'no-console': ['warn', { allow: ['debug', 'info', 'warn', 'error'] }],
-
+      
       // Architecture validation rules
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['*.module'],
-              message: 'NgModules are deprecated. Use standalone components instead.',
-            },
-          ],
-          paths: [
-            {
-              name: '@angular/material',
-              message: 'Import specific Material modules, not the entire library.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['*.module'],
+            message: 'NgModules are deprecated. Use standalone components instead.'
+          }
+        ],
+        paths: [
+          {
+            name: '@angular/material',
+            message: 'Import specific Material modules, not the entire library.'
+          }
+        ]
+      }],
     },
   },
 
@@ -83,24 +74,14 @@ export default [
   {
     files: ['src/app/core/**/*.ts'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: [
-                '../../pages/*',
-                '../../auth/services/*',
-                '../../auth/components/*',
-                '../pages/*',
-                '../auth/*',
-              ],
-              message:
-                'Core services cannot import from feature modules. Use interfaces in core/interfaces instead.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['../../pages/*', '../../auth/services/*', '../../auth/components/*', '../pages/*', '../auth/*'],
+            message: 'Core services cannot import from feature modules. Use interfaces in core/interfaces instead.'
+          }
+        ]
+      }],
     },
   },
 
@@ -108,60 +89,48 @@ export default [
   {
     files: ['src/app/**/domain/**/*.ts'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: '@angular/core',
-              message: 'Domain layer should be pure business logic without Angular dependencies.',
-            },
-            {
-              name: '@angular/common',
-              message: 'Domain layer should be pure business logic without Angular dependencies.',
-            },
-            {
-              name: '@angular/material',
-              message:
-                'Domain layer should be pure business logic without Angular Material dependencies.',
-            },
-            {
-              name: '@angular/material/*',
-              message:
-                'Domain layer should be pure business logic without Angular Material dependencies.',
-            },
-            {
-              name: 'rxjs',
-              message: 'Domain layer should be pure business logic without RxJS dependencies.',
-            },
-            {
-              name: 'rxjs/*',
-              message: 'Domain layer should be pure business logic without RxJS dependencies.',
-            },
-          ],
-          patterns: [
-            {
-              group: [
-                '../services/*',
-                '../infrastructure/*',
-                '../../infrastructure/*',
-                '../application/*',
-                '../../application/*',
-              ],
-              message:
-                'Domain layer should not depend on infrastructure, application, or service layers.',
-            },
-            {
-              group: ['@antv/*'],
-              message: 'Domain layer should not depend on X6 or other UI framework libraries.',
-            },
-            {
-              group: ['@jsverse/*'],
-              message: 'Domain layer should not depend on third-party framework libraries.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: '@angular/core',
+            message: 'Domain layer should be pure business logic without Angular dependencies.'
+          },
+          {
+            name: '@angular/common',
+            message: 'Domain layer should be pure business logic without Angular dependencies.'
+          },
+          {
+            name: '@angular/material',
+            message: 'Domain layer should be pure business logic without Angular Material dependencies.'
+          },
+          {
+            name: '@angular/material/*',
+            message: 'Domain layer should be pure business logic without Angular Material dependencies.'
+          },
+          {
+            name: 'rxjs',
+            message: 'Domain layer should be pure business logic without RxJS dependencies.'
+          },
+          {
+            name: 'rxjs/*',
+            message: 'Domain layer should be pure business logic without RxJS dependencies.'
+          }
+        ],
+        patterns: [
+          {
+            group: ['../services/*', '../infrastructure/*', '../../infrastructure/*', '../application/*', '../../application/*'],
+            message: 'Domain layer should not depend on infrastructure, application, or service layers.'
+          },
+          {
+            group: ['@antv/*'],
+            message: 'Domain layer should not depend on X6 or other UI framework libraries.'
+          },
+          {
+            group: ['@jsverse/*'],
+            message: 'Domain layer should not depend on third-party framework libraries.'
+          }
+        ]
+      }],
     },
   },
 
@@ -169,18 +138,15 @@ export default [
   {
     files: ['src/app/shared/imports.ts', 'src/app/app.config.ts'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: '@angular/material',
-              message: 'Import specific Material modules, not the entire library.',
-            },
-          ],
-          // Allow module imports in app.config.ts for third-party modules
-        },
-      ],
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: '@angular/material',
+            message: 'Import specific Material modules, not the entire library.'
+          }
+        ]
+        // Allow module imports in app.config.ts for third-party modules
+      }],
     },
   },
 
@@ -205,14 +171,11 @@ export default [
     rules: {
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
@@ -234,7 +197,7 @@ export default [
       'no-restricted-syntax': [
         'error',
         {
-          selector: 'TSAsExpression > TSAnyKeyword.typeAnnotation',
+          selector: 'TSAsExpression TSAnyKeyword, TSTypeAssertion TSAnyKeyword',
           message:
             'Do not cast to any in tests. Type the fixture, use partialMock<T>() from @testing/partial-mock, or `as unknown as T` with a comment for deliberately invalid input.',
         },
@@ -256,6 +219,7 @@ export default [
       '@typescript-eslint/no-unsafe-call': 'off',
     },
   },
+
 
   // ZZZ page - disable only unsafe assignment warnings
   {
@@ -283,7 +247,10 @@ export default [
 
   // ae-cvss-calculator library types don't resolve for ESLint's type checker
   {
-    files: ['**/cvss-calculator-dialog/*.ts', '**/threat-page/threat-page.component.ts'],
+    files: [
+      '**/cvss-calculator-dialog/*.ts',
+      '**/threat-page/threat-page.component.ts',
+    ],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -310,7 +277,7 @@ export default [
       '.angular/**/*',
       'src/testing/matchers/graph-matchers.d.ts',
       'src/app/generated/**/*',
-      'vitest.config.ts',
+      'vitest.config.ts'
     ],
   },
 ];

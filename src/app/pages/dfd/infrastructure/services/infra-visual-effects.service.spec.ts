@@ -19,8 +19,8 @@ import { partialMock } from '@testing/partial-mock';
 // Mock types for better type safety
 // Standalone (not `extends Partial<Cell>`): X6's `Cell.isNode`/`isEdge` are typed as
 // type predicates (`() => this is Node`), which a vi.fn() `Mock` return type cannot
-// satisfy structurally when extending the real interface. Usage sites already cast
-// these mocks `as unknown as Cell/Node/Edge` when passing them to the service.
+// satisfy structurally when extending the real interface. The factories below
+// present the mocks as the real types via partialMock.
 interface MockCell {
   id: string;
   isNode: Mock;
@@ -47,30 +47,33 @@ describe('InfraVisualEffectsService', () => {
 
   // Test helper to create mock cells
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub diagram node with a given id and node type for tests (pure)
-  const createMockNode = (id: string, nodeType = 'process'): MockNode => ({
-    id,
-    isNode: vi.fn().mockReturnValue(true),
-    isEdge: vi.fn().mockReturnValue(false),
-    attr: vi.fn(),
-    shape: nodeType,
-  });
+  const createMockNode = (id: string, nodeType = 'process'): MockNode & Node =>
+    partialMock<MockNode & Node>({
+      id,
+      isNode: vi.fn().mockReturnValue(true),
+      isEdge: vi.fn().mockReturnValue(false),
+      attr: vi.fn(),
+      shape: nodeType,
+    });
 
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub diagram edge with a given id for tests (pure)
-  const createMockEdge = (id: string): MockEdge => ({
-    id,
-    isNode: vi.fn().mockReturnValue(false),
-    isEdge: vi.fn().mockReturnValue(true),
-    attr: vi.fn(),
-  });
+  const createMockEdge = (id: string): MockEdge & Edge =>
+    partialMock<MockEdge & Edge>({
+      id,
+      isNode: vi.fn().mockReturnValue(false),
+      isEdge: vi.fn().mockReturnValue(true),
+      attr: vi.fn(),
+    });
 
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: build a stub text-box diagram node with a given id for tests (pure)
-  const createMockTextBoxNode = (id: string): MockNode => ({
-    id,
-    isNode: vi.fn().mockReturnValue(true),
-    isEdge: vi.fn().mockReturnValue(false),
-    attr: vi.fn(),
-    shape: 'text-box',
-  });
+  const createMockTextBoxNode = (id: string): MockNode & Node =>
+    partialMock<MockNode & Node>({
+      id,
+      isNode: vi.fn().mockReturnValue(true),
+      isEdge: vi.fn().mockReturnValue(false),
+      attr: vi.fn(),
+      shape: 'text-box',
+    });
 
   beforeEach(() => {
     // Create mock logger
@@ -99,10 +102,10 @@ describe('InfraVisualEffectsService', () => {
     it('should apply creation highlight to regular nodes', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should start fade animation immediately
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
 
       // Should apply fade effect calls (specific calls depend on animation timing)
       expect(mockNode.attr).toHaveBeenCalled();
@@ -111,10 +114,10 @@ describe('InfraVisualEffectsService', () => {
     it('should apply creation highlight to text-box nodes', () => {
       const mockTextBox = createMockTextBoxNode('textbox1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockTextBox));
+      service.applyCreationHighlight(mockTextBox);
 
       // Should start fade animation immediately
-      expect(service.hasActiveEffects(partialMock<Node>(mockTextBox))).toBe(true);
+      expect(service.hasActiveEffects(mockTextBox)).toBe(true);
 
       // Should apply fade effect calls (specific calls depend on animation timing)
       expect(mockTextBox.attr).toHaveBeenCalled();
@@ -123,10 +126,10 @@ describe('InfraVisualEffectsService', () => {
     it('should apply creation highlight to edges', () => {
       const mockEdge = createMockEdge('edge1');
 
-      service.applyCreationHighlight(partialMock<Edge>(mockEdge));
+      service.applyCreationHighlight(mockEdge);
 
       // Should start fade animation immediately
-      expect(service.hasActiveEffects(partialMock<Edge>(mockEdge))).toBe(true);
+      expect(service.hasActiveEffects(mockEdge)).toBe(true);
 
       // Should apply fade effect calls (specific calls depend on animation timing)
       expect(mockEdge.attr).toHaveBeenCalled();
@@ -149,7 +152,7 @@ describe('InfraVisualEffectsService', () => {
         return undefined;
       });
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DFD',
@@ -166,7 +169,7 @@ describe('InfraVisualEffectsService', () => {
         throw new Error('Test error');
       };
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         '[VisualEffects] Error applying creation highlight',
@@ -185,10 +188,10 @@ describe('InfraVisualEffectsService', () => {
       // Set user preference to disable animations
       mockUserPreferencesService.getPreferences.mockReturnValue({ animations: false });
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should not apply any effects
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DFD',
         '[VisualEffects] Skipping creation highlight - animations disabled by user',
@@ -205,10 +208,10 @@ describe('InfraVisualEffectsService', () => {
       // Set user preference to enable animations (this is the default already)
       mockUserPreferencesService.getPreferences.mockReturnValue({ animations: true });
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should apply effects
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
     });
 
@@ -217,10 +220,10 @@ describe('InfraVisualEffectsService', () => {
       // Return preferences without animations property
       mockUserPreferencesService.getPreferences.mockReturnValue({});
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should apply effects (default behavior)
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
     });
 
@@ -231,10 +234,10 @@ describe('InfraVisualEffectsService', () => {
       // Just test normal behavior
       mockUserPreferencesService.getPreferences.mockReturnValue({ animations: true });
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should apply effects (default behavior on error)
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
 
       // Clean up
@@ -250,7 +253,7 @@ describe('InfraVisualEffectsService', () => {
     it('should start fade animation immediately after applying creation highlight', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Fast forward past initial setup
       vi.advanceTimersByTime(50);
@@ -271,13 +274,13 @@ describe('InfraVisualEffectsService', () => {
     it('should gradually fade out over time', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Fast forward to middle of animation
       vi.advanceTimersByTime(DFD_STYLING.CREATION.FADE_DURATION_MS - 1);
 
       // Animation should be active and making calls
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
     });
   });
@@ -290,20 +293,20 @@ describe('InfraVisualEffectsService', () => {
     it('should complete fade-out and remove effects after total duration', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Fast forward past total duration
       vi.advanceTimersByTime(DFD_STYLING.CREATION.FADE_DURATION_MS + 100);
 
       // Effects should be completely removed
       expect(mockNode.attr).toHaveBeenCalledWith('body/filter', 'none');
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
     });
 
     it('should start fade-out animation after pulse completes', () => {
       const mockEdge = createMockEdge('edge1');
 
-      service.applyCreationHighlight(partialMock<Edge>(mockEdge));
+      service.applyCreationHighlight(mockEdge);
 
       // Fast forward past fade duration
       vi.advanceTimersByTime(DFD_STYLING.CREATION.FADE_DURATION_MS + 150);
@@ -325,23 +328,23 @@ describe('InfraVisualEffectsService', () => {
     it('should remove active effects and clear timers', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      service.applyCreationHighlight(mockNode);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
 
-      service.removeVisualEffects(partialMock<Node>(mockNode));
+      service.removeVisualEffects(mockNode);
 
       // Should remove all visual effects
       expect(mockNode.attr).toHaveBeenCalledWith('body/filter', 'none');
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
     });
 
     it('should handle removing effects from cell without active effects', () => {
       const mockNode = createMockNode('node1');
 
-      service.removeVisualEffects(partialMock<Node>(mockNode));
+      service.removeVisualEffects(mockNode);
 
       // Should not throw error or cause issues
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
     });
 
     it('should handle null cell gracefully', () => {
@@ -357,15 +360,15 @@ describe('InfraVisualEffectsService', () => {
     it('should return false for cell without effects', () => {
       const mockNode = createMockNode('node1');
 
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
     });
 
     it('should return true for cell with active effects', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
     });
   });
 
@@ -378,16 +381,16 @@ describe('InfraVisualEffectsService', () => {
       const mockNode1 = createMockNode('node1');
       const mockNode2 = createMockNode('node2');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode1));
-      service.applyCreationHighlight(partialMock<Node>(mockNode2));
+      service.applyCreationHighlight(mockNode1);
+      service.applyCreationHighlight(mockNode2);
 
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode1))).toBe(true);
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode2))).toBe(true);
+      expect(service.hasActiveEffects(mockNode1)).toBe(true);
+      expect(service.hasActiveEffects(mockNode2)).toBe(true);
 
       service.cleanup();
 
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode1))).toBe(false);
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode2))).toBe(false);
+      expect(service.hasActiveEffects(mockNode1)).toBe(false);
+      expect(service.hasActiveEffects(mockNode2)).toBe(false);
     });
   });
 
@@ -400,7 +403,7 @@ describe('InfraVisualEffectsService', () => {
         return undefined;
       });
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DFD',
@@ -417,7 +420,7 @@ describe('InfraVisualEffectsService', () => {
         return undefined;
       });
 
-      service.applyCreationHighlight(partialMock<Node>(mockTextBox));
+      service.applyCreationHighlight(mockTextBox);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DFD',
@@ -435,7 +438,7 @@ describe('InfraVisualEffectsService', () => {
         return undefined;
       });
 
-      service.applyCreationHighlight(partialMock<Edge>(mockEdge));
+      service.applyCreationHighlight(mockEdge);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DFD',
@@ -453,7 +456,7 @@ describe('InfraVisualEffectsService', () => {
       });
 
       // Should not throw error and should still apply highlight
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'DfdVisualEffects',
@@ -474,15 +477,15 @@ describe('InfraVisualEffectsService', () => {
     it('should use correct timing constants', () => {
       const mockNode = createMockNode('node1');
 
-      service.applyCreationHighlight(partialMock<Node>(mockNode));
+      service.applyCreationHighlight(mockNode);
 
       // Should still be animating before duration completes
       vi.advanceTimersByTime(DFD_STYLING.CREATION.FADE_DURATION_MS - 1);
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(true);
+      expect(service.hasActiveEffects(mockNode)).toBe(true);
 
       // Should complete after fade duration
       vi.advanceTimersByTime(50); // Add extra time to ensure completion
-      expect(service.hasActiveEffects(partialMock<Node>(mockNode))).toBe(false);
+      expect(service.hasActiveEffects(mockNode)).toBe(false);
     });
   });
 
@@ -513,7 +516,7 @@ describe('InfraVisualEffectsService', () => {
     it('should create a label div in the graph container', () => {
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
 
       const labels = containerElement.querySelectorAll('.dfd-user-label');
       expect(labels).toHaveLength(1);
@@ -523,7 +526,7 @@ describe('InfraVisualEffectsService', () => {
     it('should position label using graph coordinate conversion', () => {
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
 
       expect(vi.mocked(mockGraph.localToClient)).toHaveBeenCalledWith(160, 50); // x + width/2, y
       const label = containerElement.querySelector('.dfd-user-label') as HTMLElement;
@@ -534,7 +537,7 @@ describe('InfraVisualEffectsService', () => {
       const cell = createMockCellWithBBox('node1');
       const expectedColor = DFD_STYLING_HELPERS.getUserLabelColor('user-1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
 
       const label = containerElement.querySelector('.dfd-user-label') as HTMLElement;
       expect(label.style.backgroundColor).toContain(
@@ -545,8 +548,8 @@ describe('InfraVisualEffectsService', () => {
     it('should replace existing label for same cell+user', () => {
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice (updated)');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice (updated)');
 
       const labels = containerElement.querySelectorAll('.dfd-user-label');
       expect(labels).toHaveLength(1);
@@ -556,8 +559,8 @@ describe('InfraVisualEffectsService', () => {
     it('should stack labels for different users on same cell', () => {
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-2', 'Bob');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-2', 'Bob');
 
       const labels = containerElement.querySelectorAll('.dfd-user-label');
       expect(labels).toHaveLength(2);
@@ -567,7 +570,7 @@ describe('InfraVisualEffectsService', () => {
       mockUserPreferencesService.getPreferences.mockReturnValue({ animations: false });
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
 
       const labels = containerElement.querySelectorAll('.dfd-user-label');
       expect(labels).toHaveLength(0);
@@ -585,12 +588,7 @@ describe('InfraVisualEffectsService', () => {
       const cell = createMockCellWithBBox('node1');
       const graphWithoutContainer = { container: null };
 
-      service.showUserLabel(
-        partialMock<Cell>(cell),
-        partialMock<Graph>(graphWithoutContainer),
-        'user-1',
-        'Alice',
-      );
+      service.showUserLabel(cell, partialMock<Graph>(graphWithoutContainer), 'user-1', 'Alice');
 
       // No error should be thrown
     });
@@ -598,7 +596,7 @@ describe('InfraVisualEffectsService', () => {
     it('should clean up labels on cleanup()', () => {
       const cell = createMockCellWithBBox('node1');
 
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
       expect(containerElement.querySelectorAll('.dfd-user-label')).toHaveLength(1);
 
       service.cleanup();
@@ -610,7 +608,7 @@ describe('InfraVisualEffectsService', () => {
       const cell = createMockCellWithBBox('node1');
       // Force a dark color by finding an email that maps to Blue (0, 114, 178)
       // We test the private helper directly via observable behavior
-      service.showUserLabel(partialMock<Cell>(cell), mockGraph, 'user-1', 'Alice');
+      service.showUserLabel(cell, mockGraph, 'user-1', 'Alice');
 
       const label = containerElement.querySelector('.dfd-user-label') as HTMLElement;
       // Text color should be either white or black (browser may return hex or rgb format)

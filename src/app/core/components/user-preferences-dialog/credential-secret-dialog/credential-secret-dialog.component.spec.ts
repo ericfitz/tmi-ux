@@ -113,6 +113,7 @@ describe('CredentialSecretDialogComponent', () => {
       mockAnchor = { href: '', download: '', click: vi.fn() };
       createElementSpy = vi
         .spyOn(document, 'createElement')
+        // mockAnchor stubs only the anchor members the component touches
         .mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
       createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
       revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});

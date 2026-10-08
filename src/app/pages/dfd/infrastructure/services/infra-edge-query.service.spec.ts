@@ -895,6 +895,7 @@ describe('InfraEdgeQueryService', () => {
       });
 
       // Mock corrupted edge methods
+      // null ids simulate corrupted edge data the type system forbids
       vi.spyOn(edge, 'getSourceCellId').mockReturnValue(null as unknown as string);
       vi.spyOn(edge, 'getTargetCellId').mockReturnValue(null as unknown as string);
 

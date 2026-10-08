@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { CellTool, MarkupElement } from '../value-objects/x6-types';
 import { validateMarkupElements, validateCellTools, hybridDataEquals } from './x6-validation.util';
-import { partialMock } from '@testing/partial-mock';
 
 describe('validateMarkupElements', () => {
   it('should accept valid markup elements', () => {
@@ -86,8 +85,8 @@ describe('validateCellTools', () => {
   });
 
   it('should throw on non-object args', () => {
-    // Deliberately malformed tool
-    const tool = partialMock<CellTool>({ name: 'boundary', args: 'invalid' });
+    // Deliberately malformed input: args is a string, which the CellTool type forbids
+    const tool = { name: 'boundary', args: 'invalid' } as unknown as CellTool;
     expect(() => validateCellTools([tool])).toThrow('Tool at index 0 args must be an object');
   });
 
