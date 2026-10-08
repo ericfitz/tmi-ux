@@ -66,6 +66,18 @@ jobs:
           echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
           echo "Discovered branches: $BRANCHES"
 
+  # Two jobs, so the GitHub write token never shares a runner with the agent (#989).
+  #
+  # bump: the headless agent runs with --dangerously-skip-permissions and
+  #   CLAUDE_CODE_OAUTH_TOKEN. It can reach this job's workspace, $GITHUB_ENV,
+  #   $GITHUB_PATH, background processes and ACTIONS_RUNTIME_TOKEN (artifact
+  #   upload). It holds no GitHub write token and no App credentials. Everything
+  #   it produces (patches, plan text) is untrusted data.
+  # publish: a fresh runner and a fresh checkout. It applies the patches only if
+  #   they touch package.json and pnpm-lock.yaml alone and leave
+  #   "packageManager" unchanged, checks the lockfile, and only then mints the
+  #   App token to push and open the PR. No agent-written file, hook, env var,
+  #   PATH entry or process exists on this runner.
   bump:
     needs: discover
     if: ${{ needs.discover.outputs.branches != '[]' && needs.discover.outputs.branches != '' }}
@@ -82,9 +94,6 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
           fetch-depth: 0
-          # The headless agent runs with --dangerously-skip-permissions; do NOT
-          # leave a push credential in its reach. The "Open PR" step authenticates
-          # explicitly with the App token instead.
           persist-credentials: false
 
       - name: Set up pnpm
@@ -97,8 +106,21 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code
+      - name: Install Claude Code CLI (pinned)
+        env:
+          # Pinned so a new CLI release can't run here with the OAuth token
+          # before someone reviews it. Move this deliberately, like SKILL_SHA;
+          # the check below warns when it falls behind.
+          CLAUDE_CODE_VERSION: '2.1.293'
+        run: |
+          set -euo pipefail
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          latest="$(npm view @anthropic-ai/claude-code version 2>/dev/null || echo unknown)"
+          if [ "$latest" != "$CLAUDE_CODE_VERSION" ]; then
+            note="Claude Code CLI pin is ${CLAUDE_CODE_VERSION}; npm latest is ${latest}. Review and move CLAUDE_CODE_VERSION in .github/workflows/deps-bump.yml."
+            echo "::warning::$note"
+            echo "$note" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Vendor the deps plugin into the runner
         id: plugin
@@ -142,20 +164,17 @@ jobs:
             echo "pin_note=$note"
           } >> "$GITHUB_OUTPUT"
 
+      # Runs before the agent, so the agent can't change these outputs.
       - name: Create working branch
         id: wb
         env:
           BASE: ${{ matrix.branch }}
         run: |
           set -euo pipefail
-          WB="deps/auto-bump/${BASE}/${{ github.run_id }}"
           git config user.name "deps-bot"
           git config user.email "deps-bot@users.noreply.github.com"
-          git checkout -b "$WB"
-          {
-            echo "base=$BASE"
-            echo "wb=$WB"
-          } >> "$GITHUB_OUTPUT"
+          git checkout -b "deps/auto-bump/${BASE}/${{ github.run_id }}"
+          echo "artifact=deps-bump-$(printf '%s' "$BASE" | tr -c 'A-Za-z0-9._-' '_')" >> "$GITHUB_OUTPUT"
 
       - name: Run headless bump (commit only — no push, no PR, no session-completion)
         env:
@@ -171,57 +190,131 @@ jobs:
           claude -p "Run the dependency bump skill (deps:bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
             --plugin-dir "$PLUGIN_DIR" \
             --dangerously-skip-permissions \
-            --allowedTools "Bash,Read,Write,Edit,Glob,Grep" | tee /tmp/bump-plan.txt
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep" | tee "$RUNNER_TEMP/bump-plan.txt"
+
+      # The publish job re-checks everything in this artifact; nothing here is trusted.
+      - name: Export the bump as patches
+        env:
+          BASE: ${{ matrix.branch }}
+          PIN_NOTE: ${{ steps.plugin.outputs.pin_note }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/deps-bump-out"
+          mkdir -p "$out/patches"
+          git format-patch -o "$out/patches" "origin/${BASE}..HEAD"
+          cp "$RUNNER_TEMP/bump-plan.txt" "$out/plan.txt"
+          printf '%s' "$PIN_NOTE" > "$out/pin-note.txt"
+
+      - name: Upload the bump
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.wb.outputs.artifact }}
+          path: ${{ runner.temp }}/deps-bump-out
+          retention-days: 7
+          if-no-files-found: error
+
+  publish:
+    needs: [discover, bump]
+    # Run for the legs whose bump succeeded even if another leg failed.
+    if: ${{ !cancelled() && needs.discover.outputs.branches != '[]' && needs.discover.outputs.branches != '' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.discover.outputs.branches) }}
+    concurrency:
+      group: deps-bump-publish-${{ matrix.branch }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Before the patches are applied, so "packageManager" comes from the base branch.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Name the bump artifact
+        id: name
+        env:
+          BASE: ${{ matrix.branch }}
+        run: echo "artifact=deps-bump-$(printf '%s' "$BASE" | tr -c 'A-Za-z0-9._-' '_')" >> "$GITHUB_OUTPUT"
+
+      # A leg whose bump job failed uploaded nothing; that leg publishes nothing.
+      - name: Download the bump
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ steps.name.outputs.artifact }}
+          path: ${{ runner.temp }}/deps-bump-in
+
+      # The validator comes from this fresh checkout of the base branch, not
+      # from the artifact. scripts/deps-bump-apply-patches.sh has the rules.
+      - name: Apply and validate the patches
+        id: apply
+        if: ${{ steps.download.outcome == 'success' }}
+        env:
+          BASE: ${{ matrix.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "deps-bot"
+          git config user.email "deps-bot@users.noreply.github.com"
+          git checkout -b "deps/auto-bump/${BASE}/${{ github.run_id }}"
+          # upload-artifact drops an empty patches/ (no safe updates).
+          mkdir -p "$RUNNER_TEMP/deps-bump-in/patches"
+          bash scripts/deps-bump-apply-patches.sh "origin/${BASE}" "$RUNNER_TEMP/deps-bump-in/patches" >> "$GITHUB_OUTPUT"
 
       # pnpm's frozen-lockfile check is what CI's install runs; a lockfile that
       # disagrees with package.json or its overrides (#984) fails here instead
       # of opening a PR whose every check fails.
       - name: Verify the lockfile matches package.json
-        env:
-          BASE: ${{ steps.wb.outputs.base }}
+        if: ${{ steps.apply.outputs.changes == 'true' }}
         run: |
           set -euo pipefail
-          if [ "$(git rev-list --count "origin/${BASE}..HEAD")" -eq 0 ]; then
-            echo "No commits relative to ${BASE}; nothing to verify."
-            exit 0
-          fi
-          # The push sends HEAD, so the check must see exactly what was committed.
-          if ! git diff --quiet HEAD -- package.json pnpm-lock.yaml; then
-            git status --porcelain
-            echo "::error::package.json or pnpm-lock.yaml differs from the bump commit; not opening a PR."
-            exit 1
-          fi
           if ! pnpm install --frozen-lockfile --lockfile-only --ignore-scripts; then
             git --no-pager show --stat HEAD
             echo "::error::pnpm-lock.yaml does not match package.json after the bump; not opening a PR."
             exit 1
           fi
+          if ! git diff --quiet HEAD; then
+            git status --porcelain
+            echo "::error::The lockfile check changed tracked files; not opening a PR."
+            exit 1
+          fi
 
-      # Minted AFTER the agent step so the write-capable token never exists while
-      # the --dangerously-skip-permissions agent is running. Ephemeral (~1h),
+      # Minted only after the patches passed validation. Ephemeral (~1h),
       # scoped to this App's Contents + Pull-requests permissions on this repo.
       - name: Mint GitHub App token
         id: app-token
+        if: ${{ steps.apply.outputs.changes == 'true' }}
         uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.DEPS_BOT_APP_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
 
-      - name: Open PR if there are changes
+      - name: Open PR
+        if: ${{ steps.apply.outputs.changes == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          BASE: ${{ steps.wb.outputs.base }}
-          WB: ${{ steps.wb.outputs.wb }}
+          BASE: ${{ matrix.branch }}
           REPO: ${{ github.repository }}
-          PIN_NOTE: ${{ steps.plugin.outputs.pin_note }}
         run: |
           set -euo pipefail
-          if [ "$(git rev-list --count "origin/${BASE}..HEAD")" -eq 0 ]; then
-            echo "No commits relative to ${BASE} — no safe updates. Skipping PR."
-            exit 0
-          fi
+          in="$RUNNER_TEMP/deps-bump-in"
+          WB="$(git branch --show-current)"
           # persist-credentials was false, so push with the App token explicitly.
           git push "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/${WB}"
+          PIN_NOTE="$(cat "$in/pin-note.txt" 2>/dev/null || true)"
           {
             echo "Automated dependency bump for \`${BASE}\` (safe patch/minor only)."
             echo
@@ -235,11 +328,11 @@ jobs:
             echo '<details><summary>Skill output / manual-review plan</summary>'
             echo
             echo '```'
-            tail -c 60000 /tmp/bump-plan.txt
+            tail -c 60000 "$in/plan.txt" 2>/dev/null || true
             echo '```'
             echo '</details>'
-          } > /tmp/pr-body.md
+          } > "$RUNNER_TEMP/pr-body.md"
           gh pr create --repo "${REPO}" --base "${BASE}" --head "${WB}" \
             --title "chore(deps): automated bump for ${BASE}" \
-            --body-file /tmp/pr-body.md \
+            --body-file "$RUNNER_TEMP/pr-body.md" \
             --label dependencies
