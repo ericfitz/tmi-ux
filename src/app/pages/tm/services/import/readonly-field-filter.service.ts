@@ -121,7 +121,7 @@ export class ReadonlyFieldFilterService {
   /**
    * Constructs a typed ApiCreateDiagramRequest from the input data.
    * Extracts fields that belong in the subsequent PUT
-   * (BaseDiagramInput / DfdDiagramInput) for separate handling.
+   * (DfdDiagramInput) for separate handling.
    */
   // SEM@5e45ee715126061060ab5a5b0de9079ec7ee3414: filter a diagram object to CreateDiagramRequest fields, extract deferred fields (pure)
   filterDiagram(data: Record<string, unknown>): {

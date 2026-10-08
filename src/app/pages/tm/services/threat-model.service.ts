@@ -64,8 +64,8 @@ type ApiThreatInput = components['schemas']['ThreatInput'];
 type ApiDocumentInput = components['schemas']['DocumentInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for repository create/update input payload (pure)
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
-// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for base diagram create/update input payload (pure)
-type ApiBaseDiagramInput = Omit<components['schemas']['DfdDiagramInput'], 'cells'>;
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for diagram create request payload (pure)
+type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for DFD diagram create/update input payload (pure)
 type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for note create/update input payload (pure)
@@ -1394,7 +1394,7 @@ export class ThreatModelService implements OnDestroy {
    * Create a new diagram in a threat model
    */
   // SEM@49590bd79bc6fb53c9853f6850b5a5113fafa37a: create a new diagram within a threat model via the API
-  createDiagram(threatModelId: string, diagram: Partial<ApiBaseDiagramInput>): Observable<Diagram> {
+  createDiagram(threatModelId: string, diagram: ApiCreateDiagramRequest): Observable<Diagram> {
     return this.apiService
       .post<Diagram>(`threat_models/${threatModelId}/diagrams`, diagram as Record<string, unknown>)
       .pipe(
