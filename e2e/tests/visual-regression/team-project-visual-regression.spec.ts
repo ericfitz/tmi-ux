@@ -1,5 +1,5 @@
 import { userTest } from '../../fixtures/auth-fixtures';
-import { takeThemeScreenshots } from '../../helpers/screenshot';
+import { takeThemeScreenshots, DATE_TEXT } from '../../helpers/screenshot';
 import { TeamsPage } from '../../pages/teams.page';
 import { ProjectsPage } from '../../pages/projects.page';
 import { DashboardPage } from '../../pages/dashboard.page';
@@ -17,6 +17,7 @@ userTest.describe('Team/Project Visual Regression', () => {
     const timestamps = userPage.locator('.mat-column-modified');
 
     await takeThemeScreenshots(userPage, 'teams-list', {
+      freezeVolatileText: true,
       mask: [timestamps],
     });
   });
@@ -28,7 +29,11 @@ userTest.describe('Team/Project Visual Regression', () => {
     await new TeamsPage(userPage).addButton().click();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
-    await takeThemeScreenshots(userPage, 'create-team-dialog');
+    // The list's modified dates show behind the dialog.
+    await takeThemeScreenshots(userPage, 'create-team-dialog', {
+      freezeVolatileText: true,
+      mask: [userPage.locator('.mat-column-modified')],
+    });
 
     await userPage.getByTestId('create-team-cancel-button').click();
   });
@@ -41,11 +46,12 @@ userTest.describe('Team/Project Visual Regression', () => {
     await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
     const timestamps = userPage.locator('.info-value').filter({
-      hasText: /\d{1,2}\/\d{1,2}\/\d{2,4}/,
+      hasText: DATE_TEXT,
     });
 
     await takeThemeScreenshots(userPage, 'edit-team-dialog', {
-      mask: [timestamps],
+      freezeVolatileText: true,
+      mask: [timestamps, userPage.locator('.mat-column-modified')],
     });
 
     await userPage.getByTestId('edit-team-cancel-button').click();
@@ -58,6 +64,7 @@ userTest.describe('Team/Project Visual Regression', () => {
     const timestamps = userPage.locator('.mat-column-modified');
 
     await takeThemeScreenshots(userPage, 'projects-list', {
+      freezeVolatileText: true,
       mask: [timestamps],
     });
   });
@@ -69,7 +76,11 @@ userTest.describe('Team/Project Visual Regression', () => {
     await new ProjectsPage(userPage).addButton().click();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
-    await takeThemeScreenshots(userPage, 'create-project-dialog');
+    // The list's modified dates show behind the dialog.
+    await takeThemeScreenshots(userPage, 'create-project-dialog', {
+      freezeVolatileText: true,
+      mask: [userPage.locator('.mat-column-modified')],
+    });
 
     await userPage.getByTestId('create-project-cancel-button').click();
   });
@@ -82,11 +93,12 @@ userTest.describe('Team/Project Visual Regression', () => {
     await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
     const timestamps = userPage.locator('.info-value').filter({
-      hasText: /\d{1,2}\/\d{1,2}\/\d{2,4}/,
+      hasText: DATE_TEXT,
     });
 
     await takeThemeScreenshots(userPage, 'edit-project-dialog', {
-      mask: [timestamps],
+      freezeVolatileText: true,
+      mask: [timestamps, userPage.locator('.mat-column-modified')],
     });
 
     await userPage.getByTestId('edit-project-cancel-button').click();
@@ -106,6 +118,7 @@ userTest.describe('Team/Project Visual Regression', () => {
     const collabIndicators = userPage.locator('.collab-indicator-icon, .collaboration-info');
 
     await takeThemeScreenshots(userPage, 'dashboard-advanced-filters', {
+      freezeVolatileText: true,
       mask: [timestamps, collabIndicators],
       fullPage: true,
     });

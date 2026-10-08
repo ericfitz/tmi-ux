@@ -4,11 +4,49 @@ import { type ThemeMode, ALL_THEME_MODES, applyTheme, detectCurrentTheme } from 
 export type { ThemeMode };
 export { ALL_THEME_MODES };
 
+/**
+ * Matches rendered dates in the formats the app uses (numeric `10/7/2026`,
+ * medium `Oct 7, 2026` and ISO `2026-10-07`), for masking timestamps that
+ * change with every seed.
+ */
+export const DATE_TEXT = /\d{1,2}\/\d{1,2}\/\d{2,4}|\b[A-Z][a-z]{2,8}\.? \d{1,2}, \d{4}|\d{4}-\d{2}-\d{2}/;
+
+/**
+ * Matches text that changes with every seed: UUIDs, and dates (formats as in
+ * DATE_TEXT) with an optional trailing time such as `, 11:53:05 PM`.
+ */
+const VOLATILE_TEXT_SOURCE =
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' +
+  '|(?:\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}|\\b[A-Z][a-z]{2,8}\\.? \\d{1,2}, \\d{4}|\\d{4}-\\d{2}-\\d{2})' +
+  '(?:,?\\s\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s?[AP]M)?)?';
+
 export interface ScreenshotOptions {
   mask?: Locator[];
   threshold?: number;
   fullPage?: boolean;
   modes?: ThemeMode[];
+  /**
+   * Replace UUIDs and dates in the page's text with fixed placeholders before
+   * each screenshot. Unlike a mask, this also removes the layout shift that
+   * variable-width timestamps cause in auto-sized table columns.
+   */
+  freezeVolatileText?: boolean;
+}
+
+/** Rewrites volatile text (see VOLATILE_TEXT_SOURCE) in every text node under body. */
+async function freezeVolatileText(page: Page): Promise<void> {
+  await page.evaluate(source => {
+    const pattern = new RegExp(source, 'g');
+    const uuid = /^[0-9a-f]{8}-/;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.nodeValue ?? '';
+      const frozen = text.replace(pattern, match =>
+        uuid.test(match) ? '00000000-0000-0000-0000-000000000000' : '1/1/2000, 12:00 PM',
+      );
+      if (frozen !== text) node.nodeValue = frozen;
+    }
+  }, VOLATILE_TEXT_SOURCE);
 }
 
 /**
@@ -32,6 +70,8 @@ export async function takeThemeScreenshots(
   try {
     for (const mode of modes) {
       await applyTheme(page, mode);
+      // Per mode: a re-render between modes could restore the original text.
+      if (options?.freezeVolatileText) await freezeVolatileText(page);
       await expect(page).toHaveScreenshot(`${name}-${mode}.png`, {
         threshold: options?.threshold ?? 0.2,
         fullPage: options?.fullPage ?? false,
