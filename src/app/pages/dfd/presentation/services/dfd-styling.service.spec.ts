@@ -61,11 +61,21 @@ function fakeCell(overrides: FakeCellOptions = {}): FakeCell {
     getData: function <T = Record<string, unknown>>(): T {
       return cell.__data as T;
     },
+    // Like X6: without `overwrite`, setData merges and an undefined value never
+    // clears an existing key.
     setData: function (
       data: Record<string, unknown>,
-      _options?: { silent?: boolean; overwrite?: boolean },
+      options?: { silent?: boolean; overwrite?: boolean },
     ): void {
-      cell.__data = data;
+      if (options?.overwrite) {
+        cell.__data = data;
+        return;
+      }
+      const merged: Record<string, unknown> = { ...cell.__data };
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== undefined || !(key in merged)) merged[key] = value;
+      }
+      cell.__data = merged;
     },
     getSize: function () {
       return { width: 120, height: 80 };

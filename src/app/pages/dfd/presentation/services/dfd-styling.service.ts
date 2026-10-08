@@ -259,7 +259,10 @@ export class DfdStylingService {
       cell.setAttrByPath('text/refY', defaultRefY);
       cell.setAttrByPath('text/textAnchor', 'middle');
       cell.setAttrByPath('text/textVerticalAnchor', 'middle');
-      cell.setData({ ...data, customStyles: undefined }, { silent: true });
+      // X6 setData() merges, so an undefined value would leave customStyles set.
+      const resetData: Record<string, unknown> = { ...data };
+      delete resetData['customStyles'];
+      cell.setData(resetData, { silent: true, overwrite: true });
 
       return {
         id: `clear-style-${Date.now()}-${cell.id}`,

@@ -78,6 +78,8 @@ function x6MergeData(target: unknown, source: unknown): unknown {
   ) {
     const out: Record<string, unknown> = { ...(target as Record<string, unknown>) };
     for (const [k, v] of Object.entries(source)) {
+      // lodash merge (which X6 uses) skips undefined source values.
+      if (v === undefined && k in out) continue;
       out[k] = x6MergeData(out[k], v);
     }
     return out;
