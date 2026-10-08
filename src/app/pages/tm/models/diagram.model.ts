@@ -43,7 +43,7 @@ export interface Cell {
 
 /**
  * Interface for a diagram object supporting collaborative editing
- * Based on the BaseDiagram schema in tmi-openapi.json
+ * Based on the DfdDiagram schema in tmi-openapi.json
  */
 export interface Diagram {
   id: string;

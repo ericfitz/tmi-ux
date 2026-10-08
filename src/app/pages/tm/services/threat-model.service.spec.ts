@@ -832,7 +832,7 @@ describe('ThreatModelService', () => {
 
     describe('Diagram API Methods', () => {
       it('should create a diagram via API', waitForAsync(() => {
-        const diagramData: Partial<Diagram> = { name: 'Test Diagram', type: 'DFD-1.0.0' };
+        const diagramData = { name: 'Test Diagram', type: 'DFD-1.0.0' as const };
         const expectedDiagram = { ...diagramData, id: 'new-diagram-id' };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDiagram));
 
@@ -2760,7 +2760,7 @@ describe('ThreatModelService', () => {
       new Promise<void>((resolve, reject) => {
         vi.mocked(apiService.post).mockReturnValue(throwError(() => new Error('create failed')));
 
-        service.createDiagram(tmId, { name: 'x' }).subscribe({
+        service.createDiagram(tmId, { name: 'x', type: 'DFD-1.0.0' }).subscribe({
           next: () => reject(new Error('expected an error')),
           error: err => {
             try {

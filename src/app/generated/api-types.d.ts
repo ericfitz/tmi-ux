@@ -2475,7 +2475,7 @@ export interface paths {
     put?: never;
     /**
      * Re-encrypt all system settings
-     * @description Re-encrypts all system settings with the current encryption key. Use this after rotating the encryption key or when first enabling encryption on existing settings. Requires administrator privileges. Settings that cannot be decrypted are reported as errors but do not prevent other settings from being processed.
+     * @description Re-encrypts all system settings with the current encryption key. Use this after rotating the encryption key or when first enabling encryption on existing settings. Requires administrator privileges. Settings that cannot be decrypted are reported as errors but do not prevent other settings from being processed. The pass is resumable: each row is committed on its own, so a failure part-way keeps the rows already converted and a retry finishes the rest.
      */
     post: operations['reencryptSystemSettings'];
     delete?: never;
@@ -3406,7 +3406,11 @@ export interface paths {
     get: operations['getWebhookDeliveryStatus'];
     put?: never;
     post?: never;
-    delete?: never;
+    /**
+     * Cancel a webhook delivery
+     * @description Mark a pending or in-progress delivery as cancelled (terminal). Allowed for admins, the subscription owner, the addon invoker, and a client-credentials identity linked to the delivery's addon. Addons poll GET /webhook-deliveries/{delivery_id} and abort when they see cancelled; a later POST .../status from the addon returns 409.
+     */
+    delete: operations['cancelWebhookDelivery'];
     options?: never;
     head?: never;
     patch?: never;
@@ -4309,6 +4313,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/webhook-deliveries': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List my webhook deliveries
+     * @description List deliveries the caller may see: admins see every delivery; other callers see deliveries they invoked, deliveries of subscriptions they own, and (for a client-credentials identity linked to an addon) every delivery of that addon. Newest first.
+     */
+    get: operations['listMyWebhookDeliveries'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4591,137 +4615,6 @@ export interface components {
       readonly version?: number;
     });
     /**
-     * @description Base diagram object with common properties - used for API responses
-     * @example {
-     *       "id": "550e8400-e29b-41d4-a716-446655440000",
-     *       "type": "DFD-1.0.0",
-     *       "name": "System Architecture",
-     *       "description": "High-level system architecture diagram",
-     *       "created_at": "2024-01-15T10:00:00Z",
-     *       "modified_at": "2024-01-15T10:00:00Z",
-     *       "include_in_report": true,
-     *       "timmy_enabled": true
-     *     }
-     */
-    BaseDiagram: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the diagram (UUID)
-       */
-      readonly id: string;
-      /** @description Name of the diagram */
-      name: string;
-      /**
-       * @description Type of diagram with version
-       * @enum {string}
-       */
-      type: 'DFD-1.0.0';
-      /**
-       * Format: date-time
-       * @description Creation timestamp (ISO3339)
-       */
-      readonly created_at: string;
-      /**
-       * Format: date-time
-       * @description Last modification timestamp (ISO3339)
-       */
-      readonly modified_at: string;
-      /** @description Key-value pairs for additional diagram metadata */
-      metadata?: components['schemas']['Metadata'][] | null;
-      /**
-       * Format: int64
-       * @description Server-managed monotonic version counter, incremented on each diagram update
-       */
-      readonly update_vector?: number;
-      /** @description Image data with version information */
-      image?: {
-        /**
-         * Format: byte
-         * @description BASE64 encoded SVG representation of the diagram, used for thumbnails and reports
-         */
-        svg?: string;
-        /**
-         * Format: int64
-         * @description Version of the diagram when this SVG was generated. If not provided when svg is updated, will be auto-set to BaseDiagram.update_vector
-         */
-        update_vector?: number;
-      } | null;
-      /** @description Optional description of the diagram */
-      description?: string | null;
-      /**
-       * @description Whether this item should be included in generated reports
-       * @default true
-       */
-      include_in_report: boolean;
-      /**
-       * @description Whether the Timmy AI assistant is enabled for this entity
-       * @default true
-       */
-      timmy_enabled: boolean;
-      /**
-       * Format: date-time
-       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
-       */
-      readonly deleted_at?: string | null;
-      /** @description Custom color palette for diagram elements, ordered by position */
-      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
-      /** @description True when the diagram was created by an automation/service-account principal. Sticky from creation. */
-      readonly auto_generated?: boolean;
-      /**
-       * Format: int32
-       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
-       */
-      readonly alias?: number;
-    };
-    /**
-     * @description Base diagram input for PUT/PATCH requests - excludes readOnly server-managed fields
-     * @example {
-     *       "type": "DFD-1.0.0",
-     *       "name": "New Architecture Diagram",
-     *       "description": "Draft architecture for microservices migration",
-     *       "include_in_report": true,
-     *       "timmy_enabled": true
-     *     }
-     */
-    BaseDiagramInput: {
-      /** @description Name of the diagram */
-      name: string;
-      /**
-       * @description Type of diagram with version
-       * @enum {string}
-       */
-      type: 'DFD-1.0.0';
-      /** @description Key-value pairs for additional diagram metadata */
-      metadata?: components['schemas']['Metadata'][] | null;
-      /** @description Image data with version information */
-      image?: {
-        /**
-         * Format: byte
-         * @description BASE64 encoded SVG representation of the diagram, used for thumbnails and reports
-         */
-        svg?: string;
-        /**
-         * Format: int64
-         * @description Version of the diagram when this SVG was generated. If not provided when svg is updated, will be auto-set to BaseDiagram.update_vector
-         */
-        update_vector?: number;
-      } | null;
-      /** @description Optional description of the diagram */
-      description?: string | null;
-      /**
-       * @description Whether this item should be included in generated reports
-       * @default true
-       */
-      include_in_report: boolean;
-      /**
-       * @description Whether the Timmy AI assistant is enabled for this entity
-       * @default true
-       */
-      timmy_enabled: boolean;
-      /** @description Custom color palette for diagram elements, ordered by position */
-      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
-    };
-    /**
      * @description Data Flow Diagram with cells, edges, and visual styling for JointJS rendering
      * @example {
      *       "id": "234e5678-e89b-41d4-a716-446655440002",
@@ -4754,16 +4647,73 @@ export interface components {
      */
     DfdDiagram: {
       /**
-       * Format: int32
-       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
+       * Format: uuid
+       * @description Unique identifier for the diagram (UUID)
        */
-      readonly version?: number;
-    } & (Omit<components['schemas']['BaseDiagram'], 'type'> & {
+      readonly id: string;
+      /** @description Name of the diagram */
+      name: string;
       /**
        * @description DFD diagram type with version
        * @enum {string}
        */
-      type?: 'DFD-1.0.0';
+      type: 'DFD-1.0.0';
+      /**
+       * Format: date-time
+       * @description Creation timestamp (ISO3339)
+       */
+      readonly created_at: string;
+      /**
+       * Format: date-time
+       * @description Last modification timestamp (ISO3339)
+       */
+      readonly modified_at: string;
+      /** @description Key-value pairs for additional diagram metadata */
+      metadata?: components['schemas']['Metadata'][] | null;
+      /**
+       * Format: int64
+       * @description Server-managed monotonic version counter, incremented on each diagram update
+       */
+      readonly update_vector?: number;
+      /** @description Image data with version information */
+      image?: {
+        /**
+         * Format: byte
+         * @description BASE64 encoded SVG representation of the diagram, used for thumbnails and reports
+         */
+        svg?: string;
+        /**
+         * Format: int64
+         * @description Version of the diagram when this SVG was generated. If not provided when svg is updated, will be auto-set to the diagram update_vector
+         */
+        update_vector?: number;
+      } | null;
+      /** @description Optional description of the diagram */
+      description?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /**
+       * Format: date-time
+       * @description Deletion timestamp (RFC3339). Present only on soft-deleted entities within the tombstone retention period.
+       */
+      readonly deleted_at?: string | null;
+      /** @description Custom color palette for diagram elements, ordered by position */
+      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
+      /** @description True when the diagram was created by an automation/service-account principal. Sticky from creation. */
+      readonly auto_generated?: boolean;
+      /**
+       * Format: int32
+       * @description Server-assigned monotonically-increasing integer alias, unique within the parent threat model. Immutable after creation.
+       */
+      readonly alias?: number;
       /** @description List of diagram cells (nodes and edges) following X6 structure */
       cells: (components['schemas']['Node'] | components['schemas']['Edge'])[];
       /**
@@ -4771,19 +4721,7 @@ export interface components {
        * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
        */
       readonly version?: number;
-    } & {
-      /**
-       * @description discriminator enum property added by openapi-typescript
-       * @enum {string}
-       */
-      type: 'DFD-1.0.0';
-    } & {
-      /**
-       * @description discriminator enum property added by openapi-typescript
-       * @enum {string}
-       */
-      type: 'DFD-1.0.0';
-    });
+    };
     /**
      * @description Input schema for creating or updating a Data Flow Diagram
      * @example {
@@ -4804,20 +4742,45 @@ export interface components {
      *       "timmy_enabled": true
      *     }
      */
-    DfdDiagramInput: Omit<components['schemas']['BaseDiagramInput'], 'type'> & {
+    DfdDiagramInput: {
+      /** @description Name of the diagram */
+      name: string;
       /**
        * @description DFD diagram type with version
        * @enum {string}
        */
-      type?: 'DFD-1.0.0';
+      type: 'DFD-1.0.0';
+      /** @description Key-value pairs for additional diagram metadata */
+      metadata?: components['schemas']['Metadata'][] | null;
+      /** @description Image data with version information */
+      image?: {
+        /**
+         * Format: byte
+         * @description BASE64 encoded SVG representation of the diagram, used for thumbnails and reports
+         */
+        svg?: string;
+        /**
+         * Format: int64
+         * @description Version of the diagram when this SVG was generated. If not provided when svg is updated, will be auto-set to the diagram update_vector
+         */
+        update_vector?: number;
+      } | null;
+      /** @description Optional description of the diagram */
+      description?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
+      /**
+       * @description Whether the Timmy AI assistant is enabled for this entity
+       * @default true
+       */
+      timmy_enabled: boolean;
+      /** @description Custom color palette for diagram elements, ordered by position */
+      color_palette?: components['schemas']['ColorPaletteEntry'][] | null;
       /** @description List of diagram cells (nodes and edges) following X6 structure */
       cells: (components['schemas']['Node'] | components['schemas']['Edge'])[];
-    } & {
-      /**
-       * @description discriminator enum property added by openapi-typescript
-       * @enum {string}
-       */
-      type: 'DFD-1.0.0';
     };
     /**
      * @description Request body for creating a new diagram - only includes client-provided fields
@@ -4836,66 +4799,9 @@ export interface components {
       type: 'DFD-1.0.0';
     };
     /**
-     * @deprecated
-     * @description DEPRECATED: Empty wrapper schema for polymorphic diagram types. Use DfdDiagram directly instead. This schema is kept for backward compatibility but generates empty classes in client libraries.
-     * @example {
-     *       "id": "234e5678-e89b-41d4-a716-446655440001",
-     *       "type": "DFD-1.0.0",
-     *       "name": "Payment Flow Architecture",
-     *       "description": "Data flow diagram showing payment processing",
-     *       "created_at": "2024-01-15T10:35:00Z",
-     *       "modified_at": "2024-01-20T16:00:00Z",
-     *       "cells": []
-     *     }
-     */
-    Diagram: {
-      /**
-       * Format: int32
-       * @description Server-managed monotonically-increasing optimistic-locking version. Returned on reads and bumped by every successful PUT/PATCH. Clients echo this back via the If-Match request header (preferred) or the body 'version' field on the next mutation. A mismatch returns 409 Conflict. See issue #385.
-       */
-      readonly version?: number;
-    } & components['schemas']['DfdDiagram'];
-    /**
-     * @description Base schema for all diagram cells (nodes and edges). Contains common properties shared by Node and Edge types.
-     * @example {
-     *       "id": "f60eabcd-e89b-41d4-a716-446655440015",
-     *       "shape": "process"
-     *     }
-     */
-    Cell: {
-      /**
-       * Format: uuid
-       * @description Unique identifier of the cell (UUID)
-       * @example 37EAEDFA-BF37-4996-8665-242FEC34BBFF
-       */
-      id: string;
-      /**
-       * @description Shape type identifier that determines cell structure and behavior
-       * @example process
-       */
-      shape: string;
-      /**
-       * @description Flexible data storage compatible with X6, with reserved metadata namespace
-       * @default {
-       *       "_metadata": []
-       *     }
-       */
-      data: {
-        /** @description Reserved namespace for structured business metadata */
-        _metadata?: components['schemas']['Metadata'][];
-        /**
-         * @description Indicates whether this cell represents a security boundary in the threat model
-         * @default false
-         */
-        security_boundary: boolean;
-        /** @description References to Asset IDs associated with this cell. Each UUID must reference an existing Asset in the same threat model. */
-        data_assets?: string[];
-      } & {
-        [key: string]: unknown;
-      };
-    };
-    /**
      * @description Diagram node representing a process, data store, external entity, or trust boundary
+     *
+     *     Supports both X6 position/size object format and flat x/y/width/height format. Input accepts either format. Output always uses flat format (x, y, width, height).
      * @example {
      *       "id": "c30eabcd-e89b-41d4-a716-446655440022",
      *       "shape": "process",
@@ -4905,12 +4811,14 @@ export interface components {
      *       "height": 70
      *     }
      */
-    Node: Omit<components['schemas']['Cell'], 'shape'> & {
+    Node: {
+      id: components['schemas']['CellId'];
+      data?: components['schemas']['CellData'];
       /**
-       * @description Node type determining its visual representation and behavior
+       * @description Node type determining its visual representation and behavior (enum property replaced by openapi-typescript)
        * @enum {string}
        */
-      shape?: 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
+      shape: 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
       /** @description Node position in X6 nested format. Use either this with size object OR use flat x/y/width/height properties. */
       position?: {
         /** @description X coordinate */
@@ -4949,15 +4857,11 @@ export interface components {
       width?: number;
       /** @description Height in pixels (flat format) */
       height?: number;
-    } & {
-      /**
-       * @description discriminator enum property added by openapi-typescript
-       * @enum {string}
-       */
-      shape: 'actor' | 'process' | 'store' | 'security-boundary' | 'text-box';
     };
     /**
      * @description Diagram edge representing a data flow connection between nodes
+     *
+     *     Fully compatible with X6 Edge objects and supports X6 routing algorithms (manhattan, orth, one_side, metro, er), connector styles (normal, rounded, smooth, jumpover), custom markup, tools, and convenience properties (label, style) for easier integration.
      * @example {
      *       "id": "a90eabcd-e89b-41d4-a716-446655440018",
      *       "shape": "flow",
@@ -4969,12 +4873,14 @@ export interface components {
      *       }
      *     }
      */
-    Edge: Omit<components['schemas']['Cell'], 'shape'> & {
+    Edge: {
+      id: components['schemas']['CellId'];
+      data?: components['schemas']['CellData'];
       /**
-       * @description Edge type identifier
+       * @description Edge type identifier (enum property replaced by openapi-typescript)
        * @enum {string}
        */
-      shape?: 'flow';
+      shape: 'flow';
       /** @description Source connection point */
       source: components['schemas']['EdgeTerminal'];
       /** @description Target connection point */
@@ -4991,12 +4897,6 @@ export interface components {
       connector?: components['schemas']['EdgeConnector'];
       /** @description Default label configuration applied to edges without explicit labels */
       defaultLabel?: components['schemas']['EdgeLabel'];
-    } & {
-      /**
-       * @description discriminator enum property added by openapi-typescript
-       * @enum {string}
-       */
-      shape: 'flow';
     };
     /**
      * @description A threat model containing diagrams, threats, documents, and other security analysis artifacts
@@ -5084,7 +4984,7 @@ export interface components {
       /** @description List of source code repositories related to the threat model */
       readonly repositories?: components['schemas']['Repository'][];
       /** @description List of diagram objects associated with this threat model */
-      readonly diagrams?: components['schemas']['Diagram'][];
+      readonly diagrams?: components['schemas']['DfdDiagram'][];
       /** @description List of threats within the threat model */
       readonly threats?: components['schemas']['Threat'][];
       /** @description List of notes associated with the threat model */
@@ -6640,10 +6540,10 @@ export interface components {
       /** @description HMAC secret for signing payloads (not returned in GET responses) */
       secret?: string;
       /**
-       * @description Subscription status
+       * @description Subscription status. 'inactive' means the subscription was deactivated (for example, an operator-pinned subscription whose pin configuration was removed): no deliveries are made, and the subscription is retained and can be re-activated by the server when its pin configuration is restored.
        * @enum {string}
        */
-      status: 'pending_verification' | 'active' | 'pending_delete';
+      status: 'pending_verification' | 'active' | 'inactive' | 'pending_delete';
       /** @description Number of verification challenges sent */
       challenges_sent?: number;
       /**
@@ -6742,10 +6642,10 @@ export interface components {
         [key: string]: unknown;
       };
       /**
-       * @description Delivery status
+       * @description Delivery status. cancelled is terminal and set only by DELETE /webhook-deliveries/{delivery_id}.
        * @enum {string}
        */
-      status: 'pending' | 'in_progress' | 'delivered' | 'failed';
+      status: 'pending' | 'in_progress' | 'delivered' | 'failed' | 'cancelled';
       /** @description Number of delivery attempts */
       attempts: number;
       /**
@@ -10552,7 +10452,7 @@ export interface components {
        * @example in_progress
        * @enum {string}
        */
-      status: 'pending' | 'in_progress' | 'delivered' | 'failed';
+      status: 'pending' | 'in_progress' | 'delivered' | 'failed' | 'cancelled';
       /** @example 50 */
       status_percent: number;
       /**
@@ -11380,6 +11280,31 @@ export interface components {
       role?: components['schemas']['TeamMemberRole'];
       /** @description Custom role description when role is 'other' */
       custom_role?: string;
+    };
+    /**
+     * Format: uuid
+     * @description Unique identifier of the cell (UUID)
+     * @example 37EAEDFA-BF37-4996-8665-242FEC34BBFF
+     */
+    CellId: string;
+    /**
+     * @description Flexible data storage compatible with X6, with reserved metadata namespace
+     * @default {
+     *       "_metadata": []
+     *     }
+     */
+    CellData: {
+      /** @description Reserved namespace for structured business metadata */
+      _metadata?: components['schemas']['Metadata'][];
+      /**
+       * @description Indicates whether this cell represents a security boundary in the threat model
+       * @default false
+       */
+      security_boundary: boolean;
+      /** @description References to Asset IDs associated with this cell. Each UUID must reference an existing Asset in the same threat model. */
+      data_assets?: string[];
+    } & {
+      [key: string]: unknown;
     };
   };
   responses: {
@@ -15180,6 +15105,21 @@ export interface operations {
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
       415: components['responses']['UnsupportedMediaType'];
+      /** @description Unprocessable Entity - The document URI matches a content provider that is not configured on this server (provider_not_configured), or the picker_registration names a content provider that is not registered (provider_not_registered) */
+      422: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
       503: components['responses']['ServiceUnavailable'];
@@ -34799,6 +34739,99 @@ export interface operations {
       503: components['responses']['ServiceUnavailable'];
     };
   };
+  cancelWebhookDelivery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Webhook delivery identifier */
+        delivery_id: components['parameters']['DeliveryId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content - delivery cancelled */
+      204: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['Error'];
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      /** @description Conflict - delivery is already delivered, failed, or cancelled */
+      409: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
   updateWebhookDeliveryStatus: {
     parameters: {
       query?: never;
@@ -34896,7 +34929,7 @@ export interface operations {
       };
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
-      /** @description Conflict - invalid status transition */
+      /** @description Conflict - delivery is already in a terminal state (delivered, failed, or cancelled) */
       409: {
         headers: {
           /** @description Maximum number of requests allowed in the current time window */
@@ -39638,6 +39671,58 @@ export interface operations {
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
       415: components['responses']['UnsupportedMediaType'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['InternalServerError'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
+  listMyWebhookDeliveries: {
+    parameters: {
+      query?: {
+        /** @description Number of results to skip */
+        offset?: components['parameters']['PaginationOffset'];
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['PaginationLimit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of deliveries visible to the caller */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ListWebhookDeliveriesResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['InternalServerError'];
       503: components['responses']['ServiceUnavailable'];

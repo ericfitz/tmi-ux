@@ -8,8 +8,8 @@ import { Diagram } from '../models/diagram.model';
 import { Metadata } from '../models/threat-model.model';
 import type { components } from '@app/generated/api-types';
 
-// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API BaseDiagramInput schema (pure)
-type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API CreateDiagramRequest schema (pure)
+type ApiCreateDiagramRequest = components['schemas']['CreateDiagramRequest'];
 
 /** Diagrams loaded for one page of the diagrams sub-table. */
 export interface DiagramsPage {
@@ -50,9 +50,9 @@ export class TmDiagramCrudService {
     threatModelId: string,
     values: { name: string; type: string },
   ): Observable<Diagram> {
-    const data: Partial<ApiBaseDiagramInput> = {
+    const data: ApiCreateDiagramRequest = {
       name: values.name,
-      type: values.type as Diagram['type'],
+      type: values.type as ApiCreateDiagramRequest['type'],
     };
     return this.threatModelService.createDiagram(threatModelId, data);
   }
