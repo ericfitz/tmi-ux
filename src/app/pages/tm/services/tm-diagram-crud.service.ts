@@ -8,8 +8,8 @@ import { Diagram } from '../models/diagram.model';
 import { Metadata } from '../models/threat-model.model';
 import type { components } from '@app/generated/api-types';
 
-// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API BaseDiagramInput schema (pure)
-type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
+// SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: type alias for the API DfdDiagramInput schema without cells (pure)
+type ApiBaseDiagramInput = Omit<components['schemas']['DfdDiagramInput'], 'cells'>;
 
 /** Diagrams loaded for one page of the diagrams sub-table. */
 export interface DiagramsPage {

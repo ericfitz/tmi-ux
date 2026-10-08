@@ -65,7 +65,7 @@ type ApiDocumentInput = components['schemas']['DocumentInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for repository create/update input payload (pure)
 type ApiRepositoryInput = components['schemas']['RepositoryInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for base diagram create/update input payload (pure)
-type ApiBaseDiagramInput = components['schemas']['BaseDiagramInput'];
+type ApiBaseDiagramInput = Omit<components['schemas']['DfdDiagramInput'], 'cells'>;
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for DFD diagram create/update input payload (pure)
 type ApiDfdDiagramInput = components['schemas']['DfdDiagramInput'];
 // SEM@ba9b79db6a4de74a7d4fb361c47c368342bdc317: API schema type alias for note create/update input payload (pure)
