@@ -376,7 +376,10 @@ describe('TriageDetailComponent', () => {
     });
 
     it('should be true when the response has revision notes', () => {
-      component.response = responseWith({ status: 'submitted', revision_notes: 'Add the data flow' });
+      component.response = responseWith({
+        status: 'submitted',
+        revision_notes: 'Add the data flow',
+      });
       expect(component.showRevisionCard).toBe(true);
     });
 
