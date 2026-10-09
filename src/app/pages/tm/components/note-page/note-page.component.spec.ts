@@ -16,6 +16,7 @@ import {
   type MockLoggerService,
   type MockRouter,
 } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock interfaces
 interface MockActivatedRoute {
@@ -59,6 +60,8 @@ interface MockAuthorizationService {
 interface MockAddonService {
   list: ReturnType<typeof vi.fn>;
 }
+
+type Deps = ConstructorParameters<typeof NotePageComponent>;
 
 describe('NotePageComponent', () => {
   let component: NotePageComponent;
@@ -155,19 +158,19 @@ describe('NotePageComponent', () => {
     mermaidViewerService = { initialize: vi.fn().mockReturnValue(() => {}) };
 
     component = new NotePageComponent(
-      route as any,
-      router as any,
+      partialMock<Deps[0]>(route),
+      partialMock<Deps[1]>(router),
       fb,
-      snackBar as any,
-      dialog as any,
+      partialMock<Deps[3]>(snackBar),
+      partialMock<Deps[4]>(dialog),
       loggerService,
-      languageService as any,
-      translocoService as any,
-      threatModelService as any,
-      authorizationService as any,
-      addonService as any,
+      partialMock<Deps[6]>(languageService),
+      partialMock<Deps[7]>(translocoService),
+      partialMock<Deps[8]>(threatModelService),
+      partialMock<Deps[9]>(authorizationService),
+      partialMock<Deps[10]>(addonService),
       undefined,
-      mermaidViewerService as any,
+      partialMock<NonNullable<Deps[12]>>(mermaidViewerService),
     );
   });
 
@@ -400,7 +403,7 @@ describe('NotePageComponent', () => {
           selectionStart: 0,
           selectionEnd: 5,
         },
-      } as unknown as Event;
+      } as unknown as Event; // partial event: only target.selection* is read
 
       component.onTextareaSelect(mockEvent);
       expect(component.hasSelection).toBe(true);
@@ -410,7 +413,7 @@ describe('NotePageComponent', () => {
           selectionStart: 0,
           selectionEnd: 0,
         },
-      } as unknown as Event;
+      } as unknown as Event; // partial event: only target.selection* is read
 
       component.onTextareaSelect(noSelectionEvent);
       expect(component.hasSelection).toBe(false);

@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { FrameworkMappingPickerDialogComponent } from './framework-mapping-picker-dialog.component';
 import { FrameworkMappingPickerDialogData } from './framework-mapping-picker-dialog.types';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockDialogRef {
   close: ReturnType<typeof vi.fn>;
@@ -15,6 +16,8 @@ interface MockDialogRef {
 interface MockLanguageService {
   direction$: BehaviorSubject<'ltr' | 'rtl'>;
 }
+
+type Deps = ConstructorParameters<typeof FrameworkMappingPickerDialogComponent>;
 
 describe('FrameworkMappingPickerDialogComponent', () => {
   let component: FrameworkMappingPickerDialogComponent;
@@ -38,11 +41,11 @@ describe('FrameworkMappingPickerDialogComponent', () => {
     };
 
     component = new FrameworkMappingPickerDialogComponent(
-      dialogRef as any,
+      partialMock<Deps[0]>(dialogRef),
       data,
-      { markForCheck: vi.fn() } as any,
-      languageService as any,
-      { onDestroy: vi.fn() } as any,
+      partialMock<Deps[2]>({ markForCheck: vi.fn() }),
+      partialMock<Deps[3]>(languageService),
+      partialMock<Deps[4]>({ onDestroy: vi.fn() }),
     );
   }
 

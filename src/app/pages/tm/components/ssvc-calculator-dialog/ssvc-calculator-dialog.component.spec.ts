@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { SsvcCalculatorDialogComponent } from './ssvc-calculator-dialog.component';
 import { SsvcCalculatorDialogData } from './ssvc-calculator-dialog.types';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockDialogRef {
   close: ReturnType<typeof vi.fn>;
@@ -26,6 +27,8 @@ interface MockLanguageService {
 interface MockDestroyRef {
   onDestroy: ReturnType<typeof vi.fn>;
 }
+
+type Deps = ConstructorParameters<typeof SsvcCalculatorDialogComponent>;
 
 describe('SsvcCalculatorDialogComponent', () => {
   let component: SsvcCalculatorDialogComponent;
@@ -51,12 +54,12 @@ describe('SsvcCalculatorDialogComponent', () => {
     };
 
     component = new SsvcCalculatorDialogComponent(
-      dialogRef as any,
+      partialMock<Deps[0]>(dialogRef),
       dialogData,
-      { markForCheck: vi.fn() } as any,
-      loggerService as any,
-      languageService as any,
-      destroyRef as any,
+      partialMock<Deps[2]>({ markForCheck: vi.fn() }),
+      partialMock<Deps[3]>(loggerService),
+      partialMock<Deps[4]>(languageService),
+      partialMock<Deps[5]>(destroyRef),
     );
   }
 

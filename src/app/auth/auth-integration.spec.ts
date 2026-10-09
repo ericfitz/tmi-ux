@@ -8,10 +8,11 @@
 
 import '@angular/compiler';
 
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { of, throwError } from 'rxjs';
 
 import { AuthService } from './services/auth.service';
@@ -119,10 +120,10 @@ describe('Authentication Integration', () => {
 
     // Create the service with mocked dependencies (5 params, no CryptoKeyStorageService)
     authService = new AuthService(
-      router as unknown as Router,
-      httpClient as unknown as HttpClient,
+      partialMock<Router>(router),
+      partialMock<HttpClient>(httpClient),
       logger,
-      serverConnectionService as unknown as ServerConnectionService,
+      partialMock<ServerConnectionService>(serverConnectionService),
       mockPkceService,
     );
   });
@@ -432,10 +433,10 @@ describe('Authentication Integration', () => {
 
         // Create a new service instance to test initialization
         const restoredAuthService = new AuthService(
-          router as unknown as Router,
-          httpClient as unknown as HttpClient,
+          partialMock<Router>(router),
+          partialMock<HttpClient>(httpClient),
           logger,
-          serverConnectionService as unknown as ServerConnectionService,
+          partialMock<ServerConnectionService>(serverConnectionService),
           mockPkceService,
         );
 
@@ -457,10 +458,10 @@ describe('Authentication Integration', () => {
 
         // Create a new service instance to test initialization
         const unauthService = new AuthService(
-          router as unknown as Router,
-          httpClient as unknown as HttpClient,
+          partialMock<Router>(router),
+          partialMock<HttpClient>(httpClient),
           logger,
-          serverConnectionService as unknown as ServerConnectionService,
+          partialMock<ServerConnectionService>(serverConnectionService),
           mockPkceService,
         );
 
@@ -559,19 +560,19 @@ describe('Authentication Integration', () => {
         const interceptor = new JwtInterceptor(injector, logger);
 
         // Mock HTTP request and handler for a successful API call
-        const mockRequest = {
+        const mockRequest = partialMock<HttpRequest<unknown>>({
           url: `${environment.apiUrl}/test`,
           method: 'GET',
           clone: vi.fn().mockReturnThis(),
           context: new HttpContext(),
-        } as any;
+        });
 
         const mockHandler = {
           handle: vi.fn().mockReturnValue(of({ data: 'test' })),
-        } as any;
+        };
 
         // Test interceptor passes through successful requests
-        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        const result$ = interceptor.intercept(mockRequest, partialMock<HttpHandler>(mockHandler));
 
         result$.subscribe({
           next: response => {

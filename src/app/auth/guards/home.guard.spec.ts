@@ -8,8 +8,9 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { homeGuard } from './home.guard';
 import { AuthService } from '../services/auth.service';
@@ -31,8 +32,8 @@ describe('homeGuard', () => {
   };
   let envInjector: EnvironmentInjector;
 
-  const mockRoute = {} as any;
-  const mockState = { url: '/' } as any;
+  const mockRoute = partialMock<ActivatedRouteSnapshot>({});
+  const mockState = partialMock<RouterStateSnapshot>({ url: '/' });
 
   beforeEach(() => {
     mockAuthService = {
@@ -57,9 +58,9 @@ describe('homeGuard', () => {
         { provide: Router, useValue: mockRouter },
         { provide: LoggerService, useValue: mockLogger },
       ],
-      {
+      partialMock<EnvironmentInjector>({
         get: () => null,
-      } as unknown as EnvironmentInjector,
+      }),
     );
   });
 

@@ -9,6 +9,15 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import type { Metadata } from '../../models/threat-model.model';
 import { ReadonlyFieldFilterService } from './readonly-field-filter.service';
 import type { LoggerService } from '../../../../core/services/logger.service';
+import { partialMock } from '@testing/partial-mock';
+
+/** Typed view of one filtered cell. */
+function cellAt(
+  cells: unknown[],
+  index: number,
+): { id?: string; shape?: string; parent?: string; children?: string[] } {
+  return cells[index] as { id?: string; shape?: string; parent?: string; children?: string[] };
+}
 
 describe('ReadonlyFieldFilterService', () => {
   let service: ReadonlyFieldFilterService;
@@ -16,12 +25,12 @@ describe('ReadonlyFieldFilterService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockLogger = {
+    mockLogger = partialMock<LoggerService>({
       warn: vi.fn(),
       debug: vi.fn(),
       info: vi.fn(),
       error: vi.fn(),
-    } as unknown as LoggerService;
+    });
     service = new ReadonlyFieldFilterService(mockLogger);
   });
 
@@ -711,9 +720,9 @@ describe('ReadonlyFieldFilterService', () => {
       const filtered = service.filterCells(cells);
 
       expect(filtered).toHaveLength(3);
-      expect((filtered[0] as any).shape).toBe('flow'); // Normalized from 'edge'
-      expect((filtered[1] as any).shape).toBe('process');
-      expect((filtered[2] as any).shape).toBe('flow'); // Normalized from 'edge'
+      expect(cellAt(filtered, 0).shape).toBe('flow'); // Normalized from 'edge'
+      expect(cellAt(filtered, 1).shape).toBe('process');
+      expect(cellAt(filtered, 2).shape).toBe('flow'); // Normalized from 'edge'
     });
 
     it('should convert children arrays to parent references while preserving children', () => {
@@ -726,11 +735,11 @@ describe('ReadonlyFieldFilterService', () => {
       const filtered = service.filterCells(cells);
 
       // Boundary should retain children property (now preserved for API schema)
-      expect((filtered[0] as any).children).toEqual(['node-1', 'node-2']);
+      expect(cellAt(filtered, 0).children).toEqual(['node-1', 'node-2']);
 
       // Child nodes should have parent set (derived from children array)
-      expect((filtered[1] as any).parent).toBe('boundary-1');
-      expect((filtered[2] as any).parent).toBe('boundary-1');
+      expect(cellAt(filtered, 1).parent).toBe('boundary-1');
+      expect(cellAt(filtered, 2).parent).toBe('boundary-1');
     });
 
     it('should filter out non-object items from array', () => {
@@ -740,7 +749,7 @@ describe('ReadonlyFieldFilterService', () => {
 
       // Only valid object cells are kept
       expect(filtered).toHaveLength(1);
-      expect((filtered[0] as any).id).toBe('node-1');
+      expect(cellAt(filtered, 0).id).toBe('node-1');
     });
 
     it('should handle empty array', () => {

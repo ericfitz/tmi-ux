@@ -4,6 +4,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { MatPaginator } from '@angular/material/paginator';
 import { of, BehaviorSubject } from 'rxjs';
 
 import { AuditTrailPageComponent } from './audit-trail-page.component';
@@ -14,6 +15,7 @@ import {
   createTypedMockLoggerService,
   type MockLoggerService,
 } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock interfaces
 interface MockActivatedRoute {
@@ -39,6 +41,8 @@ interface MockLanguageService {
 interface MockDestroyRef {
   onDestroy: ReturnType<typeof vi.fn>;
 }
+
+type Deps = ConstructorParameters<typeof AuditTrailPageComponent>;
 
 describe('AuditTrailPageComponent', () => {
   let component: AuditTrailPageComponent;
@@ -125,12 +129,12 @@ describe('AuditTrailPageComponent', () => {
     };
 
     component = new AuditTrailPageComponent(
-      route as any,
-      router as any,
-      auditTrailService as any,
-      languageService as any,
+      partialMock<Deps[0]>(route),
+      partialMock<Deps[1]>(router),
+      partialMock<Deps[2]>(auditTrailService),
+      partialMock<Deps[3]>(languageService),
       loggerService,
-      destroyRef as any,
+      partialMock<Deps[5]>(destroyRef),
     );
   });
 
@@ -307,7 +311,7 @@ describe('AuditTrailPageComponent', () => {
 
     it('should reset paginator page index when paginator exists', () => {
       const mockPaginator = { pageIndex: 5 };
-      component.paginator = mockPaginator as any;
+      component.paginator = partialMock<MatPaginator>(mockPaginator); // only pageIndex is used
 
       component.applyFilters();
 

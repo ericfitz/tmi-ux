@@ -9,7 +9,14 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { Subject } from 'rxjs';
 import { AppStateService, DfdDiagramState, SyncState } from './app-state.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
+import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
+import { DfdStateStore } from '../../state/dfd.state';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
+import { AppWebSocketEventProcessor } from './app-websocket-event-processor.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 describe('AppStateService', () => {
   let service: AppStateService;
@@ -74,12 +81,13 @@ describe('AppStateService', () => {
 
     service = new AppStateService(
       mockLogger,
-      mockWebSocketService as any,
-      mockCollaborationService as any,
-      mockThreatModelService as any,
-      mockDfdStateStore as any,
-      mockHistoryCoordinator as any,
-      mockEventProcessor as any,
+      // Partial collaborators: only the members under test are stubbed
+      partialMock<InfraDfdWebsocketAdapter>(mockWebSocketService),
+      partialMock<DfdCollaborationService>(mockCollaborationService),
+      partialMock<ThreatModelService>(mockThreatModelService),
+      partialMock<DfdStateStore>(mockDfdStateStore),
+      partialMock<AppOperationStateManager>(mockHistoryCoordinator),
+      partialMock<AppWebSocketEventProcessor>(mockEventProcessor),
     );
   });
 
@@ -765,7 +773,7 @@ describe('AppStateService', () => {
     it('should complete destroy subject', () => {
       const completeSpy = vi.fn();
 
-      (service as any)._destroy$.subscribe({
+      service['_destroy$'].subscribe({
         complete: completeSpy,
       });
 

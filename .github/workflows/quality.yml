@@ -55,6 +55,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: pnpm run validate-json:test
 
+      - name: Deps-bump patch validator self-test
+        if: ${{ !cancelled() }}
+        run: pnpm run deps-bump-apply:test
+
       # Not `validate-all`: that also runs `unused-i18n`, which takes >3 minutes
       # and always exits 0 (it is a report, not a gate).
       - name: Validate i18n JSON

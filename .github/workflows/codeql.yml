@@ -37,19 +37,8 @@ jobs:
         with:
           run_install: false
 
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v6
-        with:
-          path: ${{ steps.pnpm-cache.outputs.store-path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
+      # No dependency cache: this job holds security-events: write, and the
+      # deps-bump agent can write main's Actions cache (#989).
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

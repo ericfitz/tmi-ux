@@ -3,9 +3,11 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 
 import { ConfirmActionDialogComponent } from './confirm-action-dialog.component';
-import { ConfirmActionDialogData } from './confirm-action-dialog.types';
+import { ConfirmActionDialogData, ConfirmActionDialogResult } from './confirm-action-dialog.types';
 
 interface MockDialogRef {
   close: ReturnType<typeof vi.fn>;
@@ -20,7 +22,10 @@ describe('ConfirmActionDialogComponent', () => {
     dialogRef = {
       close: vi.fn(),
     };
-    return new ConfirmActionDialogComponent(dialogRef as any, data);
+    return new ConfirmActionDialogComponent(
+      partialMock<MatDialogRef<ConfirmActionDialogComponent, ConfirmActionDialogResult>>(dialogRef),
+      data,
+    );
   };
 
   beforeEach(() => {

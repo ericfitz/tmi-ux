@@ -7,7 +7,9 @@
 
 import '@angular/compiler';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { TmiLoginDialogComponent } from './tmi-login-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
+import { TmiLoginDialogComponent, TmiLoginDialogResult } from './tmi-login-dialog.component';
 
 describe('TmiLoginDialogComponent', () => {
   let component: TmiLoginDialogComponent;
@@ -17,7 +19,12 @@ describe('TmiLoginDialogComponent', () => {
   beforeEach(() => {
     mockDialogRef = { close: vi.fn() };
     mockData = { providerName: 'TMI Provider' };
-    component = new TmiLoginDialogComponent(mockDialogRef as any, mockData);
+    component = new TmiLoginDialogComponent(
+      partialMock<MatDialogRef<TmiLoginDialogComponent, TmiLoginDialogResult | undefined>>(
+        mockDialogRef,
+      ),
+      mockData,
+    );
   });
 
   it('should create', () => {

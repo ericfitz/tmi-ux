@@ -11,6 +11,7 @@ import {
   UpdateNodeOperation,
   DeleteNodeOperation,
   OperationContext,
+  GraphOperation,
 } from '../../types/graph-operation.types';
 
 describe('NodeOperationExecutor', () => {
@@ -54,10 +55,10 @@ describe('NodeOperationExecutor', () => {
 
   describe('Executor Capabilities', () => {
     it('should handle node operations', () => {
-      expect(executor.canExecute({ type: 'create-node' } as any)).toBe(true);
-      expect(executor.canExecute({ type: 'update-node' } as any)).toBe(true);
-      expect(executor.canExecute({ type: 'delete-node' } as any)).toBe(true);
-      expect(executor.canExecute({ type: 'create-edge' } as any)).toBe(false);
+      expect(executor.canExecute({ type: 'create-node' } as GraphOperation)).toBe(true);
+      expect(executor.canExecute({ type: 'update-node' } as GraphOperation)).toBe(true);
+      expect(executor.canExecute({ type: 'delete-node' } as GraphOperation)).toBe(true);
+      expect(executor.canExecute({ type: 'create-edge' } as GraphOperation)).toBe(false);
     });
 
     it('should have correct priority', () => {
@@ -807,7 +808,7 @@ describe('NodeOperationExecutor', () => {
         source: 'test',
         priority: 'normal',
         timestamp: Date.now(),
-      } as any;
+      } as unknown as GraphOperation; // deliberately unsupported operation type
 
       return new Promise<void>((resolve, reject) => {
         executor.execute(unsupportedOperation, operationContext).subscribe({

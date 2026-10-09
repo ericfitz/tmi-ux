@@ -8,6 +8,8 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 import { FormBuilder } from '@angular/forms';
 import { CreateTeamDialogComponent, CreateTeamDialogResult } from './create-team-dialog.component';
 
@@ -17,7 +19,10 @@ describe('CreateTeamDialogComponent', () => {
 
   beforeEach(() => {
     mockDialogRef = { close: vi.fn() };
-    component = new CreateTeamDialogComponent(mockDialogRef as any, new FormBuilder());
+    component = new CreateTeamDialogComponent(
+      partialMock<MatDialogRef<CreateTeamDialogComponent>>(mockDialogRef),
+      new FormBuilder(),
+    );
   });
 
   it('should create', () => {

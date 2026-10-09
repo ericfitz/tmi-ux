@@ -16,6 +16,8 @@ import {
   UpdateNodeOperation,
   CreateEdgeOperation,
   UpdateEdgeOperation,
+  DeleteNodeOperation,
+  DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
 
 describe('AppCellOperationConverterService', () => {
@@ -98,7 +100,7 @@ describe('AppCellOperationConverterService', () => {
 
       expect(operations).toHaveLength(1);
       expect(operations[0].type).toBe('delete-node');
-      expect((operations[0] as any).nodeId).toBe('node1');
+      expect((operations[0] as DeleteNodeOperation).nodeId).toBe('node1');
     });
 
     it('should handle mixed operations (add, update, delete)', () => {
@@ -154,7 +156,7 @@ describe('AppCellOperationConverterService', () => {
       expect((createOp as CreateNodeOperation).nodeData.id).toBe('node3');
 
       expect(deleteOp).toBeDefined();
-      expect((deleteOp as any).nodeId).toBe('node2');
+      expect((deleteOp as DeleteNodeOperation).nodeId).toBe('node2');
     });
   });
 
@@ -526,7 +528,7 @@ describe('AppCellOperationConverterService', () => {
       const operation = service.createDeleteOperation(cell, 'user-interaction');
 
       expect(operation.type).toBe('delete-node');
-      expect((operation as any).nodeId).toBe('node1');
+      expect((operation as DeleteNodeOperation).nodeId).toBe('node1');
       expect(operation.source).toBe('user-interaction');
     });
 
@@ -542,7 +544,7 @@ describe('AppCellOperationConverterService', () => {
       const operation = service.createDeleteOperation(cell, 'user-interaction');
 
       expect(operation.type).toBe('delete-edge');
-      expect((operation as any).edgeId).toBe('edge1');
+      expect((operation as DeleteEdgeOperation).edgeId).toBe('edge1');
       expect(operation.source).toBe('user-interaction');
     });
 

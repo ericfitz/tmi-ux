@@ -11,6 +11,11 @@ import { of, throwError } from 'rxjs';
 import { UiPresenterSelectionService } from './ui-presenter-selection.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 import type { Graph } from '@antv/x6';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
+import { UiPresenterCursorDisplayService } from './ui-presenter-cursor-display.service';
+import { partialMock } from '@testing/partial-mock';
 
 describe('UiPresenterSelectionService', () => {
   let service: UiPresenterSelectionService;
@@ -27,7 +32,8 @@ describe('UiPresenterSelectionService', () => {
   };
   // Partial X6 Graph: only the members these tests drive.
   let mockGraph: Graph & { on: ReturnType<typeof vi.fn>; getCells: ReturnType<typeof vi.fn> };
-  let mockSelectionAdapter: {
+  // Partial selection adapter: only the members these tests drive.
+  let mockSelectionAdapter: InfraX6SelectionAdapter & {
     getSelectedCells: ReturnType<typeof vi.fn>;
     clearSelection: ReturnType<typeof vi.fn>;
     selectCells: ReturnType<typeof vi.fn>;
@@ -57,28 +63,31 @@ describe('UiPresenterSelectionService', () => {
     };
 
     // Create mock graph
-    mockGraph = {
+    mockGraph = partialMock<
+      Graph & { on: ReturnType<typeof vi.fn>; getCells: ReturnType<typeof vi.fn> }
+    >({
       on: vi.fn((event: string, callback: any) => {
         if (event === 'selection:changed') {
           selectionChangeCallback = callback;
         }
       }),
       getCells: vi.fn(() => []),
-    } as unknown as Graph & { on: ReturnType<typeof vi.fn>; getCells: ReturnType<typeof vi.fn> };
+    });
 
     // Create mock selection adapter
-    mockSelectionAdapter = {
+    mockSelectionAdapter = partialMock<typeof mockSelectionAdapter>({
       getSelectedCells: vi.fn(() => []),
       clearSelection: vi.fn(),
       selectCells: vi.fn(),
-    };
+    });
 
     // Create service with mocks
     service = new UiPresenterSelectionService(
       mockLogger,
-      mockCollaborationService as any,
-      mockCollaborativeOperationService as any,
-      mockUiPresenterCursorDisplayService as any,
+      // Partial collaborators: only the members under test are stubbed
+      partialMock<DfdCollaborationService>(mockCollaborationService),
+      partialMock<InfraWebsocketCollaborationAdapter>(mockCollaborativeOperationService),
+      partialMock<UiPresenterCursorDisplayService>(mockUiPresenterCursorDisplayService),
     );
   });
 
@@ -98,20 +107,21 @@ describe('UiPresenterSelectionService', () => {
 
   describe('initialize()', () => {
     it('should initialize with graph and selection adapter', () => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
 
       expect(service.isInitialized).toBe(true);
       expect(mockGraph.on).toHaveBeenCalledWith('selection:changed', expect.any(Function));
     });
 
     it('should setup selection change listener', () => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
 
       expect(mockGraph.on).toHaveBeenCalledWith('selection:changed', expect.any(Function));
     });
 
     it('should log error if graph not available', () => {
-      service.initialize(null as any, mockSelectionAdapter as any);
+      // Deliberately invalid: a missing graph must be rejected
+      service.initialize(null as unknown as Graph, mockSelectionAdapter);
 
       // Try to trigger selection change (should fail gracefully)
       expect(mockLogger.error).toHaveBeenCalledWith(
@@ -122,7 +132,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('Selection Broadcasting', () => {
     beforeEach(() => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
     });
 
     it('should broadcast selection change when presenter mode is active', () => {
@@ -199,7 +209,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('handlePresenterSelectionUpdate()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
     });
 
     it('should apply selection update for non-presenter users', () => {
@@ -258,7 +268,8 @@ describe('UiPresenterSelectionService', () => {
     });
 
     it('should log error if graph not available', () => {
-      service.initialize(null as any, mockSelectionAdapter as any);
+      // Deliberately invalid: a missing graph must be rejected
+      service.initialize(null as unknown as Graph, mockSelectionAdapter);
       mockCollaborationService.isCurrentUserPresenter.mockReturnValue(false);
 
       service.handlePresenterSelectionUpdate(['cell1']);
@@ -271,7 +282,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('broadcastCurrentSelection()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
     });
 
     it('should broadcast current selection when presenter mode active', () => {
@@ -299,7 +310,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('clearSelectionForNonPresenters()', () => {
     beforeEach(() => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
     });
 
     it('should clear selection for non-presenter users', () => {
@@ -339,7 +350,7 @@ describe('UiPresenterSelectionService', () => {
 
   describe('ngOnDestroy()', () => {
     it('should cleanup resources and reset state', () => {
-      service.initialize(mockGraph, mockSelectionAdapter as any);
+      service.initialize(mockGraph, mockSelectionAdapter);
 
       expect(service.isInitialized).toBe(true);
 

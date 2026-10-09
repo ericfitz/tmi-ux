@@ -9,8 +9,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ReferenceRewriterService } from './reference-rewriter.service';
 import type { IdTranslationService } from './id-translation.service';
 import type { components } from '@app/generated/api-types';
+import { partialMock } from '@testing/partial-mock';
 
 type ApiThreatInput = components['schemas']['ThreatInput'];
+
+interface RewrittenCell {
+  id: string;
+  shape: string;
+  data?: { data_assets?: string[] };
+}
+
+/** Typed view of the rewritten diagram's cells. */
+function cellsOf(diagram: Record<string, unknown>): RewrittenCell[] {
+  return diagram['cells'] as RewrittenCell[];
+}
 
 describe('ReferenceRewriterService', () => {
   let service: ReferenceRewriterService;
@@ -29,7 +41,7 @@ describe('ReferenceRewriterService', () => {
     };
 
     // Instantiate service with mock dependency
-    service = new ReferenceRewriterService(mockIdTranslation as unknown as IdTranslationService);
+    service = new ReferenceRewriterService(partialMock<IdTranslationService>(mockIdTranslation));
   });
 
   describe('Service Initialization', () => {
@@ -339,8 +351,8 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result['cells'] as any[])[0].id).toBe('client-cell-123');
-      expect((result['cells'] as any[])[1].id).toBe('client-cell-456');
+      expect(cellsOf(result)[0].id).toBe('client-cell-123');
+      expect(cellsOf(result)[1].id).toBe('client-cell-456');
     });
 
     it('should rewrite data_assets in cell data when translations exist', () => {
@@ -365,10 +377,7 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result['cells'] as any[])[0].data.data_assets).toEqual([
-        'new-asset-1',
-        'new-asset-2',
-      ]);
+      expect(cellsOf(result)[0].data?.data_assets).toEqual(['new-asset-1', 'new-asset-2']);
     });
 
     it('should handle cells without data property', () => {
@@ -379,7 +388,7 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect((result['cells'] as any[])[0]).toEqual({ id: 'cell-1', shape: 'rect' });
+      expect(cellsOf(result)[0]).toEqual({ id: 'cell-1', shape: 'rect' });
     });
   });
 

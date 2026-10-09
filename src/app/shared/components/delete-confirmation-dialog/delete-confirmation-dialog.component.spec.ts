@@ -3,9 +3,15 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 
 import { DeleteConfirmationDialogComponent } from './delete-confirmation-dialog.component';
-import { DeleteConfirmationDialogData, DeleteObjectType } from './delete-confirmation-dialog.types';
+import {
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+  DeleteObjectType,
+} from './delete-confirmation-dialog.types';
 
 // Mock interfaces
 interface MockDialogRef {
@@ -23,7 +29,12 @@ describe('DeleteConfirmationDialogComponent', () => {
     dialogRef = {
       close: vi.fn(),
     };
-    return new DeleteConfirmationDialogComponent(dialogRef as any, data);
+    return new DeleteConfirmationDialogComponent(
+      partialMock<MatDialogRef<DeleteConfirmationDialogComponent, DeleteConfirmationDialogResult>>(
+        dialogRef,
+      ),
+      data,
+    );
   };
 
   beforeEach(() => {

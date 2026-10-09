@@ -16,6 +16,7 @@ import {
   type MockLoggerService,
   type MockRouter,
 } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockActivatedRoute {
   snapshot: {
@@ -50,6 +51,8 @@ interface MockThreatModelService {
 interface MockSnackBar {
   open: ReturnType<typeof vi.fn>;
 }
+
+type Deps = ConstructorParameters<typeof ChatPageComponent>;
 
 describe('ChatPageComponent', () => {
   let component: ChatPageComponent;
@@ -115,15 +118,15 @@ describe('ChatPageComponent', () => {
     };
 
     component = new ChatPageComponent(
-      mockRoute as any,
-      mockRouter as any,
-      mockTimmyChat as any,
+      partialMock<Deps[0]>(mockRoute),
+      partialMock<Deps[1]>(mockRouter),
+      partialMock<Deps[2]>(mockTimmyChat),
       mockLogger,
-      mockCdr as any,
-      mockTransloco as any,
-      mockThreatModelService as any,
-      mockSnackBar as any,
-      mockDatePipe as any,
+      partialMock<Deps[4]>(mockCdr),
+      partialMock<Deps[5]>(mockTransloco),
+      partialMock<Deps[6]>(mockThreatModelService),
+      partialMock<Deps[7]>(mockSnackBar),
+      partialMock<Deps[8]>(mockDatePipe),
       // Intentionally omit the @Optional() DestroyRef to exercise the identity() fallback path.
       null as unknown as DestroyRef,
     );
@@ -380,7 +383,7 @@ describe('ChatPageComponent', () => {
 
     describe('formatSessionAsMarkdown', () => {
       it('should include all messages with role labels and timestamps', () => {
-        const result = (component as any).formatSessionAsMarkdown(mockMessages);
+        const result = component['formatSessionAsMarkdown'](mockMessages);
 
         expect(result).toContain('**You**');
         expect(result).toContain('**Timmy**');
@@ -391,7 +394,7 @@ describe('ChatPageComponent', () => {
       });
 
       it('should separate messages with blank lines', () => {
-        const result = (component as any).formatSessionAsMarkdown(mockMessages);
+        const result = component['formatSessionAsMarkdown'](mockMessages);
         const blocks = result.split('\n\n').filter((b: string) => b.trim());
 
         expect(blocks.length).toBe(4);
@@ -400,7 +403,7 @@ describe('ChatPageComponent', () => {
 
     describe('formatMessageAsMarkdown', () => {
       it('should include the assistant message and preceding user message', () => {
-        const result = (component as any).formatMessageAsMarkdown('msg-2', mockMessages);
+        const result = component['formatMessageAsMarkdown']('msg-2', mockMessages);
 
         expect(result).toContain('**You**');
         expect(result).toContain('What threats exist?');
@@ -409,7 +412,7 @@ describe('ChatPageComponent', () => {
       });
 
       it('should include only two messages', () => {
-        const result = (component as any).formatMessageAsMarkdown('msg-4', mockMessages);
+        const result = component['formatMessageAsMarkdown']('msg-4', mockMessages);
         const blocks = result.split('\n\n').filter((b: string) => b.trim());
 
         expect(blocks.length).toBe(2);
@@ -430,7 +433,7 @@ describe('ChatPageComponent', () => {
             created_at: '2026-04-05T14:34:00.000Z',
           },
         ];
-        const result = (component as any).formatMessageAsMarkdown('msg-solo', messagesWithoutUser);
+        const result = component['formatMessageAsMarkdown']('msg-solo', messagesWithoutUser);
 
         expect(result).toContain('**Timmy**');
         expect(result).toContain('Hello, I am Timmy.');
@@ -442,7 +445,7 @@ describe('ChatPageComponent', () => {
       it('should truncate at word boundary and add ellipsis', () => {
         const longContent =
           'This is a very long message that goes well beyond fifty characters and should be truncated';
-        const result = (component as any).generateNoteTitle(longContent);
+        const result = component['generateNoteTitle'](longContent);
 
         expect(result.length).toBeLessThanOrEqual(53);
         expect(result).toContain('\u2026');
@@ -450,15 +453,13 @@ describe('ChatPageComponent', () => {
       });
 
       it('should return short content as-is', () => {
-        const result = (component as any).generateNoteTitle('Short message');
+        const result = component['generateNoteTitle']('Short message');
 
         expect(result).toBe('Short message');
       });
 
       it('should fall back for code-only content', () => {
-        const result = (component as any).generateNoteTitle(
-          '```javascript\nconsole.log("hi")\n```',
-        );
+        const result = component['generateNoteTitle']('```javascript\nconsole.log("hi")\n```');
 
         expect(result).toMatch(/^Timmy response/);
       });

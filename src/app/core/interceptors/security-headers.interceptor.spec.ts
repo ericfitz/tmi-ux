@@ -12,6 +12,7 @@ import { of } from 'rxjs';
 
 import { securityHeadersInterceptor } from './security-headers.interceptor';
 import { LoggerService } from '../services/logger.service';
+import { createMockLoggerService } from '@testing/mocks';
 import { SecurityConfigService } from '../services/security-config.service';
 import { environment } from '../../../environments/environment';
 import { inject } from '@angular/core';
@@ -34,14 +35,7 @@ describe('SecurityHeadersInterceptor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    loggerSpy = {
-      debug: vi.fn(),
-      warning: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-      debugComponent: vi.fn(),
-    } as any;
+    loggerSpy = createMockLoggerService();
 
     securityConfigSpy = {
       recommendedHeaders: {

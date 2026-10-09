@@ -8,16 +8,27 @@
 import '@angular/compiler';
 
 import {
+  ChangeDetectorRef,
   EnvironmentInjector,
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { NavigationEnd } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
+import { AuthService } from '../../../auth/services/auth.service';
+import { LanguageService } from '../../../i18n/language.service';
+import { DfdCollaborationService } from '../../services/dfd-collaboration.service';
 import { NavbarComponent } from './navbar.component';
-import { ServerConnectionStatus } from '../../services/server-connection.service';
-import { WebSocketState } from '../../services/websocket.adapter';
+import {
+  ServerConnectionService,
+  ServerConnectionStatus,
+} from '../../services/server-connection.service';
+import { WebSocketAdapter, WebSocketState } from '../../services/websocket.adapter';
 import { BrandingConfigService } from '../../services/branding-config.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
 
@@ -133,18 +144,18 @@ describe('NavbarComponent', () => {
     // Create the component within the injection context so inject() works
     runInInjectionContext(envInjector, () => {
       component = new NavbarComponent(
-        mockRouter as any,
-        { queryParams: new BehaviorSubject({}) } as any, // ActivatedRoute (#626)
-        mockAuthService as any,
-        mockLanguageService as any,
-        mockDialog as any,
+        partialMock<Router>(mockRouter),
+        partialMock<ActivatedRoute>({ queryParams: new BehaviorSubject({}) }), // #626
+        partialMock<AuthService>(mockAuthService),
+        partialMock<LanguageService>(mockLanguageService),
+        partialMock<MatDialog>(mockDialog),
         mockLogger,
-        mockServerConnectionService as any,
-        mockWebSocketAdapter as any,
-        mockCollaborationService as any,
-        mockTranslocoService as any,
-        { open: vi.fn() } as any, // MatSnackBar (was missing)
-        mockCdr as any,
+        partialMock<ServerConnectionService>(mockServerConnectionService),
+        partialMock<WebSocketAdapter>(mockWebSocketAdapter),
+        partialMock<DfdCollaborationService>(mockCollaborationService),
+        partialMock<TranslocoService>(mockTranslocoService),
+        partialMock<MatSnackBar>({ open: vi.fn() }),
+        partialMock<ChangeDetectorRef>(mockCdr),
       );
     });
   });

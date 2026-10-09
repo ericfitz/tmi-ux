@@ -22,9 +22,13 @@ import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockLoggerService } from '../../../../testing/mocks';
 import { Diagram } from '../models/diagram.model';
+import { User } from '../models/threat-model.model';
+import { ImportOrchestratorService } from './import/import-orchestrator.service';
+import { ProviderAdapterService } from './providers/provider-adapter.service';
 
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
+import { partialMock } from '@testing/partial-mock';
 
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
 
@@ -43,7 +47,7 @@ describe('ThreatModelService', () => {
   let apiService: ApiService;
   let authService: AuthService;
   let authorizationService: ThreatModelAuthorizationService;
-  let importOrchestrator: any;
+  let importOrchestrator: { orchestrateImport: ReturnType<typeof vi.fn> };
   let testThreatModel1: any;
   let testThreatModel2: any;
   let testThreatModel3: any;
@@ -99,51 +103,50 @@ describe('ThreatModelService', () => {
     loggerService = createMockLoggerService();
 
     // Create a simple mock for ApiService
-    apiService = {
+    apiService = partialMock<ApiService>({
       get: vi.fn().mockReturnValue(of([])),
       getText: vi.fn().mockReturnValue(of('')),
       post: vi.fn().mockReturnValue(of({})),
       put: vi.fn().mockReturnValue(of({})),
       patch: vi.fn().mockReturnValue(of({})),
       delete: vi.fn().mockReturnValue(of(true)),
-    } as unknown as ApiService;
+    });
 
     // Create a mock for AuthService
-    authService = {
+    authService = partialMock<AuthService>({
       userEmail: 'test.user@example.com',
       userProfile: { email: 'test.user@example.com', name: 'Test User' },
-    } as unknown as AuthService;
+    });
 
     // Create a mock for ThreatModelAuthorizationService
-    authorizationService = {
+    authorizationService = partialMock<ThreatModelAuthorizationService>({
       setAuthorization: vi.fn(),
       updateAuthorization: vi.fn(),
       clearAuthorization: vi.fn(),
       getCurrentUserPermission: vi.fn().mockReturnValue('owner'),
       canEdit: vi.fn().mockReturnValue(true),
       canManagePermissions: vi.fn().mockReturnValue(true),
-    } as unknown as ThreatModelAuthorizationService;
+    });
 
     // Create mocks for the additional services
     importOrchestrator = {
       orchestrateImport: vi.fn(),
-    } as any;
+    };
 
     // filterOwner delegates to the real implementation so the owner-scrubbing
     // assertions below test the service's payload, not a stub's return value
     const realFieldFilter = new ReadonlyFieldFilterService(loggerService);
-    const fieldFilter = {
-      filterReadonlyFields: vi.fn(),
+    const fieldFilter = partialMock<ReadonlyFieldFilterService>({
       filterAuthorizations: vi.fn((auths: unknown) => auths),
-      filterOwner: vi.fn((owner: any) => realFieldFilter.filterOwner(owner)),
-    } as any;
+      filterOwner: vi.fn((owner: User) => realFieldFilter.filterOwner(owner)),
+    });
 
     // ProviderAdapterService — transformProviderForDisplay maps '*' to 'tmi'
-    const providerAdapter = {
+    const providerAdapter = partialMock<ProviderAdapterService>({
       transformProviderForDisplay: vi.fn((provider: string) =>
         provider === '*' ? 'tmi' : provider,
       ),
-    } as any;
+    });
 
     // Create the service directly with mocked dependencies
     service = new ThreatModelService(
@@ -151,7 +154,7 @@ describe('ThreatModelService', () => {
       loggerService,
       authService,
       authorizationService,
-      importOrchestrator,
+      partialMock<ImportOrchestratorService>(importOrchestrator),
       fieldFilter,
       providerAdapter,
     );
@@ -973,7 +976,7 @@ describe('ThreatModelService', () => {
             try {
               // display_name should be removed from authorization entries
               if (result.authorization && result.authorization.length > 0) {
-                expect((result.authorization[0] as any).display_name).toBeUndefined();
+                expect(result.authorization[0].display_name).toBeUndefined();
               }
               resolve();
             } catch (error) {
@@ -1454,10 +1457,10 @@ describe('ThreatModelService', () => {
             const offset = parseInt(String(params?.['offset'] ?? '0'), 10);
             if (offset === 0) {
               // Server returns items but no total field
-              return of({ notes: [mockNoteListItem], limit: 100, offset: 0 } as any);
+              return of({ notes: [mockNoteListItem], limit: 100, offset: 0 });
             }
             // Subsequent page: empty
-            return of({ notes: [], limit: 100, offset } as any);
+            return of({ notes: [], limit: 100, offset });
           }
           if (url === `threat_models/${tmId}/notes/n1`) {
             return of(mockNoteFull);

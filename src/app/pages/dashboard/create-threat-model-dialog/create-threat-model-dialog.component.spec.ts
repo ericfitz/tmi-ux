@@ -8,6 +8,8 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 import { FormBuilder } from '@angular/forms';
 import {
   CreateThreatModelDialogComponent,
@@ -20,7 +22,10 @@ describe('CreateThreatModelDialogComponent', () => {
 
   beforeEach(() => {
     mockDialogRef = { close: vi.fn() };
-    component = new CreateThreatModelDialogComponent(mockDialogRef as any, new FormBuilder());
+    component = new CreateThreatModelDialogComponent(
+      partialMock<MatDialogRef<CreateThreatModelDialogComponent>>(mockDialogRef),
+      new FormBuilder(),
+    );
   });
 
   it('should create', () => {

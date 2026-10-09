@@ -11,6 +11,9 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { UiPresenterCursorService } from './ui-presenter-cursor.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 import type { Graph } from '@antv/x6';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
+import { partialMock } from '@testing/partial-mock';
 
 describe('UiPresenterCursorService', () => {
   let service: UiPresenterCursorService;
@@ -61,15 +64,16 @@ describe('UiPresenterCursorService', () => {
     }));
 
     // Create mock graph
-    mockGraph = {
+    mockGraph = partialMock<Graph & { clientToGraph: ReturnType<typeof vi.fn> }>({
       clientToGraph: vi.fn((x: number, y: number) => ({ x, y })),
-    } as unknown as Graph & { clientToGraph: ReturnType<typeof vi.fn> };
+    });
 
     // Create service with mocks
     service = new UiPresenterCursorService(
       mockLogger,
-      mockCollaborationService as any,
-      mockCollaborativeOperationService as any,
+      // Partial collaborators: only the members under test are stubbed
+      partialMock<DfdCollaborationService>(mockCollaborationService),
+      partialMock<InfraWebsocketCollaborationAdapter>(mockCollaborativeOperationService),
     );
   });
 

@@ -8,8 +8,9 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject } from 'rxjs';
-import { Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UnauthorizedComponent } from './unauthorized.component';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
 
@@ -33,7 +34,11 @@ describe('UnauthorizedComponent', () => {
 
     mockLogger = createTypedMockLoggerService();
 
-    component = new UnauthorizedComponent(mockRoute as any, mockRouter as any, mockLogger);
+    component = new UnauthorizedComponent(
+      partialMock<ActivatedRoute>(mockRoute),
+      partialMock<Router>(mockRouter),
+      mockLogger,
+    );
   });
 
   it('should create', () => {

@@ -129,7 +129,8 @@ describe('Metadata utilities', () => {
     });
 
     it('should handle non-string values with warnings', () => {
-      const record = { key1: 'value1', key2: 42 as any };
+      // Deliberately non-string value
+      const record = { key1: 'value1', key2: 42 as unknown as string };
       const result = recordToMetadata(record);
 
       expect(result).toEqual([

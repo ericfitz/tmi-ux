@@ -176,9 +176,13 @@ reviewerTest.describe('Survey Visual Regression (Reviewer)', () => {
 
     const timestamps = reviewerPage.locator('.mat-column-submitted_at');
 
+    // The unassigned-reviews count depends on every TM on the bed, not on seed data.
+    // The badge renders only when the count is > 0, which a seeded bed always has
+    // (seed TMs have no security reviewer); replaceText fails if it is missing.
     await takeThemeScreenshots(reviewerPage, 'survey-triage-list', {
       freezeVolatileText: true,
       mask: [timestamps],
+      replaceText: [{ selector: '.mat-mdc-tab:last-of-type .tab-badge', text: '0' }],
     });
   });
 
@@ -192,9 +196,11 @@ reviewerTest.describe('Survey Visual Regression (Reviewer)', () => {
     await reviewerPage.waitForURL(/\/triage\/[a-f0-9-]+/, { timeout: 10000 });
     await reviewerPage.waitForLoadState('networkidle');
 
-    const timestamps = reviewerPage.locator('.info-value, .timeline-timestamp, .reviewed-date').filter({
-      hasText: DATE_TEXT,
-    });
+    const timestamps = reviewerPage
+      .locator('.info-value, .timeline-timestamp, .reviewed-date')
+      .filter({
+        hasText: DATE_TEXT,
+      });
 
     // The response id changes with every seed.
     const responseId = reviewerPage.locator('.id-row .info-value');
