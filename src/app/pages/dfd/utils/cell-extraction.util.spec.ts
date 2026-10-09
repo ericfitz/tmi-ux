@@ -1,15 +1,22 @@
 import { describe, it, expect } from 'vitest';
+import type { Graph } from '@antv/x6';
 import { extractCellsFromGraph } from './cell-extraction.util';
+import { partialMock } from '@testing/partial-mock';
+
+/** Shape of the attrs these tests inspect on extracted cells. */
+interface InspectedAttrs {
+  body?: { fill?: string; stroke?: string };
+  text?: { text?: string };
+}
 
 /**
  * Creates a mock X6 graph with configurable cells for testing.
  * Each mock cell supports the X6 Cell API methods used by extractCellsFromGraph.
  */
 // SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: build a minimal X6 graph mock that returns configurable cells (pure)
-function createMockGraph(cells: any[]) {
-  return {
-    getCells: () => cells,
-  };
+function createMockGraph(cells: unknown[]): Graph {
+  // Partial Graph: extractCellsFromGraph only calls getCells()
+  return partialMock<Graph>({ getCells: () => cells });
 }
 
 // SEM@f36a12e5c6761881f7a706ff50dc3179b0587755: build a mock X6 node with overridable geometry and attrs (pure)
@@ -57,7 +64,7 @@ function createMockNode(
     getData: () => data,
     getParent: () => parent,
     getProp: (key: string) => (key === 'ports' ? ports : undefined),
-    getLabel: () => (attrs as any)?.text?.text || '',
+    getLabel: () => (attrs as InspectedAttrs).text?.text || '',
   };
 }
 
@@ -110,12 +117,12 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([node]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result).toHaveLength(1);
-    expect((result[0].attrs as any)?.body?.fill).toBe('#e8f4fd');
-    expect((result[0].attrs as any)?.body?.stroke).toBe('#1f77b4');
-    expect((result[0].attrs as any)?.text?.text).toBe('Actor Node');
+    expect((result[0].attrs as InspectedAttrs | undefined)?.body?.fill).toBe('#e8f4fd');
+    expect((result[0].attrs as InspectedAttrs | undefined)?.body?.stroke).toBe('#1f77b4');
+    expect((result[0].attrs as InspectedAttrs | undefined)?.text?.text).toBe('Actor Node');
   });
 
   it('should preserve attrs that match X6 shape defaults (the bug fix)', () => {
@@ -129,17 +136,17 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([node]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
-    expect((result[0].attrs as any)?.body?.fill).toBe('#FFFFFF');
-    expect((result[0].attrs as any)?.body?.stroke).toBe('#000000');
+    expect((result[0].attrs as InspectedAttrs | undefined)?.body?.fill).toBe('#FFFFFF');
+    expect((result[0].attrs as InspectedAttrs | undefined)?.body?.stroke).toBe('#000000');
   });
 
   it('should use nested position/size format (X6 v2 native)', () => {
     const node = createMockNode({ x: 150, y: 250, width: 200, height: 80 });
     const graph = createMockGraph([node]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result[0].position).toEqual({ x: 150, y: 250 });
     expect(result[0].size).toEqual({ width: 200, height: 80 });
@@ -158,7 +165,7 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([edge]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result).toHaveLength(1);
     expect(result[0].shape).toBe('flow');
@@ -172,7 +179,7 @@ describe('extractCellsFromGraph', () => {
     const edge = createMockEdge({ id: 'e1' });
     const graph = createMockGraph([node, edge]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result).toHaveLength(2);
     const nodeResult = result.find(c => c.id === 'n1');
@@ -192,7 +199,7 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([parentNode, childNode]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
     const child = result.find(c => c.id === 'child-1');
 
     expect(child?.['parent']).toBe('parent-1');
@@ -204,7 +211,7 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([edge]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result[0]['labels']).toHaveLength(1);
   });
@@ -215,7 +222,7 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([node]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     expect(result[0]['data']).toEqual({
       _metadata: [{ key: 'type', value: 'process' }],
@@ -224,7 +231,7 @@ describe('extractCellsFromGraph', () => {
 
   it('should return empty array for graph with no cells', () => {
     const graph = createMockGraph([]);
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
     expect(result).toEqual([]);
   });
 
@@ -236,7 +243,7 @@ describe('extractCellsFromGraph', () => {
     });
     const graph = createMockGraph([node]);
 
-    const result = extractCellsFromGraph(graph as any);
+    const result = extractCellsFromGraph(graph);
 
     // Ports should be included but cleaned of runtime state
     expect(result[0]['ports']).toBeDefined();

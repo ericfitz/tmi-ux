@@ -8,7 +8,9 @@
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { AppExportService } from './app-export.service';
+import { AppSvgOptimizationService } from './app-svg-optimization.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 describe('AppExportService', () => {
   let service: AppExportService;
@@ -46,7 +48,11 @@ describe('AppExportService', () => {
     };
 
     // Create service with mocks
-    service = new AppExportService(mockLogger, mockSvgOptimizationService as any);
+    // Partial AppSvgOptimizationService: only the optimize methods are stubbed
+    service = new AppExportService(
+      mockLogger,
+      partialMock<AppSvgOptimizationService>(mockSvgOptimizationService),
+    );
   });
 
   afterEach(() => {
@@ -173,7 +179,7 @@ describe('AppExportService', () => {
     it('should handle bounding box with string values', () => {
       // Test that numeric strings get concatenated incorrectly, triggering validation failure
       mockGraph.getCellsBBox.mockReturnValue({
-        x: 'invalid' as any,
+        x: 'invalid',
         y: 100,
         width: 400,
         height: 300,

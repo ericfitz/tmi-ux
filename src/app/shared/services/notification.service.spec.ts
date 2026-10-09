@@ -7,6 +7,8 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { partialMock } from '@testing/partial-mock';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NotificationService } from './notification.service';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
@@ -47,7 +49,7 @@ describe('NotificationService', () => {
     mockLogger = createTypedMockLoggerService();
 
     // Create service with mocks
-    service = new NotificationService(mockSnackBar as any, mockLogger);
+    service = new NotificationService(partialMock<MatSnackBar>(mockSnackBar), mockLogger);
   });
 
   afterEach(() => {

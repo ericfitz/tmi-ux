@@ -189,6 +189,22 @@ export default [
     },
   },
 
+  // Vitest specs and their helpers: no casts to any (#870). Fixtures use real
+  // types; partial mocks go through partialMock<T>() from @testing/partial-mock.
+  {
+    files: ['src/**/*.spec.ts', 'src/testing/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSAsExpression TSAnyKeyword, TSTypeAssertion TSAnyKeyword',
+          message:
+            'Do not cast to any in tests. Type the fixture, use partialMock<T>() from @testing/partial-mock, or `as unknown as T` with a comment for deliberately invalid input.',
+        },
+      ],
+    },
+  },
+
   // Unit test files (Vitest)
   {
     files: ['**/*.spec.ts', '**/tests/**/*.ts', '**/testing/**/*.ts'],

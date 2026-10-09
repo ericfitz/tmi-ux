@@ -319,7 +319,7 @@ describe('InfraX6EmbeddingAdapter', () => {
 
       // Mock removeFromParent to actually remove the parent relationship
       childNode.removeFromParent = vi.fn(() => {
-        (childNode as any).setParent(null);
+        childNode.setParent(null);
         return childNode;
       });
 

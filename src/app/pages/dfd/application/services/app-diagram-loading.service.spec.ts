@@ -7,6 +7,7 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import type { Cell } from '@antv/x6';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import {
   createMockLogger,
@@ -235,11 +236,12 @@ describe('AppDiagramLoadingService', () => {
     });
 
     it('should log graph state after loading', () => {
+      // Id-only stand-ins: the service only logs the cell count
       mockGraph.getCells.mockReturnValue([
-        { id: 'cell1' } as any,
-        { id: 'cell2' } as any,
-        { id: 'cell3' } as any,
-      ]);
+        { id: 'cell1' },
+        { id: 'cell2' },
+        { id: 'cell3' },
+      ] as unknown as Cell[]);
 
       service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
 

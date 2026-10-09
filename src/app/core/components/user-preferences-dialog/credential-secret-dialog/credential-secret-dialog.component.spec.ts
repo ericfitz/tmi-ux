@@ -3,6 +3,9 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { partialMock } from '@testing/partial-mock';
 
 import {
   CredentialSecretDialogComponent,
@@ -44,10 +47,10 @@ describe('CredentialSecretDialogComponent', () => {
     };
 
     component = new CredentialSecretDialogComponent(
-      dialogRef as any,
+      partialMock<MatDialogRef<CredentialSecretDialogComponent>>(dialogRef),
       dialogData,
-      clipboard as any,
-      loggerService as any,
+      partialMock<Clipboard>(clipboard),
+      loggerService,
     );
   });
 
@@ -110,6 +113,7 @@ describe('CredentialSecretDialogComponent', () => {
       mockAnchor = { href: '', download: '', click: vi.fn() };
       createElementSpy = vi
         .spyOn(document, 'createElement')
+        // mockAnchor stubs only the anchor members the component touches
         .mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
       createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
       revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});

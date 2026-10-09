@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { TokenValidityGuardService } from './token-validity-guard.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { partialMock } from '@testing/partial-mock';
 
 describe('TokenValidityGuardService', () => {
   let service: TokenValidityGuardService;
@@ -57,10 +58,10 @@ describe('TokenValidityGuardService', () => {
     };
 
     service = new TokenValidityGuardService(
-      mockAuthService as unknown as AuthService,
-      mockLogger as unknown as LoggerService,
-      mockRouter as unknown as Router,
-      mockNgZone as unknown as NgZone,
+      partialMock<AuthService>(mockAuthService),
+      partialMock<LoggerService>(mockLogger),
+      partialMock<Router>(mockRouter),
+      partialMock<NgZone>(mockNgZone),
     );
   });
 
@@ -179,7 +180,7 @@ describe('TokenValidityGuardService', () => {
       // Date.now() shows much more time has passed than expected.
       // We simulate this by setting lastHeartbeat far in the past before
       // the next interval callback fires.
-      (service as any).lastHeartbeat = Date.now() - 130000;
+      service['lastHeartbeat'] = Date.now() - 130000;
 
       // Now advance to trigger the next heartbeat callback
       vi.advanceTimersByTime(60000);
@@ -213,7 +214,7 @@ describe('TokenValidityGuardService', () => {
       service.startMonitoring();
 
       // Simulate drift
-      (service as any).lastHeartbeat = Date.now() - 130000;
+      service['lastHeartbeat'] = Date.now() - 130000;
       vi.advanceTimersByTime(60000);
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);

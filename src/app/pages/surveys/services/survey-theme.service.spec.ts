@@ -8,10 +8,11 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject } from 'rxjs';
 import { ITheme } from 'survey-core';
 import { SurveyThemeService } from './survey-theme.service';
-import { ThemeConfig } from '@app/core/services/theme.service';
+import { ThemeConfig, ThemeService } from '@app/core/services/theme.service';
 
 describe('SurveyThemeService', () => {
   let service: SurveyThemeService;
@@ -37,7 +38,7 @@ describe('SurveyThemeService', () => {
       }),
     };
 
-    service = new SurveyThemeService(mockThemeService as any);
+    service = new SurveyThemeService(partialMock<ThemeService>(mockThemeService));
   });
 
   describe('getTheme', () => {
@@ -94,7 +95,9 @@ describe('SurveyThemeService', () => {
 
       for (const config of configs) {
         const theme = service.getTheme(config);
-        expect(theme.cssVariables?.['--sjs-font-family']).toContain('Roboto Condensed');
+        expect(theme.cssVariables?.['--sjs2-typography-font-family-text']).toContain(
+          'Roboto Condensed',
+        );
       }
     });
 
@@ -108,7 +111,7 @@ describe('SurveyThemeService', () => {
 
       for (const config of configs) {
         const theme = service.getTheme(config);
-        expect(theme.cssVariables?.['--sjs-corner-radius']).toBe('8px');
+        expect(theme.cssVariables?.['--sjs2-base-unit-radius']).toBe('8px');
       }
     });
 
@@ -118,7 +121,7 @@ describe('SurveyThemeService', () => {
         palette: 'normal',
       });
       // #1976d2 = rgba(25, 118, 210, 1)
-      expect(theme.cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(25, 118, 210, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-project-brand-600']).toBe('rgba(25, 118, 210, 1)');
     });
 
     it('should use Okabe-Ito Blue primary for light + colorblind', () => {
@@ -127,7 +130,7 @@ describe('SurveyThemeService', () => {
         palette: 'colorblind',
       });
       // #0072B2 = rgba(0, 114, 178, 1)
-      expect(theme.cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(0, 114, 178, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-project-brand-600']).toBe('rgba(0, 114, 178, 1)');
     });
 
     it('should use lightened primary for dark + normal', () => {
@@ -136,7 +139,7 @@ describe('SurveyThemeService', () => {
         palette: 'normal',
       });
       // Material Blue 200 = rgba(144, 202, 249, 1)
-      expect(theme.cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(144, 202, 249, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-project-brand-600']).toBe('rgba(144, 202, 249, 1)');
     });
 
     it('should use Okabe-Ito Sky Blue for dark + colorblind', () => {
@@ -145,7 +148,7 @@ describe('SurveyThemeService', () => {
         palette: 'colorblind',
       });
       // #56B4E9 = rgba(86, 180, 233, 1)
-      expect(theme.cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(86, 180, 233, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-project-brand-600']).toBe('rgba(86, 180, 233, 1)');
     });
 
     it('should use light backgrounds for light themes', () => {
@@ -154,9 +157,9 @@ describe('SurveyThemeService', () => {
         palette: 'normal',
       });
       // TMI light surface: #f5f5f5 = rgba(245, 245, 245, 1)
-      expect(theme.cssVariables?.['--sjs-general-backcolor']).toBe('rgba(245, 245, 245, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-basic-primary']).toBe('rgba(245, 245, 245, 1)');
       // TMI light card: #fff = rgba(255, 255, 255, 1)
-      expect(theme.cssVariables?.['--sjs-general-backcolor-dim-light']).toBe(
+      expect(theme.cssVariables?.['--sjs2-color-bg-basic-secondary']).toBe(
         'rgba(255, 255, 255, 1)',
       );
     });
@@ -167,9 +170,9 @@ describe('SurveyThemeService', () => {
         palette: 'normal',
       });
       // TMI dark surface: #424242 = rgba(66, 66, 66, 1)
-      expect(theme.cssVariables?.['--sjs-general-backcolor']).toBe('rgba(66, 66, 66, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-basic-primary']).toBe('rgba(66, 66, 66, 1)');
       // TMI dark background: #303030 = rgba(48, 48, 48, 1)
-      expect(theme.cssVariables?.['--sjs-general-backcolor-dim-light']).toBe('rgba(48, 48, 48, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-basic-secondary']).toBe('rgba(48, 48, 48, 1)');
     });
 
     it('should use Okabe-Ito status colors for colorblind palette', () => {
@@ -178,9 +181,9 @@ describe('SurveyThemeService', () => {
         palette: 'colorblind',
       });
       // Vermilion for error: #D55E00 = rgba(213, 94, 0, 1)
-      expect(theme.cssVariables?.['--sjs-special-red']).toBe('rgba(213, 94, 0, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-alert-primary']).toBe('rgba(213, 94, 0, 1)');
       // Bluish Green for success: #009E73 = rgba(0, 158, 115, 1)
-      expect(theme.cssVariables?.['--sjs-special-green']).toBe('rgba(0, 158, 115, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-positive-primary']).toBe('rgba(0, 158, 115, 1)');
     });
 
     it('should use Material status colors for normal palette', () => {
@@ -189,29 +192,28 @@ describe('SurveyThemeService', () => {
         palette: 'normal',
       });
       // #f44336 = rgba(244, 67, 54, 1)
-      expect(theme.cssVariables?.['--sjs-special-red']).toBe('rgba(244, 67, 54, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-alert-primary']).toBe('rgba(244, 67, 54, 1)');
       // #4caf50 = rgba(76, 175, 80, 1)
-      expect(theme.cssVariables?.['--sjs-special-green']).toBe('rgba(76, 175, 80, 1)');
+      expect(theme.cssVariables?.['--sjs2-color-bg-positive-primary']).toBe('rgba(76, 175, 80, 1)');
     });
 
     it('should include all required CSS variable keys', () => {
       const requiredKeys = [
-        '--sjs-font-family',
-        '--sjs-corner-radius',
-        '--sjs-base-unit',
-        '--sjs-primary-backcolor',
-        '--sjs-primary-backcolor-light',
-        '--sjs-primary-backcolor-dark',
-        '--sjs-primary-forecolor',
-        '--sjs-general-backcolor',
-        '--sjs-general-forecolor',
-        '--sjs-border-default',
-        '--sjs-special-red',
-        '--sjs-special-green',
-        '--sjs-special-blue',
-        '--sjs-special-yellow',
-        '--sjs-shadow-small',
-        '--sjs-secondary-backcolor',
+        '--sjs2-typography-font-family-text',
+        '--sjs2-base-unit-radius',
+        '--sjs2-base-unit-size',
+        '--sjs2-color-project-brand-600',
+        '--sjs2-color-bg-brand-secondary',
+        '--sjs2-color-bg-brand-primary-dim',
+        '--sjs2-color-fg-brand-on-primary',
+        '--sjs2-color-bg-basic-primary',
+        '--sjs2-color-fg-basic-primary',
+        '--sjs2-color-component-input-default-line',
+        '--sjs2-color-bg-alert-primary',
+        '--sjs2-color-bg-positive-primary',
+        '--sjs2-color-bg-note-primary',
+        '--sjs2-color-bg-warning-primary',
+        '--sjs2-border-effect-surface-default',
       ];
 
       const configs: ThemeConfig[] = [
@@ -231,6 +233,23 @@ describe('SurveyThemeService', () => {
         }
       }
     });
+
+    it('should define no survey-core 2 (--sjs-) variables other than the article font settings', () => {
+      const configs: ThemeConfig[] = [
+        { colorScheme: 'light', palette: 'normal' },
+        { colorScheme: 'light', palette: 'colorblind' },
+        { colorScheme: 'dark', palette: 'normal' },
+        { colorScheme: 'dark', palette: 'colorblind' },
+      ];
+
+      for (const config of configs) {
+        const theme = service.getTheme(config);
+        const legacyKeys = Object.keys(theme.cssVariables ?? {}).filter(
+          key => key.startsWith('--sjs-') && !key.startsWith('--sjs-article-'),
+        );
+        expect(legacyKeys, `${config.colorScheme}+${config.palette}`).toEqual([]);
+      }
+    });
   });
 
   describe('theme$', () => {
@@ -240,7 +259,9 @@ describe('SurveyThemeService', () => {
 
       expect(themes).toHaveLength(1);
       expect(themes[0].colorPalette).toBe('light');
-      expect(themes[0].cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(25, 118, 210, 1)');
+      expect(themes[0].cssVariables?.['--sjs2-color-project-brand-600']).toBe(
+        'rgba(25, 118, 210, 1)',
+      );
     });
 
     it('should emit updated theme when ThemeService changes to dark', () => {
@@ -251,7 +272,9 @@ describe('SurveyThemeService', () => {
 
       expect(themes).toHaveLength(2);
       expect(themes[1].colorPalette).toBe('dark');
-      expect(themes[1].cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(144, 202, 249, 1)');
+      expect(themes[1].cssVariables?.['--sjs2-color-project-brand-600']).toBe(
+        'rgba(144, 202, 249, 1)',
+      );
     });
 
     it('should emit updated theme when palette changes to colorblind', () => {
@@ -261,7 +284,9 @@ describe('SurveyThemeService', () => {
       themeSubject.next({ colorScheme: 'light', palette: 'colorblind' });
 
       expect(themes).toHaveLength(2);
-      expect(themes[1].cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(0, 114, 178, 1)');
+      expect(themes[1].cssVariables?.['--sjs2-color-project-brand-600']).toBe(
+        'rgba(0, 114, 178, 1)',
+      );
     });
 
     it('should emit correct theme for dark + colorblind combination', () => {
@@ -272,7 +297,9 @@ describe('SurveyThemeService', () => {
 
       expect(themes).toHaveLength(2);
       expect(themes[1].colorPalette).toBe('dark');
-      expect(themes[1].cssVariables?.['--sjs-primary-backcolor']).toBe('rgba(86, 180, 233, 1)');
+      expect(themes[1].cssVariables?.['--sjs2-color-project-brand-600']).toBe(
+        'rgba(86, 180, 233, 1)',
+      );
     });
   });
 });

@@ -9,8 +9,42 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { CellDataExtractionService } from './cell-data-extraction.service';
 import { ThreatModel } from '../../pages/tm/models/threat-model.model';
-import { type MockLoggerService, createTypedMockLoggerService } from '../../../testing/mocks';
+import { Cell, Diagram } from '../../pages/tm/models/diagram.model';
+import {
+  type MockLoggerService,
+  createTypedMockLoggerService,
+  createTestUser,
+} from '../../../testing/mocks';
 import type { Graph as X6Graph } from '@antv/x6';
+import { partialMock } from '@testing/partial-mock';
+
+const TIMESTAMP = '2024-01-01T00:00:00Z';
+
+/** A stored cell as persisted for edges: the Cell model does not declare `labels`. */
+type StoredTestCell = Cell & { labels?: unknown[] };
+
+/** Builds a valid ThreatModel whose diagrams carry the given cells. */
+function makeThreatModel(
+  diagrams: Array<{ id: string; name: string; cells?: StoredTestCell[] }>,
+): ThreatModel {
+  const user = createTestUser();
+  return {
+    id: 'tm1',
+    name: 'Test Threat Model',
+    created_at: TIMESTAMP,
+    modified_at: TIMESTAMP,
+    owner: user,
+    created_by: user,
+    threat_model_framework: 'STRIDE',
+    authorization: [],
+    diagrams: diagrams.map((diagram): Diagram => ({
+      type: 'DFD-1.0.0',
+      created_at: TIMESTAMP,
+      modified_at: TIMESTAMP,
+      ...diagram,
+    })),
+  };
+}
 
 describe('CellDataExtractionService', () => {
   let service: CellDataExtractionService;
@@ -32,25 +66,21 @@ describe('CellDataExtractionService', () => {
 
   describe('extractFromThreatModel()', () => {
     it('should extract diagrams and cells from threat model', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test Threat Model',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
-              { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
-            ],
-          },
-          {
-            id: 'diag2',
-            name: 'Diagram 2',
-            cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
+            { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
+          ],
+        },
+        {
+          id: 'diag2',
+          name: 'Diagram 2',
+          cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -63,25 +93,21 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should filter cells by diagram ID', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
-              { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
-            ],
-          },
-          {
-            id: 'diag2',
-            name: 'Diagram 2',
-            cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
+            { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
+          ],
+        },
+        {
+          id: 'diag2',
+          name: 'Diagram 2',
+          cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel, 'diag1');
 
@@ -91,11 +117,7 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle threat model with no diagrams', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [],
-      } as any;
+      const threatModel = makeThreatModel([]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -104,17 +126,13 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle diagram with no cells', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -123,23 +141,19 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should extract cell labels from attrs.text.text (X6 format)', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'cell1',
-                shape: 'process',
-                attrs: { text: { text: 'My Process Label' } },
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'cell1',
+              shape: 'process',
+              attrs: { text: { text: 'My Process Label' } },
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -147,23 +161,19 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should extract label from attrs.text.text', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'cell1',
-                shape: 'process',
-                attrs: { text: { text: 'Correct Label' } },
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'cell1',
+              shape: 'process',
+              attrs: { text: { text: 'Correct Label' } },
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -171,25 +181,21 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should extract edge labels from labels[].attrs.text.text (X6 native edge format)', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'edge1',
-                shape: 'flow',
-                source: { cell: 'node1', port: 'out' },
-                target: { cell: 'node2', port: 'in' },
-                labels: [{ attrs: { text: { text: 'Data Flow' } }, position: 0.5 }],
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'edge1',
+              shape: 'flow',
+              source: { cell: 'node1', port: 'out' },
+              target: { cell: 'node2', port: 'in' },
+              labels: [{ attrs: { text: { text: 'Data Flow' } }, position: 0.5 }],
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -197,26 +203,22 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle edges with multiple labels (use first)', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'edge1',
-                shape: 'flow',
-                labels: [
-                  { attrs: { text: { text: 'First Label' } } },
-                  { attrs: { text: { text: 'Second Label' } } },
-                ],
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'edge1',
+              shape: 'flow',
+              labels: [
+                { attrs: { text: { text: 'First Label' } } },
+                { attrs: { text: { text: 'Second Label' } } },
+              ],
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -224,23 +226,19 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle edges with empty labels array', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'edge1',
-                shape: 'flow',
-                labels: [],
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'edge1',
+              shape: 'flow',
+              labels: [],
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -249,24 +247,20 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should prefer labels array over attrs.text.text for edges', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'edge1',
-                shape: 'flow',
-                labels: [{ attrs: { text: { text: 'Correct Edge Label' } } }],
-                attrs: { text: { text: 'Wrong Label' } },
-              },
-            ],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [
+            {
+              id: 'edge1',
+              shape: 'flow',
+              labels: [{ attrs: { text: { text: 'Correct Edge Label' } } }],
+              attrs: { text: { text: 'Wrong Label' } },
+            },
+          ],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -274,17 +268,13 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should fallback to cell ID when no label found', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', shape: 'process' }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [{ id: 'cell1', shape: 'process' }],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -292,17 +282,13 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should log extraction details', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', shape: 'process', attrs: { text: { text: 'Test' } } }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [{ id: 'cell1', shape: 'process', attrs: { text: { text: 'Test' } } }],
+        },
+      ]);
 
       service.extractFromThreatModel(threatModel);
 
@@ -334,7 +320,7 @@ describe('CellDataExtractionService', () => {
       };
 
       const result = service.extractFromX6Graph(
-        mockGraph as unknown as X6Graph,
+        partialMock<X6Graph>(mockGraph),
         'diag1',
         'Diagram 1',
       );
@@ -371,7 +357,7 @@ describe('CellDataExtractionService', () => {
       };
 
       const result = service.extractFromX6Graph(
-        mockGraph as unknown as X6Graph,
+        partialMock<X6Graph>(mockGraph),
         'diag1',
         'Diagram 1',
       );
@@ -392,7 +378,7 @@ describe('CellDataExtractionService', () => {
       };
 
       const result = service.extractFromX6Graph(
-        mockGraph as unknown as X6Graph,
+        partialMock<X6Graph>(mockGraph),
         'diag1',
         'Diagram 1',
       );
@@ -412,7 +398,7 @@ describe('CellDataExtractionService', () => {
       };
 
       const result = service.extractFromX6Graph(
-        mockGraph as unknown as X6Graph,
+        partialMock<X6Graph>(mockGraph),
         'diag1',
         'Diagram 1',
       );
@@ -421,7 +407,8 @@ describe('CellDataExtractionService', () => {
     });
 
     it('should handle null graph gracefully', () => {
-      const result = service.extractFromX6Graph(null as any, 'diag1', 'Diagram 1');
+      const result = // Deliberately null: the service must tolerate a missing graph.
+        service.extractFromX6Graph(null as unknown as X6Graph, 'diag1', 'Diagram 1');
 
       expect(result.diagrams).toHaveLength(1);
       expect(result.cells).toEqual([]);
@@ -429,7 +416,7 @@ describe('CellDataExtractionService', () => {
 
     it('should handle graph without getCells method', () => {
       // Deliberately missing getCells, to exercise the defensive branch.
-      const mockGraph = {} as unknown as X6Graph;
+      const mockGraph = partialMock<X6Graph>({});
 
       const result = service.extractFromX6Graph(mockGraph, 'diag1', 'Diagram 1');
 
@@ -466,7 +453,7 @@ describe('CellDataExtractionService', () => {
       };
 
       const result = service.extractFromX6Graph(
-        mockGraph as unknown as X6Graph,
+        partialMock<X6Graph>(mockGraph),
         'diag1',
         'Diagram 1',
       );
@@ -478,17 +465,13 @@ describe('CellDataExtractionService', () => {
   describe('Label Extraction Edge Cases', () => {
     it('should handle cells with very long IDs', () => {
       const longId = 'a'.repeat(100);
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: longId, shape: 'process' }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [{ id: longId, shape: 'process' }],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 
@@ -498,17 +481,13 @@ describe('CellDataExtractionService', () => {
 
     it('should handle UUID-style IDs', () => {
       const uuid = '123e4567-e89b-12d3-a456-426614174000';
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: uuid, shape: 'process' }],
-          },
-        ],
-      } as any;
+      const threatModel = makeThreatModel([
+        {
+          id: 'diag1',
+          name: 'Diagram 1',
+          cells: [{ id: uuid, shape: 'process' }],
+        },
+      ]);
 
       const result = service.extractFromThreatModel(threatModel);
 

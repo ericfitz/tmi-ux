@@ -3,11 +3,13 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { MatSelectionListChange } from '@angular/material/list';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { CwePickerDialogComponent } from './cwe-picker-dialog.component';
 import { CwePickerDialogData } from './cwe-picker-dialog.types';
 import { CweWeakness } from '../../../../shared/models/cwe.model';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockDialogRef {
   close: ReturnType<typeof vi.fn>;
@@ -46,6 +48,8 @@ const MOCK_WEAKNESSES: CweWeakness[] = [
   },
 ];
 
+type Deps = ConstructorParameters<typeof CwePickerDialogComponent>;
+
 describe('CwePickerDialogComponent', () => {
   let component: CwePickerDialogComponent;
   let dialogRef: MockDialogRef;
@@ -79,12 +83,12 @@ describe('CwePickerDialogComponent', () => {
     };
 
     component = new CwePickerDialogComponent(
-      dialogRef as any,
+      partialMock<Deps[0]>(dialogRef),
       data,
-      cweService as any,
-      { markForCheck: vi.fn() } as any,
-      loggerService as any,
-      languageService as any,
+      partialMock<Deps[2]>(cweService),
+      partialMock<Deps[3]>({ markForCheck: vi.fn() }),
+      partialMock<Deps[4]>(loggerService),
+      partialMock<Deps[5]>(languageService),
     );
   }
 
@@ -129,7 +133,7 @@ describe('CwePickerDialogComponent', () => {
         options: [{ selected: true, value: MOCK_WEAKNESSES[0] }],
       };
 
-      component.onSelectionChange(mockEvent as any);
+      component.onSelectionChange(mockEvent as unknown as MatSelectionListChange);
 
       expect(component.selectedCwe).toEqual(MOCK_WEAKNESSES[0]);
     });
@@ -140,7 +144,7 @@ describe('CwePickerDialogComponent', () => {
         options: [{ selected: false, value: MOCK_WEAKNESSES[0] }],
       };
 
-      component.onSelectionChange(mockEvent as any);
+      component.onSelectionChange(mockEvent as unknown as MatSelectionListChange);
 
       expect(component.selectedCwe).toBeNull();
     });

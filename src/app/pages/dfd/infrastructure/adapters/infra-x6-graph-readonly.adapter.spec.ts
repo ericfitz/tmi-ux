@@ -11,7 +11,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
 import { InfraX6GraphAdapter } from './infra-x6-graph.adapter';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
+import { InfraPortStateService } from '../services/infra-port-state.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock SVG methods that X6 expects
 const mockSVGElement = {
@@ -118,25 +120,25 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
     // that setReadOnlyMode() actually uses
     adapter = new InfraX6GraphAdapter(
       mockLogger, // logger
-      {} as any, // _edgeQueryService
-      {} as any, // _nodeConfigurationService
-      {} as any, // _embeddingService
-      { setHistoryCoordinator: vi.fn() } as any, // _portStateManager
-      {} as any, // _visualEffectsService
+      partialMock({}), // _edgeQueryService
+      partialMock({}), // _nodeConfigurationService
+      partialMock({}), // _embeddingService
+      partialMock<InfraPortStateService>({ setHistoryCoordinator: vi.fn() }), // _portStateManager
+      partialMock({}), // _visualEffectsService
       mockKeyboardHandler, // _keyboardHandler
-      {} as any, // _zOrderAdapter
-      {} as any, // _embeddingAdapter
+      partialMock({}), // _zOrderAdapter
+      partialMock({}), // _embeddingAdapter
       mockSelectionAdapter, // _selectionAdapter
-      {} as any, // _x6EventLogger
-      {} as any, // _tooltipAdapter
-      {} as any, // _dfdValidation
-      {} as any, // _historyCoordinator
-      {} as any, // _x6CoreOps
-      {} as any, // _injector
+      partialMock({}), // _x6EventLogger
+      partialMock({}), // _tooltipAdapter
+      partialMock({}), // _dfdValidation
+      partialMock({}), // _historyCoordinator
+      partialMock({}), // _x6CoreOps
+      partialMock({}), // _injector
     );
 
     // Inject the graph directly into the adapter's private field
-    (adapter as any)._graph = graph;
+    adapter['_graph'] = graph;
   });
 
   afterEach(() => {
@@ -208,7 +210,7 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
 
     it('should clear transform widgets when entering read-only mode', () => {
       const clearSpy = vi.fn();
-      (graph as any).clearTransformWidgets = clearSpy;
+      Object.assign(graph, { clearTransformWidgets: clearSpy }); // plugin method, not on the Graph type
 
       adapter.setReadOnlyMode(true);
       expect(clearSpy).toHaveBeenCalled();
@@ -230,14 +232,14 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
 
     it('should set internal _readOnly flag', () => {
       adapter.setReadOnlyMode(true);
-      expect((adapter as any)._readOnly).toBe(true);
+      expect(adapter['_readOnly']).toBe(true);
 
       adapter.setReadOnlyMode(false);
-      expect((adapter as any)._readOnly).toBe(false);
+      expect(adapter['_readOnly']).toBe(false);
     });
 
     it('should throw if graph is not initialized', () => {
-      (adapter as any)._graph = null;
+      adapter['_graph'] = null;
       expect(() => adapter.setReadOnlyMode(true)).toThrow(
         'Graph not initialized. Call initialize() first.',
       );
@@ -250,7 +252,10 @@ describe('InfraX6GraphAdapter - Read-Only Mode', () => {
       adapter.setReadOnlyMode(true);
 
       // Spy on _addLabelEditor to verify it's not called
-      const addLabelEditorSpy = vi.spyOn(adapter as any, '_addLabelEditor');
+      const addLabelEditorSpy = vi.spyOn(
+        adapter as unknown as { _addLabelEditor: () => void },
+        '_addLabelEditor',
+      ); // private;
 
       // Add a node and trigger dblclick
       const node = graph.addNode({

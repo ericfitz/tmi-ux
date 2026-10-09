@@ -8,11 +8,12 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { DialogDirectionService } from './dialog-direction.service';
 import { LanguageService } from '../../i18n/language.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Directionality } from '@angular/cdk/bidi';
+import { partialMock } from '@testing/partial-mock';
 
 describe('DialogDirectionService', () => {
   let service: DialogDirectionService;
@@ -62,9 +63,9 @@ describe('DialogDirectionService', () => {
 
     // Create service with mocks
     service = new DialogDirectionService(
-      mockLanguageService as unknown as LanguageService,
+      partialMock<LanguageService>(mockLanguageService),
       mockDirectionality as Directionality,
-      mockDialog as unknown as MatDialog,
+      partialMock<MatDialog>(mockDialog),
       mockDocument as unknown as Document,
     );
   });
@@ -184,13 +185,15 @@ describe('DialogDirectionService', () => {
     });
 
     it('should not throw if subscription is null on destroy', () => {
-      service['subscription'] = null as any;
+      // Deliberately invalid: ngOnDestroy must tolerate a missing subscription.
+      service['subscription'] = null as unknown as Subscription;
 
       expect(() => service.ngOnDestroy()).not.toThrow();
     });
 
     it('should not throw if subscription is undefined on destroy', () => {
-      service['subscription'] = undefined as any;
+      // Deliberately invalid: ngOnDestroy must tolerate a missing subscription.
+      service['subscription'] = undefined as unknown as Subscription;
 
       expect(() => service.ngOnDestroy()).not.toThrow();
     });

@@ -1,8 +1,10 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DfdLayoutService } from './dfd-layout.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { LayoutCell, LayoutGraph } from '../../types/layout-cell.types';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { partialMock } from '@testing/partial-mock';
 
 /**
  * Mutable in-memory fake satisfying the `LayoutCell` structural surface.
@@ -179,7 +181,8 @@ describe('DfdLayoutService', () => {
   beforeEach(() => {
     userPrefs = { getPreferences: vi.fn() };
     setPrefs();
-    service = new DfdLayoutService(userPrefs as any);
+    // Partial UserPreferencesService: only getPreferences is stubbed
+    service = new DfdLayoutService(partialMock<UserPreferencesService>(userPrefs));
   });
 
   describe('applyIconOnlyFit', () => {
@@ -200,7 +203,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('resizes and tags the cell when it is at default size', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['PROCESS'];
+      const cfg = DFD_STYLING.NODES.PROCESS;
       const cell = fakeCell({
         shape: 'process',
         size: { width: cfg.DEFAULT_WIDTH, height: cfg.DEFAULT_HEIGHT },
@@ -231,7 +234,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('delegates to icon-only fit for an iconned leaf at default size', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['PROCESS'];
+      const cfg = DFD_STYLING.NODES.PROCESS;
       const cell = fakeCell({
         shape: 'process',
         data: { _arch: { placement: 'top-left' } },
@@ -259,7 +262,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('resizes and tags a container at default size with embedded children', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['SECURITY_BOUNDARY'];
+      const cfg = DFD_STYLING.NODES.SECURITY_BOUNDARY;
       const cell = fakeCell({
         id: 'boundary-1',
         shape: 'security-boundary',
@@ -274,7 +277,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('sorts children by position when sortBy is "position"', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['SECURITY_BOUNDARY'];
+      const cfg = DFD_STYLING.NODES.SECURITY_BOUNDARY;
       const cell = fakeCell({
         id: 'boundary-1',
         shape: 'security-boundary',
@@ -319,7 +322,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('re-applies container fit to a container-fit ancestor at default size', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['SECURITY_BOUNDARY'];
+      const cfg = DFD_STYLING.NODES.SECURITY_BOUNDARY;
       const start = fakeCell({ id: 'start', shape: 'process', size: { width: 60, height: 40 } });
       const parent = fakeCell({
         id: 'parent',
@@ -332,7 +335,7 @@ describe('DfdLayoutService', () => {
         parent: null,
       });
       // Re-point the start cell at the parent now that parent exists.
-      (start as any).getParent = (): LayoutCell => parent;
+      start.getParent = (): LayoutCell => parent;
       const graph = fakeGraph([parent, start]);
       service.cascadeContainerLayout(start, graph);
       const autoFit = parent.getData()['_archAutoFit'] as { kind: string };
@@ -351,7 +354,7 @@ describe('DfdLayoutService', () => {
     });
 
     it('applies auto-layout to an iconned cell at default size', () => {
-      const cfg = (DFD_STYLING.NODES as Record<string, any>)['PROCESS'];
+      const cfg = DFD_STYLING.NODES.PROCESS;
       const iconned = fakeCell({
         id: 'iconned',
         shape: 'process',

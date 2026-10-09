@@ -8,9 +8,10 @@ import {
   createEnvironmentInjector,
   runInInjectionContext,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { adminGuard } from './admin.guard';
 import { AuthService } from '../services/auth.service';
@@ -32,6 +33,9 @@ describe('adminGuard', () => {
     debugComponent: ReturnType<typeof vi.fn>;
   };
   let envInjector: EnvironmentInjector;
+
+  const mockRoute = partialMock<ActivatedRouteSnapshot>({});
+  const mockState = partialMock<RouterStateSnapshot>({});
 
   beforeEach(() => {
     mockAuthService = {
@@ -56,9 +60,9 @@ describe('adminGuard', () => {
         { provide: Router, useValue: mockRouter },
         { provide: LoggerService, useValue: mockLogger },
       ],
-      {
+      partialMock<EnvironmentInjector>({
         get: () => null,
-      } as unknown as EnvironmentInjector,
+      }),
     );
   });
 
@@ -79,7 +83,7 @@ describe('adminGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(adminProfile));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = adminGuard({} as any, {} as any);
+      const result$ = adminGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -104,7 +108,7 @@ describe('adminGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(regularProfile));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = adminGuard({} as any, {} as any);
+      const result$ = adminGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -131,7 +135,7 @@ describe('adminGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(profileWithoutAdmin));
 
     runInInjectionContext(envInjector, () => {
-      const result$ = adminGuard({} as any, {} as any);
+      const result$ = adminGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -150,7 +154,7 @@ describe('adminGuard', () => {
     );
 
     runInInjectionContext(envInjector, () => {
-      const result$ = adminGuard({} as any, {} as any);
+      const result$ = adminGuard(mockRoute, mockState);
 
       if (result$ instanceof Object && 'subscribe' in result$) {
         result$.subscribe(allowed => {
@@ -180,7 +184,7 @@ describe('adminGuard', () => {
     mockAuthService.refreshUserProfile.mockReturnValue(of(adminProfile));
 
     runInInjectionContext(envInjector, () => {
-      adminGuard({} as any, {} as any);
+      adminGuard(mockRoute, mockState);
 
       // Verify it calls refreshUserProfile, not a cached profile observable
       expect(mockAuthService.refreshUserProfile).toHaveBeenCalled();

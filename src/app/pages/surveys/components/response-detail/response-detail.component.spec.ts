@@ -14,6 +14,7 @@ import { ProjectService } from '@app/core/services/project.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { SurveyResponse } from '@app/types/survey.types';
 import { Project } from '@app/types/project.types';
+import { partialMock } from '@testing/partial-mock';
 
 interface MockSurveyService {
   getSurveyJson: ReturnType<typeof vi.fn>;
@@ -103,13 +104,13 @@ describe('ResponseDetailComponent', () => {
 
     component = runInInjectionContext(injector, () => {
       return new ResponseDetailComponent(
-        mockRoute as unknown as ActivatedRoute,
-        mockRouter as unknown as Router,
-        mockSurveyService as unknown as SurveyService,
-        mockResponseService as unknown as SurveyResponseService,
-        mockProjectService as unknown as ProjectService,
+        partialMock<ActivatedRoute>(mockRoute),
+        partialMock<Router>(mockRouter),
+        partialMock<SurveyService>(mockSurveyService),
+        partialMock<SurveyResponseService>(mockResponseService),
+        partialMock<ProjectService>(mockProjectService),
         mockLogger,
-        mockCdr as unknown as ChangeDetectorRef,
+        partialMock<ChangeDetectorRef>(mockCdr),
       );
     });
   });
@@ -154,7 +155,7 @@ describe('ResponseDetailComponent', () => {
 
   describe('read-only enforcement', () => {
     it('should not have an onProjectChange method', () => {
-      expect((component as any).onProjectChange).toBeUndefined();
+      expect(Reflect.get(component, 'onProjectChange')).toBeUndefined();
     });
   });
 });

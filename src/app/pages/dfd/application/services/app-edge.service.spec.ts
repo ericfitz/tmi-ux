@@ -20,6 +20,8 @@ import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-sha
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import type { AppStateService } from './app-state.service';
+import type { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock interfaces for complex dependencies
 
@@ -162,22 +164,22 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     };
 
     // Create mock AppStateService
-    const mockAppStateService = {
+    const mockAppStateService = partialMock<AppStateService>({
       getCurrentState: vi.fn().mockReturnValue({
         isApplyingUndoRedo: false,
         isApplyingRemoteChange: false,
       }),
-    } as unknown as AppStateService;
+    });
 
     // Create service instance
     service = new AppEdgeService(
       mockLogger,
       mockDfdValidation,
-      mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
-      mockVisualEffectsService as unknown as InfraVisualEffectsService,
-      mockEdgeService as unknown as InfraEdgeService,
-      mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
-      mockGraphOperationManager as any,
+      partialMock<InfraX6ZOrderAdapter>(mockX6ZOrderAdapter),
+      partialMock<InfraVisualEffectsService>(mockVisualEffectsService),
+      partialMock<InfraEdgeService>(mockEdgeService),
+      partialMock<AppOperationStateManager>(mockGraphHistoryCoordinator),
+      partialMock<AppGraphOperationManager>(mockGraphOperationManager),
       mockAppStateService,
     );
   });
@@ -940,7 +942,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     });
 
     it('should reject magnet validation when no magnet provided', () => {
-      const args: MagnetValidationArgs = { magnet: null as any };
+      const args: MagnetValidationArgs = { magnet: null as unknown as Element }; // deliberately missing magnet;
       const result = service.isMagnetValid(args);
 
       expect(result).toBe(false);

@@ -8,7 +8,16 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { of } from 'rxjs';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
+import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
+import { ThemeService } from '../../services/theme.service';
+import { ClientCredentialService } from '../../services/client-credential.service';
+import { UserPreferencesService } from '../../services/user-preferences.service';
+import { UserService } from '../../services/user.service';
 
 import { UserPreferencesDialogComponent } from './user-preferences-dialog.component';
 import { IAuthService } from '../../interfaces';
@@ -32,9 +41,18 @@ describe('UserPreferencesDialogComponent', () => {
     dialogRef = { close: vi.fn() };
     loggerService = createTypedMockLoggerService();
 
-    const authService = { getUser: vi.fn(), getUserProfile: vi.fn() };
+    const authService = {
+      userProfile: null,
+      userEmail: 'test@example.com',
+      refreshUserProfile: vi.fn(),
+      logout: vi.fn(),
+    };
     const dialog = { open: vi.fn() };
-    const themeService = { currentTheme$: { subscribe: vi.fn() }, setTheme: vi.fn() };
+    const themeService = {
+      getCurrentTheme: vi.fn(),
+      observeTheme: vi.fn(),
+      setThemeMode: vi.fn(),
+    };
     const userPreferencesService = {
       getPreferences: vi.fn().mockReturnValue({
         animations: true,
@@ -47,7 +65,7 @@ describe('UserPreferencesDialogComponent', () => {
         showDeveloperTools: false,
       }),
     };
-    const threatModelAuthService = { getCurrentRole: vi.fn() };
+    const threatModelAuthService = { currentUserPermission$: of(null) };
     clientCredentialService = { list: vi.fn().mockReturnValue(of([])), delete: vi.fn() };
     const userService = { requestDeleteChallenge: vi.fn(), confirmDeleteAccount: vi.fn() };
     const snackBar = { open: vi.fn() };
@@ -62,18 +80,18 @@ describe('UserPreferencesDialogComponent', () => {
 
     runInInjectionContext(envInjector, () => {
       component = new UserPreferencesDialogComponent(
-        dialogRef as any,
+        partialMock<MatDialogRef<UserPreferencesDialogComponent>>(dialogRef),
         {},
-        authService as unknown as IAuthService,
+        partialMock<IAuthService>(authService),
         loggerService,
-        dialog as any,
-        themeService as any,
-        userPreferencesService as any,
-        threatModelAuthService as any,
-        clientCredentialService as any,
-        userService as any,
-        snackBar as any,
-        transloco as any,
+        partialMock<MatDialog>(dialog),
+        partialMock<ThemeService>(themeService),
+        partialMock<UserPreferencesService>(userPreferencesService),
+        partialMock<ThreatModelAuthorizationService>(threatModelAuthService),
+        partialMock<ClientCredentialService>(clientCredentialService),
+        partialMock<UserService>(userService),
+        partialMock<MatSnackBar>(snackBar),
+        partialMock<TranslocoService>(transloco),
       );
     });
   });
