@@ -426,7 +426,7 @@
       "lastLogin": "เข้าสู่ระบบล่าสุด",
       "linkedAccounts": {
         "linkedAt": "เชื่อมโยงเมื่อ",
-        "menuItem": "บัญชีที่เชื่อมโยง",
+        "menuItem": "บัญชีที่เชื่อมโยง...",
         "title": "บัญชีที่เชื่อมโยงของ {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

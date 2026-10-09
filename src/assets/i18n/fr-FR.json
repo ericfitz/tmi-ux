@@ -426,7 +426,7 @@
       "lastLogin": "Dernière connexion",
       "linkedAccounts": {
         "linkedAt": "Lié le",
-        "menuItem": "Comptes liés",
+        "menuItem": "Comptes liés...",
         "title": "Comptes liés de {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

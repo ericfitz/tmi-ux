@@ -161,7 +161,7 @@ userTest.describe('TM Workflows - Single Role', () => {
     } catch (error) {
       // Name the leak: silently swallowed cleanup is how the dev DB reached 78 stray
       // threat models and started failing unrelated specs.
-       
+
       console.warn(`cleanup failed for "${testName}": ${String(error)}`);
     }
   });
@@ -367,41 +367,37 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
     await userPage.getByTestId('tm-permissions-button').click();
     const permissionsFlow = new PermissionsFlow(userPage);
     await permissionsFlow.addPermission('user', 'TMI', 'test-reviewer', 'reader');
-    await permissionsFlow.saveAndClose();
+    // The dialog closes before the PATCH is sent (the opener applies the result
+    // afterwards), so wait for the grant to be persisted before the reviewer looks.
+    await Promise.all([
+      userPage.waitForResponse(
+        resp =>
+          resp.request().method() === 'PATCH' &&
+          /\/threat_models\/[a-f0-9-]+$/.test(new URL(resp.url()).pathname) &&
+          resp.ok(),
+      ),
+      permissionsFlow.saveAndClose(),
+    ]);
 
-    await reviewerPage.goto('/dashboard');
-    await reviewerDashboard.waitForReady();
-    if (
-      await reviewerDashboard
-        .clearFiltersButton()
-        .isVisible()
-        .catch(() => false)
-    ) {
-      await reviewerDashboard.clearFiltersButton().click();
-    }
+    // Every attempt starts from a fresh load: a reload re-applies the reviewer's
+    // default filters (securityReviewer = self), which would hide this TM (it has
+    // no security reviewer), so the filters are cleared unconditionally each time.
     const filterFlow = new DashboardFilterFlow(reviewerPage);
-    await filterFlow.searchByName(testName);
-
-    // Permission replication to the reviewer's view can lag briefly; poll
-    // with reloads for up to ~30 seconds.
-    let visible = false;
-    for (let attempt = 0; attempt < 6; attempt++) {
-      if (
-        await reviewerDashboard
-          .tmCard(testName)
-          .isVisible({ timeout: 5000 })
-          .catch(() => false)
-      ) {
-        visible = true;
-        break;
-      }
-      await reviewerPage.reload();
+    await expect(async () => {
+      await reviewerPage.goto('/dashboard');
       await reviewerDashboard.waitForReady();
+      await Promise.all([
+        reviewerPage.waitForResponse(
+          resp =>
+            resp.request().method() === 'GET' &&
+            new URL(resp.url()).pathname.endsWith('/threat_models') &&
+            resp.ok(),
+        ),
+        reviewerDashboard.clearFiltersButton().click({ timeout: 5000 }),
+      ]);
       await filterFlow.searchByName(testName);
-    }
-    if (!visible) {
-      await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 10000 });
-    }
+      await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 3000 });
+    }).toPass({ timeout: 60000, intervals: [1000, 2000, 3000] });
 
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');

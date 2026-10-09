@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { TriagePage } from '../pages/triage.page';
 import { RevisionNotesDialog } from '../dialogs/revision-notes.dialog';
 
@@ -16,18 +16,34 @@ export class TriageFlow {
   // SEM@8697500456874c624d6100bf8ef5713b83d84248: replace the triage status filter's selection with exactly the given labels (mutates shared state)
   async setStatusFilter(labels: string[]) {
     await this.triagePage.statusFilter().click();
-    const options = this.page.locator('mat-option');
-    const count = await options.count();
-    for (let i = 0; i < count; i++) {
-      const option = options.nth(i);
-      const text = (await option.textContent())?.trim() ?? '';
-      const shouldSelect = labels.some(label => text.includes(label));
+    const panelOptions = this.page.getByRole('option');
+    await panelOptions.first().waitFor({ state: 'visible' });
+    // Snapshot the (static) option names once, then address each option by its
+    // accessible name: every toggle refetches the list and re-renders, so an
+    // nth() handle can detach between the read and the click.
+    const names = (await panelOptions.allTextContents()).map(text => text.trim());
+    for (const name of names) {
+      const option = this.page.getByRole('option', { name, exact: true });
+      const shouldSelect = labels.some(label => name.includes(label));
       const isSelected = (await option.getAttribute('aria-selected')) === 'true';
-      if (shouldSelect !== isSelected) {
-        await option.click();
+      if (shouldSelect === isSelected) {
+        continue;
       }
+      // Each toggle triggers exactly one list refetch; wait for it to finish
+      // before touching the next option.
+      await Promise.all([
+        this.page.waitForResponse(
+          resp =>
+            resp.request().method() === 'GET' &&
+            resp.url().includes('/triage/survey_responses') &&
+            resp.ok(),
+        ),
+        option.click(),
+      ]);
+      await expect(option).toHaveAttribute('aria-selected', shouldSelect ? 'true' : 'false');
     }
     await this.page.keyboard.press('Escape');
+    await this.page.locator('.cdk-overlay-pane mat-option').first().waitFor({ state: 'detached' });
     await this.page.waitForLoadState('networkidle');
   }
 

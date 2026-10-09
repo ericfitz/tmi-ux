@@ -114,6 +114,16 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     return this.hasSchema ? ['group', 'question', 'answer'] : ['question', 'answer'];
   }
 
+  /** Whether the response carries non-blank revision notes from a reviewer */
+  get hasRevisionNotes(): boolean {
+    return !!this.response?.revision_notes?.trim();
+  }
+
+  /** Whether to show the "Revision requested" card: only for responses returned for revision */
+  get showRevisionCard(): boolean {
+    return this.response?.status === 'needs_revision' || this.hasRevisionNotes;
+  }
+
   /** Triage notes for this response */
   triageNotes: TriageNoteListItem[] = [];
 

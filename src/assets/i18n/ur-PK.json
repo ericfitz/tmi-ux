@@ -426,7 +426,7 @@
       "lastLogin": "آخری لاگ ان",
       "linkedAccounts": {
         "linkedAt": "منسلک",
-        "menuItem": "منسلک اکاؤنٹس",
+        "menuItem": "منسلک اکاؤنٹس...",
         "title": "{{userName}} کے منسلک اکاؤنٹس"
       },
       "listTitle": "{{admin.sections.users.title}}",

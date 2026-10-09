@@ -82,6 +82,15 @@ describe('DfdNodeTypeService', () => {
     });
   });
 
+  describe('setCellDataAssets overwrite semantics', () => {
+    it('writes with overwrite so removed asset ids and keys are not deep-merged back', () => {
+      const setData = vi.fn();
+      const cell = partialCell({ getData: () => ({ data_assets: ['x', 'y'] }), setData });
+      service.setCellDataAssets(cell, ['x']);
+      expect(setData).toHaveBeenCalledWith({ data_assets: ['x'] }, { overwrite: true });
+    });
+  });
+
   describe('isDataAssetChecked', () => {
     it('is false when the map is empty', () => {
       expect(service.isDataAssetChecked(new Map(), 'a')).toBe(false);

@@ -426,7 +426,7 @@
       "lastLogin": "마지막 로그인",
       "linkedAccounts": {
         "linkedAt": "연결일",
-        "menuItem": "연결된 계정",
+        "menuItem": "연결된 계정...",
         "title": "{{userName}}의 연결된 계정"
       },
       "listTitle": "{{admin.sections.users.title}}",

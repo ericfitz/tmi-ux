@@ -426,7 +426,7 @@
       "lastLogin": "Último inicio de sesión",
       "linkedAccounts": {
         "linkedAt": "Vinculada",
-        "menuItem": "Cuentas vinculadas",
+        "menuItem": "Cuentas vinculadas...",
         "title": "Cuentas vinculadas de {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",
