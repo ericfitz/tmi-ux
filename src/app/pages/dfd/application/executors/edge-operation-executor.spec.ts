@@ -8,7 +8,7 @@
  */
 
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 
 import { EdgeOperationExecutor } from './edge-operation-executor';
 import {
@@ -86,6 +86,12 @@ function x6MergeData(target: unknown, source: unknown): unknown {
   }
   return source;
 }
+
+/** The data accessors of {@link createMockEdge}, typed for tests that read data back. */
+type MockEdgeData = {
+  getData: () => Record<string, unknown>;
+  setData: Mock<(d: Record<string, unknown>, options?: { overwrite?: boolean }) => void>;
+};
 
 /** A mock X6 edge exposing the getters/setters the executor touches. */
 // SEM@16e70871be30dfa1d3a516313196a38ca75845db: build a stateful mock X6 edge exposing all getters and setters the executor touches (pure)
@@ -491,21 +497,21 @@ describe('EdgeOperationExecutor', () => {
 
     it('removes a metadata entry instead of deep-merging arrays (#964)', () =>
       new Promise<void>((resolve, reject) => {
-        const edge = cells.get('e1') as Record<string, any>;
-        edge['setData']({
+        const edge = cells.get('e1') as MockEdgeData;
+        edge.setData({
           _metadata: [
             { key: 'a', value: '1' },
             { key: 'b', value: '2' },
           ],
         });
-        edge['setData'].mockClear();
+        edge.setData.mockClear();
         const op = makeUpdateOp({ properties: { _metadata: [{ key: 'a', value: '1' }] } });
 
         executor.execute(op, context).subscribe({
           next: result => {
             try {
               expect(result.success).toBe(true);
-              expect(edge['getData']()['_metadata']).toEqual([{ key: 'a', value: '1' }]);
+              expect(edge.getData()['_metadata']).toEqual([{ key: 'a', value: '1' }]);
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));
@@ -517,15 +523,15 @@ describe('EdgeOperationExecutor', () => {
 
     it('preserves data fields not included in the update and deletes null-valued keys', () =>
       new Promise<void>((resolve, reject) => {
-        const edge = cells.get('e1') as Record<string, any>;
-        edge['setData']({ edgeType: 'flow', keep: { x: 1 }, drop: 'gone' });
+        const edge = cells.get('e1') as MockEdgeData;
+        edge.setData({ edgeType: 'flow', keep: { x: 1 }, drop: 'gone' });
         const op = makeUpdateOp({ properties: { edgeType: 'control-flow', drop: null } });
 
         executor.execute(op, context).subscribe({
           next: result => {
             try {
               expect(result.success).toBe(true);
-              expect(edge['getData']()).toEqual({ edgeType: 'control-flow', keep: { x: 1 } });
+              expect(edge.getData()).toEqual({ edgeType: 'control-flow', keep: { x: 1 } });
               resolve();
             } catch (e) {
               reject(e instanceof Error ? e : new Error(String(e)));
