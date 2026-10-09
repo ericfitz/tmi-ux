@@ -559,7 +559,7 @@ describe('AppDiagramResyncService', () => {
     it('should clear in-progress flag on reset', () => {
       service.initialize('diagram-1', 'tm-1', mockGraph, mockX6GraphAdapter);
 
-      (service as any)._isResyncInProgress = true;
+      service['_isResyncInProgress'] = true;
 
       service.reset();
 

@@ -448,7 +448,7 @@
       "lastLogin": "সর্বশেষ লগইন",
       "linkedAccounts": {
         "linkedAt": "সংযুক্ত",
-        "menuItem": "সংযুক্ত অ্যাকাউন্ট",
+        "menuItem": "সংযুক্ত অ্যাকাউন্ট...",
         "title": "{{userName}}-এর সংযুক্ত অ্যাকাউন্ট"
       },
       "listTitle": "{{admin.sections.users.title}}",

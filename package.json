@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.23.1",
+  "version": "1.24.1",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -57,13 +57,14 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\" | grep -v '(unchanged)' || echo 'Formatting complete (no changes needed)'",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json,md}\"",
     "check": "pnpm run format:check && pnpm run lint:all",
-    "verify": "pnpm run build && pnpm run typecheck:vitest && pnpm run typecheck:e2e && pnpm run format:check && pnpm run lint:all:check && pnpm run validate-json:test && pnpm run validate-json:i18n && pnpm run validate-jsonc:tsconfig && pnpm run test",
+    "verify": "pnpm run build && pnpm run typecheck:vitest && pnpm run typecheck:e2e && pnpm run format:check && pnpm run lint:all:check && pnpm run validate-json:test && pnpm run deps-bump-apply:test && pnpm run validate-json:i18n && pnpm run validate-jsonc:tsconfig && pnpm run test",
     "validate-json": "node scripts/validate-json.cjs",
     "validate-json:i18n": "node scripts/validate-json.cjs \"src/assets/i18n/*.json\"",
     "validate-json:all": "node scripts/validate-json.cjs \"**/*.json\" --strict",
     "validate-jsonc": "node scripts/validate-json.cjs --jsonc",
     "validate-jsonc:tsconfig": "node scripts/validate-json.cjs \"tsconfig*.json\" --jsonc",
     "validate-json:test": "node scripts/validate-json.cjs --test",
+    "deps-bump-apply:test": "bash scripts/deps-bump-apply-patches.test.sh",
     "unused-i18n": "node scripts/check-unused-i18n-keys.cjs src/assets/i18n/en-US.json",
     "validate-all": "pnpm run validate-json:i18n && pnpm run validate-jsonc:tsconfig && pnpm run unused-i18n",
     "sort-json": "uv run scripts/check-i18n.py -y",

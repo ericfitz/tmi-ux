@@ -32,7 +32,6 @@ test.describe('DFD Visual Regression', () => {
     page: Page;
     dfdEditorPage: DfdEditorPage;
     threatModelFlow: ThreatModelFlow;
-    dashboardPage: DashboardPage;
     tmName: string;
   }> {
     const context = await browser.newContext();
@@ -41,7 +40,6 @@ test.describe('DFD Visual Regression', () => {
 
     const threatModelFlow = new ThreatModelFlow(page);
     const diagramFlow = new DiagramFlow(page);
-    const dashboardPage = new DashboardPage(page);
     const dfdEditorPage = new DfdEditorPage(page);
 
     const tmName = `E2E VR DFD ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -54,32 +52,48 @@ test.describe('DFD Visual Regression', () => {
     // Wait for orchestrator to be fully initialized
     await expect(dfdEditorPage.addActorButton()).toBeEnabled({ timeout: 15000 });
 
-    return { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName };
+    return { context, page, dfdEditorPage, threatModelFlow, tmName };
   }
 
   /**
-   * Helper: clean up a fresh diagram's TM.
+   * Helper: delete a fresh diagram's TM and close its context. Deletes through
+   * the API: the reviewer's default dashboard filter can hide a TM it just
+   * created, and waiting for its dashboard card used up the test timeout and
+   * leaked the TM (#830). A failed delete fails the test (softly, so it never
+   * masks the test's own failure) rather than leaking silently.
    */
   async function cleanupFreshDiagram(
-    page: Page,
     threatModelFlow: ThreatModelFlow,
-    dashboardPage: DashboardPage,
     tmName: string,
     context: BrowserContext,
   ): Promise<void> {
+    let cleanupError: unknown;
     try {
-      await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
-      await threatModelFlow.deleteFromDashboard(tmName);
-      await expect(dashboardPage.tmCard(tmName)).toHaveCount(0, { timeout: 10000 });
-    } catch {
-      // Best effort cleanup
+      await threatModelFlow.deleteByNameViaApi(tmName);
+    } catch (error) {
+      cleanupError = error;
+    } finally {
+      await context.close();
     }
-    await context.close();
+    // Soft: a failed delete fails the test without replacing the body's own error.
+    expect.soft(cleanupError, `deleting ${tmName}`).toBeUndefined();
+  }
+
+  /**
+   * Capture the theme plates with the per-run threat model name replaced by a
+   * constant and the pointer parked off the toolbar, so neither the header text
+   * nor a lingering tooltip varies between runs (#830).
+   */
+  async function capturePlate(page: Page, name: string): Promise<void> {
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(300);
+    await takeThemeScreenshots(page, name, {
+      replaceText: [{ selector: '.threat-model-name .title-name', text: 'E2E VR DFD' }],
+    });
   }
 
   test('plate 1 — node types', async ({ browser }) => {
-    const { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName } =
+    const { context, page, dfdEditorPage, threatModelFlow, tmName } =
       await setupFreshDiagram(browser);
 
     try {
@@ -93,14 +107,14 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-node-types');
+      await capturePlate(page, 'dfd-node-types');
     } finally {
-      await cleanupFreshDiagram(page, threatModelFlow, dashboardPage, tmName, context);
+      await cleanupFreshDiagram(threatModelFlow, tmName, context);
     }
   });
 
   test('plate 2 — style variations', async ({ browser }) => {
-    const { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName } =
+    const { context, page, dfdEditorPage, threatModelFlow, tmName } =
       await setupFreshDiagram(browser);
 
     try {
@@ -161,14 +175,14 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-style-variations');
+      await capturePlate(page, 'dfd-style-variations');
     } finally {
-      await cleanupFreshDiagram(page, threatModelFlow, dashboardPage, tmName, context);
+      await cleanupFreshDiagram(threatModelFlow, tmName, context);
     }
   });
 
   test('plate 3 — edge variations', async ({ browser }) => {
-    const { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName } =
+    const { context, page, dfdEditorPage, threatModelFlow, tmName } =
       await setupFreshDiagram(browser);
 
     try {
@@ -179,19 +193,35 @@ test.describe('DFD Visual Regression', () => {
 
         // Create 4 nodes
         const n1 = graph.addNode({
-          shape: 'actor', x: 50, y: 200, width: 80, height: 80,
+          shape: 'actor',
+          x: 50,
+          y: 200,
+          width: 80,
+          height: 80,
           attrs: { text: { text: 'User' } },
         });
         const n2 = graph.addNode({
-          shape: 'process', x: 250, y: 100, width: 120, height: 60,
+          shape: 'process',
+          x: 250,
+          y: 100,
+          width: 120,
+          height: 60,
           attrs: { text: { text: 'API' } },
         });
         const n3 = graph.addNode({
-          shape: 'process', x: 250, y: 300, width: 120, height: 60,
+          shape: 'process',
+          x: 250,
+          y: 300,
+          width: 120,
+          height: 60,
           attrs: { text: { text: 'Worker' } },
         });
         const n4 = graph.addNode({
-          shape: 'store', x: 500, y: 200, width: 120, height: 60,
+          shape: 'store',
+          x: 500,
+          y: 200,
+          width: 120,
+          height: 60,
           attrs: { text: { text: 'Database' } },
         });
 
@@ -220,7 +250,10 @@ test.describe('DFD Visual Regression', () => {
         graph.addEdge({
           source: { cell: n3.id },
           target: { cell: n4.id },
-          vertices: [{ x: 400, y: 350 }, { x: 450, y: 280 }],
+          vertices: [
+            { x: 400, y: 350 },
+            { x: 450, y: 280 },
+          ],
         });
       });
 
@@ -228,14 +261,14 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-edge-variations');
+      await capturePlate(page, 'dfd-edge-variations');
     } finally {
-      await cleanupFreshDiagram(page, threatModelFlow, dashboardPage, tmName, context);
+      await cleanupFreshDiagram(threatModelFlow, tmName, context);
     }
   });
 
   test('plate 4 — embedding', async ({ browser }) => {
-    const { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName } =
+    const { context, page, dfdEditorPage, threatModelFlow, tmName } =
       await setupFreshDiagram(browser);
 
     try {
@@ -247,16 +280,20 @@ test.describe('DFD Visual Regression', () => {
         // Security boundary (parent)
         const boundary = graph.addNode({
           shape: 'security-boundary',
-          x: 100, y: 100,
-          width: 300, height: 200,
+          x: 100,
+          y: 100,
+          width: 300,
+          height: 200,
           attrs: { text: { text: 'Trust Zone' } },
         });
 
         // Embedded process inside the boundary
         const embedded = graph.addNode({
           shape: 'process',
-          x: 150, y: 160,
-          width: 120, height: 60,
+          x: 150,
+          y: 160,
+          width: 120,
+          height: 60,
           attrs: { text: { text: 'Internal Service' } },
         });
         boundary.addChild(embedded);
@@ -264,8 +301,10 @@ test.describe('DFD Visual Regression', () => {
         // Process outside the boundary
         graph.addNode({
           shape: 'process',
-          x: 500, y: 180,
-          width: 120, height: 60,
+          x: 500,
+          y: 180,
+          width: 120,
+          height: 60,
           attrs: { text: { text: 'External Service' } },
         });
 
@@ -281,9 +320,9 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-embedding');
+      await capturePlate(page, 'dfd-embedding');
     } finally {
-      await cleanupFreshDiagram(page, threatModelFlow, dashboardPage, tmName, context);
+      await cleanupFreshDiagram(threatModelFlow, tmName, context);
     }
   });
 
@@ -306,7 +345,10 @@ test.describe('DFD Visual Regression', () => {
       const seededCard = dashboardPage.tmCard(SEEDED_TM).first();
       const found = await seededCard.isVisible().catch(() => false);
       if (!found) {
-        test.skip(true, 'Seed TM "Seed TM - Full Fields" not available — seed data not loaded in test backend.');
+        test.skip(
+          true,
+          'Seed TM "Seed TM - Full Fields" not available — seed data not loaded in test backend.',
+        );
         return;
       }
 
@@ -320,14 +362,14 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-seeded-complex');
+      await capturePlate(page, 'dfd-seeded-complex');
     } finally {
       await context.close();
     }
   });
 
   test('plate 6 — after operations (move + resize)', async ({ browser }) => {
-    const { context, page, dfdEditorPage, threatModelFlow, dashboardPage, tmName } =
+    const { context, page, dfdEditorPage, threatModelFlow, tmName } =
       await setupFreshDiagram(browser);
 
     try {
@@ -337,29 +379,32 @@ test.describe('DFD Visual Regression', () => {
       await dfdEditorPage.waitForGraphSettled(2, 10000);
 
       // Move node 1 and resize node 2 programmatically
-      await page.evaluate(({ nodeId1, nodeId2 }) => {
-        const graph = (window as any).__e2e?.dfd?.graph;
-        if (!graph) return;
+      await page.evaluate(
+        ({ nodeId1, nodeId2 }) => {
+          const graph = (window as any).__e2e?.dfd?.graph;
+          if (!graph) return;
 
-        const n1 = graph.getCellById(nodeId1);
-        if (n1) {
-          n1.setPosition(300, 200);
-          n1.setAttrByPath('text/text', 'Moved');
-        }
+          const n1 = graph.getCellById(nodeId1);
+          if (n1) {
+            n1.setPosition(300, 200);
+            n1.setAttrByPath('text/text', 'Moved');
+          }
 
-        const n2 = graph.getCellById(nodeId2);
-        if (n2) {
-          n2.resize(160, 100);
-          n2.setAttrByPath('text/text', 'Resized');
-        }
-      }, { nodeId1: id1, nodeId2: id2 });
+          const n2 = graph.getCellById(nodeId2);
+          if (n2) {
+            n2.resize(160, 100);
+            n2.setAttrByPath('text/text', 'Resized');
+          }
+        },
+        { nodeId1: id1, nodeId2: id2 },
+      );
 
       await dfdEditorPage.zoomToFitButton().click();
       await page.waitForTimeout(500);
 
-      await takeThemeScreenshots(page, 'dfd-after-operations');
+      await capturePlate(page, 'dfd-after-operations');
     } finally {
-      await cleanupFreshDiagram(page, threatModelFlow, dashboardPage, tmName, context);
+      await cleanupFreshDiagram(threatModelFlow, tmName, context);
     }
   });
 });

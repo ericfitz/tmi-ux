@@ -56,7 +56,8 @@ export class DfdNodeTypeService {
     } else {
       delete updated['data_assets'];
     }
-    cell.setData(updated);
+    // X6 setData() deep-merges and cannot shorten arrays or delete keys.
+    cell.setData(updated, { overwrite: true });
   }
 
   /** True when every cell in the selection map has the given asset. */

@@ -895,8 +895,9 @@ describe('InfraEdgeQueryService', () => {
       });
 
       // Mock corrupted edge methods
-      vi.spyOn(edge, 'getSourceCellId').mockReturnValue(null as any);
-      vi.spyOn(edge, 'getTargetCellId').mockReturnValue(null as any);
+      // null ids simulate corrupted edge data the type system forbids
+      vi.spyOn(edge, 'getSourceCellId').mockReturnValue(null as unknown as string);
+      vi.spyOn(edge, 'getTargetCellId').mockReturnValue(null as unknown as string);
 
       const connectedEdges = service.findEdgesConnectedToNode(graph, node1.id);
       expect(connectedEdges).toHaveLength(0);
@@ -994,17 +995,18 @@ describe('InfraEdgeQueryService', () => {
 
     it('should handle null or undefined parameters gracefully', () => {
       // These methods should return empty results for null graphs
-      expect(service.findEdgesConnectedToNode(null as any, 'node1')).toEqual([]);
-      expect(service.findEdgesBetweenNodes(null as any, 'node1', 'node2')).toEqual([]);
-      expect(service.isPortConnected(null as any, 'node1', 'port1')).toBe(false);
-      expect(service.getConnectedPorts(null as any, 'node1')).toEqual([]);
+      const nullGraph = null as unknown as Graph; // deliberately invalid input
+      expect(service.findEdgesConnectedToNode(nullGraph, 'node1')).toEqual([]);
+      expect(service.findEdgesBetweenNodes(nullGraph, 'node1', 'node2')).toEqual([]);
+      expect(service.isPortConnected(nullGraph, 'node1', 'port1')).toBe(false);
+      expect(service.getConnectedPorts(nullGraph, 'node1')).toEqual([]);
 
-      const stats = service.getNodeEdgeStatistics(null as any, 'node1');
+      const stats = service.getNodeEdgeStatistics(nullGraph, 'node1');
       expect(stats.totalEdges).toBe(0);
 
-      expect(service.validateEdgeConnections(null as any)).toEqual([]);
+      expect(service.validateEdgeConnections(nullGraph)).toEqual([]);
 
-      const summary = service.getConnectionSummary(null as any);
+      const summary = service.getConnectionSummary(nullGraph);
       expect(summary.totalEdges).toBe(0);
     });
   });

@@ -112,15 +112,27 @@ describe('DiagramInfo', () => {
     });
 
     it('should throw error for invalid dates', () => {
-      // Act & Assert
+      // Act & Assert (deliberately invalid dates)
       expect(
         () =>
-          new DiagramInfo('diagram-1', 'Test Diagram', 'DFD-1.0.0', 'invalid' as any, new Date()),
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'DFD-1.0.0',
+            'invalid' as unknown as Date,
+            new Date(),
+          ),
       ).toThrow('Created date must be a valid Date object');
 
       expect(
         () =>
-          new DiagramInfo('diagram-1', 'Test Diagram', 'DFD-1.0.0', new Date(), 'invalid' as any),
+          new DiagramInfo(
+            'diagram-1',
+            'Test Diagram',
+            'DFD-1.0.0',
+            new Date(),
+            'invalid' as unknown as Date,
+          ),
       ).toThrow('Modified date must be a valid Date object');
     });
 

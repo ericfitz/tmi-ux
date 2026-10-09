@@ -1,24 +1,30 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 import { DfdCommandService } from './dfd-command.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
+import { AppExportService } from '../../application/services/app-export.service';
+import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 describe('DfdCommandService', () => {
   let service: DfdCommandService;
   let router: { navigate: ReturnType<typeof vi.fn> };
-  let logger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    debugComponent: ReturnType<typeof vi.fn>;
-  };
+  let logger: MockLoggerService;
   let threatModelService: { createThreat: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     router = { navigate: vi.fn().mockResolvedValue(true) };
-    logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debugComponent: vi.fn() };
+    logger = createTypedMockLoggerService();
     threatModelService = { createThreat: vi.fn().mockReturnValue(of({ id: 'threat-1' })) };
-    service = new DfdCommandService(router as any, logger as any, threatModelService as any);
+    // Partial Router/ThreatModelService: only the methods the service calls are stubbed
+    service = new DfdCommandService(
+      partialMock<Router>(router),
+      logger,
+      partialMock<ThreatModelService>(threatModelService),
+    );
   });
 
   describe('navigateAway', () => {
@@ -92,8 +98,8 @@ describe('DfdCommandService', () => {
       const exportService = { prepareImageExport: vi.fn(), processSvg: vi.fn() };
 
       const result = await service.captureDiagramSvgThumbnail(
-        graphAdapter as any,
-        exportService as any,
+        partialMock<InfraX6GraphAdapter>(graphAdapter),
+        partialMock<AppExportService>(exportService),
         vi.fn(),
       );
 
@@ -108,8 +114,8 @@ describe('DfdCommandService', () => {
       const exportService = { prepareImageExport: vi.fn(), processSvg: vi.fn() };
 
       const result = await service.captureDiagramSvgThumbnail(
-        graphAdapter as any,
-        exportService as any,
+        partialMock<InfraX6GraphAdapter>(graphAdapter),
+        partialMock<AppExportService>(exportService),
         vi.fn(),
       );
 
@@ -129,8 +135,8 @@ describe('DfdCommandService', () => {
       };
 
       const result = await service.captureDiagramSvgThumbnail(
-        graphAdapter as any,
-        exportService as any,
+        partialMock<InfraX6GraphAdapter>(graphAdapter),
+        partialMock<AppExportService>(exportService),
         vi.fn(),
       );
 
@@ -154,8 +160,8 @@ describe('DfdCommandService', () => {
       };
 
       const result = await service.captureDiagramSvgThumbnail(
-        graphAdapter as any,
-        exportService as any,
+        partialMock<InfraX6GraphAdapter>(graphAdapter),
+        partialMock<AppExportService>(exportService),
         vi.fn(),
       );
 
@@ -178,8 +184,8 @@ describe('DfdCommandService', () => {
       const clearSelection = vi.fn();
 
       const result = await service.captureDiagramSvgThumbnail(
-        graphAdapter as any,
-        exportService as any,
+        partialMock<InfraX6GraphAdapter>(graphAdapter),
+        partialMock<AppExportService>(exportService),
         clearSelection,
       );
 

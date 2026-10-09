@@ -8,6 +8,9 @@ import { SessionManagerService } from './session-manager.service';
 import { of, throwError, Subject } from 'rxjs';
 import { JwtToken } from '../models/auth.models';
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { SessionExpiryDialogComponent } from '../../core/components/session-expiry-dialog/session-expiry-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 
 describe('SessionManagerService', () => {
   let service: SessionManagerService;
@@ -121,10 +124,11 @@ describe('SessionManagerService', () => {
       afterClosed: vi.fn().mockReturnValue(of('extend')),
       close: vi.fn(),
     };
-    (service as any).warningDialog = mockDialogRef;
+    service['warningDialog'] =
+      partialMock<MatDialogRef<SessionExpiryDialogComponent, string>>(mockDialogRef);
 
     // Call the private method using type assertion
-    (service as any).handleExtendSession();
+    service['handleExtendSession']();
 
     expect(mockAuthService.refreshToken).toHaveBeenCalled();
     expect(mockAuthService.storeSessionInfo).toHaveBeenCalledWith(mockToken);
@@ -137,7 +141,7 @@ describe('SessionManagerService', () => {
     );
 
     // Call the private method
-    (service as any).handleExtendSession();
+    service['handleExtendSession']();
 
     expect(mockAuthService.logout).toHaveBeenCalled();
   });
@@ -157,7 +161,7 @@ describe('SessionManagerService', () => {
 
   it('should handle session timeout', () => {
     // Call the private method
-    (service as any).handleSessionTimeout();
+    service['handleSessionTimeout']();
 
     expect(mockAuthService.logout).toHaveBeenCalled();
   });
@@ -167,7 +171,8 @@ describe('SessionManagerService', () => {
       afterClosed: vi.fn().mockReturnValue(of('extend')),
       close: vi.fn(),
     };
-    (service as any).warningDialog = mockDialogRef;
+    service['warningDialog'] =
+      partialMock<MatDialogRef<SessionExpiryDialogComponent, string>>(mockDialogRef);
 
     service.stopExpiryTimers();
 
@@ -276,7 +281,7 @@ describe('SessionManagerService', () => {
       const refreshSpy = vi.spyOn(mockAuthService, 'refreshToken').mockReturnValue(of(newToken));
 
       // Trigger activity check
-      (service as any).checkActivityAndRefreshIfNeeded();
+      service['checkActivityAndRefreshIfNeeded']();
 
       expect(refreshSpy).toHaveBeenCalled();
       expect(mockAuthService.storeSessionInfo).toHaveBeenCalledWith(newToken);
@@ -292,7 +297,7 @@ describe('SessionManagerService', () => {
       mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       // Trigger activity check
-      (service as any).checkActivityAndRefreshIfNeeded();
+      service['checkActivityAndRefreshIfNeeded']();
 
       // Should not refresh since user is inactive
       expect(mockAuthService.refreshToken).not.toHaveBeenCalled();
@@ -308,7 +313,7 @@ describe('SessionManagerService', () => {
       mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       // Trigger activity check
-      (service as any).checkActivityAndRefreshIfNeeded();
+      service['checkActivityAndRefreshIfNeeded']();
 
       // Should not refresh since token still has 30 minutes (> 15 minute threshold)
       expect(mockAuthService.refreshToken).not.toHaveBeenCalled();
@@ -325,7 +330,7 @@ describe('SessionManagerService', () => {
       mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
 
       // Trigger activity check
-      (service as any).checkActivityAndRefreshIfNeeded();
+      service['checkActivityAndRefreshIfNeeded']();
 
       // Should not logout on proactive refresh failure
       expect(mockAuthService.logout).not.toHaveBeenCalled();
@@ -342,7 +347,7 @@ describe('SessionManagerService', () => {
       mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
 
       // Trigger activity check
-      (service as any).checkActivityAndRefreshIfNeeded();
+      service['checkActivityAndRefreshIfNeeded']();
 
       // Should show warning notification on proactive refresh failure
       expect(mockNotificationService.showWarning).toHaveBeenCalledWith(

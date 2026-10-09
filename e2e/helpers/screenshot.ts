@@ -9,7 +9,8 @@ export { ALL_THEME_MODES };
  * medium `Oct 7, 2026` and ISO `2026-10-07`), for masking timestamps that
  * change with every seed.
  */
-export const DATE_TEXT = /\d{1,2}\/\d{1,2}\/\d{2,4}|\b[A-Z][a-z]{2,8}\.? \d{1,2}, \d{4}|\d{4}-\d{2}-\d{2}/;
+export const DATE_TEXT =
+  /\d{1,2}\/\d{1,2}\/\d{2,4}|\b[A-Z][a-z]{2,8}\.? \d{1,2}, \d{4}|\d{4}-\d{2}-\d{2}/;
 
 /**
  * Matches text that changes with every seed: UUIDs, and dates (DATE_TEXT) with
@@ -32,6 +33,32 @@ export interface ScreenshotOptions {
    * a change in date format is invisible to screenshots taken this way.
    */
   freezeVolatileText?: boolean;
+  /**
+   * Set the text of every element matching each selector to a fixed string
+   * before each screenshot, for per-run names (e.g. a generated threat model
+   * name) that would otherwise change the text and its width.
+   */
+  replaceText?: { selector: string; text: string }[];
+}
+
+/**
+ * Sets the text content of every element matching each rule's selector.
+ * Fails if a selector matches nothing, so a renamed element or a page that
+ * hasn't rendered yet can't silently leave volatile text in the screenshot.
+ */
+async function replaceText(page: Page, rules: { selector: string; text: string }[]): Promise<void> {
+  const counts = await page.evaluate(list => {
+    return list.map(({ selector, text }) => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => {
+        el.textContent = text;
+      });
+      return elements.length;
+    });
+  }, rules);
+  rules.forEach((rule, i) => {
+    expect(counts[i], `replaceText selector ${rule.selector}`).toBeGreaterThan(0);
+  });
 }
 
 /** Rewrites volatile text (see VOLATILE_TEXT_SOURCE) in every text node under body. */
@@ -73,6 +100,7 @@ export async function takeThemeScreenshots(
       await applyTheme(page, mode);
       // Per mode: a re-render between modes could restore the original text.
       if (options?.freezeVolatileText) await freezeVolatileText(page);
+      if (options?.replaceText) await replaceText(page, options.replaceText);
       await expect(page).toHaveScreenshot(`${name}-${mode}.png`, {
         threshold: options?.threshold ?? 0.2,
         fullPage: options?.fullPage ?? false,

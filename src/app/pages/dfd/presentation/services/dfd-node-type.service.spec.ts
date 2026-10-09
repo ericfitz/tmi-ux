@@ -1,5 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { DfdNodeTypeService } from './dfd-node-type.service';
+import { LayoutCell } from '../../types/layout-cell.types';
+import { partialMock } from '@testing/partial-mock';
+
+/**
+ * Partial cell fake: the service only calls the members supplied, and the real
+ * `getData` is generic, which an object literal cannot satisfy structurally.
+ */
+function partialCell(cell: {
+  getData: () => Record<string, unknown>;
+  setData?: (data: Record<string, unknown>) => void;
+}): LayoutCell {
+  return partialMock<LayoutCell>(cell);
+}
 
 describe('DfdNodeTypeService', () => {
   let service: DfdNodeTypeService;
@@ -23,22 +36,22 @@ describe('DfdNodeTypeService', () => {
 
   describe('getCellDataAssets', () => {
     it('returns the data_assets array when present', () => {
-      const cell = { getData: () => ({ data_assets: ['a', 'b'] }) } as any;
+      const cell = partialCell({ getData: () => ({ data_assets: ['a', 'b'] }) });
       expect(service.getCellDataAssets(cell)).toEqual(['a', 'b']);
     });
 
     it('returns the legacy dataAssetId as a single-element array', () => {
-      const cell = { getData: () => ({ dataAssetId: 'legacy' }) } as any;
+      const cell = partialCell({ getData: () => ({ dataAssetId: 'legacy' }) });
       expect(service.getCellDataAssets(cell)).toEqual(['legacy']);
     });
 
     it('returns an empty array when the cell has no asset data', () => {
-      const cell = { getData: () => ({}) } as any;
+      const cell = partialCell({ getData: () => ({}) });
       expect(service.getCellDataAssets(cell)).toEqual([]);
     });
 
     it('prefers data_assets over the legacy dataAssetId when both are present', () => {
-      const cell = { getData: () => ({ data_assets: ['new'], dataAssetId: 'old' }) } as any;
+      const cell = partialCell({ getData: () => ({ data_assets: ['new'], dataAssetId: 'old' }) });
       expect(service.getCellDataAssets(cell)).toEqual(['new']);
     });
   });
@@ -46,26 +59,35 @@ describe('DfdNodeTypeService', () => {
   describe('setCellDataAssets', () => {
     it('writes data_assets and strips the legacy key when ids are non-empty', () => {
       let written: Record<string, unknown> | undefined;
-      const cell = {
+      const cell = partialCell({
         getData: () => ({ dataAssetId: 'legacy', other: 1 }),
         setData: (d: Record<string, unknown>) => {
           written = d;
         },
-      } as any;
+      });
       service.setCellDataAssets(cell, ['x']);
       expect(written).toEqual({ other: 1, data_assets: ['x'] });
     });
 
     it('removes data_assets when the id list is empty', () => {
       let written: Record<string, unknown> | undefined;
-      const cell = {
+      const cell = partialCell({
         getData: () => ({ data_assets: ['x'], other: 1 }),
         setData: (d: Record<string, unknown>) => {
           written = d;
         },
-      } as any;
+      });
       service.setCellDataAssets(cell, []);
       expect(written).toEqual({ other: 1 });
+    });
+  });
+
+  describe('setCellDataAssets overwrite semantics', () => {
+    it('writes with overwrite so removed asset ids and keys are not deep-merged back', () => {
+      const setData = vi.fn();
+      const cell = partialCell({ getData: () => ({ data_assets: ['x', 'y'] }), setData });
+      service.setCellDataAssets(cell, ['x']);
+      expect(setData).toHaveBeenCalledWith({ data_assets: ['x'] }, { overwrite: true });
     });
   });
 

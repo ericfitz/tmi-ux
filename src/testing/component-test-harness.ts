@@ -28,8 +28,12 @@ export function createComponentFixture<T>(
     imports?: unknown[];
   } = {},
 ): ComponentFixture<T> {
-  const componentMetadata =
-    (component as any)['ɵcmp'] || (component as any)['__annotations__']?.[0];
+  // Angular's compiled-component and decorator metadata are not part of Type<T>.
+  const compiled = component as unknown as {
+    ɵcmp?: { standalone?: boolean };
+    __annotations__?: { standalone?: boolean }[];
+  };
+  const componentMetadata = compiled['ɵcmp'] || compiled['__annotations__']?.[0];
   const isStandalone = componentMetadata?.standalone === true;
 
   if (isStandalone) {

@@ -3,10 +3,14 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { TranslocoService } from '@jsverse/transloco';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 
 import { RollbackConfirmationDialogComponent } from './rollback-confirmation-dialog.component';
 import {
   RollbackConfirmationDialogData,
+  RollbackConfirmationDialogResult,
   ROLLBACK_TYPES_REQUIRING_CONFIRMATION,
   AUDIT_OBJECT_TYPE_TRANSLATION_KEY,
 } from './rollback-confirmation-dialog.types';
@@ -47,7 +51,13 @@ describe('RollbackConfirmationDialogComponent', () => {
         return key;
       }),
     };
-    return new RollbackConfirmationDialogComponent(dialogRef as any, data, translocoService as any);
+    return new RollbackConfirmationDialogComponent(
+      partialMock<
+        MatDialogRef<RollbackConfirmationDialogComponent, RollbackConfirmationDialogResult>
+      >(dialogRef),
+      data,
+      partialMock<TranslocoService>(translocoService),
+    );
   };
 
   beforeEach(() => {

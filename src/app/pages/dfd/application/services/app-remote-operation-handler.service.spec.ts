@@ -99,8 +99,7 @@ describe('AppRemoteOperationHandler', () => {
       service.initialize(mockGraph, operationContext);
 
       // Act: Manually trigger operation handling
-      const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
+      service['_handleRemoteOperation'](cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert: executeRemoteOperation should be called immediately (synchronously)
       expect(mockHistoryCoordinator.executeRemoteOperation).toHaveBeenCalledWith(
@@ -142,8 +141,7 @@ describe('AppRemoteOperationHandler', () => {
       service.initialize(mockGraph, operationContext);
 
       // Act: Manually trigger operation handling
-      const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
+      service['_handleRemoteOperation'](cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert
       expect(flagWasSet).toBe(true);
@@ -188,8 +186,7 @@ describe('AppRemoteOperationHandler', () => {
       service.initialize(mockGraph, operationContext);
 
       // Act: Manually trigger operation handling
-      const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
+      service['_handleRemoteOperation'](cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert: callback should have executed despite error
       expect(callbackExecuted).toBe(true);

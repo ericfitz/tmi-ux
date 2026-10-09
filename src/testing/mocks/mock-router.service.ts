@@ -7,6 +7,7 @@
 
 import { vi } from 'vitest';
 import type { Router } from '@angular/router';
+import { partialMock } from '../partial-mock';
 
 /**
  * Creates a mock Router with commonly used methods
@@ -16,7 +17,7 @@ import type { Router } from '@angular/router';
  */
 // SEM@e2ca46c9764dd30e66d02e1b3dc7c25f22057c23: build a mock Router with navigation spy methods and a configurable initial URL (pure)
 export function createMockRouter(initialUrl: string = '/current-route'): Router {
-  return {
+  return partialMock<Router>({
     navigate: vi.fn().mockResolvedValue(true),
     navigateByUrl: vi.fn().mockResolvedValue(true),
     url: initialUrl,
@@ -26,12 +27,12 @@ export function createMockRouter(initialUrl: string = '/current-route'): Router 
     isActive: vi.fn().mockReturnValue(false),
     routerState: {
       root: {},
-    } as any,
+    },
     events: {
       pipe: vi.fn(),
       subscribe: vi.fn(),
-    } as any,
-  } as unknown as Router;
+    },
+  });
 }
 
 /**

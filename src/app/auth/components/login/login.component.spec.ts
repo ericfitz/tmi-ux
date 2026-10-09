@@ -8,8 +8,12 @@
 import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { Params } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { LoginComponent } from './login.component';
 import { OAuthProviderInfo, SAMLProviderInfo } from '../../models/auth.models';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../testing/mocks';
@@ -99,12 +103,12 @@ describe('LoginComponent', () => {
     sessionStorage.clear();
 
     component = new LoginComponent(
-      mockAuthService as any,
-      mockRoute as any,
-      mockRouter as any,
+      partialMock<AuthService>(mockAuthService),
+      partialMock<ActivatedRoute>(mockRoute),
+      partialMock<Router>(mockRouter),
       mockLogger,
-      mockDialog as any,
-      mockCdr as any,
+      partialMock<MatDialog>(mockDialog),
+      partialMock<ChangeDetectorRef>(mockCdr),
     );
   });
 

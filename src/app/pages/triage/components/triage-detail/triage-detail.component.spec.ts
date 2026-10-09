@@ -7,7 +7,16 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '@app/i18n/language.service';
+import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
+import { SurveyService } from '../../../surveys/services/survey.service';
+import { TriageNoteService } from '../../services/triage-note.service';
 import { TriageDetailComponent } from './triage-detail.component';
 import { SurveyJsonSchema, SurveyResponse } from '@app/types/survey.types';
 import type { Language } from '@app/i18n/language-config';
@@ -31,16 +40,16 @@ describe('TriageDetailComponent', () => {
 
   beforeEach(() => {
     component = new TriageDetailComponent(
-      mockRoute as any,
-      mockRouter as any,
-      mockDialog as any,
-      mockSnackBar as any,
-      mockTransloco as any,
-      mockResponseService as any,
-      mockSurveyService as any,
-      mockTriageNoteService as any,
+      partialMock<ActivatedRoute>(mockRoute),
+      partialMock<Router>(mockRouter),
+      partialMock<MatDialog>(mockDialog),
+      partialMock<MatSnackBar>(mockSnackBar),
+      partialMock<TranslocoService>(mockTransloco),
+      partialMock<SurveyResponseService>(mockResponseService),
+      partialMock<SurveyService>(mockSurveyService),
+      partialMock<TriageNoteService>(mockTriageNoteService),
       mockLogger,
-      mockLanguageService as never,
+      partialMock<LanguageService>(mockLanguageService),
     );
   });
 
@@ -353,6 +362,39 @@ describe('TriageDetailComponent', () => {
     it('should exclude group column when hasSchema is false', () => {
       component.hasSchema = false;
       expect(component.responsesDisplayedColumns).toEqual(['question', 'answer']);
+    });
+  });
+
+  describe('showRevisionCard', () => {
+    const responseWith = (fields: Partial<SurveyResponse>): SurveyResponse =>
+      ({ id: 'r1', status: 'submitted', ...fields }) as SurveyResponse;
+
+    it('should be false before a response loads', () => {
+      component.response = null;
+      expect(component.showRevisionCard).toBe(false);
+    });
+
+    it('should be false for a response never returned for revision', () => {
+      component.response = responseWith({ status: 'submitted' });
+      expect(component.showRevisionCard).toBe(false);
+    });
+
+    it('should be true when the response needs revision, even without notes', () => {
+      component.response = responseWith({ status: 'needs_revision' });
+      expect(component.showRevisionCard).toBe(true);
+    });
+
+    it('should be true when the response has revision notes', () => {
+      component.response = responseWith({
+        status: 'submitted',
+        revision_notes: 'Add the data flow',
+      });
+      expect(component.showRevisionCard).toBe(true);
+    });
+
+    it('should be false for blank revision notes', () => {
+      component.response = responseWith({ status: 'submitted', revision_notes: '   ' });
+      expect(component.showRevisionCard).toBe(false);
     });
   });
 });

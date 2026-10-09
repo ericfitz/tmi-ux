@@ -12,6 +12,7 @@ import { InfraPortStateService } from './infra-port-state.service';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createMockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -60,6 +61,12 @@ Object.defineProperty(SVGSVGElement.prototype, 'createSVGMatrix', {
 });
 
 describe('InfraPortStateService', () => {
+  // Deliberately invalid inputs to exercise the service's null guards
+  const nullGraph = null as unknown as Graph;
+  const undefinedGraph = undefined as unknown as Graph;
+  const nullNode = null as unknown as Node;
+  const undefinedNode = undefined as unknown as Node;
+  const nullEdge = null as unknown as Edge;
   let service: InfraPortStateService;
   let mockEdgeQueryService: InfraEdgeQueryService;
   let mockLogger: LoggerService;
@@ -71,12 +78,12 @@ describe('InfraPortStateService', () => {
     mockLogger = createMockLoggerService();
 
     // Create mock InfraEdgeQueryService
-    mockEdgeQueryService = {
+    mockEdgeQueryService = partialMock<InfraEdgeQueryService>({
       isPortConnected: vi.fn(),
       findEdgesConnectedToPort: vi.fn(),
       findEdgesConnectedToNode: vi.fn(),
       getConnectedPorts: vi.fn(),
-    } as any;
+    }); // partial stub: only the methods the service calls
 
     // Create service instance
     service = new InfraPortStateService(mockEdgeQueryService, mockLogger);
@@ -178,15 +185,15 @@ describe('InfraPortStateService', () => {
     });
 
     it('should handle null or undefined graph gracefully', () => {
-      service.updateNodePortVisibility(null as any, node);
-      service.updateNodePortVisibility(undefined as any, node);
+      service.updateNodePortVisibility(nullGraph, node);
+      service.updateNodePortVisibility(undefinedGraph, node);
 
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
     });
 
     it('should handle null or undefined node gracefully', () => {
-      service.updateNodePortVisibility(graph, null as any);
-      service.updateNodePortVisibility(graph, undefined as any);
+      service.updateNodePortVisibility(graph, nullNode);
+      service.updateNodePortVisibility(graph, undefinedNode);
 
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
     });
@@ -443,9 +450,9 @@ describe('InfraPortStateService', () => {
     });
 
     it('should handle null or undefined parameters gracefully', () => {
-      service.ensureConnectedPortsVisible(null as any, edge);
-      service.ensureConnectedPortsVisible(graph, null as any);
-      service.ensureConnectedPortsVisible(null as any, null as any);
+      service.ensureConnectedPortsVisible(nullGraph, edge);
+      service.ensureConnectedPortsVisible(graph, nullEdge);
+      service.ensureConnectedPortsVisible(nullGraph, nullEdge);
 
       // Should not throw errors or make any port changes
       expect(mockLogger.debugComponent).not.toHaveBeenCalled();
@@ -479,7 +486,7 @@ describe('InfraPortStateService', () => {
     });
 
     it('should return false for port connection check with null graph', () => {
-      const result = service.isPortConnected(null as any, node.id, 'port1');
+      const result = service.isPortConnected(nullGraph, node.id, 'port1');
 
       expect(result).toBe(false);
       expect(mockEdgeQueryService.isPortConnected).not.toHaveBeenCalled();
@@ -536,7 +543,7 @@ describe('InfraPortStateService', () => {
     });
 
     it('should handle connection change with null graph gracefully', () => {
-      service.onConnectionChange(null as any);
+      service.onConnectionChange(nullGraph);
 
       // Should not throw errors
       expect(mockLogger.debugComponent).not.toHaveBeenCalled();

@@ -426,7 +426,7 @@
       "lastLogin": "अंतिम लॉगिन",
       "linkedAccounts": {
         "linkedAt": "लिंक किया गया",
-        "menuItem": "लिंक किए गए खाते",
+        "menuItem": "लिंक किए गए खाते...",
         "title": "{{userName}} के लिंक किए गए खाते"
       },
       "listTitle": "{{admin.sections.users.title}}",

@@ -9,7 +9,7 @@
 import '@angular/compiler';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Graph, Node, Edge } from '@antv/x6';
+import { Graph, Node, Edge, Selection } from '@antv/x6';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { SelectionService } from '../services/infra-selection.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
@@ -17,6 +17,7 @@ import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { partialMock } from '@testing/partial-mock';
 
 // Helper to create a node; getNodeTypeInfo derives node type from `shape`, which the
 // caller's config already sets, so this simply forwards to graph.addNode.
@@ -113,9 +114,9 @@ describe('InfraX6SelectionAdapter', () => {
     x6CoreOps = new InfraX6CoreOperationsService(mockLogger);
 
     // Create mock services for InfraEdgeService
-    infraEdgeService = {
+    infraEdgeService = partialMock<InfraEdgeService>({
       removeEdge: vi.fn().mockReturnValue(true),
-    } as any;
+    }); // partial stub: only removeEdge is used
 
     adapter = new InfraX6SelectionAdapter(
       mockLogger,
@@ -152,24 +153,32 @@ describe('InfraX6SelectionAdapter', () => {
 
     it('should configure selection plugin with correct options', () => {
       // Access the selection plugin directly from the adapter
-      const selectionPlugin = (adapter as any).selectionPlugin;
+      // X6 marks the plugin's options private, so read them through a narrow view
+      const selectionPlugin = adapter['selectionPlugin'] as unknown as {
+        options: { enabled: boolean; multiple: boolean; rubberband: boolean; movable: boolean };
+      } | null;
 
       expect(selectionPlugin).toBeDefined();
-      expect(selectionPlugin.options.enabled).toBe(true);
-      expect(selectionPlugin.options.multiple).toBe(true);
-      expect(selectionPlugin.options.rubberband).toBe(true);
-      expect(selectionPlugin.options.movable).toBe(true);
+      expect(selectionPlugin?.options.enabled).toBe(true);
+      expect(selectionPlugin?.options.multiple).toBe(true);
+      expect(selectionPlugin?.options.rubberband).toBe(true);
+      expect(selectionPlugin?.options.movable).toBe(true);
     });
 
     it('should configure transform plugin with correct options', () => {
       // Access the transform plugin directly from the adapter
-      const transformPlugin = (adapter as any).transformPlugin;
+      const transformPlugin = adapter['transformPlugin'] as unknown as {
+        options: {
+          resizing: { enabled: boolean; minWidth: number; minHeight: number };
+          rotating: boolean;
+        };
+      } | null;
 
       expect(transformPlugin).toBeDefined();
-      expect(transformPlugin.options.resizing.enabled).toBe(true);
-      expect(transformPlugin.options.resizing.minWidth).toBe(40);
-      expect(transformPlugin.options.resizing.minHeight).toBe(30);
-      expect(transformPlugin.options.rotating).toBe(false);
+      expect(transformPlugin?.options.resizing.enabled).toBe(true);
+      expect(transformPlugin?.options.resizing.minWidth).toBe(40);
+      expect(transformPlugin?.options.resizing.minHeight).toBe(30);
+      expect(transformPlugin?.options.rotating).toBe(false);
     });
   });
 
@@ -923,7 +932,7 @@ describe('InfraX6SelectionAdapter', () => {
       });
 
       // Mock graph.addNode
-      const mockGroupNode = { id: 'group-1', addChild: vi.fn() } as any;
+      const mockGroupNode = { id: 'group-1', addChild: vi.fn() };
       graph.addNode = vi.fn().mockReturnValue(mockGroupNode);
 
       // Group nodes
@@ -1020,7 +1029,7 @@ describe('InfraX6SelectionAdapter', () => {
     it('should enable selection mode', () => {
       // Mock plugin and graph methods
       const mockSelectionPlugin = { enable: vi.fn() };
-      (adapter as any).selectionPlugin = mockSelectionPlugin;
+      adapter['selectionPlugin'] = partialMock<Selection>(mockSelectionPlugin); // partial plugin stub
       graph.enableSelection = vi.fn();
 
       // Enable selection
@@ -1038,7 +1047,7 @@ describe('InfraX6SelectionAdapter', () => {
     it('should disable selection mode', () => {
       // Mock plugin and graph methods
       const mockSelectionPlugin = { disable: vi.fn() };
-      (adapter as any).selectionPlugin = mockSelectionPlugin;
+      adapter['selectionPlugin'] = partialMock<Selection>(mockSelectionPlugin); // partial plugin stub
       graph.disableSelection = vi.fn();
       adapter.clearSelection = vi.fn();
 

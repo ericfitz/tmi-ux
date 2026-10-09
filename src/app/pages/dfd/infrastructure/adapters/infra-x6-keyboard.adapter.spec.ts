@@ -294,7 +294,7 @@ describe('InfraX6KeyboardAdapter', () => {
       document.dispatchEvent(shiftDownEvent);
 
       // Check that grid size was updated to 1 (disabled snap)
-      const graphOptions = (graph as any).options;
+      const graphOptions = graph.options;
       expect(graphOptions.grid.size).toBe(1);
       expect(graph.drawGrid).toHaveBeenCalled();
     });
@@ -310,7 +310,7 @@ describe('InfraX6KeyboardAdapter', () => {
       document.dispatchEvent(shiftUpEvent);
 
       // Check that grid size was restored to original (10)
-      const graphOptions = (graph as any).options;
+      const graphOptions = graph.options;
       expect(graphOptions.grid.size).toBe(10);
       expect(graph.drawGrid).toHaveBeenCalled();
     });
@@ -320,7 +320,7 @@ describe('InfraX6KeyboardAdapter', () => {
       document.dispatchEvent(shiftDownEvent);
 
       // Grid size should remain original when not dragging
-      const graphOptions = (graph as any).options;
+      const graphOptions = graph.options;
       expect(graphOptions.grid.size).toBe(10);
     });
 
@@ -334,7 +334,7 @@ describe('InfraX6KeyboardAdapter', () => {
       graph.trigger('node:mouseup', { node });
 
       // Grid should be restored to original size when not dragging
-      const graphOptions = (graph as any).options;
+      const graphOptions = graph.options;
       expect(graphOptions.grid.size).toBe(10);
     });
   });
@@ -432,7 +432,7 @@ describe('InfraX6KeyboardAdapter', () => {
       expect(handler.getInitialNodePosition(node.id)).toBeNull();
 
       // Grid should be restored to original size
-      const graphOptions = (graph as any).options;
+      const graphOptions = graph.options;
       expect(graphOptions.grid.size).toBe(10);
     });
   });
@@ -534,7 +534,7 @@ describe('InfraX6KeyboardAdapter', () => {
 
       // Should not throw error with undefined node
       expect(() => {
-        graph.trigger('node:mousedown', { node: undefined as any });
+        graph.trigger('node:mousedown', { node: undefined });
       }).not.toThrow();
     });
   });

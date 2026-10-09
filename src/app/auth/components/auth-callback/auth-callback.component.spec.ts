@@ -8,6 +8,7 @@ import '@angular/compiler';
 
 import { AuthCallbackComponent } from './auth-callback.component';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 import { of, throwError, BehaviorSubject } from 'rxjs';
 import {
   createTypedMockLoggerService,
@@ -17,7 +18,11 @@ import {
 } from '../../../../testing/mocks';
 import { AuthService } from '../../services/auth.service';
 import { UserProfile } from '../../models/auth.models';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
+import { StepUpService } from '../../services/step-up.service';
 
 /**
  * AuthService exposes lastAuthError/userProfile/userEmail as getter-only
@@ -131,12 +136,12 @@ describe('AuthCallbackComponent', () => {
     return new AuthCallbackComponent(
       mockAuthService as AuthService,
       mockActivatedRoute as ActivatedRoute,
-      mockRouter as any,
+      partialMock<Router>(mockRouter),
       mockLoggerService,
-      mockSnackBar as any,
-      mockDialog as any,
-      mockStepUpService as any,
-      mockTransloco as any,
+      partialMock<MatSnackBar>(mockSnackBar),
+      partialMock<MatDialog>(mockDialog),
+      partialMock<StepUpService>(mockStepUpService),
+      partialMock<TranslocoService>(mockTransloco),
     );
   }
 

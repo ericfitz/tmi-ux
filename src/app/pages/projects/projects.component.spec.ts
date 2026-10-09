@@ -268,7 +268,7 @@ describe('ProjectsComponent', () => {
   // -------------------------------------------------------------------------
   describe('name filter', () => {
     it('onNameFilterChange emits to the debounce subject', () => {
-      const nextSpy = vi.spyOn((component as any).filterNameSubject$, 'next');
+      const nextSpy = vi.spyOn(component['filterNameSubject$'], 'next');
 
       component.onNameFilterChange('foo');
 
@@ -285,7 +285,7 @@ describe('ProjectsComponent', () => {
     });
 
     it('onTeamFilterInput emits to team search subject when >= 2 chars', () => {
-      const nextSpy = vi.spyOn((component as any).teamSearchSubject$, 'next');
+      const nextSpy = vi.spyOn(component['teamSearchSubject$'], 'next');
 
       component.onTeamFilterInput('Al');
 
@@ -293,7 +293,7 @@ describe('ProjectsComponent', () => {
     });
 
     it('onTeamFilterInput does not emit when < 2 chars', () => {
-      const nextSpy = vi.spyOn((component as any).teamSearchSubject$, 'next');
+      const nextSpy = vi.spyOn(component['teamSearchSubject$'], 'next');
 
       component.onTeamFilterInput('A');
 
@@ -642,7 +642,10 @@ describe('ProjectsComponent', () => {
     });
 
     it('returns empty string for null/undefined', () => {
-      expect(component.displayTeam(null as any)).toBe('');
+      expect(
+        // Deliberately null: the display function must tolerate a missing team.
+        component.displayTeam(null as unknown as TeamListItem),
+      ).toBe('');
     });
   });
 });

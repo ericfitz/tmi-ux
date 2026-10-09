@@ -15,6 +15,10 @@ import { Cell } from '../../../../core/types/websocket-message.types';
 import { OperationContext } from '../../types/graph-operation.types';
 import { type MockLoggerService, createTypedMockLoggerService } from '../../../../../testing/mocks';
 import type { AppStateService } from './app-state.service';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { AppCellOperationConverterService } from './app-cell-operation-converter.service';
+import { partialMock } from '@testing/partial-mock';
 
 describe('AppHistoryService', () => {
   let service: AppHistoryService;
@@ -95,7 +99,12 @@ describe('AppHistoryService', () => {
       ),
     };
 
-    mockAppStateService = {
+    mockAppStateService = partialMock<
+      AppStateService & {
+        getCurrentState: ReturnType<typeof vi.fn>;
+        setApplyingUndoRedo: ReturnType<typeof vi.fn>;
+      }
+    >({
       getCurrentState: vi.fn(() => ({
         syncState: {
           isSynced: true,
@@ -111,10 +120,7 @@ describe('AppHistoryService', () => {
         readOnly: false,
       })),
       setApplyingUndoRedo: vi.fn(),
-    } as unknown as AppStateService & {
-      getCurrentState: ReturnType<typeof vi.fn>;
-      setApplyingUndoRedo: ReturnType<typeof vi.fn>;
-    };
+    });
 
     mockCellOperationConverter = {
       convertCellsToOperations: vi.fn(() => [
@@ -134,10 +140,11 @@ describe('AppHistoryService', () => {
 
     service = new AppHistoryService(
       mockLogger,
-      mockCollaborationService as any,
-      mockGraphOperationManager as any,
+      // Partial collaborators: only the members under test are stubbed
+      partialMock<DfdCollaborationService>(mockCollaborationService),
+      partialMock<AppGraphOperationManager>(mockGraphOperationManager),
       mockAppStateService,
-      mockCellOperationConverter as any,
+      partialMock<AppCellOperationConverterService>(mockCellOperationConverter),
     );
   });
 
@@ -234,7 +241,7 @@ describe('AppHistoryService', () => {
       service.addHistoryEntry(entry2);
 
       // Manually populate redo stack for testing
-      (service as any)._historyState.redoStack = [entry1];
+      service['_historyState'].redoStack = [entry1];
 
       const entry3 = createMockHistoryEntry('3', [createMockCell('cell-3')]);
       service.addHistoryEntry(entry3);
@@ -343,10 +350,11 @@ describe('AppHistoryService', () => {
     it('should fail if not initialized', async () => {
       const uninitializedService = new AppHistoryService(
         mockLogger,
-        mockCollaborationService as any,
-        mockGraphOperationManager as any,
+        // Partial collaborators: only the members under test are stubbed
+        partialMock<DfdCollaborationService>(mockCollaborationService),
+        partialMock<AppGraphOperationManager>(mockGraphOperationManager),
         mockAppStateService,
-        mockCellOperationConverter as any,
+        partialMock<AppCellOperationConverterService>(mockCellOperationConverter),
       );
 
       const entry = createMockHistoryEntry('1', [createMockCell('cell-1')]);
@@ -757,7 +765,7 @@ describe('AppHistoryService', () => {
 
       const undoStack = service.getUndoStack();
       expect(undoStack).toHaveLength(1);
-      expect(undoStack).not.toBe((service as any)._historyState.undoStack);
+      expect(undoStack).not.toBe(service['_historyState'].undoStack);
     });
 
     it('should return empty arrays for empty stacks', () => {

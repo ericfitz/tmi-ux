@@ -426,7 +426,7 @@
       "lastLogin": "آخر تسجيل دخول",
       "linkedAccounts": {
         "linkedAt": "تاريخ الربط",
-        "menuItem": "الحسابات المرتبطة",
+        "menuItem": "الحسابات المرتبطة...",
         "title": "الحسابات المرتبطة لـ {{userName}}"
       },
       "listTitle": "{{admin.sections.users.title}}",

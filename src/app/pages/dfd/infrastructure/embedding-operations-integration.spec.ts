@@ -19,9 +19,9 @@ import { InfraEmbeddingService } from '../infrastructure/services/infra-embeddin
 import { ZOrderService } from '../infrastructure/services/infra-z-order.service';
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
-import { AppNotificationService } from '../application/services/app-notification.service';
 import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
 import { registerCustomShapes } from './adapters/infra-x6-shape-definitions';
+import { partialMock } from '@testing/partial-mock';
 
 // Test helpers
 // SEM@41de72ef1c753a3e626b8cc587c272e5e4614a4a: build a minimal X6 graph instance for integration test setup (mutates shared state)
@@ -123,7 +123,6 @@ describe('Embedding Operations Integration Tests', () => {
   let zOrderService: ZOrderService;
   let embeddingAdapter: InfraX6EmbeddingAdapter;
   let zOrderAdapter: InfraX6ZOrderAdapter;
-  let notificationService: AppNotificationService;
 
   beforeEach(() => {
     // Reset TestBed
@@ -139,7 +138,7 @@ describe('Embedding Operations Integration Tests', () => {
 
     // Create mock history coordinator: only the methods these adapters actually call
     // are stubbed, so the cast intentionally provides a partial AppOperationStateManager.
-    const mockHistoryCoordinator = {
+    const mockHistoryCoordinator = partialMock<AppOperationStateManager>({
       executeVisualEffect: vi.fn((graph: Graph, operation: () => void) => {
         operation();
       }),
@@ -149,7 +148,7 @@ describe('Embedding Operations Integration Tests', () => {
       executeCompoundOperation: vi.fn((graph: Graph, operation: () => any) => {
         return operation();
       }),
-    } as unknown as AppOperationStateManager;
+    });
 
     // Create adapters for post-load validation tests
     zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService, mockHistoryCoordinator);
@@ -160,11 +159,6 @@ describe('Embedding Operations Integration Tests', () => {
       zOrderAdapter,
       mockHistoryCoordinator,
     );
-
-    notificationService = {} as any;
-
-    // Spy on notification service
-    notificationService.showEmbeddingValidationError = vi.fn();
   });
 
   afterEach(() => {

@@ -75,33 +75,37 @@
         <!-- Left column -->
         <div class="top-left">
           <!-- Row 1: Revision Notes Card -->
-          <mat-card class="revision-notes-card">
-            <mat-card-header>
-              <mat-card-title>{{ 'triage.detail.revisionNotesTitle' | transloco }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              @if (response.revision_notes) {
-                <div class="revision-notes-content">{{ response.revision_notes }}</div>
-                @if (response.reviewed_by) {
-                  <div class="revision-notes-meta">
-                    <mat-icon>rate_review</mat-icon>
-                    <span>{{ 'triage.detail.reviewedBy' | transloco }}</span>
-                    <app-user-display [user]="response.reviewed_by" />
-                    @if (response.reviewed_at) {
-                      <span class="reviewed-date">
-                        &middot;
-                        {{ response.reviewed_at | date: 'medium' : undefined : currentLocale }}
-                      </span>
-                    }
+          @if (showRevisionCard) {
+            <mat-card class="revision-notes-card">
+              <mat-card-header>
+                <mat-card-title>{{
+                  'triage.detail.revisionNotesTitle' | transloco
+                }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @if (hasRevisionNotes) {
+                  <div class="revision-notes-content">{{ response.revision_notes }}</div>
+                  @if (response.reviewed_by) {
+                    <div class="revision-notes-meta">
+                      <mat-icon>rate_review</mat-icon>
+                      <span>{{ 'triage.detail.reviewedBy' | transloco }}</span>
+                      <app-user-display [user]="response.reviewed_by" />
+                      @if (response.reviewed_at) {
+                        <span class="reviewed-date">
+                          &middot;
+                          {{ response.reviewed_at | date: 'medium' : undefined : currentLocale }}
+                        </span>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="revision-notes-empty">
+                    <p>{{ 'triage.detail.noRevisionNotes' | transloco }}</p>
                   </div>
                 }
-              } @else {
-                <div class="revision-notes-empty">
-                  <p>{{ 'triage.detail.noRevisionNotes' | transloco }}</p>
-                </div>
-              }
-            </mat-card-content>
-          </mat-card>
+              </mat-card-content>
+            </mat-card>
+          }
 
           <!-- Row 2: Status Timeline -->
           <mat-card class="timeline-card">

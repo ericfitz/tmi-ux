@@ -7,6 +7,8 @@
 
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
+import { TranslocoService } from '@jsverse/transloco';
+import { partialMock } from '@testing/partial-mock';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { LanguageService } from './language.service';
 
@@ -91,7 +93,7 @@ describe('LanguageService', () => {
     };
 
     // Create service with mocks
-    service = new LanguageService(mockTranslocoService as any);
+    service = new LanguageService(partialMock<TranslocoService>(mockTranslocoService));
   });
 
   afterEach(() => {
@@ -270,10 +272,11 @@ describe('LanguageService', () => {
 
   describe('ngOnDestroy()', () => {
     it('should unsubscribe from language changes', () => {
-      const unsubscribeSpy = vi.spyOn(
-        (service as any).langChangeSub as { unsubscribe: () => void },
-        'unsubscribe',
-      );
+      const subscription = service['langChangeSub'];
+      if (!subscription) {
+        throw new Error('expected an active language subscription');
+      }
+      const unsubscribeSpy = vi.spyOn(subscription, 'unsubscribe');
 
       service.ngOnDestroy();
 

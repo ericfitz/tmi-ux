@@ -10,6 +10,7 @@ import {
 import { Injector } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
+import { partialMock } from '@testing/partial-mock';
 
 import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
@@ -51,8 +52,9 @@ describe('JwtInterceptor', () => {
     method = 'GET',
     includeClone = false,
     context?: HttpContext,
+    body?: unknown,
   ): HttpRequest<unknown> => {
-    const request = {
+    const request: Record<string, unknown> = {
       url,
       method,
       headers: {
@@ -60,18 +62,19 @@ describe('JwtInterceptor', () => {
         get: vi.fn().mockReturnValue(null),
       },
       context: context ?? new HttpContext(),
-    } as any;
+      ...(body !== undefined ? { body } : {}),
+    };
 
     if (includeClone) {
-      request.clone = vi.fn().mockImplementation((options: any) => {
+      request['clone'] = vi.fn().mockImplementation((options: { context?: HttpContext }) => {
         return {
           ...request,
-          context: options.context ?? request.context,
+          context: options.context ?? request['context'],
         };
       });
     }
 
-    return request as HttpRequest<unknown>;
+    return partialMock<HttpRequest<unknown>>(request);
   };
 
   /** Create a PUT request to an admin URL (used in step-up tests). */
@@ -89,18 +92,18 @@ describe('JwtInterceptor', () => {
       userEmail: 'charlie@tmi.local',
     };
 
-    authService = mockAuthService as unknown as AuthService;
+    authService = partialMock<AuthService>(mockAuthService);
     stepUpService = { beginStepUp: vi.fn() };
     loggerService = createTypedMockLoggerService();
 
-    const mockInjector = {
+    const mockInjector = partialMock<Injector>({
       get: vi.fn().mockImplementation((token: unknown) => {
         if (token === StepUpService) {
           return stepUpService;
         }
         return authService;
       }),
-    } as unknown as Injector;
+    });
 
     interceptor = new JwtInterceptor(mockInjector, loggerService);
   });
@@ -113,9 +116,9 @@ describe('JwtInterceptor', () => {
     it('should pass through API requests without modifying headers', async () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/test`, 'GET');
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ data: 'test' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -132,9 +135,9 @@ describe('JwtInterceptor', () => {
         context: new HttpContext(),
       } as unknown as HttpRequest<unknown>;
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ data: 'test' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -148,9 +151,9 @@ describe('JwtInterceptor', () => {
     it('should pass through public API endpoints unchanged', async () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/authorize/github`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ data: 'login response' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -164,9 +167,9 @@ describe('JwtInterceptor', () => {
     it('should pass through auth exchange endpoints unchanged', async () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/token/google`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ data: 'exchange response' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -180,9 +183,9 @@ describe('JwtInterceptor', () => {
     it('should pass through auth authorize endpoints unchanged', async () => {
       const mockRequest = createMockRequest(`${environment.apiUrl}/oauth2/authorize/github`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ data: 'authorize response' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -196,11 +199,11 @@ describe('JwtInterceptor', () => {
     it('should pass through root health check endpoint unchanged', async () => {
       const mockRequest = createMockRequest(environment.apiUrl);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValue(of({ status: { code: 'OK', time: '2025-07-28T00:58:26.207Z' } })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -222,12 +225,12 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValueOnce(throwError(() => unauthorizedError))
           .mockReturnValueOnce(of({ data: 'success' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -264,9 +267,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -310,9 +313,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -351,9 +354,9 @@ describe('JwtInterceptor', () => {
         }),
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -386,9 +389,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => forbiddenError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -416,8 +419,13 @@ describe('JwtInterceptor', () => {
       vi.mocked(authService.forceRefreshToken).mockReturnValueOnce(of(mockAuthSession));
 
       const postBody = { name: 'test-model', description: 'important data' };
-      const mockRequest = createMockRequest(`${environment.apiUrl}/threat-models`, 'POST', true);
-      (mockRequest as any).body = postBody;
+      const mockRequest = createMockRequest(
+        `${environment.apiUrl}/threat-models`,
+        'POST',
+        true,
+        undefined,
+        postBody,
+      );
 
       const unauthorizedError = new HttpErrorResponse({
         status: 401,
@@ -425,12 +433,12 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/threat-models`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValueOnce(throwError(() => unauthorizedError))
           .mockReturnValueOnce(of({ data: 'created' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -464,12 +472,12 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValueOnce(throwError(() => unauthorizedError))
           .mockReturnValueOnce(of({ data: 'success' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -503,9 +511,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -534,9 +542,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/test`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => serverError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -562,9 +570,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/oauth2/callback`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => serverError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -596,9 +604,9 @@ describe('JwtInterceptor', () => {
         logoutContext,
       );
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(of({ success: true })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -629,9 +637,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/me/logout`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -661,9 +669,9 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/me`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         const result$ = interceptor.intercept(mockRequest, mockHandler);
@@ -701,9 +709,9 @@ describe('JwtInterceptor', () => {
       const mockRequest = makeAdminRequest();
       const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -725,9 +733,9 @@ describe('JwtInterceptor', () => {
       const mockRequest = makeAdminRequest();
       const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -748,12 +756,12 @@ describe('JwtInterceptor', () => {
       const mockRequest = makeAdminRequest();
       const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValueOnce(throwError(() => stepUpError))
           .mockReturnValueOnce(of({ data: 'settings updated' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -785,9 +793,9 @@ describe('JwtInterceptor', () => {
       );
       const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -812,12 +820,12 @@ describe('JwtInterceptor', () => {
         url: `${environment.apiUrl}/admin/settings`,
       });
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi
           .fn()
           .mockReturnValueOnce(throwError(() => plainError))
           .mockReturnValueOnce(of({ data: 'ok' })),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({
@@ -838,9 +846,9 @@ describe('JwtInterceptor', () => {
       const mockRequest = makeAdminRequest();
       const stepUpError = makeStepUpError(`${environment.apiUrl}/admin/settings`);
 
-      const mockHandler = {
+      const mockHandler = partialMock<HttpHandler>({
         handle: vi.fn().mockReturnValue(throwError(() => stepUpError)),
-      } as unknown as HttpHandler;
+      });
 
       await new Promise<void>(resolve => {
         interceptor.intercept(mockRequest, mockHandler).subscribe({

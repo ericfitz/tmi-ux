@@ -1,7 +1,11 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DfdIconService } from './dfd-icon.service';
+import { DfdLayoutService } from './dfd-layout.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
+import { ArchitectureIconService } from '../../infrastructure/services/architecture-icon.service';
 import { LayoutCell, LayoutGraph } from '../../types/layout-cell.types';
+import { partialMock } from '@testing/partial-mock';
 
 /**
  * Mutable in-memory fake satisfying the `LayoutCell` structural surface.
@@ -154,12 +158,17 @@ describe('DfdIconService', () => {
     setPrefs();
     architectureIcon = { getIconPath: vi.fn().mockReturnValue('/icons/x.svg') };
     dfdLayout = { applyAutoLayout: vi.fn().mockReturnValue(false) };
-    service = new DfdIconService(userPrefs as any, architectureIcon as any, dfdLayout as any);
+    // Partial collaborators: only the methods the service calls are stubbed
+    service = new DfdIconService(
+      partialMock<UserPreferencesService>(userPrefs),
+      partialMock<ArchitectureIconService>(architectureIcon),
+      partialMock<DfdLayoutService>(dfdLayout),
+    );
   });
 
   describe('captureCellStateForHistory', () => {
     it('captures every tracked cell field as a plain JSON snapshot', () => {
-      const cell = {
+      const cell = partialMock<LayoutCell>({
         id: 'n1',
         shape: 'process',
         getPosition: () => ({ x: 10, y: 20 }),
@@ -170,7 +179,7 @@ describe('DfdIconService', () => {
         isVisible: () => true,
         getZIndex: () => 3,
         getParent: () => null,
-      } as unknown as LayoutCell;
+      });
       const snapshot = service.captureCellStateForHistory(cell) as Record<string, unknown>;
       expect(snapshot).toEqual({
         id: 'n1',
@@ -187,8 +196,8 @@ describe('DfdIconService', () => {
     });
 
     it('records the parent id when the cell is embedded in a node', () => {
-      const parent = { id: 'container', isNode: () => true } as unknown as LayoutCell;
-      const cell = {
+      const parent = partialMock<LayoutCell>({ id: 'container', isNode: () => true });
+      const cell = partialMock<LayoutCell>({
         id: 'n1',
         shape: 'process',
         getPosition: () => ({ x: 10, y: 20 }),
@@ -199,14 +208,14 @@ describe('DfdIconService', () => {
         isVisible: () => true,
         getZIndex: () => 3,
         getParent: () => parent,
-      } as unknown as LayoutCell;
+      });
       const snapshot = service.captureCellStateForHistory(cell) as Record<string, unknown>;
       expect(snapshot['parent']).toBe('container');
     });
 
     it('drops the parent id when the parent is not a node', () => {
-      const parent = { id: 'edge-parent', isNode: () => false } as unknown as LayoutCell;
-      const cell = {
+      const parent = partialMock<LayoutCell>({ id: 'edge-parent', isNode: () => false });
+      const cell = partialMock<LayoutCell>({
         id: 'n1',
         shape: 'process',
         getPosition: () => ({ x: 0, y: 0 }),
@@ -217,7 +226,7 @@ describe('DfdIconService', () => {
         isVisible: () => true,
         getZIndex: () => 0,
         getParent: () => parent,
-      } as unknown as LayoutCell;
+      });
       const snapshot = service.captureCellStateForHistory(cell) as Record<string, unknown>;
       expect(snapshot['parent']).toBeUndefined();
     });
@@ -227,7 +236,13 @@ describe('DfdIconService', () => {
     it('writes the full icon and label attr block from the resolved path', () => {
       architectureIcon.getIconPath.mockReturnValue('/icons/server.svg');
       const cell = fakeCell({ shape: 'process' });
-      service.applyIconToCell(cell, { placement: { horizontal: 'left', vertical: 'top' } } as any);
+      service.applyIconToCell(cell, {
+        provider: 'aws',
+        type: 'services',
+        subcategory: 'compute',
+        icon: 'server',
+        placement: { horizontal: 'left', vertical: 'top' },
+      });
       expect(architectureIcon.getIconPath).toHaveBeenCalled();
       // Icon block: top-left placement maps to refX/refY '15%', size 32,
       // refX2/refY2 = -ICON_SIZE / 2 = -16.

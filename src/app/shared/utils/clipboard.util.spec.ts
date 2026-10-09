@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { copyToClipboard, copyToClipboardWithFeedback } from './clipboard.util';
+import { partialMock } from '@testing/partial-mock';
 
 describe('copyToClipboard', () => {
   let writeTextMock: ReturnType<typeof vi.fn>;
@@ -17,7 +18,11 @@ describe('copyToClipboard', () => {
     removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(node => node);
     // execCommand may not exist in test environment, so define it
     if (!document.execCommand) {
-      (document as any).execCommand = vi.fn().mockReturnValue(true);
+      Object.defineProperty(document, 'execCommand', {
+        value: vi.fn().mockReturnValue(true),
+        writable: true,
+        configurable: true,
+      });
     } else {
       vi.spyOn(document, 'execCommand').mockReturnValue(true);
     }
@@ -90,7 +95,7 @@ describe('copyToClipboard', () => {
       writable: true,
       configurable: true,
     });
-    (document.execCommand as any).mockImplementation(() => {
+    vi.mocked(document.execCommand).mockImplementation(() => {
       throw new Error('execCommand failed');
     });
 
@@ -113,9 +118,9 @@ describe('copyToClipboardWithFeedback', () => {
     transloco: TranslocoService;
     logger: LoggerService;
   } => ({
-    snackBar: snackBar as unknown as MatSnackBar,
-    transloco: transloco as unknown as TranslocoService,
-    logger: logger as unknown as LoggerService,
+    snackBar: partialMock<MatSnackBar>(snackBar),
+    transloco: partialMock<TranslocoService>(transloco),
+    logger: partialMock<LoggerService>(logger),
   });
 
   beforeEach(() => {

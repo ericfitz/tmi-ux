@@ -4,6 +4,8 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { MatDialogRef } from '@angular/material/dialog';
+import { partialMock } from '@testing/partial-mock';
 import { of, throwError } from 'rxjs';
 
 import {
@@ -58,10 +60,10 @@ describe('DeleteUserDataDialogComponent', () => {
     loggerService = createTypedMockLoggerService();
 
     component = new DeleteUserDataDialogComponent(
-      dialogRef as any,
+      partialMock<MatDialogRef<DeleteUserDataDialogComponent>>(dialogRef),
       mockDialogData,
-      authService as unknown as IAuthService,
-      userService as unknown as UserService,
+      partialMock<IAuthService>(authService),
+      partialMock<UserService>(userService),
       loggerService,
     );
   });
@@ -179,7 +181,10 @@ describe('DeleteUserDataDialogComponent', () => {
       vi.mocked(userService.requestDeleteChallenge).mockReturnValue(of(mockChallenge));
       component.onContinue();
 
-      const subscription = (component as any).subscription;
+      const subscription = component['subscription'];
+      if (!subscription) {
+        throw new Error('expected an active subscription after onContinue');
+      }
       vi.spyOn(subscription, 'unsubscribe');
 
       component.ngOnDestroy();
