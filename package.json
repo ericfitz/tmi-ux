@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.24.1",
+  "version": "1.24.2",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -205,7 +205,8 @@
       "browserslist": ">=4.28.7",
       "proxy-addr": ">=2.0.8",
       "source-map-js": ">=1.2.2",
-      "postcss-selector-parser@>=7": ">=7.1.6"
+      "postcss-selector-parser@>=7": ">=7.1.6",
+      "katex": ">=0.18.2 <0.20"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
@@ -235,7 +236,8 @@
       "@oxc-project/runtime": "Held back during dependency bumps -- do NOT auto-apply. It supplies oxc runtime helpers that must match the oxc transformer bundled inside rolldown/vite (vite ^8.2.1, @angular/build ^22.1.x). Forcing a version the tooling did not resolve on its own is silent rot: it is a 0.x package, so a minor is semver-breaking, and build/test/lint stay green even when the helper/transformer pairing is wrong. To move it: bump it together with vite/rolldown, then run a cold-boot `ng serve` smoke plus a real browser load -- the unit suite will not catch a mismatch. Dependabot will keep opening PRs for it; close them unless vite is moving in the same change."
     },
     "pnpm.overrides": {
-      "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed."
+      "@angular/build>vite": "Must track the vite major @angular/build is built for (22.1.2 -> vite 8/rolldown). Pinning vite 7 made the dev server register its Angular-linker prebundle plugin under rolldownOptions, which vite 7 silently ignores, so cold `ng serve` boots crashed with the _PlatformLocation JIT error. Retarget (not delete): the blanket vite@>=7.0.0 override re-locks 7.3.5 if this entry is merely removed.",
+      "katex": "GHSA-238p-pmpm-9mq7 (prototype pollution can bypass trust) is fixed in 0.18.2, but every mermaid release declares katex ^0.16.47, so no normal update reaches it. Bounded below 0.20 so a future breaking minor needs a deliberate retarget; drop this once mermaid declares a fixed range. See ADR 0005."
     }
   }
 }
