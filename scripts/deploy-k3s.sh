@@ -75,7 +75,10 @@ if [ "$SKIP_BUILD" = false ]; then
   # build-info.json is generated on the host (no git inside the container build).
   sh "$SCRIPT_DIR/generate-build-info.sh"
   echo "Building ${IMAGE} (version ${APP_VERSION})..."
+  # --pull: always fetch the current chainguard/node:latest(-dev) base images
+  # rather than building on a stale cached copy (picks up Node security fixes).
   docker build \
+    --pull \
     --build-arg APP_VERSION="${APP_VERSION}" \
     -f "$PROJECT_ROOT/Dockerfile.chainguard" \
     -t "$IMAGE" \
