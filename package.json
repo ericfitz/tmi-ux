@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.24.10",
+  "version": "1.24.11",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -145,7 +145,7 @@
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-unused-imports": "^4.4.1",
     "fake-indexeddb": "^6.2.7",
-    "glob": "^13.0.6",
+    "glob": "^14.0.3",
     "globals": "^17.14.0",
     "http-proxy-middleware": "^4.2.1",
     "jsdom": "^30.1.3",
