@@ -139,7 +139,7 @@ jobs:
           # (ADR 0004). A release is the commit that set the version in
           # deps/.claude-plugin/plugin.json. Move this SHA deliberately when
           # adopting a newer release; the check below warns when it falls behind.
-          SKILL_SHA: '4cd8a52ab54091f7167a1ad247784336ebe5c319' # deps v2.0.6
+          SKILL_SHA: '6b3f570ccf06cf55338468ad67b2632cbff1fdfb' # deps v2.0.6
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
