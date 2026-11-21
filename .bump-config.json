@@ -1,0 +1,6 @@
+{
+  "hold": {
+    "@oxc-project/runtime": "Must move together with vite/rolldown plus a cold-boot ng serve smoke and browser load; see package.json comments and #856.",
+    "@antv/x6": "Exact-pinned at 3.1.7 for patches/@antv__x6@3.1.7.patch; a version bump invalidates the patch. See #446."
+  }
+}
