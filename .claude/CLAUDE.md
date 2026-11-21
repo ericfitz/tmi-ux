@@ -45,11 +45,20 @@ Three user groups: security reviewers (triage, prioritize, perform reviews), req
 
 Sibling repos (notably the `tmi` server) are registered in `.local/repos.json`; look up local paths there before fetching from GitHub. `github:create-issue` and `wiki:verify-doc` read that registry.
 
+- `~/Projects/tmi` (Go): `make build-server`, `make lint`, `make test-unit name=TestX count1=true`. Verbose unit output lands in `/tmp/tmi-test-unit-*`; `rg -n '^--- FAIL' <log>` instead of `sed -n` large ranges (42KB overflow). Keep `github.com/mattn/go-sqlite3` on v1.14.x; v2 breaks audit prune tests. `pnpm run arazzo:lint` needs `--ruleset arazzo-spectral.yaml`.
+- `~/Projects/tmi-ux` (Angular, pnpm): `pnpm run lint:all`, `pnpm exec vitest run <spec>`, `pnpm run build:aws`. `build:aws` font inlining needs network to Google Fonts; a fonts failure is environmental, not code. Auto-merge is disabled on the repo (`gh pr merge --auto` fails); use `gh pr checks N --watch` then plain `gh pr merge N --squash --delete-branch`.
+- Both repos use `.local/projects.json` / `.local/project-cache.json` (not repos.json) for provisioned GitHub metadata.
+
 - **API specs:** in the local `tmi` checkout, `api-schema/tmi-openapi.json` (REST) and `api-schema/tmi-asyncapi.yaml` (WebSocket). Fallbacks: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json` and `.../tmi-asyncapi.yaml`
 - **Wiki:** local `tmi-wiki` path in `.local/repos.json` (register it if absent). Fallback: `https://github.com/ericfitz/tmi/wiki/API-Integration`
 - **Server repo:** `https://github.com/ericfitz/tmi`
 
 **Suspected server bugs.** If a problem appears to originate in the TMI server (unexpected data, mutated fields, wrong status codes, behavior contrary to the spec): stop, explain the evidence (payloads, logs, spec references), and ask whether to file a server bug. If confirmed, use `github:create-issue` with target `tmi`.
+
+## AWS
+
+- Two AWS accounts: default profile = personal, `--profile tmi` = project account. `tmi.dev` hosted zone now lives in the project account (zone `Z017072317XPHCAN503JC`); the old personal zone `Z0771889287QQTOYN4BDL` is being retired. SPA is `www.tmi.dev` (CloudFront `d11dob1we4l0n7.cloudfront.net`), API is `api.tmi.dev`; `*.aws.tmi.dev` names are stale.
+- Terraform: `tmi-ux/terraform/aws` and `tmi/terraform/environments/aws-public`, run with `export AWS_PROFILE=tmi`. Local `dig @ns` against the new nameservers times out from this network; use `aws route53 test-dns-answer` to verify records.
 
 ## Development commands
 
