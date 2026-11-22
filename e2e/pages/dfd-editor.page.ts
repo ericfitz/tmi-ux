@@ -207,7 +207,9 @@ export class DfdEditorPage {
         id: edge.id,
         sourceId: edge.getSourceCellId() || '',
         targetId: edge.getTargetCellId() || '',
-        labels: (edge.getLabels() || []).map((l: any) => l.attrs?.label?.text || ''),
+        labels: (edge.getLabels() || []).map(
+          (l: any) => l.attrs?.text?.text || l.attrs?.label?.text || '',
+        ),
       }));
     });
   }

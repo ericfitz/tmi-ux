@@ -369,7 +369,7 @@ export interface paths {
     };
     /**
      * List threats in a threat model
-     * @description Returns a paginated list of threats within the specified threat model
+     * @description Returns a paginated list of threats within the specified threat model. The created_after/created_before and modified_after/modified_before bounds are exclusive, so equal bounds describe an empty range and are rejected with 400 invalid_input.
      */
     get: operations['getThreatModelThreats'];
     put?: never;
@@ -993,18 +993,18 @@ export interface paths {
     };
     /**
      * Get diagram collaboration session
-     * @description Retrieves the current collaboration session details for a diagram. The session payload indicates who has been authorized to the session, not who is currently active in the WebSocket session. The 200 status indicates successful retrieval - clients must NOT evaluate the payload to determine session status.
+     * @description Retrieves the current collaboration session for a diagram. The participants list contains every user authorized on the threat model (the owner and each user in its authorization list, with their session permission), plus any connected user not otherwise listed; it does not indicate who is currently connected. Group authorization entries are not expanded. The 200 status indicates successful retrieval - clients must NOT evaluate the payload to determine session status.
      */
     get: operations['getDiagramCollaborationSession'];
     put?: never;
     /**
      * Create diagram collaboration session
-     * @description Creates a new collaboration session for real-time diagram editing. Only one collaboration session can exist per diagram at a time. If a session already exists, returns 409 with a link to join the existing session.
+     * @description Creates a new collaboration session for real-time diagram editing, or returns the existing one. Only one collaboration session can exist per diagram at a time: if a session already exists, the existing session is returned with 200 so the caller can join it. The participants list is the same as for GET.
      */
     post: operations['createDiagramCollaborationSession'];
     /**
      * End diagram collaboration session
-     * @description Terminates the active collaboration session for a diagram
+     * @description If the caller is the session host, terminates the session for all participants; otherwise the caller leaves the session (204 in both cases)
      */
     delete: operations['endDiagramCollaborationSession'];
     options?: never;
@@ -1173,7 +1173,7 @@ export interface paths {
     head?: never;
     /**
      * Partially update note
-     * @description Apply JSON Patch operations to partially update a note
+     * @description Apply JSON Patch (RFC 6902) operations to partially update a note. All six operations are supported. Operations may change only name, content, description, include_in_report and timmy_enabled; an operation that would change any other field returns 400. The patched content is sanitized like content sent by create and update.
      */
     patch: operations['patchThreatModelNote'];
     trace?: never;
@@ -1908,6 +1908,26 @@ export interface paths {
      * @description Returns configuration settings for client applications such as tmi-ux. This endpoint is public and cacheable.
      */
     get: operations['getClientConfig'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/server-info': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get server information
+     * @description Returns server TLS settings and the WebSocket base URL that clients should use. This endpoint is public.
+     */
+    get: operations['getServerInfo'];
     put?: never;
     post?: never;
     delete?: never;
@@ -2979,7 +2999,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted threat model
-     * @description Restores a soft-deleted threat model and all its soft-deleted children (diagrams, threats, assets, documents, notes, repositories). Restricted to owner role or administrators.
+     * @description Restores a soft-deleted threat model and all its soft-deleted children (diagrams, threats, assets, documents, notes, repositories). Restricted to the owner role.
      */
     post: operations['restoreThreatModel'];
     delete?: never;
@@ -2999,7 +3019,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted diagram
-     * @description Restores a soft-deleted diagram within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted diagram within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreDiagram'];
     delete?: never;
@@ -3019,7 +3039,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted threat
-     * @description Restores a soft-deleted threat within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted threat within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreThreat'];
     delete?: never;
@@ -3039,7 +3059,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted asset
-     * @description Restores a soft-deleted asset within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted asset within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreAsset'];
     delete?: never;
@@ -3059,7 +3079,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted document
-     * @description Restores a soft-deleted document within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted document within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreDocument'];
     delete?: never;
@@ -3079,7 +3099,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted note
-     * @description Restores a soft-deleted note within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted note within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreNote'];
     delete?: never;
@@ -3099,7 +3119,7 @@ export interface paths {
     put?: never;
     /**
      * Restore a soft-deleted repository
-     * @description Restores a soft-deleted repository within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to owner role or administrators.
+     * @description Restores a soft-deleted repository within a threat model. The parent threat model must not be deleted; returns 409 if it is. Restricted to the owner role.
      */
     post: operations['restoreRepository'];
     delete?: never;
@@ -3774,7 +3794,7 @@ export interface paths {
     };
     /**
      * List usability feedback (admin)
-     * @description Admin-only listing with filters and pagination.
+     * @description Admin-only listing with filters and pagination. created_after is inclusive and created_before is exclusive, so equal bounds describe an empty range and are rejected with 400 invalid_input.
      */
     get: operations['listUsabilityFeedback'];
     put?: never;
@@ -5132,14 +5152,39 @@ export interface components {
     /**
      * @description Standard error response format
      * @example {
-     *       "error": "invalid_request",
-     *       "error_description": "The request is missing a required parameter",
-     *       "error_uri": "https://docs.example.com/oauth2/errors/invalid_request"
+     *       "error": "invalid_input",
+     *       "error_description": "The request is missing a required parameter"
      *     }
      */
     Error: {
-      /** @description Error code */
-      error: string;
+      /**
+       * @description Machine-readable REST error code. One of: invalid_input (400, a body, field, header or query value fails validation); invalid_id (400, a path or query identifier is malformed); invalid_patch (400, a JSON Patch document is malformed or cannot be applied); unauthorized (401, missing, expired or invalid credentials); insufficient_user_authentication (401, step-up authentication required, RFC 9470); forbidden (403, authenticated but not permitted); not_found (404, resource does not exist or is hidden by authorization); method_not_allowed (405); not_acceptable (406); conflict (409, duplicate, in use, or wrong lifecycle state); gone (410, permanently removed); version_mismatch (409, If-Match does not match the current version); payload_too_large (413); unsupported_media_type (415); unprocessable_entity (422, well-formed request that cannot be processed in the current state); if_match_required (428, If-Match header missing); rate_limit_exceeded (429, transient limit, honor Retry-After); quota_exceeded (403 or 429, hard cap reached, retrying does not help); server_error (500); not_implemented (501); service_unavailable (503, a dependency is unavailable, retry later); feature_not_available (404) and content_token_provider_not_configured (422) are legacy domain codes kept at top level because clients branch on them; they are also present in details.code and will move to details.code only in a future breaking change. A domain-specific reason a client can act on is in details.code.
+       * @enum {string}
+       */
+      error:
+        | 'invalid_input'
+        | 'invalid_id'
+        | 'invalid_patch'
+        | 'unauthorized'
+        | 'insufficient_user_authentication'
+        | 'forbidden'
+        | 'not_found'
+        | 'method_not_allowed'
+        | 'not_acceptable'
+        | 'conflict'
+        | 'gone'
+        | 'version_mismatch'
+        | 'payload_too_large'
+        | 'unsupported_media_type'
+        | 'unprocessable_entity'
+        | 'if_match_required'
+        | 'rate_limit_exceeded'
+        | 'quota_exceeded'
+        | 'server_error'
+        | 'not_implemented'
+        | 'service_unavailable'
+        | 'feature_not_available'
+        | 'content_token_provider_not_configured';
       /** @description Human-readable error description */
       error_description: string;
       /**
@@ -5151,7 +5196,7 @@ export interface components {
       details?: {
         /**
          * @description Machine-readable error code for programmatic handling
-         * @example COLLABORATION_SESSION_NOT_FOUND
+         * @example session_not_found
          */
         code?: string;
         /**
@@ -5255,7 +5300,7 @@ export interface components {
       diagram_id: string;
       /** @description Name of the associated diagram */
       diagram_name: string;
-      /** @description List of active participants */
+      /** @description Users authorized to take part in the session: the threat model owner and each user in its authorization list, each with their session permission, plus any connected user not otherwise listed. This is not the set of currently connected users. Group authorization entries are not expanded. For users who are not currently connected, last_activity is the session last-activity time. For users who are not connected, permissions come from the threat model authorization role (owner and writer map to writer, reader to reader); roles elevated through group membership are not reflected. */
       participants: components['schemas']['Participant'][];
       /** @description WebSocket URL for real-time updates */
       websocket_url: string;
@@ -5851,8 +5896,11 @@ export interface components {
       name: string;
       /** @description Description of the threat model and its purpose */
       description?: string | null;
-      /** @description The framework used for this threat model */
-      threat_model_framework?: string | null;
+      /**
+       * @description The framework used for this threat model. One of CIA, STRIDE, LINDDUN, DIE, PLOT4ai; an empty string or omission selects the server default (STRIDE).
+       * @enum {string|null}
+       */
+      threat_model_framework?: 'CIA' | 'STRIDE' | 'LINDDUN' | 'DIE' | 'PLOT4ai' | '' | null;
       /** @description List of users and their roles for this threat model */
       authorization?: components['schemas']['Authorization'][];
       /** @description Key-value pairs for additional threat model metadata */
@@ -7846,7 +7894,7 @@ export interface components {
        * @enum {string}
        */
       op: 'add' | 'replace' | 'remove' | 'move' | 'copy' | 'test';
-      /** @description JSON path to target */
+      /** @description JSON Pointer (RFC 6901) to the target; must start with "/" (the document root "" is not allowed) */
       path: string;
       /** @description The value to use for add/replace/test operations. Can be any JSON value per RFC 6902 (string, number, boolean, object, array, or null). */
       value?:
@@ -7855,6 +7903,8 @@ export interface components {
         | boolean
         | Record<string, never>
         | ((string | null) | number | boolean | Record<string, never>)[];
+      /** @description JSON Pointer (RFC 6901) to the source location. Required for move and copy operations, ignored otherwise; must start with "/". */
+      from?: string;
     }[];
     /** @description OAuth 2.0 token exchange request */
     TokenRequest: {
@@ -8062,6 +8112,18 @@ export interface components {
       /** @description CVSS score (0.0-10.0) */
       score: number;
     };
+    /** @description Server TLS and WebSocket connection information for clients */
+    ServerInfoResponse: {
+      /** @description Whether the server itself terminates TLS */
+      tls_enabled: boolean;
+      /** @description Subject name of the server TLS certificate; omitted when empty */
+      tls_subject_name?: string;
+      /**
+       * @description WebSocket base URL derived from the host the client used and the client-facing scheme (wss when the request arrived over TLS directly or through a TLS-terminating proxy that sets X-Forwarded-Proto, otherwise ws)
+       * @example wss://api.example.com/ws
+       */
+      websocket_base_url: string;
+    };
     /**
      * @description Client configuration for tmi-ux and other client applications
      * @example {
@@ -8189,7 +8251,7 @@ export interface components {
        * @enum {string}
        */
       readonly source?: 'database' | 'config' | 'environment' | 'vault';
-      /** @description Whether this setting can be modified via the API. True when source is not database. */
+      /** @description Whether this setting can be modified via the API: true exactly when PUT /admin/settings/{key} would be refused with 409 (the setting is startup-only, static, bootstrap, or a config-defined provider setting), false when a PUT would be accepted. It does not depend on the source: an environment- or file-supplied hot setting is writable, because an admin-set database row outranks config. */
       readonly read_only?: boolean;
       /**
        * @description How the database row for this setting came to exist. seeded: inserted with a registry default at first boot (an explicitly configured config or environment value outranks it). explicit: deliberately set by an operator via the admin API, tmi-dbtool --import-config, or SettingsService.Set (it outranks config). Absent when the setting has no database row (source is config, environment, or vault). Server-managed, not writable.
@@ -8823,8 +8885,11 @@ export interface components {
        * @description Unique identifier for the response (UUID)
        */
       readonly id?: string;
-      /** @description Current status of the survey response in the triage workflow */
-      status?: string;
+      /**
+       * @description Current status of the survey response in the triage workflow. The server enforces the set of values (an unknown value is rejected with 400 invalid_input; needs_revision also requires revision_notes) but not the order of transitions.
+       * @enum {string}
+       */
+      status?: 'draft' | 'submitted' | 'needs_revision' | 'ready_for_review' | 'review_created';
       /** @description Whether Security Reviewers group was excluded (set at creation, read-only after) */
       readonly is_confidential?: boolean;
       /** @description Notes from security reviewer when returning for revision */
@@ -8901,8 +8966,11 @@ export interface components {
        * @description Unique identifier for the response (UUID)
        */
       readonly id: string;
-      /** @description Current status of the survey response */
-      status: string;
+      /**
+       * @description Current status of the survey response. The server enforces the set of values but not the order of transitions.
+       * @enum {string}
+       */
+      status: 'draft' | 'submitted' | 'needs_revision' | 'ready_for_review' | 'review_created';
       /** @description Whether this is a secret project (no auto Security Reviewers access) */
       is_confidential?: boolean;
       /** @description User who created the response */
@@ -9025,8 +9093,11 @@ export interface components {
       description?: string | null;
       /** @description Custom version string (e.g., '2024-Q1', 'v2-pilot') */
       version: string;
-      /** @description Survey status: active surveys appear in intake, inactive are hidden but editable, archived are read-only and preserved for historical reference */
-      status?: string | null;
+      /**
+       * @description Survey status: active surveys appear in intake, inactive are hidden but editable, archived are read-only and preserved for historical reference
+       * @enum {string|null}
+       */
+      status?: 'active' | 'inactive' | 'archived' | null;
       settings?: components['schemas']['SurveySettings'];
       /** @description Complete SurveyJS JSON definition. Opaque to the server; validated only for top-level structure (must contain a pages array). */
       survey_json: {
@@ -11306,6 +11377,83 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /**
+     * @description Error response for OAuth, SAML and discovery routes
+     * @example {
+     *       "error": "invalid_request",
+     *       "error_description": "The request is missing a required parameter"
+     *     }
+     */
+    OAuthError: {
+      /**
+       * @description Error code for OAuth, SAML and discovery routes: the RFC 6749, 7009 and 9470 codes, the documented TMI extensions (identity_mismatch, account_conflict, email_not_verified, provider_unreachable, provider_response_invalid, invalid_provider), and the transport codes that route-agnostic middleware can emit (unauthorized, not_found, method_not_allowed, not_acceptable, payload_too_large, unsupported_media_type, rate_limit_exceeded, server_error). SAML routes also use the TMI extension codes saml_error, saml_not_enabled, saml_unavailable, saml_provider_not_found, saml_metadata_error, saml_init_error, saml_invalid_logout_request and saml_logout_error.
+       * @enum {string}
+       */
+      error:
+        | 'invalid_request'
+        | 'invalid_client'
+        | 'invalid_grant'
+        | 'unauthorized_client'
+        | 'unsupported_grant_type'
+        | 'invalid_scope'
+        | 'access_denied'
+        | 'unsupported_response_type'
+        | 'server_error'
+        | 'temporarily_unavailable'
+        | 'unsupported_token_type'
+        | 'insufficient_user_authentication'
+        | 'identity_mismatch'
+        | 'account_conflict'
+        | 'email_not_verified'
+        | 'provider_unreachable'
+        | 'provider_response_invalid'
+        | 'invalid_provider'
+        | 'saml_error'
+        | 'saml_not_enabled'
+        | 'saml_unavailable'
+        | 'saml_provider_not_found'
+        | 'saml_metadata_error'
+        | 'saml_init_error'
+        | 'saml_invalid_logout_request'
+        | 'saml_logout_error'
+        | 'unauthorized'
+        | 'not_found'
+        | 'method_not_allowed'
+        | 'not_acceptable'
+        | 'payload_too_large'
+        | 'unsupported_media_type'
+        | 'rate_limit_exceeded';
+      /** @description Human-readable error description */
+      error_description: string;
+      /**
+       * Format: uri
+       * @description URI to documentation about the error
+       */
+      error_uri?: string;
+      /** @description Additional context-specific error information */
+      details?: {
+        /**
+         * @description Machine-readable error code for programmatic handling
+         * @example session_not_found
+         */
+        code?: string;
+        /**
+         * @description Contextual information about the error
+         * @example {
+         *       "diagram_id": "550e8400-e29b-41d4-a716-446655440000",
+         *       "requested_operation": "end_session"
+         *     }
+         */
+        context?: {
+          [key: string]: unknown;
+        };
+        /**
+         * @description Human-readable suggestion for resolving the error
+         * @example Start a collaboration session first using POST /diagrams/{id}/collaborate
+         */
+        suggestion?: string;
+      } | null;
+    };
   };
   responses: {
     /** @description Error response */
@@ -11342,7 +11490,7 @@ export interface components {
          *       "error": "rate_limit_exceeded",
          *       "error_description": "Rate limit exceeded: 100 requests per minute. Retry after 45 seconds.",
          *       "details": {
-         *         "code": "RATE_LIMIT_EXCEEDED",
+         *         "code": "rate_limit_exceeded",
          *         "context": {
          *           "limit": 100,
          *           "window": "minute",
@@ -11412,14 +11560,15 @@ export interface components {
       content: {
         /**
          * @example {
-         *       "error": "An internal server error occurred",
-         *       "request_id": "550e8400-e29b-41d4-a716-446655440000"
+         *       "error": "server_error",
+         *       "request_id": "550e8400-e29b-41d4-a716-446655440000",
+         *       "error_description": "An internal server error occurred"
          *     }
          */
         'application/json': {
           /**
            * @description Error message describing what went wrong
-           * @example internal_server_error
+           * @example server_error
            */
           error: string;
           /**
@@ -11578,6 +11727,177 @@ export interface components {
         'application/json': components['schemas']['Error'];
       };
     };
+    /** @description Error response (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthErrorResponse: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Method Not Allowed - The HTTP method is not supported for this endpoint (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthMethodNotAllowed: {
+      headers: {
+        /** @description List of allowed HTTP methods for this endpoint */
+        Allow?: string;
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Not Acceptable - The requested media type is not supported. This API only supports application/json (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthNotAcceptable: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Too Many Requests - Rate limit exceeded. The client has sent too many requests in a given amount of time. See rate limit headers for details. (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthTooManyRequests: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix timestamp (seconds since epoch) when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        /** @description Number of seconds to wait before retrying the request */
+        'Retry-After'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Service Unavailable - A required backend service (authentication, database, or cache) is temporarily unavailable. The client should retry the request after the delay indicated in the Retry-After header. (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthServiceUnavailable: {
+      headers: {
+        /** @description Number of seconds to wait before retrying the request */
+        'Retry-After'?: number;
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Internal server error (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthInternalServerError: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Unsupported media type - the request Content-Type is not supported for this operation (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthUnsupportedMediaType: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Unauthorized - missing or invalid authentication credentials (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthUnauthorized: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Forbidden - authenticated but not authorized for this operation (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthForbidden: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Resource not found (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthNotFound: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
+    /** @description Conflict — the supplied version does not match the resource's current version. Refetch and retry. (OAuth, SAML and discovery routes use the OAuthError schema.) */
+    OAuthConflict: {
+      headers: {
+        /** @description Maximum number of requests allowed in the current time window */
+        'X-RateLimit-Limit'?: number;
+        /** @description Number of requests remaining in the current time window */
+        'X-RateLimit-Remaining'?: number;
+        /** @description Unix epoch seconds when the rate limit window resets */
+        'X-RateLimit-Reset'?: number;
+        [name: string]: unknown;
+      };
+      content: {
+        'application/json': components['schemas']['OAuthError'];
+      };
+    };
   };
   parameters: {
     /** @description Threat model identifier */
@@ -11606,19 +11926,19 @@ export interface components {
     PaginationLimit: number;
     /** @description Number of results to skip */
     PaginationOffset: number;
-    /** @description Filter results created after this timestamp (ISO 8601) */
+    /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     CreatedAfter: string;
-    /** @description Filter results created before this timestamp (ISO 8601) */
+    /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     CreatedBefore: string;
-    /** @description Filter results modified after this timestamp (ISO 8601) */
+    /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     ModifiedAfter: string;
-    /** @description Filter results modified before this timestamp (ISO 8601) */
+    /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     ModifiedBefore: string;
     /** @description Identity provider ID (e.g., saml_okta, saml_azure) */
     IdpPathParam: string;
     /** @description OAuth provider identifier. Defaults to 'tmi' provider in non-production builds if not specified. */
     IdpQueryParam: string;
-    /** @description Client callback URL where TMI should redirect after successful OAuth completion with tokens in URL fragment (#access_token=...). If not provided, tokens are returned as JSON response. Per OAuth 2.0 implicit flow spec, tokens are in fragments to prevent logging. */
+    /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
     ClientCallbackQueryParam: string;
     /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
     StateQueryParam: string;
@@ -11648,9 +11968,9 @@ export interface components {
      *     ]
      */
     StatusQueryParam: string[];
-    /** @description Filter threat models where status was updated after this timestamp (RFC3339) */
+    /** @description Filter threat models where status was updated after this timestamp (RFC3339). If `status_updated_before` is also supplied and the resulting range is empty (this value is later than `status_updated_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     StatusUpdatedAfterQueryParam: string;
-    /** @description Filter threat models where status was updated before this timestamp (RFC3339) */
+    /** @description Filter threat models where status was updated before this timestamp (RFC3339). If `status_updated_after` is also supplied and the resulting range is empty (this value is later than `status_updated_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     StatusUpdatedBeforeQueryParam: string;
     /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
     SortQueryParam: string;
@@ -11676,15 +11996,15 @@ export interface components {
     DiagramIdQueryParam: string;
     /** @description Filter by cell ID (exact match) */
     CellIdQueryParam: string;
-    /** @description Filter threats with score greater than this value */
+    /** @description Filter threats with score greater than this value. Must be less than `score_lt` and `score_le` when supplied (equal is also rejected when either bound is exclusive); an empty range is rejected with 400 `invalid_input`. */
     ScoreGtQueryParam: number;
-    /** @description Filter threats with score less than this value */
+    /** @description Filter threats with score less than this value. Must be greater than `score_gt` and `score_ge` when supplied; an empty range is rejected with 400 `invalid_input`. */
     ScoreLtQueryParam: number;
     /** @description Filter threats with score equal to this value */
     ScoreEqQueryParam: number;
-    /** @description Filter threats with score greater than or equal to this value */
+    /** @description Filter threats with score greater than or equal to this value. Must not be greater than `score_le` and must be less than `score_lt` when supplied; an empty range is rejected with 400 `invalid_input`. */
     ScoreGeQueryParam: number;
-    /** @description Filter threats with score less than or equal to this value */
+    /** @description Filter threats with score less than or equal to this value. Must be greater than `score_gt` and not less than `score_ge` when supplied; an empty range is rejected with 400 `invalid_input`. */
     ScoreLeQueryParam: number;
     /**
      * @description Comma-separated list of threat IDs to delete (UUID format)
@@ -11716,13 +12036,13 @@ export interface components {
     UserIdPathParam: string;
     /** @description Filter by email (case-insensitive substring match) */
     EmailQueryParam: string;
-    /** @description Return only records created after this RFC 3339 timestamp. */
+    /** @description Return only records created after this RFC 3339 timestamp. If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     CreatedAfterQueryParam: string;
-    /** @description Return only records created before this RFC 3339 timestamp. */
+    /** @description Return only records created before this RFC 3339 timestamp. If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     CreatedBeforeQueryParam: string;
-    /** @description Filter users who logged in after this timestamp (RFC3339) */
+    /** @description Filter users who logged in after this timestamp (RFC3339). If `last_login_before` is also supplied and the resulting range is empty (this value is later than `last_login_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     LastLoginAfterQueryParam: string;
-    /** @description Filter users who logged in before this timestamp (RFC3339) */
+    /** @description Filter users who logged in before this timestamp (RFC3339). If `last_login_after` is also supplied and the resulting range is empty (this value is later than `last_login_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
     LastLoginBeforeQueryParam: string;
     /** @description Field to sort by */
     SortByQueryParam: 'created_at' | 'last_login' | 'email' | 'name';
@@ -11740,14 +12060,14 @@ export interface components {
     ThreatModelIdPathParam: string;
     /** @description Diagram UUID */
     DiagramIdPathParam: string;
-    /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
+    /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). Valid values: draft, submitted, needs_revision, ready_for_review, review_created. */
     SurveyResponseStatusQueryParam: string;
-    /** @description Filter by secret_project flag */
+    /** @description Filter survey responses by their is_confidential flag, intersected with the caller's reviewer scope */
     IsConfidentialQueryParam: boolean;
     /** @description Filter by survey ID */
     SurveyIdQueryParam: string;
     /** @description Filter by survey status */
-    SurveyStatusQueryParam: string;
+    SurveyStatusQueryParam: 'active' | 'inactive' | 'archived';
     /** @description Unique identifier of the survey */
     SurveyId: string;
     /** @description Unique identifier of the survey response */
@@ -11964,12 +12284,12 @@ export interface operations {
           };
         };
       };
-      400: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getOAuthAuthorizationServerMetadata: {
@@ -12064,12 +12384,12 @@ export interface operations {
           };
         };
       };
-      400: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getJWKS: {
@@ -12129,12 +12449,12 @@ export interface operations {
           };
         };
       };
-      400: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getOAuthProtectedResourceMetadata: {
@@ -12161,12 +12481,12 @@ export interface operations {
           'application/json': components['schemas']['OAuthProtectedResourceMetadata'];
         };
       };
-      400: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   introspectToken: {
@@ -12256,15 +12576,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthInternalServerError'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getAuthProviders: {
@@ -12459,7 +12779,7 @@ export interface operations {
       query: {
         /** @description OAuth provider identifier. Defaults to 'tmi' provider in non-production builds if not specified. */
         idp?: components['parameters']['IdpQueryParam'];
-        /** @description Client callback URL where TMI should redirect after successful OAuth completion with tokens in URL fragment (#access_token=...). If not provided, tokens are returned as JSON response. Per OAuth 2.0 implicit flow spec, tokens are in fragments to prevent logging. */
+        /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
         client_callback?: components['parameters']['ClientCallbackQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
@@ -12499,7 +12819,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Authorization endpoint encountered an unrecognized path/parameter; an HTML error page is rendered. */
@@ -12517,19 +12837,19 @@ export interface operations {
           'text/html': string;
         };
       };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Internal server error generating authorization URL */
       500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   exchangeOAuthCode: {
@@ -12628,28 +12948,28 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
           'text/plain': string;
         };
       };
-      401: components['responses']['Unauthorized'];
-      403: components['responses']['Forbidden'];
-      404: components['responses']['NotFound'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      409: components['responses']['Conflict'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
+      401: components['responses']['OAuthUnauthorized'];
+      403: components['responses']['OAuthForbidden'];
+      404: components['responses']['OAuthNotFound'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      409: components['responses']['OAuthConflict'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Internal server error - OAuth provider communication failed */
       500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   refreshToken: {
@@ -12693,7 +13013,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Unauthorized - invalid or expired refresh token */
@@ -12708,23 +13028,23 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Internal server error */
       500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getCurrentUser: {
@@ -12805,15 +13125,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      401: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      401: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   handleOAuthCallback: {
@@ -12854,13 +13174,13 @@ export interface operations {
         };
         content?: never;
       };
-      400: components['responses']['Error'];
-      401: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      401: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   revokeToken: {
@@ -12914,7 +13234,7 @@ export interface operations {
            *       "error_description": "Missing required 'token' parameter"
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
           'text/plain': string;
         };
       };
@@ -12936,15 +13256,15 @@ export interface operations {
            *       "error_description": "Client authentication failed"
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthInternalServerError'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getCurrentUserSessions: {
@@ -13047,13 +13367,13 @@ export interface operations {
         description?: components['parameters']['DescriptionQueryParam'];
         /** @description Filter by issue URI (partial match) */
         issue_uri?: components['parameters']['IssueUriQueryParam'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
         /**
          * @description Filter by status (OR logic). Returns threats matching ANY of the specified statuses. Example: ?status=identified&status=mitigated
@@ -13063,9 +13383,9 @@ export interface operations {
          *     ]
          */
         status?: components['parameters']['StatusQueryParam'];
-        /** @description Filter threat models where status was updated after this timestamp (RFC3339) */
+        /** @description Filter threat models where status was updated after this timestamp (RFC3339). If `status_updated_before` is also supplied and the resulting range is empty (this value is later than `status_updated_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         status_updated_after?: components['parameters']['StatusUpdatedAfterQueryParam'];
-        /** @description Filter threat models where status was updated before this timestamp (RFC3339) */
+        /** @description Filter threat models where status was updated before this timestamp (RFC3339). If `status_updated_after` is also supplied and the resulting range is empty (this value is later than `status_updated_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         status_updated_before?: components['parameters']['StatusUpdatedBeforeQueryParam'];
         /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
         include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
@@ -13812,23 +14132,23 @@ export interface operations {
         diagram_id?: components['parameters']['DiagramIdQueryParam'];
         /** @description Filter by cell ID (exact match) */
         cell_id?: components['parameters']['CellIdQueryParam'];
-        /** @description Filter threats with score greater than this value */
+        /** @description Filter threats with score greater than this value. Must be less than `score_lt` and `score_le` when supplied (equal is also rejected when either bound is exclusive); an empty range is rejected with 400 `invalid_input`. */
         score_gt?: components['parameters']['ScoreGtQueryParam'];
-        /** @description Filter threats with score less than this value */
+        /** @description Filter threats with score less than this value. Must be greater than `score_gt` and `score_ge` when supplied; an empty range is rejected with 400 `invalid_input`. */
         score_lt?: components['parameters']['ScoreLtQueryParam'];
         /** @description Filter threats with score equal to this value */
         score_eq?: components['parameters']['ScoreEqQueryParam'];
-        /** @description Filter threats with score greater than or equal to this value */
+        /** @description Filter threats with score greater than or equal to this value. Must not be greater than `score_le` and must be less than `score_lt` when supplied; an empty range is rejected with 400 `invalid_input`. */
         score_ge?: components['parameters']['ScoreGeQueryParam'];
-        /** @description Filter threats with score less than or equal to this value */
+        /** @description Filter threats with score less than or equal to this value. Must be greater than `score_gt` and not less than `score_ge` when supplied; an empty range is rejected with 400 `invalid_input`. */
         score_le?: components['parameters']['ScoreLeQueryParam'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
         /** @description Include soft-deleted (tombstoned) entities in the response. Requires owner or admin role. */
         include_deleted?: components['parameters']['IncludeDeletedQueryParam'];
@@ -18122,38 +18442,6 @@ export interface operations {
       404: components['responses']['Error'];
       405: components['responses']['MethodNotAllowed'];
       406: components['responses']['NotAcceptable'];
-      /** @description Collaboration session already exists for this diagram */
-      409: {
-        headers: {
-          /** @description Maximum number of requests allowed in the current time window */
-          'X-RateLimit-Limit'?: number;
-          /** @description Number of requests remaining in the current time window */
-          'X-RateLimit-Remaining'?: number;
-          /** @description Unix epoch seconds when the rate limit window resets */
-          'X-RateLimit-Reset'?: number;
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "error": "collaboration_session_exists",
-           *       "join_url": "http://localhost:8080/ws/diagrams/550e8400-e29b-41d4-a716-446655440000"
-           *     }
-           */
-          'application/json': {
-            /**
-             * @description Error message indicating session already exists
-             * @example collaboration_session_exists
-             */
-            error: string;
-            /**
-             * @description URL to join the existing collaboration session
-             * @example http://localhost:8080/threat_models/{threat_model_id}/diagrams/{diagram_id}/collaborate
-             */
-            join_url: string;
-          };
-        };
-      };
       415: components['responses']['UnsupportedMediaType'];
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
@@ -21167,7 +21455,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Authentication failed */
@@ -21182,17 +21470,17 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['NotFound'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      409: components['responses']['Conflict'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
+      404: components['responses']['OAuthNotFound'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      409: components['responses']['OAuthConflict'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthInternalServerError'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   processSAMLLogout: {
@@ -21242,15 +21530,15 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
+      404: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthInternalServerError'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   processSAMLLogoutPost: {
@@ -21307,16 +21595,16 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      415: components['responses']['UnsupportedMediaType'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['InternalServerError'];
-      503: components['responses']['ServiceUnavailable'];
+      404: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      415: components['responses']['OAuthUnsupportedMediaType'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthInternalServerError'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   listAddons: {
@@ -21888,18 +22176,18 @@ export interface operations {
           };
         };
       };
-      400: components['responses']['Error'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
-      500: components['responses']['Error'];
-      503: components['responses']['ServiceUnavailable'];
+      400: components['responses']['OAuthErrorResponse'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
+      500: components['responses']['OAuthErrorResponse'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   initiateSAMLLogin: {
     parameters: {
       query?: {
-        /** @description Client callback URL where TMI should redirect after successful OAuth completion with tokens in URL fragment (#access_token=...). If not provided, tokens are returned as JSON response. Per OAuth 2.0 implicit flow spec, tokens are in fragments to prevent logging. */
+        /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
         client_callback?: components['parameters']['ClientCallbackQueryParam'];
       };
       header?: never;
@@ -21930,23 +22218,23 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['NotFound'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
+      404: components['responses']['OAuthNotFound'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Failed to initiate SAML authentication */
       500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getSAMLMetadata: {
@@ -21988,23 +22276,23 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['NotFound'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
+      404: components['responses']['OAuthNotFound'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Failed to generate metadata */
       500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   getUserAPIQuota: {
@@ -22098,8 +22386,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22238,8 +22527,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22372,8 +22662,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22485,8 +22776,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22627,8 +22919,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22761,8 +23054,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -22792,13 +23086,13 @@ export interface operations {
         email?: components['parameters']['EmailQueryParam'];
         /** @description Filter by name (case-insensitive substring match) */
         name?: components['parameters']['NameQueryParam'];
-        /** @description Return only records created after this RFC 3339 timestamp. */
+        /** @description Return only records created after this RFC 3339 timestamp. If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
-        /** @description Return only records created before this RFC 3339 timestamp. */
+        /** @description Return only records created before this RFC 3339 timestamp. If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBeforeQueryParam'];
-        /** @description Filter users who logged in after this timestamp (RFC3339) */
+        /** @description Filter users who logged in after this timestamp (RFC3339). If `last_login_before` is also supplied and the resulting range is empty (this value is later than `last_login_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         last_login_after?: components['parameters']['LastLoginAfterQueryParam'];
-        /** @description Filter users who logged in before this timestamp (RFC3339) */
+        /** @description Filter users who logged in before this timestamp (RFC3339). If `last_login_after` is also supplied and the resulting range is empty (this value is later than `last_login_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         last_login_before?: components['parameters']['LastLoginBeforeQueryParam'];
         /** @description Maximum number of results to return */
         limit?: components['parameters']['LimitQueryParam'];
@@ -22895,8 +23189,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23030,8 +23325,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23168,8 +23464,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23295,7 +23592,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Unauthorized - Invalid or missing authentication token */
@@ -23310,7 +23607,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Forbidden - User is not from the same SAML provider */
@@ -23325,12 +23622,12 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      404: components['responses']['NotFound'];
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
+      404: components['responses']['OAuthNotFound'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
       /** @description Too many requests - rate limit exceeded */
       429: {
         headers: {
@@ -23347,22 +23644,11 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
-          'application/json': {
-            /**
-             * @description Error message
-             * @example rate_limit_exceeded
-             */
-            error: string;
-            /**
-             * @description Seconds until rate limit resets
-             * @example 60
-             */
-            retry_after?: number;
-          };
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Internal server error */
@@ -23371,10 +23657,10 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      503: components['responses']['ServiceUnavailable'];
+      503: components['responses']['OAuthServiceUnavailable'];
     };
   };
   listUserAPIQuotas: {
@@ -23489,8 +23775,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23627,8 +23914,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23761,8 +24049,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -23874,8 +24163,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -24014,8 +24304,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -24148,8 +24439,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -24392,8 +24684,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -24541,8 +24834,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -24987,6 +25281,38 @@ export interface operations {
       503: components['responses']['ServiceUnavailable'];
     };
   };
+  getServerInfo: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Server information */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ServerInfoResponse'];
+        };
+      };
+      400: components['responses']['Error'];
+      405: components['responses']['MethodNotAllowed'];
+      406: components['responses']['NotAcceptable'];
+      429: components['responses']['TooManyRequests'];
+      500: components['responses']['Error'];
+      503: components['responses']['ServiceUnavailable'];
+    };
+  };
   listSystemSettings: {
     parameters: {
       query?: never;
@@ -25305,13 +25631,13 @@ export interface operations {
         offset?: components['parameters']['PaginationOffset'];
         /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
         sort?: components['parameters']['SortQueryParam'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
       };
       header?: never;
@@ -25885,13 +26211,13 @@ export interface operations {
         limit?: components['parameters']['PaginationLimit'];
         /** @description Number of results to skip */
         offset?: components['parameters']['PaginationOffset'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
       };
       header?: never;
@@ -26054,7 +26380,7 @@ export interface operations {
   listIntakeSurveyResponses: {
     parameters: {
       query?: {
-        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
+        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). Valid values: draft, submitted, needs_revision, ready_for_review, review_created. */
         status?: components['parameters']['SurveyResponseStatusQueryParam'];
         /** @description Filter by survey ID */
         survey_id?: components['parameters']['SurveyIdQueryParam'];
@@ -26064,13 +26390,13 @@ export interface operations {
         offset?: components['parameters']['PaginationOffset'];
         /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
         sort?: components['parameters']['SortQueryParam'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
       };
       header?: never;
@@ -26734,11 +27060,11 @@ export interface operations {
   listTriageSurveyResponses: {
     parameters: {
       query?: {
-        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). */
+        /** @description Filter by response status. Supports comma-separated values for multi-status filtering (e.g., status=submitted,ready_for_review). Valid values: draft, submitted, needs_revision, ready_for_review, review_created. */
         status?: components['parameters']['SurveyResponseStatusQueryParam'];
         /** @description Filter by survey ID */
         survey_id?: components['parameters']['SurveyIdQueryParam'];
-        /** @description Filter by secret_project flag */
+        /** @description Filter survey responses by their is_confidential flag, intersected with the caller's reviewer scope */
         is_confidential?: components['parameters']['IsConfidentialQueryParam'];
         /** @description Maximum number of results to return */
         limit?: components['parameters']['PaginationLimit'];
@@ -26746,13 +27072,13 @@ export interface operations {
         offset?: components['parameters']['PaginationOffset'];
         /** @description Sort order (e.g., created_at:desc, name:asc, severity:desc, score:desc) */
         sort?: components['parameters']['SortQueryParam'];
-        /** @description Filter results created after this timestamp (ISO 8601) */
+        /** @description Filter results created after this timestamp (ISO 8601). If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfter'];
-        /** @description Filter results created before this timestamp (ISO 8601) */
+        /** @description Filter results created before this timestamp (ISO 8601). If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBefore'];
-        /** @description Filter results modified after this timestamp (ISO 8601) */
+        /** @description Filter results modified after this timestamp (ISO 8601). If `modified_before` is also supplied and the resulting range is empty (this value is later than `modified_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_after?: components['parameters']['ModifiedAfter'];
-        /** @description Filter results modified before this timestamp (ISO 8601) */
+        /** @description Filter results modified before this timestamp (ISO 8601). If `modified_after` is also supplied and the resulting range is empty (this value is later than `modified_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         modified_before?: components['parameters']['ModifiedBefore'];
       };
       header?: never;
@@ -28779,8 +29105,11 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "encryption_not_enabled",
-           *       "error_description": "Encryption is not enabled"
+           *       "error": "conflict",
+           *       "error_description": "Encryption is not enabled",
+           *       "details": {
+           *         "code": "encryption_not_enabled"
+           *       }
            *     }
            */
           'application/json': components['schemas']['Error'];
@@ -28885,8 +29214,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -31951,9 +32281,9 @@ export interface operations {
         change_type?: components['parameters']['AuditChangeType'];
         /** @description Filter by actor email */
         actor_email?: components['parameters']['AuditActorEmail'];
-        /** @description Return only records created after this RFC 3339 timestamp. */
+        /** @description Return only records created after this RFC 3339 timestamp. If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
-        /** @description Return only records created before this RFC 3339 timestamp. */
+        /** @description Return only records created before this RFC 3339 timestamp. If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBeforeQueryParam'];
       };
       header?: never;
@@ -33126,8 +33456,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -36135,7 +36466,9 @@ export interface operations {
         sentiment?: 'up' | 'down';
         client_id?: string;
         surface?: string;
+        /** @description Return only feedback created at or after this RFC 3339 timestamp. If `created_before` is also supplied and the range is empty (this value is not earlier than `created_before`), the request is rejected with 400 `invalid_input`. */
         created_after?: string;
+        /** @description Return only feedback created before this RFC 3339 timestamp (exclusive). If `created_after` is also supplied and the range is empty (`created_after` is not earlier than this value), the request is rejected with 400 `invalid_input`. */
         created_before?: string;
       };
       header?: never;
@@ -36392,7 +36725,7 @@ export interface operations {
   stepUpAuthenticate: {
     parameters: {
       query: {
-        /** @description Client callback URL where TMI should redirect after successful OAuth completion with tokens in URL fragment (#access_token=...). If not provided, tokens are returned as JSON response. Per OAuth 2.0 implicit flow spec, tokens are in fragments to prevent logging. */
+        /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
         client_callback?: components['parameters']['ClientCallbackQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
@@ -36466,7 +36799,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description JWT cookie/header missing, invalid, or expired. */
@@ -36485,11 +36818,14 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "invalid_token",
-           *       "error_description": "Missing or invalid access token"
+           *       "error": "unauthorized",
+           *       "error_description": "Missing or invalid access token",
+           *       "details": {
+           *         "code": "invalid_token"
+           *       }
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Reserved for future per-grant restrictions (unauthorized_client). */
@@ -36510,12 +36846,12 @@ export interface operations {
            *       "error_description": "Step-up is not permitted for this grant"
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
-      405: components['responses']['MethodNotAllowed'];
-      406: components['responses']['NotAcceptable'];
-      429: components['responses']['TooManyRequests'];
+      405: components['responses']['OAuthMethodNotAllowed'];
+      406: components['responses']['OAuthNotAcceptable'];
+      429: components['responses']['OAuthTooManyRequests'];
       /** @description Internal server error. */
       500: {
         headers: {
@@ -36528,7 +36864,7 @@ export interface operations {
            *       "error_description": "Internal failure during step-up processing"
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
       /** @description Redis or downstream store temporarily unavailable. */
@@ -36545,7 +36881,7 @@ export interface operations {
            *       "error_description": "State storage temporarily unavailable"
            *     }
            */
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['OAuthError'];
         };
       };
     };
@@ -36557,9 +36893,9 @@ export interface operations {
         actor_email?: components['parameters']['AuditActorEmail'];
         /** @description Filter by the actor identity provider. */
         actor_provider?: components['parameters']['AuditActorProvider'];
-        /** @description Return only records created after this RFC 3339 timestamp. */
+        /** @description Return only records created after this RFC 3339 timestamp. If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
-        /** @description Return only records created before this RFC 3339 timestamp. */
+        /** @description Return only records created before this RFC 3339 timestamp. If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBeforeQueryParam'];
         /** @description Filter system audit entries by HTTP method. */
         http_method?: components['parameters']['AuditHTTPMethod'];
@@ -36837,9 +37173,9 @@ export interface operations {
         actor_email?: components['parameters']['AuditActorEmail'];
         /** @description Filter by the actor identity provider. */
         actor_provider?: components['parameters']['AuditActorProvider'];
-        /** @description Return only records created after this RFC 3339 timestamp. */
+        /** @description Return only records created after this RFC 3339 timestamp. If `created_before` is also supplied and the resulting range is empty (this value is later than `created_before`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_after?: components['parameters']['CreatedAfterQueryParam'];
-        /** @description Return only records created before this RFC 3339 timestamp. */
+        /** @description Return only records created before this RFC 3339 timestamp. If `created_after` is also supplied and the resulting range is empty (this value is later than `created_after`, or equal to it when either bound is exclusive), the request is rejected with 400 `invalid_input`. */
         created_before?: components['parameters']['CreatedBeforeQueryParam'];
         /** @description Filter by change type */
         change_type?: components['parameters']['AuditChangeType'];
@@ -37732,8 +38068,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -37867,8 +38204,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38008,8 +38346,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38143,8 +38482,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38277,8 +38617,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38418,8 +38759,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38558,8 +38900,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38714,8 +39057,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38853,8 +39197,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
@@ -38994,8 +39339,9 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "error": "Rate limit exceeded. Please try again later.",
-           *       "retry_after": 60
+           *       "error": "rate_limit_exceeded",
+           *       "retry_after": 60,
+           *       "error_description": "Rate limit exceeded. Please try again later."
            *     }
            */
           'application/json': {
