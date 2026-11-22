@@ -8,13 +8,17 @@ import { describe, it, expect } from 'vitest';
 import type { Cell } from '@antv/x6';
 import { InfraEmbeddingService } from '../infrastructure/services/infra-embedding.service';
 import {
+  type EmbeddingShading,
   inferCustomFill,
   migrateCustomFillFlags,
   normalizeColor,
 } from './custom-fill-migration.util';
 
-const shade = (depth: number): string =>
-  new InfraEmbeddingService(null as never).calculateEmbeddingFillColor(depth);
+const embeddingService = new InfraEmbeddingService(null as never);
+const shade: EmbeddingShading = {
+  fillColor: d => embeddingService.calculateEmbeddingFillColor(d),
+  opacity: d => embeddingService.calculateEmbeddingOpacity(d),
+};
 
 interface FakeNode {
   id: string;
@@ -72,10 +76,29 @@ describe('inferCustomFill', () => {
   });
 
   it.each([1, 2, 3, 4, 5, 6, 7, 10])('is false for the embedding shade at depth %i', depth => {
-    expect(inferCustomFill('security-boundary', shade(depth), undefined, shade)).toBe(false);
+    expect(inferCustomFill('security-boundary', shade.fillColor(depth), undefined, shade)).toBe(
+      false,
+    );
     expect(
-      inferCustomFill('security-boundary', shade(depth), Math.max(0.7, 1 - depth * 0.1), shade),
+      inferCustomFill('security-boundary', shade.fillColor(depth), shade.opacity(depth), shade),
     ).toBe(false);
+  });
+
+  it('is false for the depth 1 and depth 10 shades', () => {
+    expect(inferCustomFill('process', 'rgb(230, 240, 255)', undefined, shade)).toBe(false);
+    expect(inferCustomFill('process', shade.fillColor(10), undefined, shade)).toBe(false);
+  });
+
+  it('is false for the depth opacities 0.9 and 0.7', () => {
+    expect(inferCustomFill('process', '#FFFFFF', 0.9, shade)).toBe(false);
+    expect(inferCustomFill('process', '#FFFFFF', 0.7, shade)).toBe(false);
+  });
+
+  it('ignores null and non-string fills, and string opacities', () => {
+    expect(inferCustomFill('process', null, undefined, shade)).toBe(false);
+    expect(inferCustomFill('process', 42, undefined, shade)).toBe(false);
+    expect(inferCustomFill('process', {}, undefined, shade)).toBe(false);
+    expect(inferCustomFill('process', '#FFFFFF', '0.5', shade)).toBe(false);
   });
 
   it('is true for a real custom color', () => {
@@ -96,7 +119,7 @@ describe('inferCustomFill', () => {
 
 describe('migrateCustomFillFlags', () => {
   it('marks a border-only node as customFill false', () => {
-    const n = fakeNode('security-boundary', { customStyles: true }, { fill: shade(1) });
+    const n = fakeNode('security-boundary', { customStyles: true }, { fill: shade.fillColor(1) });
     expect(migrateCustomFillFlags([n as unknown as Cell], shade)).toBe(1);
     expect(n.data['customFill']).toBe(false);
   });
@@ -124,6 +147,12 @@ describe('migrateCustomFillFlags', () => {
     const n = fakeNode('process', {}, { fill: '#00ff00' });
     expect(migrateCustomFillFlags([n as unknown as Cell], shade)).toBe(0);
     expect(n.data['customFill']).toBeUndefined();
+  });
+
+  it('treats a node whose getData() returns undefined as having no customStyles', () => {
+    const n = fakeNode('process', {}, { fill: '#00ff00' });
+    n.getData = () => undefined as never;
+    expect(migrateCustomFillFlags([n as unknown as Cell], shade)).toBe(0);
   });
 
   it('ignores non-node cells', () => {

@@ -9,13 +9,18 @@
 
 import type { Cell } from '@antv/x6';
 
+/** Embedding-derived appearance, as computed by `InfraEmbeddingService`. */
+export interface EmbeddingShading {
+  fillColor: (depth: number) => string;
+  opacity: (depth: number) => number;
+}
+
 /** Deepest embedding level considered when matching embedding shades. */
 const MAX_INFERRED_EMBEDDING_DEPTH = 10;
 
 /**
  * Normalize a CSS color (hex, rgb(), or keyword) to a comparable key.
  */
-// SEM@0000000000000000000000000000000000000000: normalize a CSS color string to a case- and format-insensitive comparison key (pure)
 export function normalizeColor(color: unknown): string {
   if (typeof color !== 'string') {
     return '';
@@ -46,19 +51,18 @@ export function normalizeColor(color: unknown): string {
  * Infer whether a node's current fill/opacity were chosen by the user rather
  * than being the shape default or an embedding shade.
  */
-// SEM@0000000000000000000000000000000000000000: infer whether a node's fill or fill opacity is user-owned versus default or embedding-derived (pure)
 export function inferCustomFill(
   nodeType: string,
   fill: unknown,
   fillOpacity: unknown,
-  embeddingFillColor: (depth: number) => string,
+  shading: EmbeddingShading,
 ): boolean {
   const defaultFill = nodeType === 'text-box' ? 'transparent' : '#FFFFFF';
   const knownFills = new Set<string>([normalizeColor(defaultFill)]);
   const knownOpacities = new Set<number>([1]);
   for (let depth = 1; depth <= MAX_INFERRED_EMBEDDING_DEPTH; depth++) {
-    knownFills.add(normalizeColor(embeddingFillColor(depth)));
-    knownOpacities.add(Math.max(0.7, 1 - depth * 0.1));
+    knownFills.add(normalizeColor(shading.fillColor(depth)));
+    knownOpacities.add(shading.opacity(depth));
   }
 
   if (typeof fill === 'string' && fill.trim() !== '' && !knownFills.has(normalizeColor(fill))) {
@@ -80,11 +84,7 @@ export function inferCustomFill(
  * yet. Non-node cells are ignored. Idempotent: nodes that already carry a
  * `customFill` value are left untouched. Returns the number of nodes updated.
  */
-// SEM@0000000000000000000000000000000000000000: migrate legacy customStyles nodes by inferring and setting customFill (mutates shared state)
-export function migrateCustomFillFlags(
-  cells: Cell[],
-  embeddingFillColor: (depth: number) => string,
-): number {
+export function migrateCustomFillFlags(cells: Cell[], shading: EmbeddingShading): number {
   let migrated = 0;
   for (const cell of cells) {
     if (!cell.isNode()) {
@@ -96,12 +96,7 @@ export function migrateCustomFillFlags(
     }
     const nodeType = (data['nodeType'] as string | undefined) || cell.shape || 'process';
     const body: Record<string, unknown> = cell.getAttrByPath('body') ?? {};
-    const customFill = inferCustomFill(
-      nodeType,
-      body['fill'],
-      body['fillOpacity'],
-      embeddingFillColor,
-    );
+    const customFill = inferCustomFill(nodeType, body['fill'], body['fillOpacity'], shading);
     cell.setData({ ...data, customFill }, { silent: true });
     migrated++;
   }

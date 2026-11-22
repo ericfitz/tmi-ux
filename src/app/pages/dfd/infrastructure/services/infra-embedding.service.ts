@@ -74,6 +74,13 @@ export class InfraEmbeddingService {
   }
 
   /**
+   * Calculate the fill opacity for a given embedding depth (deeper = more transparent)
+   */
+  calculateEmbeddingOpacity(depth: number): number {
+    return Math.max(0.7, 1 - depth * 0.1);
+  }
+
+  /**
    * Get embedding configuration for a node based on its depth (business logic)
    */
   // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: compute depth, fill color, and color-update eligibility for an embedded node (pure)

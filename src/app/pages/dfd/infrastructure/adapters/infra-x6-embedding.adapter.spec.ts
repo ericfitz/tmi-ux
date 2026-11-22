@@ -871,6 +871,7 @@ describe('InfraX6EmbeddingAdapter', () => {
       });
     });
   });
+
   describe('customFill handling (#1021)', () => {
     let outer: Node;
     let inner: Node;
@@ -950,6 +951,47 @@ describe('InfraX6EmbeddingAdapter', () => {
       adapter.updateAllEmbeddingAppearances(graph);
 
       expect(bodyOf(inner)['fill']).toBe('#123456');
+    });
+
+    it('keeps a customFill node untouched through the node:embedded event handler', () => {
+      inner.setAttrByPath('body/fill', '#123456');
+      inner.setAttrByPath('body/fillOpacity', 0.4);
+      inner.setData({ customStyles: true, customFill: true }, { silent: true });
+
+      graph.trigger('node:embedded', { node: inner, parent: outer });
+
+      expect(bodyOf(inner)['fill']).toBe('#123456');
+      expect(bodyOf(inner)['fillOpacity']).toBe(0.4);
+    });
+
+    it('keeps a customFill node untouched through the node:unembedded event handler', () => {
+      inner.setAttrByPath('body/fill', '#123456');
+      inner.setAttrByPath('body/fillOpacity', 0.4);
+      inner.setData({ customStyles: true, customFill: true }, { silent: true });
+
+      inner.setParent(null);
+      graph.trigger('node:unembedded', { node: inner });
+
+      expect(bodyOf(inner)['fill']).toBe('#123456');
+      expect(bodyOf(inner)['fillOpacity']).toBe(0.4);
+    });
+
+    it('shades a border-only node through the node:embedded event handler', () => {
+      inner.setData({ customStyles: true }, { silent: true });
+
+      graph.trigger('node:embedded', { node: inner, parent: outer });
+
+      expect(bodyOf(inner)['fill']).toBe('rgb(230, 240, 255)');
+    });
+
+    it('resets a border-only node to the default fill through the node:unembedded event handler', () => {
+      adapter.updateAllEmbeddingAppearances(graph);
+      inner.setData({ customStyles: true }, { silent: true });
+
+      inner.setParent(null);
+      graph.trigger('node:unembedded', { node: inner });
+
+      expect(bodyOf(inner)['fill']).toBe('#FFFFFF');
     });
 
     it('resets a border-only node to the default fill when un-embedded', () => {

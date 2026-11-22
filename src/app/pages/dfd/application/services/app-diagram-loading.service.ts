@@ -120,9 +120,10 @@ export class AppDiagramLoadingService {
         // Infer customFill for diagrams saved before the flag existed; this must
         // precede the embedding refresh and is excluded from history.
         this.historyCoordinator.executeVisualEffect(graph, () => {
-          const migrated = migrateCustomFillFlags(graph.getCells(), depth =>
-            this.infraEmbeddingService.calculateEmbeddingFillColor(depth),
-          );
+          const migrated = migrateCustomFillFlags(graph.getCells(), {
+            fillColor: depth => this.infraEmbeddingService.calculateEmbeddingFillColor(depth),
+            opacity: depth => this.infraEmbeddingService.calculateEmbeddingOpacity(depth),
+          });
           if (migrated > 0) {
             this.logger.debugComponent('AppDiagramLoadingService', 'Migrated customFill flags', {
               migrated,

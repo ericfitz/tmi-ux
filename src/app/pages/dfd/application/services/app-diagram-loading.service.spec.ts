@@ -58,7 +58,10 @@ describe('AppDiagramLoadingService', () => {
       mockOperationStateManager,
       mockHistoryService,
       mockAppStateService,
-      { calculateEmbeddingFillColor: vi.fn(() => 'rgb(230, 240, 255)') } as never,
+      {
+        calculateEmbeddingFillColor: vi.fn(() => 'rgb(230, 240, 255)'),
+        calculateEmbeddingOpacity: vi.fn(() => 0.9),
+      } as never,
     );
   });
 

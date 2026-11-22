@@ -841,7 +841,7 @@ export class InfraX6EmbeddingAdapter {
 
     // Apply opacity based on depth (deeper = more transparent)
     if (depth > 0) {
-      const opacity = Math.max(0.7, 1 - depth * 0.1);
+      const opacity = this.infraEmbeddingService.calculateEmbeddingOpacity(depth);
       updatedAttrs.body = {
         ...updatedAttrs.body,
         fillOpacity: opacity,
