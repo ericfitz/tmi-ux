@@ -28,7 +28,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          client-id: ${{ secrets.DEPS_BOT_CLIENT_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
       - id: set
         env:
@@ -117,7 +117,7 @@ jobs:
           # Pinned so a new CLI release can't run here with the OAuth token
           # before someone reviews it. Move this deliberately, like SKILL_SHA;
           # the check below warns when it falls behind.
-          CLAUDE_CODE_VERSION: '2.1.293'
+          CLAUDE_CODE_VERSION: '2.1.330'
           # Keep the pin: no background self-update.
           DISABLE_UPDATES: '1'
           DISABLE_AUTOUPDATER: '1'
@@ -139,7 +139,7 @@ jobs:
           # (ADR 0004). A release is the commit that set the version in
           # deps/.claude-plugin/plugin.json. Move this SHA deliberately when
           # adopting a newer release; the check below warns when it falls behind.
-          SKILL_SHA: '6b3f570ccf06cf55338468ad67b2632cbff1fdfb' # deps v2.0.6
+          SKILL_SHA: '19736305805a78033847383c3060a044baa0f9ee' # deps v2.0.6 + unversioned fixes through #101
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
@@ -182,6 +182,10 @@ jobs:
           set -euo pipefail
           git config user.name "deps-bot"
           git config user.email "deps-bot@users.noreply.github.com"
+          # deps:bump resolves its base from origin/HEAD (or gh, which has no
+          # token here) and stops to ask if neither works. actions/checkout
+          # leaves origin/HEAD unset, so point it at this run's base branch.
+          git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/${BASE}"
           git checkout -b "deps/auto-bump/${BASE}/${{ github.run_id }}"
           echo "artifact=deps-bump-$(printf '%s' "$BASE" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
@@ -311,7 +315,7 @@ jobs:
         if: ${{ steps.apply.outputs.changes == 'true' }}
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          client-id: ${{ secrets.DEPS_BOT_CLIENT_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
 
       - name: Open PR

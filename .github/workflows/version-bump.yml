@@ -18,7 +18,7 @@ name: Version Bump
 #     any version already on main that never got tagged.
 #   - Dependabot PRs: a dependabot[bot]-triggered run reads secrets from the
 #     repository's *Dependabot* secrets store, not the Actions store, so the two
-#     DEPS_BOT_APP_* secrets must exist in both. The read-only GITHUB_TOKEN is
+#     DEPS_BOT_CLIENT_ID and DEPS_BOT_APP_PRIVATE_KEY must exist in both. The read-only GITHUB_TOKEN is
 #     irrelevant — the push uses the App token. Once the App pushes the bump
 #     commit, Dependabot stops auto-rebasing that PR; `@dependabot rebase`
 #     force-pushes the bump away and the resulting synchronize re-applies it.
@@ -60,7 +60,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          client-id: ${{ secrets.DEPS_BOT_CLIENT_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
 
       - name: Checkout PR head
