@@ -809,12 +809,6 @@ export class InfraX6EmbeddingAdapter {
    */
   // SEM@5b7995108d43c3368c218c5cf9f539e0c87aba54: restore a node's original fill and opacity when it leaves an embedding (mutates shared state)
   private resetEmbeddingAppearance(node: Node): void {
-    // Respect user-authored styles — don't override body/fill when the node
-    // has been marked customStyles via the style panel.
-    if (node.getData?.()?.customStyles) {
-      return;
-    }
-
     // Get original fill color based on shape type
     const originalFillColor = this._getOriginalFillColorForShape(node.shape);
 
@@ -827,6 +821,11 @@ export class InfraX6EmbeddingAdapter {
    */
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: set node body fill color and depth-scaled opacity attributes (mutates shared state)
   private applyEmbeddingVisualEffects(node: Node, fillColor: string, depth: number): void {
+    // A user-chosen fill or fill opacity (customFill) is never repainted by embedding.
+    if (node.getData?.()?.customFill) {
+      return;
+    }
+
     // Update node attributes
     const currentAttrs = node.getAttrs() || {};
 

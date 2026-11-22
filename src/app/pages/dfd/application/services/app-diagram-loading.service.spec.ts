@@ -58,6 +58,7 @@ describe('AppDiagramLoadingService', () => {
       mockOperationStateManager,
       mockHistoryService,
       mockAppStateService,
+      { calculateEmbeddingFillColor: vi.fn(() => 'rgb(230, 240, 255)') } as never,
     );
   });
 
@@ -145,6 +146,32 @@ describe('AppDiagramLoadingService', () => {
         'AppDiagramLoadingService',
         'Updated embedding appearances after cell loading',
       );
+    });
+
+    it('should infer customFill for legacy nodes before updating embedding appearances', () => {
+      const setData = vi.fn();
+      const legacyNode = {
+        id: 'n1',
+        shape: 'security-boundary',
+        isNode: () => true,
+        getData: () => ({ customStyles: true }),
+        getAttrByPath: () => ({ fill: '#123456' }),
+        setData,
+      };
+      mockGraph.getCells.mockReturnValue([legacyNode] as unknown as Cell[]);
+      const order: string[] = [];
+      setData.mockImplementation(() => order.push('migrate'));
+      mockX6GraphAdapter.updateAllEmbeddingAppearances.mockImplementation(() =>
+        order.push('embed'),
+      );
+
+      service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);
+
+      expect(setData).toHaveBeenCalledWith(
+        { customStyles: true, customFill: true },
+        { silent: true },
+      );
+      expect(order).toEqual(['migrate', 'embed']);
     });
 
     it('should not update embedding when updateEmbedding is false', () => {
@@ -238,9 +265,9 @@ describe('AppDiagramLoadingService', () => {
     it('should log graph state after loading', () => {
       // Id-only stand-ins: the service only logs the cell count
       mockGraph.getCells.mockReturnValue([
-        { id: 'cell1' },
-        { id: 'cell2' },
-        { id: 'cell3' },
+        { id: 'cell1', isNode: () => false },
+        { id: 'cell2', isNode: () => false },
+        { id: 'cell3', isNode: () => false },
       ] as unknown as Cell[]);
 
       service.loadCellsIntoGraph(mockCells, mockGraph, 'diagram-123', mockX6GraphAdapter);

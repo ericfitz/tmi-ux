@@ -302,13 +302,61 @@ describe('DfdStylingService', () => {
       expect(op!.type).toBe('update-node');
       expect(op!.nodeId).toBe('n1');
       expect(op!.updates.style).toEqual({ fill: '#ff0000' });
-      expect(op!.updates.properties).toEqual({ customStyles: true });
+      expect(op!.updates.properties).toEqual({ customStyles: true, customFill: true });
       // previousState captures the unchanged body fields. (The `fill` field is
       // re-read from the live body attrs after mutation — a verbatim-preserved
       // quirk of the original component code.)
       expect(op!.previousState!.style!['stroke']).toBe('#000');
       expect(op!.previousState!.style!['fillOpacity']).toBe(1);
-      expect(op!.previousState!.properties).toEqual({ customStyles: false });
+      expect(op!.previousState!.properties).toEqual({ customStyles: false, customFill: false });
+      expect(node.__data['customFill']).toBe(true);
+    });
+
+    it('sets customFill for fillOpacity changes and carries the previous value', () => {
+      const node = fakeCell({
+        id: 'n1',
+        data: { nodeType: 'process', customStyles: true, customFill: true },
+        attrs: { body: { fill: '#fff', fillOpacity: 1 } },
+      });
+      const op = service.applyNodeStyleChange(node, {
+        property: 'fillOpacity',
+        value: 0.5,
+        applicableCellIds: ['n1'],
+      }) as UpdateNodeOperation;
+
+      expect(node.__data['customFill']).toBe(true);
+      expect(op.updates.properties).toEqual({ customStyles: true, customFill: true });
+      expect(op.previousState!.properties).toEqual({ customStyles: true, customFill: true });
+    });
+
+    it('does not set customFill for a stroke color change', () => {
+      const node = fakeCell({
+        id: 'n1',
+        data: { nodeType: 'security-boundary' },
+        attrs: { body: { stroke: '#000', fill: '#fff' } },
+      });
+      const op = service.applyNodeStyleChange(node, {
+        property: 'strokeColor',
+        value: '#ff0000',
+        applicableCellIds: ['n1'],
+      }) as UpdateNodeOperation;
+
+      expect(node.__data['customStyles']).toBe(true);
+      expect(node.__data['customFill']).toBeUndefined();
+      expect(op.updates.properties).toEqual({ customStyles: true });
+      expect(op.previousState!.properties).toEqual({ customStyles: false });
+    });
+
+    it('does not set customFill for a label position change', () => {
+      const node = fakeCell({ id: 'n1', data: { nodeType: 'process' } });
+      const op = service.applyNodeStyleChange(node, {
+        property: 'labelPosition',
+        value: 'top-left',
+        applicableCellIds: ['n1'],
+      }) as UpdateNodeOperation;
+
+      expect(node.__data['customFill']).toBeUndefined();
+      expect(op.updates.properties).toEqual({ customStyles: true });
     });
 
     it('maps a strokeColor change to the body/stroke attr path', () => {
@@ -358,13 +406,13 @@ describe('DfdStylingService', () => {
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
       expect(op!.updates.style).toEqual({ fillOpacity: 0.25 });
-      expect(op!.updates.properties).toEqual({ customStyles: true });
+      expect(op!.updates.properties).toEqual({ customStyles: true, customFill: true });
       // previousState captures the unchanged body fields. (The `fillOpacity`
       // field is re-read from the live body attrs after mutation — a
       // verbatim-preserved quirk of the original component code.)
       expect(op!.previousState!.style!['stroke']).toBe('#000');
       expect(op!.previousState!.style!['fill']).toBe('#fff');
-      expect(op!.previousState!.properties).toEqual({ customStyles: false });
+      expect(op!.previousState!.properties).toEqual({ customStyles: false, customFill: false });
     });
 
     it('applies a label position change and returns an update-node operation', () => {
@@ -458,6 +506,21 @@ describe('DfdStylingService', () => {
       expect(op).not.toBeNull();
       expect(op!.type).toBe('update-node');
       expect(op!.updates.style!['fill']).toBe(defaultFill);
+    });
+
+    it('removes customFill along with customStyles', () => {
+      const node = fakeCell({
+        id: 'n1',
+        shape: 'process',
+        data: { nodeType: 'process', customStyles: true, customFill: true },
+        attrs: { body: { fill: '#def' } },
+      });
+
+      const op = service.clearCustomFormatting(node) as UpdateNodeOperation;
+
+      expect(node.__data['customFill']).toBeUndefined();
+      expect('customFill' in node.__data).toBe(false);
+      expect(op.updates.properties).toEqual({ customStyles: undefined, customFill: undefined });
     });
 
     it('uses refY 55% for store nodes', () => {

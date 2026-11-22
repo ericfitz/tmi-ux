@@ -871,4 +871,95 @@ describe('InfraX6EmbeddingAdapter', () => {
       });
     });
   });
+  describe('customFill handling (#1021)', () => {
+    let outer: Node;
+    let inner: Node;
+
+    const bodyOf = (node: Node): Record<string, unknown> => node.getAttrByPath('body') ?? {};
+
+    beforeEach(() => {
+      outer = graph.addNode({
+        x: 20,
+        y: 20,
+        width: 300,
+        height: 250,
+        shape: 'security-boundary',
+      });
+      inner = graph.addNode({
+        x: 50,
+        y: 50,
+        width: 200,
+        height: 150,
+        shape: 'security-boundary',
+      });
+      inner.setParent(outer);
+      outer.addChild(inner);
+    });
+
+    it('keeps the embedding shade when only the border was customized', () => {
+      adapter.updateAllEmbeddingAppearances(graph);
+      const shaded = bodyOf(inner)['fill'];
+      expect(shaded).toBe('rgb(230, 240, 255)');
+
+      inner.setAttrByPath('body/stroke', '#ff0000');
+      inner.setData({ ...inner.getData(), customStyles: true }, { silent: true });
+      adapter.updateAllEmbeddingAppearances(graph);
+
+      expect(bodyOf(inner)['fill']).toBe(shaded);
+      expect(bodyOf(inner)['stroke']).toBe('#ff0000');
+    });
+
+    it('leaves fill and opacity untouched for a customFill node', () => {
+      inner.setAttrByPath('body/fill', '#123456');
+      inner.setAttrByPath('body/fillOpacity', 0.4);
+      inner.setData({ customStyles: true, customFill: true }, { silent: true });
+
+      adapter.updateAllEmbeddingAppearances(graph);
+
+      expect(bodyOf(inner)['fill']).toBe('#123456');
+      expect(bodyOf(inner)['fillOpacity']).toBe(0.4);
+    });
+
+    it('leaves a customFill node untouched when re-nested at another depth', () => {
+      const deeper = graph.addNode({
+        x: 80,
+        y: 80,
+        width: 50,
+        height: 50,
+        shape: 'process',
+      });
+      deeper.setAttrByPath('body/fill', '#abcdef');
+      deeper.setData({ customStyles: true, customFill: true }, { silent: true });
+      deeper.setParent(inner);
+      inner.addChild(deeper);
+
+      adapter.updateAllEmbeddingAppearances(graph);
+      expect(bodyOf(deeper)['fill']).toBe('#abcdef');
+
+      deeper.setParent(outer);
+      outer.addChild(deeper);
+      adapter.updateAllEmbeddingAppearances(graph);
+      expect(bodyOf(deeper)['fill']).toBe('#abcdef');
+    });
+
+    it('leaves a customFill node untouched when un-embedded', () => {
+      inner.setAttrByPath('body/fill', '#123456');
+      inner.setData({ customStyles: true, customFill: true }, { silent: true });
+
+      inner.setParent(null);
+      adapter.updateAllEmbeddingAppearances(graph);
+
+      expect(bodyOf(inner)['fill']).toBe('#123456');
+    });
+
+    it('resets a border-only node to the default fill when un-embedded', () => {
+      adapter.updateAllEmbeddingAppearances(graph);
+      inner.setData({ customStyles: true }, { silent: true });
+
+      inner.setParent(null);
+      adapter.updateAllEmbeddingAppearances(graph);
+
+      expect(bodyOf(inner)['fill']).toBe('#FFFFFF');
+    });
+  });
 });

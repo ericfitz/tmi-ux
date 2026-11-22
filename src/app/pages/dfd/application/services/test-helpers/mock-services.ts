@@ -87,6 +87,7 @@ export function createMockOperationStateManager() {
   const stub = {
     setDragInProgress: vi.fn(),
     getDragInProgress: vi.fn(() => false),
+    executeVisualEffect: vi.fn((_graph: unknown, operation: () => void) => operation()),
   };
   return stub as typeof stub & AppOperationStateManager;
 }

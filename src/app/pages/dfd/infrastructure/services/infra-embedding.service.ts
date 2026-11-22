@@ -89,9 +89,9 @@ export class InfraEmbeddingService {
     const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // Don't update color for text-box nodes (they should remain transparent)
-    // Don't override user-set custom fill colors
-    const hasCustomStyles = !!node.getData?.()?.customStyles;
-    const shouldUpdateColor = nodeType !== 'text-box' && !hasCustomStyles;
+    // Don't override user-set custom fill colors (stroke-only changes don't count)
+    const hasCustomFill = !!node.getData?.()?.customFill;
+    const shouldUpdateColor = nodeType !== 'text-box' && !hasCustomFill;
 
     this.logger.debugComponent('Embedding', 'Calculated embedding configuration', {
       nodeId: node.id,
