@@ -217,6 +217,30 @@ describe('SchemaValidator', () => {
       const errors = validator.validateThreatModel(tm, baseContext);
       expect(hasError(errors, 'INVALID_ENUM_VALUE')).toBe(true);
     });
+
+    it('should accept an empty framework when there are no threats (server default)', () => {
+      const tm = validThreatModel({ threat_model_framework: '', threats: [] });
+      baseContext.object = tm;
+      const errors = validator.validateThreatModel(tm, baseContext);
+      expect(hasError(errors, 'INVALID_ENUM_VALUE')).toBe(false);
+    });
+  });
+
+  describe('validateThreatModel — threat status length', () => {
+    it('should accept a 128-character threat status', () => {
+      const tm = validThreatModel({ threats: [validThreat({ status: 'a'.repeat(128) })] });
+      baseContext.object = tm;
+      const errors = validator.validateThreatModel(tm, baseContext);
+      expect(hasErrorContaining(errors, 'status')).toBe(false);
+    });
+
+    it('should reject a threat status longer than 128 characters', () => {
+      const tm = validThreatModel({ threats: [validThreat({ status: 'a'.repeat(129) })] });
+      baseContext.object = tm;
+      const errors = validator.validateThreatModel(tm, baseContext);
+      expect(hasError(errors, 'MAX_LENGTH_VIOLATION')).toBe(true);
+      expect(hasErrorContaining(errors, 'status')).toBe(true);
+    });
   });
 
   describe('validateThreatModel — conditional framework requirement', () => {

@@ -107,6 +107,7 @@ test.describe.serial('DFD Edge Properties', () => {
 
       // Build edge configuration
       const edgeConfig: any = {
+        shape: 'flow',
         source: { cell: source.id },
         target: { cell: target.id },
       };
@@ -114,14 +115,14 @@ test.describe.serial('DFD Edge Properties', () => {
       // Single label
       if (opts?.label) {
         edgeConfig.labels = [{
-          attrs: { label: { text: opts.label } },
+          attrs: { text: { text: opts.label } },
         }];
       }
 
       // Multiple labels
       if (opts?.labels) {
         edgeConfig.labels = opts.labels.map((text: string) => ({
-          attrs: { label: { text } },
+          attrs: { text: { text } },
         }));
       }
 
