@@ -12,12 +12,14 @@ import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
+import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 import { AppDiagramService } from './app-diagram.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { AppHistoryService } from './app-history.service';
 import { AppStateService } from './app-state.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { migrateCustomFillFlags } from '../../utils/custom-fill-migration.util';
 
 /**
  * Options for cell loading operations
@@ -42,6 +44,7 @@ export class AppDiagramLoadingService {
     private historyCoordinator: AppOperationStateManager,
     private historyService: AppHistoryService,
     private appStateService: AppStateService,
+    private infraEmbeddingService: InfraEmbeddingService,
   ) {
     // this.logger.info('AppDiagramLoadingService initialized');
   }
@@ -112,6 +115,20 @@ export class AppDiagramLoadingService {
         this.logger.debugComponent('AppDiagramLoadingService', 'Graph state after loading', {
           totalCellsInGraph: graphCells.length,
           cellIds: graphCells.map(cell => cell.id),
+        });
+
+        // Infer customFill for diagrams saved before the flag existed; this must
+        // precede the embedding refresh and is excluded from history.
+        this.historyCoordinator.executeVisualEffect(graph, () => {
+          const migrated = migrateCustomFillFlags(graph.getCells(), {
+            fillColor: depth => this.infraEmbeddingService.calculateEmbeddingFillColor(depth),
+            opacity: depth => this.infraEmbeddingService.calculateEmbeddingOpacity(depth),
+          });
+          if (migrated > 0) {
+            this.logger.debugComponent('AppDiagramLoadingService', 'Migrated customFill flags', {
+              migrated,
+            });
+          }
         });
 
         // Update embedding appearances if requested (while history is still suppressed)

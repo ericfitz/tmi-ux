@@ -74,6 +74,13 @@ export class InfraEmbeddingService {
   }
 
   /**
+   * Calculate the fill opacity for a given embedding depth (deeper = more transparent)
+   */
+  calculateEmbeddingOpacity(depth: number): number {
+    return Math.max(0.7, 1 - depth * 0.1);
+  }
+
+  /**
    * Get embedding configuration for a node based on its depth (business logic)
    */
   // SEM@22214a6ac6e2459278c73fec5fcf23b69f95dae8: compute depth, fill color, and color-update eligibility for an embedded node (pure)
@@ -89,9 +96,9 @@ export class InfraEmbeddingService {
     const nodeType = getNodeTypeInfo(node)?.type ?? 'process';
 
     // Don't update color for text-box nodes (they should remain transparent)
-    // Don't override user-set custom fill colors
-    const hasCustomStyles = !!node.getData?.()?.customStyles;
-    const shouldUpdateColor = nodeType !== 'text-box' && !hasCustomStyles;
+    // Don't override user-set custom fill colors (stroke-only changes don't count)
+    const hasCustomFill = !!node.getData?.()?.customFill;
+    const shouldUpdateColor = nodeType !== 'text-box' && !hasCustomFill;
 
     this.logger.debugComponent('Embedding', 'Calculated embedding configuration', {
       nodeId: node.id,

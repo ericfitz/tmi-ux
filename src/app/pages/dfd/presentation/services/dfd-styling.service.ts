@@ -128,8 +128,15 @@ export class DfdStylingService {
       fillOpacity: 'fillOpacity',
     };
 
+    // Only fill changes take ownership of the fill; stroke changes leave the
+    // embedding shade in control.
+    const setsCustomFill = event.property === 'fillColor' || event.property === 'fillOpacity';
+
     cell.setAttrByPath(attrPathMap[event.property], event.value);
-    cell.setData({ ...previousData, customStyles: true }, { silent: true });
+    cell.setData(
+      { ...previousData, customStyles: true, ...(setsCustomFill ? { customFill: true } : {}) },
+      { silent: true },
+    );
 
     return {
       id: `style-change-${Date.now()}-${cell.id}`,
@@ -140,7 +147,9 @@ export class DfdStylingService {
       nodeId: cell.id,
       updates: {
         style: { [styleKeyMap[event.property]]: event.value },
-        properties: { customStyles: true },
+        properties: setsCustomFill
+          ? { customStyles: true, customFill: true }
+          : { customStyles: true },
       },
       previousState: {
         style: {
@@ -148,7 +157,12 @@ export class DfdStylingService {
           fill: previousBody['fill'],
           fillOpacity: previousBody['fillOpacity'] ?? 1,
         },
-        properties: { customStyles: previousData['customStyles'] || false },
+        properties: setsCustomFill
+          ? {
+              customStyles: previousData['customStyles'] || false,
+              customFill: previousData['customFill'] || false,
+            }
+          : { customStyles: previousData['customStyles'] || false },
       },
       includeInHistory: true,
     } as GraphOperation;
@@ -262,6 +276,7 @@ export class DfdStylingService {
       // X6 setData() merges, so an undefined value would leave customStyles set.
       const resetData: Record<string, unknown> = { ...data };
       delete resetData['customStyles'];
+      delete resetData['customFill'];
       cell.setData(resetData, { silent: true, overwrite: true });
 
       return {
@@ -281,7 +296,7 @@ export class DfdStylingService {
             textAnchor: 'middle',
             textVerticalAnchor: 'middle',
           },
-          properties: { customStyles: undefined },
+          properties: { customStyles: undefined, customFill: undefined },
         },
         includeInHistory: true,
       } as GraphOperation;
