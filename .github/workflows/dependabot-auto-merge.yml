@@ -13,7 +13,7 @@ name: Dependabot Auto-merge
 # PR as Dependabot's. Enabling auto-merge is idempotent, so re-runs are safe
 # and the synchronize run is the recovery path if the `opened` run lost a race.
 #
-# The DEPS_BOT_APP_* secrets must exist in the Dependabot secrets store as
+# DEPS_BOT_CLIENT_ID and DEPS_BOT_APP_PRIVATE_KEY must exist in the Dependabot secrets store as
 # well as the Actions store (see version-bump.yml).
 #
 # Majors are left open for a human. Dependabot stops auto-rebasing a PR once
@@ -52,7 +52,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.DEPS_BOT_APP_ID }}
+          client-id: ${{ secrets.DEPS_BOT_CLIENT_ID }}
           private-key: ${{ secrets.DEPS_BOT_APP_PRIVATE_KEY }}
 
       - name: Enable squash auto-merge
