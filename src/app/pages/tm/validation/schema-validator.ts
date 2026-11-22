@@ -71,7 +71,8 @@ export class SchemaValidator extends BaseValidator {
       field: 'threat_model_framework',
       required: false,
       type: 'string',
-      enum: ['CIA', 'STRIDE', 'LINDDUN', 'DIE', 'PLOT4ai'],
+      // An empty string selects the server default (STRIDE)
+      enum: ['CIA', 'STRIDE', 'LINDDUN', 'DIE', 'PLOT4ai', ''],
     },
     { field: 'authorization', required: true, type: 'array' },
 
@@ -159,7 +160,7 @@ export class SchemaValidator extends BaseValidator {
     { field: 'score', required: false, type: 'number' },
     { field: 'priority', required: false, type: 'string' },
     { field: 'mitigated', required: false, type: 'boolean' },
-    { field: 'status', required: false, type: 'string' },
+    { field: 'status', required: false, type: 'string', maxLength: 128 },
     // Note: issue_uri accepts any string per RFC 3986 (URI-reference)
     { field: 'issue_uri', required: false, type: 'string' },
     { field: 'metadata', required: false, type: 'array' },

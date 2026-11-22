@@ -75,7 +75,9 @@ export class ReadonlyFieldFilterService {
 
     if (data['description'] != null) filtered.description = data['description'] as string;
     if (data['threat_model_framework'] != null)
-      filtered.threat_model_framework = data['threat_model_framework'] as string;
+      filtered.threat_model_framework = data[
+        'threat_model_framework'
+      ] as ApiThreatModelInput['threat_model_framework'];
     if (data['authorization'] != null)
       filtered.authorization = data['authorization'] as ApiThreatModelInput['authorization'];
     if (data['issue_uri'] != null) filtered.issue_uri = data['issue_uri'] as string;
