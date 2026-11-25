@@ -7,7 +7,7 @@
 
 ## Context
 
-`.github/workflows/deps-bump.yml` runs the `deps:bump` skill from ericfitz/skills in a headless
+`.github/workflows/deps-bump.yml` runs the `dependencies:bump` skill from ericfitz/skills in a headless
 Claude Code agent with `--dangerously-skip-permissions` and `CLAUDE_CODE_OAUTH_TOKEN` in its
 environment. The skill's instructions and scripts run with those privileges, so a change to the
 skills repo takes effect in this CI job. The workflow already pinned the skill to a commit, but
@@ -18,16 +18,19 @@ gained its Node adapter, and PR #984 then shipped a lockfile that failed every C
 
 Keep the pin, and make moving it routine:
 
-- `SKILL_SHA` names a deps release: the commit that set the version in
-  `deps/.claude-plugin/plugin.json`. ericfitz/skills has no per-plugin git tags.
+- `SKILL_SHA` names a `dependencies` plugin release: the commit that set the version in
+  `dependencies/.claude-plugin/plugin.json`. ericfitz/skills has no per-plugin git tags.
 - The workflow warns, in the job summary and the bot's PR body, when the pinned release's version
   differs from the version on ericfitz/skills `main`.
-- Moving `SKILL_SHA` is a reviewed tmi-ux change. `--plugin-dir` loads the whole `deps` plugin, so
+- Moving `SKILL_SHA` is a reviewed tmi-ux change. `--plugin-dir` loads the whole `dependencies` plugin, so
   the review covers any hooks, MCP servers, agents or commands the new release adds, not just the
   skill.
 
 Rejected: tracking ericfitz/skills `main` unpinned (any push to the skills repo would run in this
 job with a live token), and copying the skill into tmi-ux (more churn and duplicated code).
+
+The plugin was named `deps` (skill `deps:bump`) when this was decided; ericfitz/skills renamed it
+to `dependencies` (skill `dependencies:bump`) in 0a1c685, and the pin moved with it.
 
 ## Consequences
 

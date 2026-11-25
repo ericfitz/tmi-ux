@@ -131,20 +131,20 @@ jobs:
             echo "$note" >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Vendor the deps plugin into the runner
+      - name: Vendor the dependencies plugin into the runner
         id: plugin
         env:
-          # Pin ericfitz/skills to a reviewed deps release so the high-privilege
+          # Pin ericfitz/skills to a reviewed dependencies release so the high-privilege
           # agent run below cannot execute an unreviewed change to the skill
           # (ADR 0004). A release is the commit that set the version in
-          # deps/.claude-plugin/plugin.json. Move this SHA deliberately when
+          # dependencies/.claude-plugin/plugin.json. Move this SHA deliberately when
           # adopting a newer release; the check below warns when it falls behind.
-          SKILL_SHA: '19736305805a78033847383c3060a044baa0f9ee' # deps v2.0.6 + unversioned fixes through #101
+          SKILL_SHA: 'ddd8fe00847c9f9835cf21adb4d8e7f46d8f96f3' # dependencies v2.0.6 (deps renamed to dependencies, ruff format)
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
           git clone --filter=blob:none https://github.com/ericfitz/skills "$tmp/skills"
-          manifest=deps/.claude-plugin/plugin.json
+          manifest=dependencies/.claude-plugin/plugin.json
           # Versions come from the repo the pin distrusts: accept only plain
           # version strings, and never let the warn-only check fail the job.
           version_of() {
@@ -156,20 +156,20 @@ jobs:
           git -C "$tmp/skills" checkout -q "$SKILL_SHA"
           pinned="$(version_of < "$tmp/skills/$manifest")"
           for f in skills/bump/SKILL.md scripts/bump.py; do
-            if [ ! -f "$tmp/skills/deps/$f" ]; then
-              echo "::error::SKILL_SHA $SKILL_SHA has no deps/$f; pin a deps release that has it."
+            if [ ! -f "$tmp/skills/dependencies/$f" ]; then
+              echo "::error::SKILL_SHA $SKILL_SHA has no dependencies/$f; pin a dependencies release that has it."
               exit 1
             fi
           done
-          echo "deps plugin vendored @ $SKILL_SHA (v$pinned)"
+          echo "dependencies plugin vendored @ $SKILL_SHA (v$pinned)"
           note=""
           if [ "$pinned" != "$latest" ]; then
-            note="Skill pin differs from the latest release: SKILL_SHA is deps v$pinned, ericfitz/skills main has v$latest. Review and move SKILL_SHA in .github/workflows/deps-bump.yml."
+            note="Skill pin differs from the latest release: SKILL_SHA is dependencies v$pinned, ericfitz/skills main has v$latest. Review and move SKILL_SHA in .github/workflows/deps-bump.yml."
             echo "::warning::$note"
             echo "$note" >> "$GITHUB_STEP_SUMMARY"
           fi
           {
-            echo "dir=$tmp/skills/deps"
+            echo "dir=$tmp/skills/dependencies"
             echo "pin_note=$note"
           } >> "$GITHUB_OUTPUT"
 
@@ -182,7 +182,7 @@ jobs:
           set -euo pipefail
           git config user.name "deps-bot"
           git config user.email "deps-bot@users.noreply.github.com"
-          # deps:bump resolves its base from origin/HEAD (or gh, which has no
+          # dependencies:bump resolves its base from origin/HEAD (or gh, which has no
           # token here) and stops to ask if neither works. actions/checkout
           # leaves origin/HEAD unset, so point it at this run's base branch.
           git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/${BASE}"
@@ -205,7 +205,7 @@ jobs:
             echo "::error::CLAUDE_CODE_OAUTH_TOKEN is empty (secret missing on this ref)."
             exit 1
           fi
-          claude -p "Run the dependency bump skill (deps:bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
+          claude -p "Run the dependency bump skill (dependencies:bump) on the CURRENT checked-out git branch ONLY. You are running UNATTENDED in CI under a STRICT scope. DO: apply only safe patch/minor dependency updates; run the project build/test/lint; bisect out any update that breaks them; make exactly ONE local commit with the safe updates; then STOP. DO NOT: push; run any session-completion / 'landing the plane' / end-of-session workflow; file or close GitHub issues; run a security review; open a pull request; switch branches; ask questions. A separate CI step handles pushing and the PR. If there are no safe updates, make NO commit and say so. Finally, print the manual-review plan for anything not auto-applied." \
             --plugin-dir "$PLUGIN_DIR" \
             --dangerously-skip-permissions \
             --allowedTools "Bash,Read,Write,Edit,Glob,Grep" | tee "$RUNNER_TEMP/bump-plan.txt"
@@ -340,7 +340,7 @@ jobs:
           {
             echo "Automated dependency bump for \`${BASE}\` (safe patch/minor only)."
             echo
-            echo "Generated by the \`deps:bump\` skill running headless in CI. Review before merging."
+            echo "Generated by the \`dependencies:bump\` skill running headless in CI. Review before merging."
             echo
             if [ -n "$PIN_NOTE" ]; then
               echo "> [!WARNING]"
