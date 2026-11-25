@@ -1366,6 +1366,7 @@
       "title": "Aide de l'éditeur de diagrammes",
       "zoomLabel": "Maintenez Maj et utilisez la molette de la souris pour zoomer"
     },
+    "hideDiagramDetails": "Masquer les détails du diagramme",
     "nodeLabels": {
       "actor": "Acteur",
       "node": "Noeud",
@@ -1375,6 +1376,7 @@
       "textbox": "Texte"
     },
     "pageTitle": "Éditeur de diagrammes de flux de données",
+    "showDiagramDetails": "Afficher les détails du diagramme",
     "toolbar": {
       "tooltips": {
         "addActor": "Ajouter un acteur",

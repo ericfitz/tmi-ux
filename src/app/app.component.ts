@@ -6,6 +6,8 @@
  *
  * Key functionality:
  * - Renders the main application layout with navbar, router outlet, and footer
+ * - Switches to a full-bleed layout (no width cap, no footer, fills the viewport)
+ *   for routes that declare `data: { fullBleed: true }`, such as the DFD editor
  * - Manages global authentication state and user profile information
  * - Initializes the dependency injection system for dynamic material loading
  * - Provides logging for application startup and authentication events
@@ -14,8 +16,10 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, Injector, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, Injector, ChangeDetectionStrategy, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 
 import { FooterComponent } from './core/components/footer/footer.component';
 import { setInjector } from './core/utils/dynamic-material-loader.util';
@@ -42,12 +46,39 @@ import { SessionManagerService } from './auth/services/session-manager.service';
 export class AppComponent {
   title = 'TMI: Threat Modeling Improved';
 
+  /** True while the active route asks for the full-bleed layout. */
+  readonly fullBleed: Signal<boolean>;
+
   // SEM@3903a03b300b2abc9dee4a0db1c8c5ef2d92be40: register the DI injector and initialize the session manager (mutates shared state)
   constructor(
     private injector: Injector,
     private sessionManager: SessionManagerService,
+    router: Router,
   ) {
     // Set the injector for dynamic material loading
     setInjector(injector);
+
+    this.fullBleed = toSignal(
+      router.events.pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        map(() => isFullBleedRoute(router.routerState.snapshot.root)),
+      ),
+      { initialValue: isFullBleedRoute(router.routerState.snapshot.root) },
+    );
   }
+}
+
+/**
+ * Whether any route on the active branch declares `data.fullBleed === true`.
+ * Walks from the root snapshot down the primary child chain.
+ */
+export function isFullBleedRoute(root: ActivatedRouteSnapshot): boolean {
+  let route: ActivatedRouteSnapshot | null = root;
+  while (route) {
+    if (route.data?.['fullBleed'] === true) {
+      return true;
+    }
+    route = route.firstChild;
+  }
+  return false;
 }

@@ -1364,6 +1364,7 @@
       "title": "עזרה לעורך הדיאגרמה",
       "zoomLabel": "החזק Shift והשתמש בגלגלת העכבר לזום"
     },
+    "hideDiagramDetails": "הסתר את פרטי התרשים",
     "nodeLabels": {
       "actor": "שחקן",
       "node": "צומת",
@@ -1373,6 +1374,7 @@
       "textbox": "טקסט"
     },
     "pageTitle": "עורך דיאגרמת זרימת נתונים",
+    "showDiagramDetails": "הצג את פרטי התרשים",
     "toolbar": {
       "tooltips": {
         "addActor": "הוסף שחקן",

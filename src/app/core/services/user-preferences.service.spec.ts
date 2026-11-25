@@ -47,6 +47,7 @@ describe('UserPreferencesService', () => {
     autoLayoutOrientation: 'automatic',
     pageSize: 'usLetter',
     marginSize: 'standard',
+    dfdHeaderExpanded: false,
   };
 
   beforeEach(() => {

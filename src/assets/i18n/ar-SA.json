@@ -1368,6 +1368,7 @@
       "title": "مساعدة محرر المخطط",
       "zoomLabel": "اضغط مع الاستمرار على Shift واستخدم عجلة الماوس للتكبير"
     },
+    "hideDiagramDetails": "إخفاء تفاصيل المخطط",
     "nodeLabels": {
       "actor": "ممثل",
       "node": "عقدة",
@@ -1377,6 +1378,7 @@
       "textbox": "نص"
     },
     "pageTitle": "محرر مخطط تدفق البيانات",
+    "showDiagramDetails": "إظهار تفاصيل المخطط",
     "toolbar": {
       "tooltips": {
         "addActor": "إضافة ممثل",

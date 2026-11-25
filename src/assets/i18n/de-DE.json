@@ -1366,6 +1366,7 @@
       "title": "Diagramm-Editor Hilfe",
       "zoomLabel": "Halten Sie Umschalt gedrückt und verwenden Sie das Mausrad zum Zoomen"
     },
+    "hideDiagramDetails": "Diagrammdetails ausblenden",
     "nodeLabels": {
       "actor": "Akteur",
       "node": "Knoten",
@@ -1375,6 +1376,7 @@
       "textbox": "Text"
     },
     "pageTitle": "Datenflussdiagramm-Editor",
+    "showDiagramDetails": "Diagrammdetails anzeigen",
     "toolbar": {
       "tooltips": {
         "addActor": "Akteur hinzufügen",

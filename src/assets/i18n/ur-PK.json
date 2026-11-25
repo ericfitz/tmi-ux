@@ -1366,6 +1366,7 @@
       "title": "خاکہ ایڈیٹر کی مدد",
       "zoomLabel": "زوم کرنے کے لیے Shift دبائیں اور ماؤس وہیل استعمال کریں"
     },
+    "hideDiagramDetails": "ڈایاگرام کی تفصیلات چھپائیں",
     "nodeLabels": {
       "actor": "ایکٹر",
       "node": "نوڈ",
@@ -1375,6 +1376,7 @@
       "textbox": "ٹیکسٹ"
     },
     "pageTitle": "ڈیٹا فلو خاکہ ایڈیٹر",
+    "showDiagramDetails": "ڈایاگرام کی تفصیلات دکھائیں",
     "toolbar": {
       "tooltips": {
         "addActor": "اداکار شامل کریں",

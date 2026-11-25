@@ -277,6 +277,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // User preference for showing developer tools
   showDeveloperTools = false;
 
+  // User preference: diagram details row (description, report/Timmy flags) expanded
+  isHeaderExpanded = false;
+
+  // Resizes the X6 graph whenever its container changes size (window resize,
+  // header expand/collapse, full-bleed layout changes)
+  private _graphResizeObserver: ResizeObserver | null = null;
+  // Pending animation frame for a coalesced graph resize (0 when none)
+  private _graphResizeFrame = 0;
+
   // SEM@6ef84cf8f4f3d4682964be0a4ae2cb3f180bf27d: inject diagram services and initialize X6 cell extensions (mutates shared state)
   constructor(
     private logger: LoggerService,
@@ -309,7 +318,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.logger.info('DfdComponent v2 ngOnInit called');
 
     // Load user preferences for developer tools visibility
-    this.loadDeveloperToolsPreference();
+    this.loadUserPreferences();
     this.subscribeToAutoLayoutPreferences();
 
     // Get route parameters
@@ -356,6 +365,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // SEM@2de9acd9c0f615f9127954482ca522837ca91618: initialize the diagram graph after resolving the user's authorization permission (mutates shared state)
   ngAfterViewInit(): void {
     // this.logger.info('DfdComponent v2 ngAfterViewInit called - starting initialization sequence');
+
+    this._observeGraphContainerSize();
 
     // First check if authorization is already loaded synchronously
     const currentPermission = this.authorizationService.getCurrentUserPermission();
@@ -598,6 +609,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Clean up E2E testing bridge
     if (environment.enableE2eTools && (window as any).__e2e?.dfd) {
       delete (window as any).__e2e.dfd;
+    }
+
+    this._graphResizeObserver?.disconnect();
+    this._graphResizeObserver = null;
+    if (this._graphResizeFrame) {
+      cancelAnimationFrame(this._graphResizeFrame);
+      this._graphResizeFrame = 0;
     }
 
     this._destroy$.next();
@@ -2662,19 +2680,48 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.onKeyDown(event);
   }
 
-  @HostListener('window:resize', ['$event'])
-  // SEM@0c4b0e63a2f170695121de276aae1d8887c94516: handle window resize events by delegating to the orchestrator
-  onWindowResize(_event: Event): void {
-    // Delegate to orchestrator for centralized resize handling
-    this.appDfdOrchestrator.onWindowResize();
+  /**
+   * Toggle the diagram details row and persist the choice as a user preference.
+   */
+  toggleHeaderExpanded(): void {
+    this.userPreferencesService.updatePreferences({ dfdHeaderExpanded: !this.isHeaderExpanded });
+  }
+
+  /**
+   * Resize the graph whenever its container changes size. This covers window
+   * resizes and layout changes inside the page (such as expanding the header),
+   * which a window resize listener would miss.
+   */
+  private _observeGraphContainerSize(): void {
+    if (typeof ResizeObserver === 'undefined') {
+      this.logger.warn('ResizeObserver not available; the graph will not follow container resizes');
+      return;
+    }
+    this._graphResizeObserver = new ResizeObserver(() => {
+      // Coalesce to one graph resize per animation frame: a window drag
+      // reports many size changes, and each graph resize is synchronous.
+      if (this._graphResizeFrame) {
+        return;
+      }
+      this._graphResizeFrame = requestAnimationFrame(() => {
+        this._graphResizeFrame = 0;
+        this.appDfdOrchestrator.onWindowResize();
+      });
+    });
+    // Observe the outer container: its size comes from the page layout, while
+    // the X6 container's size is written by graph.resize() itself.
+    const graphElement = this.graphContainer.nativeElement as HTMLElement;
+    this._graphResizeObserver.observe(graphElement.parentElement ?? graphElement);
   }
 
   // Helper Methods
 
   // SEM@8e3b401a9132a5eba91fd80043ac0e6ff4c5b355: subscribe to user preferences and sync the developer-tools visibility flag (mutates shared state)
-  private loadDeveloperToolsPreference(): void {
+  /** Subscribe to the user preferences this page uses (developer tools, header expansion). */
+  private loadUserPreferences(): void {
     this.userPreferencesService.preferences$.pipe(takeUntil(this._destroy$)).subscribe(prefs => {
       this.showDeveloperTools = prefs.showDeveloperTools;
+      this.isHeaderExpanded = prefs.dfdHeaderExpanded === true;
       this.cdr.markForCheck();
     });
   }

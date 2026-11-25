@@ -1368,6 +1368,7 @@
       "title": "आरेख संपादक सहायता",
       "zoomLabel": "ज़ूम करने के लिए Shift दबाकर माउस व्हील का उपयोग करें"
     },
+    "hideDiagramDetails": "आरेख का विवरण छिपाएँ",
     "nodeLabels": {
       "actor": "एक्टर",
       "node": "नोड",
@@ -1377,6 +1378,7 @@
       "textbox": "टेक्स्ट"
     },
     "pageTitle": "डेटा प्रवाह आरेख संपादक",
+    "showDiagramDetails": "आरेख का विवरण दिखाएँ",
     "toolbar": {
       "tooltips": {
         "addActor": "अभिनेता जोड़ें",

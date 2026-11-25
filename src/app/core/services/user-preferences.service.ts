@@ -25,6 +25,8 @@ export interface UserPreferencesData {
   autoLayoutOrientation: AutoLayoutOrientation;
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
+  /** Whether the DFD editor's diagram details (description, report and Timmy flags) are expanded */
+  dfdHeaderExpanded: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ const DEFAULT_PREFERENCES: UserPreferencesData = {
   autoLayoutOrientation: 'automatic',
   pageSize: 'usLetter',
   marginSize: 'standard',
+  dfdHeaderExpanded: false,
 };
 
 /**

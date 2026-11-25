@@ -1366,6 +1366,7 @@
       "title": "Bantuan Editor Diagram",
       "zoomLabel": "Tahan Shift dan gunakan roda mouse untuk memperbesar/memperkecil"
     },
+    "hideDiagramDetails": "Sembunyikan detail diagram",
     "nodeLabels": {
       "actor": "Aktor",
       "node": "Node",
@@ -1375,6 +1376,7 @@
       "textbox": "Teks"
     },
     "pageTitle": "Editor Diagram Aliran Data",
+    "showDiagramDetails": "Tampilkan detail diagram",
     "toolbar": {
       "tooltips": {
         "addActor": "Tambah Aktor",
