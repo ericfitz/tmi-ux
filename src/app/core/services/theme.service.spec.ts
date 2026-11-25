@@ -93,6 +93,7 @@ describe('ThemeService', () => {
       autoLayoutOrientation: 'automatic',
       pageSize: 'usLetter',
       marginSize: 'standard',
+      dfdHeaderExpanded: false,
     });
 
     mockUserPreferencesService = {
@@ -109,6 +110,7 @@ describe('ThemeService', () => {
         autoLayoutOrientation: 'automatic',
         pageSize: 'usLetter',
         marginSize: 'standard',
+        dfdHeaderExpanded: false,
       }),
       updatePreferences: vi.fn().mockImplementation((partial: Partial<UserPreferencesData>) => {
         const current = prefsSubject.value;
@@ -192,6 +194,7 @@ describe('ThemeService', () => {
         autoLayoutOrientation: 'automatic',
         pageSize: 'usLetter',
         marginSize: 'standard',
+        dfdHeaderExpanded: false,
       });
 
       const mockPrefsService = {
@@ -208,6 +211,7 @@ describe('ThemeService', () => {
           autoLayoutOrientation: 'automatic',
           pageSize: 'usLetter',
           marginSize: 'standard',
+          dfdHeaderExpanded: false,
         }),
         updatePreferences: vi.fn(),
         getThemePreferences: vi.fn().mockReturnValue(storedPrefs),
@@ -513,6 +517,7 @@ describe('ThemeService', () => {
         autoLayoutOrientation: 'automatic',
         pageSize: 'usLetter',
         marginSize: 'standard',
+        dfdHeaderExpanded: false,
       });
 
       const mockPrefsService = {
@@ -529,6 +534,7 @@ describe('ThemeService', () => {
           autoLayoutOrientation: 'automatic',
           pageSize: 'usLetter',
           marginSize: 'standard',
+          dfdHeaderExpanded: false,
         }),
         updatePreferences: vi.fn(),
         getThemePreferences: vi.fn().mockReturnValue({
@@ -585,6 +591,7 @@ describe('ThemeService', () => {
         autoLayoutOrientation: 'automatic',
         pageSize: 'usLetter',
         marginSize: 'standard',
+        dfdHeaderExpanded: false,
       });
 
       const mockPrefsService = {
@@ -615,6 +622,7 @@ describe('ThemeService', () => {
         autoLayoutOrientation: 'automatic',
         pageSize: 'usLetter',
         marginSize: 'standard',
+        dfdHeaderExpanded: false,
       });
 
       // ThemeService should react to the change

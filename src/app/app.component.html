@@ -1,7 +1,9 @@
-<div class="app-container">
+<div class="app-container" [class.full-bleed]="fullBleed()">
   <app-navbar></app-navbar>
   <div class="main-content">
     <router-outlet></router-outlet>
   </div>
-  <app-footer></app-footer>
+  @if (!fullBleed()) {
+    <app-footer></app-footer>
+  }
 </div>

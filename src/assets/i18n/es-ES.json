@@ -1366,6 +1366,7 @@
       "title": "Ayuda del editor de diagramas",
       "zoomLabel": "Mantenga Mayús y use la rueda del ratón para hacer zoom"
     },
+    "hideDiagramDetails": "Ocultar detalles del diagrama",
     "nodeLabels": {
       "actor": "Actor",
       "node": "Nodo",
@@ -1375,6 +1376,7 @@
       "textbox": "Texto"
     },
     "pageTitle": "Editor de diagramas de flujo de datos",
+    "showDiagramDetails": "Mostrar detalles del diagrama",
     "toolbar": {
       "tooltips": {
         "addActor": "Agregar actor",

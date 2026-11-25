@@ -681,9 +681,19 @@ export class AppDfdOrchestrator {
   // SEM@00558ec66867848e260e04954f555ab98f64f0e4: notify the diagram graph to recalculate its dimensions on window resize (mutates shared state)
   handleWindowResize(): void {
     const graph = this.getGraph;
-    if (graph) {
-      graph.resize();
+    if (!graph) {
+      return;
     }
+    // X6's resize() without arguments reuses its stored size, so measure the
+    // outer graph container (whose size comes from the page layout, not from
+    // X6's inline styles) and pass explicit dimensions.
+    const outer: HTMLElement | null = graph.container?.parentElement ?? null;
+    const width = outer?.clientWidth ?? 0;
+    const height = outer?.clientHeight ?? 0;
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    graph.resize(width, height);
   }
 
   // SEM@122e52ca325567fc2739e6fd80b2bb4f4ad97c25: dispatch diagram actions for recognized keyboard shortcuts and return handled flag (mutates shared state)

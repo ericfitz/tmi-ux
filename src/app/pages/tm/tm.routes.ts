@@ -74,6 +74,7 @@ export const TM_ROUTES: Routes = [
         resolve: {
           threatModel: threatModelResolver,
         },
+        data: { fullBleed: true },
       },
       {
         path: ':id/audit',

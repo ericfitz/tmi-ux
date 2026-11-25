@@ -1690,6 +1690,7 @@
       "title": "ডায়াগ্রাম এডিটর সহায়তা",
       "zoomLabel": "জুম করতে Shift ধরে মাউস হুইল ব্যবহার করুন"
     },
+    "hideDiagramDetails": "ডায়াগ্রামের বিবরণ লুকান",
     "nodeLabels": {
       "actor": "অ্যাক্টর",
       "node": "নোড",
@@ -1699,6 +1700,7 @@
       "textbox": "টেক্সট"
     },
     "pageTitle": "ডেটা ফ্লো ডায়াগ্রাম এডিটর",
+    "showDiagramDetails": "ডায়াগ্রামের বিবরণ দেখান",
     "toolbar": {
       "tooltips": {
         "addActor": "অ্যাক্টর যোগ করুন",

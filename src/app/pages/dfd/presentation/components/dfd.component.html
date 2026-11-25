@@ -1,65 +1,92 @@
 <div class="dfd-container">
   <div class="title-row">
     <div class="title-container">
-      <h1 class="page-title">
-        {{ 'editor.pageTitle' | transloco }}
-        @if (isReadOnlyMode) {
-          <mat-icon
-            class="read-only-indicator"
-            [matTooltip]="'common.readOnlyTooltip' | transloco"
-            [attr.aria-label]="'common.readOnly' | transloco"
-            >edit_off</mat-icon
-          >
-        }
-      </h1>
-      @if (threatModelName) {
-        <div class="subtitle threat-model-name">
-          <span class="title-prefix">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
-          <span class="title-name">{{ threatModelName }}</span>
+      <div class="title-line">
+        <button
+          mat-icon-button
+          class="header-toggle"
+          (click)="toggleHeaderExpanded()"
+          [attr.aria-expanded]="isHeaderExpanded"
+          [attr.aria-controls]="isHeaderExpanded ? 'dfd-diagram-details' : null"
+          [matTooltip]="
+            (isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')
+              | transloco
+          "
+          [attr.aria-label]="
+            (isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')
+              | transloco
+          "
+        >
+          <mat-icon>{{ isHeaderExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+        <h1 class="page-title">
+          <span class="cdk-visually-hidden">{{ 'editor.pageTitle' | transloco }}</span>
+          @if (threatModelName) {
+            <span class="cdk-visually-hidden"
+              >{{ 'common.objectTypes.threatModel' | transloco }}:</span
+            >
+            <span
+              class="title-name threat-model-name"
+              [matTooltip]="'common.objectTypes.threatModel' | transloco"
+              >{{ threatModelName }}</span
+            >
+            <span class="title-separator" aria-hidden="true">&rsaquo;</span>
+          }
+          <span class="cdk-visually-hidden">{{ 'common.objectTypes.diagram' | transloco }}:</span>
+          <app-inline-edit
+            class="diagram-name"
+            [value]="diagramName"
+            [disabled]="isReadOnlyMode || isCollaborating"
+            [placeholder]="'editor.diagramNamePlaceholder' | transloco"
+            [editTooltip]="'editor.editDiagramName' | transloco"
+            [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
+            displayClass="title-name"
+            (valueChange)="onDiagramNameChange($event)"
+          ></app-inline-edit>
+          @if (isReadOnlyMode) {
+            <mat-icon
+              class="read-only-indicator"
+              [matTooltip]="'common.readOnlyTooltip' | transloco"
+              [attr.aria-label]="'common.readOnly' | transloco"
+              >edit_off</mat-icon
+            >
+          }
+        </h1>
+      </div>
+      @if (isHeaderExpanded) {
+        <div id="dfd-diagram-details" class="diagram-details">
+          <div class="subtitle diagram-description">
+            <span class="title-prefix">{{ 'editor.description' | transloco }}:</span>
+            <app-inline-edit
+              [value]="diagramDescription"
+              [disabled]="isReadOnlyMode || isCollaborating"
+              [placeholder]="'editor.diagramDescriptionPlaceholder' | transloco"
+              [editTooltip]="'editor.editDiagramDescription' | transloco"
+              [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
+              displayClass="title-name description-text"
+              (valueChange)="onDiagramDescriptionChange($event)"
+            ></app-inline-edit>
+          </div>
+          <div class="subtitle diagram-flags">
+            <mat-checkbox
+              class="include-in-report"
+              [checked]="includeInReport"
+              [disabled]="isReadOnlyMode || isCollaborating"
+              (change)="onIncludeInReportChange($event)"
+            >
+              {{ 'common.includeInReport' | transloco }}
+            </mat-checkbox>
+            <mat-checkbox
+              class="include-in-timmy-chat"
+              [checked]="timmyEnabled"
+              [disabled]="isReadOnlyMode || isCollaborating"
+              (change)="onTimmyEnabledChange($event)"
+            >
+              {{ 'common.includeInTimmyChat' | transloco }}
+            </mat-checkbox>
+          </div>
         </div>
       }
-      <div class="subtitle diagram-name">
-        <span class="title-prefix">{{ 'common.objectTypes.diagram' | transloco }}:</span>
-        <app-inline-edit
-          [value]="diagramName"
-          [disabled]="isReadOnlyMode || isCollaborating"
-          [placeholder]="'editor.diagramNamePlaceholder' | transloco"
-          [editTooltip]="'editor.editDiagramName' | transloco"
-          [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
-          displayClass="title-name"
-          (valueChange)="onDiagramNameChange($event)"
-        ></app-inline-edit>
-      </div>
-      <div class="subtitle diagram-description">
-        <span class="title-prefix">{{ 'editor.description' | transloco }}:</span>
-        <app-inline-edit
-          [value]="diagramDescription"
-          [disabled]="isReadOnlyMode || isCollaborating"
-          [placeholder]="'editor.diagramDescriptionPlaceholder' | transloco"
-          [editTooltip]="'editor.editDiagramDescription' | transloco"
-          [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
-          displayClass="title-name description-text"
-          (valueChange)="onDiagramDescriptionChange($event)"
-        ></app-inline-edit>
-      </div>
-      <div class="subtitle include-in-report">
-        <mat-checkbox
-          [checked]="includeInReport"
-          [disabled]="isReadOnlyMode || isCollaborating"
-          (change)="onIncludeInReportChange($event)"
-        >
-          {{ 'common.includeInReport' | transloco }}
-        </mat-checkbox>
-      </div>
-      <div class="subtitle include-in-timmy-chat">
-        <mat-checkbox
-          [checked]="timmyEnabled"
-          [disabled]="isReadOnlyMode || isCollaborating"
-          (change)="onTimmyEnabledChange($event)"
-        >
-          {{ 'common.includeInTimmyChat' | transloco }}
-        </mat-checkbox>
-      </div>
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>

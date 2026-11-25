@@ -1102,14 +1102,38 @@ describe('AppDfdOrchestrator', () => {
       await service.initialize(initParams).toPromise();
     });
 
-    it('should handle window resize', () => {
+    it('resizes the graph to the outer graph container on window resize', () => {
+      // X6's resize() without arguments reuses its stored size, so the graph
+      // must be given the current dimensions of the stable outer container.
+      const outer = document.createElement('div');
+      const x6Container = document.createElement('div');
+      outer.appendChild(x6Container);
+      Object.defineProperty(outer, 'clientWidth', { value: 1463 });
+      Object.defineProperty(outer, 'clientHeight', { value: 372 });
       const mockGraph = {
+        container: x6Container,
         resize: vi.fn(),
       };
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
 
       service.onWindowResize();
-      expect(mockGraph.resize).toHaveBeenCalled();
+
+      expect(mockGraph.resize).toHaveBeenCalledWith(1463, 372);
+    });
+
+    it('skips the resize while the outer container has no size', () => {
+      const outer = document.createElement('div');
+      const x6Container = document.createElement('div');
+      outer.appendChild(x6Container);
+      const mockGraph = {
+        container: x6Container,
+        resize: vi.fn(),
+      };
+      vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
+
+      service.onWindowResize();
+
+      expect(mockGraph.resize).not.toHaveBeenCalled();
     });
 
     it('should handle keyboard shortcuts', () => {

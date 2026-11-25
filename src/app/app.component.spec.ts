@@ -5,7 +5,9 @@ import '@angular/compiler';
 
 import { describe, it, expect } from 'vitest';
 
-import { AppComponent } from './app.component';
+import { ActivatedRouteSnapshot } from '@angular/router';
+
+import { AppComponent, isFullBleedRoute } from './app.component';
 
 describe('AppComponent', () => {
   describe('change detection strategy', () => {
@@ -33,5 +35,41 @@ describe('AppComponent', () => {
 
       expect(def.onPush).toBe(false);
     });
+  });
+});
+
+describe('isFullBleedRoute', () => {
+  /** Build a minimal snapshot chain: each entry is one level's route data. */
+  function chain(...levels: Record<string, unknown>[]): ActivatedRouteSnapshot {
+    let child: ActivatedRouteSnapshot | null = null;
+    for (const data of [...levels].reverse()) {
+      child = { data, firstChild: child } as unknown as ActivatedRouteSnapshot;
+    }
+    return child as ActivatedRouteSnapshot;
+  }
+
+  it('is true when the deepest route declares fullBleed', () => {
+    expect(isFullBleedRoute(chain({}, {}, { fullBleed: true }))).toBe(true);
+  });
+
+  it('is true when an ancestor route declares fullBleed', () => {
+    expect(isFullBleedRoute(chain({}, { fullBleed: true }, {}))).toBe(true);
+  });
+
+  it('is false when no route declares fullBleed', () => {
+    expect(isFullBleedRoute(chain({}, { threatModel: {} }, {}))).toBe(false);
+  });
+
+  it('rejects truthy non-boolean values', () => {
+    expect(isFullBleedRoute(chain({ fullBleed: 'yes' }, { fullBleed: 1 }))).toBe(false);
+  });
+});
+
+describe('full-bleed route configuration', () => {
+  it('marks only the DFD editor route as full-bleed', async () => {
+    const { TM_ROUTES } = await import('./pages/tm/tm.routes');
+    const children = TM_ROUTES.flatMap(r => r.children ?? [r]);
+    const fullBleedPaths = children.filter(r => r.data?.['fullBleed'] === true).map(r => r.path);
+    expect(fullBleedPaths).toEqual([':id/dfd/:dfdId']);
   });
 });

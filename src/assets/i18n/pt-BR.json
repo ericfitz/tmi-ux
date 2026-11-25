@@ -1368,6 +1368,7 @@
       "title": "Ajuda do editor de diagramas",
       "zoomLabel": "Mantenha Shift pressionado e use a roda do mouse para ampliar"
     },
+    "hideDiagramDetails": "Ocultar detalhes do diagrama",
     "nodeLabels": {
       "actor": "Ator",
       "node": "No",
@@ -1377,6 +1378,7 @@
       "textbox": "Texto"
     },
     "pageTitle": "Editor de diagrama de fluxo de dados",
+    "showDiagramDetails": "Mostrar detalhes do diagrama",
     "toolbar": {
       "tooltips": {
         "addActor": "Adicionar ator",

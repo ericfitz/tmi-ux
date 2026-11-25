@@ -1368,6 +1368,7 @@
       "title": "ダイアグラムエディターのヘルプ",
       "zoomLabel": "Shiftキーを押しながらマウスホイールでズーム"
     },
+    "hideDiagramDetails": "ダイアグラムの詳細を非表示",
     "nodeLabels": {
       "actor": "アクター",
       "node": "ノード",
@@ -1377,6 +1378,7 @@
       "textbox": "テキスト"
     },
     "pageTitle": "データフローダイアグラムエディター",
+    "showDiagramDetails": "ダイアグラムの詳細を表示",
     "toolbar": {
       "tooltips": {
         "addActor": "アクターを追加",

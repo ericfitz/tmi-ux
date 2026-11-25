@@ -1364,6 +1364,7 @@
       "title": "다이어그램 편집기 도움말",
       "zoomLabel": "Shift를 누른 채 마우스 휠을 사용하여 확대/축소"
     },
+    "hideDiagramDetails": "다이어그램 세부 정보 숨기기",
     "nodeLabels": {
       "actor": "액터",
       "node": "노드",
@@ -1373,6 +1374,7 @@
       "textbox": "텍스트"
     },
     "pageTitle": "데이터 흐름 다이어그램 편집기",
+    "showDiagramDetails": "다이어그램 세부 정보 표시",
     "toolbar": {
       "tooltips": {
         "addActor": "액터 추가",

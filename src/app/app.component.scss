@@ -15,3 +15,15 @@
   max-width: 1200px;
   box-sizing: border-box;
 }
+
+// Full-bleed routes (e.g. the DFD editor) fill the viewport exactly: no width
+// cap, no page scroll, and the footer is not rendered.
+.app-container.full-bleed {
+  height: 100dvh;
+  min-height: 0;
+
+  .main-content {
+    max-width: none;
+    overflow: hidden;
+  }
+}

@@ -9027,6 +9027,88 @@
       }
     ]
   },
+  "admin.webhooks.status.inactive": {
+    "ambiguous_word": false,
+    "confidence": "medium",
+    "ellipsis_candidate": false,
+    "found_by": "leaf",
+    "needs_translator_comment": false,
+    "surfaces": [
+      "general"
+    ],
+    "uses": [
+      {
+        "classes": [],
+        "context": "<h1 [transloco]=\"'admin.webhooks.title'\">Manage Webhooks</h1>",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 4,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<p class=\"subtitle\" [transloco]=\"'admin.webhooks.subtitle'\">",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 5,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<mat-label [transloco]=\"'admin.webhooks.filterLabel'\">Filter Webhooks</mat-label>",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 25,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "[placeholder]=\"'admin.webhooks.filterPlaceholder' | transloco\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 31,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<mat-card-title [transloco]=\"'admin.webhooks.listTitle'\"",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 40,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<span [transloco]=\"'admin.webhooks.addButton'\">Add Webhook</span>",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 51,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<span>{{ 'admin.webhooks.status.' + webhook.status | transloco }}</span>",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 73,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<span [transloco]=\"'admin.webhooks.deleteTooltip'\">Delete</span>",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 104,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<span [transloco]=\"'admin.webhooks.triggerEvents'\">Trigger events</span>:",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 113,
+        "partial_match": "medium"
+      },
+      {
+        "classes": [],
+        "context": "<span [transloco]=\"'admin.webhooks.subscriptionId'\">Subscription ID</span>:",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/admin/webhooks/admin-webhooks.component.html",
+        "line": 119,
+        "partial_match": "medium"
+      }
+    ]
+  },
   "admin.webhooks.status.pending_delete": {
     "ambiguous_word": true,
     "confidence": "medium",
@@ -34677,6 +34759,31 @@
       }
     ]
   },
+  "editor.hideDiagramDetails": {
+    "ambiguous_word": true,
+    "confidence": "high",
+    "ellipsis_candidate": false,
+    "found_by": "fully-qualified",
+    "needs_translator_comment": false,
+    "surfaces": [
+      "button",
+      "tooltip"
+    ],
+    "uses": [
+      {
+        "classes": [],
+        "context": "(isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dfd/presentation/components/dfd.component.html",
+        "line": 12
+      },
+      {
+        "classes": [],
+        "context": "(isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dfd/presentation/components/dfd.component.html",
+        "line": 16
+      }
+    ]
+  },
   "editor.nodeLabels.actor": {
     "ambiguous_word": false,
     "confidence": "high",
@@ -34800,6 +34907,31 @@
         "context": "{{ 'editor.pageTitle' | transloco }}",
         "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dfd/presentation/components/dfd.component.html",
         "line": 5
+      }
+    ]
+  },
+  "editor.showDiagramDetails": {
+    "ambiguous_word": true,
+    "confidence": "high",
+    "ellipsis_candidate": false,
+    "found_by": "fully-qualified",
+    "needs_translator_comment": false,
+    "surfaces": [
+      "button",
+      "tooltip"
+    ],
+    "uses": [
+      {
+        "classes": [],
+        "context": "(isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dfd/presentation/components/dfd.component.html",
+        "line": 12
+      },
+      {
+        "classes": [],
+        "context": "(isHeaderExpanded ? 'editor.hideDiagramDetails' : 'editor.showDiagramDetails')",
+        "file": "/Users/efitz/Projects/tmi-ux/src/app/pages/dfd/presentation/components/dfd.component.html",
+        "line": 16
       }
     ]
   },

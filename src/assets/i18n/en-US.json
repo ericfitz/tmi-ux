@@ -1631,6 +1631,8 @@
       "title.comment": "Noun phrase. Title of a dialog: 'Diagram editor help'.",
       "zoomLabel": "Hold shift and use the mouse wheel to zoom"
     },
+    "hideDiagramDetails": "Hide diagram details",
+    "hideDiagramDetails.comment": "Tooltip and accessible label on the chevron button in the diagram editor header that collapses the diagram description and the include-in-report and include-in-Timmy-chat options.",
     "nodeLabels": {
       "actor": "Actor",
       "node": "Node",
@@ -1640,6 +1642,8 @@
       "textbox": "Text"
     },
     "pageTitle": "Data flow diagram editor",
+    "showDiagramDetails": "Show diagram details",
+    "showDiagramDetails.comment": "Tooltip and accessible label on the chevron button in the diagram editor header that expands the diagram description and the include-in-report and include-in-Timmy-chat options.",
     "toolbar": {
       "tooltips": {
         "addActor": "Add actor",

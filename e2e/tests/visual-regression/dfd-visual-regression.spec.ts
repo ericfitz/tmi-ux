@@ -88,7 +88,7 @@ test.describe('DFD Visual Regression', () => {
     await page.mouse.move(0, 0);
     await page.waitForTimeout(300);
     await takeThemeScreenshots(page, name, {
-      replaceText: [{ selector: '.threat-model-name .title-name', text: 'E2E VR DFD' }],
+      replaceText: [{ selector: '.title-name.threat-model-name', text: 'E2E VR DFD' }],
     });
   }
 

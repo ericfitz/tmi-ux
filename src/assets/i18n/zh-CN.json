@@ -1366,6 +1366,7 @@
       "title": "图表编辑器帮助",
       "zoomLabel": "按住 Shift 并使用鼠标滚轮缩放"
     },
+    "hideDiagramDetails": "隐藏图表详细信息",
     "nodeLabels": {
       "actor": "外部实体",
       "node": "节点",
@@ -1375,6 +1376,7 @@
       "textbox": "文本"
     },
     "pageTitle": "数据流图编辑器",
+    "showDiagramDetails": "显示图表详细信息",
     "toolbar": {
       "tooltips": {
         "addActor": "添加角色",
