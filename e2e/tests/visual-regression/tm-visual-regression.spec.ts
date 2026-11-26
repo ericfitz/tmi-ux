@@ -18,10 +18,11 @@ userTest.describe('TM Visual Regression', () => {
     await userPage.waitForLoadState('networkidle');
 
     const timestamps = userPage.locator(
-      '.mat-column-lastModified, .mat-column-created, .mat-column-statusLastChanged'
+      '.mat-column-lastModified, .mat-column-created, .mat-column-statusLastChanged',
     );
 
     await takeThemeScreenshots(userPage, 'tm-dashboard', {
+      freezeVolatileText: true,
       mask: [timestamps],
     });
   });
@@ -38,6 +39,7 @@ userTest.describe('TM Visual Regression', () => {
     });
 
     await takeThemeScreenshots(userPage, 'tm-edit-page', {
+      freezeVolatileText: true,
       mask: [timestamps],
       fullPage: true,
     });
@@ -49,10 +51,7 @@ userTest.describe('TM Visual Regression', () => {
     await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await new TmEditPage(userPage).threatRow(SEEDED_THREAT).click();
-    await userPage.waitForURL(
-      /\/tm\/[a-f0-9-]+\/threat\/[a-f0-9-]+/,
-      { timeout: 10000 },
-    );
+    await userPage.waitForURL(/\/tm\/[a-f0-9-]+\/threat\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');
 
     const timestamps = userPage.locator('.info-value').filter({
@@ -60,6 +59,7 @@ userTest.describe('TM Visual Regression', () => {
     });
 
     await takeThemeScreenshots(userPage, 'tm-threat-detail', {
+      freezeVolatileText: true,
       mask: [timestamps],
       fullPage: true,
     });
@@ -71,10 +71,8 @@ userTest.describe('TM Visual Regression', () => {
     await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
-    await userPage.getByTestId('asset-row')
-      .filter({ hasText: SEEDED_ASSET }).click();
-    await userPage.locator('mat-dialog-container')
-      .waitFor({ state: 'visible' });
+    await userPage.getByTestId('asset-row').filter({ hasText: SEEDED_ASSET }).click();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
     await takeThemeScreenshots(userPage, 'tm-asset-editor-dialog');
 
@@ -87,10 +85,8 @@ userTest.describe('TM Visual Regression', () => {
     await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
-    await userPage.getByTestId('document-row')
-      .filter({ hasText: SEEDED_DOC }).click();
-    await userPage.locator('mat-dialog-container')
-      .waitFor({ state: 'visible' });
+    await userPage.getByTestId('document-row').filter({ hasText: SEEDED_DOC }).click();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
     await takeThemeScreenshots(userPage, 'tm-document-editor-dialog');
 
@@ -103,10 +99,8 @@ userTest.describe('TM Visual Regression', () => {
     await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
-    await userPage.getByTestId('repository-row')
-      .filter({ hasText: SEEDED_REPO }).click();
-    await userPage.locator('mat-dialog-container')
-      .waitFor({ state: 'visible' });
+    await userPage.getByTestId('repository-row').filter({ hasText: SEEDED_REPO }).click();
+    await userPage.locator('mat-dialog-container').waitFor({ state: 'visible' });
 
     await takeThemeScreenshots(userPage, 'tm-repository-editor-dialog');
 
@@ -119,12 +113,8 @@ userTest.describe('TM Visual Regression', () => {
     await new DashboardPage(userPage).tmCard(SEEDED_TM).first().click();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
 
-    await userPage.getByTestId('note-row')
-      .filter({ hasText: SEEDED_NOTE }).click();
-    await userPage.waitForURL(
-      /\/tm\/[a-f0-9-]+\/note\/[a-f0-9-]+/,
-      { timeout: 10000 },
-    );
+    await userPage.getByTestId('note-row').filter({ hasText: SEEDED_NOTE }).click();
+    await userPage.waitForURL(/\/tm\/[a-f0-9-]+\/note\/[a-f0-9-]+/, { timeout: 10000 });
     await userPage.waitForLoadState('networkidle');
 
     const timestamps = userPage.locator('.info-value').filter({
@@ -132,6 +122,7 @@ userTest.describe('TM Visual Regression', () => {
     });
 
     await takeThemeScreenshots(userPage, 'tm-note-page', {
+      freezeVolatileText: true,
       mask: [timestamps],
       fullPage: true,
     });

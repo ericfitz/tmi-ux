@@ -1,20 +1,13 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { userTest, reviewerTest, adminTest } from '../../fixtures/auth-fixtures';
 import { takeThemeScreenshots, DATE_TEXT } from '../../helpers/screenshot';
 import { SurveyListPage } from '../../pages/survey-list.page';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
 import { SurveyResponseFlow } from '../../flows/survey-response.flow';
-import { testConfig } from '../../config/test.config';
+import { deleteDraftViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 /** The seeded submitted response (seed-spec.json survey_responses[0]). */
 const SEEDED_RESPONSE_SURVEY = 'Simple Workflow Survey';
-
-/** Extracts the response id from a /intake/fill/<surveyId>/<responseId> URL. */
-function draftIdFromFillUrl(url: string): string {
-  const match = /\/intake\/fill\/[^/]+\/([^/?#]+)/.exec(url);
-  if (!match) throw new Error(`not a survey fill URL: ${url}`);
-  return match[1];
-}
 
 /**
  * Hides the autosave status ("Saved at <time>"). Whether it is showing depends on
@@ -24,21 +17,6 @@ async function hideSaveStatus(page: Page): Promise<void> {
   await page.addStyleTag({
     content: '[data-testid="survey-fill-status"] { visibility: hidden !important; }',
   });
-}
-
-/** Deletes a draft survey response and asserts the delete succeeded. */
-async function deleteDraftViaApi(page: Page, id: string): Promise<void> {
-  const ok = await page.evaluate(
-    async ({ api, responseId }) => {
-      const res = await fetch(`${api}/intake/survey_responses/${responseId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      return res.ok || res.status === 404;
-    },
-    { api: testConfig.apiUrl, responseId: id },
-  );
-  expect(ok, `cleanup: failed to delete draft survey response ${id}`).toBe(true);
 }
 
 userTest.describe('Survey Visual Regression (User)', () => {

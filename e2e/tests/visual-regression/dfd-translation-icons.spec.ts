@@ -3,7 +3,6 @@ import { test } from '@playwright/test';
 import { AuthFlow } from '../../flows/auth.flow';
 import { ThreatModelFlow } from '../../flows/threat-model.flow';
 import { DiagramFlow } from '../../flows/diagram.flow';
-import { DashboardPage } from '../../pages/dashboard.page';
 import { DfdEditorPage } from '../../pages/dfd-editor.page';
 import { assertNoMissingTranslations } from '../../helpers/translation-scanner';
 import { assertIconsRendered } from '../../helpers/icon-checker';
@@ -26,7 +25,6 @@ test.describe.serial('DFD Translation & Icon Integrity', () => {
 
   let threatModelFlow: ThreatModelFlow;
   let diagramFlow: DiagramFlow;
-  let dashboardPage: DashboardPage;
   let dfdEditorPage: DfdEditorPage;
 
   const testTmName = `E2E DFD i18n TM ${Date.now()}`;
@@ -41,7 +39,6 @@ test.describe.serial('DFD Translation & Icon Integrity', () => {
 
     threatModelFlow = new ThreatModelFlow(page);
     diagramFlow = new DiagramFlow(page);
-    dashboardPage = new DashboardPage(page);
     dfdEditorPage = new DfdEditorPage(page);
 
     // Create fresh TM and diagram, open the DFD editor
@@ -52,11 +49,10 @@ test.describe.serial('DFD Translation & Icon Integrity', () => {
   });
 
   test.afterAll(async () => {
+    // Clean up via API: the reviewer's default dashboard filter does not show
+    // a just-created TM, so UI-driven deletion waits out the hook timeout.
     try {
-      await page.goto('/dashboard');
-      await page.waitForLoadState('networkidle');
-      await threatModelFlow.deleteFromDashboard(testTmName);
-      await expect(dashboardPage.tmCard(testTmName)).toHaveCount(0, { timeout: 10000 });
+      await threatModelFlow.deleteByNameViaApi(testTmName);
     } catch {
       // Best effort cleanup
     }
@@ -74,7 +70,7 @@ test.describe.serial('DFD Translation & Icon Integrity', () => {
   test('no missing translations with style panel open', async () => {
     // Add a node and select it so the style panel shows controls (not "no selection")
     const nodeId = await dfdEditorPage.addNodeViaOrchestrator('process');
-    await page.evaluate((id) => {
+    await page.evaluate(id => {
       const graph = (window as any).__e2e?.dfd?.graph;
       if (!graph) return;
       const cell = graph.getCellById(id);

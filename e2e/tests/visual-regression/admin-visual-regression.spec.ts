@@ -26,6 +26,8 @@ const PLATES: AdminPlate[] = [
     route: '/admin/users',
     maskSelectors: [
       '[data-testid="users-row"] td:nth-child(3)', // last login timestamp column
+      // TM counts move as e2e specs create and delete threat models.
+      '[data-testid="users-row"] td.mat-column-threatModels',
     ],
   },
   { slug: 'admin-teams', route: '/admin/teams' },
@@ -70,7 +72,11 @@ test.describe('Admin Visual Regression', () => {
         }
 
         const mask = (plate.maskSelectors ?? []).map(sel => page.locator(sel));
-        await takeThemeScreenshots(page, plate.slug, { freezeVolatileText: true, mask, fullPage: true });
+        await takeThemeScreenshots(page, plate.slug, {
+          freezeVolatileText: true,
+          mask,
+          fullPage: true,
+        });
 
         // Basic sanity: page rendered something testable
         await expect(page.locator('body')).toBeVisible();

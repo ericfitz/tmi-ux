@@ -3,9 +3,21 @@ import { assertNoMissingTranslations } from '../../helpers/translation-scanner';
 import { assertIconsRendered } from '../../helpers/icon-checker';
 import { SurveyListPage } from '../../pages/survey-list.page';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
+import { deleteDraftViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 userTest.describe('Survey Translation & Icon Integrity (User)', () => {
   userTest.setTimeout(30000);
+
+  // The fill test creates a draft; delete it so the survey-list and my-responses
+  // visual baselines that run after this spec see only the seeded response.
+  let draftId: string | undefined;
+
+  userTest.afterEach(async ({ userPage }) => {
+    if (!draftId) return;
+    const id = draftId;
+    draftId = undefined;
+    await deleteDraftViaApi(userPage, id);
+  });
 
   userTest('survey list', async ({ userPage }) => {
     await userPage.goto('/intake');
@@ -19,6 +31,7 @@ userTest.describe('Survey Translation & Icon Integrity (User)', () => {
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
 
     // Note: SurveyJS-rendered content uses its own i18n and may produce
     // false positives in translation scanning. The assertNoMissingTranslations
