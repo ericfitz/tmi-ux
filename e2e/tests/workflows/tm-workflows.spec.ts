@@ -29,11 +29,24 @@ async function openDetailsKebab(page: import('@playwright/test').Page) {
 userTest.describe('TM Workflows - Single Role', () => {
   userTest.setTimeout(120000);
 
+  // Threat models each test created; deleted after each test, even on failure.
+  // Ownership may have moved (owner tests), but test-user keeps an owner-role
+  // entry, so the API delete still succeeds where the dashboard card is gone.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('cancelling the permissions dialog reverts an owner change', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const permissionsFlow = new PermissionsFlow(userPage);
     const permissionsDialog = new PermissionsDialog(userPage);
     const testName = `E2E Owner Cancel TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await tmFlow.createFromDashboard(testName);
 
@@ -86,14 +99,6 @@ userTest.describe('TM Workflows - Single Role', () => {
     await permissionsDialog.cancel();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
 
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    try {
-      await tmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 
   userTest('promoting an unsaved permission row to owner', async ({ userPage }) => {
@@ -101,6 +106,7 @@ userTest.describe('TM Workflows - Single Role', () => {
     const permissionsFlow = new PermissionsFlow(userPage);
     const permissionsDialog = new PermissionsDialog(userPage);
     const testName = `E2E Owner Unsaved TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await tmFlow.createFromDashboard(testName);
 
@@ -151,26 +157,13 @@ userTest.describe('TM Workflows - Single Role', () => {
     await expect(permissionsDialog.ownerValue()).toContainText(/Test Reviewer/i);
     await permissionsDialog.cancel();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 10000 });
-
-    // Cleanup via the API, not the dashboard: ownership has moved to test-reviewer, so
-    // the TM is no longer on test-user's dashboard and tmDeleteButton would wait for a
-    // card that never arrives until the test times out. test-user keeps its owner-role
-    // authorization entry, so the DELETE still succeeds.
-    try {
-      await tmFlow.deleteByNameViaApi(testName);
-    } catch (error) {
-      // Name the leak: silently swallowed cleanup is how the dev DB reached 78 stray
-      // threat models and started failing unrelated specs.
-
-      console.warn(`cleanup failed for "${testName}": ${String(error)}`);
-    }
   });
 
   userTest('framework selection (STRIDE)', async ({ userPage }) => {
-    const tmFlow = new ThreatModelFlow(userPage);
     const createDialog = new CreateTmDialog(userPage);
     const dashboard = new DashboardPage(userPage);
     const testName = `E2E STRIDE TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
@@ -182,20 +175,13 @@ userTest.describe('TM Workflows - Single Role', () => {
 
     await expect(userPage.getByTestId('tm-framework-select')).toContainText('STRIDE');
 
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    try {
-      await tmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 
   userTest('export dialog', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const exportDialog = new ExportDialog(userPage);
     const testName = `E2E Export TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await tmFlow.createFromDashboard(testName);
 
@@ -207,20 +193,13 @@ userTest.describe('TM Workflows - Single Role', () => {
     await expect(exportDialog.saveButton()).toBeVisible({ timeout: 10000 });
     await exportDialog.cancel();
 
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    try {
-      await tmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 
   userTest('project association and dashboard filter', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const dashboard = new DashboardPage(userPage);
     const testName = `E2E Project TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await tmFlow.createFromDashboard(testName);
 
@@ -238,12 +217,6 @@ userTest.describe('TM Workflows - Single Role', () => {
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
     await expect(dashboard.tmCard(testName)).toBeVisible({ timeout: 10000 });
-
-    try {
-      await tmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 });
 
@@ -274,9 +247,22 @@ reviewerTest.describe('TM Workflows - Reviewer Role', () => {
 multiRoleTest.describe('TM Workflows - Cross Role', () => {
   multiRoleTest.setTimeout(180000);
 
+  // Threat models each test created; deleted after each test, even on failure.
+  // Ownership may have moved (owner tests), but test-user keeps an owner-role
+  // entry, so the API delete still succeeds where the dashboard card is gone.
+  const createdTms: string[] = [];
+
+  multiRoleTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   multiRoleTest('owner shares TM with reviewer', async ({ userPage, reviewerPage }) => {
     const userTmFlow = new ThreatModelFlow(userPage);
     const testName = `E2E Share TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await userTmFlow.createFromDashboard(testName);
 
@@ -331,21 +317,14 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
 
     await expect(reviewerPage.getByTestId('threat-model-name')).toContainText(testName);
 
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    try {
-      await userTmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 
   multiRoleTest('confidential TM visibility', async ({ userPage, reviewerPage }) => {
     const createDialog = new CreateTmDialog(userPage);
     const userDashboard = new DashboardPage(userPage);
-    const userTmFlow = new ThreatModelFlow(userPage);
     const reviewerDashboard = new DashboardPage(reviewerPage);
     const testName = `E2E Confidential TM ${Date.now()}`;
+    createdTms.push(testName);
 
     await userPage.goto('/dashboard');
     await userPage.waitForLoadState('networkidle');
@@ -399,12 +378,5 @@ multiRoleTest.describe('TM Workflows - Cross Role', () => {
       await expect(reviewerDashboard.tmCard(testName)).toHaveCount(1, { timeout: 3000 });
     }).toPass({ timeout: 60000, intervals: [1000, 2000, 3000] });
 
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    try {
-      await userTmFlow.deleteFromDashboard(testName);
-    } catch {
-      /* best effort */
-    }
   });
 });

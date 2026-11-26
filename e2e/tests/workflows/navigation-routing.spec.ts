@@ -10,11 +10,22 @@ import { ThreatModelFlow } from '../../flows/threat-model.flow';
 userTest.describe('Navigation & Routing (User)', () => {
   userTest.setTimeout(60000);
 
+  // Threat models this test created; deleted after each test, even on failure.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('deep link to a threat model', async ({ userPage }) => {
     const tmEdit = new TmEditPage(userPage);
     const tmFlow = new ThreatModelFlow(userPage);
 
     const tmName = `E2E Nav Test TM ${Date.now()}`;
+    createdTms.push(tmName);
     await tmFlow.createFromDashboard(tmName);
 
     const url = userPage.url();
@@ -28,11 +39,6 @@ userTest.describe('Navigation & Routing (User)', () => {
     await userPage.waitForLoadState('networkidle');
 
     await expect(tmEdit.tmName()).toHaveText(tmName, { timeout: 10000 });
-
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    await tmFlow.deleteFromDashboard(tmName);
   });
 
   userTest('deep link to nonexistent resource', async ({ userPage }) => {
@@ -54,6 +60,7 @@ userTest.describe('Navigation & Routing (User)', () => {
     const tmFlow = new ThreatModelFlow(userPage);
 
     const tmName = `E2E Back/Fwd Test TM ${Date.now()}`;
+    createdTms.push(tmName);
     await tmFlow.createFromDashboard(tmName);
     await expect(tmEdit.tmName()).toHaveText(tmName);
 
@@ -64,11 +71,6 @@ userTest.describe('Navigation & Routing (User)', () => {
     await userPage.goForward();
     await userPage.waitForURL(/\/tm\/[a-f0-9-]+/, { timeout: 10000 });
     await expect(tmEdit.tmName()).toHaveText(tmName);
-
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    await tmFlow.deleteFromDashboard(tmName);
   });
 
   userTest('navbar shows dashboard and intake links', async ({ userPage }) => {

@@ -58,11 +58,15 @@ export class ThreatModelFlow {
    * point unrelated specs start failing in ways that look like product bugs.
    * A local run reached 78 leaked TMs against 3 real ones before this was
    * caught. Callers that genuinely want best-effort cleanup should catch.
+   *
+   * With `missingOk`, finding no threat model by that name is success: use it
+   * in after-hooks and `finally` blocks, where the test may have failed before
+   * the threat model was created.
    */
   // SEM@13b76c5ab4901ec8f70a703f94076e186a33c951: delete a threat model by name using the authenticated browser fetch API
-  async deleteByNameViaApi(name: string): Promise<void> {
+  async deleteByNameViaApi(name: string, options: { missingOk?: boolean } = {}): Promise<void> {
     const result = await this.page.evaluate(
-      async ({ tmName, apiUrl }: { tmName: string; apiUrl: string }) => {
+      async ({ tmName, apiUrl, missingOk }: { tmName: string; apiUrl: string; missingOk: boolean }) => {
         const listResp = await fetch(
           `${apiUrl}/threat_models?limit=100&name=${encodeURIComponent(tmName)}`,
           { credentials: 'include' },
@@ -73,7 +77,9 @@ export class ThreatModelFlow {
         const list = (await listResp.json()) as { threat_models?: { id: string; name: string }[] };
         const matches = (list.threat_models || []).filter(tm => tm.name === tmName);
         if (matches.length === 0) {
-          return { ok: false, reason: 'no threat model matched the name' };
+          return missingOk
+            ? { ok: true, reason: '' }
+            : { ok: false, reason: 'no threat model matched the name' };
         }
         for (const tm of matches) {
           const delResp = await fetch(`${apiUrl}/threat_models/${tm.id}`, {
@@ -86,7 +92,7 @@ export class ThreatModelFlow {
         }
         return { ok: true, reason: '' };
       },
-      { tmName: name, apiUrl: testConfig.apiUrl },
+      { tmName: name, apiUrl: testConfig.apiUrl, missingOk: options.missingOk ?? false },
     );
 
     if (!result.ok) {

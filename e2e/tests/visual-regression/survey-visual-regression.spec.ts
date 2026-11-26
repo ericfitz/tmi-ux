@@ -4,7 +4,7 @@ import { takeThemeScreenshots, DATE_TEXT } from '../../helpers/screenshot';
 import { SurveyListPage } from '../../pages/survey-list.page';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
 import { SurveyResponseFlow } from '../../flows/survey-response.flow';
-import { deleteDraftViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
+import { deleteSurveyResponseViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 /** The seeded submitted response (seed-spec.json survey_responses[0]). */
 const SEEDED_RESPONSE_SURVEY = 'Simple Workflow Survey';
@@ -30,7 +30,7 @@ userTest.describe('Survey Visual Regression (User)', () => {
     if (!draftId) return;
     const id = draftId;
     draftId = undefined;
-    await deleteDraftViaApi(userPage, id);
+    await deleteSurveyResponseViaApi(userPage, id);
   });
 
   userTest('survey list', async ({ userPage }) => {

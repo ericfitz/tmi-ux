@@ -7,6 +7,7 @@ import { TriageDetailFlow } from '../../flows/triage-detail.flow';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { TriageDetailPage } from '../../pages/triage-detail.page';
 import { testConfig } from '../../config/test.config';
+import { deleteSurveyResponseViaApi } from '../../helpers/survey-drafts';
 import {
   buildHostileMarkdownCases,
   hostileMarkdownContent,
@@ -175,22 +176,6 @@ async function seedSubmittedResponse(page: Page): Promise<string> {
   }, apiUrl);
 }
 
-/** Deletes a seeded survey response and asserts the delete succeeded. */
-async function deleteResponseViaApi(page: Page, id: string): Promise<void> {
-  const apiUrl = testConfig.apiUrl;
-  const ok = await page.evaluate(
-    async ({ api, responseId }) => {
-      const res = await fetch(`${api}/intake/survey_responses/${responseId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      return res.ok || res.status === 404;
-    },
-    { api: apiUrl, responseId: id },
-  );
-  expect(ok, `cleanup: failed to delete seeded survey response ${id}`).toBe(true);
-}
-
 reviewerTest.describe('Markdown sanitization — triage note', () => {
   reviewerTest.setTimeout(60000);
 
@@ -200,7 +185,7 @@ reviewerTest.describe('Markdown sanitization — triage note', () => {
     if (!responseId) return;
     const id = responseId;
     responseId = undefined;
-    await deleteResponseViaApi(reviewerPage, id);
+    await deleteSurveyResponseViaApi(reviewerPage, id);
   });
 
   reviewerTest(

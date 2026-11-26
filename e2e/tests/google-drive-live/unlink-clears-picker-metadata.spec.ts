@@ -23,6 +23,17 @@ const config = loadGoogleDriveConfig();
 userTest.describe('Google Drive — unlink clears picker metadata cascade', () => {
   userTest.skip(!config, GOOGLE_DRIVE_SKIP_REASON);
 
+  // Threat models this test created. Deleted in a hook rather than the test's
+  // `finally`, so a cleanup failure cannot replace the test's own error.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('document access_status reverts to unknown after unlink', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const tmName = `E2E Unlink Cascade ${Date.now()}`;
@@ -59,6 +70,7 @@ userTest.describe('Google Drive — unlink clears picker metadata cascade', () =
       await userPage.waitForLoadState('networkidle');
 
       // Create TM and add a picker-attached document.
+      createdTms.push(tmName);
       await tmFlow.createFromDashboard(tmName);
       await sourceFlow.openCreateAndSelectSource('google_workspace');
       console.log(
@@ -114,7 +126,6 @@ userTest.describe('Google Drive — unlink clears picker metadata cascade', () =
     } finally {
       await userPage.goto('/dashboard').catch(() => undefined);
       await userPage.waitForLoadState('networkidle').catch(() => undefined);
-      await tmFlow.deleteFromDashboard(tmName).catch(() => undefined);
       await revokeToken();
     }
   });

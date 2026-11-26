@@ -15,6 +15,16 @@ import { contentProviderSkipReason, serverHasContentProvider } from '../../helpe
 userTest.describe('Google Drive — unlinked user shows link prompt', () => {
   userTest.setTimeout(60000);
 
+  // Threat models this test created; deleted after each test, even on failure.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('shows link prompt when no google_workspace token', async ({ userPage }) => {
     userTest.skip(
       !(await serverHasContentProvider('google_workspace')),
@@ -36,6 +46,7 @@ userTest.describe('Google Drive — unlinked user shows link prompt', () => {
     const editor = new DocumentEditorDialog(userPage);
     const tmName = `E2E GDrive Unlinked Prompt ${Date.now()}`;
 
+    createdTms.push(tmName);
     await tmFlow.createFromDashboard(tmName);
 
     // The radio only renders if the picker provider registry includes
@@ -51,9 +62,5 @@ userTest.describe('Google Drive — unlinked user shows link prompt', () => {
 
     await editor.cancel();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 5000 });
-
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    await tmFlow.deleteFromDashboard(tmName).catch(() => undefined);
   });
 });

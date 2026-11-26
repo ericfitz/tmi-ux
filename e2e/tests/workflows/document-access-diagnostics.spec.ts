@@ -21,6 +21,16 @@ import { contentProviderSkipReason, serverHasContentProvider } from '../../helpe
 userTest.describe('Document access diagnostics panel', () => {
   userTest.setTimeout(120000);
 
+  // Threat models this test created; deleted after each test, even on failure.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('renders diagnostics + remediation for unreachable Drive URL', async ({ userPage }) => {
     userTest.skip(!(await serverHasContentProvider('google_drive')), contentProviderSkipReason('google_drive'));
     const tmFlow = new ThreatModelFlow(userPage);
@@ -32,6 +42,7 @@ userTest.describe('Document access diagnostics panel', () => {
     // resolve to a 404 from Drive's metadata API.
     const bogusUri = `https://docs.google.com/document/d/E2ETEST${Date.now()}NONEXISTENT/edit`;
 
+    createdTms.push(tmName);
     await tmFlow.createFromDashboard(tmName);
 
     // Create the document via the dialog. Wait for the POST so the server
@@ -65,10 +76,5 @@ userTest.describe('Document access diagnostics panel', () => {
 
     await editor.cancel();
     await userPage.locator('mat-dialog-container').waitFor({ state: 'hidden', timeout: 5000 });
-
-    // Cleanup
-    await userPage.goto('/dashboard');
-    await userPage.waitForLoadState('networkidle');
-    await tmFlow.deleteFromDashboard(tmName).catch(() => undefined);
   });
 });

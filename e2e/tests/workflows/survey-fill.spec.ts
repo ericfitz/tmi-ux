@@ -6,6 +6,7 @@ import { SurveyListPage } from '../../pages/survey-list.page';
 import { SurveyFillPage } from '../../pages/survey-fill.page';
 import { MyResponsesPage } from '../../pages/my-responses.page';
 import { testConfig } from '../../config/test.config';
+import { deleteSurveyResponseViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 const SIMPLE_WORKFLOW_JSON = {
   title: 'Quick Security Review Request',
@@ -231,6 +232,10 @@ test.describe.serial('Survey Fill Workflows', () => {
   let surveyFill: SurveyFillPage;
   let myResponses: MyResponsesPage;
 
+  // Responses (submitted and draft) this suite creates. Later tests read them
+  // from my-responses, so they are deleted once, after the whole suite.
+  const createdResponseIds: string[] = [];
+
   test.beforeAll(async ({ browser }, testInfo) => {
     testInfo.setTimeout(60000);
 
@@ -248,7 +253,17 @@ test.describe.serial('Survey Fill Workflows', () => {
   });
 
   test.afterAll(async () => {
-    await context.close();
+    try {
+      const failures: string[] = [];
+      for (const id of createdResponseIds.splice(0)) {
+        await deleteSurveyResponseViaApi(page, id).catch((error: unknown) => {
+          failures.push(String(error));
+        });
+      }
+      expect(failures, 'cleanup: survey responses not deleted').toEqual([]);
+    } finally {
+      await context.close();
+    }
   });
 
   test('survey list shows active surveys', async () => {
@@ -265,6 +280,7 @@ test.describe.serial('Survey Fill Workflows', () => {
     await page.waitForLoadState('networkidle');
 
     await fillFlow.startSurvey('Simple Workflow Survey');
+    createdResponseIds.push(draftIdFromFillUrl(page.url()));
 
     // Fill all fields on the single page
     await fillFlow.fillTextField('system_name', `E2E Test System ${Date.now()}`);
@@ -284,6 +300,7 @@ test.describe.serial('Survey Fill Workflows', () => {
     await page.waitForLoadState('networkidle');
 
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    createdResponseIds.push(draftIdFromFillUrl(page.url()));
 
     // Page 1: Basic Inputs
     await fillFlow.fillTextField('project_name', `KS Project ${Date.now()}`);
@@ -341,6 +358,7 @@ test.describe.serial('Survey Fill Workflows', () => {
     await page.waitForLoadState('networkidle');
 
     await fillFlow.startSurvey('Simple Workflow Survey');
+    createdResponseIds.push(draftIdFromFillUrl(page.url()));
 
     // Fill partially
     const partialName = `Draft Test ${Date.now()}`;
