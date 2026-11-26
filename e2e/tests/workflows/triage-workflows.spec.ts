@@ -7,6 +7,8 @@ import { TriagePage } from '../../pages/triage.page';
 import { TriageDetailPage } from '../../pages/triage-detail.page';
 import { ReviewerAssignmentPage } from '../../pages/reviewer-assignment.page';
 import { testConfig } from '../../config/test.config';
+import { ThreatModelFlow } from '../../flows/threat-model.flow';
+import { deleteSurveyResponseViaApi } from '../../helpers/survey-drafts';
 
 interface SeededResponse {
   id: string;
@@ -199,6 +201,11 @@ test.describe.serial('Triage Workflows', () => {
   // exclude — their ids aren't otherwise referenced.
   let seedSubmitted: SeededResponse;
 
+  // Everything the suite creates, deleted once after the whole suite (the
+  // serial tests share the seeded responses).
+  const createdResponseIds: string[] = [];
+  const createdTmNames: string[] = [];
+
   test.beforeAll(async ({ browser }, testInfo) => {
     testInfo.setTimeout(60000);
     context = await browser.newContext();
@@ -224,11 +231,13 @@ test.describe.serial('Triage Workflows', () => {
         urgency: 'medium',
       },
     });
-    await seedSurveyResponse(page, apiUrl, {
+    createdResponseIds.push(seedSubmitted.id);
+    const kitchenSink = await seedSurveyResponse(page, apiUrl, {
       surveyName: 'Kitchen Sink Survey',
       answers: { project_name: `E2E Triage Seed Kitchen Sink ${seedSuffix}` },
     });
-    await seedSurveyResponse(page, apiUrl, {
+    createdResponseIds.push(kitchenSink.id);
+    const revision = await seedSurveyResponse(page, apiUrl, {
       surveyName: 'Simple Workflow Survey',
       answers: {
         system_name: `E2E Triage Seed Revision ${seedSuffix}`,
@@ -237,10 +246,27 @@ test.describe.serial('Triage Workflows', () => {
       },
       status: 'needs_revision',
     });
+    createdResponseIds.push(revision.id);
   });
 
   test.afterAll(async () => {
-    await context.close();
+    try {
+      const failures: string[] = [];
+      for (const id of createdResponseIds.splice(0)) {
+        await deleteSurveyResponseViaApi(page, id).catch((error: unknown) => {
+          failures.push(String(error));
+        });
+      }
+      const tmFlow = new ThreatModelFlow(page);
+      for (const name of createdTmNames.splice(0)) {
+        await tmFlow.deleteByNameViaApi(name, { missingOk: true }).catch((error: unknown) => {
+          failures.push(String(error));
+        });
+      }
+      expect(failures, 'cleanup: triage seed data not deleted').toEqual([]);
+    } finally {
+      await context.close();
+    }
   });
 
   test('triage list filters', async () => {
@@ -358,6 +384,7 @@ test.describe.serial('Triage Workflows', () => {
     // Seed a threat model with no reviewer assigned and status != closed, so
     // the Unassigned Reviews tab always has a deterministic row to act on.
     const tmName = `E2E Assignment Seed ${Date.now()}`;
+    createdTmNames.push(tmName);
     const tmId = await createUnassignedThreatModel(page, apiUrl, tmName);
 
     await page.goto('/triage');

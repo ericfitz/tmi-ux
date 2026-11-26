@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { userTest } from '../../fixtures/auth-fixtures';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
+import { deleteSurveyResponseViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 /**
  * Tests that each SurveyJS question type renders correctly and accepts input.
@@ -8,6 +9,16 @@ import { SurveyFillFlow } from '../../flows/survey-fill.flow';
  */
 userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => {
   userTest.setTimeout(60000);
+
+  // Each test starts the survey, which creates a draft; delete it even on failure.
+  let draftId: string | undefined;
+
+  userTest.afterEach(async ({ userPage }) => {
+    if (!draftId) return;
+    const id = draftId;
+    draftId = undefined;
+    await deleteSurveyResponseViaApi(userPage, id);
+  });
 
   /**
    * Advance `pages` pages past the first one.
@@ -30,6 +41,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
 
     const input = userPage.locator(
       '.sd-question[data-name="project_name"] input'
@@ -44,6 +56,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
 
     const textarea = userPage.locator(
       '.sd-question[data-name="project_description"] textarea'
@@ -58,6 +71,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
 
     // Assert on the rendered question, not on `.sd-boolean__switch`: that is
     // the decorative track, present in the DOM but never visible, so the
@@ -86,6 +100,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
     await advancePages(fillFlow, 1); // Page 2: Selection Inputs
 
     const question = userPage.locator(
@@ -104,6 +119,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
     await advancePages(fillFlow, 1); // Page 2
 
     const question = userPage.locator(
@@ -121,6 +137,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
     await advancePages(fillFlow, 1); // Page 2
 
     const question = userPage.locator(
@@ -135,6 +152,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
     await advancePages(fillFlow, 3); // Page 4: Grouped Inputs
 
     // Panel should render with its child inputs
@@ -151,6 +169,7 @@ userTest.describe('Survey Fill Field Coverage (SurveyJS Question Types)', () => 
     await userPage.waitForLoadState('networkidle');
     const fillFlow = new SurveyFillFlow(userPage);
     await fillFlow.startSurvey('Kitchen Sink Survey');
+    draftId = draftIdFromFillUrl(userPage.url());
     await advancePages(fillFlow, 3); // Page 4: Grouped Inputs
 
     // paneldynamic should show the first panel with template fields

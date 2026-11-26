@@ -13,6 +13,7 @@ import { TriageDetailPage } from '../../pages/triage-detail.page';
 import { MyResponsesPage } from '../../pages/my-responses.page';
 import { SurveyListPage } from '../../pages/survey-list.page';
 import { testConfig } from '../../config/test.config';
+import { forceDeleteSurveyByNameViaApi } from '../../helpers/survey-drafts';
 
 /**
  * Look up the survey response this run created by its (uniquely timestamped)
@@ -92,18 +93,18 @@ test.describe.serial('Survey Cross-Role Lifecycle', () => {
   });
 
   test.afterAll(async () => {
-    // Best-effort cleanup: delete the test survey
+    // Force-delete the survey with its response: a plain delete is refused
+    // while the survey has responses.
     try {
-      const adminFlow = new SurveyAdminFlow(adminPage);
-      await adminPage.goto('/admin/surveys');
-      await adminPage.waitForLoadState('networkidle');
-      await adminFlow.deleteSurvey(crossRoleSurveyName);
-    } catch {
-      /* best effort */
+      // Undefined only when beforeAll failed before the admin page existed.
+      if (adminPage) {
+        await forceDeleteSurveyByNameViaApi(adminPage, crossRoleSurveyName);
+      }
+    } finally {
+      await adminContext?.close();
+      await userContext?.close();
+      await reviewerContext?.close();
     }
-    await adminContext.close();
-    await userContext.close();
-    await reviewerContext.close();
   });
 
   test('full cross-role lifecycle', async () => {

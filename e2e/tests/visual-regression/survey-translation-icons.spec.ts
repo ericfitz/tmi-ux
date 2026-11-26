@@ -3,7 +3,7 @@ import { assertNoMissingTranslations } from '../../helpers/translation-scanner';
 import { assertIconsRendered } from '../../helpers/icon-checker';
 import { SurveyListPage } from '../../pages/survey-list.page';
 import { SurveyFillFlow } from '../../flows/survey-fill.flow';
-import { deleteDraftViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
+import { deleteSurveyResponseViaApi, draftIdFromFillUrl } from '../../helpers/survey-drafts';
 
 userTest.describe('Survey Translation & Icon Integrity (User)', () => {
   userTest.setTimeout(30000);
@@ -16,7 +16,7 @@ userTest.describe('Survey Translation & Icon Integrity (User)', () => {
     if (!draftId) return;
     const id = draftId;
     draftId = undefined;
-    await deleteDraftViaApi(userPage, id);
+    await deleteSurveyResponseViaApi(userPage, id);
   });
 
   userTest('survey list', async ({ userPage }) => {

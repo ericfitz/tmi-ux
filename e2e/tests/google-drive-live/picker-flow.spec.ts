@@ -24,6 +24,17 @@ const config = loadGoogleDriveConfig();
 userTest.describe('Google Drive — picker flow attaches with picker_registration', () => {
   userTest.skip(!config, GOOGLE_DRIVE_SKIP_REASON);
 
+  // Threat models this test created. Deleted in a hook rather than the test's
+  // `finally`, so a cleanup failure cannot replace the test's own error.
+  const createdTms: string[] = [];
+
+  userTest.afterEach(async ({ userPage }) => {
+    const tmFlow = new ThreatModelFlow(userPage);
+    for (const name of createdTms.splice(0)) {
+      await tmFlow.deleteByNameViaApi(name, { missingOk: true });
+    }
+  });
+
   userTest('captures picker_registration in document POST', async ({ userPage }) => {
     const tmFlow = new ThreatModelFlow(userPage);
     const tmName = `E2E Picker Flow ${Date.now()}`;
@@ -60,6 +71,7 @@ userTest.describe('Google Drive — picker flow attaches with picker_registratio
       await userPage.waitForLoadState('networkidle');
 
       // Create TM and open Add Document dialog with Google Drive selected.
+      createdTms.push(tmName);
       await tmFlow.createFromDashboard(tmName);
       await sourceFlow.openCreateAndSelectSource('google_workspace');
 
@@ -101,7 +113,6 @@ userTest.describe('Google Drive — picker flow attaches with picker_registratio
     } finally {
       await userPage.goto('/dashboard').catch(() => undefined);
       await userPage.waitForLoadState('networkidle').catch(() => undefined);
-      await tmFlow.deleteFromDashboard(tmName).catch(() => undefined);
       await revokeToken();
     }
   });
