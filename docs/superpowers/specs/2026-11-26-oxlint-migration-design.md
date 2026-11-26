@@ -74,6 +74,11 @@ build).
 - `no-restricted-imports` `group` patterns end in `/**`, not `/*`: Oxlint's `/*` matches exactly one
   path segment, whereas ESLint's gitignore-style `/*` matched any depth (`../../pages/tm/...` was
   reported). With `/*` the core-to-pages rule would have been inert. Fixtures cover deep imports.
+- Rule options are explicit: every option ESLint resolved for the recommended rules (for example
+  `no-cond-assign: except-parens`, `no-shadow-restricted-names.reportGlobalThis`,
+  `no-irregular-whitespace.skipStrings`) is written into `.oxlintrc.json`. Oxlint validates options
+  and rejects unknown fields, so a mismatch fails loudly. The only option Oxlint lacks is
+  `preserve-caught-error.errorClassNames`, which ESLint resolved to an empty list (no effect).
 - Oxlint also applies `no-restricted-imports` to dynamic `import()`; ESLint did not. No current
   source hits it.
 - Oxlint honors `.gitignore`, so the git-ignored `src/environments/environment.local.ts` is no longer

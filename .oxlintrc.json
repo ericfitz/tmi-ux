@@ -25,42 +25,109 @@
     "no-async-promise-executor": "error",
     "no-case-declarations": "error",
     "no-compare-neg-zero": "error",
-    "no-cond-assign": "error",
+    "no-cond-assign": ["error", "except-parens"],
     "no-console": [
       "warn",
       {
         "allow": ["debug", "info", "warn", "error"]
       }
     ],
-    "no-constant-binary-expression": "error",
-    "no-constant-condition": "error",
+    "no-constant-binary-expression": [
+      "error",
+      {
+        "checkRelationalComparisons": false
+      }
+    ],
+    "no-constant-condition": [
+      "error",
+      {
+        "checkLoops": "allExceptWhileTrue"
+      }
+    ],
     "no-control-regex": "error",
     "no-debugger": "error",
     "no-delete-var": "error",
     "no-dupe-else-if": "error",
     "no-duplicate-case": "error",
-    "no-empty": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": false
+      }
+    ],
     "no-empty-character-class": "error",
-    "no-empty-pattern": "error",
+    "no-empty-pattern": [
+      "error",
+      {
+        "allowObjectPatternsAsParameters": false
+      }
+    ],
     "no-empty-static-block": "error",
     "no-ex-assign": "error",
-    "no-extra-boolean-cast": "error",
-    "no-fallthrough": "error",
-    "no-global-assign": "error",
-    "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "error",
+    "no-extra-boolean-cast": ["error", {}],
+    "no-fallthrough": [
+      "error",
+      {
+        "allowEmptyCase": false,
+        "reportUnusedFallthroughComment": false
+      }
+    ],
+    "no-global-assign": [
+      "error",
+      {
+        "exceptions": []
+      }
+    ],
+    "no-invalid-regexp": ["error", {}],
+    "no-irregular-whitespace": [
+      "error",
+      {
+        "skipComments": false,
+        "skipJSXText": false,
+        "skipRegExps": false,
+        "skipStrings": true,
+        "skipTemplates": false
+      }
+    ],
     "no-loss-of-precision": "error",
-    "no-misleading-character-class": "error",
+    "no-misleading-character-class": [
+      "error",
+      {
+        "allowEscape": false
+      }
+    ],
     "no-nonoctal-decimal-escape": "error",
     "no-prototype-builtins": "error",
     "no-regex-spaces": "error",
-    "no-self-assign": "error",
-    "no-shadow-restricted-names": "error",
+    "no-self-assign": [
+      "error",
+      {
+        "props": true
+      }
+    ],
+    "no-shadow-restricted-names": [
+      "error",
+      {
+        "reportGlobalThis": true
+      }
+    ],
     "no-sparse-arrays": "error",
     "no-unassigned-vars": "error",
     "no-unsafe-finally": "error",
-    "no-unsafe-optional-chaining": "error",
-    "no-unused-expressions": "error",
+    "no-unsafe-optional-chaining": [
+      "error",
+      {
+        "disallowArithmeticOperators": false
+      }
+    ],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTaggedTemplates": false,
+        "allowTernary": false
+      }
+    ],
     "no-unused-labels": "error",
     "no-unused-private-class-members": "error",
     "no-unused-vars": [
@@ -78,12 +145,28 @@
     "no-useless-assignment": "error",
     "no-useless-backreference": "error",
     "no-useless-catch": "error",
-    "no-useless-escape": "error",
+    "no-useless-escape": [
+      "error",
+      {
+        "allowRegexCharacters": []
+      }
+    ],
     "no-var": "error",
-    "prefer-const": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
     "prefer-rest-params": "error",
     "prefer-spread": "error",
-    "preserve-caught-error": "error",
+    "preserve-caught-error": [
+      "error",
+      {
+        "requireCatchParameter": false
+      }
+    ],
     "require-yield": "error",
     "typescript/await-thenable": "error",
     "typescript/ban-ts-comment": "error",
@@ -136,8 +219,19 @@
         "ignoreStatic": true
       }
     ],
-    "use-isnan": "error",
-    "valid-typeof": "error",
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true
+      }
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false
+      }
+    ],
     "no-restricted-imports": [
       "error",
       {
