@@ -15,7 +15,7 @@ You are a senior engineer collaborating with a peer: a highly experienced securi
 **Any file change:**
 
 1. Run `pnpm run lint:all` and fix issues (formatting is handled by a PostToolUse hook)
-2. Done gate: `pnpm run verify` (build, both tsc projects, prettier, eslint/stylelint/i18n checks, JSON validators, Vitest; mirrors `.github/workflows/quality.yml`). Show its last lines before claiming done. Playwright (`pnpm test:e2e*`) and `build:aws` are separate; the build step inlines Google Fonts and needs network.
+2. Done gate: `pnpm run verify` (build, both tsc projects, prettier, oxlint (+ rule self-test)/stylelint/i18n checks, JSON validators, Vitest; mirrors `.github/workflows/quality.yml`). Show its last lines before claiming done. Playwright (`pnpm test:e2e*`) and `build:aws` are separate; the build step inlines Google Fonts and needs network.
 3. Commit with a conventional message (`feat:`, `fix:`, `chore:`, `refactor:`, ...). Do not run `git diff` or `git log` first; commit directly based on the work done.
 
 **Code changes, additionally:**
@@ -62,7 +62,7 @@ Sibling repos (notably the `tmi` server) are registered in `.local/repos.json`; 
 
 ## Development commands
 
-**Always use the pnpm scripts in `package.json`** for build, test, lint, format, and deploy; never hand-craft `ng`/`vitest`/`playwright`/`eslint` command lines. The scripts encode required configurations, pre/post steps, env vars, ordering, and generated inputs; bespoke commands fail in ways the real script wouldn't. If no script fits, add one. Run from the project root.
+**Always use the pnpm scripts in `package.json`** for build, test, lint, format, and deploy; never hand-craft `ng`/`vitest`/`playwright`/`oxlint` command lines. The scripts encode required configurations, pre/post steps, env vars, ordering, and generated inputs; bespoke commands fail in ways the real script wouldn't. If no script fits, add one. Run from the project root.
 
 ## Architecture
 

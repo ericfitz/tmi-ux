@@ -227,7 +227,7 @@ export class FormValidationService {
 
       // Check for obviously invalid patterns
       // Control characters (except tab, newline which shouldn't be in URIs anyway)
-      // eslint-disable-next-line no-control-regex
+      // oxlint-disable-next-line no-control-regex
       if (/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/.test(trimmedValue)) {
         return {
           uriSuggestion: {

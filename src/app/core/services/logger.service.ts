@@ -296,7 +296,7 @@ export class LoggerService {
   // SEM@ae1386fd5b08be51a49de3b138a087530606aee2: strip control characters from a string to prevent log injection (pure)
   private sanitizeForLog(input: string): string {
     // Remove ASCII control characters (0x00-0x1F and 0x7F) to prevent log injection
-    // eslint-disable-next-line no-control-regex
+    // oxlint-disable-next-line no-control-regex
     return input.replace(/[\u0000-\u001F\u007F]/g, '');
   }
 
@@ -363,7 +363,7 @@ export class LoggerService {
   // SEM@59f5d93b4f1834723d1c668f5cbd4d3b1220f954: sanitize and redact sensitive credentials from any log parameter (pure)
   private redactSensitiveData(param: unknown): unknown {
     if (typeof param === 'string') {
-      // eslint-disable-next-line no-control-regex
+      // oxlint-disable-next-line no-control-regex
       const sanitized = param.replace(/[\u0000-\u001F\u007F]/g, '');
       if (sanitized.startsWith('http://') || sanitized.startsWith('https://')) {
         return this.redactUrl(sanitized);
