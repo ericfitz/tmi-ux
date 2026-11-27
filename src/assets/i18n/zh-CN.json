@@ -722,10 +722,13 @@
       "connectionFailed": "无法连接到 Timmy。请检查您的网络连接后重试。",
       "generic": "出错了。",
       "interrupted": "响应已中断。请重新发送您的消息。",
+      "messageFailed": "Timmy 无法生成回复。请尝试重新发送您的消息。",
       "notAcceptable": "由于服务器配置问题，Timmy 暂时不可用。",
       "notEnabled": "此威胁模型未启用 Timmy。",
       "rateLimited": "消息限制已达到。请在 {{minutes}} 分钟后重试。",
-      "serverBusy": "服务器繁忙。请稍后重试。"
+      "serverBusy": "服务器繁忙。请稍后重试。",
+      "serverError": "Timmy 遇到服务器错误。请稍后重试。",
+      "sessionCreationFailed": "Timmy 无法启动聊天会话。请重试。"
     },
     "hideSidePanel": "隐藏边侧面板",
     "inputPlaceholder": "向 Timmy 咨询有关此威胁模型的信息...",

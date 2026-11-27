@@ -722,10 +722,13 @@
       "connectionFailed": "Timmy에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.",
       "generic": "문제가 발생했습니다.",
       "interrupted": "응답이 중단되었습니다. 메시지를 다시 보내세요.",
+      "messageFailed": "Timmy가 응답을 생성하지 못했습니다. 메시지를 다시 보내 보세요.",
       "notAcceptable": "서버 구성 문제로 인해 Timmy를 일시적으로 사용할 수 없습니다.",
       "notEnabled": "이 위협 모델에서는 Timmy가 활성화되어 있지 않습니다.",
       "rateLimited": "메시지 제한에 도달했습니다. {{minutes}}분 후에 다시 시도하세요.",
-      "serverBusy": "서버가 바쁩니다. 잠시 후에 다시 시도하세요."
+      "serverBusy": "서버가 바쁩니다. 잠시 후에 다시 시도하세요.",
+      "serverError": "Timmy에서 서버 오류가 발생했습니다. 나중에 다시 시도하세요.",
+      "sessionCreationFailed": "Timmy가 채팅 세션을 시작하지 못했습니다. 다시 시도하세요."
     },
     "hideSidePanel": "사이드 패널 숨기기",
     "inputPlaceholder": "이 위협 모델에 대해 Timmy에게 물어보세요...",

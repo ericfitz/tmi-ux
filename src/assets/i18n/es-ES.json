@@ -722,10 +722,13 @@
       "connectionFailed": "No se pudo conectar con Timmy. Comprueba tu conexión e inténtalo de nuevo.",
       "generic": "Algo salió mal.",
       "interrupted": "Respuesta interrumpida. Intenta enviar tu mensaje de nuevo.",
+      "messageFailed": "Timmy no pudo generar una respuesta. Intenta enviar tu mensaje de nuevo.",
       "notAcceptable": "Timmy no está disponible temporalmente debido a un problema de configuración del servidor.",
       "notEnabled": "Timmy no está habilitado para este modelo de amenazas.",
       "rateLimited": "Límite de mensajes alcanzado. Inténtalo de nuevo en {{minutes}} minutos.",
-      "serverBusy": "El servidor está ocupado. Inténtalo de nuevo en un momento."
+      "serverBusy": "El servidor está ocupado. Inténtalo de nuevo en un momento.",
+      "serverError": "Timmy encontró un error del servidor. Inténtalo de nuevo más tarde.",
+      "sessionCreationFailed": "Timmy no pudo iniciar la sesión de chat. Inténtalo de nuevo."
     },
     "hideSidePanel": "Ocultar panel lateral",
     "inputPlaceholder": "Pregunta a Timmy sobre este modelo de amenazas...",

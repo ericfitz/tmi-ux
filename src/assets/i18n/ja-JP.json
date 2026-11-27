@@ -722,10 +722,13 @@
       "connectionFailed": "Timmyに接続できませんでした。接続を確認してもう一度お試しください。",
       "generic": "問題が発生しました。",
       "interrupted": "応答が中断されました。メッセージを再度送信してください。",
+      "messageFailed": "Timmyは応答を生成できませんでした。メッセージをもう一度送信してください。",
       "notAcceptable": "サーバー設定の問題により、Timmyは一時的に利用できません。",
       "notEnabled": "この脅威モデルではTimmyが有効になっていません。",
       "rateLimited": "メッセージの上限に達しました。{{minutes}}分後にお試しください。",
-      "serverBusy": "サーバーが混雑しています。しばらくしてからお試しください。"
+      "serverBusy": "サーバーが混雑しています。しばらくしてからお試しください。",
+      "serverError": "Timmyでサーバーエラーが発生しました。しばらくしてからお試しください。",
+      "sessionCreationFailed": "Timmyはチャットセッションを開始できませんでした。もう一度お試しください。"
     },
     "hideSidePanel": "サイドパネルを非表示",
     "inputPlaceholder": "Timmyにこの脅威モデルについて質問してください...",

@@ -854,10 +854,13 @@
       "connectionFailed": "Could not connect to Timmy. Check your connection and try again.",
       "generic": "Something went wrong.",
       "interrupted": "Response interrupted. Try sending your message again.",
+      "messageFailed": "Timmy could not generate a response. Try sending your message again.",
       "notAcceptable": "Timmy is temporarily unavailable due to a server configuration issue.",
       "notEnabled": "Timmy is not enabled for this threat model.",
       "rateLimited": "Message limit reached. Try again in {{minutes}} minutes.",
-      "serverBusy": "Server is busy. Try again in a moment."
+      "serverBusy": "Server is busy. Try again in a moment.",
+      "serverError": "Timmy encountered a server error. Try again later.",
+      "sessionCreationFailed": "Timmy could not start the chat session. Try again."
     },
     "hideSidePanel": "Hide side panel",
     "hideSidePanel.comment": "Action description on a tooltip (typically for an icon button): 'Hide side panel'.",
