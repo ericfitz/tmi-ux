@@ -246,14 +246,14 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
       isCompleted: false,
     };
 
-    /* eslint-disable @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any */
+    /* oxlint-disable typescript/no-unsafe-argument -- SurveyJS Model.data is typed as any */
     this.draftService.queueSave(
       this.responseId,
       this.surveyModel.data,
       uiState,
       this.response?.survey_id,
     );
-    /* eslint-enable @typescript-eslint/no-unsafe-argument */
+    /* oxlint-enable typescript/no-unsafe-argument */
   }
 
   /**
@@ -274,7 +274,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
     // Save immediately, then submit
     this.draftService
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
+      // oxlint-disable-next-line typescript/no-unsafe-argument -- SurveyJS Model.data is typed as any
       .saveNow(this.responseId, this.surveyModel.data, uiState, this.response?.survey_id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -327,7 +327,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     };
 
     this.draftService
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
+      // oxlint-disable-next-line typescript/no-unsafe-argument -- SurveyJS Model.data is typed as any
       .saveNow(this.responseId, this.surveyModel.data, uiState, this.response?.survey_id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

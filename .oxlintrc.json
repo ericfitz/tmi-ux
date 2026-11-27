@@ -1,0 +1,417 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
+  "jsPlugins": ["./scripts/oxlint/tmi-plugin.mjs"],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2024": true
+  },
+  "ignorePatterns": [
+    "dist/**",
+    "node_modules/**",
+    ".angular/**",
+    "src/testing/matchers/graph-matchers.d.ts",
+    "src/app/generated/**",
+    "vitest.config.ts"
+  ],
+  "rules": {
+    "complexity": ["warn", 20],
+    "for-direction": "error",
+    "no-array-constructor": "error",
+    "no-async-promise-executor": "error",
+    "no-case-declarations": "error",
+    "no-compare-neg-zero": "error",
+    "no-cond-assign": ["error", "except-parens"],
+    "no-console": [
+      "warn",
+      {
+        "allow": ["debug", "info", "warn", "error"]
+      }
+    ],
+    "no-constant-binary-expression": [
+      "error",
+      {
+        "checkRelationalComparisons": false
+      }
+    ],
+    "no-constant-condition": [
+      "error",
+      {
+        "checkLoops": "allExceptWhileTrue"
+      }
+    ],
+    "no-control-regex": "error",
+    "no-debugger": "error",
+    "no-delete-var": "error",
+    "no-dupe-else-if": "error",
+    "no-duplicate-case": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": false
+      }
+    ],
+    "no-empty-character-class": "error",
+    "no-empty-pattern": [
+      "error",
+      {
+        "allowObjectPatternsAsParameters": false
+      }
+    ],
+    "no-empty-static-block": "error",
+    "no-ex-assign": "error",
+    "no-extra-boolean-cast": ["error", {}],
+    "no-fallthrough": [
+      "error",
+      {
+        "allowEmptyCase": false,
+        "reportUnusedFallthroughComment": false
+      }
+    ],
+    "no-global-assign": [
+      "error",
+      {
+        "exceptions": []
+      }
+    ],
+    "no-invalid-regexp": ["error", {}],
+    "no-irregular-whitespace": [
+      "error",
+      {
+        "skipComments": false,
+        "skipJSXText": false,
+        "skipRegExps": false,
+        "skipStrings": true,
+        "skipTemplates": false
+      }
+    ],
+    "no-loss-of-precision": "error",
+    "no-misleading-character-class": [
+      "error",
+      {
+        "allowEscape": false
+      }
+    ],
+    "no-nonoctal-decimal-escape": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-self-assign": [
+      "error",
+      {
+        "props": true
+      }
+    ],
+    "no-shadow-restricted-names": [
+      "error",
+      {
+        "reportGlobalThis": true
+      }
+    ],
+    "no-sparse-arrays": "error",
+    "no-unassigned-vars": "error",
+    "no-unsafe-finally": "error",
+    "no-unsafe-optional-chaining": [
+      "error",
+      {
+        "disallowArithmeticOperators": false
+      }
+    ],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTaggedTemplates": false,
+        "allowTernary": false
+      }
+    ],
+    "no-unused-labels": "error",
+    "no-unused-private-class-members": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "fix": {
+          "imports": "safe-fix",
+          "variables": "suggestion"
+        }
+      }
+    ],
+    "no-useless-assignment": "error",
+    "no-useless-backreference": "error",
+    "no-useless-catch": "error",
+    "no-useless-escape": [
+      "error",
+      {
+        "allowRegexCharacters": []
+      }
+    ],
+    "no-var": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "preserve-caught-error": [
+      "error",
+      {
+        "requireCatchParameter": false
+      }
+    ],
+    "require-yield": "error",
+    "typescript/await-thenable": "error",
+    "typescript/ban-ts-comment": "error",
+    "typescript/explicit-function-return-type": [
+      "warn",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "typescript/no-array-delete": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/no-duplicate-enum-values": "error",
+    "typescript/no-duplicate-type-constituents": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-floating-promises": "warn",
+    "typescript/no-for-in-array": "error",
+    "typescript/no-implied-eval": "error",
+    "typescript/no-misused-new": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-redundant-type-constituents": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-this-alias": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-argument": "warn",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-unsafe-call": "warn",
+    "typescript/no-unsafe-declaration-merging": "error",
+    "typescript/no-unsafe-enum-comparison": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-unsafe-member-access": "warn",
+    "typescript/no-unsafe-return": "warn",
+    "typescript/no-unsafe-unary-minus": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/only-throw-error": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-namespace-keyword": "error",
+    "typescript/prefer-promise-reject-errors": "error",
+    "typescript/require-await": "error",
+    "typescript/restrict-plus-operands": "error",
+    "typescript/restrict-template-expressions": "error",
+    "typescript/triple-slash-reference": "error",
+    "typescript/unbound-method": [
+      "warn",
+      {
+        "ignoreStatic": true
+      }
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true
+      }
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@angular/material",
+            "message": "Import specific Material modules, not the entire library."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["*.module"],
+            "message": "NgModules are deprecated. Use standalone components instead."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/app/core/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "../../pages/**",
+                  "../../auth/services/**",
+                  "../../auth/components/**",
+                  "../pages/**",
+                  "../auth/**"
+                ],
+                "message": "Core services cannot import from feature modules. Use interfaces in core/interfaces instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/app/**/domain/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@angular/core",
+                "message": "Domain layer should be pure business logic without Angular dependencies."
+              },
+              {
+                "name": "@angular/common",
+                "message": "Domain layer should be pure business logic without Angular dependencies."
+              },
+              {
+                "name": "@angular/material",
+                "message": "Domain layer should be pure business logic without Angular Material dependencies."
+              },
+              {
+                "name": "rxjs",
+                "message": "Domain layer should be pure business logic without RxJS dependencies."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@angular/material/**"],
+                "message": "Domain layer should be pure business logic without Angular Material dependencies."
+              },
+              {
+                "group": ["rxjs/**"],
+                "message": "Domain layer should be pure business logic without RxJS dependencies."
+              },
+              {
+                "group": [
+                  "../services/**",
+                  "../infrastructure/**",
+                  "../../infrastructure/**",
+                  "../application/**",
+                  "../../application/**"
+                ],
+                "message": "Domain layer should not depend on infrastructure, application, or service layers."
+              },
+              {
+                "group": ["@antv/**"],
+                "message": "Domain layer should not depend on X6 or other UI framework libraries."
+              },
+              {
+                "group": ["@jsverse/**"],
+                "message": "Domain layer should not depend on third-party framework libraries."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/app/shared/imports.ts", "src/app/app.config.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@angular/material",
+                "message": "Import specific Material modules, not the entire library."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["e2e/**/*.ts"],
+      "rules": {
+        "typescript/explicit-function-return-type": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-floating-promises": "off",
+        "typescript/unbound-method": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-call": "off",
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.spec.ts", "src/testing/**/*.ts"],
+      "rules": {
+        "tmi/no-any-cast": "error"
+      }
+    },
+    {
+      "files": ["**/*.spec.ts", "**/tests/**/*.ts", "**/testing/**/*.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "typescript/no-floating-promises": "off",
+        "typescript/unbound-method": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-call": "off"
+      }
+    },
+    {
+      "files": ["**/pages/zzz/**/*.ts"],
+      "rules": {
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-member-access": "off"
+      }
+    },
+    {
+      "files": ["**/pages/dfd/**/*.ts"],
+      "rules": {
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/explicit-function-return-type": "off"
+      }
+    },
+    {
+      "files": ["**/cvss-calculator-dialog/*.ts", "**/threat-page/threat-page.component.ts"],
+      "rules": {
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-redundant-type-constituents": "off"
+      }
+    }
+  ],
+  "options": {
+    "typeAware": true,
+    "reportUnusedDisableDirectives": "warn"
+  }
+}

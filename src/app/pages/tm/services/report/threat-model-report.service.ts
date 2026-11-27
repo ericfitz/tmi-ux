@@ -83,7 +83,7 @@ export class ThreatModelReportService {
 
       // Create PDF document
       const doc = await PDFDocument.create();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-explicit-any
       doc.registerFontkit(fontkit as any);
 
       // Set document metadata

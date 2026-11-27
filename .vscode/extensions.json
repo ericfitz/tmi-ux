@@ -2,6 +2,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
   "recommendations": [
     "angular.ng-template",
+    "oxc.oxc-vscode",
     "ms-python.python",
     "ms-python.vscode-pylance",
     "charliermarsh.ruff"

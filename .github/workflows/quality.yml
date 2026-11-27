@@ -43,6 +43,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: pnpm run lint:all:check
 
+      - name: Lint rule self-test
+        if: ${{ !cancelled() }}
+        run: pnpm run lint:rules:test
+
       - name: Typecheck e2e sources
         if: ${{ !cancelled() }}
         run: pnpm run typecheck:e2e

@@ -57,7 +57,7 @@ temp/
 **/__tests__/
 
 # Linting and formatting
-.eslintrc.*
+.oxlintrc.json
 .prettierrc.*
 .stylelintrc.*
 .editorconfig

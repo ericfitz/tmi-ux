@@ -241,8 +241,8 @@ export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, After
     if (!this.noteForm.valid) return;
 
     const result: TriageNoteEditorResult = {
-      name: (this.noteForm.get('name')?.value as string).trim(),
-      content: (this.noteForm.get('content')?.value as string).trim(),
+      name: ((this.noteForm.get('name')?.value as string | undefined) ?? '').trim(),
+      content: ((this.noteForm.get('content')?.value as string | undefined) ?? '').trim(),
     };
     this.dialogRef.close(result);
   }

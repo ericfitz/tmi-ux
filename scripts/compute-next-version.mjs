@@ -29,7 +29,7 @@ function parse(v) {
   const dash = s.indexOf('-');
   const core = dash === -1 ? s : s.slice(0, dash);
   const pre = dash === -1 ? undefined : s.slice(dash + 1);
-  const [maj, min, pat] = core.split('.').map((n) => parseInt(n, 10));
+  const [maj, min, pat] = core.split('.').map(n => parseInt(n, 10));
   return { maj, min, pat, pre };
 }
 
@@ -85,10 +85,12 @@ function runTests() {
     const got = computeNextVersion(cur, prev, bump);
     const ok = got === expected;
     if (!ok) failed++;
-    // eslint-disable-next-line no-console
-    console.log(`${ok ? 'PASS' : 'FAIL'}  ${cur} (prev ${prev}, ${bump || 'none'}) -> ${got}${ok ? '' : `  expected ${expected}`}`);
+    // oxlint-disable-next-line no-console
+    console.log(
+      `${ok ? 'PASS' : 'FAIL'}  ${cur} (prev ${prev}, ${bump || 'none'}) -> ${got}${ok ? '' : `  expected ${expected}`}`,
+    );
   }
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.log(`\n${cases.length - failed}/${cases.length} passed`);
   return failed === 0;
 }
@@ -98,10 +100,10 @@ const args = process.argv.slice(2);
 if (args[0] === '--test') {
   process.exit(runTests() ? 0 : 1);
 } else if (args.length >= 3) {
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.log(computeNextVersion(args[0], args[1], args[2]));
 } else {
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.error('usage: compute-next-version.mjs <current> <previous> <minor|patch> | --test');
   process.exit(2);
 }
