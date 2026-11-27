@@ -108,4 +108,33 @@ describe('AiArtifactFeedbackService', () => {
     const [, body] = mockApi.post.mock.calls[0];
     expect('verbatim' in body).toBe(false);
   });
+  describe('false_positive_subreason requires a matching false_positive_reason (OpenAPI 3.0.3)', () => {
+    const base = {
+      sentiment: 'down' as const,
+      targetType: 'threat' as const,
+      targetId: 'threat-1',
+    };
+
+    it('rejects a subreason without a reason and sends nothing', () => {
+      const error = vi.fn();
+      service
+        .submit('tm-1', { ...base, falsePositiveSubreason: 'needs_tuning' })
+        .subscribe({ error });
+      expect(error).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockApi.post).not.toHaveBeenCalled();
+    });
+
+    it('rejects a subreason that does not belong to the chosen reason', () => {
+      const error = vi.fn();
+      service
+        .submit('tm-1', {
+          ...base,
+          falsePositiveReason: 'out_of_scope',
+          falsePositiveSubreason: 'needs_tuning',
+        })
+        .subscribe({ error });
+      expect(error).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockApi.post).not.toHaveBeenCalled();
+    });
+  });
 });

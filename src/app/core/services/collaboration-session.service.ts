@@ -20,6 +20,7 @@ import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { WebSocketAdapter, MessageType } from './websocket.adapter';
+import type { components } from '@app/generated/api-types';
 import { User } from '@app/pages/tm/models/threat-model.model';
 
 /**
@@ -37,23 +38,12 @@ export interface CollaborationSession {
 }
 
 /**
- * Interface for server collaboration session response
+ * GET /me/sessions item (OpenAPI CollaborationSession). The server omits `host`
+ * when it has none (Go `omitempty`), although the spec marks it required.
  */
-interface ServerCollaborationSession {
-  session_id: string;
-  threat_model_id: string;
-  threat_model_name?: string;
-  diagram_id: string;
-  diagram_name?: string;
-  participants: Array<{
-    user_id: string;
-    joined_at?: string;
-    permissions?: 'reader' | 'writer';
-  }>;
-  websocket_url: string;
+type ServerCollaborationSession = Omit<components['schemas']['CollaborationSession'], 'host'> & {
   host?: User;
-  started_at?: string;
-}
+};
 
 /**
  * Interface for session started/ended WebSocket messages
@@ -273,13 +263,13 @@ export class CollaborationSessionService implements OnDestroy {
     //   serverSession,
     // );
 
-    // Create a fallback User object if host is not provided
-    const fallbackHost: User = {
+    // Without a host, show the first participant; with no participants either, a placeholder.
+    const fallbackHost: User = serverSession.participants[0]?.user ?? {
       principal_type: 'user',
       provider: 'unknown',
-      provider_id: serverSession.participants[0]?.user_id || 'unknown',
-      email: serverSession.participants[0]?.user_id || '',
-      display_name: serverSession.participants[0]?.user_id || 'Unknown',
+      provider_id: 'unknown',
+      email: '',
+      display_name: 'Unknown',
     };
 
     const session: CollaborationSession = {
@@ -290,9 +280,8 @@ export class CollaborationSessionService implements OnDestroy {
       diagramId: serverSession.diagram_id,
       diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
       host: serverSession.host || fallbackHost,
-      startedAt: new Date(
-        serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now(),
-      ),
+      // The API carries no session start time (see #1067); the fetch time stands in.
+      startedAt: new Date(),
       activeUsers: serverSession.participants.length,
     };
 

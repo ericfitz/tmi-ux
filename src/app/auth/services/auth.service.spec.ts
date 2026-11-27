@@ -23,6 +23,7 @@ import {
   AuthError,
   UserMeResponse,
   ProvidersResponse,
+  SAMLProviderInfo,
 } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
@@ -365,6 +366,22 @@ describe('AuthService', () => {
     });
   }); /* End of Service Initialization describe block */
 
+  describe('SAML Login', () => {
+    it('sends client_callback to the SAML login endpoint', () => {
+      service['initiateTMISAMLLogin']({
+        id: 'okta',
+        name: 'Okta',
+        auth_url: 'http://localhost:8080/saml/okta/login?x=1',
+      } as SAMLProviderInfo);
+
+      expect(window.location.href).toBe(
+        `http://localhost:8080/saml/okta/login?x=1&client_callback=${encodeURIComponent(
+          `${window.location.origin}/oauth2/callback`,
+        )}`,
+      );
+    });
+  });
+
   describe('OAuth Login', () => {
     it('should initiate OAuth login flow with default provider', async () => {
       // Mock crypto to return predictable values
@@ -385,7 +402,9 @@ describe('AuthService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'tmi');
       expect(window.location.href).toContain('http://localhost:8080/oauth2/authorize/tmi');
       expect(window.location.href).toContain('state=');
-      expect(window.location.href).toContain('client_callback=');
+      expect(window.location.href).toContain(
+        `client_callback=${encodeURIComponent(`${window.location.origin}/oauth2/callback`)}`,
+      );
       expect(window.location.href).toContain('scope=openid%20profile%20email');
       expect(window.location.href).toContain('code_challenge=');
       expect(window.location.href).toContain('code_challenge_method=S256');

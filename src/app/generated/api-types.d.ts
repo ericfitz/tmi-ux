@@ -6638,7 +6638,7 @@ export interface components {
        */
       url: string;
       /** @description List of event types to subscribe to */
-      events: string[];
+      events: components['schemas']['WebhookEventType'][];
       /** @description Optional HMAC secret for signing payloads (auto-generated if not provided) */
       secret?: string;
     };
@@ -7419,7 +7419,7 @@ export interface components {
       description?: string;
     };
     /**
-     * @description Webhook event type following {resource}.{action} pattern. CRUD events are emitted for resource lifecycle changes (created, updated, deleted). The addon.invoked event is emitted when an add-on is invoked.
+     * @description Webhook event type following {resource}.{action} pattern. CRUD events are emitted for resource lifecycle changes (created, updated, deleted). The addon.invoked event is emitted when an add-on is invoked. The wildcard `*` subscribes to all events (subscriptions only; a test delivery requires a concrete event type).
      * @example threat_model.created
      * @enum {string}
      */
@@ -7457,7 +7457,8 @@ export interface components {
       | 'survey_response.created'
       | 'survey_response.updated'
       | 'survey_response.deleted'
-      | 'system_audit.admin_write';
+      | 'system_audit.admin_write'
+      | '*';
     /**
      * @description Member of a group with role information
      * @example {
@@ -7580,7 +7581,7 @@ export interface components {
     AddGroupMemberRequest: {
       /**
        * Format: uuid
-       * @description Internal UUID of the user to add to the group
+       * @description Internal UUID of the user to add to the group. Required when subject_type is user (the default); the request is rejected with 400 if it is missing.
        */
       user_internal_uuid?: string;
       /** @description Optional notes about this membership */
@@ -7593,7 +7594,7 @@ export interface components {
       subject_type: 'user' | 'group';
       /**
        * Format: uuid
-       * @description Internal UUID of the group to add as a member (required when subject_type is group)
+       * @description Internal UUID of the group to add as a member. Required when subject_type is group; the request is rejected with 400 if it is missing.
        */
       member_group_internal_uuid?: string;
     };
@@ -11075,7 +11076,7 @@ export interface components {
         | 'already_remediated'
         | 'detection_rule_flawed';
       /**
-       * @description Allowed only when false_positive_reason has subreasons; must be a valid subreason for the chosen reason
+       * @description Requires false_positive_reason; a subreason without a reason is rejected with 400. Allowed only when the chosen false_positive_reason has subreasons, and must be one of that reason's subreasons: detection_misfired (code_does_not_exist, trigger_conditions_not_met), out_of_scope (component_outside_threat_model), intended_behavior (sanctioned_by_design), detection_rule_flawed (not_a_real_risk, needs_tuning).
        * @enum {string}
        */
       false_positive_subreason?:
@@ -12119,6 +12120,8 @@ export interface components {
     AuditAround: string;
     /** @description Internal system UUID of the group */
     GroupIdPathParam: string;
+    /** @description Required. Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). An OAuth login cannot complete without it, so the request is rejected with 400 when it is missing. */
+    ClientCallbackRequiredQueryParam: string;
   };
   requestBodies: never;
   headers: never;
@@ -12779,8 +12782,8 @@ export interface operations {
       query: {
         /** @description OAuth provider identifier. Defaults to 'tmi' provider in non-production builds if not specified. */
         idp?: components['parameters']['IdpQueryParam'];
-        /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
-        client_callback?: components['parameters']['ClientCallbackQueryParam'];
+        /** @description Required. Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). An OAuth login cannot complete without it, so the request is rejected with 400 when it is missing. */
+        client_callback: components['parameters']['ClientCallbackRequiredQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
         /** @description User identity hint forwarded to the provider (login_hint), so the provider knows which account to authenticate. For the TMI provider this selects the test identity: either a username (alice) or its address form (alice@tmi.local); other providers receive it as an email address or username, per their own login_hint semantics. Valid characters: letters, digits, periods, underscores, percent signs, plus signs, at signs, and hyphens. */
@@ -13289,22 +13292,33 @@ export interface operations {
         };
         content: {
           /**
-           * @example {
-           *       "sessions": [
-           *         {
-           *           "session_id": "550e8400-e29b-41d4-a716-446655440000",
-           *           "diagram_id": "550e8400-e29b-41d4-a716-446655440001",
-           *           "host_user_id": "alice@example.com",
-           *           "participants": [
-           *             "alice@example.com",
-           *             "bob@example.com"
-           *           ],
-           *           "created_at": "2026-01-17T12:00:00Z"
+           * @example [
+           *       {
+           *         "session_id": "550e8400-e29b-41d4-a716-446655440000",
+           *         "host": {
+           *           "principal_type": "user",
+           *           "provider": "tmi",
+           *           "provider_id": "alice@tmi.local",
+           *           "display_name": "Alice",
+           *           "email": "alice@tmi.local"
+           *         },
+           *         "threat_model_id": "550e8400-e29b-41d4-a716-446655440002",
+           *         "threat_model_name": "Payment Service",
+           *         "diagram_id": "550e8400-e29b-41d4-a716-446655440001",
+           *         "diagram_name": "Checkout DFD",
+           *         "participants": [],
+           *         "websocket_url": "wss://api.tmi.dev/threat_models/550e8400-e29b-41d4-a716-446655440002/diagrams/550e8400-e29b-41d4-a716-446655440001/ws",
+           *         "presenter": {
+           *           "principal_type": "user",
+           *           "provider": "tmi",
+           *           "provider_id": "alice@tmi.local",
+           *           "display_name": "Alice",
+           *           "email": "alice@tmi.local"
            *         }
-           *       ]
-           *     }
+           *       }
+           *     ]
            */
-          'application/json': Record<string, never>;
+          'application/json': components['schemas']['CollaborationSession'][];
         };
       };
       /** @description Bad Request - Invalid parameters, malformed UUIDs, or validation failures */
@@ -36725,8 +36739,8 @@ export interface operations {
   stepUpAuthenticate: {
     parameters: {
       query: {
-        /** @description Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). */
-        client_callback?: components['parameters']['ClientCallbackQueryParam'];
+        /** @description Required. Client callback URL where TMI redirects after successful authentication. For OAuth (authorization code with PKCE) the redirect carries the authorization code and state in the query string (?code=...&state=...); the client exchanges the code for tokens at POST /oauth2/token, which returns a JSON body and, when cookie delivery is enabled, also sets HttpOnly token cookies. OAuth never delivers tokens in the URL fragment. SAML login instead redirects with the tokens in the URL fragment (#access_token=...). An OAuth login cannot complete without it, so the request is rejected with 400 when it is missing. */
+        client_callback: components['parameters']['ClientCallbackRequiredQueryParam'];
         /** @description CSRF protection state parameter. Recommended for security. Will be included in the callback response. */
         state?: components['parameters']['StateQueryParam'];
         /** @description PKCE code challenge (RFC 7636) - Base64url-encoded SHA256 hash of the code_verifier. Must be 43-128 characters using unreserved characters [A-Za-z0-9-._~]. The server associates this with the authorization code for later verification during token exchange. */

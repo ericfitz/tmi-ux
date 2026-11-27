@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 import { version } from '../../../../package.json';
 import { ApiService } from './api.service';
@@ -104,6 +104,22 @@ export class AiArtifactFeedbackService {
     threatModelId: string,
     input: ArtifactFeedbackInput,
   ): Observable<ArtifactFeedbackResponse> {
+    const subreason = input.falsePositiveSubreason;
+    if (
+      subreason &&
+      !(
+        input.falsePositiveReason &&
+        FALSE_POSITIVE_TAXONOMY[input.falsePositiveReason].subreasons.includes(subreason)
+      )
+    ) {
+      return throwError(
+        () =>
+          new Error(
+            `false_positive_subreason '${subreason}' is not valid for false_positive_reason '${input.falsePositiveReason ?? '(none)'}'`,
+          ),
+      );
+    }
+
     const body: Record<string, unknown> = {
       sentiment: input.sentiment,
       target_type: input.targetType,
