@@ -361,6 +361,21 @@ describe('GroupAdminService', () => {
     });
   });
 
+  describe('AddGroupMemberRequest (OpenAPI 3.0.3 conditional requirements)', () => {
+    it('requires the UUID that matches subject_type', () => {
+      const user: AddGroupMemberRequest = { user_internal_uuid: 'u-1' };
+      const group: AddGroupMemberRequest = {
+        subject_type: 'group',
+        member_group_internal_uuid: 'g-1',
+      };
+      // @ts-expect-error a group member needs member_group_internal_uuid
+      const groupWithoutUuid: AddGroupMemberRequest = { subject_type: 'group' };
+      // @ts-expect-error a user member needs user_internal_uuid
+      const userWithGroupUuid: AddGroupMemberRequest = { member_group_internal_uuid: 'g-1' };
+      expect([user, group, groupWithoutUuid, userWithGroupUuid]).toHaveLength(4);
+    });
+  });
+
   describe('addMember()', () => {
     const groupUuid = '123e4567-e89b-12d3-a456-426614174000';
     const addRequest: AddGroupMemberRequest = {

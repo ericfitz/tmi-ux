@@ -55,6 +55,15 @@ describe('ChatSessionPanelComponent', () => {
       expect(groups[0].entries).toHaveLength(2);
       expect(groups[0].labelKey).toBe('chat.sourceSummary.assets');
     });
+
+    it('keeps every entry of a snapshot larger than 100 (the spec no longer caps it)', () => {
+      component.sourceSnapshot = Array.from({ length: 150 }, (_, i) => ({
+        entity_type: 'threat' as const,
+        entity_id: `t${i}`,
+      }));
+
+      expect(component.sourceGroups[0].entries).toHaveLength(150);
+    });
   });
 
   describe('output events', () => {

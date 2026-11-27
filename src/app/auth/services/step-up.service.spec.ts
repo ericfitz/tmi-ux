@@ -85,7 +85,7 @@ describe('StepUpService', () => {
     expect(options.headers['Accept']).toBe('application/json');
     expect(options.params['code_challenge']).toBe(pkceParams.codeChallenge);
     expect(options.params['code_challenge_method']).toBe('S256');
-    expect(options.params['client_callback']).toContain('/oauth2/callback');
+    expect(options.params['client_callback']).toBe(`${window.location.origin}/oauth2/callback`);
     // The state sent is the step-up state (storage-independent: the weak path
     // clears localStorage after completing, so decode the sent value directly).
     const decodedState = JSON.parse(atob(options.params['state'])) as { stepUp?: boolean };

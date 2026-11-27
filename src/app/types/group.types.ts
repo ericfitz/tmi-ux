@@ -119,16 +119,23 @@ export interface ListGroupMembersResponse {
 }
 
 /**
- * Request to add a member to a group
- * Provide user_internal_uuid for user members or member_group_internal_uuid for group members
+ * Request to add a member to a group. The server rejects with 400 a user
+ * request without user_internal_uuid or a group request without
+ * member_group_internal_uuid, so each variant requires its own UUID.
  */
-export interface AddGroupMemberRequest {
-  /** Internal UUID of the user to add (required when subject_type is user) */
-  user_internal_uuid?: string;
-  /** Type of member to add: user or group */
-  subject_type?: 'user' | 'group';
-  /** Internal UUID of the group to add as member (required when subject_type is group) */
-  member_group_internal_uuid?: string;
-  /** Optional notes about this membership */
-  notes?: string;
-}
+export type AddGroupMemberRequest =
+  | {
+      /** Defaults to user when omitted */
+      subject_type?: 'user';
+      /** Internal UUID of the user to add */
+      user_internal_uuid: string;
+      /** Optional notes about this membership */
+      notes?: string;
+    }
+  | {
+      subject_type: 'group';
+      /** Internal UUID of the group to add as member */
+      member_group_internal_uuid: string;
+      /** Optional notes about this membership */
+      notes?: string;
+    };
