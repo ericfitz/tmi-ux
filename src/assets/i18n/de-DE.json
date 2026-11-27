@@ -722,10 +722,13 @@
       "connectionFailed": "Verbindung zu Timmy konnte nicht hergestellt werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
       "generic": "Etwas ist schief gelaufen.",
       "interrupted": "Antwort unterbrochen. Versuchen Sie, Ihre Nachricht erneut zu senden.",
+      "messageFailed": "Timmy konnte keine Antwort erzeugen. Senden Sie Ihre Nachricht erneut.",
       "notAcceptable": "Timmy ist aufgrund eines Serverkonfigurationsproblems vorübergehend nicht verfügbar.",
       "notEnabled": "Timmy ist für dieses Bedrohungsmodell nicht aktiviert.",
       "rateLimited": "Nachrichtenlimit erreicht. Versuchen Sie es in {{minutes}} Minuten erneut.",
-      "serverBusy": "Server ist überlastet. Versuchen Sie es in Kürze erneut."
+      "serverBusy": "Server ist überlastet. Versuchen Sie es in Kürze erneut.",
+      "serverError": "Bei Timmy ist ein Serverfehler aufgetreten. Versuchen Sie es später erneut.",
+      "sessionCreationFailed": "Timmy konnte die Chat-Sitzung nicht starten. Versuchen Sie es erneut."
     },
     "hideSidePanel": "Seitenpanel ausblenden",
     "inputPlaceholder": "Fragen Sie Timmy zu diesem Bedrohungsmodell...",

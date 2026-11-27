@@ -41,6 +41,12 @@ import { TimmyChatService } from '../../services/timmy-chat.service';
 import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
 import { ChatSessionPanelComponent } from '../chat-session-panel/chat-session-panel.component';
 
+/** i18n keys for the SSE error codes the server sends with a fixed message. */
+const STREAM_ERROR_KEYS: ReadonlyMap<string, string> = new Map([
+  ['message_failed', 'chat.errors.messageFailed'],
+  ['session_creation_failed', 'chat.errors.sessionCreationFailed'],
+]);
+
 @Component({
   selector: 'app-chat-page',
   standalone: true,
@@ -251,10 +257,11 @@ export class ChatPageComponent implements OnInit {
 
     let sessionId = '';
     let messageSent = false;
+    let creationFailed = false;
 
     // SEM@4db2dd0a222a4f8a791726648870e8e04861a57b: send the pending user message once a new session id is available, guarded against double-send (mutates shared state)
     const sendQueuedMessage = (): void => {
-      if (!sessionId || messageSent) return;
+      if (!sessionId || messageSent || creationFailed) return;
       messageSent = true;
       this.activeSessionId = sessionId;
       userMessage.session_id = sessionId;
@@ -267,6 +274,13 @@ export class ChatPageComponent implements OnInit {
       .pipe(this.untilDestroyed())
       .subscribe({
         next: (event: SseEvent) => {
+          // The server closes the stream after an error event; without this
+          // the complete() fallback would send into the half-built session.
+          // Set before parsing so a malformed error payload still blocks it.
+          if (event.event === 'error') {
+            creationFailed = true;
+          }
+
           this.handleSessionCreationEvent(event, id => {
             sessionId = id;
           });
@@ -346,7 +360,7 @@ export class ChatPageComponent implements OnInit {
           phase: '',
           entityName: '',
           progress: 0,
-          error: data.message,
+          error: this.streamErrorMessage(data),
         };
         break;
       }
@@ -445,6 +459,8 @@ export class ChatPageComponent implements OnInit {
             this.addErrorMessage(this.transloco.translate('chat.errors.rateLimited', { minutes }));
           } else if (sseErr.status === 503) {
             this.addErrorMessage(this.transloco.translate('chat.errors.serverBusy'));
+          } else if (sseErr.status >= 500) {
+            this.addErrorMessage(this.transloco.translate('chat.errors.serverError'));
           } else {
             this.addErrorMessage(this.transloco.translate('chat.errors.interrupted'));
           }
@@ -459,16 +475,29 @@ export class ChatPageComponent implements OnInit {
     this.loading = false;
     this.preparationStatus = null;
 
+    const text = this.streamErrorMessage(data);
     if (currentMessageId) {
       const msg = this.messages.find(m => m.id === currentMessageId);
       if (msg && msg.content) {
-        msg.content += `\n\n*Error: ${data.message}*`;
+        msg.content += `\n\n*${text}*`;
       } else {
-        this.addErrorMessage(data.message);
+        this.addErrorMessage(text);
       }
     } else {
-      this.addErrorMessage(data.message);
+      this.addErrorMessage(text);
     }
+  }
+
+  /**
+   * Map an SSE error event to user-facing text. Known server codes get a
+   * localized message; any other code shows the server's (curated) message.
+   */
+  private streamErrorMessage(data: ChatErrorEvent): string {
+    const key = STREAM_ERROR_KEYS.get(data.code);
+    if (key) {
+      return this.transloco.translate(key);
+    }
+    return data.message || this.transloco.translate('chat.errors.generic');
   }
 
   /**
@@ -648,7 +677,9 @@ export class ChatPageComponent implements OnInit {
       case 503:
         return this.transloco.translate('chat.errors.serverBusy');
       default:
-        return this.transloco.translate('chat.errors.connectionFailed');
+        return sseErr.status >= 500
+          ? this.transloco.translate('chat.errors.serverError')
+          : this.transloco.translate('chat.errors.connectionFailed');
     }
   }
 

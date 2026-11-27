@@ -722,10 +722,13 @@
       "connectionFailed": "Tidak dapat terhubung ke Timmy. Periksa koneksi Anda dan coba lagi.",
       "generic": "Terjadi kesalahan.",
       "interrupted": "Respons terputus. Coba kirim pesan Anda lagi.",
+      "messageFailed": "Timmy tidak dapat membuat respons. Coba kirim pesan Anda lagi.",
       "notAcceptable": "Timmy tidak tersedia untuk sementara karena masalah konfigurasi server.",
       "notEnabled": "Timmy tidak diaktifkan untuk model ancaman ini.",
       "rateLimited": "Batas pesan tercapai. Coba lagi dalam {{minutes}} menit.",
-      "serverBusy": "Server sibuk. Coba lagi sebentar."
+      "serverBusy": "Server sibuk. Coba lagi sebentar.",
+      "serverError": "Timmy mengalami kesalahan server. Coba lagi nanti.",
+      "sessionCreationFailed": "Timmy tidak dapat memulai sesi obrolan. Coba lagi."
     },
     "hideSidePanel": "Sembunyikan panel samping",
     "inputPlaceholder": "Tanyakan kepada Timmy tentang model ancaman ini...",

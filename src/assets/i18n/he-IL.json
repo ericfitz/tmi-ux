@@ -722,10 +722,13 @@
       "connectionFailed": "לא ניתן להתחבר ל-Timmy. בדוק את החיבור שלך ונסה שוב.",
       "generic": "משהו השתבש.",
       "interrupted": "התגובה הופסקה. נסה לשלוח את ההודעה שלך שוב.",
+      "messageFailed": "Timmy לא הצליח ליצור תשובה. נסה לשלוח את ההודעה שוב.",
       "notAcceptable": "Timmy אינו זמין זמנית בשל בעיית תצורת שרת.",
       "notEnabled": "Timmy אינו מופעל עבור מודל איומים זה.",
       "rateLimited": "הגעת לגבול הודעות. נסה שוב בעוד {{minutes}} דקות.",
-      "serverBusy": "השרת עסוק. נסה שוב בעוד רגע."
+      "serverBusy": "השרת עסוק. נסה שוב בעוד רגע.",
+      "serverError": "Timmy נתקל בשגיאת שרת. נסה שוב מאוחר יותר.",
+      "sessionCreationFailed": "Timmy לא הצליח להתחיל את שיחת הצ'אט. נסה שוב."
     },
     "hideSidePanel": "הסתר פנל צד",
     "inputPlaceholder": "שאל את Timmy על מודל איומים זה...",

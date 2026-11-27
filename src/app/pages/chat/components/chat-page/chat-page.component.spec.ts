@@ -309,14 +309,14 @@ describe('ChatPageComponent', () => {
       expect(component.preparationStatus?.error).toBe('chat.errors.connectionFailed');
     });
 
-    it('should show connection-failed message for 500 errors', () => {
+    it('should show server-error message for 500 errors', () => {
       mockTimmyChat.createSession.mockReturnValue(
         throwError(() => ({ status: 500, statusText: 'Internal Server Error' })),
       );
 
       component.onMessageSent('test message');
 
-      expect(mockTransloco.translate).toHaveBeenCalledWith('chat.errors.connectionFailed');
+      expect(component.preparationStatus?.error).toBe('chat.errors.serverError');
     });
 
     it('should log the error regardless of status code', () => {
@@ -336,6 +336,167 @@ describe('ChatPageComponent', () => {
       component.onMessageSent('test message');
 
       expect(mockCdr.markForCheck).toHaveBeenCalled();
+    });
+  });
+
+  describe('SSE error events', () => {
+    const sessionCreated: SseEvent = {
+      event: 'session_created',
+      data: JSON.stringify({
+        id: 'session-1',
+        source_snapshot: [],
+        status: 'active',
+        threat_model_id: 'tm-123',
+        user_id: 'user-1',
+        created_at: '2026-04-07T00:00:00Z',
+        modified_at: '2026-04-07T00:00:00Z',
+      }),
+    };
+
+    function errorEvent(code: string, message: string): SseEvent {
+      return { event: 'error', data: JSON.stringify({ code, message }) };
+    }
+
+    function setupReadySession(): Subject<SseEvent> {
+      const sessionStream = new Subject<SseEvent>();
+      const messageStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(messageStream.asObservable());
+      component.onMessageSent('test question');
+      sessionStream.next(sessionCreated);
+      sessionStream.next({ event: 'ready', data: JSON.stringify({ status: 'ready' }) });
+      return messageStream;
+    }
+
+    it('should localize session_creation_failed during session creation', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+
+      component.onMessageSent('test message');
+      sessionStream.next(sessionCreated);
+      sessionStream.next(
+        errorEvent('session_creation_failed', 'The chat session could not be created'),
+      );
+
+      expect(component.preparationStatus?.error).toBe('chat.errors.sessionCreationFailed');
+    });
+
+    it('should not send the queued message after a session creation error', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+      sessionStream.next(sessionCreated);
+      sessionStream.next(
+        errorEvent('session_creation_failed', 'The chat session could not be created'),
+      );
+      sessionStream.complete();
+
+      expect(mockTimmyChat.sendMessage).not.toHaveBeenCalled();
+      expect(component.preparationStatus?.error).toBe('chat.errors.sessionCreationFailed');
+    });
+
+    it('should not send the queued message when ready follows a session creation error', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(EMPTY);
+
+      component.onMessageSent('test message');
+      sessionStream.next(sessionCreated);
+      sessionStream.next(
+        errorEvent('session_creation_failed', 'The chat session could not be created'),
+      );
+      sessionStream.next({ event: 'ready', data: JSON.stringify({ status: 'ready' }) });
+
+      expect(mockTimmyChat.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should fall back to the server message for an unknown code', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+
+      component.onMessageSent('test message');
+      sessionStream.next(errorEvent('quota_exceeded', 'Embedding quota exceeded'));
+
+      expect(component.preparationStatus?.error).toBe('Embedding quota exceeded');
+    });
+
+    it('should not treat an inherited object property name as a known code', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+
+      component.onMessageSent('test message');
+      sessionStream.next(errorEvent('constructor', 'Server text'));
+
+      expect(component.preparationStatus?.error).toBe('Server text');
+    });
+
+    it('should fall back to the generic message when an unknown code has no message', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+
+      component.onMessageSent('test message');
+      sessionStream.next(errorEvent('something_new', ''));
+
+      expect(component.preparationStatus?.error).toBe('chat.errors.generic');
+    });
+
+    it('should localize message_failed before any token arrives', () => {
+      const messageStream = setupReadySession();
+
+      messageStream.next(
+        errorEvent('message_failed', 'The assistant could not generate a response'),
+      );
+
+      const last = component.messages[component.messages.length - 1];
+      expect(last.content).toBe('*chat.errors.messageFailed*');
+      expect(component.loading).toBe(false);
+      expect(component.streamingMessageId).toBeNull();
+    });
+
+    it('should append the localized error to a partially streamed reply', () => {
+      const messageStream = setupReadySession();
+
+      messageStream.next({
+        event: 'message_start',
+        data: JSON.stringify({ message_id: 'msg-1' }),
+      });
+      messageStream.next({ event: 'token', data: JSON.stringify({ content: 'Partial' }) });
+      messageStream.next(
+        errorEvent('message_failed', 'The assistant could not generate a response'),
+      );
+
+      const msg = component.messages.find(m => m.id === 'msg-1');
+      expect(msg?.content).toBe('Partial\n\n*chat.errors.messageFailed*');
+    });
+
+    it('should show server-error message when message send fails with a 5xx', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(
+        throwError(() => ({ status: 500, statusText: 'Internal Server Error' })),
+      );
+
+      component.onMessageSent('test message');
+      sessionStream.next(sessionCreated);
+      sessionStream.next({ event: 'ready', data: JSON.stringify({ status: 'ready' }) });
+
+      const last = component.messages[component.messages.length - 1];
+      expect(last.content).toBe('*chat.errors.serverError*');
+    });
+
+    it('should keep the interrupted message when message send fails without a status', () => {
+      const sessionStream = new Subject<SseEvent>();
+      mockTimmyChat.createSession.mockReturnValue(sessionStream.asObservable());
+      mockTimmyChat.sendMessage.mockReturnValue(throwError(() => new TypeError('network')));
+
+      component.onMessageSent('test message');
+      sessionStream.next(sessionCreated);
+      sessionStream.next({ event: 'ready', data: JSON.stringify({ status: 'ready' }) });
+
+      const last = component.messages[component.messages.length - 1];
+      expect(last.content).toBe('*chat.errors.interrupted*');
     });
   });
 
