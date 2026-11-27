@@ -369,14 +369,13 @@
                           />
                         </p>
                         <p class="collab-detail">
-                          <mat-icon>schedule</mat-icon>
-                          {{ 'collaboration.sessionStarted' | transloco }}
-                          {{ formatSessionTime(session.startedAt) }}
-                        </p>
-                        <p class="collab-detail">
                           <mat-icon>group</mat-icon>
                           {{
-                            'collaboration.activeUsers' | transloco: { count: session.activeUsers }
+                            session.participantCount === 1
+                              ? ('collaboration.participantCount'
+                                | transloco: { count: session.participantCount })
+                              : ('collaboration.participantCountPlural'
+                                | transloco: { count: session.participantCount })
                           }}
                         </p>
                         <button
@@ -587,14 +586,13 @@
                         />
                       </p>
                       <p class="collab-detail">
-                        <mat-icon>schedule</mat-icon>
-                        {{ 'collaboration.sessionStarted' | transloco }}
-                        {{ formatSessionTime(session.startedAt) }}
-                      </p>
-                      <p class="collab-detail">
                         <mat-icon>group</mat-icon>
                         {{
-                          'collaboration.activeUsers' | transloco: { count: session.activeUsers }
+                          session.participantCount === 1
+                            ? ('collaboration.participantCount'
+                              | transloco: { count: session.participantCount })
+                            : ('collaboration.participantCountPlural'
+                              | transloco: { count: session.participantCount })
                         }}
                       </p>
                       <button

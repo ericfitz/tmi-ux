@@ -509,52 +509,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }).format(dateObj);
   }
 
-  /**
-   * Format session start time as a relative time string
-   */
-  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: format a session start time as a human-readable relative or absolute time (pure)
-  formatSessionTime(startedAt: Date): string {
-    const now = new Date();
-    const diffMs = now.getTime() - startedAt.getTime();
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMinutes / 60);
-
-    if (diffMinutes < 1) {
-      return this.transloco.translate('collaboration.justNow');
-    } else if (diffMinutes < 60) {
-      return this.formatRelativeTime(-diffMinutes, 'minute');
-    } else if (diffHours < 24) {
-      return this.formatRelativeTime(-diffHours, 'hour');
-    } else {
-      return new Intl.DateTimeFormat(this.currentLocale, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(startedAt);
-    }
-  }
-
-  // SEM@32d7e22c36935dfe9252dabace7cd08023f1173d: format a numeric time offset as a locale-aware relative time string (pure)
-  private formatRelativeTime(value: number, unit: 'minute' | 'hour'): string {
-    try {
-      if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
-        const rtf = new Intl.RelativeTimeFormat(this.currentLocale, {
-          numeric: 'auto',
-          style: 'long',
-        });
-        return rtf.format(value, unit);
-      }
-    } catch {
-      // Fallback if RelativeTimeFormat fails
-    }
-
-    const absValue = Math.abs(value);
-    const unitText = unit === 'minute' ? 'minute' : 'hour';
-    const pluralSuffix = absValue === 1 ? '' : 's';
-    return `${absValue} ${unitText}${pluralSuffix} ago`;
-  }
-
   // SEM@199afb71dcd141f16d7dad3caaa1b7a3d6c17ce5: confirm and delete a threat model, adjusting pagination and reloading the list
   deleteThreatModel(id: string, event: MouseEvent): void {
     event.stopPropagation();

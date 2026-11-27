@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "すべてのイベント (*)",
         "createAutomationUser": "このWebhook用の自動化ユーザーを作成する。",
         "events": "サブスクライブするイベントタイプ",
         "eventsHint": "サブスクライブするイベントタイプ（例: threat_model.created）",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}}人のアクティブユーザー。",
     "approvePresenterRequest": "プレゼンターリクエストを承認",
     "availableCollaborationSessions": "利用可能なコラボレーションセッション。",
     "collaboratorsHeader": "参加者",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "ダイアグラムコンテキストを読み込み中...",
     "manageParticipants": "参加者を管理",
     "noActiveSessions": "アクティブなコラボレーションセッションはありません。",
+    "participantCount": "{{count}}人の参加者",
+    "participantCountPlural": "{{count}}人の参加者",
     "participantRequestsPresenterRole": "参加者がプレゼンターロールをリクエストしています",
     "presenterModeRequested": "プレゼンターモードがリクエストされました",
     "removeFromSession": "セッションから削除",
@@ -798,7 +800,6 @@
       "diagram": "このダイアグラムは削除されました。脅威モデルに戻ります。",
       "threatModel": "この脅威モデルは削除されました。ダッシュボードに戻ります。"
     },
-    "sessionStarted": "開始",
     "soloTransition": {
       "disconnected": "コラボレーションセッションが終了したか、接続が切断されました。現在はソロ作業中です。コラボレーションボタンから再参加できます。",
       "endedByYou": "コラボレーションセッションを終了しました。現在はソロ作業中です。",

@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "所有事件 (*)",
         "createAutomationUser": "为此 webhook 创建自动化用户。",
         "events": "要订阅的事件类型",
         "eventsHint": "要订阅的事件类型（例如：threat_model.created）",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} 个活跃用户。",
     "approvePresenterRequest": "批准主讲人请求",
     "availableCollaborationSessions": "可用协作会话。",
     "collaboratorsHeader": "参与者",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "正在加载图表上下文...",
     "manageParticipants": "管理参与者",
     "noActiveSessions": "没有活跃的协作会话。",
+    "participantCount": "{{count}} 位参与者",
+    "participantCountPlural": "{{count}} 位参与者",
     "participantRequestsPresenterRole": "参与者请求主讲人角色",
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",
@@ -798,7 +800,6 @@
       "diagram": "此图表已被删除——正在返回威胁模型。",
       "threatModel": "此威胁模型已被删除——正在返回仪表板。"
     },
-    "sessionStarted": "开始于",
     "soloTransition": {
       "disconnected": "协作会话已结束或连接已断开——您现在正在独立工作。您可以通过协作按钮重新加入。",
       "endedByYou": "您已结束协作会话——您现在正在独立工作。",

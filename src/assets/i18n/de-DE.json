@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "Alle Ereignisse (*)",
         "createAutomationUser": "Automatisierungsbenutzer für diesen Webhook erstellen.",
         "events": "Zu abonnierende Ereignistypen",
         "eventsHint": "Ereignistypen zum Abonnieren (z.B. threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} aktive Benutzer.",
     "approvePresenterRequest": "Präsentator-Anfrage genehmigen",
     "availableCollaborationSessions": "Verfügbare Zusammenarbeitssitzungen.",
     "collaboratorsHeader": "Teilnehmer",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "Diagrammkontext wird geladen...",
     "manageParticipants": "Teilnehmer verwalten",
     "noActiveSessions": "Keine aktiven Zusammenarbeitssitzungen.",
+    "participantCount": "{{count}} Teilnehmer",
+    "participantCountPlural": "{{count}} Teilnehmer",
     "participantRequestsPresenterRole": "Teilnehmer fordert Präsentatorrolle an",
     "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",
@@ -798,7 +800,6 @@
       "diagram": "Dieses Diagramm wurde gelöscht—Sie werden zum Bedrohungsmodell weitergeleitet.",
       "threatModel": "Dieses Bedrohungsmodell wurde gelöscht—Sie werden zum Dashboard weitergeleitet."
     },
-    "sessionStarted": "Gestartet",
     "soloTransition": {
       "disconnected": "Die Zusammenarbeitssitzung wurde beendet oder die Verbindung unterbrochen—Sie arbeiten jetzt allein. Sie können über die Zusammenarbeitsschaltfläche wieder beitreten.",
       "endedByYou": "Sie haben die Zusammenarbeitssitzung beendet—Sie arbeiten jetzt allein.",

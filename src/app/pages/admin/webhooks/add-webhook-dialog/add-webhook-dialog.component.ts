@@ -27,6 +27,52 @@ import { WebhookService } from '@app/core/services/webhook.service';
 import { replaceOperations } from '@app/shared/utils/json-patch.util';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 import { LoggerService } from '@app/core/services/logger.service';
+import type { components } from '@app/generated/api-types';
+
+type WebhookEventType = components['schemas']['WebhookEventType'];
+
+/**
+ * Every subscribable event type, `*` (all events) first. Typed as a Record over the
+ * generated enum, so an event type added to or removed from the spec breaks the build
+ * until this list matches.
+ */
+const WEBHOOK_EVENT_TYPES: Record<WebhookEventType, true> = {
+  '*': true,
+  'threat_model.created': true,
+  'threat_model.updated': true,
+  'threat_model.deleted': true,
+  'diagram.created': true,
+  'diagram.updated': true,
+  'diagram.deleted': true,
+  'document.created': true,
+  'document.updated': true,
+  'document.deleted': true,
+  'document.extraction_completed': true,
+  'document.extraction_failed': true,
+  'note.created': true,
+  'note.updated': true,
+  'note.deleted': true,
+  'repository.created': true,
+  'repository.updated': true,
+  'repository.deleted': true,
+  'asset.created': true,
+  'asset.updated': true,
+  'asset.deleted': true,
+  'threat.created': true,
+  'threat.updated': true,
+  'threat.deleted': true,
+  'metadata.created': true,
+  'metadata.updated': true,
+  'metadata.deleted': true,
+  'addon.invoked': true,
+  'survey.created': true,
+  'survey.updated': true,
+  'survey.deleted': true,
+  'survey_response.created': true,
+  'survey_response.updated': true,
+  'survey_response.deleted': true,
+  'system_audit.admin_write': true,
+};
 
 /**
  * Add Webhook Dialog Component
@@ -125,7 +171,9 @@ export interface AddWebhookDialogData {
             [placeholder]="'admin.webhooks.addDialog.eventsPlaceholder' | transloco"
           >
             @for (eventType of availableEventTypes; track eventType) {
-              <mat-option [value]="eventType">{{ eventType }}</mat-option>
+              <mat-option [value]="eventType">{{
+                eventType === '*' ? ('admin.webhooks.addDialog.allEvents' | transloco) : eventType
+              }}</mat-option>
             }
           </mat-select>
           <mat-hint [transloco]="'admin.webhooks.addDialog.eventsHint'"
@@ -238,40 +286,7 @@ export class AddWebhookDialogComponent implements OnInit {
   errorMessage = '';
   showHttpWarning = false;
 
-  // Event types from OpenAPI schema
-  availableEventTypes: string[] = [
-    'threat_model.created',
-    'threat_model.updated',
-    'threat_model.deleted',
-    'diagram.created',
-    'diagram.updated',
-    'diagram.deleted',
-    'document.created',
-    'document.updated',
-    'document.deleted',
-    'note.created',
-    'note.updated',
-    'note.deleted',
-    'repository.created',
-    'repository.updated',
-    'repository.deleted',
-    'asset.created',
-    'asset.updated',
-    'asset.deleted',
-    'threat.created',
-    'threat.updated',
-    'threat.deleted',
-    'metadata.created',
-    'metadata.updated',
-    'metadata.deleted',
-    'addon.invoked',
-    'survey.created',
-    'survey.updated',
-    'survey.deleted',
-    'survey_response.created',
-    'survey_response.updated',
-    'survey_response.deleted',
-  ];
+  readonly availableEventTypes = Object.keys(WEBHOOK_EVENT_TYPES) as WebhookEventType[];
 
   // SEM@96f99fa8dc535031469a8349e57a0731d824c8cd: inject dialog ref and services for the add-webhook dialog (pure)
   constructor(

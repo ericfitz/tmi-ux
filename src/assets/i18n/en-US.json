@@ -526,6 +526,9 @@
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addButton.lint-skip": "Trailing ellipsis is intentional per style guide: button that opens a dialog.",
       "addDialog": {
+        "allEvents": "All events (*)",
+        "allEvents.comment": "Option that subscribes a webhook to every event type. Keep the asterisk (*) as is.",
+        "allEvents.lint-skip": "Option label (fragment); the plural noun trips the sentence heuristic.",
         "createAutomationUser": "Create automation user for this webhook.",
         "events": "Event types to subscribe to",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
@@ -905,7 +908,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} active users.",
     "approvePresenterRequest": "Approve presenter request",
     "availableCollaborationSessions": "Available collaboration sessions.",
     "collaboratorsHeader": "Participants",
@@ -926,6 +928,8 @@
     "loadingDiagramContext": "Loading diagram context...",
     "manageParticipants": "Manage participants",
     "noActiveSessions": "No active collaboration sessions.",
+    "participantCount": "{{count}} participant",
+    "participantCountPlural": "{{count}} participants",
     "participantRequestsPresenterRole": "Participant requests presenter role",
     "presenterModeRequested": "Presenter mode requested",
     "removeFromSession": "Remove from session",
@@ -935,7 +939,6 @@
       "diagram": "This diagram was deleted — returning to the threat model.",
       "threatModel": "This threat model was deleted — returning to the dashboard."
     },
-    "sessionStarted": "Started",
     "soloTransition": {
       "disconnected": "The collaboration session ended or the connection was lost — you're now working solo. You can rejoin from the collaboration button.",
       "endedByYou": "You ended the collaboration session — you're now working solo.",

@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "Todos os eventos (*)",
         "createAutomationUser": "Criar usuário de automação para este webhook.",
         "events": "Tipos de evento para assinar",
         "eventsHint": "Tipos de evento para assinar (ex.: threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} usuário(s) ativo(s).",
     "approvePresenterRequest": "Aprovar solicitação de apresentador",
     "availableCollaborationSessions": "Sessões de colaboração disponíveis.",
     "collaboratorsHeader": "Participantes",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "Carregando contexto do diagrama...",
     "manageParticipants": "Gerenciar participantes",
     "noActiveSessions": "Nenhuma sessão de colaboração ativa.",
+    "participantCount": "{{count}} participante",
+    "participantCountPlural": "{{count}} participantes",
     "participantRequestsPresenterRole": "Participante solicita função de apresentador",
     "presenterModeRequested": "Modo apresentador solicitado",
     "removeFromSession": "Remover da sessão",
@@ -798,7 +800,6 @@
       "diagram": "Este diagrama foi excluído — retornando ao modelo de ameaças.",
       "threatModel": "Este modelo de ameaças foi excluído — retornando ao painel."
     },
-    "sessionStarted": "Iniciada",
     "soloTransition": {
       "disconnected": "A sessão de colaboração foi encerrada ou a conexão foi perdida — você está trabalhando solo agora. Você pode entrar novamente pelo botão de colaboração.",
       "endedByYou": "Você encerrou a sessão de colaboração — você está trabalhando solo agora.",

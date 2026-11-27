@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "Tous les événements (*)",
         "createAutomationUser": "Créer un utilisateur d'automatisation pour ce webhook.",
         "events": "Types d'événements auxquels s'abonner",
         "eventsHint": "Types d'evenements auxquels s'abonner (ex : threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} utilisateurs actifs.",
     "approvePresenterRequest": "Approuver la demande de présentateur",
     "availableCollaborationSessions": "Sessions de collaboration disponibles.",
     "collaboratorsHeader": "Participants",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "Chargement du contexte du diagramme...",
     "manageParticipants": "Gérer les participants",
     "noActiveSessions": "Aucune session de collaboration active.",
+    "participantCount": "{{count}} participant",
+    "participantCountPlural": "{{count}} participants",
     "participantRequestsPresenterRole": "Le participant demande le rôle de présentateur",
     "presenterModeRequested": "Mode présentateur demandé",
     "removeFromSession": "Retirer de la session",
@@ -798,7 +800,6 @@
       "diagram": "Ce diagramme a été supprimé—retour au modèle de menace.",
       "threatModel": "Ce modèle de menace a été supprimé—retour au tableau de bord."
     },
-    "sessionStarted": "Demarree",
     "soloTransition": {
       "disconnected": "La session de collaboration a pris fin ou la connexion a été perdue—vous travaillez maintenant individuellement. Vous pouvez rejoindre depuis le bouton de collaboration.",
       "endedByYou": "Vous avez mis fin à la session de collaboration—vous travaillez maintenant individuellement.",

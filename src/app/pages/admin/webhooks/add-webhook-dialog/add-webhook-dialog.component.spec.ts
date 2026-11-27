@@ -75,6 +75,20 @@ describe('AddWebhookDialogComponent', () => {
     expect(component.availableEventTypes.length).toBeGreaterThan(0);
   });
 
+  it('offers every spec event type, with the * wildcard first (#1068)', () => {
+    const { availableEventTypes } = build();
+
+    expect(availableEventTypes[0]).toBe('*');
+    expect(availableEventTypes).toEqual(
+      expect.arrayContaining([
+        'document.extraction_completed',
+        'document.extraction_failed',
+        'system_audit.admin_write',
+      ]),
+    );
+    expect(new Set(availableEventTypes).size).toBe(availableEventTypes.length);
+  });
+
   describe('form validation', () => {
     it('requires name, url, and events', () => {
       const component = build();

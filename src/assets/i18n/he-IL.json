@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "כל האירועים (*)",
         "createAutomationUser": "צור משתמש אוטומציה עבור webhook זה.",
         "events": "סוגי אירועים להרשמה",
         "eventsHint": "סוגי אירועים להרשמה (לדוגמה, threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} משתמשים פעילים.",
     "approvePresenterRequest": "אשר בקשת מציג",
     "availableCollaborationSessions": "שיחות שיתוף פעולה זמינות.",
     "collaboratorsHeader": "משתתפים",
@@ -790,6 +790,8 @@
     "loadingDiagramContext": "טוען הקשר דיאגרמה...",
     "manageParticipants": "נהל משתתפים",
     "noActiveSessions": "אין שיחות שיתוף פעולה פעילות.",
+    "participantCount": "{{count}} משתתף",
+    "participantCountPlural": "{{count}} משתתפים",
     "participantRequestsPresenterRole": "משתתף מבקש תפקיד מציג",
     "presenterModeRequested": "נשלחה בקשה למצב מציג",
     "removeFromSession": "הסר מהשיחה",
@@ -798,7 +800,6 @@
       "diagram": "הדיאגרמה נמחקה — חוזר למודל האיומים.",
       "threatModel": "מודל האיומים נמחק — חוזר ללוח הבקרה."
     },
-    "sessionStarted": "התחיל",
     "soloTransition": {
       "disconnected": "שיחת שיתוף הפעולה הסתיימה או שהחיבור אבד — אתה עובד כעת באופן עצמאי. ניתן להצטרף מחדש דרך כפתור שיתוף הפעולה.",
       "endedByYou": "סיימת את שיחת שיתוף הפעולה — אתה עובד כעת באופן עצמאי.",

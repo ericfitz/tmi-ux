@@ -473,6 +473,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "সব ইভেন্ট (*)",
         "createAutomationUser": "এই ওয়েবহুকের জন্য অটোমেশন ব্যবহারকারী তৈরি করুন",
         "events": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার",
         "eventsHint": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার (যেমন, threat_model.created)",
@@ -950,7 +951,6 @@
   "chat.savedAsNote": "নোট হিসেবে সংরক্ষিত হয়েছে।",
   "chat.sourceSummary.title": "{{count}} সূত্র অন্তর্ভুক্ত",
   "collaboration": {
-    "activeUsers": "{{count}} সক্রিয় ব্যবহারকারী",
     "approvePresenterRequest": "উপস্থাপকের অনুরোধ অনুমোদন করুন",
     "availableCollaborationSessions": "উপলব্ধ সহযোগিতা সেশন",
     "collaboratorsHeader": "অংশগ্রহণকারী",
@@ -970,6 +970,8 @@
     "loadingDiagramContext": "ডায়াগ্রাম প্রসঙ্গ লোড হচ্ছে...",
     "manageParticipants": "অংশগ্রহণকারী পরিচালনা করুন",
     "noActiveSessions": "কোনো সক্রিয় সহযোগিতা সেশন নেই",
+    "participantCount": "{{count}} অংশগ্রহণকারী",
+    "participantCountPlural": "{{count}} অংশগ্রহণকারী",
     "participantRequestsPresenterRole": "অংশগ্রহণকারী উপস্থাপকের ভূমিকা অনুরোধ করেছেন",
     "presenterModeRequested": "উপস্থাপক মোড অনুরোধ করা হয়েছে",
     "removeFromSession": "সেশন থেকে সরান",
@@ -978,7 +980,6 @@
       "diagram": "এই ডায়াগ্রামটি মুছে ফেলা হয়েছে — থ্রেট মডেলে ফিরে যাওয়া হচ্ছে।",
       "threatModel": "এই থ্রেট মডেলটি মুছে ফেলা হয়েছে — ড্যাশবোর্ডে ফিরে যাওয়া হচ্ছে।"
     },
-    "sessionStarted": "শুরু হয়েছে",
     "soloTransition": {
       "disconnected": "সহযোগিতা সেশন শেষ হয়েছে বা সংযোগ বিচ্ছিন্ন হয়েছে — আপনি এখন একা কাজ করছেন। সহযোগিতা বোতাম থেকে আবার যোগ দিতে পারেন।",
       "endedByYou": "আপনি সহযোগিতা সেশন শেষ করেছেন — আপনি এখন একা কাজ করছেন।",
@@ -996,7 +997,6 @@
       "notConnected": "ওয়েবসকেট সংযুক্ত নয়"
     }
   },
-  "collaboration.activeUsers": "{{count}} সক্রিয় ব্যবহারকারী।",
   "collaboration.approvePresenterRequest": "উপস্থাপক অনুরোধ অনুমোদন করুন",
   "collaboration.availableCollaborationSessions": "উপলব্ধ সহযোগিতা সেশন।",
   "collaboration.copyLink": "লিঙ্ক কপি করুন",
