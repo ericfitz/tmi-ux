@@ -791,6 +791,7 @@
     "manageParticipants": "Kelola Peserta",
     "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif.",
     "participantCount": "{{count}} peserta",
+    "participantCountPlural": "{{count}} peserta",
     "participantRequestsPresenterRole": "Peserta Meminta Peran Presenter",
     "presenterModeRequested": "Mode Presenter Diminta",
     "removeFromSession": "Keluarkan dari Sesi",

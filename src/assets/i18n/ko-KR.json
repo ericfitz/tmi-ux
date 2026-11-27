@@ -791,6 +791,7 @@
     "manageParticipants": "참가자 관리",
     "noActiveSessions": "활성 협업 세션 없음.",
     "participantCount": "참가자 {{count}}명",
+    "participantCountPlural": "참가자 {{count}}명",
     "participantRequestsPresenterRole": "참가자가 발표자 역할 요청",
     "presenterModeRequested": "발표자 모드 요청됨",
     "removeFromSession": "세션에서 제거",

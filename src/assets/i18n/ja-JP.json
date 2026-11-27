@@ -791,6 +791,7 @@
     "manageParticipants": "参加者を管理",
     "noActiveSessions": "アクティブなコラボレーションセッションはありません。",
     "participantCount": "{{count}}人の参加者",
+    "participantCountPlural": "{{count}}人の参加者",
     "participantRequestsPresenterRole": "参加者がプレゼンターロールをリクエストしています",
     "presenterModeRequested": "プレゼンターモードがリクエストされました",
     "removeFromSession": "セッションから削除",

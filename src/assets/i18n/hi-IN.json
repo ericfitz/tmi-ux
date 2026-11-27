@@ -791,6 +791,7 @@
     "manageParticipants": "प्रतिभागी प्रबंधित करें",
     "noActiveSessions": "कोई सक्रिय सहयोग सत्र नहीं।",
     "participantCount": "{{count}} प्रतिभागी",
+    "participantCountPlural": "{{count}} प्रतिभागी",
     "participantRequestsPresenterRole": "प्रतिभागी प्रस्तुतकर्ता भूमिका का अनुरोध कर रहा है",
     "presenterModeRequested": "प्रस्तुतकर्ता मोड अनुरोधित",
     "removeFromSession": "सत्र से हटाएं",

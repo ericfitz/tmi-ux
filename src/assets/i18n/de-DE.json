@@ -791,6 +791,7 @@
     "manageParticipants": "Teilnehmer verwalten",
     "noActiveSessions": "Keine aktiven Zusammenarbeitssitzungen.",
     "participantCount": "{{count}} Teilnehmer",
+    "participantCountPlural": "{{count}} Teilnehmer",
     "participantRequestsPresenterRole": "Teilnehmer fordert Präsentatorrolle an",
     "presenterModeRequested": "Präsentationsmodus angefordert",
     "removeFromSession": "Aus Sitzung entfernen",

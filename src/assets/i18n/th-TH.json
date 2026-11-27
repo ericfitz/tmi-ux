@@ -791,6 +791,7 @@
     "manageParticipants": "จัดการผู้เข้าร่วม",
     "noActiveSessions": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
     "participantCount": "ผู้เข้าร่วม {{count}} คน",
+    "participantCountPlural": "ผู้เข้าร่วม {{count}} คน",
     "participantRequestsPresenterRole": "ผู้เข้าร่วมขอบทบาทผู้นำเสนอ",
     "presenterModeRequested": "ขอโหมดผู้นำเสนอ",
     "removeFromSession": "ลบออกจากเซสชัน",
