@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "Semua peristiwa (*)",
         "createAutomationUser": "Buat pengguna otomasi untuk webhook ini.",
         "events": "Jenis peristiwa untuk berlangganan",
         "eventsHint": "Jenis peristiwa untuk berlangganan (misalnya, threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} pengguna aktif.",
     "approvePresenterRequest": "Setujui Permintaan Presenter",
     "availableCollaborationSessions": "Sesi Kolaborasi yang Tersedia.",
     "collaboratorsHeader": "Peserta",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "Memuat konteks diagram...",
     "manageParticipants": "Kelola Peserta",
     "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif.",
+    "participantCount": "{{count}} peserta",
     "participantRequestsPresenterRole": "Peserta Meminta Peran Presenter",
     "presenterModeRequested": "Mode Presenter Diminta",
     "removeFromSession": "Keluarkan dari Sesi",
@@ -798,7 +799,6 @@
       "diagram": "Diagram ini telah dihapus — kembali ke threat model.",
       "threatModel": "Threat model ini telah dihapus — kembali ke dasbor."
     },
-    "sessionStarted": "Dimulai",
     "soloTransition": {
       "disconnected": "Sesi kolaborasi berakhir atau koneksi terputus — Anda sekarang bekerja sendiri. Anda dapat bergabung kembali melalui tombol kolaborasi.",
       "endedByYou": "Anda mengakhiri sesi kolaborasi — Anda sekarang bekerja sendiri.",

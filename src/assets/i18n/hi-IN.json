@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "सभी इवेंट (*)",
         "createAutomationUser": "इस webhook के लिए ऑटोमेशन उपयोगकर्ता बनाएं।",
         "events": "सदस्यता लेने के लिए इवेंट प्रकार",
         "eventsHint": "सब्सक्राइब करने के लिए इवेंट प्रकार (उदा., threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} सक्रिय उपयोगकर्ता।",
     "approvePresenterRequest": "प्रस्तुतकर्ता अनुरोध स्वीकृत करें",
     "availableCollaborationSessions": "उपलब्ध सहयोग सत्र।",
     "collaboratorsHeader": "प्रतिभागी",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "आरेख संदर्भ लोड हो रहा है...",
     "manageParticipants": "प्रतिभागी प्रबंधित करें",
     "noActiveSessions": "कोई सक्रिय सहयोग सत्र नहीं।",
+    "participantCount": "{{count}} प्रतिभागी",
     "participantRequestsPresenterRole": "प्रतिभागी प्रस्तुतकर्ता भूमिका का अनुरोध कर रहा है",
     "presenterModeRequested": "प्रस्तुतकर्ता मोड अनुरोधित",
     "removeFromSession": "सत्र से हटाएं",
@@ -798,7 +799,6 @@
       "diagram": "यह आरेख हटा दिया गया — थ्रेट मॉडल पर वापस जा रहे हैं।",
       "threatModel": "यह थ्रेट मॉडल हटा दिया गया — डैशबोर्ड पर वापस जा रहे हैं।"
     },
-    "sessionStarted": "शुरू हुआ",
     "soloTransition": {
       "disconnected": "सहयोग सत्र समाप्त हो गया या कनेक्शन टूट गया — आप अब अकेले काम कर रहे हैं। सहयोग बटन से पुनः जुड़ सकते हैं।",
       "endedByYou": "आपने सहयोग सत्र समाप्त किया — आप अब अकेले काम कर रहे हैं।",

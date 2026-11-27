@@ -33,8 +33,8 @@ export interface CollaborationSession {
   diagramId: string;
   diagramName: string;
   host: User;
-  startedAt: Date;
-  activeUsers: number;
+  /** Users authorized to take part (not only those connected) */
+  participantCount: number;
 }
 
 /**
@@ -280,9 +280,7 @@ export class CollaborationSessionService implements OnDestroy {
       diagramId: serverSession.diagram_id,
       diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
       host: serverSession.host || fallbackHost,
-      // The API carries no session start time (see #1067); the fetch time stands in.
-      startedAt: new Date(),
-      activeUsers: serverSession.participants.length,
+      participantCount: serverSession.participants.length,
     };
 
     // this.logger.debugComponent('CollaborationSession', 'Transformed session', session);

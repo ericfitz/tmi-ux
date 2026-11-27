@@ -205,7 +205,7 @@ describe('CollaborationSessionService', () => {
           diagramId: specSession.diagram_id,
           diagramName: 'Checkout DFD',
           host: alice,
-          activeUsers: 1,
+          participantCount: 1,
         }),
       ]);
     });
@@ -221,10 +221,10 @@ describe('CollaborationSessionService', () => {
     it('uses a placeholder host when there is neither host nor participant', async () => {
       mockHttpClient.get.mockReturnValue(of([{ ...specSession, participants: [] }]));
       const sessions = await new Promise<
-        Array<{ host: { display_name: string }; activeUsers: number }>
+        Array<{ host: { display_name: string }; participantCount: number }>
       >(resolve => service['requestSessionsViaHttp']().subscribe(resolve));
       expect(sessions[0].host.display_name).toBe('Unknown');
-      expect(sessions[0].activeUsers).toBe(0);
+      expect(sessions[0].participantCount).toBe(0);
     });
   });
 

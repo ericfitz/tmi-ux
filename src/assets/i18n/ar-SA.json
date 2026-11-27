@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "كل الأحداث (*)",
         "createAutomationUser": "إنشاء مستخدم أتمتة لهذا الـ Webhook.",
         "events": "أنواع الأحداث للاشتراك فيها",
         "eventsHint": "أنواع الأحداث للاشتراك فيها (مثال: threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} مستخدمين نشطين.",
     "approvePresenterRequest": "الموافقة على طلب المقدم",
     "availableCollaborationSessions": "جلسات التعاون المتاحة.",
     "collaboratorsHeader": "المشاركون",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "جارٍ تحميل سياق المخطط...",
     "manageParticipants": "إدارة المشاركين",
     "noActiveSessions": "لا توجد جلسات تعاون نشطة.",
+    "participantCount": "{{count}} مشاركين",
     "participantRequestsPresenterRole": "المشارك يطلب دور المقدم",
     "presenterModeRequested": "تم طلب وضع المقدم",
     "removeFromSession": "إزالة من الجلسة",
@@ -798,7 +799,6 @@
       "diagram": "تم حذف هذا المخطط — العودة إلى نموذج التهديد.",
       "threatModel": "تم حذف نموذج التهديد هذا — العودة إلى لوحة التحكم."
     },
-    "sessionStarted": "بدأت",
     "soloTransition": {
       "disconnected": "انتهت جلسة التعاون أو فُقد الاتصال — أنت الآن تعمل بشكل منفرد. يمكنك إعادة الانضمام من زر التعاون.",
       "endedByYou": "لقد أنهيت جلسة التعاون — أنت الآن تعمل بشكل منفرد.",

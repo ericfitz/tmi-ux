@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "تمام ایونٹس (*)",
         "createAutomationUser": "اس webhook کے لیے آٹومیشن صارف بنائیں۔",
         "events": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام",
         "eventsHint": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام (مثلاً، threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} فعال صارفین۔",
     "approvePresenterRequest": "پیش کنندہ کی درخواست منظور کریں",
     "availableCollaborationSessions": "دستیاب تعاون سیشنز۔",
     "collaboratorsHeader": "شرکاء",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "خاکے کا سیاق و سباق لوڈ ہو رہا ہے...",
     "manageParticipants": "شرکاء کا انتظام کریں",
     "noActiveSessions": "کوئی فعال تعاون سیشن نہیں۔",
+    "participantCount": "{{count}} شرکاء",
     "participantRequestsPresenterRole": "شریک پیش کنندہ کے کردار کی درخواست کر رہا ہے",
     "presenterModeRequested": "پیش کنندہ موڈ کی درخواست کی گئی",
     "removeFromSession": "سیشن سے ہٹائیں",
@@ -798,7 +799,6 @@
       "diagram": "یہ خاکہ حذف کر دیا گیا — خطرے کے ماڈل پر واپس جا رہے ہیں۔",
       "threatModel": "یہ خطرے کا ماڈل حذف کر دیا گیا — ڈیش بورڈ پر واپس جا رہے ہیں۔"
     },
-    "sessionStarted": "شروع ہوا",
     "soloTransition": {
       "disconnected": "تعاون سیشن ختم ہو گیا یا کنکشن منقطع ہو گیا — آپ اب اکیلے کام کر رہے ہیں۔ آپ تعاون بٹن سے دوبارہ شامل ہو سکتے ہیں۔",
       "endedByYou": "آپ نے تعاون سیشن ختم کیا — آپ اب اکیلے کام کر رہے ہیں۔",

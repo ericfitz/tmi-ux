@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "เหตุการณ์ทั้งหมด (*)",
         "createAutomationUser": "สร้างผู้ใช้อัตโนมัติสำหรับ Webhook นี้",
         "events": "ประเภทเหตุการณ์ที่ต้องการรับ",
         "eventsHint": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก (เช่น threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} ผู้ใช้ที่ใช้งานอยู่",
     "approvePresenterRequest": "อนุมัติคำขอผู้นำเสนอ",
     "availableCollaborationSessions": "เซสชันการทำงานร่วมกันที่พร้อมใช้งาน",
     "collaboratorsHeader": "ผู้เข้าร่วม",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "กำลังโหลดบริบทไดอะแกรม...",
     "manageParticipants": "จัดการผู้เข้าร่วม",
     "noActiveSessions": "ไม่มีเซสชันการทำงานร่วมกันที่ใช้งานอยู่",
+    "participantCount": "ผู้เข้าร่วม {{count}} คน",
     "participantRequestsPresenterRole": "ผู้เข้าร่วมขอบทบาทผู้นำเสนอ",
     "presenterModeRequested": "ขอโหมดผู้นำเสนอ",
     "removeFromSession": "ลบออกจากเซสชัน",
@@ -798,7 +799,6 @@
       "diagram": "ไดอะแกรมนี้ถูกลบแล้ว — กำลังกลับไปยังโมเดลภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคามนี้ถูกลบแล้ว — กำลังกลับไปยังแดชบอร์ด"
     },
-    "sessionStarted": "เริ่มต้น",
     "soloTransition": {
       "disconnected": "เซสชันการทำงานร่วมกันสิ้นสุดลงหรือการเชื่อมต่อขาดหาย — ขณะนี้คุณกำลังทำงานแบบเดี่ยว สามารถเข้าร่วมใหม่ได้จากปุ่มการทำงานร่วมกัน",
       "endedByYou": "คุณได้สิ้นสุดเซสชันการทำงานร่วมกันแล้ว — ขณะนี้คุณกำลังทำงานแบบเดี่ยว",

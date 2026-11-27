@@ -451,6 +451,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}...",
       "addDialog": {
+        "allEvents": "Все события (*)",
         "createAutomationUser": "Создать пользователя автоматизации для этого вебхука.",
         "events": "Типы событий для подписки",
         "eventsHint": "Типы событий для подписки (например, threat_model.created)",
@@ -770,7 +771,6 @@
     "title": "Timmy"
   },
   "collaboration": {
-    "activeUsers": "{{count}} активных пользователей.",
     "approvePresenterRequest": "Одобрить запрос ведущего",
     "availableCollaborationSessions": "Доступные сеансы совместной работы.",
     "collaboratorsHeader": "Участники",
@@ -790,6 +790,7 @@
     "loadingDiagramContext": "Загрузка контекста диаграммы...",
     "manageParticipants": "Управление участниками",
     "noActiveSessions": "Нет активных сеансов совместной работы.",
+    "participantCount": "{{count}} участников",
     "participantRequestsPresenterRole": "Участник запрашивает роль ведущего",
     "presenterModeRequested": "Запрошен режим ведущего",
     "removeFromSession": "Удалить из сеанса",
@@ -798,7 +799,6 @@
       "diagram": "Эта диаграмма была удалена — выполняется возврат к модели угроз.",
       "threatModel": "Эта модель угроз была удалена — выполняется возврат к панели управления."
     },
-    "sessionStarted": "Начало",
     "soloTransition": {
       "disconnected": "Сеанс совместной работы завершился или соединение было прервано — вы продолжаете работу самостоятельно. Вы можете снова присоединиться, воспользовавшись кнопкой совместной работы.",
       "endedByYou": "Вы завершили сеанс совместной работы — вы продолжаете работу самостоятельно.",
