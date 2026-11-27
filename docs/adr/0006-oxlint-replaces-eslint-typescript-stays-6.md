@@ -30,7 +30,9 @@ Switching the linter to Oxlint removes only the second blocker.
 
 - Type-aware lint rules run through `oxlint-tsgolint`, which uses the TypeScript 7 checker. Lint-time
   type information can differ from the TypeScript 6 compiler's in edge cases; the build and `tsc`
-  projects remain the source of truth for type errors. (Implementation call made during the
-  autonomous run, flagged for Eric's review in the #1063 PR.)
+  projects remain the source of truth for type errors. (Proposed during the autonomous run;
+  approved by Eric on 2026-11-26, human decision.)
+- `tsconfig.json` sets `"rootDir": "./"` so tsgolint accepts the project. (Approved by Eric on
+  2026-11-26, human decision.)
 - When Angular ships TypeScript 7 support, #845 needs no linter work.
 - Implementation details and the parity record: `docs/superpowers/specs/2026-11-26-oxlint-migration-design.md`.

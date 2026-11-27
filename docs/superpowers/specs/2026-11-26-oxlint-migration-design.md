@@ -62,6 +62,9 @@ build).
 
 ## Calls made without Eric (autonomous run)
 
+**Human decision (Eric, 2026-11-26):** the first call (tsgolint's TypeScript 7 checker) and the
+`rootDir` call below were reviewed and approved.
+
 - **Type-aware linting uses tsgolint, which is built on the TypeScript 7 native checker**, while
   the build and `tsc` projects use TS 6. Lint-time type information can therefore differ from the
   compiler's in edge cases. Accepted because the alternative (approach C) drops all type-aware
