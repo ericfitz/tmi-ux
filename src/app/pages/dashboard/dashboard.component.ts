@@ -96,6 +96,7 @@ import {
   hasAdvancedFilters as hasAdvancedServerFilters,
 } from './dashboard-filter.model';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+import { PluralKeyPipe } from '@app/i18n/plural-key.pipe';
 
 @Component({
   selector: 'app-dashboard',
@@ -109,6 +110,7 @@ import { getErrorMessage } from '@app/shared/utils/http-error.utils';
     MatDatepickerModule,
     MatNativeDateModule,
     TranslocoModule,
+    PluralKeyPipe,
     UserDisplayComponent,
   ],
   templateUrl: './dashboard.component.html',
