@@ -895,6 +895,7 @@
     "manageThreats": "Gestionar amenazas",
     "metadata": "Metadatos",
     "metadataKey": "Clave",
+    "metadataLoadFailed": "No se pudieron cargar los metadatos.",
     "metadataValue": "Valor",
     "mitigated": "Mitigado",
     "mitigation": "Mitigación",

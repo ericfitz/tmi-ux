@@ -31,7 +31,13 @@ import { ThreatModelService } from '../../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../../services/threat-model-authorization.service';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
-import { CVSSScore, SSVCScore, Threat, ThreatModel } from '../../models/threat-model.model';
+import {
+  CVSSScore,
+  Metadata,
+  SSVCScore,
+  Threat,
+  ThreatModel,
+} from '../../models/threat-model.model';
 import { Diagram } from '../../models/diagram.model';
 import type { components } from '@app/generated/api-types';
 import { FrameworkModel, ThreatTypeModel } from '../../../../shared/models/framework.model';
@@ -183,6 +189,12 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
   // CWE name lookup
   private cweNameMap = new Map<string, string>();
+  /**
+   * True once the threat's stored metadata has been fetched (#1076). Saving and
+   * the metadata dialog wait for it: the server's threat PUT replaces stored
+   * metadata, so a save without it would clear it.
+   */
+  metadataLoaded = false;
 
   // SEM@fda5a8a7189951ee270000543334c785ff38e1f6: inject dependencies and build the reactive threat form with validators (mutates shared state)
   constructor(
@@ -268,6 +280,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       threatId: this.threatId,
       threatName: this.threat.name,
     });
+
+    this.loadThreatMetadata();
 
     // Subscribe to authorization
     this.authorizationService.canEdit$.pipe(this.untilDestroyed()).subscribe(canEdit => {
@@ -684,11 +698,14 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
    */
   // SEM@cee4a5ff46c0649755a9808fdf31ce0eea5f0a3e: persist threat edits to the API and navigate back on success (writes DB)
   save(): void {
-    if (this.threatForm.invalid || !this.canEdit || this.isSaving) return;
+    if (this.threatForm.invalid || !this.canEdit || this.isSaving || !this.metadataLoaded) return;
 
     this.isSaving = true;
 
     const threatData = this.buildThreatData();
+    // The server's threat PUT replaces stored metadata, clearing it when the
+    // field is omitted, so send what was loaded from the metadata sub-resource.
+    threatData.metadata = this.threat?.metadata ?? [];
 
     this.threatModelService
       .updateThreat(this.threatModelId, this.threatId, threatData)
@@ -801,30 +818,71 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open metadata dialog
+   * Fetch the threat's stored metadata. The threat list endpoint, which
+   * populates the resolved threat model, does not include it (#1076).
    */
-  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the metadata editor dialog and merge returned key-value pairs onto the threat (mutates shared state)
-  openMetadataDialog(): void {
-    if (!this.threat) return;
+  private loadThreatMetadata(): void {
+    this.threatModelService
+      .getThreatMetadata(this.threatModelId, this.threatId)
+      .pipe(this.untilDestroyed())
+      .subscribe({
+        next: (metadata: Metadata[]) => {
+          if (!this.threat) return;
+          this.threat.metadata = metadata ?? [];
+          this.metadataLoaded = true;
+        },
+        error: (err: unknown) => {
+          this.logger.error('Failed to load threat metadata', err);
+          this.snackBar.open(
+            this.translocoService.translate('common.metadataLoadFailed'),
+            this.translocoService.translate('common.close'),
+            { duration: 5000 },
+          );
+        },
+      });
+  }
 
+  /**
+   * Open the metadata dialog and persist the returned entries through the
+   * threat's bulk metadata endpoint.
+   */
+  openMetadataDialog(): void {
+    if (!this.threat || !this.metadataLoaded) return;
+
+    const data: MetadataDialogData = {
+      metadata: this.threat.metadata || [],
+      isReadOnly: !this.canEdit,
+      objectType: 'Threat',
+      objectName: `${this.translocoService.translate('common.objectTypes.threat')}: ${this.threat.name} (${this.threat.id})`,
+    };
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
       width: '600px',
       maxHeight: '90vh',
-      data: {
-        metadata: this.threat.metadata || [],
-        isReadOnly: !this.canEdit,
-        entityType: 'threat',
-        entityId: this.threatId,
-        threatModelId: this.threatModelId,
-      } as MetadataDialogData,
+      data,
     });
 
     dialogRef
       .afterClosed()
-      .subscribe((result: { metadata: { key: string; value: string }[] } | undefined) => {
-        if (result && this.threat) {
-          this.threat.metadata = result.metadata.map(m => ({ key: m.key, value: m.value }));
-        }
+      .pipe(this.untilDestroyed())
+      .subscribe((result: Metadata[] | undefined) => {
+        if (!result || !this.canEdit) return;
+        this.threatModelService
+          .updateThreatMetadata(this.threatModelId, this.threatId, result)
+          .pipe(this.untilDestroyed())
+          .subscribe({
+            next: (updated: Metadata[]) => {
+              if (!this.threat) return;
+              this.threat.metadata = updated ?? result;
+            },
+            error: (err: unknown) => {
+              this.logger.error('Failed to update threat metadata', err);
+              this.snackBar.open(
+                this.translocoService.translate('common.saveFailed'),
+                this.translocoService.translate('common.close'),
+                { duration: 3000 },
+              );
+            },
+          });
       });
   }
 

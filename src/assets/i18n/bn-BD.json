@@ -1098,6 +1098,7 @@
     "manageThreats": "হুমকি পরিচালনা করুন",
     "metadata": "মেটাডেটা",
     "metadataKey": "কী",
+    "metadataLoadFailed": "মেটাডেটা লোড করা যায়নি",
     "metadataValue": "মান",
     "mitigated": "প্রশমিত",
     "mitigation": "প্রশমন",
