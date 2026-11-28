@@ -2134,36 +2134,53 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
-    const dialogData: MetadataDialogData = {
-      metadata: threat.metadata || [],
-      isReadOnly: !this.canEdit,
-      objectType: 'Threat',
-      objectName: `${this.transloco.translate('common.objectTypes.threat')}: ${threat.name} (${threat.id})`,
-    };
+    if (!this.threatModel) return;
 
+    // Fetch metadata from API since the threat list endpoint doesn't include it (#1076)
     this._subscriptions.add(
-      this.dialogService.openMetadata(dialogData).subscribe(result => {
-        if (result && this.threatModel) {
+      this.threatCrud.getThreatMetadata(this.threatModel.id, threat.id).subscribe({
+        next: metadata => {
+          const loadedThreat = this.threatModel?.threats?.find(t => t.id === threat.id);
+          if (loadedThreat) loadedThreat.metadata = metadata || [];
+          const dialogData: MetadataDialogData = {
+            metadata: metadata || [],
+            isReadOnly: !this.canEdit,
+            objectType: 'Threat',
+            objectName: `${this.transloco.translate('common.objectTypes.threat')}: ${threat.name} (${threat.id})`,
+          };
           this._subscriptions.add(
-            this.threatCrud.updateThreatMetadata(this.threatModel.id, threat.id, result).subscribe({
-              next: updatedMetadata => {
-                if (updatedMetadata && this.threatModel) {
-                  const threatIndex = this.threatModel.threats?.findIndex(t => t.id === threat.id);
-                  if (threatIndex !== undefined && threatIndex !== -1 && this.threatModel.threats) {
-                    this.threatModel.threats[threatIndex].metadata = updatedMetadata;
-                    this.threatModel.threats[threatIndex].modified_at = new Date().toISOString();
-                  }
-                  this.logger.info('Updated threat metadata via API', {
-                    threatId: threat.id,
-                    threatName: threat.name,
-                    metadata: updatedMetadata,
-                  });
-                }
-              },
-              error: error => this.logger.error('Failed to update threat metadata', error),
+            this.dialogService.openMetadata(dialogData).subscribe(result => {
+              if (!result || !this.threatModel) return;
+              this._subscriptions.add(
+                this.threatCrud
+                  .updateThreatMetadata(this.threatModel.id, threat.id, result)
+                  .subscribe({
+                    next: updatedMetadata => {
+                      const listThreat = this.threatModel?.threats?.find(t => t.id === threat.id);
+                      if (updatedMetadata && listThreat) {
+                        listThreat.metadata = updatedMetadata;
+                        listThreat.modified_at = new Date().toISOString();
+                      }
+                      this.logger.info('Updated threat metadata via API', {
+                        threatId: threat.id,
+                        threatName: threat.name,
+                        metadata: updatedMetadata,
+                      });
+                    },
+                    error: error => this.logger.error('Failed to update threat metadata', error),
+                  }),
+              );
             }),
           );
-        }
+        },
+        error: error => {
+          this.logger.error('Failed to fetch threat metadata', error);
+          this.snackBar.open(
+            this.transloco.translate('common.metadataLoadFailed'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
+        },
       }),
     );
   }
@@ -3181,6 +3198,26 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // SEM@3ef058b55fa1cb48b295638770d9df824a0d3a8a: store the row-level addon invocation context for the selected object (mutates shared state)
   setAddonRowContext(type: AddonObjectType, id: string, name: string, metadata?: Metadata[]): void {
     this.currentAddonRowContext = { type, id, name, metadata };
+    // Threats from the list endpoint carry no metadata (#1076); load it for
+    // addon parameters that read metadata keys.
+    if (type === 'threat' && this.threatModel) {
+      this._subscriptions.add(
+        this.threatCrud.getThreatMetadata(this.threatModel.id, id).subscribe({
+          next: loaded => {
+            if (
+              this.currentAddonRowContext?.type === 'threat' &&
+              this.currentAddonRowContext.id === id
+            ) {
+              this.currentAddonRowContext = {
+                ...this.currentAddonRowContext,
+                metadata: loaded || [],
+              };
+            }
+          },
+          error: error => this.logger.error('Failed to fetch threat metadata for addon', error),
+        }),
+      );
+    }
   }
 
   /**

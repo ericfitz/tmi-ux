@@ -20,6 +20,7 @@
       <button
         mat-icon-button
         data-testid="threat-page-metadata-button"
+        [disabled]="!metadataLoaded"
         (click)="openMetadataDialog()"
         [matTooltip]="
           canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
@@ -31,7 +32,7 @@
         <button
           mat-icon-button
           color="primary"
-          [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
+          [disabled]="threatForm.invalid || !threatForm.dirty || isSaving || !metadataLoaded"
           (click)="save()"
           [matTooltip]="'common.save' | transloco"
           data-testid="threat-page-save-button"

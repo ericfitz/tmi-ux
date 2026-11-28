@@ -895,6 +895,7 @@
     "manageThreats": "จัดการภัยคุกคาม",
     "metadata": "ข้อมูลเมตา",
     "metadataKey": "คีย์",
+    "metadataLoadFailed": "ไม่สามารถโหลดเมทาดาทาได้",
     "metadataValue": "ค่า",
     "mitigated": "ลดความรุนแรง",
     "mitigation": "การลดผลกระทบ",

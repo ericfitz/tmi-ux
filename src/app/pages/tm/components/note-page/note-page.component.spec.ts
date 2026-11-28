@@ -51,6 +51,7 @@ interface MockThreatModelService {
   getNoteById: ReturnType<typeof vi.fn>;
   updateNote: ReturnType<typeof vi.fn>;
   deleteNote: ReturnType<typeof vi.fn>;
+  updateNoteMetadata: ReturnType<typeof vi.fn>;
 }
 
 interface MockAuthorizationService {
@@ -148,6 +149,7 @@ describe('NotePageComponent', () => {
       getNoteById: vi.fn().mockReturnValue(of(mockNote)),
       updateNote: vi.fn().mockReturnValue(of(mockNote)),
       deleteNote: vi.fn().mockReturnValue(of(true)),
+      updateNoteMetadata: vi.fn((_tm: string, _id: string, md: unknown) => of(md)),
     };
     authorizationService = {
       canEdit$: new BehaviorSubject(true),
@@ -293,6 +295,32 @@ describe('NotePageComponent', () => {
       );
       expect(snackBar.open).toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/tm', 'tm-1']);
+    });
+  });
+
+  describe('openMetadataDialog', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('persists metadata returned by the dialog through the bulk endpoint', () => {
+      const edited = [{ key: 'reviewed', value: 'yes' }];
+      dialog.open = vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(edited)) });
+
+      component.openMetadataDialog();
+
+      expect(threatModelService.updateNoteMetadata).toHaveBeenCalledWith('tm-1', 'note-1', edited);
+      expect(component.note?.metadata).toEqual(edited);
+    });
+
+    it('does not persist when the dialog is cancelled', () => {
+      dialog.open = vi
+        .fn()
+        .mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(undefined)) });
+
+      component.openMetadataDialog();
+
+      expect(threatModelService.updateNoteMetadata).not.toHaveBeenCalled();
     });
   });
 

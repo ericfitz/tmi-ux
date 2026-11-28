@@ -895,6 +895,7 @@
     "manageThreats": "Kelola Ancaman",
     "metadata": "Metadata",
     "metadataKey": "Kunci",
+    "metadataLoadFailed": "Tidak dapat memuat metadata.",
     "metadataValue": "Nilai",
     "mitigated": "Dimitigasi",
     "mitigation": "Mitigasi",

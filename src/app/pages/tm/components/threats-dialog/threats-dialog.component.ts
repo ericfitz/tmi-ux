@@ -189,6 +189,21 @@ export class ThreatsDialogComponent implements OnInit {
    */
   // SEM@0c2bd0b0fb53372a6287ea6eadbe0b56824bab8f: open threat editor dialog and persist accepted changes via API (reads DB)
   private openThreatEditorDialog(threat: Threat, framework?: FrameworkModel): void {
+    // The threat update PUT replaces stored metadata, and threats from the list
+    // endpoint carry none (#1076); load it first so an edit cannot clear it.
+    this.threatModelService
+      .getThreatMetadata(this.data.threatModelId!, threat.id)
+      .pipe(take(1))
+      .subscribe({
+        next: metadata => this.openThreatEditorDialogWith({ ...threat, metadata }, framework),
+        error: error => this.logger.error('Failed to load threat metadata for edit', error),
+      });
+  }
+
+  /**
+   * Opens the threat editor for a threat whose stored metadata is loaded
+   */
+  private openThreatEditorDialogWith(threat: Threat, framework?: FrameworkModel): void {
     const dialogData: ThreatEditorDialogData = {
       threat: threat,
       threatModelId: this.data.threatModelId!,

@@ -895,6 +895,7 @@
     "manageThreats": "إدارة التهديدات",
     "metadata": "البيانات الوصفية",
     "metadataKey": "المفتاح",
+    "metadataLoadFailed": "تعذّر تحميل البيانات الوصفية.",
     "metadataValue": "القيمة",
     "mitigated": "تم التخفيف",
     "mitigation": "التخفيف",

@@ -895,6 +895,7 @@
     "manageThreats": "脅威を管理",
     "metadata": "メタデータ",
     "metadataKey": "キー",
+    "metadataLoadFailed": "メタデータを読み込めませんでした。",
     "metadataValue": "値",
     "mitigated": "軽減済み",
     "mitigation": "軽減策",

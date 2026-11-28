@@ -4,7 +4,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { of, BehaviorSubject, Subscription } from 'rxjs';
+import { of, throwError, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
 import { ThreatPageComponent } from './threat-page.component';
@@ -50,6 +50,8 @@ interface MockTranslocoService {
 interface MockThreatModelService {
   updateThreat: ReturnType<typeof vi.fn>;
   deleteThreat: ReturnType<typeof vi.fn>;
+  getThreatMetadata: ReturnType<typeof vi.fn>;
+  updateThreatMetadata: ReturnType<typeof vi.fn>;
 }
 
 interface MockAuthorizationService {
@@ -126,8 +128,15 @@ describe('ThreatPageComponent', () => {
     metadata: [],
   };
 
+  const storedMetadata = [
+    { key: 'creation-agent', value: 'tmi-tf' },
+    { key: 'run_id', value: 'ace18002-3d78-4ffc-804d-0c46f1419ce4' },
+  ];
+
   beforeEach(() => {
     vi.clearAllMocks();
+    // The threat list endpoint returns threats with empty inline metadata (#1076)
+    mockThreat.metadata = [];
 
     route = {
       snapshot: {
@@ -164,6 +173,8 @@ describe('ThreatPageComponent', () => {
     threatModelService = {
       updateThreat: vi.fn().mockReturnValue(of(mockThreat)),
       deleteThreat: vi.fn().mockReturnValue(of(true)),
+      getThreatMetadata: vi.fn().mockReturnValue(of(storedMetadata)),
+      updateThreatMetadata: vi.fn((_tm: string, _id: string, md: unknown) => of(md)),
     };
     authorizationService = {
       canEdit$: new BehaviorSubject(true),
@@ -279,6 +290,102 @@ describe('ThreatPageComponent', () => {
       );
       expect(snackBar.open).toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/tm', 'tm-1']);
+    });
+  });
+
+  describe('metadata (#1076)', () => {
+    it('loads the threat metadata from the metadata sub-resource on init', () => {
+      component.ngOnInit();
+
+      expect(threatModelService.getThreatMetadata).toHaveBeenCalledWith('tm-1', 'threat-1');
+      expect(component.threat?.metadata).toEqual(storedMetadata);
+    });
+
+    it('opens the metadata dialog with the loaded metadata', () => {
+      dialog.open.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(undefined)) });
+      component.ngOnInit();
+
+      component.openMetadataDialog();
+
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({ metadata: storedMetadata, isReadOnly: false }),
+        }),
+      );
+    });
+
+    it('persists metadata returned by the dialog through the bulk endpoint', () => {
+      const edited = [{ key: 'reviewed', value: 'yes' }];
+      dialog.open.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(edited)) });
+      component.ngOnInit();
+
+      component.openMetadataDialog();
+
+      expect(threatModelService.updateThreatMetadata).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        edited,
+      );
+      expect(component.threat?.metadata).toEqual(edited);
+    });
+
+    it('does not persist when the dialog is cancelled', () => {
+      dialog.open.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(undefined)) });
+      component.ngOnInit();
+
+      component.openMetadataDialog();
+
+      expect(threatModelService.updateThreatMetadata).not.toHaveBeenCalled();
+    });
+
+    it('sends the stored metadata on save so the PUT does not clear it', () => {
+      component.ngOnInit();
+      component.threatForm.markAsDirty();
+
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({ metadata: storedMetadata }),
+      );
+    });
+
+    it('blocks save and warns when loading the metadata failed', () => {
+      threatModelService.getThreatMetadata.mockReturnValue(throwError(() => new Error('boom')));
+      component.ngOnInit();
+      component.threatForm.markAsDirty();
+
+      component.save();
+
+      expect(threatModelService.updateThreat).not.toHaveBeenCalled();
+      expect(snackBar.open).toHaveBeenCalledWith(
+        'common.metadataLoadFailed',
+        'common.close',
+        expect.anything(),
+      );
+    });
+
+    it('blocks save and the metadata dialog until the metadata has loaded', () => {
+      const pending = new Subject<{ key: string; value: string }[]>();
+      threatModelService.getThreatMetadata.mockReturnValue(pending);
+      dialog.open.mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(undefined)) });
+      component.ngOnInit();
+      component.threatForm.markAsDirty();
+
+      component.save();
+      component.openMetadataDialog();
+      expect(threatModelService.updateThreat).not.toHaveBeenCalled();
+      expect(dialog.open).not.toHaveBeenCalled();
+
+      pending.next(storedMetadata);
+      component.save();
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({ metadata: storedMetadata }),
+      );
     });
   });
 
