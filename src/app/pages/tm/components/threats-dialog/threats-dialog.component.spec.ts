@@ -5,6 +5,7 @@ import '@angular/compiler';
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import type { TranslocoService } from '@jsverse/transloco';
+import { of, throwError } from 'rxjs';
 
 import { ThreatsDialogComponent, ThreatsDialogData } from './threats-dialog.component';
 import type { Threat } from '../../models/threat-model.model';
@@ -140,6 +141,49 @@ describe('ThreatsDialogComponent', () => {
       // editThreat warns and returns when threatModelId is missing.
       expect(mockLogger['warn']).toHaveBeenCalled();
       expect(mockThreatModelService['getThreatModelById']).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('editThreat metadata (#1076)', () => {
+    const stored = [{ key: 'run_id', value: 'ace18002-3d78-4ffc-804d-0c46f1419ce4' }];
+
+    beforeEach(() => {
+      mockThreatModelService['getThreatModelById'].mockReturnValue(
+        of({ id: 'tm-1', threat_model_framework: 'STRIDE' }),
+      );
+      mockFrameworkService['loadAllFrameworks'].mockReturnValue(of([]));
+      mockThreatModelService['getThreatMetadata'] = vi.fn().mockReturnValue(of(stored));
+      mockThreatModelService['updateThreat'].mockReturnValue(of(makeThreat('t1')));
+    });
+
+    it('sends the stored metadata, not the empty list copy, when saving an edit', () => {
+      const threat = makeThreat('t1', { metadata: [] });
+      mockDialog.open.mockReturnValue({
+        afterClosed: vi.fn().mockReturnValue(of({ name: 'Renamed', threat_type: [] })),
+      });
+      const component = build({ threats: [threat], threatModelId: 'tm-1' });
+
+      component.editThreat(threat);
+
+      expect(mockThreatModelService['getThreatMetadata']).toHaveBeenCalledWith('tm-1', 't1');
+      expect(mockThreatModelService['updateThreat']).toHaveBeenCalledWith(
+        'tm-1',
+        't1',
+        expect.objectContaining({ name: 'Renamed', metadata: stored }),
+      );
+    });
+
+    it('does not open the editor when the stored metadata cannot be loaded', () => {
+      mockThreatModelService['getThreatMetadata'].mockReturnValue(
+        throwError(() => new Error('boom')),
+      );
+      const threat = makeThreat('t1', { metadata: [] });
+      const component = build({ threats: [threat], threatModelId: 'tm-1' });
+
+      component.editThreat(threat);
+
+      expect(mockDialog.open).not.toHaveBeenCalled();
+      expect(mockThreatModelService['updateThreat']).not.toHaveBeenCalled();
     });
   });
 

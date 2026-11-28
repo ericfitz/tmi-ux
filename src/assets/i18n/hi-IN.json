@@ -899,6 +899,7 @@
     "manageThreats": "खतरे प्रबंधित करें",
     "metadata": "मेटाडेटा",
     "metadataKey": "कुंजी",
+    "metadataLoadFailed": "मेटाडेटा लोड नहीं हो सका।",
     "metadataValue": "मान",
     "mitigated": "शमन किया गया",
     "mitigation": "शमन",

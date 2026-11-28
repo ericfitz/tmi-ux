@@ -903,6 +903,7 @@
     "manageThreats": "Управление угрозами",
     "metadata": "Метаданные",
     "metadataKey": "Ключ",
+    "metadataLoadFailed": "Не удалось загрузить метаданные.",
     "metadataValue": "Значение",
     "mitigated": "Смягчено",
     "mitigation": "Смягчение",

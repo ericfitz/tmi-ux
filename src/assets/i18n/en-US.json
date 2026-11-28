@@ -1062,6 +1062,7 @@
     "manageThreats.lint-skip": "Shared with a dialog title (dialog-title surface); a trailing ellipsis would be wrong on the title, so the ellipsis convention does not apply to this key.",
     "metadata": "Metadata",
     "metadataKey": "Key",
+    "metadataLoadFailed": "Couldn't load metadata.",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
     "mitigation": "Mitigation",

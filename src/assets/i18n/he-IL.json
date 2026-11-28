@@ -901,6 +901,7 @@
     "manageThreats": "נהל איומים",
     "metadata": "מטא-נתונים",
     "metadataKey": "מפתח",
+    "metadataLoadFailed": "לא ניתן לטעון את המטא-נתונים.",
     "metadataValue": "ערך",
     "mitigated": "הופחת",
     "mitigation": "הפחתה",

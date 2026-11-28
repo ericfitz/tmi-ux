@@ -901,6 +901,7 @@
     "manageThreats": "Gérer les menaces",
     "metadata": "Metadonnees",
     "metadataKey": "Cle",
+    "metadataLoadFailed": "Impossible de charger les métadonnées.",
     "metadataValue": "Valeur",
     "mitigated": "Attenue",
     "mitigation": "Attenuation",

@@ -32,7 +32,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { LanguageService } from '../../../../i18n/language.service';
 import { ThreatModelService } from '../../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../../services/threat-model-authorization.service';
-import { Note, ThreatModel } from '../../models/threat-model.model';
+import { Metadata, Note, ThreatModel } from '../../models/threat-model.model';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
@@ -442,30 +442,45 @@ export class NotePageComponent
   }
 
   /**
-   * Open metadata dialog
+   * Open the metadata dialog and persist the returned entries through the
+   * note's bulk metadata endpoint.
    */
-  // SEM@6155a2a9e7c211bc53a925f06c0fa0e1aa3b4ec2: open the metadata dialog for the note and apply returned changes (mutates shared state)
   openMetadataDialog(): void {
     if (!this.note) return;
 
+    const data: MetadataDialogData = {
+      metadata: this.note.metadata || [],
+      isReadOnly: !this.canEdit,
+      objectType: 'Note',
+      objectName: `${this.translocoService.translate('common.objectTypes.note')}: ${this.note.name} (${this.note.id})`,
+    };
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
       width: '600px',
       maxHeight: '90vh',
-      data: {
-        metadata: this.note.metadata || [],
-        isReadOnly: !this.canEdit,
-        entityType: 'note',
-        entityId: this.noteId,
-        threatModelId: this.threatModelId,
-      } as MetadataDialogData,
+      data,
     });
 
     dialogRef
       .afterClosed()
-      .subscribe((result: { metadata: { key: string; value: string }[] } | undefined) => {
-        if (result && this.note) {
-          this.note.metadata = result.metadata.map(m => ({ key: m.key, value: m.value }));
-        }
+      .pipe(this.untilDestroyed())
+      .subscribe((result: Metadata[] | undefined) => {
+        if (!result || !this.canEdit) return;
+        this.threatModelService
+          .updateNoteMetadata(this.threatModelId, this.noteId, result)
+          .pipe(this.untilDestroyed())
+          .subscribe({
+            next: (updated: Metadata[]) => {
+              if (this.note) this.note.metadata = updated ?? result;
+            },
+            error: (err: unknown) => {
+              this.logger.error('Failed to update note metadata', err);
+              this.snackBar.open(
+                this.translocoService.translate('common.saveFailed'),
+                this.translocoService.translate('common.close'),
+                { duration: 3000 },
+              );
+            },
+          });
       });
   }
 

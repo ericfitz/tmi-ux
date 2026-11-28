@@ -897,6 +897,7 @@
     "manageThreats": "管理威胁",
     "metadata": "元数据",
     "metadataKey": "键",
+    "metadataLoadFailed": "无法加载元数据。",
     "metadataValue": "值",
     "mitigated": "已缓解",
     "mitigation": "缓解措施",

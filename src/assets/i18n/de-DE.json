@@ -899,6 +899,7 @@
     "manageThreats": "Bedrohungen verwalten",
     "metadata": "Metadaten",
     "metadataKey": "Schlüssel",
+    "metadataLoadFailed": "Metadaten konnten nicht geladen werden.",
     "metadataValue": "Wert",
     "mitigated": "Gemildert",
     "mitigation": "Schadensbegrenzung",

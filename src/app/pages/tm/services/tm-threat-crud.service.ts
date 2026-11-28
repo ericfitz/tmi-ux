@@ -162,6 +162,11 @@ export class TmThreatCrudService {
     return this.threatModelService.deleteThreat(threatModelId, threatId);
   }
 
+  /** Fetch a threat's stored metadata from its metadata sub-resource. */
+  getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
+    return this.threatModelService.getThreatMetadata(threatModelId, threatId);
+  }
+
   /** Update a threat's metadata; emits the updated metadata array. */
   // SEM@2448d40fcb8d5c2695db6c1bdc7952b40e57b317: update metadata collection for a threat via the API
   updateThreatMetadata(
