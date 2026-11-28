@@ -35,6 +35,7 @@ import {
   CreateSurveyDialogResult,
 } from './components/create-survey-dialog/create-survey-dialog.component';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
+import { PluralKeyPipe } from '@app/i18n/plural-key.pipe';
 
 /**
  * Admin surveys component
@@ -50,6 +51,7 @@ import { getErrorMessage } from '@app/shared/utils/http-error.utils';
     ...FEEDBACK_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
+    PluralKeyPipe,
   ],
   templateUrl: './admin-surveys.component.html',
   styleUrl: './admin-surveys.component.scss',

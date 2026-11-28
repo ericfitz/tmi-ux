@@ -60,6 +60,9 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_style.plural import is_plural_group  # noqa: E402
+
 
 CONFIG_FILENAME = ".claude/i18n.config.json"
 
@@ -134,6 +137,8 @@ def load_and_sort_json(file_path):
 def get_all_keys(obj, prefix="", skip_comments=True):
     """Recursively collect all keys with their full dot-path.
 
+    A plural group counts as one key: its CLDR category keys differ by locale.
+
     Args:
         obj: The JSON object to traverse.
         prefix: Current key path prefix.
@@ -147,6 +152,8 @@ def get_all_keys(obj, prefix="", skip_comments=True):
             if skip_comments and full_key.endswith(".comment"):
                 continue
             keys.add(full_key)
+            if is_plural_group(value):
+                continue
             keys.update(get_all_keys(value, full_key, skip_comments))
     return keys
 

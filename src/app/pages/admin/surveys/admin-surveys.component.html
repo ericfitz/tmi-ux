@@ -260,9 +260,9 @@
 
     <div class="templates-summary">
       <span>{{
-        dataSource.data.length === 1
-          ? ('adminSurveys.templateCount' | transloco: { count: dataSource.data.length })
-          : ('adminSurveys.templateCountPlural' | transloco: { count: dataSource.data.length })
+        'adminSurveys.templateCount'
+          | pluralKey: dataSource.data.length
+          | transloco: { count: dataSource.data.length }
       }}</span>
     </div>
   }

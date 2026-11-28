@@ -25,6 +25,20 @@ const EXCLUDE_PATTERNS = [
   '**/*.test.ts'
 ];
 
+const PLURAL_CATEGORIES = new Set(['zero', 'one', 'two', 'few', 'many', 'other']);
+
+/**
+ * True for a CLDR plural group: an object whose keys are all plural categories,
+ * including `other` (ADR 0007).
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isPluralGroup(value) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  return keys.includes('other') && keys.every(k => PLURAL_CATEGORIES.has(k));
+}
+
 /**
  * Recursively extracts all keys from a nested localization object
  * @param {Object} obj - The localization object
@@ -42,7 +56,10 @@ function extractKeysFromObject(obj, prefix = '') {
       continue;
     }
 
-    if (typeof value === 'object' && value !== null) {
+    if (isPluralGroup(value)) {
+      // Code references a plural group by its own key (ADR 0007).
+      keys.push(fullKey);
+    } else if (typeof value === 'object' && value !== null) {
       keys.push(...extractKeysFromObject(value, fullKey));
     } else {
       keys.push(fullKey);
@@ -103,6 +120,8 @@ function isKeyUsedInSources(key, sourceFiles) {
   const patterns = [
     // Template pipe usage: 'key' | transloco
     new RegExp(`['"\`]${escapeRegExp(key)}['"\`]\\s*\\|\\s*transloco`),
+    // Plural group: 'key' | pluralKey: count | transloco
+    new RegExp(`['"\`]${escapeRegExp(key)}['"\`]\\s*\\|\\s*pluralKey`),
     // Template directive: [transloco]="'key'" or [transloco]='"key"'
     new RegExp(`\\[transloco\\]\\s*=\\s*"'${escapeRegExp(key)}'"\\s*`),
     new RegExp(`\\[transloco\\]\\s*=\\s*'"${escapeRegExp(key)}"'\\s*`),

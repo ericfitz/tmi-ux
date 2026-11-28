@@ -163,11 +163,10 @@
                 Triage Notes
               </span>
               <span class="section-description">
-                {{ triageNotes.length }}
                 {{
-                  triageNotes.length === 1
-                    ? ('triage.detail.note' | transloco)
-                    : ('triage.detail.notes' | transloco)
+                  'triage.detail.noteCount'
+                    | pluralKey: triageNotes.length
+                    | transloco: { count: triageNotes.length }
                 }}
               </span>
             </button>

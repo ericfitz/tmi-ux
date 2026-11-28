@@ -24,6 +24,7 @@ import {
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types';
+import { PluralKeyPipe } from '@app/i18n/plural-key.pipe';
 
 /**
  * My responses component
@@ -39,6 +40,7 @@ import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types'
     ...FEEDBACK_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
+    PluralKeyPipe,
   ],
   templateUrl: './my-responses.component.html',
   styleUrl: './my-responses.component.scss',

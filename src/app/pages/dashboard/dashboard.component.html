@@ -371,11 +371,9 @@
                         <p class="collab-detail">
                           <mat-icon>group</mat-icon>
                           {{
-                            session.participantCount === 1
-                              ? ('collaboration.participantCount'
-                                | transloco: { count: session.participantCount })
-                              : ('collaboration.participantCountPlural'
-                                | transloco: { count: session.participantCount })
+                            'collaboration.participantCount'
+                              | pluralKey: session.participantCount
+                              | transloco: { count: session.participantCount }
                           }}
                         </p>
                         <button
@@ -588,11 +586,9 @@
                       <p class="collab-detail">
                         <mat-icon>group</mat-icon>
                         {{
-                          session.participantCount === 1
-                            ? ('collaboration.participantCount'
-                              | transloco: { count: session.participantCount })
-                            : ('collaboration.participantCountPlural'
-                              | transloco: { count: session.participantCount })
+                          'collaboration.participantCount'
+                            | pluralKey: session.participantCount
+                            | transloco: { count: session.participantCount }
                         }}
                       </p>
                       <button

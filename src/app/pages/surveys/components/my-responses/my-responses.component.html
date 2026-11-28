@@ -175,9 +175,9 @@
 
     <div class="responses-summary">
       <span>{{
-        dataSource.data.length === 1
-          ? ('surveys.responses.responseCount' | transloco: { count: dataSource.data.length })
-          : ('surveys.responses.responseCountPlural' | transloco: { count: dataSource.data.length })
+        'surveys.responses.responseCount'
+          | pluralKey: dataSource.data.length
+          | transloco: { count: dataSource.data.length }
       }}</span>
     </div>
   }

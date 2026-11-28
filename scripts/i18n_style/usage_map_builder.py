@@ -25,19 +25,25 @@ from typing import Dict, Any
 from scripts.i18n_style.config import load_lists
 from scripts.i18n_style.ellipsis_detector import is_ellipsis_candidate
 from scripts.i18n_style.key_enumerator import enumerate_keys
+from scripts.i18n_style.plural import is_plural_group
 from scripts.i18n_style.usage_scanner import scan_for_key, scan_for_partial_key
 from scripts.i18n_style.surface_inference import infer_surfaces
 
 
-def _value_for_key(data, key: str):
-    """Return the string value for a dotted key in a nested dict, or None."""
-    parts = key.split(".")
+def _node_for_key(data, key: str):
+    """Return the value (of any type) for a dotted key in a nested dict, or None."""
     cur = data
-    for p in parts:
+    for p in key.split("."):
         if isinstance(cur, dict) and p in cur:
             cur = cur[p]
         else:
             return None
+    return cur
+
+
+def _value_for_key(data, key: str):
+    """Return the string value for a dotted key in a nested dict, or None."""
+    cur = _node_for_key(data, key)
     return cur if isinstance(cur, str) else None
 
 
@@ -111,7 +117,10 @@ def build_usage_map(en_us_path: Path, repo_root: Path) -> Dict[str, Dict[str, An
         has_comment = _has_comment_sibling(en_us_data, key)
         needs_comment = ambiguous and not has_comment
 
-        usages = scan_for_key(key, repo_root)
+        # Code references a plural group by its own key, not a category leaf.
+        parent_key = key.rsplit(".", 1)[0] if "." in key else key
+        scan_key = parent_key if is_plural_group(_node_for_key(en_us_data, parent_key)) else key
+        usages = scan_for_key(scan_key, repo_root)
         if usages:
             surfaces = infer_surfaces(usages)
             # The surface guard is intentionally omitted here: surface inference
@@ -132,7 +141,7 @@ def build_usage_map(en_us_path: Path, repo_root: Path) -> Dict[str, Dict[str, An
             continue
 
         # Stage 3: try partial-key search.
-        candidates = scan_for_partial_key(key, repo_root)
+        candidates = scan_for_partial_key(scan_key, repo_root)
         if candidates:
             best = "medium" if any(c.confidence == "medium" for c in candidates) else "low"
             usage_map[key] = {

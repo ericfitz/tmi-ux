@@ -34,6 +34,7 @@ import {
   getStatusClass as getStatusClassUtil,
   getStatusKey as getStatusKeyUtil,
 } from '../../utils/triage-status.util';
+import { PluralKeyPipe } from '@app/i18n/plural-key.pipe';
 
 /**
  * Flattened survey response row for table display.
@@ -74,6 +75,7 @@ interface StatusTimelineEntry {
     ...COMMON_IMPORTS,
     ...ALL_MATERIAL_IMPORTS,
     TranslocoModule,
+    PluralKeyPipe,
     UserDisplayComponent,
     MarkdownModule,
   ],
