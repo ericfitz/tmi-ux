@@ -1,9 +1,9 @@
 # ADR 0007: CLDR plurals with Intl.PluralRules, not ICU MessageFormat
 
-- **Status:** Accepted, pending Eric's confirmation
+- **Status:** Accepted
 - **Date:** 2026-11-28
-- **Decision by:** Claude (agent decision; Eric delegated #1070 to be resolved autonomously on
-  2026-11-28). This is not a human-made decision until Eric confirms it.
+- **Decision by:** Eric (human decision, confirmed 2026-11-28 after review; drafted by Claude under
+  delegation of #1070).
 - **Related:** [#1070](https://github.com/ericfitz/tmi-ux/issues/1070), [#1067](https://github.com/ericfitz/tmi-ux/issues/1067)
 
 ## Context
